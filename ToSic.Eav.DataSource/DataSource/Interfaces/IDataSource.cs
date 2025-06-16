@@ -43,7 +43,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    void AddDebugInfo(Guid? guid, string label);
+    void AddDebugInfo(Guid? guid, string? label);
 
     #endregion
 
@@ -102,7 +102,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    void Setup(IDataSourceOptions options, IDataSourceLinkable attach);
+    void Setup(IDataSourceOptions? options, IDataSourceLinkable? attach);
 
     #endregion
 

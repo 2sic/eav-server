@@ -22,6 +22,6 @@ public abstract class TypeWithMetadataBase<T> : IHasIdentityNameId
 
     public Type Type { get; }
 
-    public T TypeMetadata { get; }
+    public T? TypeMetadata { get; }
 
 }

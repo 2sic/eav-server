@@ -20,7 +20,8 @@ public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cul
     /// </summary>
     public const string InStreamName = "In";
 
-    private string[] Dimensions => field ??= cultureResolver.SafeLanguagePriorityCodes();
+    [field: AllowNull, MaybeNull]
+    private string?[] Dimensions => field ??= cultureResolver.SafeLanguagePriorityCodes();
 
 
     /// <inheritdoc />
@@ -32,17 +33,19 @@ public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cul
     {
         // Check if it has sub-keys to see if it's trying to match an inbound stream
         var subTokens = CheckAndGetSubToken(key);
-        if (!subTokens.HasSubToken) return string.Empty;
+        if (!subTokens.HasSubToken)
+            return string.Empty;
 
         // check if this stream exists
-        if (!dataSource.In.TryGetValue(subTokens.Source, out var entityStream)) return string.Empty;
+        if (!dataSource.In.TryGetValue(subTokens.Source!, out var entityStream))
+            return string.Empty;
 
         // check if any entities exist in this specific in-stream
         if (!entityStream.List.Any()) return string.Empty;
 
         // Create an LookUpInEntity based on the first item, return its Get
         var first = entityStream.List.First();
-        return new LookUpInEntity("no-name", first, Dimensions).Get(subTokens.Rest, format);
+        return new LookUpInEntity("no-name", first, Dimensions).Get(subTokens.Rest!, format);
 
     }
 }

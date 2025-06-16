@@ -11,6 +11,7 @@ partial class DataSourceBase
     #region Connections
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
+    [field: AllowNull, MaybeNull]
     internal DataSourceConnections Connections => field ??= new(this);
 
     #endregion
@@ -117,7 +118,7 @@ partial class DataSourceBase
 
     /// <inheritdoc />
     [PublicApi]
-    public IEnumerable<IEntity> List => GetStream().List;
+    public IEnumerable<IEntity> List => GetStream()?.List ?? []; // Just fallback to empty, as all null errors will throw anyway.
 
 
     #region various Attach-In commands
@@ -139,8 +140,10 @@ partial class DataSourceBase
             foreach (var link in list)
                 if (link.Stream != null)
                     Attach(link.InName, link.Stream);
-                else
+                else if (link.DataSource != null)
                     Attach(link.InName, link.DataSource, link.OutName);
+                else
+                    throw new ArgumentException("Can't connect as both the stream and the source are null");
         });
         l.Done();
     }
@@ -156,7 +159,8 @@ partial class DataSourceBase
     [PublicApi]
     public void Attach(string streamName, IDataStream dataStream)
     {
-        if (dataStream == null) return;
+        if (dataStream == null!)
+            return;
         Attach(new DataSourceConnection(dataStream, this, streamName));
     }
 

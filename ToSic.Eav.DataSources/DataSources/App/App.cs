@@ -79,23 +79,17 @@ public partial class App : DataSourceBase
     #region Constructor / DI
 
 
-    public new class MyServices: MyServicesBase<Eav.DataSource.DataSourceBase.MyServices>
+    public new class MyServices(
+        Eav.DataSource.DataSourceBase.MyServices parentServices,
+        IAppReaderFactory appReaders,
+        IDataSourcesService dataSourceFactory,
+        ICurrentContextUserPermissionsService userPermissions)
+        : MyServicesBase<Eav.DataSource.DataSourceBase.MyServices>(parentServices,
+            connect: [appReaders, dataSourceFactory, userPermissions])
     {
-        public ICurrentContextUserPermissionsService UserPermissions { get; }
-        public IDataSourcesService DataSourceFactory { get; }
-        public IAppReaderFactory AppReaders { get; }
-
-        public MyServices(Eav.DataSource.DataSourceBase.MyServices parentServices,
-            IAppReaderFactory appReaders,
-            IDataSourcesService dataSourceFactory,
-            ICurrentContextUserPermissionsService userPermissions) : base(parentServices)
-        {
-            ConnectLogs([
-                AppReaders = appReaders,
-                DataSourceFactory = dataSourceFactory,
-                UserPermissions = userPermissions
-            ]);
-        }
+        public ICurrentContextUserPermissionsService UserPermissions { get; } = userPermissions;
+        public IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
+        public IAppReaderFactory AppReaders { get; } = appReaders;
     }
 
     /// <summary>
@@ -106,7 +100,7 @@ public partial class App : DataSourceBase
     {
         _services = services;
         // this one is unusual, so don't pre-attach a default data stream to out
-        _out = new(this, null);
+        _out = new(this, Services.CacheService);
     }
 
     private readonly MyServices _services;

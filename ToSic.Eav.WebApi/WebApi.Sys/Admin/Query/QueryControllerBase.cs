@@ -78,18 +78,18 @@ public abstract class QueryControllerBase<TImplementation>(
     public QueryDefinitionDto Get(int appId, int? id = null)
     {
         var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
-        var query = new QueryDefinitionDto();
+        var queryDto = new QueryDefinitionDto();
 
         if (!id.HasValue)
-            return l.Return(query, "no id, empty");
+            return l.Return(queryDto, "no id, empty");
 
         var appState = Services.AppStates.New().Get(appId);
         var qDef = Services.QueryManager.Value.Get(appState, id.Value);
 
         #region Deserialize some Entity-Values
 
-        query.Pipeline = qDef.Entity.AsDictionary();
-        query.Pipeline[QueryConstants.QueryStreamWiringAttributeName] = qDef.Connections;
+        queryDto.Pipeline = qDef.Entity.AsDictionary();
+        queryDto.Pipeline[QueryConstants.QueryStreamWiringAttributeName] = qDef.Connections;
 
         var converter = Services.EntToDicLazy.Value;
         converter.Type.Serialize = true;
@@ -101,12 +101,12 @@ public abstract class QueryControllerBase<TImplementation>(
             var partDto = part.AsDictionary();
             var metadata = appState.Metadata.GetMetadata(TargetTypes.Entity, part.Guid);
             partDto.Add("Metadata", converter.Convert(metadata));
-            query.DataSources.Add(partDto);
+            queryDto.DataSources.Add(partDto);
         }
 
         #endregion
 
-        return l.ReturnAsOk(query);
+        return l.ReturnAsOk(queryDto);
     }
 
     /// <summary>

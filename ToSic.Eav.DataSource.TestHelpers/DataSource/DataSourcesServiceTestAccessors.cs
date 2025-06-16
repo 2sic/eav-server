@@ -27,14 +27,17 @@ public static class DataSourcesServiceTestAccessors
         NoParamOrder noParamOrder = default,
         IDataSource? upstream = default,
         IAppIdentity? appIdentity = default,
-        object? options = default) where TDataSource : IDataSource
+        object? options = default
+    )
+        where TDataSource : IDataSource
         => dsf.Create<TDataSource>(
             attach: upstream,
-            options: new DataSourceOptionConverter().Create(new DataSourceOptions
-            {
-                AppIdentityOrReader = appIdentity,
-                LookUp = new LookUpEngine(null),
-            }, options)
+            options: new DataSourceOptionConverter()
+                .Create(new DataSourceOptions
+                {
+                    AppIdentityOrReader = appIdentity,
+                    LookUp = new LookUpEngine(null),
+                }, options)
         );
 
 }

@@ -15,8 +15,9 @@ partial class ILog_Add
     /// <param name="cLine">Code line number, auto-added by compiler</param>
     /// <remarks>Is null-safe, so if there is no log, things still work</remarks>
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static TException Ex<TException>(this ILog? log,
-        TException exception,
+    [return: NotNullIfNotNull(nameof(exception))]
+    public static TException? Ex<TException>(this ILog? log,
+        TException? exception,
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default

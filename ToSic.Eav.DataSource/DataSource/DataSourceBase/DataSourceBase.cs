@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
-using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.DataSource;
 
@@ -62,7 +61,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
 
     [PrivateApi("internal use only - for labeling data sources in queries to show in debugging")]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public string Label { get; private set; }
+    public string Label { get; private set; } = "unknown";
 
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     public virtual bool Immutable { get; private set; }
@@ -80,7 +79,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public void AddDebugInfo(Guid? guid, string label)
+    public void AddDebugInfo(Guid? guid, string? label)
     {
         Guid = guid ?? Guid;
         Label = label ?? Label;
@@ -99,8 +98,8 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     #region Error Handling
 
     [PublicApi]
-    public DataSourceErrorHelper Error => _errorHandler.Get(() => Services.ErrorHandler.Value.ConnectToParent(this))!;
-    private readonly GetOnce<DataSourceErrorHelper> _errorHandler = new();
+    [field: AllowNull, MaybeNull]
+    public DataSourceErrorHelper Error => field ??= Services.ErrorHandler.Value.ConnectToParent(this);
 
     #endregion
 

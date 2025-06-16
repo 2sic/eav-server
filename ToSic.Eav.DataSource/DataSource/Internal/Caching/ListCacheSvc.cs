@@ -89,11 +89,11 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
             l.A($"Re-Building cache of data stream {stream.Name}");
             // Measure how long it takes to do this
             var watch = Stopwatch.StartNew();
-            var entities = builderFunc();
+            var entities = builderFunc() ?? [];
             watch.Stop();
 
             // Check if it's an error data, in which case caching off or special
-            if ((entities?.FirstOrDefault()).IsError())
+            if (entities.FirstOrDefault()?.IsError() == true)
             {
                 if (errorInSeconds < 0 || (errorInSeconds == 0 && watch.ElapsedMilliseconds < 1000))
                 {

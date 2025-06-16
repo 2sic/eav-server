@@ -97,7 +97,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
         var queryInfos = _queryBuilderLazy.Value.BuildQuery(Definition, Configuration.LookUpEngine,
             [paramsOverride]);
         var source = queryInfos.Main;
-        var outWritable = new StreamDictionary(this, source.Out);
+        var outWritable = new StreamDictionary(this, Services.CacheService, streams: source.Out);
         return l.Return((source, outWritable));
     }
 

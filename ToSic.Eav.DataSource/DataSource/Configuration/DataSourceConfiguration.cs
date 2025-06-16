@@ -50,7 +50,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
         // on first call, get and log
         var l = Log.Fn<string>($"{DataSourceForIn.GetType().Name}:{name}");
         var raw = GetRaw(name);
-        var parsed = ParseToken(raw);
+        var parsed = ParseToken(raw ?? "");
         _getThisCache[name] = parsed;
         return l.Return(parsed, raw == parsed ? $"'{raw}'" : $"raw: '{raw}'; parsed: '{parsed}'");
     }
@@ -62,12 +62,13 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     /// <param name="name"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    private string? GetRaw(string name) => _values.TryGetValue(name, out var result) 
+    private string? GetRaw(string name)
+        => _values.TryGetValue(name, out var result) 
         ? result
         : throw new ArgumentException(string.Format(ConfigNotFoundMessage, name));
 
     public T GetThis<T>(T fallback, [CallerMemberName] string? name = default)
-        => Get(name!, fallback: fallback);
+        => Get(name!, fallback: fallback)!;
 
     // ReSharper disable once AssignNullToNotNullAttribute
     [Obsolete("This is necessary for older DataSources which hat configuration setters. We will not support that any more, do not use.")]
@@ -84,7 +85,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.MyServices servic
     public IReadOnlyDictionary<string, string> Values => (IReadOnlyDictionary<string, string>)_values;
     private IDictionary<string, string> _values = new Dictionary<string, string>(InvariantCultureIgnoreCase);
 
-    public ILookUpEngine LookUpEngine { get; protected internal set; }
+    public ILookUpEngine LookUpEngine { get; protected internal set; } = null!;
 
     [PrivateApi]
     public bool IsParsed { get; private set; }

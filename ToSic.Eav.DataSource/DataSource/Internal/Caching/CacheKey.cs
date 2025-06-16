@@ -32,7 +32,8 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
         }
     }
 
-    [ShowApiWhenReleased(ShowApiMode.Never)] 
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    [field: AllowNull, MaybeNull]
     public virtual string CacheFullKey => field ??= string.Join(">", SubKeys.Distinct());
 
 
@@ -42,21 +43,24 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
     /// <returns></returns>
     private List<IDataSource> UniqueSources()
     {
-        if (DataSource == null)
+        // Note: doing extra careful null checks here, as this is used in the cache key, and if it fails, it will break the cache
+        if (DataSource == null!)
             return [];
 
-        if (DataSource.In == null || DataSource.In.Count == 0)
+        if (DataSource.In == null! || DataSource.In.Count == 0)
             return [];
 
         return DataSource.In
             .Select(pairs => pairs.Value?.Source)
             .Where(stream => stream != null)
+            .Cast<IDataSource>()
             .Distinct()
             .ToList();
     }
 
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
+    [field: AllowNull, MaybeNull]
     public string[] SubKeys
     {
         get

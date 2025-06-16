@@ -146,7 +146,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
 
     /// <inheritdoc />
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string[]? languages = default)
+    public object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string?[]? languages = default)
         => Entity.Get(name, noParamOrder, language, languages);
 
     // 2025-06-13 #MoveIEntityTypedGetToExtension

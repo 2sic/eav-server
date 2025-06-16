@@ -25,7 +25,7 @@ public class InspectDataSourceDto
     /// </summary>
     public bool Error { get; set; }
 
-    public Dictionary<string, object>? Definition;
+    public Dictionary<string, object?>? Definition;
 
     public IList<OutDto>? Out;
 

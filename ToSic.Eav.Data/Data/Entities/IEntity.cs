@@ -254,7 +254,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// </remarks>
     [PublicApi]
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string[]? languages = default);
+    object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string?[]? languages = default);
 
     // 2025-06-13 #MoveIEntityTypedGetToExtension
     ///// <summary>

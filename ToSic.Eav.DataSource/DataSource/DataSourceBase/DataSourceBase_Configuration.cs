@@ -38,11 +38,15 @@ partial class DataSourceBase
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public void Setup(IDataSourceOptions options, IDataSourceLinkable attach)
+    public void Setup(IDataSourceOptions? options, IDataSourceLinkable? attach)
     {
         var l = Log.Fn();
         var mainUpstream = attach?.Link?.DataSource;
-        (this as IAppIdentitySync).UpdateAppIdentity(options?.AppIdentityOrReader ?? mainUpstream);
+
+        var appIdRequired = options?.AppIdentityOrReader
+                            ?? mainUpstream
+                            ?? throw new NullReferenceException("Setup needs a proper App ID, neither the options nor the attach.Link has it.");
+        (this as IAppIdentitySync).UpdateAppIdentity(appIdRequired);
             
         // Attach in-bound, and make it immutable afterward
         if (attach?.Link == null)
@@ -50,7 +54,8 @@ partial class DataSourceBase
         else
             Connect(attach.Link);
 
-        if (options?.Immutable == true) Immutable = true;
+        if (options?.Immutable == true)
+            Immutable = true;
         l.A($"{nameof(Immutable)}, {Immutable}");
 
         var lookUp = options?.LookUp ?? mainUpstream?.Configuration?.LookUpEngine;

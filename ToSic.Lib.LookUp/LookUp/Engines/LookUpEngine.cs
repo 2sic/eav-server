@@ -29,7 +29,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     private readonly TokenReplace _reusableTokenReplace;
 
     // ReSharper disable once UnusedParameter.Local
-    public LookUpEngine(ILog parentLog, NoParamOrder protector = default, IEnumerable<ILookUp>? sources = default)
+    public LookUpEngine(ILog? parentLog, NoParamOrder protector = default, IEnumerable<ILookUp>? sources = default)
         : base(parentLog, "EAV.LookUp")
     {
         _reusableTokenReplace = new(this);

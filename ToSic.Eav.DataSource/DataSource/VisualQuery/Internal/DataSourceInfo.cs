@@ -6,10 +6,10 @@ namespace ToSic.Eav.DataSource.VisualQuery.Internal;
 public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>
 {
         
-    public VisualQueryAttribute VisualQuery { get; }
+    public VisualQueryAttribute? VisualQuery { get; }
 
-    // By default the name is the global name of the VisualQuery.
-    public override string NameId => VisualQuery?.NameId;
+    // By default, the name is the global name of the VisualQuery.
+    public override string NameId => VisualQuery?.NameId ?? "error-no-name-id";
 
     public bool IsGlobal { get; }
 

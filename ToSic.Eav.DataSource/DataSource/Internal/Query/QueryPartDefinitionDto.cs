@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSource.Internal.Query;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class QueryPartDefExtTemp
 {
-    public static Dictionary<string, object> AsDictionary(this QueryPartDefinition part)
+    public static Dictionary<string, object?> AsDictionary(this QueryPartDefinition part)
     {
         var attributes = part.Entity.AsDictionary();
 

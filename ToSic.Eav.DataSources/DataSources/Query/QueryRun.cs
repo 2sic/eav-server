@@ -58,9 +58,9 @@ public class QueryRun : Eav.DataSource.DataSourceBase
 
     #region Out
     /// <inheritdoc/>
-    public override IReadOnlyDictionary<string, IDataStream> Out => (_out ??= new(this, Query?.Out)).AsReadOnly();
+    public override IReadOnlyDictionary<string, IDataStream> Out
+        => field ??= new StreamDictionary(this, Services.CacheService, streams: Query?.Out).AsReadOnly();
 
-    private StreamDictionary _out;
     #endregion
 
     #region Surface the inner query in the API in case we need to look into it from our Razor Code

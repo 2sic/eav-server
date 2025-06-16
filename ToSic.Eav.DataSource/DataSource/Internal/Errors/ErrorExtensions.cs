@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSource.Internal.Errors;
 public static class ErrorExtensions
 {
     public static bool IsError(this IDataSource ds)
-        => (ds.List?.FirstOrDefault()).IsError();
+        => (ds.List?.FirstOrDefault())?.IsError() == true;
 
     public static bool IsError(this IEntity entity)
         => entity?.Type?.Name == DataConstants.ErrorTypeName;

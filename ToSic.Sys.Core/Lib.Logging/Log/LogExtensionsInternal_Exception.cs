@@ -4,7 +4,9 @@ partial class LogExtensionsInternal
 {
     private const int MaxExceptionRecursion = 100;
 
-    internal static TException ExceptionInternal<TException>(this ILog? log, TException ex, CodeRef codeRef) where TException : Exception
+    [return: NotNullIfNotNull(nameof(ex))]
+    internal static TException? ExceptionInternal<TException>(this ILog? log, TException? ex, CodeRef codeRef)
+        where TException : Exception
     {
         // Null-check
         if (log.GetRealLog() is not Log realLog)
@@ -12,9 +14,16 @@ partial class LogExtensionsInternal
 
         var l = realLog.FnCode(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
         var recursion = 1;
-        Exception loopEx = ex;
+        Exception? loopEx = ex;
         while (true)
         {
+            // Null-check; exit early if null
+            if (loopEx == null!)
+            {
+                l.Done("Exception is null");
+                return null!;
+            }
+
             // avoid infinite loops
             if (recursion >= MaxExceptionRecursion)
             {
@@ -22,12 +31,6 @@ partial class LogExtensionsInternal
                 return ex;
             }
                 
-            if (ex == null!)
-            {
-                l.Done("Exception is null");
-                return null!;
-            }
-
             realLog.A($"Depth {recursion} in {loopEx.Source}: {loopEx}"); // use the default ToString of an exception
 
             if (loopEx.InnerException != null)

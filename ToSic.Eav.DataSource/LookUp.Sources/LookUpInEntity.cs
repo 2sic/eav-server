@@ -11,7 +11,7 @@ namespace ToSic.Eav.LookUp.Sources;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class LookUpInEntity : LookUpIn<IEntity>
 {
-    private readonly string[] _dimensions;
+    private readonly string?[] _dimensions;
 
     /// <summary>
     /// Constructs a new Entity LookUp
@@ -20,7 +20,7 @@ public class LookUpInEntity : LookUpIn<IEntity>
     /// <param name="source"></param>
     /// <param name="dimensions">the languages / dimensions to use</param>
     /// <param name="description"></param>
-    public LookUpInEntity(string name, IEntity? source, string[] dimensions, string? description = default)
+    public LookUpInEntity(string name, IEntity? source, string?[]? dimensions, string? description = default)
         : base(source!, name, description ?? $"LookUp in Entity {source?.EntityId}")
     {
         _dimensions = dimensions ?? IZoneCultureResolverExtensions.SafeLanguagePriorityCodes(null);
@@ -48,7 +48,7 @@ public class LookUpInEntity : LookUpIn<IEntity>
         var subTokens = CheckAndGetSubToken(key);
         if (!subTokens.HasSubToken)
             return string.Empty;
-        valueObject = Data.Get(subTokens.Source, languages: _dimensions);
+        valueObject = Data.Get(subTokens.Source!, languages: _dimensions);
 
         // Finally: Handle child-Entity-Field (sorted list of related entities) / null check
         if (valueObject is not IEnumerable<IEntity> relationshipList)
@@ -56,6 +56,6 @@ public class LookUpInEntity : LookUpIn<IEntity>
         var first = relationshipList.FirstOrDefault();
         return first == null
             ? string.Empty
-            : new LookUpInEntity("no-name", first, _dimensions).Get(subTokens.Rest, format);
+            : new LookUpInEntity("no-name", first, _dimensions).Get(subTokens.Rest!, format);
     }
 }

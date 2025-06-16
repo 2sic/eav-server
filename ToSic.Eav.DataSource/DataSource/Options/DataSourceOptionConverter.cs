@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource;
 /// </summary>
 public class DataSourceOptionConverter
 {
-    public DataSourceOptions Create(IDataSourceOptions original, object other)
+    public DataSourceOptions Create(IDataSourceOptions original, object? other)
     {
         // other is null
         if (other is null)
@@ -21,16 +21,11 @@ public class DataSourceOptionConverter
         // Most complex case, both are now "real" - must merge
         return typed with
         {
-            AppIdentityOrReader = secondDs.AppIdentityOrReader ?? typed.AppIdentityOrReader,
-            Values = secondDs.Values ?? typed.Values,
-            LookUp = secondDs.LookUp ?? typed.LookUp,
-            ShowDrafts = secondDs.ShowDrafts ?? typed.ShowDrafts
+            AppIdentityOrReader = secondDs?.AppIdentityOrReader ?? typed.AppIdentityOrReader,
+            Values = secondDs?.Values ?? typed.Values,
+            LookUp = secondDs?.LookUp ?? typed.LookUp,
+            ShowDrafts = secondDs?.ShowDrafts ?? typed.ShowDrafts
         };
-        //new DataSourceOptions(original,
-        //    appIdentity: secondDs.AppIdentityOrReader,
-        //    values: secondDs.Values,
-        //    lookUp: secondDs.LookUp,
-        //    showDrafts: secondDs.ShowDrafts);}
     }
 
     public DataSourceOptions? Convert(object original, bool throwIfNull, bool throwIfNoMatch)
@@ -56,26 +51,32 @@ public class DataSourceOptionConverter
 
     }
 
-    //public IDataSourceOptions ConvertLookUpEngine(ILookUpEngine lookUp)
-    //    => new DataSourceOptions { LookUp = lookUp };
-
     public IImmutableDictionary<string, string>? Values(object original, bool throwIfNull = false, bool throwIfNoMatch = true)
     {
         switch (original)
         {
-            case null when throwIfNull: throw new ArgumentNullException(nameof(original));
-            case null: return null;
-            case IImmutableDictionary<string, string> immutable: return immutable;
-            case IDictionary<string, string> dicString: return ValuesFromDictionary(dicString);
-            case IDictionary<string, object> dicObj: return ValuesFromDictionary(dicObj);
-            case Array { Length: 0 }: return null;
-            case Array arr2 when arr2.GetType() == typeof(string[]): return ValuesFromStringArray(arr2 as string[]);
+            case null when throwIfNull
+                : throw new ArgumentNullException(nameof(original));
+            case null:
+                return null;
+            case IImmutableDictionary<string, string> immutable:
+                return immutable;
+            case IDictionary<string, string> dicString:
+                return ValuesFromDictionary(dicString);
+            case IDictionary<string, object> dicObj:
+                return ValuesFromDictionary(dicObj!);
+            case Array { Length: 0 }:
+                return null;
+            case Array arr2 when arr2.GetType() == typeof(string[]):
+                return ValuesFromStringArray(arr2 as string[]);
             default:
                 var values = original.IsAnonymous()
                     ? ValuesFromAnonymous(original)
                     : null;
-                if (values != null) return values;
-                if (!throwIfNoMatch) return null;
+                if (values != null)
+                    return values;
+                if (!throwIfNoMatch)
+                    return null;
                 throw new ArgumentException(
                     $"Could not convert {nameof(original)} of type '{original.GetType()}' to {nameof(IDataSource)}. " +
                     $"{nameof(Convert)} only accepts object types as specified by the conversion methods of {nameof(DataSourceOptionConverter)}");
@@ -92,12 +93,15 @@ public class DataSourceOptionConverter
     public IImmutableDictionary<string, string>? ValuesFromDictionary(IDictionary<string, string>? original)
         => original?.ToImmutableInvIgnoreCase();
 
-    public IImmutableDictionary<string, string?>? ValuesFromDictionary(IDictionary<string, object>? original)
-        => original?.ToImmutableDictionary(
-            pair => pair.Key,
-            pair => pair.Value?.ToString(),
-            InvariantCultureIgnoreCase
-        );
+    [return: NotNullIfNotNull(nameof(original))]
+    public IImmutableDictionary<string, string>? ValuesFromDictionary(IDictionary<string, object?>? original)
+        => original
+            ?.Where(pair => pair.Value != null)
+            .ToImmutableDictionary(
+                pair => pair.Key,
+                pair => pair.Value!.ToString()!,
+                InvariantCultureIgnoreCase
+            );
 
     public IImmutableDictionary<string, string>? ValuesFromStringArray(params string[]? values)
     {

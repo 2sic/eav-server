@@ -53,6 +53,9 @@ public class ConfigurationDataLoader() : ServiceBase(EavLogs.Eav + "CnfLdr")
         var result = new List<ConfigMaskInfo>();
         foreach (var configProp in configProps)
         {
+            if (configProp.ConfigFrom == null)
+                continue;
+
             var token = configProp.ConfigFrom.Token;
             if (token == null)
             {

@@ -26,7 +26,8 @@ public class QueryBuilder(
         connect: [cultureResolver, appsCatalog, dataSourceFactory, passThrough, userPermissions, queryDefinitionBuilder])
 {
 
-    public QueryDefinition Create(IEntity entity, int appId) => queryDefinitionBuilder.Create(entity, appId);
+    public QueryDefinition Create(IEntity entity, int appId)
+        => queryDefinitionBuilder.Create(entity, appId);
 
     /// <summary>
     /// Build a query-definition object based on the entity-ID defining the query
@@ -43,6 +44,8 @@ public class QueryBuilder(
 
             // use findRepo, as it uses the cache, which gives the list of all items
             var dataQuery = appEntities.FindRepoId(queryEntityId);
+            if (dataQuery == null)
+                throw new KeyNotFoundException($"QueryEntity with ID {queryEntityId} not found on AppId {appId}");
             var result = Create(dataQuery, appId);
             return l.Return(result);
         }
@@ -55,7 +58,7 @@ public class QueryBuilder(
 
     public QueryResult BuildQuery(
         QueryDefinition queryDef,
-        ILookUpEngine lookUpEngineToClone,
+        ILookUpEngine? lookUpEngineToClone,
         List<ILookUp> overrideLookUps) 
     {
         var l = Log.Fn<QueryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
@@ -123,7 +126,7 @@ public class QueryBuilder(
             try
             {
                 var err = dataQueryPart.DataSourceInfo?.ErrorOrNull;
-                if (dataQueryPart.DataSourceInfo?.ErrorOrNull != null && dataSource is Error errDs)
+                if (err != null && dataSource is Error errDs)
                 {
                     errDs.Title = err.Title;
                     errDs.Message = err.Message;
@@ -152,11 +155,12 @@ public class QueryBuilder(
     {
         var l = Log.Fn($"count⋮{queryDef.Connections?.Count}");
         // Init
-        var wirings = queryDef.Connections;
+        var wirings = queryDef.Connections ?? [];
         var initializedWirings = new List<Connection>();
 
         // 1. wire Out-Streams of DataSources with no In-Streams
-        var dataSourcesWithNoInStreams = dataSources.Where(d => wirings.All(w => w.To != d.Key));
+        var dataSourcesWithNoInStreams = dataSources
+            .Where(d => wirings.All(w => w.To != d.Key));
         ConnectOutStreams(dataSourcesWithNoInStreams, dataSources, wirings, initializedWirings);
 
         // 2. init DataSources with In-Streams of DataSources which are already wired

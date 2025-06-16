@@ -99,7 +99,7 @@ public class DataStream(
     #region Get Dictionary and Get List
 
     /// <inheritdoc />
-    public IEnumerable<IEntity> List => _list.Get(GetList);
+    public IEnumerable<IEntity> List => _list.Get(GetList)!;
 
     private IImmutableList<IEntity> GetList()
     {
@@ -181,9 +181,9 @@ public class DataStream(
 
     #endregion Support for IEnumerable<IEntity>
 
-    public ILog Log => Source?.Log; // Note that it can be null, but most commands on Log are null-safe
+    public ILog Log => Source?.Log!; // Note that it can be null, but most commands on Log are null-safe
 
 
-    public IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: Source, stream: this, outName: Name));
+    public IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: Source, stream: this, outName: Name))!;
     private readonly GetOnce<IDataSourceLink> _link = new();
 }

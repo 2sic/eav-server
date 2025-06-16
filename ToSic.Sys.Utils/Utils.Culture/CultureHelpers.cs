@@ -4,7 +4,7 @@ namespace ToSic.Sys.Utils.Culture;
 
 public static class CultureHelpers
 {
-    public static CultureInfo SafeCultureInfo(string[]? dimensions)
+    public static CultureInfo SafeCultureInfo(string?[]? dimensions)
     {
         try
         {
@@ -19,6 +19,6 @@ public static class CultureHelpers
         return CultureInfo.CurrentCulture;
     }
 
-    internal static CultureInfo ThreadCurrentCultureInfo => CultureInfo.CurrentCulture;
+    //internal static CultureInfo ThreadCurrentCultureInfo => CultureInfo.CurrentCulture;
 
 }

@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSource;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IDataSourceOptions
 {
-    IImmutableDictionary<string, string> Values { get; }
+    IImmutableDictionary<string, string>? Values { get; }
 
     /// <summary>
     /// The App Identity.
@@ -24,5 +24,5 @@ public interface IDataSourceOptions
     /// <summary>
     /// WIP experimental v19.01 2dm
     /// </summary>
-    IWorkSpecs Specs { get; }
+    IWorkSpecs? Specs { get; }
 }

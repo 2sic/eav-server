@@ -20,7 +20,8 @@ internal class LookUpInQueryPartMetadata : LookUpInEntity
     /// <param name="name">Source name</param>
     /// <param name="entityWithMetadata">Entity whose metadata we'll use</param>
     /// <param name="dimensions">language / dimension data for lookup</param>
-    public LookUpInQueryPartMetadata(string name, IEntity entityWithMetadata, string[] dimensions): base(name, null, dimensions, "LookUp in DataSource-Part Metadata")
+    public LookUpInQueryPartMetadata(string name, IEntity entityWithMetadata, string?[]? dimensions)
+        : base(name, null, dimensions, "LookUp in DataSource-Part Metadata")
     {
         _parent = entityWithMetadata;
     }
@@ -31,9 +32,12 @@ internal class LookUpInQueryPartMetadata : LookUpInEntity
     [PrivateApi]
     public void Initialize()
     {
-        if (_initialized) return;
+        if (_initialized)
+            return;
         // make sure we get the settings, but not the pipeline-parts, which may also be assigned
-        SetData(_parent.Metadata.FirstOrDefault(e => e.Type.NameId != QueryConstants.QueryPartTypeName));
+        var sourceData = _parent.Metadata.FirstOrDefault(e => e.Type.NameId != QueryConstants.QueryPartTypeName);
+        if (sourceData != null)
+            SetData(sourceData);
         _initialized = true;
     }
     private bool _initialized;

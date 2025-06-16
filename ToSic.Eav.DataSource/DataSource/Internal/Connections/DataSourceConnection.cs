@@ -21,7 +21,7 @@ public class DataSourceConnection(IDataSource source, string sourceStream, IData
     /// Temporary safety net - unsure if useful
     /// </summary>
     [JsonIgnore]
-    public IDataStream DirectlyAttachedStream { get; }
+    public IDataStream? DirectlyAttachedStream { get; }
 
     #region Serialization properties just for debugging in QueryInfo
 
@@ -30,7 +30,8 @@ public class DataSourceConnection(IDataSource source, string sourceStream, IData
 
     #endregion
 
-    public DataSourceConnection(IDataStream sourceStream, IDataSource target, string targetStream) : this(sourceStream.Source, sourceStream.Name, target, targetStream)
+    public DataSourceConnection(IDataStream sourceStream, IDataSource target, string targetStream)
+        : this(sourceStream.Source, sourceStream.Name, target, targetStream)
     {
         DirectlyAttachedStream = sourceStream;
     }

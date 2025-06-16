@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Lib.LookUp.Engines;
 using IEntity = ToSic.Eav.Data.IEntity;
@@ -23,7 +24,8 @@ public class QueryManager(
     public QueryDefinition Get(IAppIdentity appIdentity, int queryId)
     {
         var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
-        var app = appReaders.Value.GetOrKeep(appIdentity);
+        var app = appReaders.Value.GetOrKeep(appIdentity)
+            ?? throw new ArgumentException($"Can't find app for {appIdentity.Show()}");
         var qEntity = GetQueryEntity(queryId, app);
         var qDef = queryDefBuilder.Value.Create(qEntity, app.AppId);
         return l.Return(qDef);
@@ -42,13 +44,13 @@ public class QueryManager(
         try
         {
             var queryEntity = app.List.FindRepoId(entityId);
-            if (queryEntity.Type.NameId != QueryConstants.QueryTypeName)
-                throw new ArgumentException("Entity is not an DataQuery Entity", nameof(entityId));
+            if (queryEntity?.Type.NameId != QueryConstants.QueryTypeName)
+                throw new ArgumentException(@"Entity is not an DataQuery Entity", nameof(entityId));
             return l.Return(queryEntity);
         }
         catch (Exception ex)
         {
-            l.Ex(new ArgumentException($"Could not load Query-Entity with ID {entityId}.", nameof(entityId)));
+            l.Ex(new ArgumentException($@"Could not load Query-Entity with ID {entityId}.", nameof(entityId)));
             l.Ex(ex);
             throw;
         }
@@ -69,7 +71,7 @@ public class QueryManager(
             var delayedQuery = queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, lookUps);
             // make sure it doesn't break if two queries have the same name...
             var name = entQuery.GetBestTitle();
-            if (!dict.ContainsKey(name))
+            if (name != null && !dict.ContainsKey(name))
                 dict[name] = delayedQuery;
         }
         return l.Return(dict);

@@ -83,7 +83,7 @@ public abstract class LookUpBase(string name, string? description = "") : ILookU
     /// Take a specific result object (usually from an IEntity property) and format as needed.
     /// </summary>
     /// <returns></returns>
-    protected string FormatValue(object valueObject, string format, string[] dimensions)
+    protected string FormatValue(object valueObject, string format, string?[] dimensions)
     {
         return Type.GetTypeCode(valueObject.GetType()) switch
         {

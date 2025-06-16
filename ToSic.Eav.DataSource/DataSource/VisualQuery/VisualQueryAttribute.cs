@@ -29,12 +29,12 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// <summary>
     /// Optional custom icon, based on the icon-names from the Material Icons library.
     /// </summary>
-    public string Icon { get; set; }
+    public string? Icon { get; set; }
 
     /// <summary>
     /// List of in-streams expected by this data-source - will be shown in the UI. Default is empty []. 
     /// </summary>
-    public string[] In { get; set; } = null;
+    public string[]? In { get; set; } = null;
 
     //[PrivateApi]
     //public string[] GetSafeIn() => In ?? Array.Empty<string>();
@@ -99,7 +99,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// <remarks>
     /// Older data sources have a name like "|Config ToSic.Eav.DataSources.App", but that's deprecated
     /// </remarks>
-    public string ConfigurationType { get; set; }
+    public string? ConfigurationType { get; set; }
 
 
     /// <summary>
@@ -107,13 +107,13 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// If not specified, the UI will use the normal name instead.
     /// May contain spaces, slashes etc.
     /// </summary>
-    public string NiceName { get; set; }
+    public string? NiceName { get; set; }
 
 
     /// <summary>
     /// A hint to help the user better understand what this does - in case the nice name isn't enough. 
     /// </summary>
-    public string UiHint { get; set; }
+    public string? UiHint { get; set; }
 
     /// <summary>
     /// **required** this should be a unique id, ideally a GUID. <br/>

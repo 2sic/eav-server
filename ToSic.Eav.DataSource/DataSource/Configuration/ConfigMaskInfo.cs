@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.DataSource;
 
 [PrivateApi]
-internal class ConfigMaskInfo
+internal record ConfigMaskInfo
 {
-    public string Key;
-    public string Token;
-    public bool CacheRelevant;
+    public required string Key;
+    public required string Token;
+    public required bool CacheRelevant;
 }
