@@ -122,9 +122,9 @@ public sealed class RelationshipFilter : DataSourceBase
     /// Determines if the relationship we're looking into is a 'child'-relationship (default) or 'parent' relationship.
     /// </summary>
     [Configuration(Field = FieldDirection, Fallback = DefaultDirection)]
-    public string? ChildOrParent
+    public string ChildOrParent
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: DefaultDirection);
         set
         {
             var valLower = value?.ToLowerInvariant();

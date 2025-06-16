@@ -29,9 +29,9 @@ public sealed class StreamPick : DataSourceBase
     /// The stream name to lookup.
     /// </summary>
     [Configuration(Fallback = DataSourceConstants.StreamDefaultName)]
-    public string? StreamName
+    public string StreamName
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: DataSourceConstants.StreamDefaultName);
         set => Configuration.SetThisObsolete(value);
     }
 

@@ -72,9 +72,9 @@ public class Csv : CustomDataSourceAdvanced
     /// Delimiter character in the CSV, usually a ',' or ';' but could also be a tab or something. Default is tab.
     /// </summary>
     [Configuration(Fallback = "\t")]
-    public string? Delimiter
+    public string Delimiter
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "\t");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -87,9 +87,9 @@ public class Csv : CustomDataSourceAdvanced
     /// * Before v15.03 it defaulted to "Anonymous"
     /// </remarks>
     [Configuration(Fallback = "CSV")]
-    public string? ContentType
+    public string ContentType
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "CSV");
         set => Configuration.SetThisObsolete(value);
     }
 

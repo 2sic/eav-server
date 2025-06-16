@@ -30,9 +30,9 @@ public sealed class ValueFilter : DataSourceBase
     /// The attribute whose value will be scanned / filtered.
     /// </summary>
     [Configuration]
-    public string? Attribute
+    public string Attribute
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -40,9 +40,9 @@ public sealed class ValueFilter : DataSourceBase
     /// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
     /// </summary>
     [Configuration]
-    public string? Value
+    public string Value
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -50,9 +50,9 @@ public sealed class ValueFilter : DataSourceBase
     /// Language to filter for. At the moment it is not used, or it is trying to find "any"
     /// </summary>
     [Configuration(Fallback = ValueLanguages.LanguageDefaultPlaceholder)]
-    public string? Languages
+    public string Languages
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: ValueLanguages.LanguageDefaultPlaceholder);
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -61,9 +61,9 @@ public sealed class ValueFilter : DataSourceBase
     /// depending on the original types we're comparing
     /// </summary>
     [Configuration(Fallback = "==")]
-    public string? Operator
+    public string Operator
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "==");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -145,12 +145,14 @@ public sealed class ValueFilter : DataSourceBase
 
         // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
         // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
-        if (!isSpecial) fieldType = firstEntity[fieldName].Type;
+        if (!isSpecial)
+            fieldType = firstEntity[fieldName]!.Type;
 
 
         IImmutableList<IEntity>? innerErrors = null;
         var compMaker = new ValueComparison((title, message) => innerErrors = Error.Create(title: title, message: message), Log);
-        var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value);
+        var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value)
+            ?? throw new NullReferenceException("Cant' find proper comparison. This is unexpected, please contact support.");
 
         return innerErrors.SafeAny()
             ? l.ReturnAsError(innerErrors)

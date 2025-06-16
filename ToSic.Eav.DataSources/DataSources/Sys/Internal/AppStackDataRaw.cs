@@ -26,18 +26,18 @@ public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
 
     public string Path { get; set; } = original.Path;
 
-    public object Value { get; set; } = original.Property.Result;
+    public object? Value { get; set; } = original.Property?.Result;
 
-    public string Type { get; set; } = original.Property.ValueType.ToString();
+    public string Type { get; set; } = original.Property?.ValueType.ToString() ?? nameof(ValueTypes.Undefined);
 
     public int TotalResults { get; set; } = original.AllOptions
                                                 ?.GroupBy(i => i.SourceName)
-                                                ?.Count()
+                                                .Count()
                                             ?? 0; // do not count "duplicate" by SourceName
 
-    public override IDictionary<string, object> Attributes(RawConvertOptions options)
+    public override IDictionary<string, object?> Attributes(RawConvertOptions options)
     {
-        var attributes = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase)
+        var attributes = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase)
         {
             { AttributeNames.TitleNiceName, Path },
             { nameof(Source), Source },

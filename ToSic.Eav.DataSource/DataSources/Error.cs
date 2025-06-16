@@ -30,8 +30,11 @@ public class Error: DataSourceBase
 
     /// <summary>
     /// Delay the result by this many seconds.
-    /// Meant for testing scenarios where the error needs time - like waiting for a connection timeout.
     /// </summary>
+    /// <remarks>
+    /// Meant for testing scenarios where the error needs time - like waiting for a connection timeout.
+    /// Default / fallback is 0 seconds, which means no delay.
+    /// </remarks>
     [Configuration(Fallback = 0, CacheRelevant = false)]
     public int DelaySeconds => Configuration.GetThis(0);
 

@@ -40,7 +40,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppR
     [Configuration(Fallback = true)]
     public bool FilterDuplicates => Configuration.GetThis(true);
 
-    protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName)
+    protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string? typeName)
     {
         var getTargetFunc = GetTargetsFunctionGenerator();
 

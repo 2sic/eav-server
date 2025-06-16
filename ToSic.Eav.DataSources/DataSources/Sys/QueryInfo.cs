@@ -43,10 +43,10 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     /// The content-type name
     /// </summary>
     [Configuration(Fallback = DefQuery)]
-    public string? QueryName => Configuration.GetThis();
+    public string QueryName => Configuration.GetThis(fallback: DefQuery);
 
     [Configuration(Fallback = StreamDefaultName)]
-    public string? StreamName => Configuration.GetThis();
+    public string StreamName => Configuration.GetThis(fallback: StreamDefaultName);
 
     #endregion
 

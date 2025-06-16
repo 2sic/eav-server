@@ -30,7 +30,7 @@ public class Metadata(CustomDataSourceAdvanced.MyServices services) : MetadataDa
     [Configuration]
     public override string? ContentTypeName => Configuration.GetThis();
 
-    protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName)
+    protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string? typeName)
     {
         var getMdFunc = GetMetadataFunctionGenerator(typeName);
 
@@ -43,8 +43,8 @@ public class Metadata(CustomDataSourceAdvanced.MyServices services) : MetadataDa
     /// <param name="typeName"></param>
     /// <returns></returns>
     [PrivateApi]
-    private static Func<IEntity, IEnumerable<IEntity>> GetMetadataFunctionGenerator(string typeName)
+    private static Func<IEntity, IEnumerable<IEntity>> GetMetadataFunctionGenerator(string? typeName)
         => string.IsNullOrEmpty(typeName)
             ? o => o.Metadata
-            : o => o.Metadata.OfType(typeName);
+            : o => o.Metadata.OfType(typeName!);
 }

@@ -190,7 +190,7 @@ public partial class Serialization : DataSourceBase
     /// * extended purpose in v18.00 to also have "array" as possible value
     /// </remarks>
     [Configuration(Fallback = false)]
-    public string? IncludeRelationshipsAsCsv => Configuration.GetThis();
+    public string IncludeRelationshipsAsCsv => Configuration.GetThis(fallback: "false");
 
     /// <summary>
     /// Should the Relationship ID be included in serialization
@@ -223,7 +223,7 @@ public partial class Serialization : DataSourceBase
     public string? IncludeTypeAs => Configuration.GetThis();
 
     [Configuration(Fallback = "Type")]
-    public string? TypePropertyNames => Configuration.GetThis();
+    public string TypePropertyNames => Configuration.GetThis(fallback: "Type");
 
     [Configuration]
     public string? IncludeTypeId => Configuration.GetThis();

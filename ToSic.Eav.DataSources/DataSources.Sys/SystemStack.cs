@@ -29,7 +29,7 @@ public class SystemStack: CustomDataSourceAdvanced
     public string? StackNames => Configuration.GetThis();
 
     [Configuration]
-    public string? Keys => Configuration.GetThis();
+    public string Keys => Configuration.GetThis(fallback: "");
 
     [Configuration(Fallback = true)]
     public bool AddValues => Configuration.GetThis(true);
@@ -71,7 +71,7 @@ public class SystemStack: CustomDataSourceAdvanced
         var settings = _dataStackService.Init(appState).GetStack(stackName);
 
         // Dump results
-        var dump = _dumpService.Dump(settings, new(null, languages, true, Log), null);
+        var dump = _dumpService.Dump(settings, new("irrelevant", languages, true, Log), "");
 
         dump = SystemStackHelpers.ApplyKeysFilter(dump, Keys);
 

@@ -42,7 +42,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
     /// The content-type name
     /// </summary>
     [Configuration(Fallback = TypeNameFallbackToTryToUseInStream)]
-    public string? ContentTypeName => Configuration.GetThis();
+    public string ContentTypeName => Configuration.GetThis(fallback: TypeNameFallbackToTryToUseInStream);
         
     #endregion
 
@@ -75,11 +75,18 @@ public sealed class Attributes: CustomDataSourceAdvanced
             ? In[StreamDefaultName]?.List.ToImmutableOpt()
             : null;
 
-        var appReader = _appReaders.Get(this);
-        var firstEntityInStream = useStream ? optionalList?.FirstOrDefault() : null;
-        var types = useStream 
-            ? (firstEntityInStream?.Type).ToListOfOne()
-            : typeNames.Select(appReader.GetContentType).ToList();
+        var appReader = _appReaders.Get(this)!;
+        var firstEntityInStream = useStream
+            ? optionalList?.FirstOrDefault()
+            : null;
+        var types = (useStream
+                ? [firstEntityInStream?.Type]
+                : typeNames
+                    .Select(appReader.GetContentType)
+            )
+            .Where(t => t != null)
+            .Cast<IContentType>()
+            .ToList();
 
 
         if (!types.Any())
@@ -87,19 +94,18 @@ public sealed class Attributes: CustomDataSourceAdvanced
 
         // try to load from type, if it exists
         var attributes = types
-            .SelectMany(t =>
-                t.Attributes?.Select(a => new
+            .SelectMany(t => t
+                .Attributes
+                .Select(a => new
                 {
                     Type = t,
                     Attribute = a,
                     a.Name,
                 })
-                ?? []
             )
             .DistinctBy(set => set.Name)
             .OrderBy(at => at.Name)
             .ToList();
-
 
         // todo: when supporting multiple types, consider adding more info what type they are from
         var list = attributes
@@ -144,6 +150,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
         var foundFieldNames = list
             .Select(dic => dic[nameof(IAttributeType.Name)] as string)
             .Where(x => x != null)
+            .Cast<string>()
             .ToList();
 
         // Add descriptions of system fields such as Id, Created, Modified etc.
@@ -163,7 +170,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
         return l.Return(data, $"{data.Count}");
     }
 
-    private static IEnumerable<Dictionary<string, object>> GetSystemFields(List<IContentType> types, List<string> foundFieldNames)
+    private static IEnumerable<Dictionary<string, object?>> GetSystemFields(List<IContentType> types, List<string> foundFieldNames)
     {
         // New 2022-10-17 2dm - Add System fields such as Id, Created, Modified etc.
         // But only if they weren't already added by the content type, so if the ContentType had an "Id" field, we shouldn't override it here.
@@ -202,7 +209,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
         return additions;
     }
 
-    private static Dictionary<string, object> AsDic(
+    private static Dictionary<string, object?> AsDic(
         string name,
         ValueTypes type,
         bool isTitle,
@@ -228,12 +235,12 @@ public sealed class Attributes: CustomDataSourceAdvanced
     /// </summary>
     /// <param name="html"></param>
     /// <returns></returns>
-    private static string CleanDescription(string html)
+    private static string? CleanDescription(string? html)
     {
         if (string.IsNullOrWhiteSpace(html))
             return html;
 
-        html = html.Replace("<br>", "\n");
+        html = html!.Replace("<br>", "\n");
         var clean = StripHtml(html);
         var enter = clean.IndexOf("\n", StringComparison.Ordinal);
         var firstLine = enter > 0

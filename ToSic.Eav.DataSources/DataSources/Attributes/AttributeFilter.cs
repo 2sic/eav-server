@@ -46,9 +46,9 @@ public class AttributeFilter : DataSourceBase
     /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
     /// </summary>
     [Configuration(Fallback = ModeKeep)]
-    public string? Mode
+    public string Mode
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: ModeKeep);
         set => Configuration.SetThisObsolete(value);
     }
       

@@ -29,7 +29,8 @@ public abstract class MetadataDataSourceBase : CustomDataSourceAdvanced
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
         var typeName = ContentTypeName;
-        if (string.IsNullOrWhiteSpace(typeName)) typeName = null;
+        if (string.IsNullOrWhiteSpace(typeName))
+            typeName = null;
         l.A($"Content Type Name: {typeName}");
 
         var relationships = SpecificGet(source, typeName);
@@ -37,5 +38,5 @@ public abstract class MetadataDataSourceBase : CustomDataSourceAdvanced
         return l.ReturnAsOk(relationships.ToImmutableOpt());
     }
 
-    protected abstract IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName);
+    protected abstract IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string? typeName);
 }
