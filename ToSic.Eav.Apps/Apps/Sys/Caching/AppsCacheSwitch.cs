@@ -58,7 +58,7 @@ public class AppsCacheSwitch(
 
     #endregion
 
-    public IAppStateCache Update(IAppIdentity app, IEnumerable<int> entities)
+    public void Update(IAppIdentity app, IEnumerable<int> entities)
         => Value.Update(app, entities, Log, appLoaderTools.Value);
 
 }

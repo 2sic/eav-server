@@ -173,19 +173,19 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     #region Update
 
     /// <inheritdoc />
-    public virtual IAppStateCache Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
+    public virtual void Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
     {
         var entityIds = entities.ToArray();
-        var l = log.Fn<IAppStateCache>($"{appIdentity}, {entityIds.Length} entities");
+        var l = log.Fn($"{appIdentity}, {entityIds.Length} entities");
         // if it's not cached yet, ignore the request as partial update won't be necessary
-        if (!Has(appIdentity))
-            //return l.ReturnNull("not cached, won't update");
-            throw new NullReferenceException($"Trying to update an app which doesn't exist in the cache. This should never happen.");
+        if (!Has(appIdentity)) 
+            l.Done("not cached, won't update; probably updating an app in the process of being created.");
+            //throw new NullReferenceException($"Trying to update an app which doesn't exist in the cache. This should never happen."); 
         var appState = Get(appIdentity, tools);
         if (appState == null)
             throw new NullReferenceException($"AppState was returned null. This should never happen.");
         tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, new(), entityIds.ToArray());
-        return l.ReturnAsOk(appState);
+        l.Done("ok");
     }
 
     #endregion

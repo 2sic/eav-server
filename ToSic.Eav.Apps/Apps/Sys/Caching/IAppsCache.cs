@@ -71,7 +71,7 @@ public interface IAppsCache: ILogShouldNeverConnect
     /// <param name="log">Log object to log what's happening.</param>
     /// <param name="tools"></param>
     /// <returns>The updated <see cref="IAppStateCache"/> or null, if it wasn't in the cache so didn't need updating.</returns>
-    IAppStateCache Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools);
+    void Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools);
 
     [PrivateApi("wip 12.10+")]
     void Add(IAppStateCache appState);
