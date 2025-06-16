@@ -25,10 +25,14 @@ partial class XmlImportWithFiles
             return l.ReturnFalse(LogError("The import file is not compatible with the installed version of 2sxc."));
 
         // Get root node "SexyContent"
-        var xmlSource = doc.Element(XmlConstants.RootNode);
-        var xApp = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.App);
+        var xmlSource = doc
+            .Element(XmlConstants.RootNode);
+        var xApp = xmlSource
+            ?.Element(XmlConstants.Header)
+            ?.Element(XmlConstants.App);
 
-        var appGuid = xApp?.Attribute(XmlConstants.Guid)?.Value;
+        var appGuid = xApp
+            ?.Attribute(XmlConstants.Guid)?.Value;
 
         if (appGuid == null)
             return l.ReturnFalse(LogError("Something is wrong in the xml structure, can't get an app-guid"));
@@ -67,10 +71,12 @@ partial class XmlImportWithFiles
         return l.Return(result, "done");
     }
 
-    private int? GetParentAppId(XElement xmlSource, IStorage eavDc)
+    private int? GetParentAppId(XElement? xmlSource, IStorage eavDc)
     {
         var l = Log.Fn<int?>();
-        var parentAppXElement = xmlSource?.Element(XmlConstants.Header)?.Element(XmlConstants.ParentApp);
+        var parentAppXElement = xmlSource
+            ?.Element(XmlConstants.Header)
+            ?.Element(XmlConstants.ParentApp);
         if (parentAppXElement == null)
             return l.ReturnNull("app doesn't have inherit-data");
         
@@ -82,7 +88,7 @@ partial class XmlImportWithFiles
         if (!int.TryParse(parentIdString, out var parAppId))
             return l.ReturnNull($"app inherit data not useful int: {parentIdString}");
         
-        var parentAppId = eavDc.GetParentAppId(parentAppGuidOrName, parAppId);
+        var parentAppId = eavDc.GetParentAppId(parentAppGuidOrName!, parAppId);
         return l.Return(parentAppId, $"parentAppId: {parentAppId}");
     }
 

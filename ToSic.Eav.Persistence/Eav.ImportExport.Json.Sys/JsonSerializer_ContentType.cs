@@ -136,7 +136,8 @@ partial class JsonSerializer
             .ToListOpt();
 
         // clean up metadata info on this metadata list, as it's already packed inside something it's related to
-        var attribMetadataToResetFor = attribs.Where(a => a.Metadata != null)
+        var attribMetadataToResetFor = attribs
+            .Where(a => a.Metadata != null)
             .SelectMany(a => a.Metadata!)
             .ToListOpt();
         foreach (var jsonEntity in attribMetadataToResetFor)
@@ -179,9 +180,9 @@ partial class JsonSerializer
 
     internal static string? Serialize(ContentTypeAttributeSysSettings? sysSettings, ILog log)
     {
-        var l = log.Fn<string?>($"serialize {sysSettings} to json string");
+        var l = log.Fn<string>($"serialize {sysSettings} to json string");
         if (sysSettings == null)
-            return l.Return(null, "null sysSettings");
+            return l.ReturnNull("null sysSettings");
         try
         {
             var json = JsonAttributeSysSettings.FromSysSettings(sysSettings);

@@ -48,7 +48,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// <param name="temporaryDirectory">temporary storage</param>
     /// <param name="newName">App rename</param>
     /// <returns></returns>
-    public bool ImportZip(Stream zipStream, string temporaryDirectory, string newName = null)
+    public bool ImportZip(Stream zipStream, string temporaryDirectory, string? newName = null)
         => ImportZipInternal(temporaryDirectory, newName, zipStream);
 
     /// <summary>
@@ -59,13 +59,13 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// <param name="newName">App rename</param>
     /// <param name="inheritAppId">optional inherit AppId</param>
     /// <returns></returns>
-    public bool ImportZip(string zipPath, string temporaryDirectory, string newName = null, int? inheritAppId = null)
+    public bool ImportZip(string zipPath, string temporaryDirectory, string? newName = null, int? inheritAppId = null)
         => ImportZipInternal(temporaryDirectory, newName, null, zipPath, inheritAppId);
 
-    private bool ImportZipInternal(string temporaryDirectory, string newName = null, Stream zipStream = null, string zipPath = null, int? inheritAppId = null)
+    private bool ImportZipInternal(string temporaryDirectory, string? newName = null, Stream? zipStream = null, string? zipPath = null, int? inheritAppId = null)
     {
         var l = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(newName)}:{newName}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
-        Exception finalException = null;
+        Exception? finalException = null;
 
         try
         {
@@ -84,14 +84,15 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
                 new Zipping(Log).ExtractZipFile(zipPath, temporaryDirectory, AllowCodeImport);
             }
             else
-                throw new ArgumentNullException("zipStream or zipPath");
+                throw new ArgumentNullException(nameof(zipPath), @"zipStream or zipPath");
 
             // Loop through each root-folder.
             // For now only it should only contain the "Apps" folder.
             foreach (var directoryPath in Directory.GetDirectories(temporaryDirectory))
             {
                 l.A($"folder:{directoryPath}");
-                if (Path.GetFileName(directoryPath) != "Apps") continue;
+                if (Path.GetFileName(directoryPath) != "Apps")
+                    continue;
                 var packageDir = Path.Combine(temporaryDirectory, "Apps");
                 // Loop through each app directory
                 foreach (var appDirectory in Directory.GetDirectories(packageDir))
@@ -147,8 +148,8 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             catch (Exception e)
             {
                 ++retryDelete;
-                log.Ex(e);
-                log.A("Delete ran into issues, will ignore. " +
+                l.Ex(e);
+                l.A("Delete ran into issues, will ignore. " +
                       "Probably files/folders are used by another process like anti-virus. " +
                       $"Retry: {retryDelete}.");
             }
@@ -165,14 +166,14 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// Historical note: the xml file used to have a different rename
     /// but it's been app.xml since Oct 2016 so this is all we plan to support
     /// </remarks>
-    /// <param name="newName"></param>
+    /// <param name="reName"></param>
     /// <param name="appDirectory"></param>
     /// <param name="importMessages"></param>
     /// <param name="pendingApp"></param>
     /// <param name="inheritAppId">optional inherit appId</param>
-    public bool ImportApp(string newName, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
+    public bool ImportApp(string? reName, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
     {
-        var l = Log.Fn<bool>($"{nameof(newName)}:'{newName}', {nameof(appDirectory)}:'{appDirectory}', ...");
+        var l = Log.Fn<bool>($"{nameof(reName)}:'{reName}', {nameof(appDirectory)}:'{appDirectory}', ...");
         try
         {
             // migrate old app.xml and 2sexy/.data/app.xml to 2sexy/App_Data
@@ -180,7 +181,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
 
             // Import app.xml file(s) when is located in appDirectory/2sexy/App_Data
             foreach (var _ in Directory.GetFiles(AppDataProtectedFolderPath(appDirectory, pendingApp), FolderConstants.AppDataFile))
-                ImportAppXmlAndFiles(newName, appDirectory, importMessages, pendingApp, inheritAppId);
+                ImportAppXmlAndFiles(reName, appDirectory, importMessages, pendingApp, inheritAppId);
         }
         catch (Exception e)
         {
@@ -191,16 +192,18 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         return l.ReturnTrue("ok");
     }
 
-    private void ImportAppXmlAndFiles(string newName, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
+    private void ImportAppXmlAndFiles(string? reName, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
     {
-        var l = Log.Fn($"{nameof(newName)}:'{newName}' {nameof(appDirectory)}:'{appDirectory}', ...");
+        var l = Log.Fn($"{nameof(reName)}:'{reName}' {nameof(appDirectory)}:'{appDirectory}', ...");
 
         int appId;
         var importer = Services.XmlImpExpFiles.New().Init(null, false);
 
         var imp = new ImportXmlReader(
-            Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), FolderConstants.AppDataFile), importer,
-            l);
+            Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), FolderConstants.AppDataFile),
+            importer,
+            l
+        );
 
         if (imp.IsAppImport)
         {
@@ -213,15 +216,16 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             var folder = imp.AppFolder;
 
             // user decided to install app in different folder, because same App is already installed
-            if (!string.IsNullOrEmpty(newName))
+            if (!string.IsNullOrEmpty(reName))
             {
-                l.A($"User rename to '{newName}'");
-                var renameHelper = new RenameOnImport(folder, newName, l);
+                l.A($"User rename to '{reName}'");
+                var renameHelper = new RenameOnImport(folder, reName!, l);
                 renameHelper.FixAppXmlForImportAsDifferentApp(imp);
                 renameHelper.FixPortalFilesAdamAppFolderName(appDirectory, pendingApp);
-                folder = newName;
+                folder = reName!;
             }
-            else l.A("No rename of app requested");
+            else
+                l.A("No rename of app requested");
 
             if (!pendingApp)
             {
@@ -249,7 +253,9 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         importMessages.AddRange(importer.Messages);
         if (!pendingApp) CopyAppFiles(importMessages, appId, appDirectory);
 
-        var tmpAppGlobalFilesRoot = pendingApp ? Path.Combine(appDirectory, FolderConstants.AppDataProtectedFolder) : appDirectory;
+        var tmpAppGlobalFilesRoot = pendingApp
+            ? Path.Combine(appDirectory, FolderConstants.AppDataProtectedFolder)
+            : appDirectory;
         CopyAppGlobalFiles(importMessages, appId, tmpAppGlobalFilesRoot, deleteGlobalTemplates: false, overwriteFiles: true);
         // New in V11 - now that we just imported content types into the /system folder
         // the App must be refreshed to ensure these are available for working
@@ -277,7 +283,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         var templateRoot = Services.Environment.TemplatesRoot(_zoneId, appId);
         var appTemplateRoot = Path.Combine(tempFolder, FolderConstants.ZipFolderForAppStuff);
         if (Directory.Exists(appTemplateRoot))
-            base.Services.FileManagerGenerator.New().SetFolder(appId, appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+            Services.FileManagerGenerator.New().SetFolder(appId, appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
         l.Done("ok");
     }
 
@@ -301,7 +307,7 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
                 TryToDeleteDirectory(globalTemplatesRoot, l);
 
             l.A("copy all files to app global template folder");
-            base.Services.FileManagerGenerator.New()
+            Services.FileManagerGenerator.New()
                 .SetFolder(appId, appTemplateRoot)
                 .CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
         }
@@ -331,7 +337,6 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// for import only, migrate app.xml or old 2sexy/.data/app.xml to 2sexy/App_Data
     /// </summary>
     /// <param name="appRootPath"></param>
-    /// <param name="xmlFileName"></param>
     public static void MigrateForImportAppDataFile(string appRootPath)
     {
         var oldAppFilePath = Path.Combine(appRootPath, FolderConstants.AppDataFile);
@@ -343,13 +348,15 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
 
         if (File.Exists(oldDataAppFilePath))
         {
-            if (File.Exists(newFilePath)) File.Delete(newFilePath);
+            if (File.Exists(newFilePath))
+                File.Delete(newFilePath);
             File.Move(oldDataAppFilePath, newFilePath);
         }
 
         if (File.Exists(oldAppFilePath))
         {
-            if (File.Exists(newFilePath)) File.Delete(newFilePath);
+            if (File.Exists(newFilePath))
+                File.Delete(newFilePath);
             File.Move(oldAppFilePath, newFilePath);
         }
     }
@@ -362,12 +369,14 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     public static void MigrateOldAppDataFile(string appRootPath)
     {
         var oldDataAppFilePath = Path.Combine(appRootPath, FolderConstants.FolderOldDotData, FolderConstants.AppDataFile);
-        if (!File.Exists(oldDataAppFilePath)) return;
+        if (!File.Exists(oldDataAppFilePath))
+            return;
 
         Directory.CreateDirectory(Path.Combine(appRootPath, FolderConstants.AppDataProtectedFolder));
         var newFilePath = Path.Combine(appRootPath, FolderConstants.AppDataProtectedFolder, FolderConstants.AppDataFile);
 
-        if (File.Exists(newFilePath)) File.Delete(newFilePath);
+        if (File.Exists(newFilePath))
+            File.Delete(newFilePath);
         File.Move(oldDataAppFilePath, newFilePath);
 
         //// commented cody will move/copy .data to App_Data with all content

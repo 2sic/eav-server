@@ -67,7 +67,7 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
             return ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks);
 
         var langsOfValue = valueItem.Languages;
-        string primaryLanguageRef = null;
+        string? primaryLanguageRef = null;
 
         var valueLanguageReadOnly = langsOfValue.First(l => l.Key == language).ReadOnly;
         if (useRefToParentLanguage)
@@ -81,7 +81,7 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
             : ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks);
     }
 
-    public static IValue GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)
+    public static IValue? GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)
     {
         var valueItem = string.IsNullOrEmpty(language) || language == languageFallback // if no language is specified, or it's the fallback language
             ? attrib.Values.FirstOrDefault(v => v.Languages.Any(l => l.Key == languageFallback)) // use default (fallback)
@@ -94,7 +94,7 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
     /// Append an element to this. The element will have the value of the EavValue. File and page references 
     /// can optionally be resolved.
     /// </summary>
-    internal string ResolveValue(IEntity entity, ValueTypes attrType, string value, bool resolveLinks) 
+    internal string ResolveValue(IEntity entity, ValueTypes attrType, string? value, bool resolveLinks) 
         => ResolveValue(entity.EntityGuid, attrType, value, resolveLinks);
 
 
@@ -102,7 +102,7 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
     /// Append an element to this. The element will have the value of the EavValue. File and page references 
     /// can optionally be resolved.
     /// </summary>
-    internal string ResolveValue(Guid itemGuid, ValueTypes attrType, string value, bool resolveLinks)
+    internal string ResolveValue(Guid itemGuid, ValueTypes attrType, string? value, bool resolveLinks)
     {
         if (value == null)
             return XmlConstants.NullMarker;

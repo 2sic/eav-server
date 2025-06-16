@@ -85,7 +85,7 @@ public class ImportXmlReader: HelperBase
         return value;
     }
 
-    private string GetKeyValue(string key)
+    private string? GetKeyValue(string key)
     {
         ThrowErrorIfNotAppImport();
  

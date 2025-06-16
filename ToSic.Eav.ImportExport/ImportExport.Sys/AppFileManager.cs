@@ -13,7 +13,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// </summary>
     private const char Separator = ';';
 
-    public AppFileManager SetFolder(int appId, string sourceFolder, string subFolder = null)
+    public AppFileManager SetFolder(int appId, string sourceFolder, string? subFolder = null)
     {
         // appId is needed to get app.json from cache
         _appId = appId;
@@ -29,8 +29,8 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     }
 
     private int _appId;
-    private string _sourceFolder;
-    private string _root;
+    private string _sourceFolder = null!;
+    private string _root = null!;
 
     /// <summary>
     /// Copy all files from SourceFolder to DestinationFolder (directly on the file system)
@@ -150,7 +150,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// Get all files from a folder, not caring if it will be exported or not
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<string> AllFiles(FileSearchSpecs specs = default) =>
+    public IEnumerable<string> AllFiles(FileSearchSpecs? specs = default) =>
         !Directory.Exists(_root)
             ? []
             : ((specs ?? new())

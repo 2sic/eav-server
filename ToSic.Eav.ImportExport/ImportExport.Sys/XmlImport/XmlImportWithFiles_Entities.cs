@@ -112,14 +112,20 @@ partial class XmlImportWithFiles
 
         foreach (var sourceValue in entityNode.Elements(XmlConstants.ValueNode))
         {
-            var sourceValueString = sourceValue.Attribute(XmlConstants.ValueAttr).Value;
+            var sourceValueNode = sourceValue.Attribute(XmlConstants.ValueAttr);
+            if (sourceValueNode == null)
+                continue; // skip if no value attribute
+
+            var sourceValueString = sourceValueNode.Value;
+            if (string.IsNullOrEmpty(sourceValueString))
+                continue; // skip if no value
 
             // Correct FileId in Hyperlink fields (takes XML data that lists files)
-            if (!string.IsNullOrEmpty(sourceValueString) && sourceValue.Attribute(XmlConstants.EntityTypeAttribute).Value == XmlConstants.ValueTypeLink)
+            if (sourceValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value == XmlConstants.ValueTypeLink)
             {
                 var newValue = GetMappedLink(sourceValueString);
                 if (newValue != null)
-                    sourceValue.Attribute(XmlConstants.ValueAttr).SetValue(newValue);
+                    sourceValueNode.SetValue(newValue);
             }
         }
 
@@ -138,7 +144,7 @@ partial class XmlImportWithFiles
     /// </summary>
     /// <param name="sourceValueString"></param>
     /// <returns></returns>
-    private string GetMappedLink(string sourceValueString)
+    private string? GetMappedLink(string sourceValueString)
     {
         // file
         // todo: these patterns should be stored in a global location, in case we enhance the functionality

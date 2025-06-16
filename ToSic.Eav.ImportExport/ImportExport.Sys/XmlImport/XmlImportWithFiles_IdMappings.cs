@@ -24,8 +24,8 @@ partial class XmlImportWithFiles
             return l.ReturnFalse();
 
         var filesAndPaths = portalFiles.ToDictionary(
-            p => int.Parse(p.Attribute(XmlConstants.FileIdAttr).Value),
-            v => v.Attribute(XmlConstants.FolderNodePath).Value
+            p => int.Parse(p.Attribute(XmlConstants.FileIdAttr)!.Value),
+            v => v.Attribute(XmlConstants.FolderNodePath)!.Value
         );
         Services.Environment.MapExistingFilesToImportSet(filesAndPaths, _fileIdCorrectionList);
         return l.ReturnTrue();
@@ -43,8 +43,8 @@ partial class XmlImportWithFiles
             return l.ReturnFalse();
 
         var foldersAndPath = portalFiles.ToDictionary(
-            p => int.Parse(p.Attribute(XmlConstants.FolderNodeId).Value),
-            v => v.Attribute(XmlConstants.FolderNodePath).Value
+            p => int.Parse(p.Attribute(XmlConstants.FolderNodeId)!.Value),
+            v => v.Attribute(XmlConstants.FolderNodePath)!.Value
         );
         Services.Environment.CreateFoldersAndMapToImportIds(foldersAndPath, _folderIdCorrectionList, Messages);
         return l.ReturnTrue();

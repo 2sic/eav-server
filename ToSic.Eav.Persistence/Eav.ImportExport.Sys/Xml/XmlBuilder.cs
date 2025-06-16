@@ -5,7 +5,7 @@ namespace ToSic.Eav.ImportExport.Sys.Xml;
 public class XmlBuilder
 {
 
-    public XDocument BuildDocument(params object[] content) => new(new("1.0", "UTF-8", "yes"), content);
+    public static XDocument BuildDocument(params object[] content) => new(new("1.0", "UTF-8", "yes"), content);
 
     public XElement BuildRootNode(params object[] content) => new(XmlConstants.Root, content);
 

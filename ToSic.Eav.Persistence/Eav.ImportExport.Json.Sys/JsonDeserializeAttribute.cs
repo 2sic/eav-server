@@ -6,13 +6,13 @@ namespace ToSic.Eav.ImportExport.Json.Sys;
 
 internal class JsonDeserializeAttribute
 {
-    internal static ContentTypeAttributeSysSettings? SysSettings(string name, string serialized, ILog? logOrNull)
+    internal static ContentTypeAttributeSysSettings? SysSettings(string? nameForLog, string? serialized, ILog? logOrNull)
     {
         // If nothing to process, exit early without logging
         if (serialized.IsEmpty())
             return null;
 
-        var l = logOrNull.Fn<ContentTypeAttributeSysSettings?>($"{name}: {serialized.Substring(0, Math.Min(50, serialized.Length))}...");
+        var l = logOrNull.Fn<ContentTypeAttributeSysSettings?>($"{nameForLog}: {serialized.Substring(0, Math.Min(50, serialized.Length))}...");
 
         try
         {

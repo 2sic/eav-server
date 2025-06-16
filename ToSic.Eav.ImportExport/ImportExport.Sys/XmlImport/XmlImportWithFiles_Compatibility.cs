@@ -1,6 +1,5 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Sys.Xml;
-using ToSic.Eav.Persistence.Sys.Logging;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -13,23 +12,49 @@ partial class XmlImportWithFiles
     public bool IsCompatible(XDocument doc)
     {
         var l = Log.Fn<bool>("is compatible check");
-        var rns = doc.Elements(XmlConstants.RootNode);
-        var rn = doc.Element(XmlConstants.RootNode);
+        var rootNodeList = doc.Elements(XmlConstants.RootNode);
+        var rootNode = doc.Element(XmlConstants.RootNode);
         // Return if no Root Node "SexyContent"
-        if (!rns.Any() || rn == null)
+        if (!rootNodeList.Any() || rootNode == null)
         {
-            Messages.Add(new("The XML file you specified does not seem to be a 2sxc/EAV Export.", Message.MessageTypes.Error));
+            LogError("The XML file you specified does not seem to be a 2sxc/EAV Export.");
             return l.ReturnFalse("XML seems invalid");
         }
-        // Return if Version does not match
-        if (rn.Attributes().All(a => a.Name != XmlConstants.MinEnvVersion) || new Version(rn.Attribute(XmlConstants.MinEnvVersion).Value) > new Version(base.Services.Environment.ModuleVersion))
-        {
-            Messages.Add(new("This template or app requires version " + rn.Attribute(XmlConstants.MinEnvVersion).Value + " in order to work, you have version " + base.Services.Environment.ModuleVersion + " installed.", Message.MessageTypes.Error));
-            return l.ReturnFalse("XML version check failed");
-        }
 
-        return l.ReturnTrue("is compatible completed");
+        var isEnvOk = IsCompatibleSingleVersion(rootNode,
+            XmlConstants.MinEnvVersion,
+            Services.Environment.TenantVersion
+        );
+        if (!isEnvOk)
+            return l.ReturnFalse("Environment version check failed");
+
+        var isSxcOk = IsCompatibleSingleVersion(rootNode,
+            XmlConstants.MinModVersion,
+            new(Services.Environment.ModuleVersion)
+        );
+        if (!isSxcOk)
+            return l.ReturnFalse("2sxc version check failed");
+        return l.ReturnTrue("all ok");
     }
 
+    private bool IsCompatibleSingleVersion(XElement rootNode, string versionNodeName, Version currentVersion)
+    {
+        var l = Log.Fn<bool>();
+        // Return if Version does not match
+        var hasNoMinEnvVersionInXml = rootNode
+            .Attributes()
+            .All(a => a.Name != versionNodeName);
 
+        if (hasNoMinEnvVersionInXml)
+            return l.ReturnTrue("No min version specified");
+
+        var minVersionString = rootNode.Attribute(versionNodeName)!.Value;
+        var minVersionInXml = new Version(minVersionString);
+
+        if (minVersionInXml <= currentVersion)
+            return l.ReturnTrue("is compatible completed");
+
+        LogError($"This template / app requires version {minVersionString}. You have version {currentVersion.ToString()} installed.");
+        return l.ReturnFalse("XML version check failed");
+    }
 }

@@ -9,7 +9,6 @@ using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Identity;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
-using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.ImportExport.Sys.XmlExport;
@@ -27,15 +26,16 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
     public List<TenantFileItem> ReferencedFiles = [];
     private bool _isAppExport;
 
-    public string[] ContentTypeNamesOrIds;
-    public string[] EntityIDs;
-    public List<Message> Messages = [];
+    public string[] ContentTypeNamesOrIds = null!;
 
-    public IAppReader AppReader { get; private set; }
+    public string[] EntityIDs = null!;
+    //public List<Message> Messages = [];
+
+    public IAppReader AppReader { get; private set; } = null!;
     public int ZoneId { get; private set; }
 
     private string _appStaticName = "";
-    private AppExportSpecs _specs;
+    private AppExportSpecs _specs = null!;
     private List<string> _foldersForEntitiesThatAreNotDeleted = [];
     #endregion
 
@@ -46,15 +46,17 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
     protected void Constructor(AppExportSpecs specs, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, string defaultCultureCode)
     {
+        var l = Log.Fn(message: "start XML exporter using app-package");
         _specs = specs;
         ZoneId = specs.ZoneId;
-        Log.A("start XML exporter using app-package");
         AppReader = appReader;
         Serializer.Init(
-            AppsCatalog.Zone(specs.ZoneId).LanguagesActive
+            AppsCatalog
+                .Zone(specs.ZoneId)
+                .LanguagesActive
                 .ToDictionary(
-                    l => l.EnvironmentKey.ToLowerInvariant(),
-                    l => l.DimensionId
+                    lng => lng.EnvironmentKey.ToLowerInvariant(),
+                    lng => lng.DimensionId
                 ),
             AppReader);
 
@@ -65,6 +67,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
         // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
         InitExportXDocument(defaultCultureCode, EavSystemInfo.VersionString);
+        l.Done();
     }
 
     public abstract XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds);
@@ -115,7 +118,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         var doc = ExportXDocument;
 
         // Will be used to show an export protocol in future
-        Messages = null;
+        //Messages = null;
 
         // Write XDocument to string and return it
         var xmlSettings = new XmlWriterSettings
@@ -131,16 +134,15 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         return stringWriter.ToString();
     }
 
-    private XDocument _exportDocument;
+    [field: AllowNull, MaybeNull]
+    public XDocument ExportXDocument { get; } = XmlBuilder.BuildDocument();
 
-    public XDocument ExportXDocument => _exportDocument;
-
-    protected void InitExportXDocument(string defaultLanguage, string moduleVersion)
+    private void InitExportXDocument(string defaultLanguage, string moduleVersion)
     {
         EnsureThisIsInitialized();
 
         // Create XML document and declaration
-        var doc = _exportDocument = new XmlBuilder().BuildDocument();
+        var doc = ExportXDocument;
 
         #region Header
 
@@ -154,13 +156,18 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
             // Default Language of this site
             new XElement(XmlConstants.Language, new XAttribute(XmlConstants.LangDefault, defaultLanguage)),
             // All languages of this site/export
-            new XElement(XmlConstants.DimensionDefinition, dimensions.Select(d => new XElement(XmlConstants.DimensionDefElement,
-                new XAttribute(XmlConstants.DimId, d.DimensionId),
-                new XAttribute(XmlConstants.Name, d.Name),
-                new XAttribute(XmlConstants.CultureSysKey, d.Key ?? string.Empty),
-                new XAttribute(XmlConstants.CultureExtKey, d.EnvironmentKey ?? string.Empty),
-                new XAttribute(XmlConstants.CultureIsActiveAttrib, d.Active)
-            )))
+            new XElement(
+                XmlConstants.DimensionDefinition,
+                dimensions
+                    .Select(d => new XElement(XmlConstants.DimensionDefElement,
+                            new XAttribute(XmlConstants.DimId, d.DimensionId),
+                            new XAttribute(XmlConstants.Name, d.Name),
+                            new XAttribute(XmlConstants.CultureSysKey, d.Key ?? string.Empty),
+                            new XAttribute(XmlConstants.CultureExtKey, d.EnvironmentKey ?? string.Empty),
+                            new XAttribute(XmlConstants.CultureIsActiveAttrib, d.Active)
+                        )
+                    )
+            )
         );
 
         #endregion
@@ -177,7 +184,8 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
                 : AppReader.GetContentType(contentTypeId);  // in case it's the name, not the number
 
             // skip system/code-types
-            if (set.HasPresetAncestor()) continue;
+            if (set == null || set.HasPresetAncestor())
+                continue;
 
             var attributes = new XElement(XmlConstants.Attributes);
 
@@ -190,13 +198,16 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
                     new XAttribute(XmlConstants.Type, a.Type.ToString()),
                     new XAttribute(XmlConstants.IsTitle, a.IsTitle),
                     // Add Attribute MetaData
-                    appMetadata.GetMetadata(TargetTypes.Attribute, a.AttributeId)
+                    appMetadata
+                        .GetMetadata(TargetTypes.Attribute, a.AttributeId)
                         .Select(c => GetEntityXElement(c.EntityId, c.Type.NameId))
                 );
 
                 // #SharedFieldDefinition
-                if (a.Guid.HasValue) xmlAttribute.Add(new XAttribute(XmlConstants.Guid, a.Guid));
-                if (a.SysSettings != null) xmlAttribute.Add(new XAttribute(XmlConstants.SysSettings, JsonSerializer.Serialize(a.SysSettings, Log)));
+                if (a.Guid.HasValue)
+                    xmlAttribute.Add(new XAttribute(XmlConstants.Guid, a.Guid));
+                if (a.SysSettings != null)
+                    xmlAttribute.Add(new XAttribute(XmlConstants.SysSettings, JsonSerializer.Serialize(a.SysSettings, Log)!));
 
                 attributes.Add(xmlAttribute);
             }
@@ -230,9 +241,11 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         {
             var id = int.Parse(entityId);
 
-            // Get the entity and ContentType from ContentContext add Add it to ContentItems
-            var entity = AppReader.List.FindRepoId(id);
-            entities.Add(GetEntityXElement(entity.EntityId, entity.Type.NameId));
+            // Get the entity and ContentType from ContentContext and Add it to ContentItems
+            var entity = AppReader.List.FindRepoId(id)
+                ?? throw new NullReferenceException($"Tried to find entity {entityId} and it should really exist, but can't find it.");
+            var entityXElement = GetEntityXElement(entity.EntityId, entity.Type.NameId);
+            entities.Add(entityXElement);
         }
 
         #endregion
@@ -252,7 +265,8 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
             contentTypes,
             entities,
             GetFilesXElements(),
-            GetFoldersXElements()));
+            GetFoldersXElements()
+        ));
     }
 
     /// <summary>
@@ -282,12 +296,12 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
                 _foldersForEntitiesThatAreNotDeleted.Add(guid.GuidCompress());
     }
 
-    private XElement GetParentAppXElement()
+    private XElement? GetParentAppXElement()
     {
         if (!_isAppExport || _appStaticName == XmlConstants.AppContentGuid || !AppReader.HasCustomParentApp())
             return null;
 
-        var parentAppState = AppReader.GetParentCache();
+        var parentAppState = AppReader.GetParentCache()!;
         return new(XmlConstants.ParentApp,
             new XAttribute(XmlConstants.Guid, parentAppState.NameId),
             new XAttribute(XmlConstants.AppId, parentAppState.AppId)
@@ -326,7 +340,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
             {
                 var fileRegex = new Regex(XmlConstants.FileRefRegex, RegexOptions.IgnoreCase);
                 var a = fileRegex.Match(valueString);
-                // try remember the file
+                // try to remember the file
                 if (a.Success && a.Groups[XmlConstants.FileIdInRegEx].Length > 0)
                     AddFileAndFolderToQueue(int.Parse(a.Groups[XmlConstants.FileIdInRegEx].Value));
             }
@@ -356,27 +370,29 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
     protected abstract TenantFileItem ResolveFile(int fileId);
 
-    private XElement GetFileXElement(int fileId)
+    private XElement? GetFileXElement(int fileId)
     {
         var file = ResolveFile(fileId);
 
-        if (IsDeletedOrInvalid(file?.RelativePath)) return null;
+        if (IsDeletedOrInvalid(file?.RelativePath))
+            return null;
 
-        ReferencedFiles.Add(file);
+        ReferencedFiles.Add(file!);
 
         return new(XmlConstants.FileNode,
-            new XAttribute(XmlConstants.FileIdAttr, file.Id),
-            new XAttribute(XmlConstants.FolderNodePath, file.RelativePath)
+            new XAttribute(XmlConstants.FileIdAttr, file!.Id),
+            new XAttribute(XmlConstants.FolderNodePath, file.RelativePath!)
         );
     }
 
     protected abstract string ResolveFolderId(int folderId);
 
-    private XElement GetFolderXElement(int folderId)
+    private XElement? GetFolderXElement(int folderId)
     {
         var path = ResolveFolderId(folderId);
 
-        if (IsDeletedOrInvalid(path)) return null;
+        if (IsDeletedOrInvalid(path))
+            return null;
 
         return new(XmlConstants.Folder,
             new XAttribute(XmlConstants.FolderNodeId, folderId),
@@ -389,24 +405,28 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
     /// </summary>
     /// <param name="relativePath">The relative path of the asset.</param>
     /// <returns>True if the asset path is invalid or belongs to deleted entity, otherwise false.</returns>
-    private bool IsDeletedOrInvalid(string relativePath)
+    private bool IsDeletedOrInvalid(string? relativePath)
     {
         // invalid, can't export assets without path
-        if (relativePath == null) return true;
+        if (relativePath == null)
+            return true;
 
         // skip check for deleted assets and just leave it for export
-        if (_specs.AssetAdamDeleted) return false;
+        if (_specs.AssetAdamDeleted)
+            return false;
 
         // if not in "adam" folder, we can't know is it deleted or not, so leave it for export
         // this is expected for site assets
-        if (!relativePath.StartsWith("adam")) return false;
+        if (!relativePath.StartsWith("adam"))
+            return false;
 
         // break adam path to parts,
         // this is necessary to check if it's in discriminator list of possible folders for entities that are not deleted
         var pathParts = relativePath.ForwardSlash().Split(['/'], StringSplitOptions.RemoveEmptyEntries);
 
         // always export parent folders for entity assets (like adam/app/)
-        if (pathParts.Length < 3) return false;
+        if (pathParts.Length < 3)
+            return false;
 
         // check if folder is in list of possible entities that are not deleted
         return _foldersForEntitiesThatAreNotDeleted.All(f => f != pathParts[2]);

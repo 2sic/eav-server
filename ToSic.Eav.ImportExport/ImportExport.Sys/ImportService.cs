@@ -36,10 +36,10 @@ public class ImportService(
         //var dbController = genDbDataController.New().Init(zoneId, appId, parentAppId);
         var storage = storageFactory.New(new(zoneId, appId, parentAppId));
         Storage = storage;
-        AppId = appId;
-        ZoneId = zoneId;
+        _appId = appId;
+        _zoneId = zoneId;
 
-        SaveOptions = importExportEnvironment.SaveOptions(ZoneId) with
+        SaveOptions = importExportEnvironment.SaveOptions(_zoneId) with
         {
             SkipExistingAttributes = skipExistingAttributes,
             PreserveUntouchedAttributes = preserveUntouchedAttributes,
@@ -52,11 +52,11 @@ public class ImportService(
 
     #region Private Fields
 
-    internal IStorage Storage;
-    public SaveOptions SaveOptions;
+    internal IStorage Storage = null!;
+    public SaveOptions SaveOptions = null!;
 
-    private int AppId;
-    private int ZoneId;
+    private int _appId;
+    private int _zoneId;
 
     #endregion
 
@@ -83,7 +83,7 @@ public class ImportService(
                         {
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
-                            var appReaderRaw = Storage.Loader.AppReaderRaw(AppId, new());
+                            var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
                             var newTypeList = newTypes.ToList();
                             // first: import the attribute sets in the system scope, as they may be needed by others...
                             // ...and would need a cache-refresh before 
@@ -98,12 +98,12 @@ public class ImportService(
                                 .ToList();
                         });
 
-                        var lInner = Log.Fn(message: "Import Types in non-Sys scopes", timer: true);
+                        var lInner = l.Fn(message: "Import Types in non-Sys scopes", timer: true);
                         if (nonSysTypes.Any())
                         {
                             // now reload the app state as it has new content-types
                             // and it may need these to load the remaining attributes of the content-types
-                            var appReaderRaw = Storage.Loader.AppReaderRaw(AppId, new());
+                            var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
 
                             // now the remaining Content-Types
                             MergeAndSaveContentTypes(appReaderRaw, nonSysTypes);
@@ -120,13 +120,15 @@ public class ImportService(
                 l.A("Not entities to import");
             else
             {
-                var appStateTemp = Storage.Loader.AppReaderRaw(AppId, new()); // load all entities
-                var newIEntitiesRaw = Log.Quick(message: "Pre-Import Entities merge", timer: true, func: () =>
-                    newEntities
+                var appStateTemp = Storage.Loader.AppReaderRaw(_appId, new()); // load all entities
+                var newIEntitiesRaw = Log.Quick(message: "Pre-Import Entities merge", timer: true,
+                    func: () => newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
+                        .Select(pair => pair?.Entity)
                         .Where(e => e != null)
                         .Cast<IEntity>()
-                        .ToList());
+                        .ToList()
+                );
 
                 // HACK 2022-05-05 2dm Import Problem
                 // If we use chunks of 500, then relationships are not imported
@@ -171,7 +173,7 @@ public class ImportService(
         var l = Log.Fn(timer: true);
         // Here's the problem! #badmergeofmetadata
         var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appReader, type));
-        var so = importExportEnvironment.SaveOptions(ZoneId) with
+        var so = importExportEnvironment.SaveOptions(_zoneId) with
         {
             DiscardAttributesNotInType = true,
         };
@@ -265,7 +267,7 @@ public class ImportService(
     /// <summary>
     /// Import an Entity with all values
     /// </summary>
-    private IEntityPair<SaveOptions> CreateMergedForSaving<T>(IEntity update, T appState, SaveOptions saveOptions)
+    private IEntityPair<SaveOptions>? CreateMergedForSaving<T>(IEntity update, T appState, SaveOptions saveOptions)
         where T : IAppReadEntities, IAppReadContentTypes
     {
         var l = Log.Fn<IEntityPair<SaveOptions>>();
@@ -292,7 +294,7 @@ public class ImportService(
         #endregion
 
         // Find existing Entities - meaning both draft and non-draft
-        List<IEntity> existingEntities = null;
+        List<IEntity>? existingEntities = null;
         if (update.EntityGuid != Guid.Empty)
             existingEntities = appState.List.Where(e => e.EntityGuid == update.EntityGuid).ToList();
 

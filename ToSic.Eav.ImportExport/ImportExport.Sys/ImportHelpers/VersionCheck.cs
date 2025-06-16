@@ -9,18 +9,22 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
     internal void EnsureVersions(XElement appConfig)
     {
         var l = Log.Fn();
-        var reqVersionNode = appConfig.Elements(XmlConstants.ValueNode)
+        var reqVersionNode = appConfig
+            .Elements(XmlConstants.ValueNode)
             .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredVersion")
-            ?.Attribute(XmlConstants.ValueAttr)?.Value;
-        var reqVersionNodeDnn = appConfig.Elements(XmlConstants.ValueNode)
+            ?.Attribute(XmlConstants.ValueAttr)
+            ?.Value;
+        var reqVersionNodeDnn = appConfig
+            .Elements(XmlConstants.ValueNode)
             .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredDnnVersion")
-            ?.Attribute(XmlConstants.ValueAttr)?.Value;
+            ?.Attribute(XmlConstants.ValueAttr)
+            ?.Value;
 
         CheckRequiredEnvironmentVersions(reqVersionNode, reqVersionNodeDnn);
         l.Done();
     }
 
-    private void CheckRequiredEnvironmentVersions(string reqVersionNode, string reqVersionNodePlatform)
+    private void CheckRequiredEnvironmentVersions(string? reqVersionNode, string? reqVersionNodePlatform)
     {
         var l = Log.Fn($"{reqVersionNode}, {reqVersionNodePlatform}");
         if (reqVersionNode != null)

@@ -1,5 +1,6 @@
 ﻿using System.Xml.XPath;
 using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Ancestors.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
@@ -31,12 +32,12 @@ public class ZipExport(
     private const string SourceControlDataFile = FolderConstants.AppDataFile;
     private readonly string _blankGuid = Guid.Empty.ToString();
 
-    public AppFileManager AppFileManager;
-    private string _physicalAppPath;
-    private string _appFolder;
+    public AppFileManager AppFileManager = null!;
+    private string _physicalAppPath = null!;
+    private string _appFolder = null!;
 
-    public AppFileManager AppFileManagerGlobal;
-    private string _physicalPathGlobal;
+    public AppFileManager AppFileManagerGlobal = null!;
+    private string _physicalPathGlobal = null!;
 
     #region DI Constructor
 
@@ -52,11 +53,11 @@ public class ZipExport(
         AppFileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal);
         
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appReader = appReaders.Get(appIdentity);
+        _appReader = appReaders.Get(appIdentity) ?? throw new NullReferenceException($"App must exist to be able o export it: {appIdentity.Show()}");
         return this;
     }
 
-    private IAppReader _appReader;
+    private IAppReader _appReader = null!;
     #endregion
 
     public void ExportForSourceControl(AppExportSpecs specs)
@@ -191,19 +192,21 @@ public class ZipExport(
 
         foreach (var file in xmlExport.ReferencedFiles)
         {
-            var portalFilePath = Path.Combine(siteFilesDirectory.FullName, Path.GetDirectoryName(file.RelativePath));
+            var relPath = file.RelativePath ?? throw new NullReferenceException("File relative path is null, this should not happen in export.");
+            var portalFilePath = Path.Combine(siteFilesDirectory.FullName, Path.GetDirectoryName(relPath)!);
 
             Directory.CreateDirectory(portalFilePath);
 
             if (!File.Exists(file.Path))
                 continue;
 
-            var fullPath = Path.Combine(siteFilesDirectory.FullName, file.RelativePath);
+            var fullPath = Path.Combine(siteFilesDirectory.FullName, relPath);
             try
             {
-                if (assetsAdam && file.RelativePath.StartsWith("adam") // Adam assets
-                    || assetsSite && !file.RelativePath.StartsWith("adam")) // Site assets
-                    File.Copy(file.Path, fullPath, overwrite: true);
+                var pathStartWithAdam = relPath.StartsWith("adam");
+                if (assetsAdam && pathStartWithAdam // Adam assets
+                    || assetsSite && !pathStartWithAdam) // Site assets
+                    File.Copy(file.Path!, fullPath, overwrite: true);
             }
             catch (Exception e)
             {
@@ -263,12 +266,13 @@ public class ZipExport(
 
         #region reset App Guid if necessary
 
-        if (specs.ResetAppGuid)
-        {
-            var root = xmlExport.ExportXDocument; //.Root;
-            var appGuid = root.XPathSelectElement("/SexyContent/Header/App").Attribute(XmlConstants.Guid);
-            appGuid.Value = _blankGuid;
-        }
+        if (!specs.ResetAppGuid)
+            return xmlExport;
+
+        // Reset the AppGuid in the xml export, so it can be used for a new app which will also have a new guid on import
+        var root = xmlExport.ExportXDocument; //.Root;
+        var appGuid = root.XPathSelectElement("/SexyContent/Header/App")!.Attribute(XmlConstants.Guid)!;
+        appGuid.Value = _blankGuid;
         return xmlExport;
         #endregion
     }

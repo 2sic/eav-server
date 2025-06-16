@@ -11,19 +11,19 @@ namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 partial class XmlImportWithFiles
 {
 
-    private static ICollection<DimensionDefinition> BuildSourceDimensionsList(XElement xmlSource)
+    private static ICollection<DimensionDefinition>? BuildSourceDimensionsList(XElement xmlSource)
     {
         var sDimensions = xmlSource
-            .Element(XmlConstants.Header)?
-            .Element(XmlConstants.DimensionDefinition)?
+            .Element(XmlConstants.Header)
+            ?.Element(XmlConstants.DimensionDefinition)?
             .Elements(XmlConstants.DimensionDefElement)
             .Select(p => new DimensionDefinition
             {
-                DimensionId = int.Parse(p.Attribute(XmlConstants.DimId).Value),
-                Name = p.Attribute(XmlConstants.Name).Value,
-                Key = p.Attribute(XmlConstants.CultureSysKey).Value,
-                EnvironmentKey = p.Attribute(XmlConstants.CultureExtKey).Value,
-                Active = bool.Parse(p.Attribute(XmlConstants.CultureIsActiveAttrib).Value)
+                DimensionId = int.Parse(p.Attribute(XmlConstants.DimId)!.Value),
+                Name = p.Attribute(XmlConstants.Name)!.Value,
+                Key = p.Attribute(XmlConstants.CultureSysKey)!.Value,
+                EnvironmentKey = p.Attribute(XmlConstants.CultureExtKey)!.Value,
+                Active = bool.Parse(p.Attribute(XmlConstants.CultureIsActiveAttrib)!.Value)
             })
             .ToListOpt();
         return sDimensions;

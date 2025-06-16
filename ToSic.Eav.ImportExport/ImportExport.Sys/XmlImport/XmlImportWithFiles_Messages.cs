@@ -8,11 +8,11 @@ namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 
 partial class XmlImportWithFiles
 {
-    public List<Message> Messages;
+    public List<Message> Messages = [];
 
     public string LogError(string message)
     {
-        Log.A(message);
+        Log.E(message);
         Messages.Add(new(message, Message.MessageTypes.Error));
         return "error";
     }

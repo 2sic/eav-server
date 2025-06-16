@@ -35,27 +35,40 @@ partial class XmlImportWithFiles
 
         #region Prepare dimensions (languages) based on header...
         var sourceDimensions = BuildSourceDimensionsList(xmlSource);
-        Log.A($"build source dims list⋮{sourceDimensions?.Count}");
+        l.A($"build source dims list⋮{sourceDimensions?.Count}");
 
-        var sourceDefaultLanguage = xmlSource.Element(XmlConstants.Header)?.Element(XmlConstants.Language)?.Attribute(XmlConstants.LangDefault)?.Value;
+        var sourceDefaultLanguage = xmlSource
+            .Element(XmlConstants.Header)
+            ?.Element(XmlConstants.Language)
+            ?.Attribute(XmlConstants.LangDefault)
+            ?.Value;
+
         if (sourceDimensions == null || sourceDefaultLanguage == null)
             return l.ReturnFalse(LogError("Can't find source dimensions or source-default language."));
 
         var sourceDefaultDimensionId = sourceDimensions.Any()
-            ? sourceDimensions.FirstOrDefault(p => p.Matches(sourceDefaultLanguage))?.DimensionId
+            ? sourceDimensions
+                .FirstOrDefault(p => p.Matches(sourceDefaultLanguage))
+                ?.DimensionId
             : new();
 
         l.A($"source def dim:{sourceDefaultDimensionId}");
 
-        _targetDimensions = Services.AppsCatalog.Zone(zoneId).Languages;
+        var targetDimensions = Services.AppsCatalog.Zone(zoneId).Languages;
 
-        XmlBuilder = Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, _targetDimensions, DefaultLanguage);
+        XmlBuilder = Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, targetDimensions, DefaultLanguage);
         #endregion
 
-        var atsNodes = xmlSource.Element(XmlConstants.AttributeSets)?.Elements(XmlConstants.AttributeSet).ToList();
-        var entNodes = xmlSource.Elements(XmlConstants.Entities).Elements(XmlConstants.Entity).ToList();
+        var atsNodes = xmlSource
+            .Element(XmlConstants.AttributeSets)
+            ?.Elements(XmlConstants.AttributeSet)
+            .ToList();
+        var entNodes = xmlSource
+            .Elements(XmlConstants.Entities)
+            .Elements(XmlConstants.Entity)
+            .ToList();
 
-        var importAttributeSets = GetImportContentTypes(atsNodes);
+        var importAttributeSets = GetImportContentTypes(atsNodes ?? []);
         var importEntities = BuildEntities(entNodes, (int)TargetTypes.None);
 
 

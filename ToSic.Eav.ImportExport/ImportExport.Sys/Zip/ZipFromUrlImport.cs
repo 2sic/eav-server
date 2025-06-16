@@ -26,7 +26,7 @@ public class ZipFromUrlImport: ZipImport
         return this;
     }
 
-    public bool ImportUrl(string packageUrl, bool isAppImport, string newName = null)
+    public bool ImportUrl(string packageUrl, bool isAppImport, string? newName = null)
     {
         Log.A($"import zip from url:'{packageUrl}', isApp:{isAppImport}, {nameof(newName)}:'{newName}'");
         var path = _globalConfiguration.TemporaryFolder();

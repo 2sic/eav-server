@@ -26,12 +26,20 @@ internal class RenameOnImport: HelperBase
         var xmlDoc = imp.XmlDoc;
         var appConfig = imp.AppConfig;
         var xmlPath = imp.XmlPath;
-        // save original App folder
-        var originalFolder = appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder").Attribute(XmlConstants.ValueAttr)?.Value;
+
+        // get original App folder as is in the XML
+        var originalFolder = appConfig
+            .Elements(XmlConstants.ValueNode)
+            .First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "Folder")
+            .Attribute(XmlConstants.ValueAttr)
+            ?.Value
+            ?? throw new NullReferenceException("Can't find App folder in the XML, something is wrong.");
 
         // save original AppId (because soon will be rewritten with empty string)
         var appGuidNode = xmlDoc.XPathSelectElement("//SexyContent/Header/App")?.Attribute(AttributeNames.GuidNiceName);
-        if(appGuidNode == null) throw new("app guid node not found - totally unexpected");
+        if (appGuidNode == null)
+            throw new("app guid node not found - totally unexpected");
+
         var originalAppId = appGuidNode.Value;
         Log.A($"original AppID:{originalAppId}");
 
@@ -40,17 +48,19 @@ internal class RenameOnImport: HelperBase
         Log.A($"original AppID is now empty");
 
         // change folder to install app
-        xmlDoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='Folder']")
+        xmlDoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='Folder']")!
             .SetAttributeValue("Value", name);
         Log.A($"change folder to install app:{name}");
 
         // change DisplayName to install app
-        xmlDoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='DisplayName']")
+        xmlDoc.XPathSelectElement("//SexyContent/Entities/Entity/Value[@Key='DisplayName']")!
             .SetAttributeValue("Value", name);
         Log.A($"change DisplayName to install app:{name}");
 
         // find Value element with OriginalId attribute
-        var valueElementWithOriginalIdAttribute = appConfig.Elements(XmlConstants.ValueNode).FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId");
+        var valueElementWithOriginalIdAttribute = appConfig
+            .Elements(XmlConstants.ValueNode)
+            .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId");
         // if missing add new Value element with OriginalId attribute
         if (valueElementWithOriginalIdAttribute == null)
         {
@@ -70,37 +80,55 @@ internal class RenameOnImport: HelperBase
             if (string.IsNullOrEmpty(originalId))
             {
                 Log.A($"current OriginalId is empty, so adding OriginalId:{originalAppId}");
-                appConfig.Elements(XmlConstants.ValueNode).First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId").SetAttributeValue("OriginalId", originalAppId);
+                appConfig
+                    .Elements(XmlConstants.ValueNode)
+                    .First(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "OriginalId")
+                    .SetAttributeValue("OriginalId", originalAppId);
             }
         }
 
         // change folder in PortalFolders
-        var folders = xmlDoc.Element(XmlConstants.RootNode)?.Elements(XmlConstants.FolderGroup)?.FirstOrDefault();
+        var folders = xmlDoc
+            .Element(XmlConstants.RootNode)
+            ?.Elements(XmlConstants.FolderGroup)
+            ?.FirstOrDefault();
+
         if (folders != null)
         {
-            foreach (var folderItem in folders?.Elements(XmlConstants.Folder)?.ToList())
+            var folderList = folders.Elements(XmlConstants.Folder)?.ToList() ?? [];
+            foreach (var folderItem in folderList)
             {
-                var originalFolderRelativePath = folderItem.Attribute(XmlConstants.FolderNodePath).Value;
+                var originalFolderRelativePath = folderItem.Attribute(XmlConstants.FolderNodePath)?.Value ?? "";
                 // replace first occurrence of original app name in folder relative path with new name
-                var position = originalFolderRelativePath.IndexOf(originalFolder);
-                if (position == -1) continue;
-                var newFolderRelativePath = originalFolderRelativePath.Remove(position, originalFolder.Length).Insert(position, name);
+                var position = originalFolderRelativePath.IndexOf(originalFolder, StringComparison.InvariantCultureIgnoreCase);
+                if (position == -1)
+                    continue;
+                var newFolderRelativePath = originalFolderRelativePath
+                    .Remove(position, originalFolder.Length)
+                    .Insert(position, name);
                 Log.A($"replace first occurrence of original app name in folder relative path:{newFolderRelativePath}");
                 folderItem.SetAttributeValue(XmlConstants.FolderNodePath, newFolderRelativePath);
             }
         }
 
         // change app folder in PortalFiles
-        var files = xmlDoc.Element(XmlConstants.RootNode)?.Elements(XmlConstants.PortalFiles)?.FirstOrDefault();
+        var files = xmlDoc
+            .Element(XmlConstants.RootNode)
+            ?.Elements(XmlConstants.PortalFiles)
+            ?.FirstOrDefault();
         if (files != null)
         {
-            foreach (var fileItem in files?.Elements(XmlConstants.FileNode)?.ToList())
+            var filesList = files.Elements(XmlConstants.FileNode)?.ToList() ?? [];
+            foreach (var fileItem in filesList)
             {
-                var originalFileRelativePath = fileItem.Attribute(XmlConstants.FolderNodePath).Value;
+                var originalFileRelativePath = fileItem.Attribute(XmlConstants.FolderNodePath)?.Value ?? "";
                 // replace first occurrence of original app name in file relative path with new name
-                var position = originalFileRelativePath.IndexOf(originalFolder);
-                if (position == -1) continue;
-                var newFileRelativePath = originalFileRelativePath.Remove(position, originalFolder.Length).Insert(position, name);
+                var position = originalFileRelativePath.IndexOf(originalFolder, StringComparison.InvariantCultureIgnoreCase);
+                if (position == -1)
+                    continue;
+                var newFileRelativePath = originalFileRelativePath
+                    .Remove(position, originalFolder.Length)
+                    .Insert(position, name);
                 Log.A($"replace first occurrence of original app name in file relative path:{newFileRelativePath}");
                 fileItem.SetAttributeValue(XmlConstants.FolderNodePath, newFileRelativePath);
             }
@@ -120,5 +148,8 @@ internal class RenameOnImport: HelperBase
         }
     }
 
-    internal string GetFolderForSiteFiles(bool pendingApp) => pendingApp ? Path.Combine(FolderConstants.AppDataProtectedFolder, FolderConstants.ZipFolderForSiteFiles) : FolderConstants.ZipFolderForPortalFiles;
+    internal string GetFolderForSiteFiles(bool pendingApp)
+        => pendingApp
+            ? Path.Combine(FolderConstants.AppDataProtectedFolder, FolderConstants.ZipFolderForSiteFiles)
+            : FolderConstants.ZipFolderForPortalFiles;
 }
