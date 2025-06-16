@@ -46,25 +46,27 @@ public record CacheItemPolicyMaker : FunFactActionsBase<CacheItemPolicy>, IPolic
     public IPolicyMaker SetSlidingExpiration(int seconds)
         => SetSlidingExpiration(new TimeSpan(0, 0, seconds));
 
-    public IPolicyMaker WatchFiles(IList<string> filePaths) =>
-        filePaths is not { Count: > 0 }
+    public IPolicyMaker WatchFiles(IList<string> filePaths)
+        => filePaths is not { Count: > 0 }
             ? this
             : Next(
                 $"Add {filePaths.Count} {nameof(HostFileChangeMonitor)}s",
                 p => p.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths))
             );
 
-    public IPolicyMaker WatchFolders(IDictionary<string, bool> folderPaths) =>
-        folderPaths is not { Count: > 0 }
+    public IPolicyMaker WatchFolders(IDictionary<string, bool>? folderPaths)
+        => folderPaths is not { Count: > 0 }
             ? this
             : Next(
                 $"Watch {folderPaths.Count} {nameof(FolderChangeMonitor)}s: \n {string.Join("\n", folderPaths.Select(pair => $"Folders: '{pair.Key}'; Subfolder: {pair.Value}"))}",
                 p => p.ChangeMonitors.Add(new FolderChangeMonitor(folderPaths))
             );
 
-    public IPolicyMaker WatchCacheKeys(IEnumerable<string> cacheKeys)
+    public IPolicyMaker WatchCacheKeys(IEnumerable<string>? cacheKeys)
     {
-        if (cacheKeys == null) return this;
+        if (cacheKeys == null)
+            return this;
+
         var keysClone = new List<string>(cacheKeys);
         return keysClone.Count <= 0
             ? this
@@ -74,9 +76,11 @@ public record CacheItemPolicyMaker : FunFactActionsBase<CacheItemPolicy>, IPolic
             );
     }
 
-    public IPolicyMaker WatchNotifyKeys(IEnumerable<ICanBeCacheDependency> cacheKeys)
+    public IPolicyMaker WatchNotifyKeys(IEnumerable<ICanBeCacheDependency>? cacheKeys)
     {
-        if (cacheKeys == null) return this;
+        if (cacheKeys == null)
+            return this;
+
         var keysClone = new List<ICanBeCacheDependency>(cacheKeys);
         return !keysClone.Any()
             ? this

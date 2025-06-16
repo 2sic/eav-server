@@ -19,7 +19,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     #region MyRegion
 
     /// <summary>
-    /// Internal ID usually from persisted configurations IF the configuration was build from an pre-stored query.
+    /// Internal ID usually from persisted configurations IF the configuration was build from a pre-stored query.
     /// </summary>
     /// <returns>The guid of this data source which identifies the configuration <see cref="IEntity"/> of the data source.</returns>
     [PrivateApi]

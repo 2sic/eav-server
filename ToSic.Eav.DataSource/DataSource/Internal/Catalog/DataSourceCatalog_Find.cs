@@ -22,12 +22,13 @@ partial class DataSourceCatalog
     }
 
 
-    internal DataSourceInfo FindDsiByGuidOrName(string name, int appId)
+    internal DataSourceInfo? FindDsiByGuidOrName(string name, int appId)
     {
-        var l = Log.Fn<DataSourceInfo>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
+        var l = Log.Fn<DataSourceInfo?>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
         // New 11.12.x If the type is identified by a GUID, that's what we should return
         var typeInfo = FindInCache(name, appId);
-        if (typeInfo?.NameId != null) return l.Return(typeInfo, $"found in cache {typeInfo.NameId}");
+        if (typeInfo?.NameId != null)
+            return l.Return(typeInfo, $"found in cache {typeInfo.NameId}");
 
         // Old mechanism which checks real types etc. but probably is never needed any more
         var typeFromCatalog = FindDataSourceInfo(name, appId);
@@ -35,9 +36,9 @@ partial class DataSourceCatalog
     }
     
     // Note: only public because we're still supporting a very old API in a 2sxc code
-    public DataSourceInfo FindDataSourceInfo(string name, int appId)
+    public DataSourceInfo? FindDataSourceInfo(string name, int appId)
     {
-        var l = Log.Fn<DataSourceInfo>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
+        var l = Log.Fn<DataSourceInfo?>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
 
         // if not found, or if obsolete, try to find another
         var typeFromCatalog = FindInCache(name, appId);
@@ -48,9 +49,9 @@ partial class DataSourceCatalog
     /// Get all Installed DataSources
     /// </summary>
     /// <remarks>Objects that implement IDataSource</remarks>
-    public IEnumerable<DataSourceInfo> GetAll(bool onlyForVisualQuery, int appId)
+    public IList<DataSourceInfo> GetAll(bool onlyForVisualQuery, int appId)
     {
-        var l = Log.Fn<IEnumerable<DataSourceInfo>>($"{onlyForVisualQuery}, {appId}");
+        var l = Log.Fn<IList<DataSourceInfo>>($"{onlyForVisualQuery}, {appId}");
 
         var fromGlobal = onlyForVisualQuery
             ? GlobalCache.Where(dsi => (dsi.VisualQuery?.NameId).HasValue())
@@ -58,10 +59,14 @@ partial class DataSourceCatalog
 
         var appList = Get(appId) ?? [];
         var fromApp = onlyForVisualQuery
-            ? appList.Where(dsi => (dsi.VisualQuery?.NameId).HasValue()).ToList()
+            ? appList
+                .Where(dsi => (dsi.VisualQuery?.NameId).HasValue())
+                .ToList()
             : appList;
 
-        var result = fromGlobal.Concat(fromApp);
-        return l.Return(result, $"{result.Count()}");
+        var result = fromGlobal
+            .Concat(fromApp)
+            .ToListOpt();
+        return l.Return(result, $"{result.Count}");
     }
 }

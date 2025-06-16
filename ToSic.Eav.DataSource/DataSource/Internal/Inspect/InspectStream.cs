@@ -9,12 +9,13 @@ public class InspectStream
 {
     public Guid Target;
     public Guid Source;
-    public string SourceOut;
-    public string TargetIn;
-    public int Count => Stream.List.Count();
+    public string? SourceOut { get; }
+    public string? TargetIn { get; }
+    public int Count => Stream?.List.Count() ?? 0;
         
         
-    public bool Error = false;
+    public bool Error;
+
     /// <summary>
     /// This object contains error data - usually as an IEntity. 
     /// </summary>
@@ -22,20 +23,21 @@ public class InspectStream
     /// Before sending in a web-api it must be converted, but the converter is not available in the DataSources project, so it must be handled at API level
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public object /*IDictionary<string, object>*/ ErrorData;
+    public object? /*IDictionary<string, object>?*/ ErrorData;
         
     [JsonIgnore]
-    protected readonly IDataStream Stream;
+    protected readonly IDataStream? Stream;
 
     public InspectStream(IDataStream stream, IDataSource target, string inName)
     {
         try
         {
             Stream = stream;
-            Target = target?.Guid ?? Guid.Empty;
+            Target = target.Guid; // ?? Guid.Empty; // note 2025-06-16 2dm, removed null check, monitor
             Source = stream.Source.Guid;
             TargetIn = inName;
-            if (stream is ConnectionStream conStream1) SourceOut = conStream1.Connection.SourceStream;
+            if (stream is ConnectionStream conStream1)
+                SourceOut = conStream1.Connection?.SourceStream;
             else
                 foreach (var outStm in stream.Source.Out)
                     if (outStm.Value == stream)
@@ -43,7 +45,8 @@ public class InspectStream
 
             var firstItem = Stream.List?.FirstOrDefault();
             Error = firstItem?.Type?.Name == DataConstants.ErrorTypeName;
-            if (Error) ErrorData = firstItem;
+            if (Error)
+                ErrorData = firstItem;
         }
         catch
         {

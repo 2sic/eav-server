@@ -5,5 +5,12 @@ namespace ToSic.Eav.DataSource.Internal.AppDataSources;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppDataSourcesLoader
 {
-    (List<DataSourceInfo> data, TimeSpan slidingExpiration, IList<string> folderPaths, IEnumerable<string> cacheKeys) CompileDynamicDataSources(int appId);
+    AppLocalDataSources CompileDynamicDataSources(int appId);
 }
+
+public record AppLocalDataSources(
+    List<DataSourceInfo> Data,
+    TimeSpan SlidingExpiration,
+    IList<string> FolderPaths,
+    IEnumerable<string> CacheKeys
+);

@@ -20,7 +20,7 @@ public interface IQuery: IDataSource, IDataSourceReset
     /// <param name="key">Key - the part used in [Params:key]</param>
     /// <param name="value">The value it will resolve to. Can also be another token.</param>
     /// <remarks>If you set a param after accessing the query, an exception will occur unless you call Reset() first.</remarks>
-    void Params(string key, string value);
+    void Params(string key, string? value);
 
     /// <summary>
     /// Add/Set a parameter for the query, which will be used by the [Params:Xxx] tokens.
@@ -32,7 +32,7 @@ public interface IQuery: IDataSource, IDataSourceReset
     /// - If you set a param after accessing the query, an exception will occur unless you call Reset() first.
     /// - History: Added in v15
     /// </remarks>
-    void Params(string key, object value);
+    void Params(string key, object? value);
 
     /// <summary>
     /// Add/Set a parameter for the query, which will be used by the [Params:Xxx] tokens.

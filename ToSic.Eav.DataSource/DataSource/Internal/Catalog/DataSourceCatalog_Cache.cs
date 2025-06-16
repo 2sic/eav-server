@@ -20,7 +20,7 @@ partial class DataSourceCatalog
     /// <param name="name"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
-    private DataSourceInfo FindInCache(string name, int appId)
+    private DataSourceInfo? FindInCache(string name, int appId)
     {
         var list = GlobalCache;
         var inGlobal = FindInCachedList(name, list, false);
@@ -28,10 +28,10 @@ partial class DataSourceCatalog
             return inGlobal;
 
         // New v15.04 - also support app level data sources
-        var appCache = Get(appId);
-        return appCache == null
+        var appLocalDataSources = Get(appId);
+        return appLocalDataSources == null
             ? null 
-            : FindInCachedList(name, appCache, true);
+            : FindInCachedList(name, appLocalDataSources, true);
     }
 
     private static DataSourceInfo? FindInCachedList(string name, List<DataSourceInfo> list, bool isLocal)

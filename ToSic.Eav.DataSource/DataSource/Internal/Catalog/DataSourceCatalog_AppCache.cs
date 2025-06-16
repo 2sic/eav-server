@@ -9,17 +9,20 @@ partial class DataSourceCatalog
 
     public List<DataSourceInfo> Get(int appId)
     {
-        if (memoryCacheService.TryGet<List<DataSourceInfo>>(AppCacheKey(appId), out var dataFromCache))
+        if (memoryCacheService.TryGet<List<DataSourceInfo>>(AppCacheKey(appId), out var dataFromCache) && dataFromCache != null)
             return dataFromCache;
 
-        var (data, slidingExpiration, folderPaths, cacheKeys)
-            = appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
+        var appLocalDataSources = appDataSourcesLoader.Value.CompileDynamicDataSources(appId);
 
-        memoryCacheService.Set(AppCacheKey(appId), data, p => p
-            .SetSlidingExpiration(slidingExpiration)
-            .WatchFolders(folderPaths?.ToDictionary(p => p, _ => true))
-            .WatchCacheKeys(cacheKeys));
+        memoryCacheService.Set(
+            AppCacheKey(appId),
+            appLocalDataSources.Data,
+            policyMaker => policyMaker
+                .SetSlidingExpiration(appLocalDataSources.SlidingExpiration)
+                .WatchFolders(appLocalDataSources.FolderPaths.ToDictionary(pair => pair, _ => true))
+                .WatchCacheKeys(appLocalDataSources.CacheKeys)
+        );
 
-        return data;
+        return appLocalDataSources.Data;
     }
 }

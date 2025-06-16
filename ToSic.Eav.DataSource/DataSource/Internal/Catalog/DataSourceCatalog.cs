@@ -20,7 +20,7 @@ public partial class DataSourceCatalog(
     /// </summary>
     /// <param name="dsInfo"></param>
     /// <returns></returns>
-    public ICollection<string> GetOutStreamNames(DataSourceInfo dsInfo)
+    public ICollection<string>? GetOutStreamNames(DataSourceInfo dsInfo)
     {
         var l = Log.Fn<ICollection<string>>();
         try

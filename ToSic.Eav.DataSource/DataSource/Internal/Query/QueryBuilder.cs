@@ -111,10 +111,6 @@ public class QueryBuilder(
                 LookUp = partEngine,
             };
 
-            // 2023-03-13 2dm - #removedQueryPartShowDrafts
-            // if show-draft in overridden, add that to the settings
-            //partConfig.AddOverride(new LookUpInDictionary(DataSource.MyConfiguration, itemSettingsShowDrafts));
-
             #endregion
 
             // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
@@ -178,7 +174,8 @@ public class QueryBuilder(
         // 3. Test all Wirings were created
         if (wirings.Count != initializedWirings.Count)
         {
-            var notInitialized = wirings.Where(w => !initializedWirings.Any(i => i.From == w.From && i.Out == w.Out && i.To == w.To && i.In == w.In));
+            var notInitialized = wirings
+                .Where(w => !initializedWirings.Any(i => i.From == w.From && i.Out == w.Out && i.To == w.To && i.In == w.In));
             var error = string.Join(", ", notInitialized);
             var exception = new Exception("Some Stream-Wirings were not created: " + error);
             l.Ex(exception);
@@ -205,7 +202,9 @@ public class QueryBuilder(
                 .Where(w =>
                     w.From == dataSource.Key
                     && !initializedWirings.Any(i =>
-                        w.From == i.From && w.Out == i.Out && w.To == i.To && w.In == i.In));
+                        w.From == i.From && w.Out == i.Out && w.To == i.To && w.In == i.In)
+                )
+                .ToListOpt();
                 
             // loop all wirings from this DataSource (except already initialized)
             foreach (var wire in unassignedConnectionsForThisSource)

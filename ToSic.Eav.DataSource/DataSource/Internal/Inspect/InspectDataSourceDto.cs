@@ -3,35 +3,35 @@
 namespace ToSic.Eav.DataSource.Internal.Inspect;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InspectDataSource
+public class InspectDataSourceDto
 {
     /// <summary>
     /// DS Guid for identification
     /// </summary>
-    public Guid Guid { get; }
+    public Guid? Guid { get; }
 
     /// <summary>
     /// Internal type
     /// </summary>
-    public string Type { get; }
+    public string? Type { get; }
 
     /// <summary>
     /// The resolved values used from the settings/config of the data source
     /// </summary>
-    public IReadOnlyDictionary<string, string> Configuration { get; }
+    public IReadOnlyDictionary<string, string>? Configuration { get; }
 
     /// <summary>
     /// Error state
     /// </summary>
     public bool Error { get; set; }
 
-    public Dictionary<string, object> Definition;
+    public Dictionary<string, object>? Definition;
 
-    public List<OutDto> Out;
+    public IList<OutDto>? Out;
 
-    public DataSourceConnections Connections { get; set; }
+    public DataSourceConnections? Connections { get; set; }
 
-    public InspectDataSource(IDataSource ds)
+    public InspectDataSourceDto(IDataSource ds)
     {
         try
         {
@@ -42,8 +42,13 @@ public class InspectDataSource
 
             try
             {
-                Out = ds.Out.Select(o => new OutDto { Name = o.Key, Scope = o.Value.Scope })
-                    .ToList();
+                Out = ds.Out
+                    .Select(o => new OutDto
+                    {
+                        Name = o.Key,
+                        Scope = o.Value.Scope
+                    })
+                    .ToListOpt();
             }
             catch { /* ignore */ }
         }
@@ -53,11 +58,13 @@ public class InspectDataSource
         }
     }
 
-    public InspectDataSource WithQueryDef(QueryDefinition queryDefinition)
+    public InspectDataSourceDto WithQueryDef(QueryDefinition queryDefinition)
     {
         // find this item in the query def
-        var partDef = queryDefinition.Parts.FirstOrDefault(p => p.Guid == Guid);
-        if(partDef is null) return this;
+        var partDef = queryDefinition.Parts
+            .FirstOrDefault(p => p.Guid == Guid);
+        if(partDef is null)
+            return this;
 
         Definition = partDef.AsDictionary();
         return this;

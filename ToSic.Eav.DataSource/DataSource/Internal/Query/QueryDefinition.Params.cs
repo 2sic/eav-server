@@ -9,20 +9,28 @@ partial class QueryDefinition
     /// <summary>
     /// The raw Params used in this query, as stored in the IEntity
     /// </summary>
-    public string ParamsRaw => Get<string>(FieldParams, null);
+    private string ParamsRaw => Get<string>(FieldParams, null) ?? "";
 
     /// <summary>
     /// The param-dictionary used for the LookUp. All keys will be available in the token [Params:key]
     /// </summary>
-    public IDictionary<string, string> Params => _params ??= GenerateParamsDic(ParamsRaw, Log);
-    private IDictionary<string, string> _params;
+    [field: AllowNull, MaybeNull]
+    public IDictionary<string, string> Params
+    {
+        get => field ??= GenerateParamsDic(ParamsRaw, Log);
+        set;
+    }
 
     /// <summary>
     /// The <see cref="ILookUp"/> for the params of this query - based on the Params.
     /// </summary>
     /// <returns>Always returns a valid ILookup, even if no params found. </returns>
-    public ILookUp ParamsLookUp => _paraLookUp ??= new LookUpInDictionary(DataSourceConstants.ParamsSourceName, Params);
-    private ILookUp _paraLookUp;
+    [field: AllowNull, MaybeNull]
+    public ILookUp ParamsLookUp
+    {
+        get => field ??= new LookUpInDictionary(DataSourceConstants.ParamsSourceName, Params);
+        set;
+    }
 
     /// <summary>
     /// Regex to detect key=value. <br/>
@@ -45,7 +53,8 @@ partial class QueryDefinition
 
         var paramsDic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-        if (string.IsNullOrWhiteSpace(paramsText)) return l.Return(paramsDic, "no params");
+        if (string.IsNullOrWhiteSpace(paramsText))
+            return l.Return(paramsDic, "no params");
 
         // extract the lines which look like key=value
         var paramMatches = ParamRegex.Matches(paramsText);
@@ -71,7 +80,7 @@ partial class QueryDefinition
     public void Reset()
     {
         Log.A($"{nameof(Reset)}()");
-        _params = null;
-        _paraLookUp = null;
+        Params = null!;
+        ParamsLookUp = null!;
     }
 }

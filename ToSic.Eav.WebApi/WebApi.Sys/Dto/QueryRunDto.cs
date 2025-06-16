@@ -7,7 +7,7 @@ public class QueryRunDto
 {
     public IDictionary<string, IEnumerable<EavLightEntity>> Query;
     public ICollection<InspectStream> Streams;
-    public Dictionary<Guid, InspectDataSource> Sources;
+    public Dictionary<Guid, InspectDataSourceDto> Sources;
     public QueryTimerDto QueryTimer;
 }
 

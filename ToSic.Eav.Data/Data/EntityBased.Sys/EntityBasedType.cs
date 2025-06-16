@@ -68,7 +68,7 @@ public abstract class EntityBasedType : IEntityBasedType
     /// <param name="fallback">fallback value</param>
     /// <returns>The value. If the Entity is missing, will return the fallback result. </returns>
     [return: NotNullIfNotNull(nameof(fallback))]
-    protected T? Get<T>(string fieldName, T fallback)
+    protected T? Get<T>(string fieldName, T? fallback)
         => Entity == null
             ? fallback
             : Entity.Get(fieldName, fallback: fallback, languages: LookupLanguages);

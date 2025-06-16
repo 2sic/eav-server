@@ -8,7 +8,7 @@ public interface IDataSourceLink : IDataSourceLinkable
 {
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    IDataSource DataSource { get; }
+    IDataSource? DataSource { get; }
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
     string OutName { get; }
@@ -17,7 +17,7 @@ public interface IDataSourceLink : IDataSourceLinkable
     string InName { get; }
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    IDataStream Stream { get; }
+    IDataStream? Stream { get; }
 
     /// <summary>
     /// Internal use only.
