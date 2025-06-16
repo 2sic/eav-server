@@ -14,13 +14,13 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
     /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
     /// </summary>
     [Configuration]
-    public abstract string FieldName { get; }
+    public abstract string? FieldName { get; }
 
     /// <summary>
     /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
     /// </summary>
     [Configuration]
-    public abstract string ContentTypeName { get; }
+    public abstract string? ContentTypeName { get; }
 
     /// <summary>
     /// Will filter duplicate hits from the result.
@@ -91,6 +91,6 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
     /// <param name="typeName"></param>
     /// <returns></returns>
     [PrivateApi]
-    protected abstract Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName);
+    protected abstract Func<IEntity, IEnumerable<IEntity>> InnerGet(string? fieldName, string? typeName);
 
 }

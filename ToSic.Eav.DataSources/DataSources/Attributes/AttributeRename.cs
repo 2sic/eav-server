@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
     HelpLink = "https://go.2sxc.org/DsAttributeRename")]
 
-public class AttributeRename : Eav.DataSource.DataSourceBase
+public class AttributeRename : DataSourceBase
 {
     #region Configuration-properties
 
@@ -29,7 +29,7 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
     /// The syntax is "NewName=OldName" - one mapping per line
     /// </summary>
     [Configuration]
-    public string AttributeMap
+    public string? AttributeMap
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -50,7 +50,7 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
     /// The syntax is "NewName=OldName" - one mapping per line
     /// </summary>
     [Configuration]
-    public string TypeName
+    public string? TypeName
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -63,11 +63,9 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public AttributeRename(DataBuilder dataBuilder, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen")
+    public AttributeRename(DataBuilder dataBuilder, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen", connect: [dataBuilder])
     {
-        ConnectLogs([
-            _dataBuilder = dataBuilder
-        ]);
+        _dataBuilder = dataBuilder;
         ProvideOut(GetList);
     }
 
@@ -83,7 +81,7 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
         var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
-        var mapRaw = AttributeMap;
+        var mapRaw = AttributeMap ?? "";
         var attrMapArray = mapRaw
             .Split(["\r\n", "\r", "\n"], StringSplitOptions.RemoveEmptyEntries)
             .ToList();
@@ -91,12 +89,13 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
             .Select(s =>
             {
                 var splitEquals = s.Split('=');
-                if (splitEquals.Length != 2) return null;
+                if (splitEquals.Length != 2)
+                    return null!;
                 return splitEquals.Any(string.IsNullOrWhiteSpace)
-                    ? null
+                    ? null!
                     : new { New = splitEquals[0].Trim(), Old = splitEquals[1].Trim() };
             })
-            .Where(x => x != null)
+            .Where(x => x != null!)
             .ToList();
 
         var preserveOthers = KeepOtherAttributes;
@@ -107,8 +106,9 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
                 .Select(a =>
                 {
                     // find in the map
-                    var fieldMap = attributeNames.FirstOrDefault(an =>
-                        string.Equals(an.Old, a.Key, StringComparison.InvariantCultureIgnoreCase));
+                    var fieldMap = attributeNames
+                        .FirstOrDefault(an =>
+                            string.Equals(an.Old, a.Key, StringComparison.InvariantCultureIgnoreCase));
                     if (fieldMap != null)
                     {
                         // check if the name actually changed, if not, return original (faster)
@@ -120,22 +120,26 @@ public class AttributeRename : Eav.DataSource.DataSourceBase
 
                     return preserveOthers
                         ? a
-                        : new(null, null);
+                        : new(null!, null!);
                 })
                 .Where(set => set.Key != null)
-                .ToDictionary(a => a.Key, v => v.Value);
+                .ToDictionary(
+                    a => a.Key,
+                    v => v.Value
+                );
 
         }
 
 
         // build type if we have another one
         var typeName = TypeName;
-        IContentType newType = null;
+        IContentType? newType = null;
         if (!string.IsNullOrEmpty(typeName))
-            newType = _dataBuilder.ContentType.Transient(AppId, typeName, typeName);
+            newType = _dataBuilder.ContentType.Transient(AppId, typeName!, typeName!);
 
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
         var result = source
             .Select(entity =>

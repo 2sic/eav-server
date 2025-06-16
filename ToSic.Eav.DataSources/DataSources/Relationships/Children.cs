@@ -29,7 +29,7 @@ public class Children(DataSourceBase.MyServices services, ICurrentContextUserPer
     /// Name of the field pointing to the children.
     /// If left blank, will use get all children.
     /// </summary>
-    public override string FieldName => Configuration.GetThis();
+    public override string? FieldName => Configuration.GetThis();
 
     /// <summary>
     /// Name of the content-type to get. 
@@ -37,7 +37,7 @@ public class Children(DataSourceBase.MyServices services, ICurrentContextUserPer
     ///
     /// Can usually be left empty (recommended).
     /// </summary>
-    public override string ContentTypeName => Configuration.GetThis();
+    public override string? ContentTypeName => Configuration.GetThis();
 
     /// <summary>
     /// Construct function for the get of the related items
@@ -46,7 +46,7 @@ public class Children(DataSourceBase.MyServices services, ICurrentContextUserPer
     /// <param name="typeName"></param>
     /// <returns></returns>
     [PrivateApi]
-    protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName) 
+    protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string? fieldName, string? typeName) 
         => o => o.Relationships.FindChildren(fieldName, typeName, Log);
 
 }

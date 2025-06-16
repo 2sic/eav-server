@@ -54,7 +54,7 @@ partial class AttributeBuilder
     public IAttribute CreateOrUpdate(
         IAttribute? originalOrNull,
         string name,
-        object value,
+        object? value,
         ValueTypes type,
         IValue? valueToReplace = default,
         string? language = default,

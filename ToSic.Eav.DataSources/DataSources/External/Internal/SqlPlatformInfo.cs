@@ -7,7 +7,7 @@ public class SqlPlatformInfo
 
     public virtual string DefaultConnectionStringName => "unknown-server-please-override-SqlPlatformInfo";
 
-    public virtual string FindConnectionString(string name)
+    public virtual string? FindConnectionString(string name)
     {
         var config = System.Configuration.ConfigurationManager.ConnectionStrings[name];
         var connectionString = config?.ConnectionString;

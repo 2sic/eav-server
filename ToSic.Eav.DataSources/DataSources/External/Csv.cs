@@ -40,7 +40,7 @@ public class Csv : CustomDataSourceAdvanced
     [Configuration]
     public string FilePath
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -72,7 +72,7 @@ public class Csv : CustomDataSourceAdvanced
     /// Delimiter character in the CSV, usually a ',' or ';' but could also be a tab or something. Default is tab.
     /// </summary>
     [Configuration(Fallback = "\t")]
-    public string Delimiter
+    public string? Delimiter
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -87,7 +87,7 @@ public class Csv : CustomDataSourceAdvanced
     /// * Before v15.03 it defaulted to "Anonymous"
     /// </remarks>
     [Configuration(Fallback = "CSV")]
-    public string ContentType
+    public string? ContentType
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -97,7 +97,7 @@ public class Csv : CustomDataSourceAdvanced
     /// Column in the CSV which contains the ID. 
     /// </summary>
     [Configuration]
-    public string IdColumnName
+    public string? IdColumnName
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -108,7 +108,7 @@ public class Csv : CustomDataSourceAdvanced
     /// The CSV column containing the title of the item - for dropdowns etc. and the EntityTitle property. 
     /// </summary>
     [Configuration]
-    public string TitleColumnName
+    public string? TitleColumnName
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -160,8 +160,7 @@ public class Csv : CustomDataSourceAdvanced
                     ? $"Path for Super User only: '{csvPath}'"
                     : "For security reasons the path isn't mentioned here. You'll find it in the Insights."));
 
-        const string commonErrorsIdTitle =
-            "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
+        const string commonErrorsIdTitle = "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -175,7 +174,7 @@ public class Csv : CustomDataSourceAdvanced
         {
             const int idColumnNotDetermined = -999;
             var idColumnIndex = idColumnNotDetermined;
-            string titleColName;
+            string? titleColName;
 
 
             // Parse header - must happen after the first read
@@ -203,9 +202,11 @@ public class Csv : CustomDataSourceAdvanced
             else
             {
                 // The following is a little bit complicated, but it checks that the title specified exists
-                titleColName = headers.FirstOrDefault(colName => colName == titleColumnName)
-                               ?? headers.FirstOrDefault(colName =>
-                                   colName.Equals(titleColumnName, InvariantCultureIgnoreCase));
+                titleColName = headers
+                                   .FirstOrDefault(colName => colName == titleColumnName)
+                               ?? headers
+                                   .FirstOrDefault(colName =>
+                                       colName.Equals(titleColumnName, InvariantCultureIgnoreCase));
                 if (titleColName == null)
                     return l.ReturnAsError(Error.Create(title: "Title column not found",
                         message: $"Title column '{titleColumnName}' cannot be found in the file. " +
@@ -235,7 +236,7 @@ public class Csv : CustomDataSourceAdvanced
                         message:
                         $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'."));
 
-                var entityValues = new Dictionary<string, object>();
+                var entityValues = new Dictionary<string, object?>();
                 for (var i = 0; i < headers.Length; i++)
                     entityValues.Add(headers[i], (i < fields.Length) ? fields[i] : null);
 

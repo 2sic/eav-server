@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
     HelpLink = "https://go.2sxc.org/DsIdFilter")]
 
-public class EntityIdFilter : Eav.DataSource.DataSourceBase
+public class EntityIdFilter : DataSourceBase
 {
     #region Configuration-properties
 
@@ -32,7 +32,7 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
     [Configuration]
     public string EntityIds
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set
         {
             // kill any spaces in the string
@@ -65,7 +65,8 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
         if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
 
         var result = entityIds
-            .Select(eid => source.One(eid)).Where(e => e != null)
+            .Select(eid => source.One(eid)!)
+            .Where(e => e != null!)
             .ToImmutableOpt();
 
         l.A(l.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Count}"));

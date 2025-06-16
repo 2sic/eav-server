@@ -40,8 +40,8 @@ public class MetadataTargetTypes : CustomDataSourceAdvanced
                 return new
                 {
                     TargetType = value,
-                    IsPrivate = Attribute.IsDefined(field, typeof(PrivateApi)),
-                    Docs = Attribute.GetCustomAttribute(field, typeof(DocsWip)) as DocsWip
+                    IsPrivate = field != null && Attribute.IsDefined(field, typeof(PrivateApi)),
+                    Docs = field == null ? null : Attribute.GetCustomAttribute(field, typeof(DocsWip)) as DocsWip
                 };
             })
             .Where(value => !value.IsPrivate)
@@ -64,7 +64,7 @@ public class MetadataTargetTypes : CustomDataSourceAdvanced
 
         var list = publicTargetTypes
             .Select(set => dataFactory.Create(
-                    new Dictionary<string, object>
+                    new Dictionary<string, object?>
                     {
                         { AttributeNames.TitleNiceName, set.Title },
                         { AttributeNames.NameIdNiceName, set.TargetType.ToString() }

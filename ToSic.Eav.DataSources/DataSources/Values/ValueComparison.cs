@@ -1,4 +1,6 @@
-﻿using static System.StringComparison;
+﻿using static System.DateTime;
+using static System.Decimal;
+using static System.StringComparison;
 using static ToSic.Eav.DataSources.CompareOperators;
 
 namespace ToSic.Eav.DataSources;
@@ -13,9 +15,9 @@ internal class ValueComparison: HelperBase
 
     private readonly Action<string, string> _errCallback;
 
-    public Func<IEntity, bool> GetComparison(ValueTypes type, string fieldName, string operation, string[] languages, string expected)
+    public Func<IEntity, bool>? GetComparison(ValueTypes type, string fieldName, string operation, string[] languages, string expected)
     {
-        var l = Log.Fn<Func<IEntity, bool>>();
+        var l = Log.Fn<Func<IEntity, bool>?>();
         operation = operation.ToLowerInvariant();
 
         // First try to figure out based on known type
@@ -47,9 +49,9 @@ internal class ValueComparison: HelperBase
     /// <summary>
     /// Provide all the string comparison functionality as a prepared function
     /// </summary>
-    private Func<IEntity, bool> StringComparison(string fieldName, string operation, string[] languages, string expected)
+    private Func<IEntity?, bool>? StringComparison(string fieldName, string operation, string[] languages, string expected)
     {
-        var l = Log.Fn<Func<IEntity, bool>>(expected);
+        var l = Log.Fn<Func<IEntity?, bool>>(expected);
 
         var stringCompare = PickStringCompare(operation);
 
@@ -59,16 +61,16 @@ internal class ValueComparison: HelperBase
             return l.ReturnNull("error");
         }
 
-        return l.Return(e => stringCompare(e.Get(fieldName, languages: languages)), "ok");
+        return l.Return(e => stringCompare(e?.Get(fieldName, languages: languages)), "ok");
 
-        Func<object, bool> PickStringCompare(string op) => op switch
+        Func<object?, bool>? PickStringCompare(string op) => op switch
         {
             OpEquals => value => value != null && string.Equals(value.ToString(), expected, InvariantCultureIgnoreCase),
             OpExactly => value => value != null && value.ToString() == expected, // case sensitive: return full equal
             OpNotEquals => value => value != null && !string.Equals(value.ToString(), expected, InvariantCultureIgnoreCase),
-            OpContains => value => value?.ToString().IndexOf(expected, InvariantCultureIgnoreCase) > -1,
-            OpNotContains => value => value?.ToString().IndexOf(expected, InvariantCultureIgnoreCase) == -1,
-            OpBegins => value => value?.ToString().IndexOf(expected, InvariantCultureIgnoreCase) == 0,
+            OpContains => value => (value?.ToString() ?? "").IndexOf(expected, InvariantCultureIgnoreCase) > -1,
+            OpNotContains => value => (value?.ToString() ?? "").IndexOf(expected, InvariantCultureIgnoreCase) == -1,
+            OpBegins => value => (value?.ToString() ?? "").IndexOf(expected, InvariantCultureIgnoreCase) == 0,
             OpAll => value => true,
             _ => null
         };
@@ -78,7 +80,7 @@ internal class ValueComparison: HelperBase
     /// <summary>
     /// Provide all bool-compare functionality as a prepared function
     /// </summary>
-    private Func<IEntity, bool> BoolComparison(string fieldName, string operation, string[] languages, string expected)
+    private Func<IEntity, bool>? BoolComparison(string fieldName, string operation, string[] languages, string expected)
     {
         var l = Log.Fn<Func<IEntity, bool>>(expected);
         var boolFilter = bool.Parse(expected);
@@ -98,23 +100,23 @@ internal class ValueComparison: HelperBase
     /// <summary>
     /// provide all number-compare functionality as prepared/precompiled functions
     /// </summary>
-    private Func<IEntity, bool> NumberComparison(string fieldName, string operation, string[] languages, string expected)
+    private Func<IEntity, bool>? NumberComparison(string fieldName, string operation, string[] languages, string expected)
     {
         var l = Log.Fn<Func<IEntity, bool>>(expected);
 
-        var minOrExpected = decimal.MinValue;
-        var max = decimal.MaxValue;
-        List<decimal> decimals = null;
+        var minOrExpected = Decimal.MinValue;
+        var max = Decimal.MaxValue;
+        List<decimal>? decimals = null;
 
         #region check for special case "between" with two values to compare
-        if (operation == OpBetween || operation == OpNotBetween)
+        if (operation is OpBetween or OpNotBetween)
         {
-            Log.A("Operator is between or !between");
+            l.A("Operator is between or !between");
             var (useBetween, start, end) = BetweenParts(expected);
             if (useBetween)
             {
-                decimal.TryParse(start, out minOrExpected);
-                decimal.TryParse(end, out max);
+                TryParse(start, out minOrExpected);
+                TryParse(end, out max);
             }
             else
                 operation = OpEquals;
@@ -122,19 +124,19 @@ internal class ValueComparison: HelperBase
         #endregion
 
         #region check for special case "contains" with many values to compare
-        if (operation == OpContains || operation == OpNotContains)
+        if (operation is OpContains or OpNotContains)
         {
-            Log.A($"Operator is {OpContains} or {OpNotContains}");
+            l.A($"Operator is {OpContains} or {OpNotContains}");
             decimals = [];
             foreach(var num in expected.Split(','))
-                if (decimal.TryParse(num, out var dec))
+                if (Decimal.TryParse(num, out var dec))
                     decimals.Add(dec);
         }
         #endregion
 
         // get the value (but only if it hasn't been initialized already)
-        if (minOrExpected == decimal.MinValue)
-            decimal.TryParse(expected, out minOrExpected);
+        if (minOrExpected == Decimal.MinValue)
+            TryParse(expected, out minOrExpected);
 
         var numberCompare = NumberInnerCompare(operation, minOrExpected, max, decimals) ;
         if (numberCompare == null)
@@ -160,11 +162,11 @@ internal class ValueComparison: HelperBase
 
     }
 
-    private Func<decimal, bool> NumberInnerCompare(string operation, decimal expected, decimal expectedMax, List<decimal> decimals = null)
+    private Func<decimal, bool>? NumberInnerCompare(string operation, decimal expected, decimal expectedMax, List<decimal>? decimals = null)
     {
-        var l = Log.Fn<Func<decimal, bool>>($"{expected}");
+        var l = Log.Fn<Func<decimal, bool>?>($"{expected}");
 
-        Func<decimal, bool> finalFn = operation switch
+        Func<decimal, bool>? finalFn = operation switch
         {
             OpEquals => value => value == expected,
             OpExactly => value => value == expected,
@@ -187,22 +189,22 @@ internal class ValueComparison: HelperBase
     /// <summary>
     /// provide all date-time comparison as a prepared function
     /// </summary>
-    private Func<IEntity, bool> DateTimeComparison(string fieldName, string operation, string[] languages, string expected)
+    private Func<IEntity, bool>? DateTimeComparison(string fieldName, string operation, string[] languages, string expected)
     {
-        var l = Log.Fn<Func<IEntity, bool>>(expected);
+        var l = Log.Fn<Func<IEntity, bool>?>(expected);
 
         var max = DateTime.MaxValue;
         var expectedDtm = DateTime.MinValue;
 
         #region handle special case "between" with 2 values
-        if (operation == OpBetween || operation == OpNotBetween)
+        if (operation is OpBetween or OpNotBetween)
         {
-            Log.A("Operator is between or !between");
+            l.A("Operator is between or !between");
             var (useBetween, start, end) = BetweenParts(expected);
             if (useBetween)
             {
-                DateTime.TryParse(start, out expectedDtm);
-                DateTime.TryParse(end, out max);
+                TryParse(start, out expectedDtm);
+                TryParse(end, out max);
             }
             else
                 operation = OpEquals;
@@ -211,7 +213,7 @@ internal class ValueComparison: HelperBase
 
         // get the value (but only if it hasn't been initialized already)
         if (expectedDtm == DateTime.MinValue)
-            DateTime.TryParse(expected, out expectedDtm);
+            TryParse(expected, out expectedDtm);
 
         var innerFunc = DateTimeInnerCompare(operation, expectedDtm, max);
 
@@ -236,22 +238,20 @@ internal class ValueComparison: HelperBase
         }, "ok");
     }
 
-    private static Func<DateTime, bool> DateTimeInnerCompare(string operation, DateTime expected, DateTime max)
-    {
-        switch (operation)
+    private static Func<DateTime, bool>? DateTimeInnerCompare(string operation, DateTime expected, DateTime max)
+        => operation switch
         {
-            case OpEquals: return value => value == expected;
-            case OpExactly: return value => value == expected;
-            case OpNotEquals: return value => value != expected;
-            case OpGt: return value => value > expected;
-            case OpLt: return value => value < expected;
-            case OpGtEquals: return value => value >= expected;
-            case OpLtEquals: return value => value <= expected;
-            case OpBetween: return value => value >= expected && value <= max;
-            case OpNotBetween: return value => !(value >= expected && value <= max);
-            default: return null;
-        }
-    }
+            OpEquals => value => value == expected,
+            OpExactly => value => value == expected,
+            OpNotEquals => value => value != expected,
+            OpGt => value => value > expected,
+            OpLt => value => value < expected,
+            OpGtEquals => value => value >= expected,
+            OpLtEquals => value => value <= expected,
+            OpBetween => value => value >= expected && value <= max,
+            OpNotBetween => value => !(value >= expected && value <= max),
+            _ => null
+        };
 
 
     #region "between" helper

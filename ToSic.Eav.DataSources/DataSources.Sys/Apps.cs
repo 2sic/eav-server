@@ -82,14 +82,15 @@ public sealed class Apps: CustomDataSource
             .OrderBy(a => a.Key)
             .Select(app =>
             {
-                IAppSpecs appSpecs = null;
+                IAppSpecs? appSpecs = null;
                 Guid? guid = null;
-                string error = null;
+                string? error = null;
                 try
                 {
-                    appSpecs = appReaders.Get(new AppIdentityPure(zone.ZoneId, app.Key)).Specs;
+                    appSpecs = appReaders.Get(new AppIdentityPure(zone.ZoneId, app.Key))!.Specs;
                     // this will get the guid, if the identity is not "default"
-                    if (Guid.TryParse(appSpecs.NameId, out var g)) guid = g;
+                    if (Guid.TryParse(appSpecs.NameId, out var g))
+                        guid = g;
                 }
                 catch (Exception ex)
                 {
@@ -97,7 +98,7 @@ public sealed class Apps: CustomDataSource
                 }
 
                 // Assemble the entities
-                var appEnt = new Dictionary<string, object>
+                var appEnt = new Dictionary<string, object?>
                 {
                     { nameof(AppType.Id), app.Key },
                     { nameof(AppType.Name), appSpecs?.Name ?? "error - can't lookup name" },

@@ -49,7 +49,7 @@ public sealed class ContentTypes: CustomDataSource
     /// * Renamed to `Scope` in v15, previously was called `OfScope`
     /// </remarks>
     [Configuration(Fallback = "Default")]
-    public string Scope => Configuration.GetThis();
+    public string Scope => Configuration.GetThis(fallback: "Default");
 
     #endregion
 
@@ -72,7 +72,7 @@ public sealed class ContentTypes: CustomDataSource
         var appId = OfAppId;
         var scp = Scope.UseFallbackIfNoValue(ScopeConstants.Default);
 
-        var types = _appReaders.Get(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
+        var types = _appReaders.Get(appId)!.ContentTypes.OfScope(scp, includeAttributeTypes: true);
 
         // Deduplicate, in case we have identical types on current app and inherited
         var deDuplicate = types
@@ -83,9 +83,12 @@ public sealed class ContentTypes: CustomDataSource
                 if (g.Count() == 1) return g.First();
 
                 // More than 1, prioritize of the current app before parent-apps; SQL before File-System
-                var ofCurrentApp = g.Where(t => t.AppId == appId).ToList();
+                var ofCurrentApp = g
+                    .Where(t => t.AppId == appId)
+                    .ToList();
                 if (ofCurrentApp.Any())
-                    return ofCurrentApp.FirstOrDefault(t => t.RepositoryType == RepositoryTypes.Sql)
+                    return ofCurrentApp
+                               .FirstOrDefault(t => t.RepositoryType == RepositoryTypes.Sql)
                            ?? ofCurrentApp.First();
 
                 // Fallback: just return 1

@@ -43,10 +43,10 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     /// The content-type name
     /// </summary>
     [Configuration(Fallback = DefQuery)]
-    public string QueryName => Configuration.GetThis();
+    public string? QueryName => Configuration.GetThis();
 
     [Configuration(Fallback = StreamDefaultName)]
-    public string StreamName => Configuration.GetThis();
+    public string? StreamName => Configuration.GetThis();
 
     #endregion
 
@@ -82,7 +82,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
         var result = Query?.Out
                          .OrderBy(stream => stream.Key)
                          .Select(stream
-                             => dataFactory.Create(new Dictionary<string, object>
+                             => dataFactory.Create(new Dictionary<string, object?>
                              {
                                  { nameof(StreamsType.Name), stream.Key }
                              }))
@@ -133,11 +133,11 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
         return l.Return(results, $"{results.Count}");
     }
 
-    private IDataSource Query => _q.Get(BuildQuery);
-    private readonly GetOnce<IDataSource> _q = new();
+    private IDataSource? Query => _q.Get(BuildQuery);
+    private readonly GetOnce<IDataSource?> _q = new();
 
 
-    private IDataSource BuildQuery()
+    private IDataSource? BuildQuery()
     {
         var l = Log.Fn<IDataSource>();
 

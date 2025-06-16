@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.ValueSort",
     HelpLink = "https://go.2sxc.org/DsValueSort")]
 
-public sealed class ValueSort : Eav.DataSource.DataSourceBase
+public sealed class ValueSort : DataSourceBase
 {
     #region Configuration-properties
         
@@ -29,7 +29,7 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
     /// The attribute whose value will be sorted by.
     /// </summary>
     [Configuration]
-    public string Attributes
+    public string? Attributes
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -39,7 +39,7 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
     /// The sorting direction like 'asc' or 'desc', can also be 0, 1
     /// </summary>
     [Configuration]
-    public string Directions
+    public string? Directions
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -51,7 +51,7 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
     [Configuration(Fallback = ValueLanguages.LanguageDefaultPlaceholder)]
     public string Languages
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: ValueLanguages.LanguageDefaultPlaceholder);
         set => Configuration.SetThisObsolete(value);
     }
     #endregion
@@ -61,11 +61,9 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
     /// Constructs a new ValueSort
     /// </summary>
     [PrivateApi]
-    public ValueSort(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValSrt")
+    public ValueSort(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValSrt", connect: [valLanguages])
     {
-        ConnectLogs([
-            _valLanguages = valLanguages
-        ]);
+        _valLanguages = valLanguages;
 
         ProvideOut(GetValueSort);
     }
@@ -75,7 +73,7 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
     /// The internal language list used to lookup values.
     /// It's internal, to allow testing/debugging from the outside
     /// </summary>
-    [PrivateApi] internal string[] LanguageList { get; private set; }
+    [PrivateApi] internal string[]? LanguageList { get; private set; }
 
     private const char FieldId = 'i';
     private const char FieldMod = 'm';
@@ -113,7 +111,7 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
         // Keep entities which cannot sort by the required values (removed previously from results)
         //var unsortable = originals.Where(e => !results.Contains(e)).ToImmutableArray();
 
-        IOrderedEnumerable<IEntity> ordered = null;
+        IOrderedEnumerable<IEntity>? ordered = null;
 
         for (var i = 0; i < sortAttributes.Length; i++)
         {
@@ -138,20 +136,19 @@ public sealed class ValueSort : Eav.DataSource.DataSourceBase
                 : isAscending ? ordered.ThenBy(getValue) : ordered.ThenByDescending(getValue);
         }
 
-        IImmutableList<IEntity> final;
         try
         {
-            final = ordered?.ToImmutableOpt() ?? [];
+            var final = ordered?.ToImmutableOpt() ?? [];
+            return l.ReturnAsOk(final);
         }
         catch (Exception e)
         {
             return l.ReturnAsError(Error.Create(title: "Error sorting", message: "Sorting failed - see exception in insights", exception: e));
         }
 
-        return l.ReturnAsOk(final);
     }
 
-    private static Func<IEntity, object> GetPropertyToSortFunc(char propertyCode, string fieldName, string[] languages)
+    private static Func<IEntity, object?> GetPropertyToSortFunc(char propertyCode, string fieldName, string[] languages)
         => propertyCode switch
         {
             FieldId => e => e.EntityId,

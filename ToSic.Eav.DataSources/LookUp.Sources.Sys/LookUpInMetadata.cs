@@ -12,9 +12,9 @@ namespace ToSic.Eav.LookUp.Sources.Sys;
 [PrivateApi("doesn't seem to be used! note: used to be public, but it's not clear why anybody should use it. ATM not used in our code base - was only used for Queries, and that has a renamed copy LookUpInQueryMetadata")]
 public class LookUpInMetadata : LookUpInEntity
 {
-    private readonly IMetadataSource _metaDataSource;
-    private readonly Guid _objectToProvideSettingsTo;
-    private readonly IEntity _parent;
+    private readonly IMetadataSource _metaDataSource = null!; // dummy, code doesn't work yet
+    private readonly Guid _objectToProvideSettingsTo = Guid.Empty; // dummy, code doesn't work yet
+    private readonly IEntity? _parent;
 
     ///// <summary>
     ///// Constructs the object with pre-filled parameters. It won't access the entity yet, because 
@@ -49,12 +49,13 @@ public class LookUpInMetadata : LookUpInEntity
     [PrivateApi]
     public void Initialize()
     {
-        if (_initialized) return;
-        var md = _parent?.Metadata ??
-                 _metaDataSource.GetMetadata(TargetTypes.Entity, _objectToProvideSettingsTo);
+        if (_initialized)
+            return;
+        var md = _parent?.Metadata
+                 ?? _metaDataSource.GetMetadata(TargetTypes.Entity, _objectToProvideSettingsTo);
 
         // make sure we get the settings, but not the pipeline-parts, which may also be assigned
-        SetData(md.FirstOrDefault());
+        SetData(md.FirstOrDefault()!); // Dummy, code doesn't work yet
         _initialized = true;
     }
     private bool _initialized;

@@ -47,7 +47,7 @@ partial class QueryDefinition
     /// They are in the format k=value or key=[some:token]
     /// </summary>
     [PrivateApi]
-    public static IDictionary<string, string> GenerateParamsDic(string paramsText, ILog log)
+    public static IDictionary<string, string> GenerateParamsDic(string? paramsText, ILog log)
     {
         var l = log.Fn<IDictionary<string,string>>();
 

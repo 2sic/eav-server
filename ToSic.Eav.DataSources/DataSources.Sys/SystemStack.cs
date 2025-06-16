@@ -26,10 +26,10 @@ public class SystemStack: CustomDataSourceAdvanced
     #region Configuration
 
     [Configuration]
-    public string StackNames => Configuration.GetThis();
+    public string? StackNames => Configuration.GetThis();
 
     [Configuration]
-    public string Keys => Configuration.GetThis();
+    public string? Keys => Configuration.GetThis();
 
     [Configuration(Fallback = true)]
     public bool AddValues => Configuration.GetThis(true);
@@ -60,7 +60,7 @@ public class SystemStack: CustomDataSourceAdvanced
     {
         Configuration.Parse();
 
-        var appState = _appReadFac.Get(this.PureIdentity());
+        var appState = _appReadFac.Get(this.PureIdentity())!;
 
         var languages = _zoneCulture.SafeLanguagePriorityCodes();
 

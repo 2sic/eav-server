@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
     HelpLink = "https://go.2sxc.org/DsValueFilter")]
 
-public sealed class ValueFilter : Eav.DataSource.DataSourceBase
+public sealed class ValueFilter : DataSourceBase
 {
     #region Configuration-properties Attribute, Value, Language, Operator
 
@@ -30,7 +30,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     /// The attribute whose value will be scanned / filtered.
     /// </summary>
     [Configuration]
-    public string Attribute
+    public string? Attribute
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -40,7 +40,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     /// The filter that will be used - for example "Daniel" when looking for an entity w/the value Daniel
     /// </summary>
     [Configuration]
-    public string Value
+    public string? Value
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -50,7 +50,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     /// Language to filter for. At the moment it is not used, or it is trying to find "any"
     /// </summary>
     [Configuration(Fallback = ValueLanguages.LanguageDefaultPlaceholder)]
-    public string Languages
+    public string? Languages
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -61,7 +61,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     /// depending on the original types we're comparing
     /// </summary>
     [Configuration(Fallback = "==")]
-    public string Operator
+    public string? Operator
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -71,7 +71,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     /// Amount of items to take - then stop filtering. For performance optimization.
     /// </summary>
     [Configuration]
-    public string Take
+    public string? Take
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -117,8 +117,10 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
 
         // Get the In-list and stop if error or empty
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
-        if (!source.Any()) return l.Return(source, "empty");
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
+        if (!source.Any())
+            return l.Return(source, "empty");
 
         var op = Operator.ToLowerInvariant();
 
@@ -146,7 +148,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         if (!isSpecial) fieldType = firstEntity[fieldName].Type;
 
 
-        IImmutableList<IEntity> innerErrors = null;
+        IImmutableList<IEntity>? innerErrors = null;
         var compMaker = new ValueComparison((title, message) => innerErrors = Error.Create(title: title, message: message), Log);
         var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value);
 

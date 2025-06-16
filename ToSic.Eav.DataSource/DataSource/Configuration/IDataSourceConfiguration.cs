@@ -30,6 +30,7 @@ public interface IDataSourceConfiguration
     /// <param name="name">The configuration key. Do not set this; it's auto-added by the compiler.</param>
     /// <returns>The configuration value or the fallback.</returns>
     /// <remarks>Added in v15.04</remarks>
+    [return: NotNullIfNotNull(nameof(fallback))]
     T GetThis<T>(T fallback, [CallerMemberName] string? name = default);
 
     /// <summary>

@@ -32,7 +32,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppR
     /// Optional TypeName restrictions to only get **Targets** of this Content Type.
     /// </summary>
     [Configuration]
-    public override string ContentTypeName => Configuration.GetThis();
+    public override string? ContentTypeName => Configuration.GetThis();
 
     /// <summary>
     /// If it should filter duplicates. Default is true.
@@ -44,7 +44,8 @@ public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppR
     {
         var getTargetFunc = GetTargetsFunctionGenerator();
 
-        var relationships = originals.SelectMany(getTargetFunc);
+        var relationships = originals
+            .SelectMany(getTargetFunc);
 
         if (FilterDuplicates)
             relationships = relationships.Distinct();
@@ -62,7 +63,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppR
     [PrivateApi]
     private Func<IEntity, IEnumerable<IEntity>> GetTargetsFunctionGenerator()
     {
-        var appState = appReaders.Get(this);
+        var appState = appReaders.Get(this)!;
         return o =>
         {
             var mdFor = o.MetadataFor;
@@ -75,10 +76,14 @@ public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppR
             // We seem to have a historic setup where we sometimes use IDs and sometimes GUIDs?
             if (mdFor.TargetType == (int)TargetTypes.Entity)
             {
-                if (mdFor.KeyGuid != null)
-                    return [appState.List.One(mdFor.KeyGuid.Value)];
-                if (mdFor.KeyNumber != null)
-                    return [appState.List.One(mdFor.KeyNumber.Value)];
+                var foundEntity = (mdFor.KeyGuid != null)
+                    ? appState.List.One(mdFor.KeyGuid.Value)
+                    : mdFor.KeyNumber != null
+                        ? appState.List.One(mdFor.KeyNumber.Value)
+                        : null;
+                return foundEntity != null
+                    ? [foundEntity]
+                    : [];
             }
 
             if (mdFor.TargetType == (int)TargetTypes.ContentType)
@@ -87,9 +92,11 @@ public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppR
                     DataFactory.SpawnNew(options: ContentTypeUtil.Options with { AppId = AppId, WithMetadata = true });
 
                 var key = mdFor.KeyString ?? mdFor.KeyGuid?.ToString();
-                if (key == null) return [];
+                if (key == null)
+                    return [];
                 var ct = appState.GetContentType(key);
-                if (ct == null) return [];
+                if (ct == null)
+                    return [];
                 var ctEntity = contentTypeFactory.Create(ContentTypeUtil.ToRaw(ct));
                 return [ctEntity];
             }

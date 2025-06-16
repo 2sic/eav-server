@@ -34,7 +34,7 @@ public class ValueLanguages(IZoneCultureResolver cultureResolver) : ServiceBase(
         throw l.Done(ex);
     }
 
-    private string ResolveOneLanguageCode(string lang)
+    private string? ResolveOneLanguageCode(string lang)
     {
         var l = Log.Fn<string>(lang);
         if (string.IsNullOrWhiteSpace(lang) || lang == LanguageDefaultPlaceholder)

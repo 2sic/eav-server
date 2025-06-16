@@ -24,7 +24,7 @@ public sealed class StreamFallback : DataSourceBase
 
     #region Debug-Properties
     [PrivateApi]
-    internal string ReturnedStreamName { get; private set; }
+    internal string? DebugReturnedStreamName { get; private set; }
     #endregion
 
 
@@ -44,7 +44,7 @@ public sealed class StreamFallback : DataSourceBase
         return foundStream?.List.ToImmutableOpt() ?? [];
     }
 
-    private IDataStream FindIdealFallbackStream()
+    private IDataStream? FindIdealFallbackStream()
     {
         var l = Log.Fn<IDataStream>("");
         Configuration.Parse();
@@ -61,8 +61,8 @@ public sealed class StreamFallback : DataSourceBase
         foreach (var stream in streamList)
             if (stream.Value.List.Any())
             {
-                ReturnedStreamName = stream.Key;
-                return l.Return(stream.Value, $"will return stream:{ReturnedStreamName}");
+                DebugReturnedStreamName = stream.Key;
+                return l.Return(stream.Value, $"will return stream:{stream.Key}");
             }
 
         return l.ReturnNull("didn't find any stream, will return empty");

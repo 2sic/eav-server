@@ -97,6 +97,6 @@ internal class SerializationSourceToDecorator
         };
     }
 
-    private static bool? TryParseIncludeRule(string original)
+    private static bool? TryParseIncludeRule(string? original)
         => bool.TryParse(original, out var include) ? include : null;
 }

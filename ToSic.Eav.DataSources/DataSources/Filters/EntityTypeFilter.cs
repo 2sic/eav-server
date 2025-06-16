@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
     HelpLink = "https://go.2sxc.org/DsTypeFilter")]
 
-public class EntityTypeFilter : Eav.DataSource.DataSourceBase
+public class EntityTypeFilter : DataSourceBase
 {
     #region Configuration-properties
 
@@ -31,7 +31,7 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
     [Configuration]
     public string TypeName
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 

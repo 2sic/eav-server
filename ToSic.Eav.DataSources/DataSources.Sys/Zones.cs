@@ -65,7 +65,7 @@ public sealed class Zones: CustomDataSourceAdvanced
                 var site = _zoneMapper.SiteOfZone(zone.ZoneId);
 
                 // Assemble the entities
-                var znData = new Dictionary<string, object>
+                var znData = new Dictionary<string, object?>
                 {
                     { nameof(ZoneType.Id), zone.ZoneId },
                     { nameof(ZoneType.Name), $"Zone {zone.ZoneId}" },

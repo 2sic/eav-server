@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSources.Sys.Internal;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SystemStackHelpers
 {
-    public static string GetStackNameOrNull(string part)
+    public static string? GetStackNameOrNull(string? part)
     {
         // Ensure name is known
         if (RootNameSettings.EqualsInsensitive(part))

@@ -42,7 +42,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
     /// The content-type name
     /// </summary>
     [Configuration(Fallback = TypeNameFallbackToTryToUseInStream)]
-    public string ContentTypeName => Configuration.GetThis();
+    public string? ContentTypeName => Configuration.GetThis();
         
     #endregion
 
@@ -176,7 +176,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
         var sysFieldAttributes = types
             .Select(t => t.GetDecorator<ContentTypeVirtualAttributes>())
             .Where(x => x != null)
-            .SelectMany(x => x.VirtualAttributes)
+            .SelectMany(x => x!.VirtualAttributes)
             .ToList();
 
         var additions = sysFieldsWhichWereNotAdded
@@ -209,7 +209,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
         int sortOrder,
         bool builtIn,
         string contentTypeName,
-        string description = default
+        string? description = default
     ) => new()
         {
             [nameof(IAttributeType.Name)] = name,

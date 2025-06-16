@@ -30,7 +30,7 @@ public class Parents(DataSourceBase.MyServices services, ICurrentContextUserPerm
     ///
     /// Example: If a person is referenced by books as both `Author` and `Illustrator` then leaving this empty will get both relationships, but specifying `Author` will only get this person if it's the author. 
     /// </summary>
-    public override string FieldName => Configuration.GetThis();
+    public override string? FieldName => Configuration.GetThis();
 
     /// <summary>
     /// Name of the content-type to get.
@@ -38,7 +38,7 @@ public class Parents(DataSourceBase.MyServices services, ICurrentContextUserPerm
     ///
     /// Example: If a person is referenced by books (as author) as by companies) as employee, then you may want to only find companies referencing this book. 
     /// </summary>
-    public override string ContentTypeName => Configuration.GetThis();
+    public override string? ContentTypeName => Configuration.GetThis();
 
     /// <summary>
     /// Construct function for the get of the related items
@@ -47,7 +47,7 @@ public class Parents(DataSourceBase.MyServices services, ICurrentContextUserPerm
     /// <param name="typeName"></param>
     /// <returns></returns>
     [PrivateApi]
-    protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName) 
+    protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string? fieldName, string? typeName) 
         => o => o.Relationships.FindParents(typeName, fieldName, Log);
 
 }

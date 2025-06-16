@@ -46,33 +46,33 @@ public partial class Serialization : DataSourceBase
     /// Should the ID be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeId => Configuration.GetThis();
+    public string? IncludeId => Configuration.GetThis();
 
     /// <summary>
     /// Should the AppId be included in serialization.
     /// Especially for scenarios where data is retrieved from multiple Apps
     /// </summary>
     [Configuration]
-    public string IncludeAppId => Configuration.GetThis();
+    public string? IncludeAppId => Configuration.GetThis();
 
     /// <summary>
     /// Should the AppId be included in serialization.
     /// Especially for scenarios where data is retrieved from multiple Apps
     /// </summary>
     [Configuration]
-    public string IncludeZoneId => Configuration.GetThis();
+    public string? IncludeZoneId => Configuration.GetThis();
 
     /// <summary>
     /// Should the GUID be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeGuid => Configuration.GetThis();
+    public string? IncludeGuid => Configuration.GetThis();
 
     /// <summary>
     /// Should the default Title be included as "Title" in serialization
     /// </summary>
     [Configuration]
-    public string IncludeTitle => Configuration.GetThis();
+    public string? IncludeTitle => Configuration.GetThis();
 
     #endregion
 
@@ -82,13 +82,13 @@ public partial class Serialization : DataSourceBase
     /// Should the Modified date be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeModified => Configuration.GetThis();
+    public string? IncludeModified => Configuration.GetThis();
 
     /// <summary>
     /// Should the Created date be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeCreated => Configuration.GetThis();
+    public string? IncludeCreated => Configuration.GetThis();
 
     #endregion
 
@@ -98,25 +98,25 @@ public partial class Serialization : DataSourceBase
     /// todo
     /// </summary>
     [Configuration]
-    public string RemoveNullValues => Configuration.GetThis();
+    public string? RemoveNullValues => Configuration.GetThis();
 
     /// <summary>
     /// todo
     /// </summary>
     [Configuration]
-    public string RemoveZeroValues => Configuration.GetThis();
+    public string? RemoveZeroValues => Configuration.GetThis();
 
     /// <summary>
     /// todo
     /// </summary>
     [Configuration(Field = RmvEmptyStringsKey)]
-    public string RemoveEmptyStrings => Configuration.GetThis();
+    public string? RemoveEmptyStrings => Configuration.GetThis();
 
     /// <summary>
     /// todo
     /// </summary>
     [Configuration(Field = RmvBooleanFalseKey)]
-    public string DropFalseValues => Configuration.GetThis();
+    public string? DropFalseValues => Configuration.GetThis();
 
     #endregion
 
@@ -126,19 +126,19 @@ public partial class Serialization : DataSourceBase
     /// Should the Metadata target/for information be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeMetadataFor => Configuration.GetThis();
+    public string? IncludeMetadataFor => Configuration.GetThis();
 
     /// <summary>
     /// Should the Metadata target/for information be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeMetadataForId => Configuration.GetThis();
+    public string? IncludeMetadataForId => Configuration.GetThis();
 
     /// <summary>
     /// Should the Metadata target/for information be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeMetadataForType => Configuration.GetThis();
+    public string? IncludeMetadataForType => Configuration.GetThis();
     #endregion
 
     #region Metadata
@@ -147,25 +147,25 @@ public partial class Serialization : DataSourceBase
     /// Should the Metadata ID be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeMetadata => Configuration.GetThis();
+    public string? IncludeMetadata => Configuration.GetThis();
 
     /// <summary>
     /// Should the Metadata ID be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeMetadataId => Configuration.GetThis();
+    public string? IncludeMetadataId => Configuration.GetThis();
 
     /// <summary>
     /// Should the Metadata GUID be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeMetadataGuid => Configuration.GetThis();
+    public string? IncludeMetadataGuid => Configuration.GetThis();
 
     /// <summary>
     /// Should the default Title of the Metadata be included as "Title" in serialization
     /// </summary>
     [Configuration]
-    public string IncludeMetadataTitle => Configuration.GetThis();
+    public string? IncludeMetadataTitle => Configuration.GetThis();
 
     #endregion
 
@@ -176,7 +176,7 @@ public partial class Serialization : DataSourceBase
     /// Should the Relationships be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeRelationships => Configuration.GetThis();
+    public string? IncludeRelationships => Configuration.GetThis();
 
     /// <summary>
     /// Should the Relationships be included as CSV like "42,27,999".
@@ -190,25 +190,25 @@ public partial class Serialization : DataSourceBase
     /// * extended purpose in v18.00 to also have "array" as possible value
     /// </remarks>
     [Configuration(Fallback = false)]
-    public string IncludeRelationshipsAsCsv => Configuration.GetThis();
+    public string? IncludeRelationshipsAsCsv => Configuration.GetThis();
 
     /// <summary>
     /// Should the Relationship ID be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeRelationshipId => Configuration.GetThis();
+    public string? IncludeRelationshipId => Configuration.GetThis();
 
     /// <summary>
     /// Should the Relationship GUID be included in serialization
     /// </summary>
     [Configuration]
-    public string IncludeRelationshipGuid => Configuration.GetThis();
+    public string? IncludeRelationshipGuid => Configuration.GetThis();
 
     /// <summary>
     /// Should the default Title of the Relationship be included as "Title" in serialization
     /// </summary>
     [Configuration]
-    public string IncludeRelationshipTitle => Configuration.GetThis();
+    public string? IncludeRelationshipTitle => Configuration.GetThis();
     #endregion
 
     #region ContentType Information
@@ -220,16 +220,16 @@ public partial class Serialization : DataSourceBase
     /// - "flat"
     /// </summary>
     [Configuration]
-    public string IncludeTypeAs => Configuration.GetThis();
+    public string? IncludeTypeAs => Configuration.GetThis();
 
     [Configuration(Fallback = "Type")]
-    public string TypePropertyNames => Configuration.GetThis();
+    public string? TypePropertyNames => Configuration.GetThis();
 
     [Configuration]
-    public string IncludeTypeId => Configuration.GetThis();
+    public string? IncludeTypeId => Configuration.GetThis();
 
     [Configuration]
-    public string IncludeTypeName => Configuration.GetThis();
+    public string? IncludeTypeName => Configuration.GetThis();
 
     #endregion
 
@@ -247,7 +247,8 @@ public partial class Serialization : DataSourceBase
     #region Dynamic Out
 
     /// <inheritdoc/>
-    public override IReadOnlyDictionary<string, IDataStream> Out => _getOut.Get(() => new ReadOnlyDictionary<string, IDataStream>(CreateOutWithAllStreams()));
+    public override IReadOnlyDictionary<string, IDataStream> Out
+        => _getOut.Get(() => new ReadOnlyDictionary<string, IDataStream>(CreateOutWithAllStreams()))!;
 
     private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _getOut = new();
 
@@ -257,7 +258,10 @@ public partial class Serialization : DataSourceBase
     private IDictionary<string, IDataStream> CreateOutWithAllStreams()
     {
         var outDic = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase);
-        foreach (var dataStream in In.Where(s => !outDic.ContainsKey(s.Key)))
+        var inMissingInOut = In
+            .Where(s => !outDic.ContainsKey(s.Key))
+            .ToListOpt();
+        foreach (var dataStream in inMissingInOut)
             outDic.Add(dataStream.Key, new DataStream(Services.CacheService, this, dataStream.Key, () => GetList(dataStream.Key)));
         return outDic;
     }

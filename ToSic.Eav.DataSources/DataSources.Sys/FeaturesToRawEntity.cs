@@ -13,7 +13,7 @@ public static class FeaturesToRawEntity
         => new RawEntity
         {
             Guid = state.Aspect.Guid,
-            Values = new Dictionary<string, object>
+            Values = new Dictionary<string, object?>
             {
                 { nameof(state.NameId), state.NameId },
                 { AttributeNames.TitleNiceName, state.Aspect.Name },
@@ -48,7 +48,7 @@ public static class FeaturesToRawEntity
         => new RawEntity
         {
             Guid = state.Aspect.Guid,
-            Values = new Dictionary<string, object>
+            Values = new Dictionary<string, object?>
             {
                 // Properties describing the License
                 // { Attributes.NameIdNiceName, License.Name },

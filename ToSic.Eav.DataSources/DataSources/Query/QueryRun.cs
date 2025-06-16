@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources;
 )]
 
 // ReSharper disable once UnusedMember.Global
-public class QueryRun : Eav.DataSource.DataSourceBase
+public class QueryRun : DataSourceBase
 {
     private readonly Generator<Query> _queryGenerator;
 
@@ -58,6 +58,7 @@ public class QueryRun : Eav.DataSource.DataSourceBase
 
     #region Out
     /// <inheritdoc/>
+    [field: AllowNull, MaybeNull]
     public override IReadOnlyDictionary<string, IDataStream> Out
         => field ??= new StreamDictionary(this, Services.CacheService, streams: Query?.Out).AsReadOnly();
 
@@ -69,11 +70,11 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     /// The inner query object. Will be initialized the first time it's accessed.
     /// </summary>
     [PrivateApi("not sure if showing this has any value - probably not")]
-    internal Query Query => field ??= BuildQuery();
+    internal Query? Query => field ??= BuildQuery();
 
     #endregion
 
-    private Query BuildQuery()
+    private Query? BuildQuery()
     {
         var l = Log.Fn<Query>();
         // parse config to be sure we get the right query name etc.
@@ -101,23 +102,23 @@ public class QueryRun : Eav.DataSource.DataSourceBase
         // quit if nothing found
         if (configEntity == null)
         {
-            Log.A("no configuration found - empty list");
+            l.A("no configuration found - empty list");
             return l.ReturnNull("silent error");
         }
 
-        Log.A($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
+        l.A($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
 
 
         var queryDef = configEntity.Children(FieldQuery).FirstOrDefault();
         if (queryDef == null)
         {
-            Log.A("can't find query in configuration - empty list");
+            l.A("can't find query in configuration - empty list");
             return l.ReturnNull("silent error");
         }
 
         #endregion
 
-        Log.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
+        l.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
         // create the query & set params
         var query = _queryGenerator.New().Init(ZoneId, AppId, queryDef, LookUpWithoutParams());
@@ -138,7 +139,9 @@ public class QueryRun : Eav.DataSource.DataSourceBase
         // ...HasSource() also checked sub-sources, even if it didn't remove them.
         // ...So I think we're safe. If all is ok, remove this comment 2024-Q3
         var sources = Configuration.LookUpEngine.Sources.ToList();
-        sources.Remove(sources.GetSource(DataSourceConstants.ParamsSourceName));
+        var toRemove = sources.GetSource(DataSourceConstants.ParamsSourceName);
+        if (toRemove != null)
+            sources.Remove(toRemove);
 
         var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, sources: sources, onlyUseProperties: true, skipOriginalSource: true);
         //if (lookUpsWithoutParams.HasSource(DataSourceConstants.ParamsSourceName))

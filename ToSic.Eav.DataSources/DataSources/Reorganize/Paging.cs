@@ -93,13 +93,14 @@ public sealed class Paging: CustomDataSourceAdvanced
 
         // Calculate any additional stuff
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
         var itemCount = source.Count;
         var pageCount = Math.Ceiling((decimal)itemCount / PageSize);
 
         // Assemble the entity
-        var paging = new Dictionary<string, object>
+        var paging = new Dictionary<string, object?>
         {
             { AttributeNames.TitleNiceName, "Paging Information" },
             { nameof(PageSize), PageSize },

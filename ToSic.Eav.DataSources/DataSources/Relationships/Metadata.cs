@@ -28,7 +28,7 @@ public class Metadata(CustomDataSourceAdvanced.MyServices services) : MetadataDa
     /// Optional Type Name restriction to only get **Metadata** of this Content Type.
     /// </summary>
     [Configuration]
-    public override string ContentTypeName => Configuration.GetThis();
+    public override string? ContentTypeName => Configuration.GetThis();
 
     protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName)
     {

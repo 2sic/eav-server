@@ -26,7 +26,7 @@ public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cul
 
     /// <inheritdoc />
     /// <summary>
-    /// Will check if any streams in In matches the requested next key-part and will retrieve the first entity in that stream
+    /// Will check if any streams in "In" matches the requested next key-part and will retrieve the first entity in that stream
     /// to deliver the required sub-key (or even sub-sub-key)
     /// </summary>
     public override string Get(string key, string format)
@@ -41,11 +41,13 @@ public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cul
             return string.Empty;
 
         // check if any entities exist in this specific in-stream
-        if (!entityStream.List.Any()) return string.Empty;
+        if (!entityStream.List.Any())
+            return string.Empty;
 
         // Create an LookUpInEntity based on the first item, return its Get
         var first = entityStream.List.First();
-        return new LookUpInEntity("no-name", first, Dimensions).Get(subTokens.Rest!, format);
+        return new LookUpInEntity("no-name", first, Dimensions)
+            .Get(subTokens.Rest!, format);
 
     }
 }

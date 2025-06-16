@@ -10,8 +10,8 @@ public interface ITreeMapper
         IEnumerable<IEntity> originals,
         string parentIdField,
         string childToParentRefField,
-        string newChildrenField = default,
-        string newParentField = default,
-        LazyLookup<object, IEntity> lookup = default);
+        string? newChildrenField = default,
+        string? newParentField = default,
+        LazyLookup<object, IEntity>? lookup = default);
 
 }

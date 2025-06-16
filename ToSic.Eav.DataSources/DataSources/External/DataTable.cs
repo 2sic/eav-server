@@ -20,7 +20,11 @@ public class DataTable : CustomDataSourceAdvanced
     /// <summary>
     /// Source DataTable
     /// </summary>
-    public SqlDataTable Source { get; set; }
+    public SqlDataTable Source
+    {
+        get => field ?? throw new InvalidOperationException("Source DataTable not set. Please use Setup() to set it before using this DataSource.");
+        set;
+    } = null!;
 
     /// <summary>
     /// Name of the ContentType. Defaults to `Data`
@@ -31,7 +35,7 @@ public class DataTable : CustomDataSourceAdvanced
     [Configuration(Fallback = "Data")]
     public string ContentType
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "Data");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -51,7 +55,7 @@ public class DataTable : CustomDataSourceAdvanced
     [Configuration(Fallback = AttributeNames.EntityFieldId)]
     public string EntityIdField
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: AttributeNames.EntityFieldId);
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -59,7 +63,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// Name of the field which would contain a modified timestamp (date/time)
     /// </summary>
     [Configuration]
-    public string ModifiedField
+    public string? ModifiedField
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -90,7 +94,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
     /// </remarks>
     [PrivateApi]
-    internal DataTable Setup(SqlDataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
+    internal DataTable Setup(SqlDataTable source, string contentType, string? entityIdField = null, string? titleField = null, string? modifiedField = null)
     {
         Source = source;
         // Only set the values if they were explicitly provided
@@ -117,7 +121,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// <summary>
     /// Convert a DataTable to a Dictionary of EntityModels
     /// </summary>
-    private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null)
+    private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string? modifiedField = null)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         // Validate Columns
@@ -138,12 +142,19 @@ public class DataTable : CustomDataSourceAdvanced
 
         foreach (DataRow row in source.Rows)
         {
-            var entityId = global::System.Convert.ToInt32(row[entityIdField]);
-            var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField)
-                .ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
-            values = new(values,
-                StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
-            var mod = (string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?) ?? DateTime.MinValue;
+            var entityId = Convert.ToInt32(row[entityIdField]);
+            var values = row.Table.Columns
+                .Cast<DataColumn>()
+                .Where(c => c.ColumnName != entityIdField)
+                .ToDictionary(
+                    c => c.ColumnName,
+                    c => row.Field<object?>(c.ColumnName)
+                );
+            values = new(values, StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
+            var mod = (string.IsNullOrEmpty(modifiedField)
+                          ? null
+                          : values[modifiedField!] as DateTime?)
+                      ?? DateTime.MinValue;
 
             var entity = tblFactory.Create(values, id: entityId, modified: mod);
             result.Add(entity);

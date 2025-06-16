@@ -46,7 +46,7 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration]
     public string ConnectionStringName
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -56,7 +56,7 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration]
     public string ConnectionString
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -66,7 +66,7 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration]
     public string SelectCommand
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -76,7 +76,7 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration(Fallback = "SqlData")]
     public string ContentType
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "SqlData");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -86,7 +86,7 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration(Field = "EntityTitleField", Fallback = AttributeNames.EntityFieldTitle)]
     public string TitleField
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: AttributeNames.EntityFieldTitle);
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -96,7 +96,7 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration(Fallback = AttributeNames.EntityFieldId)]
     public string EntityIdField
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: AttributeNames.EntityFieldId);
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -155,7 +155,7 @@ public class Sql : CustomDataSourceAdvanced
     /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
     /// </remarks>
     [PrivateApi]
-    internal Sql Setup(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
+    internal Sql Setup(string connectionString, string selectCommand, string contentType, string? entityIdField = null, string? titleField = null)
     {
         ConnectionString = connectionString;
         SelectCommand = selectCommand;
@@ -256,7 +256,8 @@ public class Sql : CustomDataSourceAdvanced
                     ? SqlServices.SqlPlatformInfo.DefaultConnectionStringName
                     : conStringNameRaw;
 
-                ConnectionString = SqlServices.SqlPlatformInfo.FindConnectionString(conStringName);
+                ConnectionString = SqlServices.SqlPlatformInfo.FindConnectionString(conStringName)
+                    ?? throw new NullReferenceException("Can't find Connection String Name, returned value is null");
             }
             catch(Exception ex)
             {
@@ -333,7 +334,7 @@ public class Sql : CustomDataSourceAdvanced
                     var columnsToUse = columNames.Where(c => c != casedEntityId).Distinct().ToList();
                     while (reader.Read())
                     {
-                        var entityId = casedEntityId == null ? 0 : global::System.Convert.ToInt32(reader[casedEntityId]);
+                        var entityId = casedEntityId == null ? 0 : Convert.ToInt32(reader[casedEntityId]);
                         var values = columnsToUse.ToDictionary(c => c, c =>
                         {
                             // This conversion is important, because the DB uses a different kind of null, which would cause trouble

@@ -75,7 +75,7 @@ public class CacheAllStreams : DataSourceBase
             outList.Add(dataStream.Key, StreamWithCaching(dataStream.Key));
 
         return new ReadOnlyDictionary<string, IDataStream>(outList);
-    });
+    })!;
     private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _out = new();
 
     #endregion

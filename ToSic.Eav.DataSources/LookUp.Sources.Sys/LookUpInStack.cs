@@ -10,14 +10,14 @@ namespace ToSic.Eav.LookUp.Sources.Sys;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class LookUpInStack: LookUpIn<IPropertyStack>
 {
-    private readonly string[] _dimensions;
+    private readonly string?[] _dimensions;
 
     /// <summary>
     /// Constructs a new Entity LookUp
     /// </summary>
     /// <param name="source"></param>
     /// <param name="dimensions">the languages / dimensions to use</param>
-    public LookUpInStack(IPropertyStack source, string[] dimensions): base(source, source.NameId?.ToLowerInvariant(), "LookUp in stack")
+    public LookUpInStack(IPropertyStack source, string?[]? dimensions): base(source, source.NameId?.ToLowerInvariant() ?? "stack-unknown", "LookUp in stack")
     {
         _dimensions = dimensions ?? IZoneCultureResolverExtensions.SafeLanguagePriorityCodes(null);
     }
@@ -28,7 +28,7 @@ public class LookUpInStack: LookUpIn<IPropertyStack>
     /// <param name="name">Name of the LookUp, e.g. Settings</param>
     /// <param name="source"></param>
     /// <param name="dimensions">the languages / dimensions to use</param>
-    public LookUpInStack(string name, IPropertyStack source, string[] dimensions): base(source, name)
+    public LookUpInStack(string name, IPropertyStack source, string?[]? dimensions): base(source, name)
     {
         _dimensions = dimensions ?? IZoneCultureResolverExtensions.SafeLanguagePriorityCodes(null);
     }
@@ -43,7 +43,7 @@ public class LookUpInStack: LookUpIn<IPropertyStack>
     public override string Get(string key, string format)
     {
         // Return empty string if Entity is null
-        if (Data == null)
+        if (Data == null!)
             return string.Empty;
 
         if (!key.HasValue())
@@ -57,7 +57,7 @@ public class LookUpInStack: LookUpIn<IPropertyStack>
         if (propReqResult.Result != null)
             return FormatValue(propReqResult.Result, format, _dimensions);
 
-        return null;
+        return string.Empty;
 
         //// Not found yet, so check for Navigation-Property (e.g. Manager:Name)
         //var subTokens = CheckAndGetSubToken(key);
