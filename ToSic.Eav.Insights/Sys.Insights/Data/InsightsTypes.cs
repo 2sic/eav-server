@@ -5,8 +5,8 @@ using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsTypes(IAppReaderFactory appReadFac, string name) // TODO: [aPPiD]
-    : InsightsProvider(new() { Name = name, HelpCategory = HiddenFromAutoDisplay, Title = "Content Types for App: [AppId]" })
+internal class InsightsTypes(IAppReaderFactory appReadFac, string name, string? title = default) // TODO: [aPPiD]
+    : InsightsProvider(new() { Name = name, Title = title ?? "Content Types for App: [AppId]" })
 {
     public static string Link = "Types";
 
@@ -43,10 +43,10 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name) // TODO:
                 .ToList();
             msg += P($"types: {types.Count}\n");
             msg += "<table id='table'>"
-                   + InsightsHtmlTable.HeadFields(
+                   + InsightsHtmlTable.HeadFields([
                        "#", "Scope", "StaticName", "Name", "Attribs", "Metadata", "Permissions", "IsDyn",
                        "Repo", "Items"
-                   )
+                   ])
                    + "<tbody>"
                    + "\n";
             var totalItems = 0;
@@ -67,7 +67,7 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name) // TODO:
                     /*ignore*/
                 }
 
-                msg += InsightsHtmlTable.RowFields(
+                msg += InsightsHtmlTable.RowFields([
                     ++count,
                     type.Scope,
                     type.NameId,
@@ -79,11 +79,11 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name) // TODO:
                     type.IsDynamic.ToString(),
                     type.RepositoryType.ToString(),
                     Linker.LinkTo($"{itemCount}", "Entities", appId, type: type.NameId)
-                ) + "\n";
+                ]) + "\n";
             }
             msg += "</tbody>" + "\n";
-            msg += InsightsHtmlTable.RowFields("", "", "", "", "", "", "", "", "",
-                Linker.LinkTo($"{totalItems}", "Entities", appId, type: "all"));
+            msg += InsightsHtmlTable.RowFields(["", "", "", "", "", "", "", "", "",
+                Linker.LinkTo($"{totalItems}", "Entities", appId, type: "all")]);
             msg += "</table>";
             msg += "\n\n";
             msg += P(

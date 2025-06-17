@@ -4,7 +4,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsAttributeMetadata(LazySvc<IAppReaderFactory> appReaders, IHttpExceptionMaker exceptionMaker)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Attribute Metadata "}, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, Title = "Attribute Metadata "}, connect: [appReaders])
 {
     public static string Link = "AttributeMetadata";
 

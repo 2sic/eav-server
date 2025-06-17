@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Sys.Insights.Logs;
 
 internal class InsightsPauseLogs(LazySvc<ILogStoreLive> logStore)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Pause Logs" }, connect: [logStore])
+    : InsightsProvider(new() { Name = Link, Title = "Pause Logs" }, connect: [logStore])
 {
     public static string Link = "PauseLogs";
 

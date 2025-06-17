@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsTypePermissions(LazySvc<IAppReaderFactory> appReaders)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Type Permissions" }, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, Title = "Type Permissions" }, connect: [appReaders])
 {
     public static string Link = "TypePermissions";
 

@@ -13,7 +13,7 @@ internal class MetadataHelper
         {
             msg += P($"Assigned Items: {metadata.Count}\n");
             msg += "<table id='table'>"
-                   + InsightsHtmlTable.HeadFields( "#", "Id", AttributeNames.TitleNiceName, "Content-Type", "Target", "Key" )
+                   + InsightsHtmlTable.HeadFields( ["#", "Id", AttributeNames.TitleNiceName, "Content-Type", "Target", "Key"] )
                    + "<tbody>";
             var count = 0;
             foreach (var md in metadata)
@@ -27,7 +27,7 @@ internal class MetadataHelper
                             ? "{" + mdFor.KeyGuid + "}"
                             : "(directly attached)";
 
-                msg += InsightsHtmlTable.RowFields(
+                msg += InsightsHtmlTable.RowFields([
                     ++count,
                     linker.LinkTo($"{md.EntityId}", InsightsEntity.Link, appId, nameId: md.EntityId.ToString()),
                     md.EntityId,
@@ -36,7 +36,7 @@ internal class MetadataHelper
                     // md.Type.Name,
                     mdFor.TargetType,
                     key
-                );
+                ]);
             }
             msg += "</tbody>";
             msg += "</table>";

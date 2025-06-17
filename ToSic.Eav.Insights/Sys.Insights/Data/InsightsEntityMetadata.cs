@@ -4,7 +4,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsEntityMetadata(GenWorkPlus<WorkEntities> workEntities) 
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Entity Metadata" }, connect: [workEntities])
+    : InsightsProvider(new() { Name = Link, Title = "Entity Metadata" }, connect: [workEntities])
 {
     public static string Link = "EntityMetadata";
 

@@ -32,7 +32,7 @@ public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache>
         if (provider != null)
         {
             l.A($"found provider {provider.Specs.Name}");
-            provider.SetContext(new InsightsHtmlTable(), appId, new Dictionary<string, object>(InvariantCultureIgnoreCase)
+            provider.SetContext(new InsightsHtmlTable(), appId, new Dictionary<string, object?>(InvariantCultureIgnoreCase)
             {
                 {"key", key},
                 {"position", position},
@@ -48,7 +48,7 @@ public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache>
                     Tag.Custom("title", $"Insights: {provider.Specs.Name}")
                 ),
                 "\n",
-                Tag.H1(provider.Specs.Title),
+                Tag.H1(provider.Specs.Title.Replace("[AppId]", appId?.ToString() ?? "unknown")),
                 "\n",
                 Tag.Custom("body",
                     result

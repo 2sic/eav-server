@@ -8,7 +8,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Entities" }, connect: [workEntities])
+    : InsightsProvider(new() { Name = Link, Title = "Entities" }, connect: [workEntities])
 {
     public static string Link = "Entities";
 
@@ -31,12 +31,12 @@ internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities)
                 : appEntities.Get(Type).ToListOpt();
             msg += P($"entities: {entities.Count}\n");
             msg += "<table id='table'>"
-                   + InsightsHtmlTable.HeadFields("#", "Id", AttributeNames.GuidNiceName, AttributeNames.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions")
+                   + InsightsHtmlTable.HeadFields(["#", "Id", AttributeNames.GuidNiceName, AttributeNames.TitleNiceName, "Type", "Modified", "Owner", "Version", "Metadata", "Permissions"])
                    + "<tbody>";
             var count = 0;
             foreach (var ent in entities)
             {
-                msg += InsightsHtmlTable.RowFields(
+                msg += InsightsHtmlTable.RowFields([
                     (++count).ToString(),
                     Linker.LinkTo($"{ent.EntityId}", InsightsEntity.Link, AppId, nameId: ent.EntityId.ToString()),
                     Linker.LinkTo($"{ent.EntityGuid}", InsightsEntity.Link, AppId, nameId: ent.EntityGuid.ToString()),
@@ -46,7 +46,8 @@ internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities)
                     ent.Owner,
                     $"{ent.Version}",
                     Linker.LinkTo($"{ent.Metadata.Count()}", InsightsEntityMetadata.Link, AppId, nameId: ent.EntityId.ToString()),
-                    Linker.LinkTo($"{ent.Metadata.Permissions.Count()}", InsightsEntityPermissions.Link, AppId, nameId: ent.EntityId.ToString()));
+                    Linker.LinkTo($"{ent.Metadata.Permissions.Count()}", InsightsEntityPermissions.Link, AppId, nameId: ent.EntityId.ToString())
+                ]);
             }
             msg += "</tbody>";
             msg += "</table>";

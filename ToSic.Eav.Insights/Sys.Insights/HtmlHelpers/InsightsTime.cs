@@ -6,16 +6,17 @@ internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
 {
     private TimeSpan FullTime => fullTime;
 
-    public string ShowTime(Log log)
+    public string ShowTime(Log? log)
     {
         if (log == null) return "";
         var firstWithTime = log.Entries.FirstOrDefault(e => e.Elapsed != TimeSpan.Zero);
         return ShowTime(firstWithTime, default, log.Created);
     }
 
-    public string ShowTime(Entry e, TimeSpan parentTime, DateTime mainStart)
+    public string ShowTime(Entry? e, TimeSpan parentTime, DateTime mainStart)
     {
-        if (e == null) return "";
+        if (e == null)
+            return "";
         
         var (secondsText, style) = PercentString(e, mainStart);
 

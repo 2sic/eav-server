@@ -24,13 +24,14 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
             var count = 0;
 
             msg += Table().Id("table").Wrap(
-                HeadFields("# ↕", "Key ↕", "Count ↕", "Actions ↕"),
+                HeadFields(["# ↕", "Key ↕", "Count ↕", "Actions ↕"]),
                 Tbody(
                     segments.OrderBy(segPair => segPair.Key)
-                        .Select(segPair => RowFields((++count).ToString(),
+                        .Select(segPair => RowFields([(++count).ToString(),
                             Linker.LinkTo(segPair.Key, InsightsLogs.Link, key: segPair.Key),
                             $"{segPair.Value.Count}",
-                            Linker.LinkTo("flush", InsightsLogsFlush.Link, key: segPair.Key))
+                            Linker.LinkTo("flush", InsightsLogsFlush.Link, key: segPair.Key)
+                            ])
                         )
                         .Cast<object>()
                         .ToArray())
@@ -46,27 +47,28 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
     }
 
 
-    internal IHtmlTag ShowSpecs(LogStoreEntry entry)
+    internal IHtmlTag? ShowSpecs(LogStoreEntry? entry)
     {
-        if (entry == null) return null;
+        if (entry == null)
+            return null;
 
         var specs = entry.Specs ?? new Dictionary<string, string>();
 
-        var specList = Table(HeadFields(SpecialField.Left("Aspect ↕"), SpecialField.Left("Value ↕")));
+        var specList = Table(HeadFields([SpecialField.Left("Aspect ↕"), SpecialField.Left("Value ↕")]));
 
         var specsCopy = new Dictionary<string, string>(specs, StringComparer.InvariantCultureIgnoreCase);
-        if (entry.Log is Log log && log.Entries.Count > 0)
+        if (entry.Log is Log { Entries.Count: > 0 } log)
         {
             specsCopy["Z Timespan A-Start"] = log.Created.Dump();
 
             var first = log.Entries.First()?.Created;
-            specsCopy["Z Timespan B-First"] = first?.Dump();
+            specsCopy["Z Timespan B-First"] = first?.Dump() ?? "unknown";
             var last = log.Entries.Last()?.Created;
-            specsCopy["Z Timespan C-Last"] = last?.Dump();
+            specsCopy["Z Timespan C-Last"] = last?.Dump() ?? "unknown";
             if (last != null)
-                specsCopy["Z Timespan D-Duration SL"] = (last - log.Created).ToString();
+                specsCopy["Z Timespan D-Duration SL"] = (last - log.Created).ToString()!;
             if (first != null && last != null)
-                specsCopy["Z Timespan D-Duration FL"] = (last - first).ToString();
+                specsCopy["Z Timespan D-Duration FL"] = (last - first).ToString()!;
         }
 
         specList = specsCopy
@@ -118,7 +120,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         //        ? value
         //        : "";
 
-        string GetVal(IDictionary<string, string> specs, string k) => 
+        string GetVal(IDictionary<string, string>? specs, string k) => 
             specs?.TryGetValue(k, out var value) == true
                 ? value
                 : "";
@@ -146,7 +148,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         var totalSize = new SizeEstimate();
         msg += P($"Logs Overview: {set.Count}\n");
         msg += Table().Id("table").Wrap(
-            HeadFields(
+            HeadFields([
                 "#",
                 "Timestamp",
                 hasApp ? "App ↕" : null,
@@ -159,7 +161,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                 SpecialField.Left("Title / First Message"),
                 "Info",
                 "Time"
-            ),
+            ]),
             Tbody(logItems
                 .Select((bundle, i) =>
                 {
@@ -181,7 +183,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                         : bestTitle.Substring(0, 150) + "…";
 
                     // Create the rows; note that any null values will be ignored and not create a cell
-                    return RowFields(
+                    return RowFields([
                         $"{i + 1}",
                         Linker.LinkTo(timestamp, InsightsLogs.Link, key: key, more: $"position={i + 1}"),
                         !hasApp ? null : SpecialField.Right(GetVal(specs, nameof(IAppIdentity.AppId)), tooltip: GetVal(specs, "AppName") ),
@@ -195,7 +197,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                         SpecialField.Left(HtmlEncode(trimmedTitle), tooltip: bestTitle),
                         HtmlEncode(firstIfExists?.Result),
                         SpecialField.Right(new InsightsTime().ShowTime(realLog))
-                    );
+                    ]);
                 })
                 .ToArray<object>()));
         msg += "\n\n";
@@ -366,6 +368,6 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
     private const string ResStart = "<span style='color: green'>= ";
     private const string ResEnd = "</span>";
 
-    private string _lastLogLabel;
+    private string? _lastLogLabel;
 
 }

@@ -34,14 +34,14 @@ public class InsightsDataSourceCache(
             .ToString());
 
         m.AppendLine("<table id='table'>"
-                     + InsightsHtmlTable.HeadFields("Name ↕", "Count ↕", "Timestamp", "AutoRefresh", "Flush")
+                     + InsightsHtmlTable.HeadFields(["Name ↕", "Count ↕", "Timestamp", "AutoRefresh", "Flush"])
                      + "<tbody>");
 
         var rows = namesInMemory.Select(name =>
         {
             var cacheItem = listCacheSvc.Get(name);
             var keyHash = Sha256.Hash(name);
-            return InsightsHtmlTable.RowFields(
+            return InsightsHtmlTable.RowFields([
                 HoverLabel(name.Ellipsis(100), name.Replace(">", "\n>"), ""),
                 SpecialField.Right(
                     cacheItem?.List.Count
@@ -51,7 +51,7 @@ public class InsightsDataSourceCache(
                     EmojiTrueFalse(cacheItem?.RefreshOnSourceRefresh ?? false)
                 ),
                 Html.LinkTo(HtmlEncode("🚽"), nameof(DataSourceCacheFlush), key: keyHash)
-            );
+            ]);
         });
 
         foreach (var r in rows) m.AppendLine(r.ToString());
@@ -89,23 +89,28 @@ public class InsightsDataSourceCache(
 
         var locks = listCacheSvc.LoadLocks.Locks;
 
-        var namesInMemory = locks.Select(l => l.Key)
+        var namesInMemory = locks
+            .Select(l => l.Key)
             .Where(key.EqualsInsensitive)
             .Where(listCacheSvc.HasStream)
             .ToList();
 
         var name = namesInMemory.FirstOrDefault();
+
+        if (string.IsNullOrEmpty(name))
+            return "No cache item found for key: " + key + Br() + Html.LinkBack();
+
         var cacheItem = listCacheSvc.Get(name);
 
         m.AppendLine("<table id='table'>"
-                     + InsightsHtmlTable.HeadFields("Name", "Count", "Timestamp")
+                     + InsightsHtmlTable.HeadFields(["Name", "Count", "Timestamp"])
                      + "<tbody>");
 
-        var row = InsightsHtmlTable.RowFields(
+        var row = InsightsHtmlTable.RowFields([
             name,
             cacheItem?.List.Count,
             cacheItem?.CacheTimestamp.ToString()
-        );
+        ]);
 
         m.AppendLine(row.ToString());
 

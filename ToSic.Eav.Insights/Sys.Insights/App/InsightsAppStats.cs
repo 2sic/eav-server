@@ -6,7 +6,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.App;
 
 internal class InsightsAppStats(IAppStateCacheService appStates)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay }, connect: [appStates])
+    : InsightsProvider(new() { Name = Link }, connect: [appStates])
 {
     public static string Link = "AppStats";
 

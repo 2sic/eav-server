@@ -14,7 +14,7 @@ namespace ToSic.Eav.Sys.Insights;
 /// </summary>
 /// <param name="insightsProviders">All providers - MUST BE LAZY - otherwise we get circular DI dependencies</param>
 internal class InsightsHelp(LazySvc<IEnumerable<IInsightsProvider>> insightsProviders)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Insights Help / Home" })
+    : InsightsProvider(new() { Name = Link, Title = "Insights Help / Home" })
 {
     public static string Link = "Help";
 
@@ -36,7 +36,7 @@ internal class InsightsHelp(LazySvc<IEnumerable<IInsightsProvider>> insightsProv
             // Skip self
             .Where(p => !p.Specs.Name.EqualsInsensitive(Specs.Name))
             // Skip hidden - these are usually sub-providers which require additional parameters
-            .Where(p => p.Specs.HelpCategory != HiddenFromAutoDisplay)
+            .Where(p => p.Specs.HelpCategory != InsightsProviderSpecs.HiddenFromAutoDisplay)
             // Group by category - if not set, use a default
             .GroupBy(p => p.Specs.HelpCategory ?? "Uncategorized (please add Category)")
             .OrderBy(g => g.Key)

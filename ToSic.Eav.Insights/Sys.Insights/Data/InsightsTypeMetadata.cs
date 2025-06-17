@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsTypeMetadata(LazySvc<IAppReaderFactory> appReaders)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Type Metadata" }, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, Title = "Type Metadata" }, connect: [appReaders])
 {
     public static string Link = "TypeMetadata";
 

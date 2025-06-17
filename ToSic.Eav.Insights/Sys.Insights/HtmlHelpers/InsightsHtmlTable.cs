@@ -5,32 +5,36 @@ namespace ToSic.Eav.Sys.Insights.HtmlHelpers;
 
 public class InsightsHtmlTable: InsightsHtmlBase
 {
-    internal static IHtmlTag HeadFieldsLeft(params object[] fields) 
-        => HeadFieldsImplementation(fields.Select(f => f is SpecialField fs ? fs : SpecialField.Left(f)).ToArray());
+    internal static IHtmlTag HeadFieldsLeft(object?[] fields)
+        => HeadFieldsImplementation(fields
+            .Select(f => f as SpecialField ?? SpecialField.Left(f))
+            .ToArray()
+        );
 
 
-    internal static IHtmlTag HeadFields(params object[] fields)
+    internal static IHtmlTag HeadFields(object?[] fields)
         => HeadFieldsImplementation(fields);
 
-    private static IHtmlTag HeadFieldsImplementation(object[] fields)
+    private static IHtmlTag HeadFieldsImplementation(object?[] fields)
         => Thead(
             Tr(
                 fields
                     .Where(f => f != null)
-                    .Select(fresh => DataToCell(fresh, true, true)))
+                    .Select(fresh => DataToCell(fresh!, true, true)))
         );
 
-    internal static IHtmlTag RowFields(params object[] fields)
+    internal static IHtmlTag RowFields(object?[] fields)
         => Tr(
             fields
                 .Where(f => f != null)
-                .Select(fresh => DataToCell(fresh, false, false)));
+                .Select(fresh => DataToCell(fresh!, false, false)));
 
     private static IHtmlTag DataToCell(object fresh, bool encode, bool isHeader)
     {
         var data = fresh;
         var special = fresh as SpecialField;
-        if (special != null) data = special.Value;
+        if (special != null)
+            data = special.Value;
 
         var contents = (data ?? "").ToString();
         if (encode && special?.IsEncoded != true)

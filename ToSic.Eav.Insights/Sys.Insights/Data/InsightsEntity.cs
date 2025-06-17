@@ -9,7 +9,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsEntity(GenWorkPlus<WorkEntities> workEntities, Generator<JsonSerializer> jsonSerializer, IHttpExceptionMaker exceptionMaker)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Entity Details" }, connect: [workEntities, jsonSerializer])
+    : InsightsProvider(new() { Name = Link, Title = "Entity Details" }, connect: [workEntities, jsonSerializer])
 {
     public static string Link = "Entity";
 

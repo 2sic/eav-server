@@ -13,7 +13,7 @@ namespace ToSic.Eav.Sys.Insights.Sys;
 internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
     LazySvc<ILicenseService> licenseServiceLazy,
     LazySvc<LicenseCatalog> licenseCatalog) 
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Licenses Overview" }, connect: [fingerprint, licenseServiceLazy, licenseCatalog])
+    : InsightsProvider(new() { Name = Link, Title = "Licenses Overview" }, connect: [fingerprint, licenseServiceLazy, licenseCatalog])
 {
     public static string Link = "Licenses";
 
@@ -65,7 +65,7 @@ internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
         {
             var rows = licenseServiceLazy.Value.All
                 .ToList()
-                .Select(l => RowFields(
+                .Select(l => RowFields([
                         EmojiTrueFalse(l.IsEnabled),
                         l.Title,
                         l.LicenseKey,
@@ -77,16 +77,16 @@ internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
                         EmojiTrueFalse(l.VersionIsValid),
                         EmojiTrueFalse(l.ExpirationIsValid),
                         l.Expiration.ToString("yyyy-MM-dd")
-                    ).ToString()
+                    ]).ToString()
                 )
                 .ToList();
 
             licValiditySection += Table().Id("table").Wrap(
-                HeadFieldsLeft(
+                HeadFieldsLeft([
                     "Enabled", "Title", "License Key on this System", "License Name", "License Guid Identifier",
                     "Valid", "VSig", "VFP", "VVer", "VExp",
                     "Expires"
-                ),
+                ]),
                 Tbody(rows)
             );
         }
@@ -105,16 +105,16 @@ internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
         {
             var licDefinitions = licenseCatalog.Value.List.OrderBy(l => l.Priority);
 
-            var licRows = licDefinitions.Select(l => RowFields(
+            var licRows = licDefinitions.Select(l => RowFields([
                 new SpecialField(l.Name, tooltip: $"{l.NameId} ({l.Guid})"),
                 l.Description,
                 l.Priority,
                 l.AutoEnable,
                 l.FeatureLicense ? "Feature license" : "Built-In"
-            ));
+            ]));
 
             licFilesSection += Table().Id("table-licenses").Wrap(
-                HeadFieldsLeft(SpecialField.Left("Name"), SpecialField.Left("Description"), "Priority", "Auto-Enable", "Special"),
+                HeadFieldsLeft([SpecialField.Left("Name"), SpecialField.Left("Description"), "Priority", "Auto-Enable", "Special"]),
                 Tbody(licRows)
             );
         }

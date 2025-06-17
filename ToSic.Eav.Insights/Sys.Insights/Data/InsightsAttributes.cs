@@ -5,7 +5,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Attributes of Type"}, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, Title = "Attributes of Type"}, connect: [appReaders])
 {
     public static string Link = "Attributes";
 
@@ -24,12 +24,12 @@ internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders)
             var attribs = typ.Attributes.ToListOpt();
             msg += P($"attribs: {attribs.Count()}\n");
             msg += "<table id='table'>"
-                   + InsightsHtmlTable.HeadFields("#", "Id", "Name", "Type", "Input", "IsTitle", "Metadata", "Permissions")
+                   + InsightsHtmlTable.HeadFields(["#", "Id", "Name", "Type", "Input", "IsTitle", "Metadata", "Permissions"])
                    + "<tbody>";
             var count = 0;
             foreach (var att in attribs)
             {
-                msg += InsightsHtmlTable.RowFields(
+                msg += InsightsHtmlTable.RowFields([
                     (++count).ToString(),
                     att.AttributeId.ToString(),
                     att.Name,
@@ -38,7 +38,7 @@ internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders)
                     InsightsHtmlBase.EmojiTrueFalse(att.IsTitle),
                     Linker.LinkTo($"{att.Metadata.Count()}", InsightsAttributeMetadata.Link, AppId, type: Type, nameId: att.Name),
                     Linker.LinkTo($"{att.Metadata.Permissions.Count()}", InsightsAttributePermissions.Link, AppId, type: Type, nameId: att.Name)
-                );
+                ]);
             }
             msg += "</tbody>";
             msg += "</table>";

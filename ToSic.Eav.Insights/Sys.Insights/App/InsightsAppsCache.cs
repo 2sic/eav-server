@@ -9,7 +9,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.App;
 
 internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IAppStateCacheService> appStates, LazySvc<IAppReaderFactory> appReaders)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay }, connect: [appsCatalog, appStates, appReaders])
+    : InsightsProvider(new() { Name = Link }, connect: [appsCatalog, appStates, appReaders])
 {
     public static string Link = "AppsCache";
 
@@ -20,7 +20,10 @@ internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IApp
         var zones = appsCatalog.Value.Zones.OrderBy(z => z.Key);
 
         msg += "<table id='table'>"
-               + InsightsHtmlTable.HeadFields("Zone ↕", "App ↕", AttributeNames.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details", "Actions", "Hash", "Timestamp", "List-Timestamp")
+               + InsightsHtmlTable.HeadFields([
+                   "Zone ↕", "App ↕", AttributeNames.GuidNiceName, "InCache", "Name ↕", "Folder ↕", "Details",
+                   "Actions", "Hash", "Timestamp", "List-Timestamp"
+               ])
                + "<tbody>";
 
         foreach (var zone in zones)
@@ -53,7 +56,7 @@ internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IApp
 
             foreach (var app in apps)
             {
-                msg += InsightsHtmlTable.RowFields(
+                msg += InsightsHtmlTable.RowFields([
                     zone.Key.ToString(),
                     app.Id.ToString(),
                     $"{app.Guid}",
@@ -63,12 +66,14 @@ internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IApp
                     $"{Linker.LinkTo("stats", InsightsAppStats.Link, app.Id)} | {Linker.LinkTo("load log", InsightsAppLoadLog.Link, app.Id)} | {Linker.LinkTo("types", InsightsTypes.Link, app.Id)}",
                     Tag.Details(
                         Summary("show actions"),
-                        app.Id != KnownAppsConstants.PresetAppId ? Linker.LinkTo("purge", InsightsPurgeApp.Link, app.Id) : null
+                        app.Id != KnownAppsConstants.PresetAppId
+                            ? Linker.LinkTo("purge", InsightsPurgeApp.Link, app.Id)
+                            : null
                     ),
                     app.Hash?.ToString() ?? "-",
                     app.TS,
                     app.ListTs
-                );
+                ]);
             }
         }
         msg += "</tbody>"

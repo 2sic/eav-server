@@ -45,7 +45,7 @@ internal class InsightsMemoryCache()
 
     }
 
-    internal string MemoryTable(string filterPrefix, string filterType)
+    internal string MemoryTable(string? filterPrefix, string? filterType)
     {
         var l = Log.Fn<string>();
 
@@ -74,7 +74,7 @@ internal class InsightsMemoryCache()
         try
         {
             msg += "<table id='table'>"
-                   + InsightsHtmlTable.HeadFields(
+                   + InsightsHtmlTable.HeadFields([
                        "#",
                        SpecialField.Left("Key ↕"),
                        SpecialField.Left(
@@ -86,7 +86,7 @@ internal class InsightsMemoryCache()
                        SpecialField.Center("Quality", tooltip: "Size estimate reliability"),
                        SpecialField.Left("Age ↕", tooltip: "Estimated age of the data"),
                        SpecialField.Left("Contents ↕", tooltip: "Value if easily displayable")
-                   )
+                   ])
                    + "<tbody>"
                    + "\n";
 
@@ -119,7 +119,7 @@ internal class InsightsMemoryCache()
                     ? "unknown"
                     : MillisecondsToNiceText((long)new TimeSpan(timeStampNow - tsCache.Value).TotalMilliseconds);
 
-                msg += InsightsHtmlTable.RowFields(
+                msg += InsightsHtmlTable.RowFields([
                     ++count,
                     Span(visibleKey).Title(fullKey),
                     Linker.LinkTo(view: Link, label: typeName, type: typeName),
@@ -131,7 +131,7 @@ internal class InsightsMemoryCache()
                     InsightsHtmlBase.HtmlEncode(estimate.Icon),
                     SpecialField.Left(tsAge, tooltip: tsTooltip),
                     SpecialField.Left(valueShort, tooltip: value)
-                ) + "\n";
+                ]) + "\n";
             }
             msg += "</tbody>" + "\n";
 
@@ -146,7 +146,7 @@ internal class InsightsMemoryCache()
 
             var totSizeInfo = new SizeInfo(totalSize.Total);
 
-            msg += InsightsHtmlTable.RowFields(
+            msg += InsightsHtmlTable.RowFields([
                 Strong($"{filtered.Count} of {all.Count}"),
                 "",
                 $"{typeCountFiltered} of {typeCountAll}",
@@ -156,7 +156,7 @@ internal class InsightsMemoryCache()
                     tooltip: $"{totSizeInfo.BestSize} {totSizeInfo.BestUnit}"
                 ),
                 InsightsHtmlBase.HtmlEncode(totalSize.Icon)
-            );
+            ]);
             msg += "</table>";
             msg += "\n\n";
             msg += InsightsHtmlParts.JsTableSort();

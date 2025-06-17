@@ -31,11 +31,11 @@ internal class InsightsLogs : InsightsProvider
                + LogHtml.LogHistoryOverview();
     }
 
-    private string Logs(string key, string filter)
+    private string Logs(string key, string? filter)
     {
         Log.A($"debug log load for {key}");
         return LogHtml.LogHeader(key, true, filter.HasValue())
-               + LogHtml.LogHistoryList(key, filter);
+               + LogHtml.LogHistoryList(key, filter!);
     }
 
     private string Logs(string key, int position)

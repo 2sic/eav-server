@@ -5,7 +5,7 @@ public interface IInsightsProvider
 {
     InsightsProviderSpecs Specs { get; }
 
-    void SetContext(IInsightsLinker linker, int? appId, IDictionary<string, object> parameters, string key, int? position, string type, bool? toggle, string nameId, string filter);
+    void SetContext(IInsightsLinker linker, int? appId, IDictionary<string, object?> parameters, string key, int? position, string type, bool? toggle, string nameId, string filter);
 
     string HtmlBody();
 }

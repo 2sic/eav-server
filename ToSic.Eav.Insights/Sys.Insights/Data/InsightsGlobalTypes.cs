@@ -2,11 +2,8 @@
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsGlobalTypes(IAppReaderFactory appReadFac) : InsightsTypes(appReadFac, "GlobalTypes")
+internal class InsightsGlobalTypes(IAppReaderFactory appReadFac) : InsightsTypes(appReadFac, "GlobalTypes", "Global Content Types for App: [AppId]")
 {
-    [field: AllowNull, MaybeNull]
-    public override InsightsProviderSpecs Specs => field ??= base.Specs with { Title = $"Global {base.Specs.Title}" };
-
     public override string HtmlBody()
     {
         var l = Log.Fn<string>();

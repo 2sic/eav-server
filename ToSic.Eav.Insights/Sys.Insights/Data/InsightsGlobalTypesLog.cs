@@ -6,7 +6,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsGlobalTypesLog(LazySvc<ILogStoreLive> logStore)
-    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Global Types Log" }, connect: [logStore])
+    : InsightsProvider(new() { Name = Link, Title = "Global Types Log" }, connect: [logStore])
 {
     public static string Link = "GlobalTypesLog";
 
@@ -15,7 +15,7 @@ internal class InsightsGlobalTypesLog(LazySvc<ILogStoreLive> logStore)
 
     public override string HtmlBody()
     {
-        var msg = InsightsHtmlParts.PageStyles() + LogHtml.LogHeader(null, false);
+        var msg = InsightsHtmlParts.PageStyles() + LogHtml.LogHeader(Link, false);
         var log = AppStateInFolderGlobalLog.LoadLog;
         return msg + (log == null
             ? P("log is null").ToString()

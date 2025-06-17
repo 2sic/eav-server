@@ -6,8 +6,7 @@ internal class InsightsPurgeApp(LazySvc<AppCachePurger> appCachePurger)
     : InsightsProvider(new()
     {
         Name = Link,
-        Title = "Flush Logs",
-        HelpCategory = HiddenFromAutoDisplay
+        Title = "Flush Logs"
     }, connect: [appCachePurger])
 {
     public static string Link = "PurgeApp";
