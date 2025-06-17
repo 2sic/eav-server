@@ -10,7 +10,7 @@ public class EditInfoDto
     public bool ReadOnly { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string ReadOnlyMessage { get; set; }
+    public string? ReadOnlyMessage { get; set; }
 
     /// <summary>
     /// Empty Constructor for deserialization - important
@@ -23,8 +23,9 @@ public class EditInfoDto
         // If entity is null it's probably going to be new, so assume it doesn't have an ancestor
         var hasAncestor = contentType?.HasAncestor() ?? false;
         ReadOnly = hasAncestor;
-        ReadOnlyMessage = !hasAncestor ? null :
-            contentType.HasPresetAncestor() ? "This is a preset ContentType" : "This is an inherited ContentType";
+        ReadOnlyMessage = !hasAncestor
+            ? null
+            : contentType!.HasPresetAncestor() ? "This is a preset ContentType" : "This is an inherited ContentType";
     }
 
     public EditInfoDto(IEntity entity)

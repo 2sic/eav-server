@@ -4,7 +4,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class AppInternalsDto
 {
-    public IDictionary<string, IEnumerable<IDictionary<string, object>>> EntityLists { get; set; }
-    public IDictionary<string, IEnumerable<ContentTypeFieldDto>> FieldAll { get; set; }
-    public MetadataListDto MetadataList { get; set; }
+    public required IDictionary<string, IEnumerable<IDictionary<string, object>>?> EntityLists { get; init; }
+    public required IDictionary<string, IEnumerable<ContentTypeFieldDto>?> FieldAll { get; init; }
+    public required MetadataListDto MetadataList { get; init; }
 }

@@ -15,28 +15,28 @@ public class RichResult
     /// </summary>
     [JsonPropertyName("ok")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? Ok { get; set; }
+    public bool? Ok { get; init; }
 
     /// <summary>
     /// Additional message, if not i18n.
     /// </summary>
     [JsonPropertyName("message")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Message { get; set; }
+    public string? Message { get; init; }
 
     /// <summary>
     /// Message key i18n to lookup in translations.
     /// </summary>
     [JsonPropertyName("messageKey")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string MessageKey { get; set; }
+    public string? MessageKey { get; init; }
 
     /// <summary>
     /// Time taken in milliseconds.
     /// </summary>
     [JsonPropertyName("timeTaken")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public decimal TimeTaken { get; set; }
+    public decimal TimeTaken { get; internal set; }
 }
 
 /// <summary>
@@ -50,7 +50,7 @@ public class RichResult<TData> : RichResult
     /// </summary>
     [JsonPropertyName("data")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public TData Data { get; set; }
+    public TData? Data { get; init; }
 }
 
 public static class RichResultExtensions

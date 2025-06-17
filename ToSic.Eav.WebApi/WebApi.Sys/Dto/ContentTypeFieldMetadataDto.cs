@@ -4,11 +4,11 @@ public record ContentTypeFieldMetadataDto
 {
     // temp - goal would be to have many such possible extensions, and the UI would know what to do with them
     [JsonPropertyName("isRecommended")]
-    public bool IsRecommended { get; set; }
+    public required bool IsRecommended { get; init; }
 
     [JsonPropertyName("entityId")]
-    public int EntityId { get; set; }
+    public required int EntityId { get; init; }
 
     [JsonPropertyName("typeName")]
-    public string TypeName { get; set; }
+    public required string TypeName { get; init; }
 }

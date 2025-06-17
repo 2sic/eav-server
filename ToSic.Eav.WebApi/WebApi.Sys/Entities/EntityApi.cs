@@ -31,15 +31,15 @@ public class EntityApi(
         return this;
     }
 
-    private IAppWorkCtxPlus _appWorkCtxPlus;
+    private IAppWorkCtxPlus _appWorkCtxPlus = null!;
 
     #endregion
 
-    /// <summary>
-    /// Get all Entities of specified Type
-    /// </summary>
-    public IEnumerable<IDictionary<string, object>> GetEntities(string contentType)
-        => entitiesToDicLazy.New().Convert(workEntities.New(_appWorkCtxPlus).Get(contentType));
+    ///// <summary>
+    ///// Get all Entities of specified Type
+    ///// </summary>
+    //public IEnumerable<IDictionary<string, object>> GetEntities(string contentType)
+    //    => entitiesToDicLazy.New().Convert(workEntities.New(_appWorkCtxPlus).Get(contentType));
 
     /// <summary>
     /// Get all Entities of specified Type
@@ -49,50 +49,52 @@ public class EntityApi(
         var list = workEntities.New(appReader, showDrafts).Get(contentType);
         var converter= entitiesToDicLazy.New();
         if (oDataSelect.HasValue())
-            (converter as ConvertToEavLight)?.DoIfNotNull(c => c.AddSelectFields(oDataSelect.CsvToArrayWithoutEmpty().ToList()));
-        return converter.Convert(list);
+            (converter as ConvertToEavLight).DoIfNotNull(c => c.AddSelectFields(oDataSelect.CsvToArrayWithoutEmpty().ToList()));
+        return converter.Convert(list)!;
     }
 
     public List<BundleWithHeader<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
     {
         ReplaceSimpleTypeNames(items);
 
-        var list = items.Select(p =>
-        {
-            var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
-                ? GetEditableEditionAndMaybeCloneIt(p)
-                : null;
-            return new BundleWithHeader<IEntity>
+        var list = items
+            .Select(p =>
             {
-                Header = p,
-                Entity = ent
-            };
-        }).ToList();
+                var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
+                    ? GetEditableEditionAndMaybeCloneIt(p)
+                    : null;
+                return new BundleWithHeader<IEntity>
+                {
+                    Header = p,
+                    Entity = ent
+                };
+            })
+            .ToList();
 
         // make sure the header has the right "new" guid as well - as this is the primary one to work with
         // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
         var itemsWithEmptyHeaderGuid = list
-            .Where(i => i.Header.Guid == default)
+            .Where(i => i.Header!.Guid == default)
             .ToArray(); // must do toArray, to prevent re-checking after setting the guid
 
         foreach (var bundle in itemsWithEmptyHeaderGuid)
         {
             var hasEntity = bundle.Entity != null;
-            var useEntityGuid = hasEntity && bundle.Entity.EntityGuid != default;
-            bundle.Header.Guid = useEntityGuid
-                ? bundle.Entity.EntityGuid
+            var useEntityGuid = hasEntity && bundle.Entity!.EntityGuid != default;
+            bundle.Header!.Guid = useEntityGuid
+                ? bundle.Entity!.EntityGuid
                 : Guid.NewGuid();
             if (hasEntity && !useEntityGuid)
-                bundle.Entity = entityBuilder.CreateFrom(bundle.Entity, guid: bundle.Header.Guid);
+                bundle.Entity = entityBuilder.CreateFrom(bundle.Entity!, guid: bundle.Header.Guid);
         }
 
         // Update header with ContentTypeName in case it wasn't there before
-        foreach (var itm in list.Where(i => i.Header.ContentTypeName == null && i.Entity != null))
-            itm.Header.ContentTypeName = itm.Entity.Type.NameId;
+        foreach (var itm in list.Where(i => i.Header!.ContentTypeName == null && i.Entity != null))
+            itm.Header!.ContentTypeName = itm.Entity!.Type.NameId;
 
         // Add EditInfo for read-only data
         foreach (var bundle in list) 
-            bundle.Header.EditInfo = new(bundle.Entity);
+            bundle.Header!.EditInfo = new(bundle.Entity!);
 
         return list;
     }
@@ -101,7 +103,7 @@ public class EntityApi(
     private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
     {
         var appState = _appWorkCtxPlus.AppReader;
-        var found = appState.List.GetOrThrow(p.ContentTypeName, p.DuplicateEntity ?? p.EntityId);
+        var found = appState.List.GetOrThrow(p.ContentTypeName!, p.DuplicateEntity ?? p.EntityId);
         // if there is a draft, use that for editing - not the original
         found = appState.GetDraft(found) ?? found;
 
@@ -138,7 +140,7 @@ public class EntityApi(
     /// <exception cref="ArgumentNullException">Entity does not exist</exception>
     /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
     public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string? parentField = null) 
-        => Delete(contentType, workEntities.New(_appWorkCtxPlus.AppReader).Get(entityGuid).EntityId, force, parentId, parentField);
+        => Delete(contentType, workEntities.New(_appWorkCtxPlus.AppReader).Get(entityGuid)!.EntityId, force, parentId, parentField);
 
 
     /// <summary>
@@ -149,10 +151,10 @@ public class EntityApi(
     {
         foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
         {
-            var ct = _appWorkCtxPlus.AppReader.TryGetContentType(itm.ContentTypeName);
+            var ct = _appWorkCtxPlus.AppReader.TryGetContentType(itm.ContentTypeName!);
             if (ct == null)
             {
-                if (!itm.ContentTypeName.StartsWith("@"))
+                if (!itm.ContentTypeName!.StartsWith("@"))
                     throw new("Can't find content type " + itm.ContentTypeName);
                 items.Remove(itm);
                 continue;
@@ -182,13 +184,16 @@ public class EntityApi(
         // in the successor app, we can get an additional AppConfiguration, AppSettings or AppResources from the ancestor app
         // that we can optionally exclude from the results
         var afterAncestorFilter = excludeAncestor
-            ? ofType.Where(e => !e.HasAncestor()).ToList()
+            ? ofType
+                .Where(e => !e.HasAncestor())
+                .ToList()
             : ofType;
 
         // Convert all to dictionary
         var entityToDic = entitiesToDicLazy.New();
         ((ConvertToEavLight)entityToDic).ConfigureForAdminUse();
-        var list = entityToDic.Convert(afterAncestorFilter).ToList();
+        var list = entityToDic.Convert(afterAncestorFilter)
+            .ToList();
 
         // Truncate all values to 50 chars
         var result = Log.Quick(message: "truncate dictionary", timer: true,
@@ -196,12 +201,12 @@ public class EntityApi(
                 .Select(eLight => eLight.ToDictionary(pair => pair.Key, pair => Truncate(pair.Value, 50)))
                 .ToList()
         );
-        return l.Return(result, result.Count.ToString());
+        return l.Return(result!, result.Count.ToString());
     }
 
 
-    private object Truncate(object value, int length) =>
-        value is not string asTxt
+    private object? Truncate(object? value, int length)
+        => value is not string asTxt
             ? value
             : asTxt.Length > length
                 ? asTxt.Substring(0, length)

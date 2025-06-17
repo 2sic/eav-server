@@ -2,6 +2,7 @@
 
 public class LinkInfoDto
 {
-    public AdamItemDto Adam;
-    public string Value;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public AdamItemDto? Adam { get; init; }
+    public required string Value { get; init; }
 }

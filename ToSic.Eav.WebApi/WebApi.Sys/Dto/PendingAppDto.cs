@@ -3,13 +3,13 @@
 public class PendingAppDto
 {
     // folder as it's stored on the server
-    public string ServerFolder { get; set; }
+    public required string ServerFolder { get; init; }
     // taken from the app.xml
-    public string Name { get; set; }
+    public required string Name { get; init; }
     // taken from the app.xml
-    public string Description { get; set; }
+    public required string Description { get; init; }
     // taken from the app.xml
-    public string Version { get; set; }
+    public required string Version { get; init; }
     // taken from the app.xml
-    public string Folder { get; set; }
+    public required string Folder { get; init; }
 }

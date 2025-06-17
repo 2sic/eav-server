@@ -19,7 +19,12 @@ public class LanguagesBackend(
         var l = Log.Fn<IList<SiteLanguageDto>>($"{site.Id}");
         // ReSharper disable once PossibleInvalidOperationException
         var cultures = zoneMapper.Value.CulturesWithState(site)
-            .Select(c => new SiteLanguageDto { Code = c.Code, Culture = c.Culture, IsEnabled = c.IsEnabled })
+            .Select(c => new SiteLanguageDto
+            {
+                Code = c.Code,
+                Culture = c.Culture,
+                IsEnabled = c.IsEnabled,
+            })
             .ToList();
 
         return l.Return(cultures, "found:" + cultures.Count);
@@ -33,8 +38,14 @@ public class LanguagesBackend(
             var converted = langs
                 .Select(l =>
                 {
-                    var dto = new SiteLanguageDto { Code = l.Code, Culture = l.Culture, IsAllowed = l.IsAllowed, IsEnabled = l.IsEnabled };
-                    if (withCount) dto.Permissions = new() { Count = l.PermissionCount };
+                    var dto = new SiteLanguageDto
+                    {
+                        Code = l.Code,
+                        Culture = l.Culture,
+                        IsAllowed = l.IsAllowed,
+                        IsEnabled = l.IsEnabled,
+                        Permissions = (withCount) ? new() { Count = l.PermissionCount } : null,
+                    };
                     return dto;
                 })
                 .ToList();

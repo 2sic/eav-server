@@ -8,18 +8,18 @@ public class EditPrefetchDto
     /// Dictionary where each field contains a list of ADAM items
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, IEnumerable</*AdamItemDto*/object>>> Adam { get; set; }
+    public Dictionary<string, Dictionary<string, IEnumerable</*AdamItemDto*/object>>>? Adam { get; set; }
 
     /// <summary>
     /// Prefetched entities for entity picker
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public ICollection<EntityForPickerDto> Entities { get; set; }
+    public ICollection<EntityForPickerDto>? Entities { get; set; }
 
     /// <summary>
     /// Prefetched links for hyperlink fields
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Dictionary<string, LinkInfoDto> Links { get; set; }
+    public Dictionary<string, LinkInfoDto>? Links { get; set; }
 
 }

@@ -46,9 +46,9 @@ public class FeatureStateDto(FeatureState state) : FeatureDto(state, false)
     /// </summary>
     [JsonPropertyName("configuration")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public Dictionary<string, object> Configuration => state.Configuration;
+    public Dictionary<string, object>? Configuration => state.Configuration;
 
     [JsonPropertyName("configurationContentType")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public string ConfigurationContentType => state.Aspect.ConfigurationContentType;
+    public string? ConfigurationContentType => state.Aspect.ConfigurationContentType;
 }

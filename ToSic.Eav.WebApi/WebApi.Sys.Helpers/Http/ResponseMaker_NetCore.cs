@@ -13,7 +13,7 @@ internal class ResponseMaker: IResponseMaker
 {
     public void Init(ControllerBase apiController) => _apiController = apiController;
 
-    private ControllerBase _apiController;
+    private ControllerBase _apiController = null!;
 
     public ControllerBase ApiController => _apiController ??
                                        throw new(

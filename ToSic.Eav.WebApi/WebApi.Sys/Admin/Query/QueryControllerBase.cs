@@ -78,31 +78,47 @@ public abstract class QueryControllerBase<TImplementation>(
     public QueryDefinitionDto Get(int appId, int? id = null)
     {
         var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
-        var queryDto = new QueryDefinitionDto();
 
         if (!id.HasValue)
-            return l.Return(queryDto, "no id, empty");
+            return l.Return(new(), "no id, empty");
 
         var appState = Services.AppStates.New().Get(appId);
         var qDef = Services.QueryManager.Value.Get(appState, id.Value);
 
         #region Deserialize some Entity-Values
 
-        queryDto.Pipeline = qDef.Entity.AsDictionary();
-        queryDto.Pipeline[QueryConstants.QueryStreamWiringAttributeName] = qDef.Connections;
+        var pipeline = qDef.Entity.AsDictionary();
+        pipeline[QueryConstants.QueryStreamWiringAttributeName] = qDef.Connections;
 
         var converter = Services.EntToDicLazy.Value;
         converter.Type.Serialize = true;
         converter.Type.WithDescription = true;
         converter.WithGuid = true;
 
-        foreach (var part in qDef.Parts)
+        //foreach (var part in qDef.Parts)
+        //{
+        //    var partDto = part.AsDictionary();
+        //    var metadata = appState.Metadata.GetMetadata(TargetTypes.Entity, part.Guid);
+        //    partDto.Add("Metadata", converter.Convert(metadata));
+        //    queryDto.DataSources.Add(partDto);
+        //}
+
+        var dataSources = qDef.Parts
+            .Select(part =>
+            {
+                var partDto = part.AsDictionary();
+                var metadata = appState.Metadata.GetMetadata(TargetTypes.Entity, part.Guid);
+                partDto.Add("Metadata", converter.Convert(metadata));
+                return partDto;
+            })
+            .ToListOpt();
+
+        var queryDto = new QueryDefinitionDto
         {
-            var partDto = part.AsDictionary();
-            var metadata = appState.Metadata.GetMetadata(TargetTypes.Entity, part.Guid);
-            partDto.Add("Metadata", converter.Convert(metadata));
-            queryDto.DataSources.Add(partDto);
-        }
+            Pipeline = pipeline!,
+            DataSources = dataSources!,
+        };
+
 
         #endregion
 
@@ -120,7 +136,13 @@ public abstract class QueryControllerBase<TImplementation>(
         var installedDataSources = Services.DataSourceCatalogLazy.Value.GetAll(true, appIdentity.AppId);
 
         var result = installedDataSources
-            .Select(ds => new DataSourceDto(ds, ds.VisualQuery?.DynamicOut == true ? null : dsCat.GetOutStreamNames(ds)))
+            .Select(ds =>
+            {
+                var outNames = ds.VisualQuery?.DynamicOut == true
+                    ? null
+                    : dsCat.GetOutStreamNames(ds);
+                return new DataSourceDto(ds, outNames);
+            })
             .OrderBy(ds => ds.TypeNameForUi) // sort for better debugging in F12
             .ToListOpt();
 
@@ -137,8 +159,9 @@ public abstract class QueryControllerBase<TImplementation>(
     {
         var l = Log.Fn<QueryDefinitionDto>($"save pipe: a#{appId}, id#{id}");
         // assemble list of all new data-source guids, for later re-mapping when saving
-        var newDsGuids = data.DataSources.Where(d => d.ContainsKey("EntityGuid"))
-            .Select(d => d["EntityGuid"].ToString())
+        var newDsGuids = data.DataSources
+            .Where(d => d.ContainsKey("EntityGuid"))
+            .Select(d => d["EntityGuid"].ToString()!)
             .Where(g => g != "Out" && !g.StartsWith("unsaved"))
             .Select(Guid.Parse)
             .ToListOpt();
@@ -184,8 +207,8 @@ public abstract class QueryControllerBase<TImplementation>(
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
         // Get the query, run it and track how much time this took
-        var qDef = services.QueryBuilder.GetQueryDefinition(appId, id);
-        var builtQuery = services.QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
+        var qDef = Services.QueryBuilder.GetQueryDefinition(appId, id);
+        var builtQuery = Services.QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields
@@ -247,7 +270,7 @@ public abstract class QueryControllerBase<TImplementation>(
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
             var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppReader);
             var ents = deser.Deserialize(args.GetContentString());
-            var qdef = services.QueryBuilder.Create(ents, args.AppId);
+            var qdef = Services.QueryBuilder.Create(ents, args.AppId);
             workUnit.SaveCopy(qdef);
 
             return l.ReturnTrue();

@@ -87,7 +87,8 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
 
     #region Language
 
-    public string[] Languages
+    [field: AllowNull, MaybeNull]
+    public string?[] Languages
     {
         get => field ??= Services.ZoneCultureResolver.SafeLanguagePriorityCodes();
         set;
@@ -96,6 +97,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     /// <summary>
     /// Separate helper to create lightweight sub entities
     /// </summary>
+    [field: AllowNull, MaybeNull]
     internal ConvertToJsonBasicLightSubEntities SubConverter => field ??= new(Languages);
 
 
@@ -145,37 +147,41 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         // If the value is a relationship, then give those too, but only Title and Id
         var attributes = entity.Attributes
             .Select(d => d.Value)
-            .Where(d => excludeAttributes?.Contains(d.Name) != true)
+            .Where(d => excludeAttributes.Contains(d.Name) != true)
             .ToListOpt();
 
         // If we have filter fields from $select, apply that (new ca. v17)
         if (rules.FilterFieldsEnabled == true)
             attributes = attributes
-                .Where(a => rules.FilterFields.Any(ff => ff.EqualsInsensitive(a.Name)))
+                .Where(a => rules.FilterFields!.Any(ff => ff.EqualsInsensitive(a.Name)))
                 .ToListOpt();
 
         var entityValues = attributes
-            .ToEavLight(attribute => attribute.Name, attribute =>
-            {
-                var rawValue = entity.Get(attribute.Name, languages: Languages);
-
-                return attribute.Type switch
+            .ToEavLight(
+                attribute => attribute.Name,
+                attribute =>
                 {
-                    // Special Case 1: Hyperlink Field which must be resolved
-                    ValueTypes.Hyperlink when rawValue is string stringValue
-                                              && ValueConverterBase.CouldBeReference(stringValue)
-                        => (LinksWithBothValues ? stringValue + "|" : "" ) // Optionally prefix with original value, but only in admin-mode new 17.02+
-                           + Services.ValueConverter.ToValue(stringValue, entity.EntityGuid),
-                    // Special Case 2: Entity-List
-                    ValueTypes.Entity when rawValue is IEnumerable<IEntity> entities
-                        => serRels.Serialize == true
-                            ? SubConverter.CreateListOrCsvOfSubEntities(entities, serRels)
-                            : null,
-                    _ => rawValue
-                };
+                    var rawValue = entity.Get(attribute.Name, languages: Languages);
 
-                // Default: Normal Value
-            });
+                    return attribute.Type switch
+                    {
+                        // Special Case 1: Hyperlink Field which must be resolved
+                        ValueTypes.Hyperlink when rawValue is string stringValue
+                                                  && ValueConverterBase.CouldBeReference(stringValue)
+                            => (LinksWithBothValues
+                                   ? stringValue + "|"
+                                   : "") // Optionally prefix with original value, but only in admin-mode new 17.02+
+                               + Services.ValueConverter.ToValue(stringValue, entity.EntityGuid),
+                        // Special Case 2: Entity-List
+                        ValueTypes.Entity when rawValue is IEnumerable<IEntity> entities
+                            => serRels.Serialize == true
+                                ? SubConverter.CreateListOrCsvOfSubEntities(entities, serRels)
+                                : null,
+                        _ => rawValue
+                    };
+
+                    // Default: Normal Value
+                });
 
         // todo: verify what happens with null-values on the relationships, maybe we should filter them out again?
 
@@ -224,8 +230,8 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         // TODO
         else if (!string.IsNullOrWhiteSpace(tSer?.SerializeAs))
         {
-            var propName = tSer.PropertyNames ?? "Type";
-            switch (tSer.SerializeAs.ToLower())
+            var propName = tSer!.PropertyNames ?? "Type";
+            switch (tSer.SerializeAs!.ToLower())
             {
                 case "object":
                     entityValues[propName] = new JsonType(entity, tSer.SerializeDescription == true);
@@ -266,7 +272,8 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
             .Where(a => a.Type == ValueTypes.Empty
                         || a.Metadata.GetBestValue<bool>(AttributeMetadataConstants.MetadataFieldAllIsEphemeral))
             .Select(a => a.Name)
-            .ToListOpt();
+            .ToListOpt()
+            ?? [];
 
         // Cache and return
         _excludeAttributesCache[entity.Type] = excludeAttributes;

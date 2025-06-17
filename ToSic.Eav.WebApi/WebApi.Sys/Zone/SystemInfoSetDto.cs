@@ -2,52 +2,52 @@
 
 public class SystemInfoSetDto
 {
-    public SiteStatsDto Site { get; internal set; }
+    public required SiteStatsDto Site { get; init; }
 
-    public SystemInfoDto System { get; internal set; }
+    public required SystemInfoDto System { get; init; }
 
-    public LicenseInfoDto License { get; internal set; }
+    public required LicenseInfoDto License { get; init; }
 
-    public MessagesDto Messages { get; internal set; }
+    public required MessagesDto Messages { get; init; }
 }
 
 public class MessagesDto
 {
-    public int WarningsOther { get; set; }
-    public int WarningsObsolete { get; set; }
-    // public int Errors { get; set; }
+    public required int WarningsOther { get; init; }
+    public required int WarningsObsolete { get; init; }
+    // public required int Errors { get; init; }
 }
 
 public class SystemInfoDto
 {
-    public string Fingerprint { get; internal set; }
+    public required string Fingerprint { get; init; }
 
-    public string EavVersion { get; internal set; }
+    public required string EavVersion { get; init; }
 
-    public string Platform { get; internal set; }
+    public required string Platform { get; init; }
 
-    public string PlatformVersion { get; internal set; }
+    public required string PlatformVersion { get; init; }
 
-    public int Zones { get; internal set; }
+    public required int Zones { get; init; }
 }
 
 public class LicenseInfoDto
 {
-    public string Main { get; internal set; }
+    public required string Main { get; init; }
 
-    public int Count { get; internal set; }
+    public required int Count { get; init; }
 
-    public string Owner { get; internal set; }
+    public required string Owner { get; init; }
 }
     
 
 public class SiteStatsDto
 {
-    public int SiteId { get; internal set; }
+    public required int SiteId { get; init; }
 
-    public int ZoneId { get; internal set; }
+    public required int ZoneId { get; init; }
 
-    public int Apps { get; internal set; }
+    public required int Apps { get; init; }
 
-    public int Languages { get; internal set; }
+    public required int Languages { get; init; }
 }

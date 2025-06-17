@@ -22,7 +22,8 @@ internal class ApiExplorerJs
         }
 
         // Case 2: Array - get inner type and add []
-        if (type.IsArray) return JsTypeName(type.GetElementType()) + "[]";
+        if (type.IsArray)
+            return JsTypeName(type.GetElementType()!) + "[]";
 
         // Case 3: Most common basic types
         if (type == typeof(string)) return "string";
@@ -35,6 +36,6 @@ internal class ApiExplorerJs
         if (type == typeof(Guid)) return "guid as string";
 
         // Case 4: Unknown - in case we don't know let's just return the difficult name
-        return type.FullName;
+        return type.FullName!;
     }
 }

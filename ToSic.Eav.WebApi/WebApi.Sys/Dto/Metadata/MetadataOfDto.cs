@@ -4,10 +4,10 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class MetadataOfDto
 {
-    public int Id { get; set; }
+    public required int Id { get; init; }
 
-    public Guid Guid { get; set; }
-    public JsonType Type { get; set; }
+    public required Guid Guid { get; init; }
+    public required JsonType Type { get; init; }
 
 
 }

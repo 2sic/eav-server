@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.EntityBased.Sys;
-using IEntity = ToSic.Eav.Data.IEntity;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 
@@ -50,6 +49,7 @@ public partial class QueryDefinition: EntityBasedWithLog
     /// <summary>
     /// Connections used in the query to map various DataSource Out-Streams to various other DataTarget In-Streams
     /// </summary>
+    [field: AllowNull, MaybeNull]
     public IList<Connection> Connections => field ??= Internal.Query.Connections.Deserialize(ConnectionsRaw);
 
     /// <summary>

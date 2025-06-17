@@ -5,14 +5,14 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class QueryRunDto
 {
-    public IDictionary<string, IEnumerable<EavLightEntity>> Query;
-    public ICollection<InspectStream> Streams;
-    public Dictionary<Guid, InspectDataSourceDto> Sources;
-    public QueryTimerDto QueryTimer;
+    public required IDictionary<string, IEnumerable<EavLightEntity>> Query { get; init; }
+    public required ICollection<InspectStream> Streams { get; init; }
+    public required Dictionary<Guid, InspectDataSourceDto> Sources { get; init; }
+    public required QueryTimerDto QueryTimer { get; init; }
 }
 
 public class QueryTimerDto
 {
-    public long Milliseconds;
-    public long Ticks;
+    public required long Milliseconds { get; init; }
+    public required long Ticks { get; init; }
 }

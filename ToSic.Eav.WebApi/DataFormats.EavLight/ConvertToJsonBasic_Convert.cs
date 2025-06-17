@@ -23,8 +23,8 @@ partial class ConvertToEavLight
     public EavLightEntity Convert(IEntity entity)
     {
         var l = Log.Fn<EavLightEntity>(timer: true);
-        var result = entity == null
-            ? null
+        var result = entity == null!
+            ? null!
             : GetDictionaryFromEntity(entity);
         return l.ReturnAsOk(result);
     }
@@ -40,14 +40,17 @@ partial class ConvertToEavLight
 
 
         // 2021-09-11 DataStreams can be handled a bit more efficiently
-        if (list is IEnumerable<IEntity> stream) return Convert(stream);
+        if (list is IEnumerable<IEntity> stream)
+            return Convert(stream);
 
         return list
             .Select(c =>
             {
-                IEntity entity = null;
-                if (c is IEntity ent) entity = ent;
-                else if (c is ICanBeEntity dynEnt) entity = dynEnt.Entity;
+                IEntity? entity = null;
+                if (c is IEntity ent)
+                    entity = ent;
+                else if (c is ICanBeEntity dynEnt)
+                    entity = dynEnt.Entity;
                 if (entity == null)
                     throw new("tried to convert an item, but it was not a known Entity-type");
                 return GetDictionaryFromEntity(entity);
@@ -55,8 +58,8 @@ partial class ConvertToEavLight
             .ToListOpt();
     }
 
-    public virtual EavLightEntity Convert(object item) =>
-        item switch
+    public virtual EavLightEntity Convert(object item)
+        => item switch
         {
             IEntity ent => Convert(ent),
             ICanBeEntity dynEnt => Convert(dynEnt.Entity),

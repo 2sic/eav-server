@@ -30,7 +30,7 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
 
     private readonly XmlBuilder _xBuilder = new();
     private IAppReader AppReader { get; set; } = null!;
-    public IContentType? ContentType { get; set; }
+    public IContentType ContentType { get; set; } = null!;
 
     #endregion
 

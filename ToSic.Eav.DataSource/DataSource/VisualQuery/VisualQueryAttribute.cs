@@ -36,9 +36,6 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// </summary>
     public string[]? In { get; set; } = null;
 
-    //[PrivateApi]
-    //public string[] GetSafeIn() => In ?? Array.Empty<string>();
-
     /// <summary>
     /// Determine if this data sources can have many out-streams with custom names. Default is false.
     /// </summary>

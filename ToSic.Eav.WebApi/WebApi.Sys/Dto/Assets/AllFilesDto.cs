@@ -2,13 +2,13 @@
 
 public class AllFilesDto
 {
-    public IEnumerable<AllFileDto> Files = new List<AllFileDto>();
+    public required IEnumerable<AllFileDto> Files = new List<AllFileDto>();
 }
 
 public class AllFileDto
 {
-    public string Path;
+    public required string Path { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? Shared;
+    public bool? Shared { get; init; }
 }

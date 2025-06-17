@@ -12,7 +12,6 @@ using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Configuration;
 
 #if NETFRAMEWORK
-using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using System.Net.Http;
 #endif
 
@@ -35,13 +34,14 @@ public class LicenseControllerReal(
     // auto-download license file
     private const string DefaultLicenseFileName = "default.license.json";
 
+    [field: AllowNull, MaybeNull]
     private string ConfigurationsPath
     {
         get
         {
             if (!string.IsNullOrEmpty(field))
-                return field;
-            field = globalConfiguration.Value.ConfigFolder();
+                return field!;
+            field = globalConfiguration.Value.ConfigFolder()!;
 
             // ensure that path to store files already exits
             Directory.CreateDirectory(field);
@@ -113,10 +113,12 @@ public class LicenseControllerReal(
         for (var i = 0; i < uploadInfo.Count; i++)
         {
             var (fileName, stream) = uploadInfo.GetStream(i);
-            files.Add(new() { Name = fileName, Stream = stream });
+            if (!string.IsNullOrWhiteSpace(fileName) && stream != null)
+                files.Add(new() { Name = fileName, Stream = stream });
         }
 
-        foreach (var file in files) SaveLicenseFile(file);
+        foreach (var file in files)
+            SaveLicenseFile(file);
 
         // reload license and features
         featuresLoader.Value.LoadLicenseAndFeatures();
@@ -147,7 +149,7 @@ public class LicenseControllerReal(
                     throw new ArgumentException("a file is not json");
 
                 // check for error
-                var licenseFileResultDto = JsonSerializer.Deserialize<LicenseFileResultDto>(content, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+                var licenseFileResultDto = JsonSerializer.Deserialize<LicenseFileResultDto>(content, JsonOptions.UnsafeJsonWithoutEncodingHtml)!;
                 if (!licenseFileResultDto.Success)
                     return l.ReturnAndLog(licenseFileResultDto, licenseFileResultDto.Message);
             }

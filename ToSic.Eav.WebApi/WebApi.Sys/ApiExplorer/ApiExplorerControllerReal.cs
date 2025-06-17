@@ -37,7 +37,7 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
         }
     }
 
-    private bool PreCheckAndCleanPath(ref string path, out THttpResponseType error)
+    private bool PreCheckAndCleanPath(ref string path, [NotNullWhen(true)] out THttpResponseType? error)
     {
         var l = Log.Fn<bool>();
 
@@ -90,7 +90,8 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
             actions = controller.GetMethods()
                 .Where(methodInfo => methodInfo.IsPublic
                                      && !methodInfo.IsSpecialName
-                                     && Inspector.GetHttpVerbs(methodInfo).Count > 0)
+                                     && Inspector.GetHttpVerbs(methodInfo).Count > 0
+                                     )
                 .Select(methodInfo =>
                 {
                     var methodSecurity = Inspector.GetSecurity(methodInfo);
@@ -99,14 +100,16 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
                     {
                         name = methodInfo.Name,
                         verbs = Inspector.GetHttpVerbs(methodInfo).Select(m => m.ToUpperInvariant()),
-                        parameters = methodInfo.GetParameters().Select(p => new ApiActionParamDto
-                        {
-                            name = p.Name,
-                            type = ApiExplorerJs.JsTypeName(p.ParameterType),
-                            defaultValue = p.DefaultValue,
-                            isOptional = p.IsOptional,
-                            isBody = Inspector.IsBody(p),
-                        }).ToArray(),
+                        parameters = methodInfo.GetParameters()
+                            .Select(p => new ApiActionParamDto
+                            {
+                                name = p.Name!,
+                                type = ApiExplorerJs.JsTypeName(p.ParameterType),
+                                defaultValue = p.DefaultValue,
+                                isOptional = p.IsOptional,
+                                isBody = Inspector.IsBody(p),
+                            })
+                            .ToArray(),
                         security = methodSecurity,
                         mergedSecurity = mergedSecurity,
                         returns = ApiExplorerJs.JsTypeName(methodInfo.ReturnType),

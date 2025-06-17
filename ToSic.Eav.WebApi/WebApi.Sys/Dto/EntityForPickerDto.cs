@@ -7,7 +7,7 @@
 /// </summary>
 public class EntityForPickerDto
 {
-    public int Id { get; set; }
-    public Guid Value { get; set; }
-    public string Text { get; set; }
+    public required int Id { get; init; }
+    public required Guid Value { get; init; }
+    public required string Text { get; init; }
 }

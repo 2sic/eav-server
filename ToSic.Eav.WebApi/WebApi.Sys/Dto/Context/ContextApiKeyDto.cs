@@ -7,9 +7,9 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 /// </summary>
 public class ContextApiKeyDto : IHasIdentityNameId
 {
-    public string NameId { get; set; }
+    public required string NameId { get; init; }
 
-    public string ApiKey { get; set; }
+    public required string ApiKey { get; init; }
 
-    public bool IsDemo { get; set; }
+    public required bool IsDemo { get; init; }
 }

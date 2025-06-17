@@ -5,7 +5,7 @@ namespace ToSic.Eav.DataFormats.EavLight;
 partial class ConvertToEavLight
 {
 
-    private static void AddStatistics(IEntity entity, IDictionary<string, object> entityValues)
+    private static void AddStatistics(IEntity entity, IDictionary<string, object?> entityValues)
     {
         try
         {
@@ -16,7 +16,7 @@ partial class ConvertToEavLight
         catch { /* ignore */ }
     }
 
-    private static void AddEditInfo(IEntity entity, IDictionary<string, object> entityValues)
+    private static void AddEditInfo(IEntity entity, IDictionary<string, object?> entityValues)
     {
         try
         {

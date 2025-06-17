@@ -75,7 +75,8 @@ public class EntityControllerReal(
                 user.Value,
                 language, defaultLanguage, contentType,
                 recordExport, resourcesReferences,
-                languageReferences, selectedIds
+                languageReferences,
+                selectedIds
             );
 
         return responseMaker.File(fileContent: content, fileName: fileName);

@@ -30,7 +30,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
         // Note 2024-03-04 2dm - had errors with expired IServiceProvide getting deeper Metadata
         // This should just make it quiet, but there could be a deeper underlying issue.
         // Monitor - happened on Content App - but only when accessing scope System.Cms
-        ContentTypeDetails details = null;
+        ContentTypeDetails? details;
         try
         {
             details = cType.DetailsOrNull();
@@ -39,10 +39,6 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
         {
             l.E($"Getting details for content type '{cType}'");
             l.Ex(ex);
-            // 2024-05-16 2dm enabled throw again, as I believe I fixed #IServiceProviderDisposedException
-            // Reason was that the EFC11 loader had a function which would retrieve a delayed metadata-source,
-            // but it used an (unnecessary) API which needed DI.
-            // Keep an eye on this for a while.
             throw;
         }
         l.A("Got past retrieving metadata.");
@@ -54,7 +50,9 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
 
         var ancestorDecorator = cType.GetDecorator<IAncestor>();
 
-        var properties = ser.Convert(details?.Entity);
+        var properties = details?.Entity == null
+            ? null
+            : ser.Convert(details.Entity);
 
         var typeMetadata = cType.Metadata;
 
@@ -68,7 +66,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
         {
             Id = cType.Id,
             Name = cType.Name,
-            Label = nameOverride,
+            Label = nameOverride!,
             StaticName = cType.NameId,
             NameId = cType.NameId,
             Scope = cType.Scope,
@@ -80,7 +78,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
             Fields = cType.Attributes.Count(),
             TitleField = cType.TitleFieldName,
             Metadata = mdReferences,
-            Properties = properties,
+            Properties = properties!,
             Permissions = new() { Count = permissionCount },
         };
         return l.ReturnAsOk(jsonReady);

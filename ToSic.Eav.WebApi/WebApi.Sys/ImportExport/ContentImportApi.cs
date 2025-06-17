@@ -22,7 +22,7 @@ public class ContentImportApi(
     IAppReaderFactory appReaders
 ) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appsCatalog, appReaders])
 {
-    private IAppReader _appReader;
+    private IAppReader _appReader = null!;
 
     public ContentImportApi Init(int appId)
     {

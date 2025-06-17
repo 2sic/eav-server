@@ -64,7 +64,7 @@ public class WorkQueryMod(
     /// <param name="newDsGuids"></param>
     /// <param name="headerValues"></param>
     /// <param name="wirings"></param>
-    public void Update(int queryId, List<Dictionary<string, object>> partDefs, ICollection<Guid> newDsGuids, Dictionary<string, object> headerValues, ICollection<Connection> wirings)
+    public void Update(int queryId, IList<Dictionary<string, object>> partDefs, ICollection<Guid> newDsGuids, Dictionary<string, object> headerValues, ICollection<Connection> wirings)
     {
         // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
         var qdef = Get(queryId);
@@ -87,7 +87,7 @@ public class WorkQueryMod(
     /// </summary>
     /// <param name="partsDefinitions"></param>
     /// <param name="queryEntityGuid">EntityGuid of the Pipeline-Entity</param>
-    private Dictionary<string, Guid> SavePartsAndGenerateRenameMap(List<Dictionary<string, object>> partsDefinitions, Guid queryEntityGuid)
+    private Dictionary<string, Guid> SavePartsAndGenerateRenameMap(IList<Dictionary<string, object>> partsDefinitions, Guid queryEntityGuid)
     {
         Log.A($"save parts guid:{queryEntityGuid}");
         var newDataSources = new Dictionary<string, Guid>();

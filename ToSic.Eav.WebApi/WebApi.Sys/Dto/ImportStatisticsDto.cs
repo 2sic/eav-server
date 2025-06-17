@@ -2,12 +2,12 @@
 
 public class ImportStatisticsDto
 {
-    public int AmountOfEntitiesCreated;
-    public int AmountOfEntitiesDeleted;
-    public int AmountOfEntitiesUpdated;
-    public IEnumerable<string> AttributeNamesInDocument;
-    public IEnumerable<string> AttributeNamesInContentType;
-    public IEnumerable<string> AttributeNamesNotImported;
-    public int DocumentElementsCount;
-    public int LanguagesInDocumentCount;
+    public required int AmountOfEntitiesCreated{ get; init; }
+    public required int AmountOfEntitiesDeleted{ get; init; }
+    public required int AmountOfEntitiesUpdated{ get; init; }
+    public required IEnumerable<string> AttributeNamesInDocument{ get; init; }
+    public required IEnumerable<string> AttributeNamesInContentType{ get; init; }
+    public required IEnumerable<string> AttributeNamesNotImported{ get; init; }
+    public required int DocumentElementsCount{ get; init; }
+    public required int LanguagesInDocumentCount{ get; init; }
 }

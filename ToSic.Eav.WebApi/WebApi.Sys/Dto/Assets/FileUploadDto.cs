@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace ToSic.Eav.WebApi.Sys.Dto;
+﻿namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class FileUploadDto
 {

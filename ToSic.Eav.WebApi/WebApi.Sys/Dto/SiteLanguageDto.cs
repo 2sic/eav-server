@@ -4,17 +4,17 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class SiteLanguageDto
 {
-    public string Code { get; set; }
+    public required string Code { get; init; }
 
-    public string NameId => Code?.ToLowerInvariant();
+    public string? NameId => Code?.ToLowerInvariant();
 
-    public string Culture { get; set; }
+    public required string Culture { get; init; }
 
-    public bool IsEnabled { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? IsAllowed { get; set; }
+    public required bool IsEnabled { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public HasPermissionsDto Permissions { get; set; }
+    public bool? IsAllowed { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public HasPermissionsDto? Permissions { get; init; }
 }

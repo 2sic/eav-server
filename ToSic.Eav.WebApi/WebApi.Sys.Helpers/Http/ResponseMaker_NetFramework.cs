@@ -14,7 +14,7 @@ internal class ResponseMaker: IResponseMaker
 {
     public void Init(System.Web.Http.ApiController apiController) => _apiController = apiController;
 
-    private System.Web.Http.ApiController _apiController;
+    private System.Web.Http.ApiController? _apiController;
 
     private System.Web.Http.ApiController ApiController
         => _apiController ?? throw new(

@@ -5,25 +5,25 @@ namespace ToSic.Eav.WebApi.Sys.Install;
 
 public class InstallAppsDto
 {
-    public string remoteUrl { get; set; }
+    public required string remoteUrl { get; init; }
 
-    public ICollection<AppInstallRuleDto> rules { get; set; }
+    public required ICollection<AppInstallRuleDto> rules { get; init; }
 
-    public ICollection<AppDtoLight> installedApps { get; set; }
+    public required ICollection<AppDtoLight> installedApps { get; init; }
 }
 
 public class AppInstallRuleDto
 {
-    public string name { get; set; }
-    public string appGuid { get; set; }
-    public string mode { get; set; }
-    public string target { get; set; }
-    public string url { get; set; }
+    public required string name { get; init; }
+    public required string appGuid { get; init; }
+    public required string mode { get; init; }
+    public required string target { get; init; }
+    public required string url { get; init; }
 }
 
 public class AppDtoLight
 {
-    public string name { get; set; }
-    public string guid { get; set; }
-    public string version { get; set; }
+    public required string name { get; init; }
+    public required string guid { get; init; }
+    public required string version { get; init; }
 }

@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataFormats.EavLight;
 /// Converter of lightweight sub-entities containing at most id/guid/title.
 /// </summary>
 /// <param name="languages"></param>
-internal class ConvertToJsonBasicLightSubEntities(string[] languages)
+internal class ConvertToJsonBasicLightSubEntities(string?[] languages)
 {
     internal object CreateListOrCsvOfSubEntities(IEnumerable<IEntity> items, ISubEntitySerialization rules)
     {

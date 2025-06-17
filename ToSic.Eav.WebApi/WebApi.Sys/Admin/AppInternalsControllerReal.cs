@@ -43,7 +43,7 @@ public class AppInternalsControllerReal(
             // 1. .../api/2sxc/admin/type/list?appId=999&scope=System.Configuration
             //SystemConfiguration = systemConfiguration,
 
-            EntityLists = new Dictionary<string, IEnumerable<IDictionary<string, object>>>
+            EntityLists = new Dictionary<string, IEnumerable<IDictionary<string, object>>?>
             {
                 // 2. .../api/2sxc/admin/entity/list?appId=999&contentType=SettingsSystem
                 {
@@ -85,7 +85,7 @@ public class AppInternalsControllerReal(
                 }
             },
 
-            FieldAll = new Dictionary<string, IEnumerable<ContentTypeFieldDto>>
+            FieldAll = new Dictionary<string, IEnumerable<ContentTypeFieldDto>?>
             {
                 // 4. .../api/2sxc/admin/field/all?appid=999&staticName=App-Settings
                 {

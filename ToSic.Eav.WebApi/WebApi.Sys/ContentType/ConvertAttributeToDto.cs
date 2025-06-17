@@ -32,15 +32,17 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
     public IEnumerable<ContentTypeFieldDto> Convert(IEnumerable<PairTypeWithAttribute> list)
     {
         var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>();
-        var result = list.Select(Convert).ToList();
+        var result = list
+            .Select(Convert)
+            .ToList();
         return l.Return(result, $"{result.Count}");
     }
 
-    public ContentTypeFieldDto Convert(PairTypeWithAttribute item)
+    public ContentTypeFieldDto Convert(PairTypeWithAttribute? item)
     {
         var l = Log.Fn<ContentTypeFieldDto>();
         if (item == null)
-            return l.ReturnNull("no item");
+            return l.ReturnNull("no item")!;
 
         var a = item.Attribute;
         var type = item.Type;
@@ -99,12 +101,12 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
     }
 
     private (IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)
-        GetInputTypesAndMetadata(string inputType, IContentTypeAttribute a, IContentType type, IAncestor ancestorDecorator, IReadOnlyCollection<InputTypeInfo> appInputTypes)
+        GetInputTypesAndMetadata(string inputType, IContentTypeAttribute a, IContentType type, IAncestor? ancestorDecorator, IReadOnlyCollection<InputTypeInfo> appInputTypes)
     {
         var l = Log.Fn<(IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)>();
         var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
 
-        // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side-effects
+        // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side effects
         var attribMetadata = (ContentTypeAttributeMetadata)a.Metadata;
         var mdToKeep = attribMetadata
             .Where(m => configTypes.Keys.Contains(m.Type.NameId) || configTypes.Keys.Contains(m.Type.Name))
@@ -158,7 +160,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         return l.Return(configTypes, $"{configTypes.Count}");
     }
 
-    private EavLightEntity InputMetadata(IContentType contentType, IContentTypeAttribute a, IEntity e, IAncestor ancestor, IConvertToEavLight ser)
+    private EavLightEntity InputMetadata(IContentType contentType, IContentTypeAttribute a, IEntity e, IAncestor? ancestor, IConvertToEavLight ser)
     {
         var result = ser.Convert(e);
         if (ancestor != null)
@@ -189,7 +191,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         var inputType = attribute.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeGeneral);
 
         // unknown will let the UI fallback on other mechanisms
-        return string.IsNullOrEmpty(inputType) ? EavConstants.NullNameId : inputType;
+        return string.IsNullOrEmpty(inputType) ? EavConstants.NullNameId : inputType!;
     }
 
     /// <summary>
@@ -221,7 +223,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
 
         return l.Return(finalDic, $"{finalDic.Count}");
 
-        InputTypeInfo FindInputType(string name)
+        InputTypeInfo? FindInputType(string name)
             => inputTypes.FirstOrDefault(i => i.Type.EqualsInsensitive(name));
     }
 
@@ -237,13 +239,14 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
 
     private RecommendedMetadataService MdRecommendations()
     {
-        if (_mdRecs != null) return _mdRecs;
+        if (_mdRecs != null)
+            return _mdRecs;
         _mdRecs = mdRead.Value;
         var appReader = appReaders.Get(_appId);
         _mdRecs.Setup(appReader, _appId);
         return _mdRecs;
     }
-    private RecommendedMetadataService _mdRecs;
+    private RecommendedMetadataService? _mdRecs;
 
     #endregion
 }

@@ -47,7 +47,7 @@ public class ContentExportApi(
         return l.Return(this);
     }
 
-    private IAppWorkCtx _appCtx;
+    private IAppWorkCtx _appCtx = null!;
 
     public (string FileContents, string FileName) ExportContent(IUser user,
         string language,
@@ -56,7 +56,7 @@ public class ContentExportApi(
         ExportSelection exportSelection,
         ExportResourceReferenceMode exportResourcesReferences,
         ExportLanguageResolution exportLanguageReferences,
-        string selectedIds)
+        string? selectedIds)
     {
         var l = Log.Fn<(string, string)>($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
         SecurityHelpers.ThrowIfNotContentAdmin(user, l);
@@ -66,11 +66,11 @@ public class ContentExportApi(
             .ToArray();
 
         // check if we have an array of ids
-        int[] ids = null;
+        int[]? ids = null;
         try
         {
             if (exportSelection == ExportSelection.Selection && !string.IsNullOrWhiteSpace(selectedIds))
-                ids = selectedIds.Split(',').Select(int.Parse).ToArray();
+                ids = selectedIds!.Split(',').Select(int.Parse).ToArray();
         }
         catch (Exception e)
         {
@@ -79,9 +79,9 @@ public class ContentExportApi(
 
         var tableExporter = exportListXmlGenerator.New().Init(_appCtx.AppReader, contentType);
         var fileContent = exportSelection == ExportSelection.Blank
-            ? tableExporter.EmptyListTemplate()
+            ? tableExporter.EmptyListTemplate()!
             : tableExporter.GenerateXml(language ?? "", defaultLanguage, contextLanguages, exportLanguageReferences,
-                exportResourcesReferences == ExportResourceReferenceMode.Resolve, ids);
+                exportResourcesReferences == ExportResourceReferenceMode.Resolve, ids!)!;
 
         var contentTypeName = tableExporter.ContentType.Name;
 
@@ -116,7 +116,8 @@ public class ContentExportApi(
     {
         var l = Log.Fn<THttpResponseType>($"get fields id:{id}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
-        var entity = _appCtx.AppReader.List.FindRepoId(id);
+        var entity = _appCtx.AppReader.List.FindRepoId(id)
+            ?? throw new($"Can't find entity with id {id}");
         var serializer = jsonSerializer.New().SetApp(_appCtx.AppReader);
 
         return l.ReturnAsOk(responseMaker.File(
@@ -225,7 +226,6 @@ public class ContentExportApi(
     private JsonBundle BundleBuild(ExportConfiguration export, JsonSerializer serializer)
     {
         var l = Log.Fn<JsonBundle>($"build bundle for ExportConfiguration:{export.Guid}");
-        var bundleList = new JsonBundle();
 
         // loop through content types and add them to the bundle-list
         l.A($"count export content types:{export.ContentTypes.Count}");
@@ -237,14 +237,14 @@ public class ContentExportApi(
         var appState = _appCtx.AppReader;
 
         // Content-Types contains the Content-Type as well entities referenced in CT-Attribute Metadata such as Formulas
-        bundleList.ContentTypes = export.ContentTypes.Count <= 0
+        var bundleTypesRaw = export.ContentTypes.Count <= 0
             ? null
             : export.ContentTypes
                 .Select(appState.GetContentType)
                 .Select(ct => serializer.ToPackage(ct, serSettings))
                 .Select(jsonType => new JsonContentTypeSet
                 {
-                    ContentType = PreserveMarker(export.PreserveMarkers, jsonType.ContentType),
+                    ContentType = PreserveMarker(export.PreserveMarkers, jsonType.ContentType ?? throw new("Error accessing ContentType in bundle which must have it.")),
                     Entities = jsonType.Entities
                 })
                 .ToList();
@@ -252,35 +252,51 @@ public class ContentExportApi(
         // loop through entities and add them to the bundle list
         l.A($"count export entities:{export.Entities.Count}");
 
-        bundleList.Entities = export.Entities.Count <= 0
+        IList<JsonEntity>? bundleEntitiesRaw = export.Entities.Count <= 0
             ? null
             : export.Entities
                 .Select(appState.List.One)
-                .Select(e => serializer.ToJson(e, export.EntitiesWithMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0))
-                .ToListOpt();
+                .Select(e => serializer.ToJson(e, export.EntitiesWithMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0)!)
+                .ToList(); // must be mutable ToList!
 
         // Find duplicate related entities
         // as there are various ways they can appear, but we really only need them once
-        var dupEntities = (bundleList.ContentTypes ?? [])
-            .SelectMany(ct => ct.Entities.Select(e => new { Entity = e, Type = ct, List = ct.Entities }))
-            .Concat((bundleList.Entities ?? []).Select(e => new { Entity = e, Type = null as JsonContentTypeSet, List = bundleList.Entities }))
+        var ctEntities = (bundleTypesRaw ?? [])
+            .SelectMany(ct => (ct.Entities ?? []).Select(e => new { Entity = e, Priority = 1, List = ct.Entities! }))
+            .ToListOpt();
+        var bundleEntities = (bundleEntitiesRaw ?? [])
+            .Select(e => new { Entity = e, Priority = 0, List = bundleEntitiesRaw! })
+            .ToListOpt();
+        var dupEntities = ctEntities
+            .Concat(bundleEntities)
             .GroupBy(e => e.Entity.Id)
             .Where(g => g.Count() > 1)
             .ToListOpt();
 
-        l.A($"Found {dupEntities.Count} duplicate entities in export.");
+        l.A($"Found {dupEntities.Count} entities-groups (by duplicates) in export.");
 
         var removes = dupEntities
-            .Select(dupEntity =>
+            .SelectMany(dupEntity =>
             {
-                var keep = dupEntity.FirstOrDefault(e => e.Type != null) ?? dupEntity.First();
-                return dupEntity.Where(e => e != keep).ToList();
+                // To pick keepers we prefer the ones on the content-type,
+                // but otherwise (assuming duplicates) we just keep the first
+                var keep = dupEntity.FirstOrDefault(e => e.Priority == 1)
+                           ?? dupEntity.First();
+                return dupEntity
+                    .Where(e => e != keep)
+                    .ToList();
             })
-            .SelectMany(g => g)
             .ToList();
 
         foreach (var remove in removes)
             remove.List.Remove(remove.Entity);
+
+        var bundleList = new JsonBundle
+        {
+            ContentTypes = bundleTypesRaw,
+            Entities = bundleEntitiesRaw,
+        };
+
 
         return l.ReturnAsOk(bundleList);
     }
@@ -288,10 +304,15 @@ public class ContentExportApi(
     public JsonContentType PreserveMarker(bool preserveMarkers, JsonContentType jsonContentType)
     {
         Log.A($"preserveMarkers:{preserveMarkers}");
-        if (preserveMarkers) return jsonContentType;
-        
+        if (preserveMarkers)
+            return jsonContentType;
+
+        if (jsonContentType.Metadata == null)
+            return jsonContentType;
+
         var removeQue = jsonContentType.Metadata
-            .Where(metaData => metaData.Type.Name == ExportDecorator.ContentTypeName).ToList();
+            .Where(metaData => metaData.Type.Name == ExportDecorator.ContentTypeName)
+            .ToList();
 
         foreach (var item in removeQue)
             jsonContentType.Metadata.Remove(item);

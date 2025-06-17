@@ -2,7 +2,7 @@
 
 public class ContextLanguageDto
 {
-    public string Primary { get; set; }
-    public string Current { get; set; }
-    public List<SiteLanguageDto> List { get; set; }
+    public required string Primary { get; init; }
+    public required string Current { get; init; }
+    public required List<SiteLanguageDto> List { get; init; }
 }

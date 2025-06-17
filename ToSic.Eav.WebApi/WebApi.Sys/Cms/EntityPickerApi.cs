@@ -19,7 +19,7 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
         var l = Log.Fn<List<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Count}, type:{contentTypeName}");
 
         var appEnts = workEntities.New(appId, showDrafts: withDrafts);
-        IContentType contentType = null;
+        IContentType? contentType = null;
         if (!IsNullOrEmpty(contentTypeName))
         {
             contentType = appEnts.AppWorkCtx.AppReader.TryGetContentType(contentTypeName);
@@ -73,10 +73,12 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
         return l.Return(entities, $"found⋮{entities.Count}");
     }
 
-    private static string GetTitle(IEntity l, string[] dimensions)
+    private static string GetTitle(IEntity l, string?[] dimensions)
     {
         var title = l.GetBestTitle(dimensions);
-        return IsNullOrWhiteSpace(title) ? "(no Title, " + l.EntityId + ")" : title;
+        return IsNullOrWhiteSpace(title)
+            ? $"(no Title, {l.EntityId})"
+            : title!;
     }
 
 }

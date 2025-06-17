@@ -31,7 +31,7 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
                 case ValueTypes.String:
                 case ValueTypes.Hyperlink:
                     if (foundValue is string)
-                        cleanedNewItem.Add(attrName, foundValue.ToString());
+                        cleanedNewItem.Add(attrName, foundValue.ToString()!);
                     else
                         throw ValueMappingError(attrDef, foundValue);
                     break;

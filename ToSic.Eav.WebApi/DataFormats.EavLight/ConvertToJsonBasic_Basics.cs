@@ -9,7 +9,7 @@ partial class ConvertToEavLight
     /// Add Id, Guid and possibly AppId (new v15).
     /// New v17: added withIdOverride and withGuidFallback
     /// </summary>
-    private void AddAllIds(IEntity entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules, bool withGuidFallback)
+    private void AddAllIds(IEntity entity, IDictionary<string, object?> entityValues, EntitySerializationDecorator rules, bool withGuidFallback)
     {
         // Id - on by default
         // ...only if these are not already existing with this name in the entity itself as an internal value
@@ -25,7 +25,7 @@ partial class ConvertToEavLight
             AddOrReplaceValue(entityValues, AttributeNames.GuidNiceName, entity.EntityGuid);
     }
 
-    private static void AddOrReplaceValue(IDictionary<string, object> entityValues, string fieldName, object value)
+    private static void AddOrReplaceValue(IDictionary<string, object?> entityValues, string fieldName, object value)
     {
         // Manually remove, because there could be differences in case-sensitivity
         entityValues.Remove(fieldName);
@@ -33,7 +33,7 @@ partial class ConvertToEavLight
     }
 
 
-    private static void AddDateInformation(IEntity entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
+    private static void AddDateInformation(IEntity entity, IDictionary<string, object?> entityValues, EntitySerializationDecorator rules)
     {
         // Include modified field, if there is not already one in the dictionary
         if (rules.SerializeModified ?? true)

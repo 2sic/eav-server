@@ -4,9 +4,9 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class EntityImportDto
 {
-    public int AppId;
+    public int AppId { get; init; }
 
-    public string ContentBase64;
+    public required string ContentBase64 { get; init; }
 
     public string DebugInfo => $"app:{AppId} + base:{ContentBase64}";
 

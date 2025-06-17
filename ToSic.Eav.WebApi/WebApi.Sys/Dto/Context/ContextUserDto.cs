@@ -5,15 +5,15 @@
 /// </summary>
 public class ContextUserDto
 {
-    public string Email { get; set; }
-    public Guid Guid { get; set; }
-    public int Id { get; set; }
-    public bool IsAnonymous { get; set; }
-    public bool IsSystemAdmin { get; set; }
+    public required string Email { get; init; }
+    public required Guid Guid { get; init; }
+    public required int Id { get; init; }
+    public required bool IsAnonymous { get; init; }
+    public required bool IsSystemAdmin { get; init; }
 
-    public bool IsSiteAdmin { get; set; }
-    public bool IsContentAdmin { get; set; }
-    public string Name { get; set; }
-    public string Username { get; set; }
+    public required bool IsSiteAdmin { get; init; }
+    public required bool IsContentAdmin { get; init; }
+    public required string Name { get; init; }
+    public required string Username { get; init; }
 
 }

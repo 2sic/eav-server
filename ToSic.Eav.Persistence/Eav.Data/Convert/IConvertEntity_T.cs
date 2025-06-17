@@ -54,7 +54,7 @@ public interface IConvertEntity<out T>: IConvert<IEntity, T>, IConvert<IEntityWr
     /// <summary>
     /// Languages to prefer when looking up the values
     /// </summary>
-    string[] Languages { get; set; }
+    string?[] Languages { get; set; }
 
     // 2024-02-27 2dm removed from interface - clean up 2024-Q2
     ///// <summary>

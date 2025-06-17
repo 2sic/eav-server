@@ -52,7 +52,7 @@ public class MetadataControllerReal(
             l.A($"Filtered for ContentType '{contentType}' - count: {entityList.Count}");
         }
 
-        IEnumerable<MetadataRecommendation> recommendations = null;
+        IEnumerable<MetadataRecommendation>? recommendations = null;
         try
         {
             recommendations = mdRead.Value.GetAllowedRecommendations(targetType, key, contentType);
@@ -99,9 +99,9 @@ public class MetadataControllerReal(
     /// </summary>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    private (List<IEntity> entityList, JsonMetadataFor mdFor) GetExistingEntitiesAndMd(int targetType, string keyType, string key, string contentType, IMetadataSource mdSource)
+    private (List<IEntity>? entityList, JsonMetadataFor mdFor) GetExistingEntitiesAndMd(int targetType, string keyType, string key, string? contentType, IMetadataSource mdSource)
     {
-        var l = Log.Fn<(List<IEntity> entityList, JsonMetadataFor mdFor)>($"targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
+        var l = Log.Fn<(List<IEntity>? entityList, JsonMetadataFor mdFor)>($"targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
         var mdFor = new JsonMetadataFor
         {
             // #TargetTypeIdInsteadOfTarget

@@ -19,7 +19,7 @@ public class HttpUploadedFile(HttpRequestMessage requestMessage, HttpRequest req
 
     public int Count => Request.Files.Count;
 
-    public (string, Stream) GetStream(int i = 0)
+    public (string, Stream?) GetStream(int i = 0)
     {
         var file = Request.Files[i];
 

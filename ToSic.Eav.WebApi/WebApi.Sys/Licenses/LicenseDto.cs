@@ -2,15 +2,15 @@
 
 public class LicenseDto
 {
-    public string Name { get; init; }
-    public int Priority { get; init; }
-    public Guid Guid { get; init; }
-    public string Description { get; init; }
+    public required string Name { get; init; }
+    public required int Priority { get; init; }
+    public required Guid Guid { get; init; }
+    public required string Description { get; init; }
 
-    public bool AutoEnable { get; init; }
-    public bool IsEnabled { get; init; }
+    public required bool AutoEnable { get; init; }
+    public required bool IsEnabled { get; init; }
 
-    public DateTime? Expires { get; init; }
+    public required DateTime? Expires { get; init; }
 
-    public ICollection<FeatureStateDto> Features { get; init; }
+    public required ICollection<FeatureStateDto> Features { get; init; }
 }

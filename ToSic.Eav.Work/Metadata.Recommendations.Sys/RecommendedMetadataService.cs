@@ -55,7 +55,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     }
 
 
-    public IEnumerable<MetadataRecommendation>? GetRecommendations(int targetTypeId, string key, string? reqTypeName = null)
+    public IEnumerable<MetadataRecommendation> GetRecommendations(int targetTypeId, string key, string? reqTypeName = null)
     {
         var l = Log.Fn<IEnumerable<MetadataRecommendation>>($"targetType: {targetTypeId}");
         // Option 1. Specified typeName
@@ -65,7 +65,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
         {
             var recommendedType = AppReader.TryGetContentType(reqTypeName!);
             if (recommendedType == null)
-                return l.ReturnNull("type name not found");
+                return l.Return([], "type name not found");
             return l.Return(
                 [new(recommendedType, null, -1, "Use preset type", PrioMax)],
                 "use existing name");

@@ -17,12 +17,12 @@ public class ItemIdentifier
     /// <summary>
     /// the content-type (for new, and finding all fields etc.)
     /// </summary>
-    public string ContentTypeName { get; set; }
+    public string? ContentTypeName { get; set; }
 
     /// <summary>
     /// Metadata key information
     /// </summary>
-    public JsonMetadataFor For { get; set; }
+    public JsonMetadataFor? For { get; set; }
 
     #region Change v17.10 - stop passing Prefill and ClientData back and forth, let the UI remember using clientId
 
@@ -73,7 +73,7 @@ public class ItemIdentifier
     /// Must be an Entity-List. 
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Field { get; set; }
+    public string? Field { get; set; }
 
 
     /// <summary>
@@ -100,7 +100,7 @@ public class ItemIdentifier
 
     #region New EditInfo for v13 / Shared Apps
 
-    public EditInfoDto EditInfo { get; set; }
+    public EditInfoDto? EditInfo { get; set; }
 
     #endregion
 
@@ -145,12 +145,12 @@ public class ItemIdentifier
 
 public class BundleWithHeader
 {
-    public ItemIdentifier Header { get; set; }     
+    public ItemIdentifier? Header { get; set; }     
 }
 
 public class BundleWithHeader<TEntity>: BundleWithHeader
 {
-    public TEntity Entity { get; set; }
+    public TEntity? Entity { get; set; }
 
 }
 

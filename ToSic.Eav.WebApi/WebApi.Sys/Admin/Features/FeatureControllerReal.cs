@@ -26,7 +26,8 @@ public class FeatureControllerReal(
     public FeatureStateDto Details(string nameId)
     {
         var l = Log.Fn<FeatureStateDto>(nameId);
-        var details = featuresLazy.Value.All.FirstOrDefault(f => f.NameId.EqualsInsensitive(nameId));
+        var details = featuresLazy.Value.All.FirstOrDefault(f => f.NameId.EqualsInsensitive(nameId))
+            ?? throw new NullReferenceException($"Can't find feature {nameId}");
         var dto = new FeatureStateDto(details);
         return l.ReturnAsOk(dto);
     }

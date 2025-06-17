@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataFormats.EavLight;
 
 partial class ConvertToEavLight
 {
-    private void AddMetadataAndFor(IEntity entity, IDictionary<string, object> entityValues, EntitySerializationDecorator rules)
+    private void AddMetadataAndFor(IEntity entity, IDictionary<string, object?> entityValues, EntitySerializationDecorator rules)
     {
         // if rules.MetadataFor are not set, then respect WithMetadataFor
         // otherwise the rules should be applied, but default to false

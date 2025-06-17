@@ -3,22 +3,22 @@ using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-public class EditDto
+public record EditDto
 {
     /// <summary>
     /// The items in the load/save package.
     /// </summary>
-    public List<BundleWithHeader<JsonEntity>> Items;
+    public required List<BundleWithHeader<JsonEntity>> Items { get; init; }
 
     /// <summary>
     /// Content-Type information for the form
     /// </summary>
-    public List<JsonContentType> ContentTypes;
+    public List<JsonContentType> ContentTypes { get; init; } = null!;
 
     /// <summary>
     /// Relevant input-types and their default labels & configuration
     /// </summary>
-    public List<InputTypeInfo> InputTypes;
+    public List<InputTypeInfo> InputTypes { get; init; } = null!;
 
     /// <summary>
     /// If this set is to be published - default true
@@ -34,37 +34,37 @@ public class EditDto
     /// Experimental additional data for configuration
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<JsonEntity> ContentTypeItems;
+    public List<JsonEntity> ContentTypeItems { get; init; } = null!;
 
     /// <summary>
     /// The UI Context information
     /// </summary>
-    public ContextDto Context;
+    public ContextDto Context { get; init; } = null!;
 
     /// <summary>
     /// Contain pre-fetched data to reduce callbacks just to look up data which obviously will be needed
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public EditPrefetchDto Prefetch { get; set; }
+    public EditPrefetchDto? Prefetch { get; set; }
 
     /// <summary>
     /// Contains additional settings such as default GPS coordinates, content-types needed by pickers etc.
     /// </summary>
     /// <remarks>Added ca. v15</remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public EditSettingsDto Settings { get; set; }
+    public EditSettingsDto Settings { get; init; } = null!;
 
     /// <summary>
     /// WIP tell the UI what features are required v18.02...
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Dictionary<string, string[]> RequiredFeatures { get; set; }
+    public Dictionary<string, string[]> RequiredFeatures { get; init; } = null!;
 }
 
 public class EditSettingsDto
 {
-    public IDictionary<string, object> Values { get; set; }
-    public List<JsonEntity> Entities { get; set; }
+    public IDictionary<string, object>? Values { get; set; }
+    public List<JsonEntity>? Entities { get; set; }
 
     /// <summary>
     /// ContentTypes which are used for Pickers to determine names etc.
@@ -72,5 +72,5 @@ public class EditSettingsDto
     /// <remarks>
     /// Added v17, optimized with Title in v18.02
     /// </remarks>
-    public List<JsonContentTypeWithTitleWip> ContentTypes { get; set; }
+    public List<JsonContentTypeWithTitleWip>? ContentTypes { get; set; }
 }

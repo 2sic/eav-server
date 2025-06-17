@@ -21,7 +21,10 @@ public class HttpUploadedFile(HttpRequest request)
     {
         var file = Request.Form.Files[i];
 
-        var fileName = FileNames.SanitizeFileName(file?.FileName);
+        if (file == null)
+            throw new($"File {i} not found in request.");
+
+        var fileName = FileNames.SanitizeFileName(file.FileName);
 
         if (FileNames.IsKnownRiskyExtension(fileName))
             throw new($"File {fileName} has risky file type.");

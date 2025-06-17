@@ -12,12 +12,14 @@ public abstract class ValidatorBase(ILog parentLog, string logName) : HelperBase
     /// Determine if errors exist, and return that state
     /// </summary>
     /// <returns></returns>
-    protected bool BuildExceptionIfHasIssues(out HttpExceptionAbstraction preparedException, string? logMessage = null)
+    protected bool BuildExceptionIfHasIssues([NotNullWhen(true)] out HttpExceptionAbstraction? preparedException, string? logMessage = null)
     {
         var l = Log.Fn<bool>();
         preparedException = HasErrors ? HttpException.BadRequest(Errors): null;
-        if (logMessage != null) Log.A($"{nameof(logMessage)}:{logMessage}");
-        if (HasErrors) Log.A($"Errors:{Errors}");
+        if (logMessage != null)
+            l.A($"{nameof(logMessage)}:{logMessage}");
+        if (HasErrors)
+            l.A($"Errors:{Errors}");
         return l.Return(!HasErrors, HasErrors ? "found errors" : "all ok");
     }
 

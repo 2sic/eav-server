@@ -2,10 +2,10 @@
 
 public class TemplatePreviewDto
 {
-    public bool IsValid { get; set; }
+    public bool IsValid => string.IsNullOrEmpty(Error);
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Error { get; set; }
+    public string? Error { get; set; }
 
-    public string Preview { get; set; }
+    public string? Preview { get; set; }
 }

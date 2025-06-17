@@ -50,25 +50,26 @@ public class FileNames
     ];
 
 
-    public static bool IsKnownRiskyExtension(string fileName)
+    public static bool IsKnownRiskyExtension(string? fileName)
     {
         var extension = Path.GetExtension(fileName);
         return !string.IsNullOrEmpty(extension) && RiskyUploadDetector.IsMatch(extension);
     }
 
-    public static bool IsKnownCodeExtension(string fileName)
+    public static bool IsKnownCodeExtension(string? fileName)
     {
         var extension = Path.GetExtension(fileName);
         return !string.IsNullOrEmpty(extension) && CodeDetector.IsMatch(extension);
     }
 
-    public static string SanitizeFileName(string fileName)
+    public static string SanitizeFileName(string? fileName)
     {
         // make sure the file name doesn't contain injected path-traversal
         fileName = Path.GetFileName(fileName);
 
         // handle null, empty and white space
-        if (string.IsNullOrWhiteSpace(fileName)) return SafeChar;
+        if (string.IsNullOrWhiteSpace(fileName))
+            return SafeChar;
 
         // remove forbidden / troubling file name characters
         fileName = fileName
