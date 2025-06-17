@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.Dimensions.Sys;
-using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Sys.Save;
 
@@ -10,9 +9,6 @@ partial class DbEntity
     public const int RepoIdForJsonEntities = 1;
     private const int MaxToLogDetails = 10;
 
-    private List<DimensionDefinition> _zoneLangs;
-
-
     private int SaveEntity(IEntityPair<SaveOptions> entityOptionPair, bool logDetails)
     {
         var newEnt = entityOptionPair.Entity;
@@ -21,7 +17,8 @@ partial class DbEntity
 
         #region Step 1: Do some initial error checking and preparations
 
-        if (newEnt == null) throw new ArgumentNullException(nameof(newEnt));
+        if (newEnt == null)
+            throw new ArgumentNullException(nameof(newEnt));
 
         if (newEnt.Type == null)
             throw new("trying to save entity without known content-type, cannot continue");
@@ -29,21 +26,22 @@ partial class DbEntity
         #region Test what languages are given, and check if they exist in the target system
 
         // continue here - must ensure that the languages are passed in, cached - or are cached on the DbEntity... for multiple saves
-        if (_zoneLangs == null)
-            _zoneLangs = so.Languages ?? throw new("languages missing in save-options. cannot continue");
+        var zoneLangs = so.Languages ?? throw new("languages missing in save-options. cannot continue");
 
         var usedLanguages = newEnt.GetUsedLanguages();
         if (usedLanguages.Count > 0)
-            if (!usedLanguages.All(lang => _zoneLangs.Any(zl => zl.Matches(lang.Key))))
-                throw new(
-                    $"entity has languages which are not in zone - entity has {usedLanguages.Count} zone has {_zoneLangs.Count} " +
-                    $"used-list: '{string.Join(",", usedLanguages.Select(lang => lang.Key).ToArray())}'");
+            if (!usedLanguages.All(lang => zoneLangs.Any(zl => zl.Matches(lang.Key))))
+            {
+                var langList = l.Try(() => string.Join(",", usedLanguages.Select(lang => lang.Key)));
+                throw new($"entity has languages missing in zone - entity: {usedLanguages.Count} zone: {zoneLangs.Count} used-list: '{langList}'");
+            }
 
         if (logDetails)
         {
-            l.A($"lang checks - zone language⋮{_zoneLangs.Count}, usedLanguages⋮{usedLanguages.Count}");
-            l.A(l.Try(() =>
-                $"langs zone:[{string.Join(",", _zoneLangs.Select(z => z.EnvironmentKey))}] used:[{string.Join(",", usedLanguages.Select(u => u.Key))}]"));
+            l.A($"lang checks - zone language⋮{zoneLangs.Count}, usedLanguages⋮{usedLanguages.Count}");
+            var zoneLangList = l.Try(() => string.Join(",", zoneLangs.Select(z => z.EnvironmentKey)));
+            var usedLangList = l.Try(() => string.Join(",", usedLanguages.Select(u => u.Key)));
+            l.A($"langs zone:[{zoneLangList}] used:[{usedLangList}]");
         }
 
 
@@ -51,8 +49,9 @@ partial class DbEntity
 
         // check if saving should be with db-type or with the plain json
         var saveJson = UseJson(newEnt);
-        string jsonExport = null;
-        if (logDetails) l.A($"save json:{saveJson}");
+        string? jsonExport = null;
+        if (logDetails)
+            l.A($"save json:{saveJson}");
 
         #endregion Step 1
 
@@ -67,15 +66,16 @@ partial class DbEntity
         newEnt = entity; // may have been replaced with an updated IEntity during corrections
 
         var isNew = newEnt.EntityId <= 0; // remember how we want to work...
-        if (logDetails) l.A($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
+        if (logDetails)
+            l.A($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
 
         var (contentTypeId, attributeDefs) = GetContentTypeAndAttribIds(saveJson, newEnt, logDetails);
 
         #endregion Step 2
 
 
-
-        TsDynDataEntity dbEnt = null;
+        var entityId = 0;
+        TsDynDataEntity? dbEnt = null;
 
         var transactionId = DbContext.Versioning.GetTransactionId();
 
@@ -83,36 +83,35 @@ partial class DbEntity
         {
             #region Step 3: either create a new entity, or if it's an update, do draft/published checks to ensure correct data
 
-            // is New
+            // is New vs. Update
             if (isNew)
-                l.Do(message: "Create new...", action: () =>
+            {
+                var l2 = l.Fn("Create new", timer: true);
+                if (newEnt.EntityGuid == Guid.Empty)
                 {
-                    var l2 = l.Fn();
-                    if (newEnt.EntityGuid == Guid.Empty)
-                    {
-                        if (logDetails)
-                            l2.A("New entity guid was null, will throw exception");
-                        throw new ArgumentException("can't create entity in DB with guid null - entities must be fully prepared before sending to save");
-                    }
+                    if (logDetails)
+                        l2.A("New entity guid was null, will throw exception");
+                    throw new ArgumentException("can't create entity in DB with guid null - entities must be fully prepared before sending to save");
+                }
 
-                    dbEnt = CreateDbRecord(newEnt, transactionId, contentTypeId);
-                    // update the ID - for versioning and/or json persistence
-                    newEnt = builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
-                    //newEnt.ResetEntityId(dbEnt.EntityId); // update this, as it was only just generated
+                dbEnt = CreateDbRecord(newEnt, transactionId, contentTypeId);
+                // update the ID - for versioning and/or json persistence
+                newEnt = builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
 
-                    // prepare export for save json OR versioning later on
-                    jsonExport = GenerateJsonOrReportWhyNot(newEnt, logDetails);
+                // prepare export for save json OR versioning later on
+                jsonExport = GenerateJsonOrReportWhyNot(newEnt, logDetails);
 
-                    if (saveJson)
-                        l2.Do($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}", () =>
-                        {
-                            dbEnt.Json = jsonExport;
-                            dbEnt.ContentType = newEnt.Type.NameId;
-                            DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dbEnt),
-                                "update json");
-                        });
-                    l2.Done($"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
-                });
+                if (saveJson)
+                {
+                    var l3 = l2.Fn($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
+                    dbEnt.Json = jsonExport;
+                    dbEnt.ContentType = newEnt.Type.NameId;
+                    DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dbEnt),
+                        "update json");
+                    l3.Done();
+                }
+                l2.Done($"i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}");
+            }
             // is Update
             else
             {
@@ -124,7 +123,7 @@ partial class DbEntity
 
                 var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
                 var paramsMsg =
-                    $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newstate:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}";
+                    $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newState:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}";
                 l.Do(paramsMsg, () =>
                 {
 
@@ -171,14 +170,20 @@ partial class DbEntity
                     // In this case we must reset this, otherwise the next load will still prefer the json
                     else
                     {
-                        if (dbEnt.ContentTypeId == RepoIdForJsonEntities) dbEnt.ContentTypeId = contentTypeId;
-                        if (dbEnt.Json != null) dbEnt.Json = null;
-                        if (dbEnt.ContentType != null) dbEnt.ContentType = null;
+                        if (dbEnt.ContentTypeId == RepoIdForJsonEntities)
+                            dbEnt.ContentTypeId = contentTypeId;
+                        if (dbEnt.Json != null)
+                            dbEnt.Json = null;
+                        if (dbEnt.ContentType != null)
+                            dbEnt.ContentType = null;
                     }
 
                     // first, clean up all existing attributes / values (flush)
                     // this is necessary after remove, because otherwise EF state tracking gets messed up
-                    DbContext.DoAndSave(() => dbEnt.TsDynDataValues.Clear(), "Flush values");
+                    DbContext.DoAndSave(
+                        () => dbEnt.TsDynDataValues.Clear(),
+                        "Flush values"
+                    );
                 });
 
                 #endregion Step 3b
@@ -191,7 +196,7 @@ partial class DbEntity
             if (!saveJson)
             {
                 // save all the values we just added
-                SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, transactionId, logDetails);
+                SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, zoneLangs, transactionId, logDetails);
                 DbContext.Relationships.ChangeRelationships(newEnt, dbEnt, attributeDefs, so);
             }
             else if (isNew)
@@ -206,7 +211,7 @@ partial class DbEntity
             #region Step 6: Ensure versioning
 
             if (jsonExport == null)
-                throw new("trying to save version history entry, but jsonexport isn't ready");
+                throw new("trying to save version history entry, but jsonExport isn't ready");
             DbContext.Versioning.AddToHistoryQueue(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
 
             #endregion
@@ -215,13 +220,14 @@ partial class DbEntity
 
             #region Workaround for preserving the last guid (temp - improve some day...)
 
+            entityId = dbEnt.EntityId; // remember the ID for later
             TempLastSaveGuid = dbEnt.EntityGuid;
 
             #endregion
 
         }); // end of transaction
 
-        return l.Return(dbEnt.EntityId, "done id:" + dbEnt?.EntityId);
+        return l.Return(entityId, $"done id:{entityId}");
     }
 
 
@@ -286,7 +292,7 @@ partial class DbEntity
         var clone = builder.Entity.CreateFrom(newEnt,
             publishedId: newEnt.EntityId, // set this, in case we'll create a new one
             id: existingDraftId ?? 0  // set to the draft OR 0 = new
-        ) as Entity;
+        );
 
         return l.Return((existingDraftId,
                 false, // not additional anymore, as we're now pointing this as primary
@@ -294,7 +300,7 @@ partial class DbEntity
             existingDraftId?.ToString() ?? "null");
     }
 
-    private Dictionary<int, int?> _entityDraftMapCache;
+    private Dictionary<int, int?>? _entityDraftMapCache;
 
 
     /// <summary>

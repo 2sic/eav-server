@@ -42,7 +42,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
     }
 
 
-    private TsDynDataAttribute GetAttribute(int contentTypeId, int attributeId = 0, string name = null)
+    private TsDynDataAttribute GetAttribute(int contentTypeId, int attributeId = 0, string? name = null)
     {
         try
         {
@@ -94,31 +94,31 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
     /// </summary>
     public int AddAttributeAndSave(int contentTypeId, IContentTypeAttribute contentTypeAttribute, int? newSortOrder = default)
     {
-        var staticName = contentTypeAttribute.Name;
+        var nameId = contentTypeAttribute.Name;
         var type = contentTypeAttribute.Type.ToString();
         var isTitle = contentTypeAttribute.IsTitle;
         var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
         var sysSettings = Serializer.Serialize(contentTypeAttribute.SysSettings);
 
-        var contentType = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentTypeId);
+        var contentType = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentTypeId)
+            ?? throw new($"Can't find {contentTypeId} in DB.");
 
-        if (!AttributeNames.StaticNameValidation.IsMatch(staticName))
-            throw new("Attribute static name \"" + staticName + "\" is invalid. " + AttributeNames.StaticNameErrorMessage);
+        if (!AttributeNames.StaticNameValidation.IsMatch(nameId))
+            throw new($"Attribute static name \"{nameId}\" is invalid. {AttributeNames.StaticNameErrorMessage}");
 
         // Prevent Duplicate Name
-        if (AttributeExistsInSet(contentType.ContentTypeId, staticName))
-            throw new ArgumentException($@"An Attribute with the static name {staticName} already exists", nameof(staticName));
+        if (AttributeExistsInSet(contentType.ContentTypeId, nameId))
+            throw new ArgumentException($@"An Attribute with the static name {nameId} already exists", nameof(nameId));
 
         var newAttribute = new TsDynDataAttribute
         {
             Type = type,
-            StaticName = staticName,
+            StaticName = nameId,
             TransCreatedId = DbContext.Versioning.GetTransactionId(),
             Guid = contentTypeAttribute.Guid,
             SysSettings = sysSettings,
             ContentType = contentType,
             SortOrder = sortOrder,
-            // AttributeGroupId = 1,
             IsTitle = isTitle
         };
         DbContext.SqlDb.Add(newAttribute);
@@ -130,7 +130,10 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         if (isTitle)
         {
             // unset old Title Fields
-            var oldTitleFields = contentType.TsDynDataAttributes.Where(a => a.IsTitle && a.StaticName != staticName).ToList();
+            var oldTitleFields = contentType
+                .TsDynDataAttributes
+                .Where(a => a.IsTitle && a.StaticName != nameId)
+                .ToListOpt();
             foreach (var titleField in oldTitleFields)
                 titleField.IsTitle = false;
         }

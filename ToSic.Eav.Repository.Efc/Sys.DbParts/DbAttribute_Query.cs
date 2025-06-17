@@ -39,6 +39,7 @@ partial class DbAttribute
             .Select(a => a.Type)
             .ToArray();
 
-    public TsDynDataAttribute Get(int attributeId) 
-        => DbContext.SqlDb.TsDynDataAttributes.FirstOrDefault(a => a.AttributeId == attributeId);
+    public TsDynDataAttribute? Get(int attributeId) 
+        => DbContext.SqlDb.TsDynDataAttributes
+            .FirstOrDefault(a => a.AttributeId == attributeId);
 }

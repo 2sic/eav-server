@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.Save;
+﻿using ToSic.Eav.Data.Dimensions.Sys;
+using ToSic.Eav.Data.Sys.Save;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
@@ -31,6 +32,7 @@ partial class DbEntity
         SaveOptions so,
         List<TsDynDataAttribute> dbAttributes,
         TsDynDataEntity dbEnt,
+        List<DimensionDefinition> _zoneLangs,
         int transactionId,
         bool logDetails)
     {
@@ -60,14 +62,18 @@ partial class DbEntity
                 {
                     #region prepare languages - has extensive error reporting, to help in case any db-data is bad
 
-                    List<TsDynDataValueDimension> toSicEavValuesDimensions;
+                    List<TsDynDataValueDimension>? toSicEavValuesDimensions;
                     try
                     {
-                        toSicEavValuesDimensions = value.Languages?.Select(l => new TsDynDataValueDimension
-                        {
-                            DimensionId = _zoneLangs.Single(ol => ol.Matches(l.Key)).DimensionId,
-                            ReadOnly = l.ReadOnly
-                        }).ToList();
+                        toSicEavValuesDimensions = value.Languages
+                            ?.Select(lng => new TsDynDataValueDimension
+                            {
+                                DimensionId = _zoneLangs
+                                    .Single(ol => ol.Matches(lng.Key))
+                                    .DimensionId,
+                                ReadOnly = lng.ReadOnly
+                            })
+                            .ToList();
                     }
                     catch (Exception ex)
                     {

@@ -6,7 +6,7 @@ partial class DbEntity
     {
         var l = Log.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
         if (saveJson)
-            return l.Return((RepoIdForJsonEntities, null), $"json - no attributes, CT: {RepoIdForJsonEntities}");
+            return l.Return((RepoIdForJsonEntities, []), $"json - no attributes, CT: {RepoIdForJsonEntities}");
 
         // 2023-02-28 2dm now #immutable, so the ID is not updated when a type was just imported
         // So if the TypeId is 0 (or anything invalid) it's a new type, and must be retrieved first

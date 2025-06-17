@@ -12,13 +12,13 @@ internal class DbAttributeSet(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
     /// <summary>
     /// Get a single ContentType
     /// </summary>
-    internal TsDynDataContentType GetDbContentType(int appId, int contentTypeId)
+    internal TsDynDataContentType? GetDbContentType(int appId, int contentTypeId)
         => GetDbContentTypeCoreQuery(appId).SingleOrDefault(a => a.ContentTypeId == contentTypeId);
 
     /// <summary>
     /// Get a single ContentType
     /// </summary>
-    public TsDynDataContentType GetDbContentType(int appId, string name, bool alsoCheckNiceName = false)
+    public TsDynDataContentType? GetDbContentType(int appId, string name, bool alsoCheckNiceName = false)
     {
         var byStaticName = GetDbContentTypeCoreQuery(appId).SingleOrDefault(a => a.StaticName == name);
         if (byStaticName != null || !alsoCheckNiceName)
@@ -92,7 +92,7 @@ internal class DbAttributeSet(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
     private bool DbAttribSetExists(int appId, string staticName)
         => GetDbContentTypeCoreQuery(appId).Any(a => a.StaticName == staticName);
 
-    internal TsDynDataContentType PrepareDbAttribSet(string name, string nameId, string scope, bool skipExisting, int? appId)
+    internal TsDynDataContentType? PrepareDbAttribSet(string name, string nameId, string scope, bool skipExisting, int? appId)
     {
         if (string.IsNullOrEmpty(nameId))
             nameId = Guid.NewGuid().ToString();
@@ -104,7 +104,7 @@ internal class DbAttributeSet(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
         {
             if (skipExisting)
                 return null;
-            throw new("A Content-Type with StaticName \"" + nameId + "\" already exists.");
+            throw new($"A Content-Type with StaticName \"{nameId}\" already exists.");
         }
 
         var newSet = new TsDynDataContentType

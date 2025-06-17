@@ -5,15 +5,16 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
 {
-    private int GetDimensionId(string systemKey, string externalKey)
+    private int GetDimensionId(string systemKey, string? externalKey)
     {
         // Because of changes in EF 3.x we had to split where part on server and client.
-        return DbContext.SqlDb.TsDynDataDimensions
+        return DbContext.SqlDb
+            .TsDynDataDimensions
             .Where(d => d.ZoneId == DbContext.ZoneId) // This is evaluated on the SQL server
             .ToList()
             .Where(d =>
-                d.Matches(externalKey)
-                && string.Equals(d.Key, systemKey, StringComparison.CurrentCultureIgnoreCase))// This is evaluated on the client
+                string.Equals(d.EnvironmentKey, externalKey, StringComparison.InvariantCultureIgnoreCase)
+                && string.Equals(d.Key, systemKey, StringComparison.InvariantCultureIgnoreCase)) // This is evaluated on the client
             .Select(d => d.DimensionId)
             .FirstOrDefault();
     }
@@ -21,9 +22,11 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// <summary>
     /// Update a single Dimension
     /// </summary>
-    private void UpdateDimension(int dimensionId, bool? active = null, string name = null)
+    private void UpdateDimension(int dimensionId, bool? active = null, string? name = null)
     {
-        var dimension = DbContext.SqlDb.TsDynDataDimensions.Single(d => d.DimensionId == dimensionId);
+        var dimension = DbContext.SqlDb
+            .TsDynDataDimensions
+            .Single(d => d.DimensionId == dimensionId);
         if (active.HasValue)
             dimension.Active = active.Value;
         if (name != null)

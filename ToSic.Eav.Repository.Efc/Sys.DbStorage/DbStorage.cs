@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.AppReader.Sys;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
@@ -57,11 +58,13 @@ public class DbStorage(
     /// <summary>
     /// Current UserName. Used for TransactionId
     /// </summary>
+    [field: AllowNull, MaybeNull]
     public string UserIdentityToken
     {
         get
         {
-            if (field != null) return field;
+            if (field != null)
+                return field;
             try
             {
                 // try to get using dependency injection
@@ -83,16 +86,27 @@ public class DbStorage(
 
     #region Parts
 
+    [field: AllowNull, MaybeNull]
     internal DbVersioning Versioning => field ??= new(this, compressor);
+    [field: AllowNull, MaybeNull]
     internal DbEntity Entities => field ??= new(this, builder);
+    [field: AllowNull, MaybeNull]
     internal DbValue Values => field ??= new(this);
+    [field: AllowNull, MaybeNull]
     internal DbAttribute Attributes => field ??= new(this);
+    [field: AllowNull, MaybeNull]
     internal DbRelationship Relationships => field ??= new(this);
+    [field: AllowNull, MaybeNull]
     internal DbAttributeSet AttribSet => field ??= new(this);
+    [field: AllowNull, MaybeNull]
     internal DbPublishing Publishing => field ??= new(this, builder);
+    [field: AllowNull, MaybeNull]
     internal DbDimensions Dimensions => field ??= new(this);
+    [field: AllowNull, MaybeNull]
     internal DbZone Zone => field ??= new(this);
+    [field: AllowNull, MaybeNull]
     internal DbApp App => field ??= new(this);
+    [field: AllowNull, MaybeNull]
     internal DbContentType ContentType => field ??= new(this);
 
     #endregion
@@ -105,6 +119,7 @@ public class DbStorage(
 
     private static bool _loggedToBootLog;
 
+    [field: AllowNull, MaybeNull]
     public EavDbContext SqlDb
     {
         get
@@ -218,7 +233,7 @@ public class DbStorage(
 
     #region Shorthand for do & save
 
-    internal void DoAndSave(Action action, string message = null)
+    internal void DoAndSave(Action action, string? message = null)
     {
         var l = Log.Fn(message: message, timer: true);
         action.Invoke();
@@ -227,7 +242,7 @@ public class DbStorage(
     }
 
 
-    internal void DoAndSaveWithoutChangeDetection(Action action, string message = null)
+    internal void DoAndSaveWithoutChangeDetection(Action action, string? message = null)
     {
         var l = Log.Fn(timer: true, message: message);
         action.Invoke();

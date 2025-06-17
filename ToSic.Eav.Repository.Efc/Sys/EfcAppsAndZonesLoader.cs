@@ -13,7 +13,7 @@ internal class EfcAppsAndZonesLoader(DbStorage.DbStorage dbStorage) : IAppsAndZo
 {
     private readonly DbStorage.DbStorage _dbStorage = dbStorage.Init(null, null);
 
-    public ILog Log => _dbStorage.Loader.Log;
+    public ILog Log => _dbStorage.Loader.Log!;
 
     public ICollection<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
         => _dbStorage.Loader.ContentTypes(appId, source);
@@ -27,7 +27,7 @@ internal class EfcAppsAndZonesLoader(DbStorage.DbStorage dbStorage) : IAppsAndZo
     public IAppStateCache AppState(int appId, CodeRefTrail codeRefTrail)
         => _dbStorage.Loader.AppState(appId, codeRefTrail);
 
-    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds = null)
+    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[]? entityIds = null)
         => _dbStorage.Loader.Update(app, startAt, codeRefTrail, entityIds);
 
     public IDictionary<int, Zone> Zones()

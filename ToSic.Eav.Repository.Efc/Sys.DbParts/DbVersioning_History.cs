@@ -48,18 +48,27 @@ partial class DbVersioning
                 && t.SourceId == entityId
             );
         if (historyId > 0)
-            rootQuery = rootQuery.Where(t => t.TransactionId == historyId);
+            rootQuery = rootQuery
+                .Where(t => t.TransactionId == historyId);
 
         var entityVersions = rootQuery
             .OrderByDescending(t => t.Timestamp)
-            .Join(DbContext.SqlDb.TsDynDataTransactions, t => t.TransactionId, c => c.TransactionId, (history, log) => new { History = history, Log = log })
-            .Select(d =>  new ItemHistory
+            .Join(DbContext.SqlDb.TsDynDataTransactions,
+                t => t.TransactionId,
+                c => c.TransactionId,
+                (history, log) => new { History = history, Log = log }
+            )
+            .Select(d => new ItemHistory
             {
                 TimeStamp = d.History.Timestamp,
-                ChangeSetId = d.History.TransactionId.Value,
+                ChangeSetId = d.History.TransactionId ?? -1,
                 HistoryId = d.History.HistoryId,
                 User = d.Log.User,
-                Json = includeData ? (string.IsNullOrEmpty(d.History.Json) ? _compressor.Value.Decompress(d.History.CJson) : d.History.Json) : null
+                Json = includeData
+                    ? (string.IsNullOrEmpty(d.History.Json)
+                        ? _compressor.Value.Decompress(d.History.CJson)
+                        : d.History.Json)
+                    : null
             })
             .ToList();
 

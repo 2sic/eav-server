@@ -134,7 +134,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                     .Where(rel => rel.ChildEntityGuids != null)
                     .SelectMany(rel => rel.ChildEntityGuids
                         .Where(g => g.HasValue)
-                        .Select(g => g.Value)
+                        .Select(g => g!.Value)
                     )
                     .Distinct()
                     .ToArray();

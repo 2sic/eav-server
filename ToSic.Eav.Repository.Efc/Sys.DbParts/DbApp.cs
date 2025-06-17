@@ -12,7 +12,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// <summary>
     /// Add a new App
     /// </summary>
-    internal TsDynDataApp AddApp(TsDynDataZone zone, string guidName, int? inheritAppId = null)
+    internal TsDynDataApp AddApp(TsDynDataZone? zone, string guidName, int? inheritAppId = null)
     {
         // Use provided zone or if null, use the one which was pre-initialized for this DbApp Context
         zone = zone ?? DbContext.SqlDb.TsDynDataZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);

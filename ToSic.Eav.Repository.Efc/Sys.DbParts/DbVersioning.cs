@@ -29,7 +29,8 @@ internal  partial class DbVersioning: DbPartBase
     internal int GetTransactionId()
     {
         var userName = DbContext.UserIdentityToken;
-        if (_mainTransactionId != 0) return _mainTransactionId;
+        if (_mainTransactionId != 0)
+            return _mainTransactionId;
 
         var con = DbContext.SqlDb.Database.GetDbConnection();
         if (con.State != ConnectionState.Open)
@@ -44,7 +45,8 @@ internal  partial class DbVersioning: DbPartBase
 
         // enlist in any transaction EF is already using
         var curTx = DbContext.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
-        if (curTx != null) cmd.Transaction = curTx;
+        if (curTx != null)
+            cmd.Transaction = curTx;
 
         _mainTransactionId = Convert.ToInt32(cmd.ExecuteScalar()); // returns the new TransactionId
         return _mainTransactionId;

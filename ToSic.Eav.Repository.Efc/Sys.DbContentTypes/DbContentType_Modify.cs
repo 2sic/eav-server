@@ -36,9 +36,10 @@ partial class DbContentType
     }
 
 
-    public void Delete(string staticName)
+    public void Delete(string nameId)
     {
-        var setToDelete = GetTypeByStaticName(staticName);
+        var setToDelete = GetTypeByStaticName(nameId)
+            ?? throw new ArgumentException($@"Tried to delete but can't find {nameId}", nameof(nameId));
         setToDelete.TransDeletedId = DbContext.Versioning.GetTransactionId();
         DbContext.SqlDb.SaveChanges();
     }
@@ -46,17 +47,18 @@ partial class DbContentType
 
     private int? GetOrCreateContentType(ContentType contentType)
     {
-        var destinationSet = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
+        var newType = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
 
         // add new Content-Type, do basic configuration if possible, then save
-        if (destinationSet == null)
-            destinationSet = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, contentType.NameId, contentType.Scope, false, null);
+        if (newType == null)
+            newType = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, contentType.NameId, contentType.Scope, false, null)
+                ?? throw new($"Can't create content type {contentType.Name}/{contentType.NameId}");
 
         // to use existing Content-Type, do some minimal conflict-checking
         else
         {
             DbContext.ImportLogToBeRefactored.Add(new($"Content-Type already exists{contentType.NameId}|{contentType.Name}", Message.MessageTypes.Information));
-            if (destinationSet.InheritContentTypeId.HasValue)
+            if (newType.InheritContentTypeId.HasValue)
             {
                 DbContext.ImportLogToBeRefactored.Add(new("Not allowed to import/extend an Content-Type which uses Configuration of another Content-Type: " + contentType.NameId, Message.MessageTypes.Error));
                 return null;
@@ -66,15 +68,16 @@ partial class DbContentType
         // If a "Ghost"-content type is specified, try to assign that
         if (!string.IsNullOrEmpty(contentType.OnSaveUseParentStaticName))
         {
-            var ghostParentId = FindGhostParentIdOrLogWarnings(contentType.OnSaveUseParentStaticName);
-            if (ghostParentId == 0) return null;
-            destinationSet.InheritContentTypeId = ghostParentId;
+            var ghostParentId = FindGhostParentIdOrLogWarnings(contentType.OnSaveUseParentStaticName!);
+            if (ghostParentId == 0)
+                return null;
+            newType.InheritContentTypeId = ghostParentId;
         }
 
-        destinationSet.IsGlobal = contentType.AlwaysShareConfiguration;
+        newType.IsGlobal = contentType.AlwaysShareConfiguration;
         DbContext.SqlDb.SaveChanges();
 
-        return destinationSet.ContentTypeId;
+        return newType.ContentTypeId;
     }
 
 
@@ -107,7 +110,7 @@ partial class DbContentType
             var destAttribId = DbContext.Attributes.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 
             // save additional entities containing AttributeMetaData for this attribute
-            if (newAtt.Metadata != null)
+            if (newAtt.Metadata != null!)
                 SaveAttributeMetadata(destAttribId, newAtt.Metadata, saveOptions);
         }
 
@@ -131,7 +134,8 @@ partial class DbContentType
             
         var entities = new List<IEntity>();
         // if possible, try to get the complete list which is usually hidden in IMetadataOfItem
-        var sourceList = (metadata as IMetadataInternals)?.AllWithHidden as IEnumerable<IEntity> 
+        var sourceList = (metadata as IMetadataInternals)
+                         ?.AllWithHidden as IEnumerable<IEntity>
                          ?? metadata;
         foreach (var entity in sourceList)
         {
@@ -151,14 +155,14 @@ partial class DbContentType
     /// <summary>
     /// Save additional entities describing the attribute
     /// </summary>
-    /// <param name="attributeId"></param>
+    /// <param name="nameId"></param>
     /// <param name="metadata"></param>
     /// <param name="saveOptions"></param>
-    private void SaveTypeMetadata(string staticName, IMetadataOf metadata, SaveOptions saveOptions)
+    private void SaveTypeMetadata(string nameId, IMetadataOf metadata, SaveOptions saveOptions)
     {
         // Verify AttributeId before we continue
-        if (string.IsNullOrEmpty(staticName)) //  attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
-            throw new($"trying to add metadata to content-type {staticName} but name is useless");
+        if (string.IsNullOrEmpty(nameId)) //  attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id
+            throw new($"trying to add metadata to content-type {nameId} but name is useless");
             
         var entities = new List<IEntity>();
         // if possible, try to get the complete list which is usually hidden in IMetadataOfItem
@@ -173,7 +177,7 @@ partial class DbContentType
             var md = (Target)entity.MetadataFor;
             // Set type / key
             md.TargetType = (int)TargetTypes.ContentType;
-            md.KeyString = staticName;
+            md.KeyString = nameId;
             entities.Add(entity);
         }
         DbContext.Save(entities, saveOptions); // don't use the standard save options, as this is attributes only
