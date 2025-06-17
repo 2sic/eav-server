@@ -5,25 +5,25 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class ContentTypeDto: IdNameDto
 {
-    public string Label { get; set; }
+    public required string Label { get; init; }
     // TODO: @2dm - remove this as soon as it's not used in the UI anymore 2024-09-26
-    public string StaticName { get; set; }
+    public required string StaticName { get; init; }
     // TODO: @2dm - use this in the UI instead of StaticName 2024-09-26
-    public string NameId{ get; set; }
-    public string Scope { get; set; }
-    public string Description { get; set; }
-    public bool UsesSharedDef { get; set; }
-    public int? SharedDefId { get; set; }
-    public int Items { get; set; }
-    public int Fields { get; set; }
+    public required string NameId{ get; init; }
+    public required string Scope { get; init; }
+    public required string Description { get; init; }
+    public required bool UsesSharedDef { get; init; }
+    public required int? SharedDefId { get; init; }
+    public required int Items { get; init; }
+    public required int Fields { get; init; }
 
-    public string TitleField { get; set; }
+    public required string TitleField { get; init; }
 
-    public IEnumerable<EavLightEntityReference> Metadata { get; set; }
-    public IDictionary<string, object> Properties { get; set; }
+    public required IEnumerable<EavLightEntityReference> Metadata { get; init; }
+    public required IDictionary<string, object> Properties { get; init; }
 
-    public HasPermissionsDto Permissions { get; set; }
+    public required HasPermissionsDto Permissions { get; init; }
 
-    public EditInfoDto EditInfo { get; set; }
+    public required EditInfoDto EditInfo { get; init; }
 
 }

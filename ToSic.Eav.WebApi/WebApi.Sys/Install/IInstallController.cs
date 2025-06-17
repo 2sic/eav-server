@@ -22,5 +22,5 @@ public interface IInstallController<out THttpResponseType>
     /// <param name="packageUrl"></param>
     /// <param name="newName"></param>
     /// <returns></returns>
-    THttpResponseType RemotePackage(string packageUrl, string newName = null);
+    THttpResponseType RemotePackage(string packageUrl, string? newName = null);
 }

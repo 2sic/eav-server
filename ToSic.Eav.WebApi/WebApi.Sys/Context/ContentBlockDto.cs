@@ -4,5 +4,5 @@ namespace ToSic.Eav.WebApi.Sys.Context;
 
 public class ContentBlockDto : IdentifierDto
 {
-    public IEnumerable<InstanceDto> Modules;
+    public required IEnumerable<InstanceDto>? Modules { get; init; }
 }

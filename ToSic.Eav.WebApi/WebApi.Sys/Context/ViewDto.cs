@@ -4,8 +4,8 @@ namespace ToSic.Eav.WebApi.Sys.Context;
 
 public class ViewDto : IdentifierDto
 {
-    public string Name;
-    public string Path;
-    public IEnumerable<ContentBlockDto> Blocks;
+    public required string Name;
+    public string? Path;
+    public required IEnumerable<ContentBlockDto> Blocks;
 
 }

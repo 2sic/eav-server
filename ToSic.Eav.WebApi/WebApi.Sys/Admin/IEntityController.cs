@@ -38,7 +38,7 @@ public interface IEntityController
     /// Will do permission checks internally.
     /// </remarks>
     void Delete(string contentType, int appId, int? id = null, Guid? guid = null, bool force = false, int? parentId = null,
-        string parentField = null);
+        string? parentField = null);
 
     /// <summary>
     /// Used to be GET ContentExport/DownloadEntityAsJson
@@ -68,7 +68,7 @@ public interface IEntityController
         ExportSelection recordExport, 
         ExportResourceReferenceMode resourcesReferences,
         ExportLanguageResolution languageReferences, 
-        string selectedIds = null);
+        string? selectedIds = null);
 
     /// <summary>
     /// This seems to be for XML import of a list

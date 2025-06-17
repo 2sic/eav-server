@@ -5,9 +5,9 @@ namespace ToSic.Eav.WebApi.Sys.Admin.Metadata;
 
 public class MetadataListDto
 {
-    public IEnumerable<MetadataRecommendation> Recommendations { get; set; }
+    public required IEnumerable<MetadataRecommendation> Recommendations { get; init; }
 
-    public IEnumerable<IDictionary<string, object>> Items { get; set; }
+    public required IEnumerable<IDictionary<string, object>> Items { get; init; }
 
-    public JsonMetadataFor For { get; set; }
+    public required JsonMetadataFor For { get; init; }
 }

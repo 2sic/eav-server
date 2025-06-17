@@ -1,11 +1,14 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Dto;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class FileUploadDto
 {
-    public string Name;
-    public Stream Stream;
+    public required string Name;
+    public required Stream Stream;
 
     [JsonIgnore]
+    [field: AllowNull, MaybeNull]
     public string Contents 
     {
         get

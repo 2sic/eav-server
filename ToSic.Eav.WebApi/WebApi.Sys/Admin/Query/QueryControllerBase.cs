@@ -27,7 +27,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 public abstract class QueryControllerBase<TImplementation>(
     QueryControllerBase<TImplementation>.MyServices services,
     string logName,
-    object[] connect = default)
+    object[]? connect = default)
     : ServiceBase<QueryControllerBase<TImplementation>.MyServices>(services, logName, connect: connect)
     where TImplementation : QueryControllerBase<TImplementation>
 {

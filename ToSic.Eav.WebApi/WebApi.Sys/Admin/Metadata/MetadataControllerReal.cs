@@ -30,7 +30,7 @@ public class MetadataControllerReal(
     /// <summary>
     /// Get Entities with specified TargetTypeId and Key
     /// </summary>
-    public MetadataListDto Get(int appId, int targetType, string keyType, string key, string contentType = null)
+    public MetadataListDto Get(int appId, int targetType, string keyType, string key, string? contentType = null)
     {
         var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
         var appReader = appReaders.Get(appId);

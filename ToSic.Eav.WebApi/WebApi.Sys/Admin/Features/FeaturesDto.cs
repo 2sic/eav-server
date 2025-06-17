@@ -3,17 +3,17 @@
 public class FeaturesDto
 {
     [JsonPropertyName("key")]
-    public string Key { get; set; }
+    public required string Key { get; init; }
 
     [JsonPropertyName("msg")]
-    public Msg Msg { get; set; }
+    public required Msg Msg { get; init; }
 
 }
 public class Msg
 {
     [JsonPropertyName("features")]
-    public string Features { get; set; }
+    public required string Features { get; init; }
 
     [JsonPropertyName("signature")]
-    public string Signature { get; set; }
+    public required string Signature { get; init; }
 }

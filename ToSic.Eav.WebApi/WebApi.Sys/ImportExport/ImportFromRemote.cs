@@ -10,7 +10,7 @@ public class ImportFromRemote(IEnvironmentLogger envLogger, ZipFromUrlImport zip
     : ServiceBase("Bck.Export", connect: [envLogger, zipImportFromUrl, user])
 {
 
-    public (bool, List<Message>) InstallPackage(int zoneId, int appId, bool isApp, string packageUrl, string newName = null)
+    public (bool, List<Message>) InstallPackage(int zoneId, int appId, bool isApp, string packageUrl, string? newName = null)
     {
         var l = Log.Fn<(bool, List<Message>)>($"{nameof(zoneId)}:{zoneId}, {nameof(appId)}:{appId}, {nameof(isApp)}:{isApp}, url:'{packageUrl}', {nameof(newName)}:'{newName}'");
             

@@ -14,7 +14,7 @@ public class InstanceDto
     public int UsageId;
 
     public bool ShowOnAllPages;
-    public string Title;
+    public string? Title;
     public bool IsDeleted;
-    public PageDto Page;
+    public PageDto? Page;
 }

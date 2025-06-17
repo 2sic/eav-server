@@ -26,7 +26,7 @@ public interface IAppQueryController
     /// <returns></returns>
     IDictionary<string, IEnumerable<EavLightEntity>> Query(string name,
         int? appId = null,
-        string stream = null,
+        string? stream = null,
         bool includeGuid = false);
 
     /// <summary>
@@ -45,7 +45,7 @@ public interface IAppQueryController
     IDictionary<string, IEnumerable<EavLightEntity>> QueryPost(string name,
         QueryParameters more,
         int? appId = null,
-        string stream = null,
+        string? stream = null,
         bool includeGuid = false);
 
     /// <summary>
@@ -63,7 +63,7 @@ public interface IAppQueryController
     IDictionary<string, IEnumerable<EavLightEntity>> PublicQuery(
         string appPath, 
         string name,
-        string stream = null
+        string? stream = null
     );
 
     /// <summary>
@@ -83,6 +83,6 @@ public interface IAppQueryController
         string appPath,
         string name,
         QueryParameters more,
-        string stream = null
+        string? stream = null
     );
 }

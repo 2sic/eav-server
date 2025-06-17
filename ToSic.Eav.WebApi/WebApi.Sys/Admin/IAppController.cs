@@ -31,7 +31,7 @@ public interface IAppController<out THttpResponse>
     /// <param name="key">Optional key like "Settings.Images.Content.Width"</param>
     /// <param name="view">Optional guid of a view to merge with the settings</param>
     /// <returns></returns>
-    List<AppStackDataRaw> GetStack(int appId, string part, string key = null, Guid? view = null);
+    List<AppStackDataRaw> GetStack(int appId, string part, string? key = null, Guid? view = null);
 
     /// <summary>
     /// Reset an App to the last xml state

@@ -18,7 +18,7 @@ public class ContentTypeDtoService(
 
     #region Content-Type Get, Delete, Save
 
-    public IList<ContentTypeDto> List(int appId, string scope = null, bool withStatistics = false)
+    public IList<ContentTypeDto> List(int appId, string? scope = null, bool withStatistics = false)
     {
         var l = Log.Fn<IList<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
         var appCtxPlus = workEntities.CtxSvc.ContextPlus(appId);
@@ -59,7 +59,7 @@ public class ContentTypeDtoService(
     }
         
 
-    public ContentTypeDto GetSingle(int appId, string contentTypeStaticName, string scope = null)
+    public ContentTypeDto GetSingle(int appId, string contentTypeStaticName, string? scope = null)
     {
         var l = Log.Fn<ContentTypeDto>($"a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
         var appCtxPlus = workEntities.CtxSvc.ContextPlus(appId);

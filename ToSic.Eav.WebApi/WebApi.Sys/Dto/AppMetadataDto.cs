@@ -2,9 +2,9 @@
 
 public class AppMetadataDto
 {
-    public int Id { get; set; }
+    public required int Id { get; init; }
 
-    public bool IsEnabled { get; set; }
+    public required bool IsEnabled { get; init; }
 
-    public string Title { get; set; }
+    public required string Title { get; init; }
 }

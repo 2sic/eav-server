@@ -8,7 +8,7 @@ public class ImportResultDto
 
     public List<Message> Messages = [];
 
-    public ImportResultDto(bool success = false, string msg = null, Message.MessageTypes type = Message.MessageTypes.Information)
+    public ImportResultDto(bool success = false, string? msg = null, Message.MessageTypes type = Message.MessageTypes.Information)
     {
         Success = success;
         if(msg != null) Messages.Add(new(msg, type));

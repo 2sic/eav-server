@@ -124,7 +124,7 @@ public class EntityApi(
     /// <param name="parentField">parent field containing this item</param>
     /// <exception cref="ArgumentNullException">Entity does not exist</exception>
     /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-    public void Delete(string contentType, int id, bool force = false, int? parentId = null, string parentField = null)
+    public void Delete(string contentType, int id, bool force = false, int? parentId = null, string? parentField = null)
         => entDelete.New(_appWorkCtxPlus.AppReader).Delete(id, contentType, force, false, parentId, parentField);
 
     /// <summary>
@@ -137,7 +137,7 @@ public class EntityApi(
     /// <param name="force"></param>
     /// <exception cref="ArgumentNullException">Entity does not exist</exception>
     /// <exception cref="InvalidOperationException">Entity cannot be deleted for example when it is referenced by another object</exception>
-    public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string parentField = null) 
+    public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string? parentField = null) 
         => Delete(contentType, workEntities.New(_appWorkCtxPlus.AppReader).Get(entityGuid).EntityId, force, parentId, parentField);
 
 

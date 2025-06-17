@@ -5,5 +5,5 @@
 /// </summary>
 public class QueryParameters
 {
-    public string[] Guids;
+    public required string[] Guids;
 }

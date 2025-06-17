@@ -2,11 +2,11 @@
 
 public class PageDto
 {
-    public int Id;
-    public string CultureCode;
-    public string Name;
-    public string Title;
-    public string Url;
-    public bool Visible;
-    public SiteDto Portal;
+    public required int Id;
+    public required string CultureCode;
+    public required string Name;
+    public required string Title;
+    public required string Url;
+    public required bool Visible;
+    public required SiteDto Portal;
 }

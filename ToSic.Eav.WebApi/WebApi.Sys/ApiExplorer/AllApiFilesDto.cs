@@ -9,8 +9,8 @@ public class AllApiFilesDto
 
 public class AllApiFileDto : AllFileDto
 {
-    public string EndpointPath;
-    public string Edition;
+    public required string EndpointPath;
+    public required string Edition;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? IsCompiled;

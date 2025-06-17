@@ -113,7 +113,7 @@ public class AppInternalsControllerReal(
         };
     }
 
-    private IList<ContentTypeDto> TypeListInternal(int appId, string scope = null, bool withStatistics = false)
+    private IList<ContentTypeDto> TypeListInternal(int appId, string? scope = null, bool withStatistics = false)
         => ctApiLazy.Value.List(appId, scope, withStatistics);
 
     private List<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
@@ -123,6 +123,6 @@ public class AppInternalsControllerReal(
     private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string typeName)
         => ctApiLazy.Value.GetFields(appId, typeName);
 
-    private MetadataListDto MetadataListInternal(int appId, int targetType, string keyType, string key, string contentType = null)
+    private MetadataListDto MetadataListInternal(int appId, int targetType, string keyType, string key, string? contentType = null)
         => metadataControllerReal.Value.Get(appId, targetType, keyType, key, contentType);
 }

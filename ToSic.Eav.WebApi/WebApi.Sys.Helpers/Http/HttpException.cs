@@ -35,10 +35,10 @@ public class HttpException
             "permissions");
     }
 
-    public static HttpExceptionAbstraction NotAllowedFileType(string filename, string message = null) 
+    public static HttpExceptionAbstraction NotAllowedFileType(string filename, string? message = null) 
         => new(HttpStatusCode.UnsupportedMediaType, $"file {filename} has an unsupported file type. {message}");
 
-    public static HttpExceptionAbstraction PermissionDenied(string message = null) 
+    public static HttpExceptionAbstraction PermissionDenied(string? message = null) 
         => new(HttpStatusCode.Forbidden, $"Permission denied. {message}");
 
     public static HttpExceptionAbstraction MissingParam(string paramName) 

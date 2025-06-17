@@ -33,7 +33,7 @@ public interface ITypeController
     /// <param name="scope"></param>
     /// <param name="withStatistics"></param>
     /// <returns></returns>
-    IEnumerable<ContentTypeDto> List(int appId, string scope = null, bool withStatistics = false);
+    IEnumerable<ContentTypeDto> List(int appId, string? scope = null, bool withStatistics = false);
 
     /// <summary>
     /// Get one content-type
@@ -42,7 +42,7 @@ public interface ITypeController
     /// <param name="contentTypeId"></param>
     /// <param name="scope"></param>
     /// <returns></returns>
-    ContentTypeDto Get(int appId, string contentTypeId, string scope = null);
+    ContentTypeDto Get(int appId, string contentTypeId, string? scope = null);
         
     // 2019-11-15 2dm special change: item to be Dictionary<string, object> because in DNN 9.4
     // it causes problems when a content-type has metadata, where a value then is a deeper object

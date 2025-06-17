@@ -10,7 +10,7 @@ namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class HttpExceptionAbstraction: BaseType
 {
-    public HttpExceptionAbstraction(HttpStatusCode statusCode, string message, string title = null)
+    public HttpExceptionAbstraction(HttpStatusCode statusCode, string message, string? title = null)
 #if NETFRAMEWORK
         : base(new HttpResponseMessage(statusCode)
         {

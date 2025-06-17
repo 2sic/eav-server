@@ -14,7 +14,7 @@ partial class ConvertToEavLight
     #region Many variations of the Prepare-Statement expecting various kinds of input
 
     /// <inheritdoc cref="IConvertDataSource{T}.Convert" />
-    public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams = null)
+    public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string>? streams = null)
         => Convert(source, streams, null);
         
     [PrivateApi("not public yet, as the signature is not final yet")]

@@ -6,15 +6,15 @@ public class ContentImportArgsDto
 {
     public int AppId;
 
-    public string DefaultLanguage;
+    public required string DefaultLanguage;
 
     public ImportResolveReferenceMode ImportResourcesReferences;
 
     public ImportDeleteUnmentionedItems ClearEntities;
 
-    public string ContentType;
+    public required string ContentType;
 
-    public string ContentBase64;
+    public required string ContentBase64;
 
     public string DebugInfo =>
         $"app:{AppId} + deflang:{DefaultLanguage}, + ct:{ContentType} + base64:(not shown), impRes:{ImportResourcesReferences}, clear:{ClearEntities}";

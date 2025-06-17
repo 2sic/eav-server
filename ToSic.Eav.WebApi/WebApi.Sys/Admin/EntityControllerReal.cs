@@ -38,7 +38,7 @@ public class EntityControllerReal(
 
 
     /// <inheritdoc/>
-    public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null, string parentField = null)
+    public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null, string? parentField = null)
     {
         var catalog = appsCatalog.Value;
         if (id.HasValue)
@@ -68,7 +68,7 @@ public class EntityControllerReal(
         ExportSelection recordExport,
         ExportResourceReferenceMode resourcesReferences,
         ExportLanguageResolution languageReferences, 
-        string selectedIds = null)
+        string? selectedIds = null)
     {
         var (content, fileName) = contentExport.Value.Init(appId)
             .ExportContent(
