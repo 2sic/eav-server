@@ -31,29 +31,33 @@ public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("Ap
         return new PropertyStack().Init(part, sources);
     }
 
-    public List<KeyValuePair<string, IPropertyLookup?>> GetStack(AppThingsIdentifiers target, IEntity? viewPart = default)
+    public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity? viewPart = default)
     {
-        var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup?>>>(
+        var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(
             $"target: {target.Target}, Has View: {viewPart != null}");
         // "View" Settings/Resources - always add, no matter if null, so the key always exists
-        var sources = new List<KeyValuePair<string, IPropertyLookup?>>
-        {
-            new(PartView, viewPart)
-        };
+        var sources = new List<KeyValuePair<string, IPropertyLookup>>();
+
+        if (viewPart != null)
+            sources.Add(new(PartView, viewPart));
 
         // All in the App and below
 
         sources.AddRange(GetOrGenerate(target));
+
         return l.Return(sources, $"Has {sources.Count}");
     }
 
     public const string PiggyBackId = "app-stack-";
 
-    private List<KeyValuePair<string, IPropertyLookup?>> GetOrGenerate(AppThingsIdentifiers target)
+    private IList<KeyValuePair<string, IPropertyLookup>> GetOrGenerate(AppThingsIdentifiers target)
     {
-        var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup?>>>(target.Target.ToString());
-        var sourcesBuilder = AppSpecs.GetCache().PiggyBack.GetOrGenerate(PiggyBackId + target.Target, () => Get(target).FullStack(Log));
-        return l.ReturnAndLog(sourcesBuilder);
+        var l = Log.Fn<IList<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
+        var sources = AppSpecs.GetCache().PiggyBack.GetOrGenerate(
+            PiggyBackId + target.Target,
+            () => Get(target).FullStack(Log).Where(pair => pair.Value != null).ToListOpt()
+        );
+        return l.ReturnAndLog(sources!);
     }
 
     private AppStateStackSourcesBuilder Get(AppThingsIdentifiers target)

@@ -14,10 +14,10 @@ namespace ToSic.Eav.Apps.Sys;
 /// This is so that input fields can self-describe.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source)
+public class InputTypeInfo//(string type, string label, string description, string? assets, bool disableI18N, string ngAssets, bool useAdam, string source)
 {
-    public InputTypeInfo(string type, string label, string description, string assets, bool disableI18N, string ngAssets, bool useAdam, string source, IMetadataOf? metadata = null)
-        : this(type, label, description, assets, disableI18N, ngAssets, useAdam, source)
+    public InputTypeInfo(/*string type, string label, string description, string? assets, bool disableI18N, string ngAssets, bool useAdam, string source, */IMetadataOf? metadata = null)
+        //: this(type, label, description, assets, disableI18N, ngAssets, useAdam, source)
     {
         if (metadata == null)
             return;
@@ -43,30 +43,30 @@ public class InputTypeInfo(string type, string label, string description, string
     /// <summary>
     /// The type this input is for, like `String`, `string-picker` etc.
     /// </summary>
-    public string Type => type;
+    public required string Type { get; init; }
 
-    public string Label => label;
+    public string? Label { get; init; }
 
-    public string Description => description;
+    public string? Description { get; init; }
 
-    public string Assets => assets;
+    public string? Assets { get; init; }
 
     public IMetadataOf? Metadata { get; }
 
     #region new in 2sxc 10 / eav 5
 
     // ReSharper disable once InconsistentNaming
-    public bool DisableI18n => disableI18N;
+    public bool DisableI18n { get; init; }
 
     /// <summary>
     /// Additional resources to load (js/css)
     /// </summary>
-    public string AngularAssets => ngAssets;
+    public string? AngularAssets { get; init; }
 
     /// <summary>
     /// Activates ADAM in the UI for this input type
     /// </summary>
-    public bool UseAdam => useAdam;
+    public required bool UseAdam { get; init; }
 
     /// <summary>
     /// WIP 12.10 Deprecation status of the input type - would always contain a message if it's deprecated
@@ -100,7 +100,7 @@ public class InputTypeInfo(string type, string label, string description, string
     /// Just an internal info for better debugging - not meant to be used
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Source => source;
+    public string? Source { get; init; }
 
     /// <summary>
     /// Configuration Content-Types used for this input type.

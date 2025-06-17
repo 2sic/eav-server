@@ -32,7 +32,7 @@ partial class MetadataOf<T>
     }
 
     /// <inheritdoc />
-    public TVal? GetBestValue<TVal>(string name, string[] typeNames)
+    public TVal? GetBestValue<TVal>(string name, string?[] typeNames)
     {
         foreach (var type in typeNames)
         {

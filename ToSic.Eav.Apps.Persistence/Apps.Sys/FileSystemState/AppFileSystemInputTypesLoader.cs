@@ -35,16 +35,28 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
 
         var withIndexJs = inputFolders
             .Where(fld => fld.GetFiles(JsFile).Any())
-            .Select(fld => fld.Name).ToArray();
+            .Select(fld => fld.Name)
+            .ToArray();
         l.A($"found {withIndexJs.Length} folders with {JsFile}");
 
-        var types = withIndexJs.Select(name =>
+        var types = withIndexJs
+            .Select(name =>
             {
                 var fullName = name.Substring(FieldFolderPrefix.Length);
                 var niceName = InputTypeNiceName(name);
                 // TODO: use metadata information if available
-                return new InputTypeInfo(fullName, niceName, "Extension Field", "", false,
-                    $"{placeholder}/{FolderConstants.FolderAppExtensions}/{name}/{JsFile}", false, "file-system");
+                return new InputTypeInfo(type: fullName, label: niceName, description: "Extension Field", assets: "", disableI18N: false,
+                    ngAssets: $"{placeholder}/{FolderConstants.FolderAppExtensions}/{name}/{JsFile}", useAdam: false, source: "file-system")
+                {
+                    Type = fullName,
+                    Label = niceName,
+                    Description = "Extension Field",
+                    Assets = "",
+                    AngularAssets = $"{placeholder}/{FolderConstants.FolderAppExtensions}/{name}/{JsFile}",
+                    DisableI18n = false,
+                    UseAdam = false,
+                    Source = "file-system",
+                };
             })
             .ToListOpt();
         return l.Return(types, $"{types.Count}");

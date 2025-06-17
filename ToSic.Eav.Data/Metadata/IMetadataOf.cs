@@ -32,7 +32,7 @@ public interface IMetadataOf: IEnumerable<IEntity>, IHasPermissions, ITimestampe
     /// <param name="name">attribute name we're looking for</param>
     /// <param name="typeNames">list of type-name in the order to check. if one of the values is null, it will then check all items no matter what type</param>
     /// <returns>A typed value. </returns>
-    TVal? GetBestValue<TVal>(string name, string[] typeNames);
+    TVal? GetBestValue<TVal>(string name, string?[] typeNames);
 
     /// <summary>
     /// Determine if something has metadata of the specified type
