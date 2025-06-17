@@ -25,15 +25,15 @@ public static class AppStateMetadataTargetExtensions
                 if (!int.TryParse(key, out var keyInt))
                     return null;
                 var attr = appReader.ContentTypes.FindAttribute(keyInt);
-                return attr.ContentType?.Metadata?.Target.Title + "/" + attr.Attribute?.Metadata?.Target.Title;
+                return attr.ContentType?.Metadata.Target.Title + "/" + attr.Attribute?.Metadata?.Target.Title;
             case TargetTypes.App:
                 return appReader.Specs.Metadata?.Target.Title;
             case TargetTypes.Entity:
                 return !Guid.TryParse(key, out var guidKey)
                     ? null
-                    : appReader.List.One(guidKey)?.Metadata?.Target.Title;
+                    : appReader.List.One(guidKey)?.Metadata.Target.Title;
             case TargetTypes.ContentType:
-                return appReader.GetContentType(key)?.Metadata?.Target.Title;
+                return appReader.TryGetContentType(key)?.Metadata.Target.Title;
             case TargetTypes.Zone:
             case TargetTypes.CmsItem:
                 return null;

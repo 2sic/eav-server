@@ -60,7 +60,7 @@ public class SystemStack: CustomDataSourceAdvanced
     {
         Configuration.Parse();
 
-        var appState = _appReadFac.Get(this.PureIdentity())!;
+        var appState = _appReadFac.Get(this.PureIdentity());
 
         var languages = _zoneCulture.SafeLanguagePriorityCodes();
 

@@ -46,9 +46,10 @@ public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appRea
         {
             foreach (var p in appsCatalog.Apps(zoneId))
             {
+                // Maybe TryGet, but since we're going through the zone-apps, they must all exist
                 var appReader = appReaders.Get(new AppIdentity(zoneId, p.Key));
-                if (appReader == null)
-                    continue;
+                //if (appReader == null)
+                //    continue;
                 var appSpecs = appReader.Specs;
                 if (appSpecs.Folder.EqualsInsensitive(folderName))
                     return l.Return(p.Key, "folder matched");

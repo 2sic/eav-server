@@ -94,7 +94,7 @@ public class MetadataRequirementsService(
             : l.Return((false, reqStatus.Where(r => !r.IsOk).ToListOpt()), "some didn't work");
     }
 
-    private record ReqStatusPrivate(RequirementDecorator Decorator, string NameId, bool Approved, Aspect Aspect = default)
+    private record ReqStatusPrivate(RequirementDecorator Decorator, string NameId, bool Approved, Aspect? Aspect = default)
         : RequirementStatus(Approved, Aspect ?? Aspect.None with { NameId = NameId }, "")
     {
         //public RequirementDecorator Decorator = decorator;

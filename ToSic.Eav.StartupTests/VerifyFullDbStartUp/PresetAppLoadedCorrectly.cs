@@ -26,11 +26,11 @@ public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixt
 
     [Fact]
     public void PresetAppStateHasNoteDecoratorContentTypeByName() => 
-        NotNull(appReaders.GetSystemPresetTac().GetContentType(KnownDecorators.NoteDecoratorName));
+        NotNull(appReaders.GetSystemPresetTac().TryGetContentTypeTac(KnownDecorators.NoteDecoratorName));
 
     [Fact]
     public void PresetAppStateHasNoteDecoratorContentTypeById() => 
-        NotNull(appReaders.GetSystemPresetTac().GetContentType(KnownDecorators.NoteDecoratorId));
+        NotNull(appReaders.GetSystemPresetTac().TryGetContentTypeTac(KnownDecorators.NoteDecoratorId));
 
     [Fact]
     public void PresetAppStateHasNotes() => 
@@ -38,6 +38,6 @@ public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixt
 
     [Fact]
     public void PresetAppStateHasPickerDataSourceContentTypeById() => 
-        NotNull(appReaders.GetSystemPresetTac().GetContentType(KnownDecorators.IsPickerDataSourceDecoratorId));
+        NotNull(appReaders.GetSystemPresetTac().TryGetContentTypeTac(KnownDecorators.IsPickerDataSourceDecoratorId));
 
 }

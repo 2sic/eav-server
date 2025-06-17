@@ -47,7 +47,7 @@ internal class AppWithParents: DataSourceBase
     private IImmutableList<IEntity> GetList()
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        var appReader = _appReaders.Get(this)!;
+        var appReader = _appReaders.Get(this);
             
         var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions
         {

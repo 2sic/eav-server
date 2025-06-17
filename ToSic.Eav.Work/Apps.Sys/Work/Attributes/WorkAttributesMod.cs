@@ -31,7 +31,7 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<string[]>();
         var result = AppWorkCtx.DbStorage.Attributes.DataTypeNames();
-        return l.Return(result, $"{result?.Length ?? 0}");
+        return l.Return(result, $"{result.Length}");
     }
 
     #endregion
@@ -208,8 +208,9 @@ public class WorkAttributesMod(
 
         // 2.1 find the index for adding fields
         // - get the content-type
-        var contentType = AppWorkCtx.AppReader.GetContentType(contentTypeId);
-        if (contentType == null) return l.ReturnFalse($"error: wrong contentTypeId {contentTypeId}");
+        var contentType = AppWorkCtx.AppReader.GetContentTypeOptional(contentTypeId);
+        if (contentType == null)
+            return l.ReturnFalse($"error: wrong contentTypeId {contentTypeId}");
         // - make sure we have the attribute-count to add more fields
 
         // 2.2 create the attributes based on the original data

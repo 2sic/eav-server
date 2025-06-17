@@ -66,9 +66,9 @@ public class AppDataStackService(IAppReaderFactory appReaders) : ServiceBase("Ap
             : appReaders.GetZonePrimary(AppSpecs.ZoneId);
         l.A($"Site: {siteAppReader?.Show()}");
         var global = appReaders.Get(KnownAppsConstants.GlobalIdentity);
-        l.A($"Global: {global?.Show()}");
+        l.A($"Global: {global.Show()}");
         var preset = appReaders.GetSystemPreset();
-        l.A($"Preset: {preset?.Show()}");
+        l.A($"Preset: {preset.Show()}");
 
         // Find the ancestor, but only use it if it's _not_ the Preset
         var appState = AppSpecs.GetCache();

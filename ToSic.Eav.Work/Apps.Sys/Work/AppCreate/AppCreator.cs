@@ -34,7 +34,7 @@ public class AppCreator(
     /// app-definition
     /// </summary>
     /// <returns></returns>
-    public void Create(string appName, string appGuid = null, int? inheritAppId = null)
+    public void Create(string appName, string? appGuid = null, int? inheritAppId = null)
     {
         // check if invalid app-name which should never be created like this
         if (appName == KnownAppsConstants.ContentAppName || appName == KnownAppsConstants.DefaultAppGuid || string.IsNullOrEmpty(appName) || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$"))

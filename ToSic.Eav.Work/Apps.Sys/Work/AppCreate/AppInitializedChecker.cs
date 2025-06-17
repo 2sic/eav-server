@@ -49,7 +49,7 @@ public class AppInitializedChecker(Generator<AppInitializer> appInitGenerator) :
     /// <param name="appSettings"></param>
     /// <param name="log"></param>
     /// <returns></returns>
-    internal static bool CheckIfAllPartsExist(IAppReader appReader, CodeRefTrail codeRefTrail, out IEntity appConfig, out IEntity appResources, out IEntity appSettings, ILog log)
+    internal static bool CheckIfAllPartsExist(IAppReader appReader, CodeRefTrail codeRefTrail, out IEntity? appConfig, out IEntity? appResources, out IEntity? appSettings, ILog log)
     {
         var l = log.Fn<bool>();
         codeRefTrail.WithHere().AddMessage($"App: {appReader.AppId}");
@@ -74,9 +74,9 @@ public class AppInitializedChecker(Generator<AppInitializer> appInitGenerator) :
             codeRefTrail.AddMessage($"App Entity Count: {appReader.List.Count}");
             codeRefTrail.AddMessage($"App ContentType Count: {appReader.ContentTypes.Count()}");
             codeRefTrail.AddMessage($"App Metadata Count: {appReader.Specs.Metadata?.Count()}");
-            codeRefTrail.AddMessage($"Has Type App Config: {appReader.GetContentType(TypeAppConfig)}");
-            codeRefTrail.AddMessage($"Has Type App Resources: {appReader.GetContentType(TypeAppResources)}");
-            codeRefTrail.AddMessage($"Has Type App Settings: {appReader.GetContentType(TypeAppSettings)}");
+            codeRefTrail.AddMessage($"Has Type App Config: {appReader.TryGetContentType(TypeAppConfig)}");
+            codeRefTrail.AddMessage($"Has Type App Resources: {appReader.TryGetContentType(TypeAppResources)}");
+            codeRefTrail.AddMessage($"Has Type App Settings: {appReader.TryGetContentType(TypeAppSettings)}");
         }
         catch { /* ignore */ }
 

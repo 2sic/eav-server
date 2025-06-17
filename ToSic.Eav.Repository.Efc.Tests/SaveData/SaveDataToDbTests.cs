@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Entities.Sys.Lists;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Integration;
@@ -107,7 +108,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         // load content type to start creating an item...
         var loader1 = appLoadGenerator.New().UseExistingDb(dbi.SqlDb);
         var app1 = loader1.AppStateReaderRawTac(test.AppId);
-        var ct1 = app1.GetContentType(ctName);
+        var ct1 = app1.GetContentTypeTac(ctName);
 
         var newE = dataBuilder.CreateEntityTac(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new()
         {

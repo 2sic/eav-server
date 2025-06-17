@@ -21,7 +21,7 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name, string? 
             return l.Return("please add appid to the url parameters");
 
         l.A($"debug app types for {AppId}");
-        var pkg = AppReadFac.Get(AppId.Value)!;
+        var pkg = AppReadFac.Get(AppId.Value);
 
         var msg = TypesTable(AppId.Value, pkg.ContentTypes, pkg.List);
 

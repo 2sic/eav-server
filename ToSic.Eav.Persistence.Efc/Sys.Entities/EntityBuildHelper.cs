@@ -34,9 +34,7 @@ internal class EntityBuildHelper
             return clonedExtended;
         }
 
-        var contentType = appReader.GetContentType(e.ContentTypeId);
-        if (contentType == null)
-            throw new NullReferenceException("content type is not found for type " + e.ContentTypeId);
+        var contentType = appReader.GetContentTypeRequired(e.ContentTypeId);
 
         // Prepare relationships to add to AttributeGenerator
         var emptyValueList = new List<(string StaticName, IValue)>();

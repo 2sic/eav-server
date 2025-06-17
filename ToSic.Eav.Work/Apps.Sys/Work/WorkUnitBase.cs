@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// </summary>
 /// <typeparam name="TContext"></typeparam>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class WorkUnitBase<TContext>(string logName, object[] connect = default) : ServiceBase(logName, connect: connect ?? [])
+public abstract class WorkUnitBase<TContext>(string logName, object[]? connect = default) : ServiceBase(logName, connect: connect ?? [])
     where TContext : class, IAppWorkCtx
 {
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Metadata.Recommendations.Sys;
 
-internal class MetadataForDecorator(IEntity entity) : ForExpectedBase(entity)
+internal class MetadataForDecorator(IEntity? entity) : ForExpectedBase(entity!)
 {
     public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
     public static string ContentTypeName = "MetadataForDecorator";

@@ -35,16 +35,16 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     /// <summary>
     /// Get this item or return null if not found
     /// </summary>
-    public IEntity Get(int entityId) => AppWorkCtx.AppReader.List.FindRepoId(entityId);
+    public IEntity? Get(int entityId) => AppWorkCtx.AppReader.List.FindRepoId(entityId);
 
     /// <summary>
     /// Get this item or return null if not found
     /// </summary>
     /// <returns></returns>
-    public IEntity Get(Guid entityGuid) => AppWorkCtx.AppReader.List.One(entityGuid);
+    public IEntity? Get(Guid entityGuid) => AppWorkCtx.AppReader.List.One(entityGuid);
 
 
-    public IEnumerable<IEntity> Get(string contentTypeName, IAppWorkCtxPlus overrideWorkCtx = default)
+    public IEnumerable<IEntity> Get(string contentTypeName, IAppWorkCtxPlus? overrideWorkCtx = default)
     {
         var typeFilter = dataSourceFactory.Value.Create<EntityTypeFilter>(attach: (overrideWorkCtx ?? AppWorkCtx).Data); // need to go to cache, to include published & unpublished
         typeFilter.TypeName = contentTypeName;

@@ -21,7 +21,7 @@ public partial class PropertyStack
             // And in that case future lookups could result in endless loops
             .DistinctBy(src => src.Value)
             .ToImmutableOpt();
-        return real;
+        return real!;
     }
 
 

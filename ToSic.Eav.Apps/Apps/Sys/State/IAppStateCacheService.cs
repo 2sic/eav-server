@@ -14,7 +14,7 @@ public interface IAppStateCacheService
     /// <summary>
     /// Retrieve an app from the cache
     /// </summary>
-    /// <param name="appId">App id if zone unknown.</param>
+    /// <param name="appId">App id to get</param>
     IAppStateCache Get(int appId);
 
     /// <summary>

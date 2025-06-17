@@ -71,7 +71,7 @@ public class ContentTypeAttributeMetadata(
         return final;
     }
 
-    private ICollection<IEntity> GetMdOfOneSource(Guid source, string filter, ICollection<IEntity> ownEntities)
+    private ICollection<IEntity> GetMdOfOneSource(Guid source, string? filter, ICollection<IEntity> ownEntities)
     {
         var entities = source == Guid.Empty
             ? ownEntities

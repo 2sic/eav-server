@@ -36,7 +36,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     private int AppId;
 
 
-    public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string recommendedTypeName = null)
+    public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string? recommendedTypeName = null)
     {
         var recommendations = GetRecommendations(targetTypeId, key, recommendedTypeName);
 
@@ -55,7 +55,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     }
 
 
-    public IEnumerable<MetadataRecommendation> GetRecommendations(int targetTypeId, string key, string reqTypeName = null)
+    public IEnumerable<MetadataRecommendation>? GetRecommendations(int targetTypeId, string key, string? reqTypeName = null)
     {
         var l = Log.Fn<IEnumerable<MetadataRecommendation>>($"targetType: {targetTypeId}");
         // Option 1. Specified typeName
@@ -63,8 +63,9 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
         // This is the case for a Permissions dialog
         if (!IsNullOrWhiteSpace(reqTypeName))
         {
-            var recommendedType = AppReader.GetContentType(reqTypeName);
-            if (recommendedType == null) return l.ReturnNull("type name not found");
+            var recommendedType = AppReader.TryGetContentType(reqTypeName!);
+            if (recommendedType == null)
+                return l.ReturnNull("type name not found");
             return l.Return(
                 [new(recommendedType, null, -1, "Use preset type", PrioMax)],
                 "use existing name");
@@ -196,7 +197,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
         return l.Return(recommendedTypes, $"{recommendedTypes.Count}");
     }
 
-    private ICollection<MetadataRecommendation> GetTargetsExpectations(int targetType, string key)
+    private ICollection<MetadataRecommendation>? GetTargetsExpectations(int targetType, string key)
     {
         var l = Log.Fn<ICollection<MetadataRecommendation>>($"targetType: {targetType}");
         switch ((TargetTypes)targetType)
@@ -233,9 +234,11 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 // TODO: this won't work - needs another way of finding assignments
                 return l.Return(GetMetadataExpectedDecorators(AppReader.Specs.Metadata, TargetTypes.Undefined, "attached to App", PrioMax), "app");
             case TargetTypes.Entity:
-                if (!Guid.TryParse(key, out var guidKey)) return l.ReturnNull("entity not guid");
+                if (!Guid.TryParse(key, out var guidKey))
+                    return l.ReturnNull("entity not guid");
                 var entity = AppReader.List.One(guidKey);
-                if (entity == null) return l.ReturnNull("entity not found");
+                if (entity == null)
+                    return l.ReturnNull("entity not found");
                 var onEntity = GetMetadataExpectedDecorators(entity.Metadata, TargetTypes.Entity, "attached to Entity", PrioMax)
                                ?? [];
 
@@ -247,8 +250,9 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                     .ToListOpt();
                 return l.Return(merged, $"entity {onEntity.Count} type {onEntType.Count} all {merged.Count}");
             case TargetTypes.ContentType:
-                var ct = AppReader.GetContentType(key);
-                if (ct == null) return l.ReturnNull("type not found");
+                var ct = AppReader.TryGetContentType(key);
+                if (ct == null)
+                    return l.ReturnNull("type not found");
                 var onType = GetMetadataExpectedDecorators(ct.Metadata, TargetTypes.ContentType, "attached to Content-Type", PrioHigh);
                 return l.Return(onType, "content type");
             case TargetTypes.Zone:
@@ -267,7 +271,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     /// <param name="debug"></param>
     /// <param name="priority"></param>
     /// <returns></returns>
-    private ICollection<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf md, TargetTypes targetTypeFor, string debug, int priority)
+    private ICollection<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf? md, TargetTypes targetTypeFor, string debug, int priority)
     {
         var l = Log.Fn<ICollection<MetadataRecommendation>>($"for {targetTypeFor}");
 
@@ -299,7 +303,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                         .CsvToArrayWithoutEmpty()
                         .Select(name => TypeAsRecommendation(name, debug, priority, delWarning))
                         .Where(x => x != null)
-                        .ToListOpt();
+                        .ToListOpt()!;
             })
             .ToListOpt();
 
@@ -310,12 +314,13 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     /// Find a content-type and convert it into a recommendation object
     /// </summary>
     /// <returns></returns>
-    private MetadataRecommendation TypeAsRecommendation(string name, string debug, int priority, string delWarning)
+    private MetadataRecommendation? TypeAsRecommendation(string name, string debug, int priority, string delWarning)
     {
         var l = Log.Fn<MetadataRecommendation>($"name: {name}");
-        if (IsNullOrWhiteSpace(name)) return l.ReturnNull("empty name");
+        if (IsNullOrWhiteSpace(name))
+            return l.ReturnNull("empty name");
 
-        var type = AppReader.GetContentType(name);
+        var type = AppReader.TryGetContentType(name);
         return type == null
             ? l.ReturnNull("name not found")
             : l.Return(new(type, null, null, debug, priority)

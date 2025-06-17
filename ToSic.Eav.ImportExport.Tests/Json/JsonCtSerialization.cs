@@ -57,5 +57,5 @@ public class JsonCtSerialization(ITestOutputHelper output, JsonTestHelpers jsonT
         => JsonOfContentType(jsonTestHelper.SerializerOfApp(appId), typeName);
 
     internal static string JsonOfContentType(JsonSerializer ser, string typeName)
-        => JsonTestHelpers.JsonOfContentType(ser, ser.AppReaderOrError.GetContentType(typeName));
+        => JsonTestHelpers.JsonOfContentType(ser, ser.AppReaderOrError.GetContentTypeTac(typeName));
 }

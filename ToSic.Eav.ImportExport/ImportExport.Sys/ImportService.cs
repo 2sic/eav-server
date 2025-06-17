@@ -196,7 +196,7 @@ public class ImportService(
         l.A("New CT, must reset attributes");
 
         // Is it an update or new?
-        var existing = appReader.GetContentType(contentType.NameId);
+        var existing = appReader.TryGetContentType(contentType.NameId);
         if (existing == null)
         {
             // must ensure that attribute Metadata is officially seen as new
@@ -278,7 +278,7 @@ public class ImportService(
 
         #region try to get Content-Type or otherwise cancel & log error
 
-        var contentType = appState.GetContentType(update.Type.NameId);
+        var contentType = appState.TryGetContentType(update.Type.NameId);
 
         if (contentType == null) // not Found
         {

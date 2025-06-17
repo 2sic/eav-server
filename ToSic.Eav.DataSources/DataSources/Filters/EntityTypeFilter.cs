@@ -67,10 +67,10 @@ public class EntityTypeFilter : DataSourceBase
         try
         {
             var appState = _appReaders.Get(this);
-            var foundType = appState?.GetContentType(TypeName);
+            var foundType = appState?.TryGetContentType(TypeName);
             if (foundType != null) // maybe it doesn't find it!
             {
-                var result = source.OfType(foundType).ToList();
+                var result = source.OfType(foundType).ToListOpt();
                 return l.Return(result.ToImmutableOpt(), "fast");
             }
         }

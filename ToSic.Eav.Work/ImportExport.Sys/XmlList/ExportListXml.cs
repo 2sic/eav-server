@@ -23,14 +23,14 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
 
     public ExportListXml Init(IAppReader appReader, IContentType contentType)
     {
-        AppState = appReader;
+        AppReader = appReader;
         ContentType = contentType;
         return this;
     }
 
     private readonly XmlBuilder _xBuilder = new();
-    private IAppReader AppState { get; set; }
-    public IContentType ContentType { get; set; }
+    private IAppReader AppReader { get; set; } = null!;
+    public IContentType ContentType { get; set; } = null!;
 
     #endregion
 
@@ -97,7 +97,7 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
         var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
         // Query all entities, or just the ones with specified IDs
-        var entities = AppState.GetListPublished().OfType(ContentType);
+        var entities = AppReader.GetListPublished().OfType(ContentType);
         if (selectedIds is { Length: > 0 })
             entities = entities.Where(e => selectedIds.Contains(e.EntityId));
         var entList = entities.ToList();

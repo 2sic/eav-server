@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> workEntSave)
     : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntCre", connect: [workEntSave, builder])
 {
-    public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget metadataFor = null)
+    public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget? metadataFor = null)
     {
         var l = Log.Fn<(int EntityId, Guid EntityGuid)>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
 

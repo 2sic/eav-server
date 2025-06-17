@@ -22,7 +22,7 @@ public class AppWorkCtx : IAppWorkCtx
         AppReader = appReader;
     }
 
-    public AppWorkCtx(IAppWorkCtx original, IAppReader appReader = default)
+    public AppWorkCtx(IAppWorkCtx original, IAppReader? appReader = default)
     {
         if (original == null)
             throw new ArgumentException(@"Original must exist", nameof(original));

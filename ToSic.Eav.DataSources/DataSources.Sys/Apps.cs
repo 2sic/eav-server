@@ -87,7 +87,7 @@ public sealed class Apps: CustomDataSource
                 string? error = null;
                 try
                 {
-                    appSpecs = appReaders.Get(new AppIdentityPure(zone.ZoneId, app.Key))!.Specs;
+                    appSpecs = appReaders.Get(new AppIdentityPure(zone.ZoneId, app.Key)).Specs;
                     // this will get the guid, if the identity is not "default"
                     if (Guid.TryParse(appSpecs.NameId, out var g))
                         guid = g;

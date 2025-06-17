@@ -17,8 +17,8 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     }
 
 
-    public bool Delete(int id, string contentType = null, bool force = false, bool skipIfCant = false,
-        int? parentId = null, string parentField = null)
+    public bool Delete(int id, string? contentType = null, bool force = false, bool skipIfCant = false,
+        int? parentId = null, string? parentField = null)
         => Delete([id], contentType, force, skipIfCant, parentId, parentField);
 
     public bool Delete(ICollection<int> ids)
@@ -37,7 +37,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     /// <param name="parentField"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public bool Delete(int[] ids, string contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string parentField = null) 
+    public bool Delete(int[] ids, string? contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string? parentField = null) 
     {
         var l = Log.Fn<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true);
         // do optional type-check and if necessary, throw error
@@ -79,7 +79,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         metaDataIds.AddRange(childrenMetaDataIds);
     }
 
-    private Dictionary<int, (bool, string)> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant, int? parentId = null, string parentField = null)
+    private Dictionary<int, (bool, string)> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant, int? parentId = null, string? parentField = null)
     {
         var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(ids, parentId, parentField);
 
@@ -104,11 +104,11 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         }
     }
 
-    internal (bool HasMessages, string Messages) CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string parentField = null)
+    internal (bool HasMessages, string Messages) CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string? parentField = null)
         => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata([entityId], parentId, parentField).First().Value;
 
 
-    private Dictionary<int, (bool HasMessages, string Messages)> CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(int[] ids, int? parentId = null, string parentField = null)
+    private Dictionary<int, (bool HasMessages, string Messages)> CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(int[] ids, int? parentId = null, string? parentField = null)
     {
         var canDeleteList = new Dictionary<int, (bool HasMessages, string Messages)>();
 
@@ -126,8 +126,9 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
             if (parentId.HasValue && !string.IsNullOrEmpty(parentField))
             {
                 var parentToIgnore = parents
-                    .FirstOrDefault(r => r.Parent.EntityId == parentId && r.Parent.Attributes.ContainsKey(parentField));
-                if (parentToIgnore != null) parents.Remove(parentToIgnore);
+                    .FirstOrDefault(r => r.Parent.EntityId == parentId && r.Parent.Attributes.ContainsKey(parentField!));
+                if (parentToIgnore != null)
+                    parents.Remove(parentToIgnore);
             }
 
             var parentsInfoForMessages = parents

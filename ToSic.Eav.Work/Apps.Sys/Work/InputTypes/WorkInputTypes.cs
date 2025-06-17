@@ -108,7 +108,7 @@ public class WorkInputTypes(
     /// </summary>
     /// <param name="overrideCtx">App context to use. Often the current app, but can be a custom one.</param>
     /// <returns></returns>
-    private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus overrideCtx = default)
+    private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus? overrideCtx = default)
     {
         var list = workEntities
             .New(overrideCtx ?? AppWorkCtx)

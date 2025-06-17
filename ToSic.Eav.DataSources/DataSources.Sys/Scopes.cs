@@ -43,7 +43,7 @@ public sealed class Scopes : CustomDataSource
     private IEnumerable<IRawEntity> GetList()
     {
         var l = Log.Fn<IEnumerable<IRawEntity>>();
-        var scopes = _appReadFac.Get(AppId)!.ContentTypes.GetAllScopesWithLabels();
+        var scopes = _appReadFac.Get(AppId).ContentTypes.GetAllScopesWithLabels();
         var list = scopes
             .Select(s => new RawEntity(new()
             {

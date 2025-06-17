@@ -7,7 +7,7 @@ internal class InsightsGlobalTypes(IAppReaderFactory appReadFac) : InsightsTypes
     public override string HtmlBody()
     {
         var l = Log.Fn<string>();
-        var globTypes = AppReadFac.GetSystemPreset()!.ContentTypes;
+        var globTypes = AppReadFac.GetSystemPreset().ContentTypes;
         var msg = TypesTable(KnownAppsConstants.PresetAppId, globTypes, []);
 
         return l.ReturnAsOk(msg);

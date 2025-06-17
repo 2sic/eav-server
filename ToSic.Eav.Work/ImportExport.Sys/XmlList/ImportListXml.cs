@@ -50,17 +50,17 @@ public partial class ImportListXml(
         ImportResolveReferenceMode resolveLinkMode)
     {
         ErrorLog = new(Log);
-        var contentType = appReader.GetContentType(typeName);
+        var contentType = appReader.TryGetContentType(typeName);
 
         AppReader = appReader;
-        //_appId = AppReader.AppId;
 
-        ContentType = contentType;
-        if (ContentType == null)
+        if (contentType == null)
         {
             ErrorLog.Add(ImportErrorCode.InvalidContentType);
             return this;
         }
+
+        ContentType = contentType;
         Log.A("Content type ok:" + contentType.Name);
 
         ExistingEntities = AppReader.List.Where(e => e.Type == contentType).ToList();

@@ -24,19 +24,12 @@ public interface IAppReaderFactory
     /// <returns></returns>
     IAppReader? GetOrKeep(IAppIdentity appOrReader);
 
-    /// <summary>
-    /// Get a reader for the specified app.
-    /// </summary>
-    /// <param name="app"></param>
-    /// <returns></returns>
-    IAppReader? Get(IAppIdentity app);
-
-    /// <summary>
-    /// Get a reader for the specified app.
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <returns></returns>
-    IAppReader? Get(int appId);
+    ///// <summary>
+    ///// Get a reader for the specified app.
+    ///// </summary>
+    ///// <param name="app"></param>
+    ///// <returns></returns>
+    //IAppReader? Get(IAppIdentity app);
 
     /// <summary>
     /// Get a reader of the zone's primary app.
@@ -44,7 +37,7 @@ public interface IAppReaderFactory
     /// </summary>
     /// <param name="zoneId"></param>
     /// <returns></returns>
-    IAppReader? GetZonePrimary(int zoneId);
+    IAppReader GetZonePrimary(int zoneId);
 
     /// <summary>
     /// Get the preset App of the system.
@@ -59,4 +52,35 @@ public interface IAppReaderFactory
     IAppIdentityPure AppIdentity(int appId);
 
     IAppReader? ToReader(IAppStateCache state);
+
+    /// <summary>
+    /// Get a reader for the specified app.
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <returns>The expected app - or throws an exception.</returns>
+    IAppReader Get(int appId);
+
+
+    ///// <summary>
+    ///// Get a reader for the specified app.
+    ///// </summary>
+    ///// <param name="appId"></param>
+    ///// <returns>The expected app - or `null`.</returns>
+    //IAppReader? TryGet(int appId);
+
+    /// <summary>
+    /// Get a reader for the specified app.
+    /// </summary>
+    /// <param name="appIdentity"></param>
+    /// <returns></returns>
+    IAppReader? TryGet(IAppIdentity appIdentity);
+
+    /// <summary>
+    /// Get a reader for the specified app.
+    /// </summary>
+    /// <param name="appIdentity"></param>
+    /// <returns></returns>
+    IAppReader Get(IAppIdentity appIdentity);
+
+    IAppReader GetSystemPreset();
 }

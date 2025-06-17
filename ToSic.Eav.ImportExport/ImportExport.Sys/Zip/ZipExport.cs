@@ -53,7 +53,7 @@ public class ZipExport(
         AppFileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal);
         
         var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appReader = appReaders.Get(appIdentity) ?? throw new NullReferenceException($"App must exist to be able o export it: {appIdentity.Show()}");
+        _appReader = appReaders.Get(appIdentity);
         return this;
     }
 

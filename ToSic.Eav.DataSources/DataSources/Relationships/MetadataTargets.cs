@@ -63,7 +63,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppR
     [PrivateApi]
     private Func<IEntity, IEnumerable<IEntity>> GetTargetsFunctionGenerator()
     {
-        var appState = appReaders.Get(this)!;
+        var appState = appReaders.Get(this);
         return o =>
         {
             var mdFor = o.MetadataFor;
@@ -94,7 +94,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppR
                 var key = mdFor.KeyString ?? mdFor.KeyGuid?.ToString();
                 if (key == null)
                     return [];
-                var ct = appState.GetContentType(key);
+                var ct = appState.TryGetContentType(key);
                 if (ct == null)
                     return [];
                 var ctEntity = contentTypeFactory.Create(ContentTypeUtil.ToRaw(ct));

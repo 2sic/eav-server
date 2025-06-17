@@ -26,7 +26,7 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
 
     public string DeleteWarning { get; set; }
 
-    public string Icon { get; set; }
+    public string? Icon { get; set; }
 
     [JsonIgnore]
     public int Priority { get; set; }
@@ -48,9 +48,9 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
     internal bool PushToUi => Enabled || !string.IsNullOrWhiteSpace(MissingFeature);
 
     public bool Enabled { get; set; }
-    public string MissingFeature { get; set; }
+    public string? MissingFeature { get; set; }
 
-    internal MetadataRecommendation(IContentType type, MetadataForDecorator recommendation, int? count, string debugMessage, int priority)
+    internal MetadataRecommendation(IContentType type, MetadataForDecorator? recommendation, int? count, string debugMessage, int priority)
     {
         Type = type;
         Priority = priority;
@@ -68,18 +68,23 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
     }
 
     #region Equality Comparison for deduplication
-    public bool Equals(MetadataRecommendation other)
+    public bool Equals(MetadataRecommendation? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (ReferenceEquals(null, other))
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
         return Id == other.Id && Name == other.Name;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != this.GetType())
+            return false;
         return Equals((MetadataRecommendation)obj);
     }
 

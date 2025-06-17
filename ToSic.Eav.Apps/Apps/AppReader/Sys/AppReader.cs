@@ -60,11 +60,18 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
     public IEnumerable<IContentType> ContentTypes
         => _appState.ContentTypes;
 
-    public IContentType? GetContentType(string name)
+    public IContentType? TryGetContentType(string name)
         => _appState.GetContentType(name);
 
-    public IContentType? GetContentType(int contentTypeId)
+    public IContentType GetContentType(string name)
+        => _appState.GetContentType(name)
+        ?? throw new ArgumentException($@"Can't find content type with name '{name}'", nameof(name));
+
+    public IContentType? GetContentTypeOptional(int contentTypeId)
         => _appState.GetContentType(contentTypeId);
+    public IContentType GetContentTypeRequired(int contentTypeId)
+        => _appState.GetContentType(contentTypeId)
+           ?? throw new ArgumentException($@"Can't find content type with name '{contentTypeId}'", nameof(contentTypeId));
 
     #endregion
 

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data;
 using ToSic.Eav.Metadata.Sys;
 
 namespace ToSic.Eav.Apps;
@@ -39,4 +40,7 @@ public interface IAppReader:
     /// internal, but in some cases it will be given out by hidden extension methods
     /// </summary>
     internal IAppStateCache AppState { get; }
+
+    IContentType? GetContentTypeOptional(int contentTypeId);
+    IContentType GetContentTypeRequired(int contentTypeId);
 }

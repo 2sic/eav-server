@@ -90,7 +90,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
         // ReSharper disable once InvertIf
         if (PreferLocalAppTypes)
         {
-            var type = AppReaderOrError.GetContentType(staticName);
+            var type = AppReaderOrError.TryGetContentType(staticName);
             if (type != null)
                 return l.Return(type, $"app: found");
             msg += "app: not found, ";
@@ -110,7 +110,7 @@ public abstract class SerializerBase(SerializerBase.MyServices services, string 
         else
         {
             msg += "app: ";
-            globalType = AppReaderOrError.GetContentType(staticName);
+            globalType = AppReaderOrError.TryGetContentType(staticName);
         }
 
         return l.Return(globalType, $"{msg}{(globalType == null ? "not " : "")}found");

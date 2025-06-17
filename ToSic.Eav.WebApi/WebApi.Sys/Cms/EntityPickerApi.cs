@@ -22,7 +22,7 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
         IContentType contentType = null;
         if (!IsNullOrEmpty(contentTypeName))
         {
-            contentType = appEnts.AppWorkCtx.AppReader.GetContentType(contentTypeName);
+            contentType = appEnts.AppWorkCtx.AppReader.TryGetContentType(contentTypeName);
             l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
             if (contentType == null)
                 return l.Return([],

@@ -6,14 +6,14 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkCtxPlus : AppWorkCtx, IAppWorkCtxPlus
 {
-    public AppWorkCtxPlus(IDataSourcesService dsf, IAppReader appReader, bool? showDrafts, IDataSource data = default) : base(appReader)
+    public AppWorkCtxPlus(IDataSourcesService dsf, IAppReader appReader, bool? showDrafts, IDataSource? data = default) : base(appReader)
     {
         DataSourcesFactory = dsf;
         ShowDrafts = showDrafts;
         _data = data;
     }
 
-    public AppWorkCtxPlus(IAppWorkCtx original, IDataSourcesService dsf = default, IAppReader appReader = default, bool? showDrafts = default, IDataSource data = default) : base(original, appReader)
+    public AppWorkCtxPlus(IAppWorkCtx original, IDataSourcesService? dsf = default, IAppReader? appReader = default, bool? showDrafts = default, IDataSource? data = default) : base(original, appReader)
     {
         var origOfClass = original as AppWorkCtxPlus;
         DataSourcesFactory = dsf ?? origOfClass?.DataSourcesFactory;

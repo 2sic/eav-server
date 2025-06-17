@@ -24,8 +24,8 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
         foreach (var attrDef in attribs)
         {
             var attrName = attrDef.Name;
-            if (!newContentItem.ContainsKey(attrName)) continue;
-            var foundValue = newContentItem[attrName];
+            if (!newContentItem.TryGetValue(attrName, out var foundValue))
+                continue;
             switch (attrDef.Type)
             {
                 case ValueTypes.String:

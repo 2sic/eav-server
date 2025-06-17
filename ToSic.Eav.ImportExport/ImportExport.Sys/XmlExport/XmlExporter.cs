@@ -179,19 +179,19 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         // Go through each ContentTypeId
         foreach (var contentTypeId in ContentTypeNamesOrIds)
         {
-            var set = int.TryParse(contentTypeId, out var id)
-                ? AppReader.GetContentType(id)
-                : AppReader.GetContentType(contentTypeId);  // in case it's the name, not the number
+            var ct = int.TryParse(contentTypeId, out var id)
+                ? AppReader.GetContentTypeOptional(id)
+                : AppReader.TryGetContentType(contentTypeId);  // in case it's the name, not the number
 
             // skip system/code-types
-            if (set == null || set.HasPresetAncestor())
+            if (ct == null || ct.HasPresetAncestor())
                 continue;
 
             var attributes = new XElement(XmlConstants.Attributes);
 
             // Add all Attributes to Content-Type/AttributeSet including meta information
             var appMetadata = AppReader.Metadata;
-            foreach (var a in set.Attributes.OrderBy(a => a.SortOrder))
+            foreach (var a in ct.Attributes.OrderBy(a => a.SortOrder))
             {
                 var xmlAttribute = new XElement(XmlConstants.Attribute,
                     new XAttribute(XmlConstants.Static, a.Name),
@@ -214,16 +214,16 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
             // Add AttributeSet / Content Type
             var contentType = new XElement(XmlConstants.AttributeSet,
-                new XAttribute(XmlConstants.Static, set.NameId),
-                new XAttribute(XmlConstants.Name, set.Name),
-                new XAttribute(XmlConstants.Scope, set.Scope),
-                new XAttribute(XmlConstants.AlwaysShareConfig, set.AlwaysShareConfiguration),
+                new XAttribute(XmlConstants.Static, ct.NameId),
+                new XAttribute(XmlConstants.Name, ct.Name),
+                new XAttribute(XmlConstants.Scope, ct.Scope),
+                new XAttribute(XmlConstants.AlwaysShareConfig, ct.AlwaysShareConfiguration),
                 attributes);
 
             // Add Ghost-Info if content type inherits from another content type
-            if (set.HasAncestor())
+            if (ct.HasAncestor())
             {
-                var parentStaticName = set.NameId;
+                var parentStaticName = ct.NameId;
                 contentType.Add(new XAttribute(XmlConstants.AttributeSetParentDef, parentStaticName));
             }
 

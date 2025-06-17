@@ -14,7 +14,7 @@ internal class InsightsAttributePermissions(LazySvc<IAppReaderFactory> appReader
             return message;
 
         Log.A($"debug app metadata for {AppId} and {Type}");
-        var typ = appReaders.Value.Get(AppId.Value)!.GetContentType(Type)!;
+        var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
         var att = typ.Attributes.First(a => a.Name == NameId)
                   ?? throw exceptionMaker.BadRequest($"can't find attribute {NameId}");
 

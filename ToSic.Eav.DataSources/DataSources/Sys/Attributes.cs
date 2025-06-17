@@ -75,14 +75,14 @@ public sealed class Attributes: CustomDataSourceAdvanced
             ? In[StreamDefaultName]?.List.ToImmutableOpt()
             : null;
 
-        var appReader = _appReaders.Get(this)!;
+        var appReader = _appReaders.Get(this);
         var firstEntityInStream = useStream
             ? optionalList?.FirstOrDefault()
             : null;
         var types = (useStream
                 ? [firstEntityInStream?.Type]
                 : typeNames
-                    .Select(appReader.GetContentType)
+                    .Select(appReader.TryGetContentType)
             )
             .Where(t => t != null)
             .Cast<IContentType>()

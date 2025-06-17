@@ -9,7 +9,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
     {
         var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{AppWorkCtx.Show()}, type:{staticName}");
 
-        if (AppWorkCtx.AppReader.GetContentType(staticName) is not { } type)
+        if (AppWorkCtx.AppReader.TryGetContentType(staticName) is not { } type)
             return l.Return([], $"error, type:{staticName} is null. Missing or not a ContentType.");
 
         var fields = type.Attributes.OrderBy(a => a.SortOrder);
@@ -64,7 +64,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
         if (attribute.SysSettings?.InheritMetadata != true)
             return l.Return([], $"attribute {attributeId} does not inherit metadata");
 
-        var sources = attribute.SysSettings.InheritMetadataOf;
+        var sources = attribute.SysSettings!.InheritMetadataOf!;
         var allShared = GetSharedFields();
 
         var result = sources
@@ -72,7 +72,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
             .Where(x => x != null)
             .ToList();
         
-        return l.Return(result, $"{result.Count}");
+        return l.Return(result!, $"{result.Count}");
     }
 
     public List<PairTypeWithAttribute> GetDescendants(int attributeId)
@@ -97,7 +97,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
             .ToList();
 
         var result = allShared
-            .Where(a => a.Attribute.SysSettings.InheritMetadataOf.ContainsKey(guid))
+            .Where(a => a.Attribute.SysSettings!.InheritMetadataOf!.ContainsKey(guid))
             .ToList();
 
         return l.Return(result, $"{result.Count}");
@@ -108,7 +108,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
             .Where(ct => !ct.HasAncestor())
             .ToList();
 
-    private IContentTypeAttribute GetAttribute(int attributeId) =>
+    private IContentTypeAttribute? GetAttribute(int attributeId) =>
         AppWorkCtx.AppReader.ContentTypes
             .SelectMany(ct => ct.Attributes.Where(a => a.AttributeId == attributeId))
             .FirstOrDefault();

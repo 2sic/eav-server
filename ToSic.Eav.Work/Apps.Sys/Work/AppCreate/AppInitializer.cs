@@ -103,7 +103,9 @@ public class AppInitializer(
         {
             KnownAppsConstants.DefaultAppGuid => KnownAppsConstants.ContentAppFolder,
             KnownAppsConstants.PrimaryAppGuid or KnownAppsConstants.PrimaryAppName => KnownAppsConstants.PrimaryAppName,
-            _ => string.IsNullOrEmpty(newAppName) ? eavAppName : RemoveIllegalCharsFromPath(newAppName)
+            _ => string.IsNullOrEmpty(newAppName)
+                ? eavAppName
+                : RemoveIllegalCharsFromPath(newAppName!)
         };
 
 
@@ -139,7 +141,7 @@ public class AppInitializer(
         }
 
         var values = cTypeAndOrEntity.Values ?? [];
-        var attrs = builder.Value.Attribute.Create(values);
+        var attrs = builder.Value.Attribute.Create(values!);
         var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appReader.AppId);
         var newEnt = builder.Value.Entity
             .Create(appId: appReader.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
@@ -149,18 +151,18 @@ public class AppInitializer(
         l.Done();
     }
 
-    private IContentType FindContentType(IAppReadContentTypes appStateRaw, string setName, bool inAppType)
+    private IContentType? FindContentType(IAppReadContentTypes appStateRaw, string setName, bool inAppType)
     {
         // if it's an in-app type, it should check the app, otherwise it should check the global type
         // we're NOT asking the app for all types (which would be the normal way)
         // because there are rare cases where historic data accidentally
         // created the 2SexyContent-App type as a local type in an app (2sxc 9.20-9.22)
         // Basically after this update has run for a while - probably till end of 2018-04
-        // this is probably not so important any more, but I would leave it forever for now
+        // this is probably not so important anymore, but I would leave it forever for now
         // discuss w/2dm if you think you want to change this
         var ct = inAppType
-            ? appStateRaw.GetContentType(setName)
-            : appReaders.GetSystemPreset().GetContentType(setName);
+            ? appStateRaw.TryGetContentType(setName)
+            : appReaders.GetSystemPreset().TryGetContentType(setName);
         return ct;
     }
 
@@ -174,11 +176,11 @@ public class AppInitializer(
 
     private class AddContentTypeAndOrEntityTask(
         string setName,
-        Dictionary<string, object> values = null,
+        Dictionary<string, object>? values = null,
         bool inAppType = true)
     {
         public readonly string SetName = setName;
-        public readonly Dictionary<string, object> Values = values;
+        public readonly Dictionary<string, object>? Values = values;
         public readonly bool InAppType = inAppType;
     }
 }

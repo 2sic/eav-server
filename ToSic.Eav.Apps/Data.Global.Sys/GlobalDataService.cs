@@ -7,15 +7,13 @@ internal class GlobalDataService(IAppReaderFactory appReaderFactory): IGlobalDat
     private IAppReader? GlobalAppOrNull => field ??= appReaderFactory.GetSystemPreset(nullIfNotLoaded: true);
 
     [field: AllowNull, MaybeNull]
-    private IAppReader GlobalAppRequired => field
-        ??= appReaderFactory.GetSystemPreset(nullIfNotLoaded: false)
-        ?? throw new Exception($"Can't get SystemPreset App, something went really wrong.");
+    private IAppReader GlobalAppRequired => field ??= appReaderFactory.GetSystemPreset();
 
     public IContentType? GetContentType(string name)
-        => GlobalAppRequired.GetContentType(name);
+        => GlobalAppRequired.TryGetContentType(name);
 
     public IContentType? GetContentTypeIfAlreadyLoaded(string name)
-        => GlobalAppOrNull?.GetContentType(name);
+        => GlobalAppOrNull?.TryGetContentType(name);
 
     //public IImmutableList<IEntity> AllEntitiesIfAlreadyLoaded => GlobalAppOrNull?.List ?? [];
 

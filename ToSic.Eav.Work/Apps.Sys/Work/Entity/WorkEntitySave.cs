@@ -77,7 +77,7 @@ public class WorkEntitySave(
                         return pair;
 
                     // Check if the attached type exists, if not, leave, otherwise ensure the type is attached
-                    var newType = appReader.GetContentType(e2.Type.Name);
+                    var newType = appReader.TryGetContentType(e2.Type.Name);
                     return newType == null
                         ? pair
                         : pair with { Entity = Builder.Entity.CreateFrom(pair.Entity, type: newType) };

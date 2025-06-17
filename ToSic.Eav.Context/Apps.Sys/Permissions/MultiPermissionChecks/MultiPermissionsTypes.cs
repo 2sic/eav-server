@@ -52,6 +52,6 @@ public class MultiPermissionsTypes(MultiPermissionsApp.MyServices services, Lazy
     {
         Log.A($"BuildTypePermissionChecker({typeName})");
         // now do relevant security checks
-        return BuildPermissionChecker(AppState.GetContentType(typeName));
+        return BuildPermissionChecker(AppState.TryGetContentType(typeName));
     }
 }

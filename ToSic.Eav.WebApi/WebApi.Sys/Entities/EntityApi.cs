@@ -149,7 +149,7 @@ public class EntityApi(
     {
         foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
         {
-            var ct = _appWorkCtxPlus.AppReader.GetContentType(itm.ContentTypeName);
+            var ct = _appWorkCtxPlus.AppReader.TryGetContentType(itm.ContentTypeName);
             if (ct == null)
             {
                 if (!itm.ContentTypeName.StartsWith("@"))
