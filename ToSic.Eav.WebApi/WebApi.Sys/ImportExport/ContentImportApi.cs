@@ -72,7 +72,8 @@ public class ContentImportApi(
     private ImportListXml GetXmlImport(ContentImportArgsDto args)
     {
         var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
-        var contextLanguages = appsCatalog.Zone(_appReader.ZoneId)
+        var contextLanguages = appsCatalog
+            .Zone(_appReader.ZoneId)
             .LanguagesActive
             .Select(lng => lng.EnvironmentKey)
             .ToArray();

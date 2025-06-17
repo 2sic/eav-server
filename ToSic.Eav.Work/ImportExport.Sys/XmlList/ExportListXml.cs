@@ -30,7 +30,7 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
 
     private readonly XmlBuilder _xBuilder = new();
     private IAppReader AppReader { get; set; } = null!;
-    public IContentType ContentType { get; set; } = null!;
+    public IContentType? ContentType { get; set; }
 
     #endregion
 
@@ -41,9 +41,9 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
     /// Create a blank xml scheme for data of one content-type
     /// </summary>
     /// <returns>A string containing the blank xml scheme</returns>
-    public string EmptyListTemplate()
+    public string? EmptyListTemplate()
     {
-        Log.A("export schema xml");
+        var l = Log.Fn<string?>("export schema xml");
         if (ContentType == null) 
             return null;
 
@@ -59,7 +59,8 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
             secondRow.Append(attribute.Name, "");  
         }
 
-        return rootNode.Document?.ToString();
+        var result = rootNode.Document?.ToString();
+        return l.Return(result);
     }
 
     /// <summary>
@@ -72,9 +73,10 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
     /// <param name="resolveLinks">How value references to files and pages are handled</param>
     /// <param name="selectedIds">array of IDs to export only these</param>
     /// <returns>A string containing the xml data</returns>
-    public string GenerateXml(string languageSelected, string languageFallback, string[] sysLanguages, ExportLanguageResolution exportLanguageReference, bool resolveLinks, int[] selectedIds)
+    public string? GenerateXml(string languageSelected, string languageFallback, string[] sysLanguages, ExportLanguageResolution exportLanguageReference, bool resolveLinks, int[] selectedIds)
     {
-        if (ContentType == null) return null;
+        if (ContentType == null)
+            return null;
 
         Log.A($"start export lang selected:{languageSelected} with fallback:{languageFallback} and type:{ContentType.Name}");
 
@@ -92,7 +94,9 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
 
         // neutralize languages AFTER creating the languages list, as that may not be lower-invariant!
         languageFallback = languageFallback.ToLowerInvariant();
-        sysLanguages = sysLanguages.Select(l => l.ToLowerInvariant()).ToArray();
+        sysLanguages = sysLanguages
+            .Select(l => l.ToLowerInvariant())
+            .ToArray();
 
         var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
@@ -103,8 +107,8 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
         var entList = entities.ToList();
 
         // Get the attribute definitions
-        var attribsOfType = ContentType.Attributes;
-        Log.A($"will export {entList.Count} entities X {attribsOfType.Count()} attribs");
+        var attribsOfType = ContentType.Attributes.ToListOpt();
+        Log.A($"will export {entList.Count} entities X {attribsOfType.Count} attribs");
 
         foreach (var entity in entList)
         foreach (var language in languages)
@@ -115,7 +119,7 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
 
             foreach (var attribute in attribsOfType)
             {
-                string value;
+                string? value;
                 if (attribute.Type == ValueTypes.Entity) // Special, handle separately
                     value = entity.Attributes[attribute.Name].Values.FirstOrDefault()?.Serialized;
                 else
@@ -135,13 +139,13 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
 
 internal static class QuickExtensions
 {
-    internal static int IndexOf<T>(this IEnumerable<T> list, T item) 
-        => list.TakeWhile(i => !i.Equals(item)).Count();
+    //internal static int IndexOf<T>(this IEnumerable<T> list, T item) 
+    //    => list.TakeWhile(i => !i.Equals(item)).Count();
 
     /// <summary>
     /// Apend an element to this.
     /// </summary>
-    internal static void Append(this XElement element, XName name, object value)
+    internal static void Append(this XElement element, XName name, object? value)
         => element.Add(new XElement(name, value));
         
 }

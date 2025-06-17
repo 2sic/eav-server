@@ -10,7 +10,6 @@ namespace ToSic.Eav.ImportExport.Sys.XmlList;
 
 partial class ImportListXml
 {
-
     #region Timing / Debuging infos
 
     /// <summary>
@@ -22,21 +21,25 @@ partial class ImportListXml
     public long TimeForDbImport;
     #endregion
 
-    //private int _appId;
-
-    /// <summary>
-    /// The xml document to imported.
-    /// </summary>
-    public XDocument Document { get; private set; }
+    ///// <summary>
+    ///// The xml document to imported.
+    ///// </summary>
+    //public XDocument Document { get; private set; }
 
     /// <summary>
     /// The elements of the xml document.
     /// </summary>
-    public IEnumerable<XElement> DocumentElements { get; private set; }
+    public IEnumerable<XElement> DocumentElements { get; private set; } = null!;
 
-    private string _docLangPrimary;
+    //private IList<string> _languages;
 
-    private IList<string> _languages;
+    private ImportConfiguration ImportConfig { get; set; } = null!;
+
+    private record ImportConfiguration
+    {
+        public required string DocLangPrimary { get; init; }
+        public required IList<string> Languages { get; init; }
+    }
 
     protected bool ResolveLinks;
 
@@ -50,9 +53,9 @@ partial class ImportListXml
     /// </summary>
     public List<Entity> ImportEntities { get; } = [];
 
-    private Entity GetImportEntity(Guid entityGuid)
+    private Entity? GetImportEntity(Guid entityGuid)
     {
-        var l = Log.Fn<Entity>();
+        var l = Log.Fn<Entity?>();
         var result = ImportEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
         return l.Return(result, result == null ? "null" : $"Will modify entity from existing import list {entityGuid}");
     }
@@ -78,24 +81,27 @@ partial class ImportListXml
     /// <summary>
     /// Errors found while importing the document to memory.
     /// </summary>
-    public ImportErrorLog ErrorLog { get; set; }
+    public ImportErrorLog ErrorLog { get; set; } = null!;
 
 
     private List<Guid> GetCreatedEntityGuids()
-        => ImportEntities.Select(entity => entity.EntityGuid != Guid.Empty ? entity.EntityGuid : Guid.NewGuid()).ToList();
+        => ImportEntities
+            .Select(entity => entity.EntityGuid != Guid.Empty ? entity.EntityGuid : Guid.NewGuid())
+            .ToList();
 
 
     /// <summary>
     /// Get the attribute names in the xml document.
     /// </summary>
-    public IEnumerable<string> Info_AttributeNamesInDocument => DocumentElements.SelectMany(element => element.Elements())
+    public IEnumerable<string> Info_AttributeNamesInDocument => DocumentElements
+        .SelectMany(element => element.Elements())
         .GroupBy(attribute => attribute.Name.LocalName)
         .Select(group => group.Key)
         .Where(name => name != XmlConstants.EntityGuid && name != XmlConstants.EntityLanguage)
         .ToList();
 
 
-    private IEntity FindInExisting(Guid guid)
+    private IEntity? FindInExisting(Guid guid)
         => ExistingEntities.FirstOrDefault(e => e.EntityGuid == guid);
 
 

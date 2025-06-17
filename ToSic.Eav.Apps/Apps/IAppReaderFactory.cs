@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Lib.Coding;
-
-namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps;
 
 /// <summary>
 /// Internal system to retrieve AppReaders for accessing app state/data directly.
@@ -20,16 +17,9 @@ public interface IAppReaderFactory
     /// but it could also be a Reader. For performance reasons, this will get you the reader, but
     /// possibly without having to create a new one.
     /// </summary>
-    /// <param name="appOrReader"></param>
+    /// <param name="appIdOrReader"></param>
     /// <returns></returns>
-    IAppReader? GetOrKeep(IAppIdentity appOrReader);
-
-    ///// <summary>
-    ///// Get a reader for the specified app.
-    ///// </summary>
-    ///// <param name="app"></param>
-    ///// <returns></returns>
-    //IAppReader? Get(IAppIdentity app);
+    IAppReader GetOrKeep(IAppIdentity appIdOrReader);
 
     /// <summary>
     /// Get a reader of the zone's primary app.
@@ -43,10 +33,9 @@ public interface IAppReaderFactory
     /// Get the preset App of the system.
     /// In a very special case, it should skip this if it's not loaded.
     /// </summary>
-    /// <param name="protector"></param>
     /// <param name="nullIfNotLoaded"></param>
     /// <returns></returns>
-    IAppReader? GetSystemPreset(NoParamOrder protector = default, bool nullIfNotLoaded = false);
+    IAppReader? TryGetSystemPreset(bool nullIfNotLoaded);
 
     /// <see cref="IAppsCatalog.AppIdentity"/>
     IAppIdentityPure AppIdentity(int appId);
@@ -68,12 +57,12 @@ public interface IAppReaderFactory
     ///// <returns>The expected app - or `null`.</returns>
     //IAppReader? TryGet(int appId);
 
-    /// <summary>
-    /// Get a reader for the specified app.
-    /// </summary>
-    /// <param name="appIdentity"></param>
-    /// <returns></returns>
-    IAppReader? TryGet(IAppIdentity appIdentity);
+    ///// <summary>
+    ///// Get a reader for the specified app.
+    ///// </summary>
+    ///// <param name="appIdentity"></param>
+    ///// <returns></returns>
+    //IAppReader? TryGet(IAppIdentity appIdentity);
 
     /// <summary>
     /// Get a reader for the specified app.
@@ -83,4 +72,5 @@ public interface IAppReaderFactory
     IAppReader Get(IAppIdentity appIdentity);
 
     IAppReader GetSystemPreset();
+    
 }

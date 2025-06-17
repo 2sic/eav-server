@@ -3,6 +3,6 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class PairTypeWithAttribute
 {
-    public IContentType Type { get; init; }
-    public IContentTypeAttribute Attribute { get; init; }
+    public required IContentType Type { get; init; }
+    public required IContentTypeAttribute Attribute { get; init; }
 }

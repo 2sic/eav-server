@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.AppStack;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Catalog;

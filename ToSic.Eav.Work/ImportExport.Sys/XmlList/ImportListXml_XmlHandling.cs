@@ -33,28 +33,28 @@ partial class ImportListXml
         if (documentElementLanguagesCount.All(count => count == 1))
             return l.ReturnTrue("ok");
 
-        if (!documentElementLanguagesAll.Any(lang => _languages.Except(lang).Any()))
+        if (!documentElementLanguagesAll.Any(lang => ImportConfig.Languages.Except(lang).Any()))
             return l.ReturnTrue("ok");
 
         ErrorLog.Add(ImportErrorCode.MissingElementLanguage,
-            "Langs=" + string.Join(", ", _languages));
+            "Langs=" + string.Join(", ", ImportConfig.Languages));
         return l.ReturnFalse("error");
     }
 
     private bool LoadStreamIntoDocumentElement(Stream dataStream)
     {
         var l = Log.Fn<bool>(timer: true);
-        Document = XDocument.Load(dataStream);
+        var document = XDocument.Load(dataStream);
         dataStream.Position = 0;
-        if (Document == null)
+        if (document == null)
         {
             ErrorLog.Add(ImportErrorCode.InvalidDocument);
             return l.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
         }
 
         // #1 Check that document-root is the expected value
-        var documentRoot = Document.Element(XmlConstants.Root)
-                           ?? Document.Element(XmlConstants.Root97);
+        var documentRoot = document.Element(XmlConstants.Root)
+                           ?? document.Element(XmlConstants.Root97);
 
         if (documentRoot == null)
         {
@@ -64,15 +64,20 @@ partial class ImportListXml
         }
 
         // #2 make sure it has elements to import
-        DocumentElements = documentRoot.Elements(XmlConstants.Entity).ToList();
-        if (!DocumentElements.Any())
+        var docNodes = documentRoot
+            .Elements(XmlConstants.Entity)
+            .ToList();
+        if (!docNodes.Any())
         {
             ErrorLog.Add(ImportErrorCode.InvalidDocument);
             return l.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
         }
 
         // #3 Check the content type of the document (it can be found on each element in the Type attribute)
-        var documentTypeAttribute = DocumentElements.First().Attribute(XmlConstants.EntityTypeAttribute);
+        var documentTypeAttribute = docNodes
+            .First()
+            .Attribute(XmlConstants.EntityTypeAttribute);
+
         if (documentTypeAttribute?.Value == null ||
             documentTypeAttribute.Value != ContentType.Name.RemoveSpecialCharacters())
         {
@@ -80,6 +85,7 @@ partial class ImportListXml
             return l.ReturnFalse($"error: {ImportErrorCode.InvalidContentType} - Trying to import of type {ContentType} but file contains {documentTypeAttribute}");
         }
 
+        DocumentElements = docNodes;
         return l.ReturnTrue("ok");
     }
 

@@ -17,5 +17,5 @@ internal abstract class ForExpectedBase(IEntity entity) : EntityBasedType(entity
     /// <summary>
     /// A delete warning if this is being deleted
     /// </summary>
-    public string DeleteWarning => GetThis<string>(null);
+    public string? DeleteWarning => GetThis<string>(null);
 }

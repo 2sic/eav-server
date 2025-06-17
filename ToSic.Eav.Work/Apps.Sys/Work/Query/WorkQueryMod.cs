@@ -39,7 +39,7 @@ public class WorkQueryMod(
         var mdItems = parts
             .Select(ds => ds.Entity.Metadata.FirstOrDefault())
             .Where(md => md != null)
-            .Select(md => md.EntityId)
+            .Select(md => md!.EntityId)
             .ToListOpt();
 
         // delete in the right order - first the outermost-dependents, then a layer in, and finally the top node
@@ -103,11 +103,12 @@ public class WorkQueryMod(
             // remove key-fields, as we cannot save them (would cause error)
             RemoveIdAndGuidFromValues(dataSource);
 
-            if (originalIdentity == "Out") continue;
+            if (originalIdentity == "Out" || string.IsNullOrWhiteSpace(originalIdentity))
+                continue;
 
             // Update existing DataSource
-            if (dataSource.ContainsKey(QueryConstants.VisualDesignerData))
-                dataSource[QueryConstants.VisualDesignerData] = dataSource[QueryConstants.VisualDesignerData].ToString(); // serialize this JSON into string
+            if (dataSource.TryGetValue(QueryConstants.VisualDesignerData, out var designerJson))
+                dataSource[QueryConstants.VisualDesignerData] = designerJson.ToString() ?? ""; // serialize this JSON into string
 
             if (entityId != null)
                 entUpdate.New(AppWorkCtx.AppReader).UpdateParts(Convert.ToInt32(entityId), dataSource, new());
@@ -186,7 +187,7 @@ public class WorkQueryMod(
     /// <param name="renamedDataSources"></param>
     /// <param name="lg"></param>
     /// <returns></returns>
-    private static ICollection<Connection> RenameWiring(ICollection<Connection> wirings, IDictionary<string, Guid> renamedDataSources, ILog lg)
+    private static ICollection<Connection> RenameWiring(ICollection<Connection> wirings, IDictionary<string, Guid>? renamedDataSources, ILog lg)
     {
         var l = lg.Fn<ICollection<Connection>>();
         if (renamedDataSources == null)

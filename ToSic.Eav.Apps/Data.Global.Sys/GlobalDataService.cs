@@ -4,7 +4,7 @@ using ToSic.Eav.Apps;
 namespace ToSic.Eav.Data.Global.Sys;
 internal class GlobalDataService(IAppReaderFactory appReaderFactory): IGlobalDataService
 {
-    private IAppReader? GlobalAppOrNull => field ??= appReaderFactory.GetSystemPreset(nullIfNotLoaded: true);
+    private IAppReader? GlobalAppOrNull => field ??= appReaderFactory.TryGetSystemPreset(nullIfNotLoaded: true);
 
     [field: AllowNull, MaybeNull]
     private IAppReader GlobalAppRequired => field ??= appReaderFactory.GetSystemPreset();

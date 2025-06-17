@@ -14,7 +14,7 @@ public class MultiPermissionsTypes(MultiPermissionsApp.MyServices services, Lazy
 
     // Note: AppState must be public, as we have some extension methods that need it
     [field: AllowNull, MaybeNull]
-    public IAppReader AppState => field ??= appReaderFactory.Value.GetOrKeep(App)!;
+    public IAppReader AppState => field ??= appReaderFactory.Value.GetOrKeep(App);
 
     public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
     {

@@ -52,7 +52,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         var newMetadata = query.Parts
             .Select(o => new { o.Guid, Value = o.Entity.Metadata.FirstOrDefault() })
             .Where(m => m.Value != null)
-            .Select(o => CopyAndResetIds(o.Value, Guid.NewGuid(), newMetadataTarget: newParts[o.Guid].EntityGuid));
+            .Select(o => CopyAndResetIds(o.Value!, Guid.NewGuid(), newMetadataTarget: newParts[o.Guid].EntityGuid));
 
         // Remap the wiring-list of the data-sources from old to new
         var keyMap = newParts.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value.EntityGuid.ToString());

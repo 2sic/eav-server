@@ -72,8 +72,12 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
 
     private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
     {
-        var childrenMetaDataIds = AppWorkCtx.AppReader.List.FindRepoId(id).Metadata.Select(md => md.EntityId).ToList();
-        if (!childrenMetaDataIds.Any()) return;
+        var childrenMetaDataIds = AppWorkCtx.AppReader.List.FindRepoId(id)!
+            .Metadata
+            .Select(md => md.EntityId)
+            .ToList();
+        if (!childrenMetaDataIds.Any())
+            return;
         foreach (var childrenMetadataId in childrenMetaDataIds)
             CollectMetaDataIdsRecursively(childrenMetadataId, ref metaDataIds);
         metaDataIds.AddRange(childrenMetaDataIds);
@@ -94,11 +98,11 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         return canDeleteList;
     }
 
-    private void BatchCheckTypesMatch(int[] ids, string contentType)
+    private void BatchCheckTypesMatch(int[] ids, string? contentType)
     {
         foreach (var id in ids)
         {
-            var found = AppWorkCtx.AppReader.List.FindRepoId(id); // Parent.Read.Entities.Get(id);
+            var found = AppWorkCtx.AppReader.List.FindRepoId(id)!;
             if (contentType != null && found.Type.Name != contentType && found.Type.NameId != contentType)
                 throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
         }

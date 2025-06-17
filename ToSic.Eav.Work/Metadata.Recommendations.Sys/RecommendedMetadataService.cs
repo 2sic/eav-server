@@ -31,14 +31,14 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     }
 
     private IAppReader AppReader => _appReader ?? throw new("Can't use this Read class before setting AppState");
-    private IAppReader _appReader;
+    private IAppReader? _appReader;
 
     private int AppId;
 
 
     public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string? recommendedTypeName = null)
     {
-        var recommendations = GetRecommendations(targetTypeId, key, recommendedTypeName);
+        var recommendations = GetRecommendations(targetTypeId, key, recommendedTypeName) ?? [];
 
         var remaining = recommendations
             .Select(r =>
@@ -108,8 +108,8 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
 
     private class RecommendationInfos
     {
-        public IContentType Type;
-        public MetadataForDecorator Decorator;
+        public required IContentType Type;
+        public required MetadataForDecorator Decorator;
     }
 
     private ICollection<RecommendationInfos> TypesWhichDeclareTheyAreForTheTarget(int targetType, string targetKey)
@@ -167,10 +167,11 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                     case (int)TargetTypes.None:
                         return false;
                     case (int)TargetTypes.Attribute:
-                        if (targetName.EqualsInsensitive(targetKey)) return true;
+                        if (targetName.EqualsInsensitive(targetKey))
+                            return true;
                         var attr = AppReader.ContentTypes.FindAttribute(targetKey);
-                        return keyForward.EqualsInsensitive($"{attr.Item1.NameId}/{attr.Item2.Name}")
-                               || keyForward.EqualsInsensitive($"{attr.Item1.Name}/{attr.Item2.Name}");
+                        return keyForward.EqualsInsensitive($"{attr.ContentType.NameId}/{attr.Attribute.Name}")
+                               || keyForward.EqualsInsensitive($"{attr.ContentType.Name}/{attr.Attribute.Name}");
                     // App and ContentType don't need extra conditions / specifiers
                     case (int)TargetTypes.App:
                         return true;
@@ -314,13 +315,13 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     /// Find a content-type and convert it into a recommendation object
     /// </summary>
     /// <returns></returns>
-    private MetadataRecommendation? TypeAsRecommendation(string name, string debug, int priority, string delWarning)
+    private MetadataRecommendation? TypeAsRecommendation(string? name, string debug, int priority, string? delWarning)
     {
         var l = Log.Fn<MetadataRecommendation>($"name: {name}");
         if (IsNullOrWhiteSpace(name))
             return l.ReturnNull("empty name");
 
-        var type = AppReader.TryGetContentType(name);
+        var type = AppReader.TryGetContentType(name!);
         return type == null
             ? l.ReturnNull("name not found")
             : l.Return(new(type, null, null, debug, priority)

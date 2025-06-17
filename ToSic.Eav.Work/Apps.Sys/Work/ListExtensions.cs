@@ -6,20 +6,22 @@ namespace ToSic.Eav.Apps.Sys.Work;
 // todo: maybe move to something like ToSic.Eav.Generics
 internal static class ListExtensions
 {
-    internal static void EnsureListLength<T>(this List<T> listMain, int length)
+    internal static void EnsureListLength<T>(this List<T?> listMain, int length)
     {
         if (listMain.Count < length)
             listMain.AddRange(Enumerable.Repeat(default(T), length - listMain.Count));
     }
 
-    internal static void SetLength<T>(this List<T> list, int length)
+    internal static void SetLength<T>(this List<T?> list, int length)
     {
         var difference = length - list.Count;
-        if (difference < 0) list.RemoveRange(length, -difference);
-        else if (difference > 0) list.EnsureListLength(length);
+        if (difference < 0)
+            list.RemoveRange(length, -difference);
+        else if (difference > 0)
+            list.EnsureListLength(length);
     }
 
-    internal static void InsertOrAppend<T>(this IList<T> list, int position, T value)
+    internal static void InsertOrAppend<T>(this IList<T?> list, int position, T value)
     {
         if (list.Count > position)
             list.Insert(position, value);
@@ -27,12 +29,12 @@ internal static class ListExtensions
             list.Add(value);
     }
 
-    internal static void RemoveIfInRange<T>(this IList<T> list, int index)
+    internal static void RemoveIfInRange<T>(this IList<T?> list, int index)
     {
         if (list.Count > index) list.RemoveAt(index);
     }
 
-    internal static bool Move<T>(this IList<T> list, int from, int to)
+    internal static bool Move<T>(this IList<T?> list, int from, int to)
     {
         if (from >= list.Count)
             return false;
@@ -48,6 +50,9 @@ internal static class ListExtensions
         foreach (var keyValuePair in list) action.Invoke(keyValuePair.Value);
     }
 
-    internal static Dictionary<string, object> ToObject<T>(this Dictionary<string, T> list)
-        => list.ToDictionary(x => x.Key, x => x.Value as object);
+    internal static Dictionary<string, object?> ToObject<T>(this Dictionary<string, T> list)
+        => list.ToDictionary(
+            x => x.Key,
+            x => x.Value as object
+        );
 }

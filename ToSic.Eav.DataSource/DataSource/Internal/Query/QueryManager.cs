@@ -24,8 +24,7 @@ public class QueryManager(
     public QueryDefinition Get(IAppIdentity appIdentity, int queryId)
     {
         var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
-        var app = appReaders.Value.GetOrKeep(appIdentity)
-            ?? throw new ArgumentException($"Can't find app for {appIdentity.Show()}");
+        var app = appReaders.Value.GetOrKeep(appIdentity);
         var qEntity = GetQueryEntity(queryId, app);
         var qDef = queryDefBuilder.Value.Create(qEntity, app.AppId);
         return l.Return(qDef);
@@ -40,7 +39,7 @@ public class QueryManager(
     internal IEntity GetQueryEntity(int entityId, IAppIdentity appReaderOrId)
     {
         var l = Log.Fn<IEntity>($"{entityId}");
-        var app = appReaders.Value.GetOrKeep(appReaderOrId)!;
+        var app = appReaders.Value.GetOrKeep(appReaderOrId);
         try
         {
             var queryEntity = app.List.FindRepoId(entityId);
@@ -71,6 +70,7 @@ public class QueryManager(
             var delayedQuery = queryGenerator.New().Init(app.ZoneId, app.AppId, entQuery, lookUps);
             // make sure it doesn't break if two queries have the same name...
             var name = entQuery.GetBestTitle();
+            // ReSharper disable once CanSimplifyDictionaryLookupWithTryAdd
             if (name != null && !dict.ContainsKey(name))
                 dict[name] = delayedQuery;
         }

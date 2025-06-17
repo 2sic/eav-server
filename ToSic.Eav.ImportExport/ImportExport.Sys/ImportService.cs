@@ -65,12 +65,12 @@ public class ImportService(
     /// </summary>
     public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities) 
     {
-        var l = Log.Fn($"types: {newTypes?.Count}; entities: {newEntities?.Count}", timer: true);
+        var l = Log.Fn($"types: {newTypes.Count}; entities: {newEntities.Count}", timer: true);
         Storage.DoWithDelayedCacheInvalidation(() =>
         {
             #region import Content-Types if any were included but rollback transaction if necessary
 
-            if (newTypes == null)
+            if (newTypes.Count == 0)
                 l.A("No types to import");
             else
                 Storage.DoInTransaction(() =>
@@ -116,7 +116,7 @@ public class ImportService(
 
             #region import Entities, but rollback transaction if necessary
 
-            if (newEntities == null)
+            if (newEntities.Count == 0)
                 l.A("Not entities to import");
             else
             {

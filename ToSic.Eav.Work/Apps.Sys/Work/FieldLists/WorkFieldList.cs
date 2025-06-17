@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.State;
-using Callback = System.Func<ToSic.Eav.Apps.Sys.Work.CoupledIdLists, System.Collections.Generic.Dictionary<string, object>>;
+using Callback = System.Func<ToSic.Eav.Apps.Sys.Work.CoupledIdLists, System.Collections.Generic.Dictionary<string, object?>>;
 
 
 namespace ToSic.Eav.Apps.Sys.Work;
@@ -10,7 +10,7 @@ public class WorkFieldList(GenWorkDb<WorkEntityUpdate> entityUpdate)
 {
     public void FieldListUpdate(IEntity target, string[] fields, bool asDraft, Callback callback)
     {
-        target = AppWorkCtx.AppReader.GetDraftOrKeep(target);
+        target = AppWorkCtx.AppReader.GetDraftOrKeep(target)!;
         var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
         var values = callback.Invoke(lists);
         entityUpdate.New(AppWorkCtx)

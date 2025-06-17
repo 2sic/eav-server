@@ -6,8 +6,8 @@ namespace ToSic.Eav.Data.InputTypes.Sys;
 /// Constants related to Input Types
 /// </summary>
 [PrivateApi]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class InputTypeDefinition(IEntity entity) : EntityBasedType(entity)
+[ShowApiWhenReleased(state: ShowApiMode.Never)]
+public class InputTypeDefinition(IEntity entity) : EntityBasedType(entity: entity)
 {
     /// <summary>
     /// Name of the content-type which describes Input-Types
@@ -17,20 +17,20 @@ public class InputTypeDefinition(IEntity entity) : EntityBasedType(entity)
     /// <summary>
     /// Optional CSV of custom configuration types instead of the default cascade
     /// </summary>
-    public string? ConfigTypes => GetThis(null as string);
+    public string? ConfigTypes => GetThis(fallback: null as string);
 
-    public string? Label => GetThis(null as string);
+    public string? Label => GetThis(fallback: null as string);
 
-    public string? Description => GetThis(null as string);
+    public string? Description => GetThis(fallback: null as string);
 
-    public string? Assets => GetThis(null as string);
+    public string? Assets => GetThis(fallback: null as string);
 
-    public bool UseAdam => GetThis(false);
+    public bool UseAdam => GetThis(fallback: false);
 
-    public string? AngularAssets => GetThis(null as string);
+    public string? AngularAssets => GetThis(fallback: null as string);
 
     // ReSharper disable once InconsistentNaming
-    public bool DisableI18n => GetThis(false);
+    public bool DisableI18n => GetThis(fallback: false);
 
-    public string? Type => GetThis(null as string);
+    public string Type => GetThis(fallback: "error-unknown");
 }

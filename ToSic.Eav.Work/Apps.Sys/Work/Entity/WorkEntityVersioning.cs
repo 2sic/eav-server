@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.Versions;
@@ -35,7 +36,7 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
         var newVersion = PrepareRestoreEntity(entityId, transactionId);
 
         // Restore Entity
-        _import.Value.ImportIntoDb(null, new List<Data.Entities.Sys.Entity> { newVersion as Data.Entities.Sys.Entity });
+        _import.Value.ImportIntoDb([], new List<Entity> { (Entity)newVersion });
 
         // Delete Draft (if any)
         var entityDraft = AppWorkCtx.DbStorage.Publishing.GetDraftBranchEntityId(entityId);

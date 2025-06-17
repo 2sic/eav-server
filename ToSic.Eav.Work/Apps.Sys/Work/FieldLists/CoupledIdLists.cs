@@ -1,7 +1,4 @@
-﻿using DicNameInt = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<int?>>;
-using DicNameObj = System.Collections.Generic.Dictionary<string, object>;
-
-namespace ToSic.Eav.Apps.Sys.Work;
+﻿namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// This is responsible for managing / changing list-pairs of entities.
@@ -11,13 +8,14 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class CoupledIdLists: HelperBase
 {
-    public DicNameInt Lists = new(StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, List<int?>> Lists = new(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="lists">Lists to use for working on</param>
-    public CoupledIdLists(DicNameInt lists, ILog parentLog) : base(parentLog, "App.LstPai")
+    /// <param name="parentLog"></param>
+    public CoupledIdLists(Dictionary<string, List<int?>> lists, ILog parentLog) : base(parentLog, "App.LstPai")
     {
         foreach (var keyValuePair in lists) Lists.Add(keyValuePair.Key, keyValuePair.Value);
         SyncListLengths();
@@ -31,7 +29,7 @@ public class CoupledIdLists: HelperBase
     /// </summary>
     /// <param name="index">Index to add to - 0 based</param>
     /// <param name="ids"></param>
-    public DicNameObj Add(int? index, int?[] ids)
+    public Dictionary<string, object?> Add(int? index, int?[] ids)
     {
         Log.A($"add content/pres at order:{index}");
         var max = Lists.First().Value.Count; // max is at the end of the list
@@ -49,7 +47,7 @@ public class CoupledIdLists: HelperBase
     /// Removes entries from the coupled pair.
     /// </summary>
     /// <param name="index">Index to remove, 0 based</param>
-    public DicNameObj Remove(int index)
+    public Dictionary<string, object?> Remove(int index)
     {
         Log.A($"remove content and pres items order:{index}");
         Lists.ForEach(l => l.RemoveIfInRange(index));
@@ -60,14 +58,14 @@ public class CoupledIdLists: HelperBase
     /// Move an item in the coupled lists
     /// </summary>
     /// <returns></returns>
-    public DicNameObj Move(int sourceIndex, int targetIndex)
+    public Dictionary<string, object?> Move(int sourceIndex, int targetIndex)
     {
-        var l = Log.Fn<DicNameObj>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
+        var l = Log.Fn<Dictionary<string, object?>>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
         var hasChanges = Lists.Values
             .Aggregate(false, (prev, lstItem) => lstItem.Move(sourceIndex, targetIndex) || prev);
         return hasChanges
             ? l.Return(Lists.ToObject(), "ok")
-            : l.ReturnNull("outside of range, no changes");
+            : l.Return([],"outside of range, no changes");
     }
 
     /// <summary>
@@ -75,9 +73,9 @@ public class CoupledIdLists: HelperBase
     /// </summary>
     /// <param name="newSequence">List of index-IDs how it should be sorted now</param>
     /// <returns></returns>
-    public DicNameObj Reorder(int[] newSequence)
+    public Dictionary<string, object?> Reorder(int[] newSequence)
     {
-        var l = Log.Fn<DicNameObj>($"seq:[{string.Join(",", newSequence)}]");
+        var l = Log.Fn<Dictionary<string, object?>>($"seq:[{string.Join(",", newSequence)}]");
         // some error checks
         if (newSequence.Length != Lists.First().Value.Count)
         {
@@ -110,25 +108,25 @@ public class CoupledIdLists: HelperBase
     /// <param name="index"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public DicNameObj Replace(int index, (bool, int?)[] values)
+    public Dictionary<string, object?> Replace(int index, (bool, int?)[] values)
     {
-        var l = Log.Fn<DicNameObj>($"index: {index}");
+        var l = Log.Fn<Dictionary<string, object?>>($"index: {index}");
         if (index == -1)
             throw l.Ex(new Exception("Sort order is never -1 any more; deprecated"));
 
         // if necessary, increase length on all
         var i = 0;
-        var ok = Lists.Values.Aggregate(false, (prev, l) =>
+        var ok = Lists.Values.Aggregate(false, (prev, lst) =>
         {
-            l.EnsureListLength(index + 1);
+            lst.EnsureListLength(index + 1);
             var set = values[i++];
-            var changed = set.Item1 && ReplaceItemAtIndexIfChanged(l, index, set.Item2);
+            var changed = set.Item1 && ReplaceItemAtIndexIfChanged(lst, index, set.Item2);
             return prev || changed;
         });
 
         return ok
             ? l.Return(Lists.ToObject())
-            : l.ReturnNull();
+            : l.Return([]);
     }
 
     private static bool ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)

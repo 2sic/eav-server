@@ -24,10 +24,10 @@ public partial class ImportListXml(
 
     #region Init
 
-    private IContentType ContentType { get; set; }
-    private List<IEntity> ExistingEntities { get; set; }
+    private IContentType ContentType { get; set; } = null!;
+    private List<IEntity> ExistingEntities { get; set; } = null!;
 
-    private IAppReader AppReader { get; set; }
+    private IAppReader AppReader { get; set; } = null!;
 
     /// <summary>
     /// Create a xml import. The data stream passed will be imported to memory, and checked 
@@ -63,18 +63,24 @@ public partial class ImportListXml(
         ContentType = contentType;
         Log.A("Content type ok:" + contentType.Name);
 
-        ExistingEntities = AppReader.List.Where(e => e.Type == contentType).ToList();
+        ExistingEntities = AppReader.List
+            .Where(e => e.Type == contentType)
+            .ToList();
         Log.A($"Existing entities: {ExistingEntities.Count}");
 
-        _languages = languages?.ToList();
-        if (_languages == null || !_languages.Any())
-            _languages = [string.Empty];
+        var langs = languages.ToList();
+        if (!langs.Any())
+            langs = [string.Empty];
 
-        _languages = _languages
-            .Select(l => l.ToLowerInvariant())
-            .ToList();
-        _docLangPrimary = documentLanguageFallback.ToLowerInvariant();
-        Log.A($"Languages: {languages.Count()}, fallback: {_docLangPrimary}");
+        ImportConfig = new()
+        {
+            DocLangPrimary = documentLanguageFallback.ToLowerInvariant(),
+            Languages = langs
+                .Select(l => l.ToLowerInvariant())
+                .ToList(),
+        };
+
+        Log.A($"Languages: {ImportConfig.Languages.Count}, fallback: {ImportConfig.DocLangPrimary}");
         _deleteSetting = deleteSetting;
         ResolveLinks = resolveLinkMode == ImportResolveReferenceMode.Resolve;
 
@@ -114,15 +120,17 @@ public partial class ImportListXml(
         {
             nodesCount++;
 
-            var nodeLang = xEntity.Element(XmlConstants.EntityLanguage)?.Value.ToLowerInvariant();
-            if (_languages.All(language => language != nodeLang))
+            var nodeLangRaw = xEntity.Element(XmlConstants.EntityLanguage)?.Value.ToLowerInvariant();
+            if (ImportConfig.Languages.All(language => language != nodeLangRaw))
             {
                 // problem when DNN does not support the language
-                ErrorLog.Add(ImportErrorCode.InvalidLanguage, $"Lang={nodeLang}", nodesCount);
+                ErrorLog.Add(ImportErrorCode.InvalidLanguage, $"Lang={nodeLangRaw}", nodesCount);
                 continue;
             }
 
-            var entityGuid = entityGuidManager.GetGuid(xEntity, _docLangPrimary);
+            var nodeLang = nodeLangRaw!;
+
+            var entityGuid = entityGuidManager.GetGuid(xEntity, ImportConfig.DocLangPrimary);
             var entityInImportQueue = GetImportEntity(entityGuid);
             var entityAttributes = builder.Attribute.Mutable(entityInImportQueue?.Attributes);
 
@@ -193,7 +201,7 @@ public partial class ImportListXml(
                         entityValue.Value.Languages.ToImmutableOpt()
                             .Add(new Language(nodeLang, valueReadOnly))
                     );
-                    var newValues = builder.Value.Replace(entityValue.Attribute.Values,
+                    var newValues = builder.Value.Replace(entityValue.Attribute!.Values,
                         entityValue.Value, updatedValue);
                     var newAttribute = builder.Attribute.CreateFrom(entityValue.Attribute, newValues);
                     entityAttributes = builder.Attribute.Replace(entityAttributes, newAttribute);
@@ -208,9 +216,8 @@ public partial class ImportListXml(
                     continue;
                 }
 
-                var attrExisting = existingEnt[ctAttribute.Name];
-                var valExisting = ExportImportValueConversion.GetExactAssignedValue(attrExisting,
-                    valueReferenceLanguage, null);
+                var attrExisting = existingEnt[ctAttribute.Name]!;
+                var valExisting = ExportImportValueConversion.GetExactAssignedValue(attrExisting, valueReferenceLanguage, null! /* ignore language fallback */);
                 if (valExisting == null)
                 {
                     ErrorLog.Add(ImportErrorCode.InvalidValueReference, value, nodesCount);
@@ -263,7 +270,7 @@ public partial class ImportListXml(
                 // which was from 2017 or before, I'll leave it in for now
                 var entityClone = builder.Entity.CreateFrom(entityInImportQueue, attributes: builder.Attribute.Create(entityAttributes));
                 ImportEntities.Remove(entityInImportQueue);
-                ImportEntities.Add(entityClone as Entity);
+                ImportEntities.Add((Entity)entityClone);
             }
 
         }
@@ -290,12 +297,14 @@ public partial class ImportListXml(
         Timer.Start();
         if (_deleteSetting == ImportDeleteUnmentionedItems.All)
         {
-            var idsToDelete = GetEntityDeleteGuids().Select(g => FindInExisting(g).EntityId).ToList();
+            var idsToDelete = GetEntityDeleteGuids()
+                .Select(g => FindInExisting(g)!.EntityId)
+                .ToList();
             entDelete.New(AppReader).Delete(idsToDelete);
         }
 
         var import = importerLazy.Value.Init(AppReader.ZoneId, AppReader.AppId, false, true);
-        import.ImportIntoDb(null, ImportEntities);
+        import.ImportIntoDb([], ImportEntities);
 
         // important note: don't purge cache here, but the caller MUST do this!
         Timer.Stop();

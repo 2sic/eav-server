@@ -116,17 +116,17 @@ public class WorkInputTypes(
 
         return list
             .Select(e => new InputTypeDefinition(e))
-            .Select(e => new InputTypeInfo(
-                e.Type,
-                e.Label,
-                e.Description,
-                e.Assets,
-                e.DisableI18n,
-                e.AngularAssets,
-                e.UseAdam,
-                "app-registered",
-                e.Metadata
-            ))
+            .Select(e => new InputTypeInfo(metadata: e.Metadata)
+            {
+                Type = e.Type,
+                Label = e.Label,
+                Description = e.Description,
+                Assets = e.Assets,
+                DisableI18n = e.DisableI18n,
+                AngularAssets = e.AngularAssets,
+                UseAdam = e.UseAdam,
+                Source = "app-registered",
+            })
             .ToListOpt();
     }
 
@@ -181,21 +181,20 @@ public class WorkInputTypes(
             .Select(it =>
             {
                 var md = it.Metadata;
-                return new InputTypeInfo(
-                    // 2023-11-10 2dm - changed this to support new input-types based on guid-content-types
-                    //it.NameId.TrimStart(FieldTypePrefix[0]),
-                    md.GetBestValue<string>(nameof(InputTypeDefinition.Type), TypeForInputTypeDefinition)
+                // 2023-11-10 2dm - changed this to support new input-types based on guid-content-types
+                return new InputTypeInfo(metadata: md)
+                {
+                    Type = md.GetBestValue<string>(nameof(InputTypeDefinition.Type), TypeForInputTypeDefinition)
                         .UseFallbackIfNoValue(GetTypeName(it))
                         .TrimStart(FieldTypePrefix[0]),
-                    md.GetBestValue<string>(nameof(InputTypeDefinition.Label), typesToCheckInThisOrder),
-                    md.GetBestValue<string>(nameof(InputTypeDefinition.Description), typesToCheckInThisOrder),
-                    md.GetBestValue<string>(nameof(InputTypeDefinition.Assets), TypeForInputTypeDefinition),
-                    md.GetBestValue<bool>(nameof(InputTypeDefinition.DisableI18n), TypeForInputTypeDefinition),
-                    md.GetBestValue<string>(nameof(InputTypeDefinition.AngularAssets), TypeForInputTypeDefinition),
-                    md.GetBestValue<bool>(nameof(InputTypeDefinition.UseAdam), TypeForInputTypeDefinition),
-                    "preset",
-                    md
-                );
+                    Label = md.GetBestValue<string>(nameof(InputTypeDefinition.Label), typesToCheckInThisOrder),
+                    Description = md.GetBestValue<string>(nameof(InputTypeDefinition.Description), typesToCheckInThisOrder),
+                    Assets = md.GetBestValue<string>(nameof(InputTypeDefinition.Assets), TypeForInputTypeDefinition),
+                    DisableI18n = md.GetBestValue<bool>(nameof(InputTypeDefinition.DisableI18n), TypeForInputTypeDefinition),
+                    AngularAssets = md.GetBestValue<string>(nameof(InputTypeDefinition.AngularAssets), TypeForInputTypeDefinition),
+                    UseAdam = md.GetBestValue<bool>(nameof(InputTypeDefinition.UseAdam), TypeForInputTypeDefinition),
+                    Source = "preset",
+                };
             })
             .ToListOpt();
 
@@ -203,7 +202,7 @@ public class WorkInputTypes(
         return l.Return(_presetInpTypeCache, $"{_presetInpTypeCache.Count}");
     }
 
-    private static ICollection<InputTypeInfo> _presetInpTypeCache;
+    private static ICollection<InputTypeInfo>? _presetInpTypeCache;
 
     public static string GetTypeName(IContentType t)
         => (Guid.TryParse(t.NameId, out _)

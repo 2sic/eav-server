@@ -9,7 +9,7 @@ partial class ImportListXml
     /// <summary>
     /// Get the languages found in the xml document.
     /// </summary>
-    public IEnumerable<string> Info_LanguagesInDocument => DocumentElements
+    public IEnumerable<string?> Info_LanguagesInDocument => DocumentElements
         .Select(element => element.Element(XmlConstants.EntityLanguage)?.Value)
         .Distinct();
 

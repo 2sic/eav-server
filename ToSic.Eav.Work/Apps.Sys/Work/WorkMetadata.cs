@@ -27,7 +27,7 @@ public class WorkMetadata(
             var appState = AppWorkCtx.AppReader;
             var saveEnt = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
                 contentType: appState.GetContentType(typeName),
-                attributes: builder.Attribute.Create(values),
+                attributes: builder.Attribute.Create(values!),
                 metadataFor: target);
 
             var entSaver = workEntSave.New(AppWorkCtx);

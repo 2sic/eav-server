@@ -119,7 +119,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
         var l = Log.Fn<List<IPermission>?>();
         var permissions = appIdentity == null
             ? null
-            : appReaders.GetOrKeep(appIdentity)!.Specs.Metadata.Permissions.ToList();
+            : appReaders.GetOrKeep(appIdentity).Specs.Metadata.Permissions.ToList();
         return l.Return(permissions, $"found: {permissions?.Count}");
     }
 

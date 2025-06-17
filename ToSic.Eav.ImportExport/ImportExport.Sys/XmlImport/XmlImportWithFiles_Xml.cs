@@ -68,13 +68,13 @@ partial class XmlImportWithFiles
             .Elements(XmlConstants.Entity)
             .ToList();
 
-        var importAttributeSets = GetImportContentTypes(atsNodes ?? []);
+        var importTypes = GetImportContentTypes(atsNodes ?? []);
         var importEntities = BuildEntities(entNodes, (int)TargetTypes.None);
 
 
         var import = Services.ImporterLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, parentAppId: parentAppId);
 
-        import.ImportIntoDb(importAttributeSets, importEntities.Cast<Entity>().ToList());
+        import.ImportIntoDb(importTypes, importEntities.Cast<Entity>().ToList());
 
         l.A($"Purging {ZoneId}/{AppId}");
         Services.AppCachePurger.Purge(ZoneId, AppId);

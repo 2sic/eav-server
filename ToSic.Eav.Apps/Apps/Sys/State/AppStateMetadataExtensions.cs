@@ -42,8 +42,10 @@ public static class AppStateMetadataTargetExtensions
         }
     }
 
-    public static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this IEnumerable<IContentType> contentTypes, string idString) 
-        => !int.TryParse(idString, out var keyInt) ? default : contentTypes.FindAttribute(keyInt);
+    public static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this IEnumerable<IContentType> contentTypes, string? idString) 
+        => !int.TryParse(idString, out var keyInt)
+            ? default
+            : contentTypes.FindAttribute(keyInt);
 
     private static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this IEnumerable<IContentType> contentTypes, int id)
     {

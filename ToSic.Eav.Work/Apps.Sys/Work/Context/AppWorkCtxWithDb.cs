@@ -5,9 +5,10 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkCtxWithDb : AppWorkCtx, IAppWorkCtxWithDb
 {
-    private readonly LazySvc<DbStorage> _dbLazy;
+    private readonly LazySvc<DbStorage>? _dbLazy;
 
-    public DbStorage DbStorage => field ??= _dbLazy.Value;
+    [field: AllowNull, MaybeNull]
+    public DbStorage DbStorage => field ??= _dbLazy!.Value;
 
     public AppWorkCtxWithDb(LazySvc<DbStorage> dbLazy, IAppReader appReader) : base(appReader)
     {

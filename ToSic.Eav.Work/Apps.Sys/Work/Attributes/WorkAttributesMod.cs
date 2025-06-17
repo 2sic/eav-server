@@ -128,7 +128,7 @@ public class WorkAttributesMod(
 
         // get field attributeId
         var attribute = AppWorkCtx.DbStorage.Attributes.Get(attributeId)
-            /*?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.")*/;
+            ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
 
         // update with the Share = share (hide we'll ignore for now, it's for future needs)
         var newSysSettings = new ContentTypeAttributeSysSettings
@@ -143,7 +143,8 @@ public class WorkAttributesMod(
         AppWorkCtx.DbStorage.DoAndSave(() =>
         {
             // ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
-            if (attribute.Guid.HasValue == false) attribute.Guid = Guid.NewGuid();
+            if (attribute.Guid.HasValue == false)
+                attribute.Guid = Guid.NewGuid();
 
             attribute.SysSettings = serializer.Serialize(newSysSettings);
         });
@@ -159,7 +160,8 @@ public class WorkAttributesMod(
             l.W("Setting up field share but feature is not enabled / licensed.");
 
         // get field attributeId
-        var attribute = AppWorkCtx.DbStorage.Attributes.Get(attributeId);
+        var attribute = AppWorkCtx.DbStorage.Attributes.Get(attributeId)
+            ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
 
         // set InheritMetadataOf to the guid above(as string)
         var newSysSettings = new ContentTypeAttributeSysSettings

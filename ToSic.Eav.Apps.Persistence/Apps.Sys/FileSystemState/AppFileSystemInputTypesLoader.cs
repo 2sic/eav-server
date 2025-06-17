@@ -45,8 +45,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
                 var fullName = name.Substring(FieldFolderPrefix.Length);
                 var niceName = InputTypeNiceName(name);
                 // TODO: use metadata information if available
-                return new InputTypeInfo(type: fullName, label: niceName, description: "Extension Field", assets: "", disableI18N: false,
-                    ngAssets: $"{placeholder}/{FolderConstants.FolderAppExtensions}/{name}/{JsFile}", useAdam: false, source: "file-system")
+                return new InputTypeInfo
                 {
                     Type = fullName,
                     Label = niceName,

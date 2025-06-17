@@ -78,43 +78,43 @@ public class MetadataRequirementsService(
         var entities = requirement?.ToListOpt();
         l.A($"entities: {entities?.Count}");
         if (entities == null || !entities.Any())
-            return l.Return((true, null), "no metadata");
+            return l.Return((true, []), "no metadata");
 
         // Preflight - ensure that they are of type RequirementDecorator
         var reqList = entities.OfType(TypeName).ToListOpt();
         if (!reqList.Any())
-            return l.Return((true, null), "no requirements");
+            return l.Return((true, []), "no requirements");
 
         var reqStatus = reqList
             .Select(RequirementMet)
+            .Where(r => r != null!)
+            .Cast<ReqStatusPrivate>()
             .ToListOpt();
 
         return reqStatus.All(rs => rs.IsOk)
-            ? l.Return((true, null), "all ok")
+            ? l.Return((true, []), "all ok")
             : l.Return((false, reqStatus.Where(r => !r.IsOk).ToListOpt()), "some didn't work");
     }
 
     private record ReqStatusPrivate(RequirementDecorator Decorator, string NameId, bool Approved, Aspect? Aspect = default)
         : RequirementStatus(Approved, Aspect ?? Aspect.None with { NameId = NameId }, "")
-    {
-        //public RequirementDecorator Decorator = decorator;
-    }
+    { }
 
-    private ReqStatusPrivate RequirementMet(IEntity requirement)
+    private ReqStatusPrivate? RequirementMet(IEntity? requirement)
     {
         var l = Log.Fn<ReqStatusPrivate>();
         // No requirement, all is ok
         if (requirement == null)
-            return l.Return(new(null, ReqNone, true), ReqNone);
+            return l.ReturnNull();
         var reqDec = new RequirementDecorator(requirement);
 
         // Check requirement type
         return reqDec.RequirementType switch
         {
-            ReqFeature => BuildAndRet(VerifyFeature(reqDec), reqDec.Feature?.Trim(), ReqFeature),
-            ReqLicense => BuildAndRet(VerifyLicense(reqDec), reqDec.License?.Trim(), ReqLicense),
-            ReqPlatform => BuildAndRet(VerifyPlatform(reqDec), reqDec.Platform?.Trim(), ReqPlatform),
-            ReqSysCap => BuildAndRet(VerifySysCap(reqDec), reqDec.SystemCapability?.Trim(), ReqSysCap),
+            ReqFeature => BuildAndRet(VerifyFeature(reqDec), reqDec.Feature.Trim(), ReqFeature),
+            ReqLicense => BuildAndRet(VerifyLicense(reqDec), reqDec.License.Trim(), ReqLicense),
+            ReqPlatform => BuildAndRet(VerifyPlatform(reqDec), reqDec.Platform.Trim(), ReqPlatform),
+            ReqSysCap => BuildAndRet(VerifySysCap(reqDec), reqDec.SystemCapability.Trim(), ReqSysCap),
             _ => BuildAndRet((false, Aspect.None), ReqUnknown, ReqUnknown)
         };
 
@@ -125,7 +125,7 @@ public class MetadataRequirementsService(
     private (bool IsOk, Aspect Aspect) VerifyPlatform(RequirementDecorator reqObj)
         => VerifyPlatform(reqObj.Platform?.Trim());
 
-    private (bool IsOk, Aspect Aspect) VerifyPlatform(string platform)
+    private (bool IsOk, Aspect Aspect) VerifyPlatform(string? platform)
     {
         var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {platform}");
         if (platform.IsEmptyOrWs())
@@ -139,7 +139,7 @@ public class MetadataRequirementsService(
     private (bool IsOk, Aspect Aspect) VerifyFeature(RequirementDecorator reqObj)
         => VerifyFeature(reqObj.Feature?.Trim());
 
-    private (bool IsOk, Aspect Aspect) VerifyFeature(string feat)
+    private (bool IsOk, Aspect Aspect) VerifyFeature(string? feat)
     {
         var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {feat}");
         if (feat.IsEmptyOrWs())
@@ -154,7 +154,7 @@ public class MetadataRequirementsService(
     private (bool IsOk, Aspect Aspect) VerifySysCap(RequirementDecorator reqObj)
         => VerifySysCap(reqObj.SystemCapability?.Trim());
 
-    private (bool IsOk, Aspect Aspect) VerifySysCap(string sysCap)
+    private (bool IsOk, Aspect Aspect) VerifySysCap(string? sysCap)
     {
         var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {sysCap}");
         if (sysCap.IsEmptyOrWs())
@@ -169,7 +169,7 @@ public class MetadataRequirementsService(
     private (bool IsOk, Aspect Aspect) VerifyLicense(RequirementDecorator reqObj)
         => VerifyLicense(reqObj.License?.Trim());
 
-    private (bool IsOk, Aspect Aspect) VerifyLicense(string license)
+    private (bool IsOk, Aspect Aspect) VerifyLicense(string? license)
     {
         var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {license}");
         if (license.IsEmptyOrWs())

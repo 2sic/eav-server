@@ -61,7 +61,7 @@ public class WorkEntitySave(
         // in which case it would add it twice
 
         var appReader = AppWorkCtx.AppReader;
-        List<int> ids = null;
+        List<int> ids = null!;
         appReader.GetCache().DoInLock(Log, () => ids = InnerSaveInLock());
         return l.Return(ids, $"ids:{ids.Count}");
 
@@ -101,7 +101,7 @@ public class WorkEntitySave(
                 .ToListOpt();
             //entities = AttachRelationshipResolver(entities, appReader.GetCache());
 
-            List<int> intIds = null;
+            List<int> intIds = null!;
             var dc = AppWorkCtx.DbStorage;
             dc.DoButSkipAppCachePurge(() => intIds = dc.Save(pairsToSave));
 
@@ -136,9 +136,12 @@ public class WorkEntitySave(
         var relationshipsUpdated = relationshipAttributes
             .Select(a =>
             {
+                if (a.TypedContents == null)
+                    return null!;
                 var newLazyEntities = Builder.Value.Relationships(a.TypedContents, appState);
                 return Builder.Attribute.CreateFrom(a.Attribute, newLazyEntities);
             })
+            .Where(a => a != null)
             .ToListOpt();
 
         // Assemble the attributes (replace the relationships)
@@ -153,7 +156,7 @@ public class WorkEntitySave(
     /// WIP - clear attributes which shouldn't be saved at all
     /// </summary>
     /// <param name="entity"></param>
-    private IImmutableDictionary<string, IAttribute> AttributesWithEmptyEphemerals(IEntity entity)
+    private IImmutableDictionary<string, IAttribute>? AttributesWithEmptyEphemerals(IEntity entity)
     {
         var l = Log.Fn<IImmutableDictionary<string, IAttribute>>();
         var attributes = entity.Type?.Attributes?.ToListOpt();

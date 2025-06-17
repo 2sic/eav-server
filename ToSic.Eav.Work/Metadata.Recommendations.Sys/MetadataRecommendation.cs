@@ -24,7 +24,7 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
 
     public int Count { get; set; }
 
-    public string DeleteWarning { get; set; }
+    public string? DeleteWarning { get; set; }
 
     public string? Icon { get; set; }
 
