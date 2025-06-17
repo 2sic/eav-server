@@ -9,12 +9,12 @@ internal class TempEntity
     public int Version;
 
     public int ContentTypeId;
-    public Target MetadataFor;
+    public required Target MetadataFor;
     public bool IsPublished;
     public int? PublishedEntityId;
-    public string Owner;
+    public required string Owner;
     public DateTime Created;
     public DateTime Modified;
-    public string Json;
+    public required string Json;
     //public string ContentType;
 }

@@ -58,7 +58,7 @@ internal class EntityBuildHelper
                 .SelectMany(a =>
                 {
                     var results = a.Values
-                        .Select(v => dataBuilder.Value.Build(a.CtAttribute.Type, v.Value, v.Languages))
+                        .Select(v => dataBuilder.Value.Build(a.CtAttribute!.Type, v.Value, v.Languages))
                         .ToList();
                     var final = ValueLanguageRepairHelper.FixIncorrectLanguageDefinitions(results, primaryLanguage);
                     return final.Select(r => (a.Name, r));

@@ -5,7 +5,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(parentLog, "Efc.EntQry")
 {
-    internal IQueryable<TsDynDataEntity> EntitiesOfAppQuery(int appId, int[] entityIds, string filterType = null)
+    internal IQueryable<TsDynDataEntity> EntitiesOfAppQuery(int appId, int[] entityIds, string? filterType = null)
     {
         var filterIds = entityIds.Length > 0;
         var filterByType = filterType != null;

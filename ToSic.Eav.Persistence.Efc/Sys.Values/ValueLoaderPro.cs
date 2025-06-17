@@ -71,7 +71,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
     /// SQL isn't properly converted, and we'll run into null exceptions! So don't use IEnumerable,
     /// at least not for EF 2.2 which is still in use for DNN.
     /// </remarks>
-    internal override ICollection<LoadingValue> ToLoadingValues(IQueryable<TsDynDataValue> values, List<TsDynDataDimension> dimensions)
+    internal override ICollection<LoadingValue> ToLoadingValues(IQueryable<TsDynDataValue> values, List<TsDynDataDimension>? dimensions)
     {
         return values
             .Select(v => new LoadingValue(

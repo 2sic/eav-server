@@ -18,6 +18,7 @@ using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Utils;
 using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Services;
@@ -135,7 +136,7 @@ public class EfcAppLoaderService(
             return l.Return(builder.AppState, $"default app, no auto-init {MessageSuffix(builder.AppState)}");
 
         var needsReload = initializedChecker
-            .EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, null, codeRefTrail.WithHere(), Log);
+            .EnsureAppConfiguredAndInformIfRefreshNeeded(builder.Reader, newAppName: null, codeRefTrail.WithHere(), Log);
 
         if (!needsReload)
             return l.Return(builder.AppState, $"init checked, no reload {MessageSuffix(builder.AppState)}");
@@ -205,7 +206,7 @@ public class EfcAppLoaderService(
     }
 
     /// <inheritdoc />
-    public IAppStateCache Update(IAppStateCache appStateOriginal, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds = null)
+    public IAppStateCache Update(IAppStateCache appStateOriginal, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[]? entityIds = null)
     {
         var lMain = Log.Fn<IAppStateCache>(message: "What happens inside this is logged in the app-state loading log");
         codeRefTrail.WithHere().AddMessage($"App: {appStateOriginal.AppId}");
@@ -214,12 +215,14 @@ public class EfcAppLoaderService(
         {
             var l = Log.Fn();
             codeRefTrail.WithHere();
+            string? folderOrNull = null;
             // prepare metadata lists & relationships etc.
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
                 AddSqlTime(InitMetadataLists(builder));
-                var (name, path) = PreLoadAppPath(state.AppId);
-                builder.SetNameAndFolder(name, path);
+                var (name, folder) = PreLoadAppPath(state.AppId);
+                folderOrNull = folder;
+                //builder.SetNameAndFolder(name, folder);
             }
             else
                 l.A("skipping metadata load");
@@ -230,7 +233,7 @@ public class EfcAppLoaderService(
                 var typeTimer = Stopwatch.StartNew();
                 var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
-                var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge);
+                var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge, folderOrNull);
                 builder.InitContentTypes(dbTypes.ToListOpt());
                 typeTimer.Stop();
                 l.A($"timers types:{typeTimer.Elapsed}");
@@ -262,10 +265,10 @@ public class EfcAppLoaderService(
         // Prefetch this App (new in v13 for ancestor apps)
         var appInDb = Context.TsDynDataApps.FirstOrDefault(a => a.AppId == appId);
         var appSysSettings = appInDb?.SysSettings;
-        if (string.IsNullOrWhiteSpace(appSysSettings))
+        if (appInDb == null || string.IsNullOrWhiteSpace(appSysSettings))
             return l.Return(0, "none found");
 
-        var sysSettings = JsonSerializer.Deserialize<AppSysSettingsJsonInDb>(appInDb.SysSettings, JsonOptions.SafeJsonForHtmlAttributes);
+        var sysSettings = JsonSerializer.Deserialize<AppSysSettingsJsonInDb>(appInDb.SysSettings, JsonOptions.SafeJsonForHtmlAttributes)!;
         if (!sysSettings.Inherit || sysSettings.AncestorAppId == 0)
             return l.Return(0, "data found but inherit not active");
 
@@ -283,9 +286,9 @@ public class EfcAppLoaderService(
     /// </summary>
     /// <param name="appId"></param>
     /// <returns></returns>
-    private (string Name, string Path) PreLoadAppPath(int appId)
+    private (string? Name, string? Path) PreLoadAppPath(int appId)
     {
-        var l = Log.Fn<(string Name, string Path)>($"{nameof(appId)}: {appId}");
+        var l = Log.Fn<(string? Name, string? Path)>($"{nameof(appId)}: {appId}");
         var nullTuple = (null as string, null as string);
         try
         {
@@ -304,14 +307,12 @@ public class EfcAppLoaderService(
             l.A("app Entity found - this json: " + json);
             var serializer = dataDeserializer.New();
             serializer.Initialize(appId, [], null);
-            if (serializer.Deserialize(json, true, true) is not Entity appEntity)
+            if (serializer.Deserialize(json!, true, true) is not Entity appEntity)
                 return l.Return(nullTuple, "can't deserialize");
             var path = appEntity.Get<string>(AppLoadConstants.FieldFolder);
             var name = appEntity.Get<string>(AppLoadConstants.FieldName);
 
-            return string.IsNullOrWhiteSpace(path)
-                ? l.Return((name, path), "no folder")
-                : l.Return((name, path), path);
+            return l.Return((name, path), path.NullIfNoValue() ?? "no folder");
         }
         catch (Exception ex)
         {
@@ -342,7 +343,7 @@ public class EfcAppLoaderService(
     {
         var l = Log.Fn<TimeSpan>($"{builder.AppState.Show()}", timer: true);
         builder.InitMetadata();
-        return l.Return(l.Timer.Elapsed);
+        return l.Return(l?.Timer?.Elapsed ?? new TimeSpan(0));
     }
 
     #endregion

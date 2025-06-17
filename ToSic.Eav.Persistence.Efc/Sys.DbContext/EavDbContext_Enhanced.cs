@@ -7,7 +7,7 @@ partial class EavDbContext
     public delegate int SaveChangesEvent(bool acceptAllChangesOnSuccess);
     public delegate int HandleSaveChangesEvent(bool acceptAllChangesOnSuccess, SaveChangesEvent baseEvent);
 
-    public HandleSaveChangesEvent AlternateSaveHandler;
+    public HandleSaveChangesEvent? AlternateSaveHandler;
 
     #region Save and check if to kill cache
     /// <inheritdoc />

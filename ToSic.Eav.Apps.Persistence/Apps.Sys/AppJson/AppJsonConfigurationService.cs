@@ -89,7 +89,7 @@ public class AppJsonConfigurationService(
 
     private string GetAppFullPath(int appId, bool useShared)
     {
-        var appPaths = _appPathsCache.GetOrCreate(appId, () => appPathsFactory.Get(appReaders.Get(appId)));
+        var appPaths = _appPathsCache.GetOrCreate(appId, () => appPathsFactory.Get(appReaders.Get(appId)!));
         return useShared ? appPaths.PhysicalPathShared : appPaths.PhysicalPath;
     }
     private readonly Dictionary<int, IAppPaths> _appPathsCache = [];

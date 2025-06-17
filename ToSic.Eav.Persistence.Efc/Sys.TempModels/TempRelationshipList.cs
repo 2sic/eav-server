@@ -2,7 +2,7 @@
 
 internal class TempRelationshipList
 {
-    public string StaticName;
+    public required string StaticName;
 
-    public ICollection<int?> Children;
+    public required ICollection<int?> Children;
 }

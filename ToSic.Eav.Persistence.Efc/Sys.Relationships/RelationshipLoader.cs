@@ -126,11 +126,14 @@ internal record LoadingRelationship(TsDynDataRelationship Rel, string StaticName
 
 internal class RelationshipComparer : IEqualityComparer<TsDynDataRelationship>
 {
-    public bool Equals(TsDynDataRelationship x, TsDynDataRelationship y)
+    public bool Equals(TsDynDataRelationship? x, TsDynDataRelationship? y)
     {
-        if (x == null && y == null) return true;
-        if (x == null) return false;
-        if (y == null) return false;
+        if (x == null && y == null)
+            return true;
+        if (x == null)
+            return false;
+        if (y == null)
+            return false;
         return x.AttributeId == y.AttributeId
                && x.SortOrder == y.SortOrder
                && x.ParentEntityId == y.ParentEntityId

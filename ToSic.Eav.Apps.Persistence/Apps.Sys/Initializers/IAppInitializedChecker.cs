@@ -10,9 +10,9 @@ public interface IAppInitializedChecker
     /// If it's not configured yet, it will trigger automatic
     /// </summary>
     /// <param name="appIdentity"></param>
-    /// <param name="appName"></param>
+    /// <param name="newAppName"></param>
     /// <param name="codeRefTrail"></param>
     /// <param name="parentLog"></param>
     /// <returns></returns>
-    bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppReader appIdentity, string appName, CodeRefTrail codeRefTrail, ILog parentLog);
+    bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppReader appIdentity, string? newAppName, CodeRefTrail codeRefTrail, ILog parentLog);
 }

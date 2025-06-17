@@ -37,19 +37,19 @@ public class Target : ITarget
     /// Constructor for a new MetadataTarget, which is empty.
     /// </summary>
     [PrivateApi]
-    public Target(int targetType, string title, string? keyString = default, int? keyNumber = default, Guid? keyGuid = default)
+    public Target(int targetType, string? title, string? keyString = default, int? keyNumber = default, Guid? keyGuid = default)
     {
         TargetType = targetType;
-        Title = title;
+        Title = title ?? "";
         KeyString = keyString;
         KeyNumber = keyNumber;
         KeyGuid = keyGuid;
     }
     /// <summary>
-    /// Constructor for a new MetadataTarget, which is empty.
+    /// Constructor for a new MetadataTarget. The object is try-used for every key type to automatically apply to string/int/guid.
     /// </summary>
     [PrivateApi]
-    public Target(int targetType, string title, object? key): this(targetType, title, key as string, key as int?, key as Guid?)
+    public Target(int targetType, string? title, object? key): this(targetType, title, key as string, key as int?, key as Guid?)
     { }
 
     /// <summary>

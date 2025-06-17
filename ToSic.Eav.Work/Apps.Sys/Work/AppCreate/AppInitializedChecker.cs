@@ -12,12 +12,12 @@ public class AppInitializedChecker(Generator<AppInitializer> appInitGenerator) :
     connect: [appInitGenerator]), IAppInitializedChecker
 {
     /// <inheritdoc />
-    public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppReader appReader, string appName, CodeRefTrail codeRefTrail, ILog parentLog)
+    public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppReader appReader, string? newAppName, CodeRefTrail codeRefTrail, ILog parentLog)
     {
         var log = new Log("Eav.AppChk", parentLog);
         codeRefTrail.WithHere();
 
-        var l = log.Fn<bool>($"..., {appName}");
+        var l = log.Fn<bool>($"..., {newAppName}");
 
         if (CheckIfAllPartsExist(appReader, codeRefTrail, out _, out _, out _, log))
             return l.ReturnFalse("ok");
@@ -26,7 +26,7 @@ public class AppInitializedChecker(Generator<AppInitializer> appInitGenerator) :
         if (appReader.IsHealthy)
         {
             l.A("the app is healthy, build missing parts");
-            appInitGenerator.New().InitializeApp(appReader, appName, codeRefTrail.WithHere().AddMessage("Add Requested"));
+            appInitGenerator.New().InitializeApp(appReader, newAppName, codeRefTrail.WithHere().AddMessage("Add Requested"));
         }
         else
         {

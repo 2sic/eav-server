@@ -136,7 +136,7 @@ partial class JsonSerializer
 
         var target = new Target(
             targetType: targetType,
-            title: "target not looked up yet", // not-null field, but normally the target will be looked up later
+            title: null,
             keyString: mdFor.String,
             keyNumber: mdFor.Number,
             keyGuid: mdFor.Guid

@@ -8,14 +8,14 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics;
 // ReSharper disable once UnusedMember.Global
 public class EfCoreFilteredLoggerProvider : ILoggerProvider
 {
-    private static string[] _categories =
+    private static readonly string[] Categories =
     {
         typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName,
     };
 
     public ILogger CreateLogger(string categoryName)
     {
-        if (_categories.Contains(categoryName))
+        if (Categories.Contains(categoryName))
         {
             return new MyLogger();
         }
@@ -38,7 +38,7 @@ public class EfCoreFilteredLoggerProvider : ILoggerProvider
             Console.WriteLine(formatter(state, exception));
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state)
         {
             return null;
         }
@@ -54,7 +54,7 @@ public class EfCoreFilteredLoggerProvider : ILoggerProvider
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         { }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state)
         {
             return null;
         }

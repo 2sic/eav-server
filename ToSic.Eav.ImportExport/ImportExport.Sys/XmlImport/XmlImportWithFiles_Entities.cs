@@ -129,7 +129,7 @@ partial class XmlImportWithFiles
             }
         }
 
-        var mdTarget = new Target(targetType: targetType, title: "to be looked up later", keyString: keyString, keyGuid: keyGuid, keyNumber: keyNumber);
+        var mdTarget = new Target(targetType: targetType, title: null, keyString: keyString, keyGuid: keyGuid, keyNumber: keyNumber);
 
         l.A($"Metadata ({mdTarget.IsMetadata}) - type:{mdTarget.TargetType}, #:{mdTarget.KeyNumber} guid:{mdTarget.KeyGuid}, $:{mdTarget.KeyString}");
 

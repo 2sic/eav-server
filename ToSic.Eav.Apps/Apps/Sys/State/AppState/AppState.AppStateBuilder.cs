@@ -148,7 +148,8 @@ partial class AppState
                 // Always set the Name if we are on the content or primary app
                 st.Name = KnownAppsConstants.ContentAppName;
                 // Only set the folder if not over-configured since it can change in v13+
-                if (st.Folder.IsEmptyOrWs()) st.Folder = KnownAppsConstants.ContentAppFolder;
+                if (st.Folder.IsEmptyOrWs())
+                    st.Folder = KnownAppsConstants.ContentAppFolder;
             }
 
             return l.ReturnTrue($"Name: {st.Name}, Folder:{st.Folder}");

@@ -29,7 +29,7 @@ public static class StringExtensions
     public static string? UseFallbackIfNoValue(this string? value, string? fallback)
         => !string.IsNullOrWhiteSpace(value) ? value : fallback;
 
-    public static string? NullIfNoValue(this string value)
+    public static string? NullIfNoValue(this string? value)
         => value.HasValue() ? value : null;
 
     [ShowApiWhenReleased(ShowApiMode.Never)]

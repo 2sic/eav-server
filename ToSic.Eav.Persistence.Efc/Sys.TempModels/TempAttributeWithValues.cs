@@ -2,7 +2,6 @@
 
 internal class TempAttributeWithValues
 {
-    //public int AttributeId;
-    public string Name;
-    public ICollection<TempValueWithLanguage> Values;
+    public required string Name;
+    public required ICollection<TempValueWithLanguage> Values;
 }

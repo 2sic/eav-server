@@ -37,7 +37,7 @@ public class AppInitializer(
     /// <param name="appReader">The app State</param>
     /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
     /// <param name="codeRefTrail">Origin caller to better track down creation - see issue https://github.com/2sic/2sxc/issues/3203</param>
-    public bool InitializeApp(IAppReader appReader, string newAppName, CodeRefTrail codeRefTrail)
+    public bool InitializeApp(IAppReader appReader, string? newAppName, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
         codeRefTrail.WithHere().AddMessage($"App: {appReader.AppId}");
@@ -98,7 +98,7 @@ public class AppInitializer(
         return l.ReturnFalse("ok");
     }
 
-    private static string PickCorrectFolderName(string newAppName, string eavAppName) =>
+    private static string PickCorrectFolderName(string? newAppName, string eavAppName) =>
         eavAppName switch
         {
             KnownAppsConstants.DefaultAppGuid => KnownAppsConstants.ContentAppFolder,

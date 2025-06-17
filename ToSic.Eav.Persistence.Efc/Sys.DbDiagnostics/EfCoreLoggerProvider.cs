@@ -30,7 +30,7 @@ public class EfCoreLoggerProvider : ILoggerProvider
             Console.WriteLine(formatter(state, exception));
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state)
         {
             return null;
         }

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Dimensions.Sys;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Data.Dimensions.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
@@ -6,12 +7,13 @@ using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 
-internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsLoadSpecs specs, string logName = default)
+internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsLoadSpecs specs, string? logName = default)
     : HelperBase(appLoader.Log, logName ?? "Efc.VlLdSt")
 {
     protected readonly EfcAppLoaderService AppLoader = appLoader;
     protected readonly EntityDetailsLoadSpecs Specs = specs;
 
+    [field: AllowNull, MaybeNull]
     private ValueQueries ValueQueries => field ??= new(AppLoader.Context, Log);
 
 
@@ -79,10 +81,10 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
     /// <param name="dimensions"></param>
     /// <remarks>
     /// It's really important that we use an IQueryable here, because otherwise the
-    /// SQL isn't properly converted and we'll run into null exceptions! So don't use IEnumerable,
+    /// SQL isn't properly converted, and we'll run into null exceptions! So don't use IEnumerable,
     /// at least not for EF 2.2 which is still in use for DNN.
     /// </remarks>
-    internal virtual ICollection<LoadingValue> ToLoadingValues(IQueryable<TsDynDataValue> values, List<TsDynDataDimension> dimensions)
+    internal virtual ICollection<LoadingValue> ToLoadingValues(IQueryable<TsDynDataValue> values, List<TsDynDataDimension>? dimensions)
         => values
             .ToList()
             .Select(v => new LoadingValue(

@@ -6,6 +6,10 @@
     <RootNamespace>ToSic.Eav.Persistence.Efc</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
   <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
 
   <!--<Import Project="../SharedImports/CsProj.Props/Reference/RazorBlade.props" />-->

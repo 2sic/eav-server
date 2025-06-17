@@ -20,7 +20,7 @@ internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDes
     internal EntityQueries EntityQueries => field ??= new(efcAppLoader.Context, Log);
 
 
-    internal TimeSpan LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[] entityIds = null)
+    internal TimeSpan LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[]? entityIds = null)
     {
         codeRefTrail.WithHere();
         var l = Log.Fn<TimeSpan>($"{builder.Reader.AppId}, {entityIds?.Length ?? 0}", timer: true);
@@ -94,7 +94,7 @@ internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDes
         return l.Return(sqlTime.Elapsed);
     }
 
-    public List<TempEntity> LoadEntitiesFromDb(int appId, int[] entityIds, string filterType = null)
+    public List<TempEntity> LoadEntitiesFromDb(int appId, int[] entityIds, string? filterType = null)
     {
         var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterType)}: '{filterType}'", timer: true);
 

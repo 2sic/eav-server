@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Sys.Configuration;
 
+#nullable disable // This is EFC code; values will be auto-generated on compile
+
 namespace ToSic.Eav.Persistence.Efc.Sys.DbContext;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
