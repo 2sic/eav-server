@@ -2,11 +2,15 @@
 
 namespace ToSic.Eav.Sys.Insights.App;
 
-internal class InsightsPurgeApp(LazySvc<AppCachePurger> appCachePurger) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appCachePurger])
+internal class InsightsPurgeApp(LazySvc<AppCachePurger> appCachePurger)
+    : InsightsProvider(new()
+    {
+        Name = Link,
+        Title = "Flush Logs",
+        HelpCategory = HiddenFromAutoDisplay
+    }, connect: [appCachePurger])
 {
     public static string Link = "PurgeApp";
-
-    public override string Title => "Flush Logs";
 
     public override string HtmlBody()
         => Purge(AppId);

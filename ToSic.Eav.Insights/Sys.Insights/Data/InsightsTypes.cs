@@ -5,15 +5,14 @@ using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsTypes(IAppReaderFactory appReadFac, string name) : InsightsProvider(name, helpCategory: HiddenFromAutoDisplay)
+internal class InsightsTypes(IAppReaderFactory appReadFac, string name) // TODO: [aPPiD]
+    : InsightsProvider(new() { Name = name, HelpCategory = HiddenFromAutoDisplay, Title = "Content Types for App: [AppId]" })
 {
     public static string Link = "Types";
 
     protected readonly IAppReaderFactory AppReadFac = appReadFac;
 
     public InsightsTypes(IAppReaderFactory appReadFac) : this(appReadFac, "Types") { }
-
-    public override string Title => $"Content Types for App: {AppId}";
 
     public override string HtmlBody()
     {
@@ -22,7 +21,7 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name) : Insigh
             return l.Return("please add appid to the url parameters");
 
         l.A($"debug app types for {AppId}");
-        var pkg = AppReadFac.Get(AppId.Value);
+        var pkg = AppReadFac.Get(AppId.Value)!;
 
         var msg = TypesTable(AppId.Value, pkg.ContentTypes, pkg.List);
 
@@ -54,12 +53,14 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name) : Insigh
             var count = 0;
             foreach (var type in types)
             {
-                int? itemCount = null;
+                var itemCount = 0;
                 try
                 {
-                    var itms = items?.Where(e => e.Type == type);
-                    itemCount = itms?.Count();
-                    totalItems += itemCount ?? 0;
+                    var itms = items
+                        .Where(e => Equals(e.Type, type))
+                        .ToListOpt();
+                    itemCount = itms.Count;
+                    totalItems += itemCount;
                 }
                 catch
                 {
@@ -86,7 +87,7 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name) : Insigh
             msg += "</table>";
             msg += "\n\n";
             msg += P(
-                $"Total item in system: {items?.Count} - in types: {totalItems} - numbers {Em("should")} match!");
+                $"Total item in system: {items.Count} - in types: {totalItems} - numbers {Em("should")} match!");
             msg += InsightsHtmlParts.JsTableSort();
         }
         catch (Exception ex)

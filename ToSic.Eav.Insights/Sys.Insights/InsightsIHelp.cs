@@ -14,11 +14,9 @@ namespace ToSic.Eav.Sys.Insights;
 /// </summary>
 /// <param name="insightsProviders">All providers - MUST BE LAZY - otherwise we get circular DI dependencies</param>
 internal class InsightsHelp(LazySvc<IEnumerable<IInsightsProvider>> insightsProviders)
-    : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay)
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Insights Help / Home" })
 {
     public static string Link = "Help";
-
-    public override string Title => "Insights Help / Home";
 
     public override string HtmlBody()
     {
@@ -36,28 +34,29 @@ internal class InsightsHelp(LazySvc<IEnumerable<IInsightsProvider>> insightsProv
 
         var providersWithCategory = insightsProviders.Value
             // Skip self
-            .Where(p => !p.Name.EqualsInsensitive(Name))
+            .Where(p => !p.Specs.Name.EqualsInsensitive(Specs.Name))
             // Skip hidden - these are usually sub-providers which require additional parameters
-            .Where(p => p.HelpCategory != HiddenFromAutoDisplay)
+            .Where(p => p.Specs.HelpCategory != HiddenFromAutoDisplay)
             // Group by category - if not set, use a default
-            .GroupBy(p => p.HelpCategory ?? "Uncategorized (please add Category)")
+            .GroupBy(p => p.Specs.HelpCategory ?? "Uncategorized (please add Category)")
             .OrderBy(g => g.Key)
             .ToList();
 
         var extras = providersWithCategory
             .Select(g =>
                 H2(g.Key)
-                + Ol(g.Select(p =>
+                + Ol(g
+                    .Select(p =>
                         Li(
-                            LinkTo(p.Title, p.Name),
-                            p.Teaser.HasValue()
-                                ? $"<br>{p.Teaser}"
+                            LinkTo(p.Specs.Title, p.Specs.Name),
+                            p.Specs.Teaser.HasValue()
+                                ? $"<br>{p.Specs.Teaser}"
                                 : ""
                         )
                     )
                 )
             )
-            .ToList();
+            .ToListOpt();
 
         var result = RawHtml(
                 H1("2sxc Insights - Commands"),
@@ -123,7 +122,7 @@ internal class InsightsHelp(LazySvc<IEnumerable<IInsightsProvider>> insightsProv
 
     internal A LinkTo(string label, string view,
         int? appId = null, NoParamOrder noParamOrder = default,
-        string key = null, string type = null, string nameId = null, string more = null)
+        string? key = null, string? type = null, string? nameId = null, string? more = null)
     {
         return HtmlTableBuilder.LinkTo(label, view, appId, noParamOrder, key, type, nameId, more);
     }

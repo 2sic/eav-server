@@ -4,11 +4,10 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
+internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders)
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Attributes of Type"}, connect: [appReaders])
 {
     public static string Link = "Attributes";
-
-    public override string Title => "Attributes of Type";
 
     public override string HtmlBody()
     {
@@ -16,13 +15,13 @@ internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders) : Insig
             return message;
 
         Log.A($"debug app attributes for {AppId} and {Type}");
-        var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.Get(AppId.Value)!.GetContentType(Type)!;
 
         var msg = "" + H1($"Attributes for {typ.Name} ({typ.NameId}) in {AppId}\n");
         try
         {
             Log.A("getting content-type stats");
-            var attribs = typ.Attributes;
+            var attribs = typ.Attributes.ToListOpt();
             msg += P($"attribs: {attribs.Count()}\n");
             msg += "<table id='table'>"
                    + InsightsHtmlTable.HeadFields("#", "Id", "Name", "Type", "Input", "IsTitle", "Metadata", "Permissions")

@@ -7,12 +7,11 @@ internal class InsightsLogs : InsightsProvider
 {
     public static string Link = "Logs";
 
-    public override string Title => "Insights into Logs";
-
+    [field: AllowNull, MaybeNull]
     private InsightsLogsHelper LogHtml => field ??= new(_logStore.Value);
     private readonly LazySvc<ILogStoreLive> _logStore;
 
-    public InsightsLogs(LazySvc<ILogStoreLive> logStore) : base(Link, teaser: "Logs of Modules, APIs and more", helpCategory: "Logging", connect: [logStore])
+    public InsightsLogs(LazySvc<ILogStoreLive> logStore) : base(new() { Name = Link, Teaser = "Logs of Modules, APIs and more", HelpCategory = "Logging", Title = "Insights into Logs" }, connect: [logStore])
     {
         _logStore = logStore;
         BootLog.AddToStore(logStore.Value);

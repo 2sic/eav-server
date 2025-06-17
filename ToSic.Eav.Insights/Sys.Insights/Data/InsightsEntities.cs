@@ -7,11 +7,10 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [workEntities])
+internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities)
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Entities" }, connect: [workEntities])
 {
     public static string Link = "Entities";
-
-    public override string Title => "Entities";
 
     public override string HtmlBody()
     {

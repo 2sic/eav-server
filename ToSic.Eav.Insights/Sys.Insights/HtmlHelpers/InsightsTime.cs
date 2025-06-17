@@ -31,7 +31,7 @@ internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
         var number = ms < 1000 ? ms : seconds;
         var time = number > 100
             ? $"{(int)number}"
-            : $"{number:0.###}".Truncate(4).TrimEnd('.');
+            : $"{number:0.###}".Truncate(4)!.TrimEnd('.');
 
         time += ms < 1000 ? "ms" : "s";
 

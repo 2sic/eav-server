@@ -13,15 +13,13 @@ namespace ToSic.Eav.Sys.Insights.Sys;
 internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
     LazySvc<ILicenseService> licenseServiceLazy,
     LazySvc<LicenseCatalog> licenseCatalog) 
-    : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [fingerprint, licenseServiceLazy, licenseCatalog])
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Licenses Overview" }, connect: [fingerprint, licenseServiceLazy, licenseCatalog])
 {
     public static string Link = "Licenses";
 
-    public override string Title => "Licenses Overview";
-
     public override string HtmlBody()
     {
-        var body = H1("Licenses and Features") as TagBase;
+        TagBase body = H1("Licenses and Features");
 
         #region Fingerprints List
 

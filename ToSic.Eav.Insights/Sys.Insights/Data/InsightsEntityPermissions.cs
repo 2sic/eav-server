@@ -3,11 +3,10 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsEntityPermissions(GenWorkPlus<WorkEntities> workEntities) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [workEntities])
+internal class InsightsEntityPermissions(GenWorkPlus<WorkEntities> workEntities)
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Entity Permissions" }, connect: [workEntities])
 {
     public static string Link = "EntityPermissions";
-
-    public override string Title => "Entity Permissions";
 
     public override string HtmlBody()
     {

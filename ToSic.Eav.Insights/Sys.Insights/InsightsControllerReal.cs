@@ -28,10 +28,10 @@ public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache>
 
         view = view.ToLowerInvariant();
 
-        var provider = insightsProviders.FirstOrDefault(p => p.Name.EqualsInsensitive(view));
+        var provider = insightsProviders.FirstOrDefault(p => p.Specs.Name.EqualsInsensitive(view));
         if (provider != null)
         {
-            l.A($"found provider {provider.Name}");
+            l.A($"found provider {provider.Specs.Name}");
             provider.SetContext(new InsightsHtmlTable(), appId, new Dictionary<string, object>(InvariantCultureIgnoreCase)
             {
                 {"key", key},
@@ -45,10 +45,10 @@ public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache>
 
             var wrapper = Tag.Custom("html",
                 Tag.Head(
-                    Tag.Custom("title", $"Insights: {provider.Name}")
+                    Tag.Custom("title", $"Insights: {provider.Specs.Name}")
                 ),
                 "\n",
-                Tag.H1(provider.Title),
+                Tag.H1(provider.Specs.Title),
                 "\n",
                 Tag.Custom("body",
                     result

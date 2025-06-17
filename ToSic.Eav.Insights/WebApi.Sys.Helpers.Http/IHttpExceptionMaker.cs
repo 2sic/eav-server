@@ -3,5 +3,5 @@
 public interface IHttpExceptionMaker
 {
     Exception BadRequest(string message);
-    Exception PermissionDenied(string message = null);
+    Exception PermissionDenied(string? message = null);
 }

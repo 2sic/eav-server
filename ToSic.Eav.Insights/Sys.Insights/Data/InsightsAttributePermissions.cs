@@ -4,11 +4,9 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsAttributePermissions(LazySvc<IAppReaderFactory> appReaders, IHttpExceptionMaker exceptionMaker)
-    : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Attribute Permissions"}, connect: [appReaders])
 {
     public static string Link = "AttributePermissions";
-
-    public override string Title => "Attribute Permissions";
 
     public override string HtmlBody()
     {
@@ -16,7 +14,7 @@ internal class InsightsAttributePermissions(LazySvc<IAppReaderFactory> appReader
             return message;
 
         Log.A($"debug app metadata for {AppId} and {Type}");
-        var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.Get(AppId.Value)!.GetContentType(Type)!;
         var att = typ.Attributes.First(a => a.Name == NameId)
                   ?? throw exceptionMaker.BadRequest($"can't find attribute {NameId}");
 

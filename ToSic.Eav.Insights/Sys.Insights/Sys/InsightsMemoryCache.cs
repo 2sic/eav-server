@@ -8,14 +8,14 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Sys;
 
-internal class InsightsMemoryCache() : InsightsProvider(Link, teaser: "Memory Cache Analysis", helpCategory: "Performance")
+internal class InsightsMemoryCache()
+    : InsightsProvider(new () { Name = Link, Teaser = "Memory Cache Analysis", HelpCategory = "Performance", Title = "Insights into Memory Cache" })
 {
     public static string Link = "MemoryCache";
 
-    public override string Title => "Insights into Memory Cache";
-
     private const int ShowMax = 500;
 
+    [field: AllowNull, MaybeNull]
     private MemorySizeEstimator SizeEstimator => field ??= new(Log);
 
     public override string HtmlBody()

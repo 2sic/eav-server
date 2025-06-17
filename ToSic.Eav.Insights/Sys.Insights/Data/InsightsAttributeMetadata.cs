@@ -4,11 +4,9 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsAttributeMetadata(LazySvc<IAppReaderFactory> appReaders, IHttpExceptionMaker exceptionMaker)
-    : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Attribute Metadata "}, connect: [appReaders])
 {
     public static string Link = "AttributeMetadata";
-
-    public override string Title => "Attribute Metadata";
 
     public override string HtmlBody()
     {
@@ -16,7 +14,7 @@ internal class InsightsAttributeMetadata(LazySvc<IAppReaderFactory> appReaders, 
             return message;
 
         Log.A($"debug app metadata for {AppId} and {Type}");
-        var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.Get(AppId.Value)!.GetContentType(Type)!;
         var att = typ.Attributes.First(a => a.Name == NameId)
                   ?? throw exceptionMaker.BadRequest($"can't find attribute {NameId}");
 

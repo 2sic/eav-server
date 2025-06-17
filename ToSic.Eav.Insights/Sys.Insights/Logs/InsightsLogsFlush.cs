@@ -1,10 +1,9 @@
 ﻿namespace ToSic.Eav.Sys.Insights.Logs;
 
-internal class InsightsLogsFlush(LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [logStore])
+internal class InsightsLogsFlush(LazySvc<ILogStoreLive> logStore)
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Flush Logs" }, connect: [logStore])
 {
     public static string Link = "LogsFlush";
-
-    public override string Title => "Flush Logs";
 
     public override string HtmlBody()
         => LogsFlush(Key);

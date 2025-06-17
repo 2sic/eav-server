@@ -2,9 +2,13 @@
 
   <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Eav.props" />
 
-  <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
+  <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
 
   <Import Project="../SharedImports/CsProj.Props/Reference/RazorBlade.props" />
+
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" Version="5.2.3">

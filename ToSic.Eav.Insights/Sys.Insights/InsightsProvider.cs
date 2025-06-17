@@ -3,24 +3,37 @@
 namespace ToSic.Eav.Sys.Insights;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class InsightsProvider(string name,
+public abstract class InsightsProvider(
+    InsightsProviderSpecs specs,
+    //string? name = default,
 #pragma warning disable CS9113 // Parameter is unread.
     NoParamOrder protect = default,
 #pragma warning restore CS9113 // Parameter is unread.
-    string teaser = default,
-    string helpCategory = default,
-    object[] connect = default
-    ): ServiceBase($"Ins.{name}", connect: connect ?? []), IInsightsProvider
+    //string? teaser = default,
+    //string? helpCategory = default,
+    object[]? connect = default
+): ServiceBase($"Ins.{specs.Name}", connect: connect ?? []),
+    IInsightsProvider
 {
     public const string HiddenFromAutoDisplay = "Hidden";
 
-    public string HelpCategory => helpCategory;
+    //[field: AllowNull, MaybeNull]
+    public virtual InsightsProviderSpecs Specs => specs; 
+    //field ??= specs ?? new()
+    //{
+    //    HelpCategory = helpCategory,
+    //    Name = name,
+    //    Teaser = teaser,
+    //    Title = name
 
-    public string Name => name;
+    //};
+    //public string HelpCategory => helpCategory;
 
-    public string Teaser => teaser;
+    //public string Name => name;
 
-    public virtual string Title => name;
+    //public string? Teaser => teaser;
+
+    //public virtual string Title => name;
 
     protected string Key { get; private set;  }
 
@@ -53,20 +66,20 @@ public abstract class InsightsProvider(string name,
 
     #region Url Params Checkers
 
-    protected bool UrlParamsIncomplete(int? appId, out string message)
+    protected bool UrlParamsIncomplete([NotNullWhen(false)] int? appId, out string message)
         => UrlParamIncomplete("appid", appId, out message);
 
 
-    protected bool UrlParamsIncomplete(int? appId, string type, out string message)
+    protected bool UrlParamsIncomplete([NotNullWhen(false)] int? appId, string type, out string message)
         => UrlParamsIncomplete(appId, out message)
            || UrlParamIncomplete("type", type, out message);
 
 
-    protected bool UrlParamsIncomplete(int? appId, string type, string attribute, out string message)
+    protected bool UrlParamsIncomplete([NotNullWhen(false)] int? appId, [NotNullWhen(false)] string type, [NotNullWhen(false)] string attribute, out string message)
         => UrlParamsIncomplete(appId, type, out message)
            || UrlParamIncomplete("attribute", attribute, out message);
 
-    protected bool UrlParamsIncomplete(int? appId, int? entity, out string message)
+    protected bool UrlParamsIncomplete([NotNullWhen(false)] int? appId, [NotNullWhen(false)] int? entity, out string message)
         => UrlParamsIncomplete(appId, out message)
            || UrlParamIncomplete("entity", entity, out message);
 

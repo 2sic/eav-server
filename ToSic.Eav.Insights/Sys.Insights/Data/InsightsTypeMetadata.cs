@@ -2,11 +2,10 @@
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsTypeMetadata(LazySvc<IAppReaderFactory> appReaders) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay, connect: [appReaders])
+internal class InsightsTypeMetadata(LazySvc<IAppReaderFactory> appReaders)
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Type Metadata" }, connect: [appReaders])
 {
     public static string Link = "TypeMetadata";
-
-    public override string Title => "Type Metadata";
 
     public override string HtmlBody()
     {
@@ -15,7 +14,7 @@ internal class InsightsTypeMetadata(LazySvc<IAppReaderFactory> appReaders) : Ins
         if (UrlParamsIncomplete(AppId, Type, out var message))
             return message;
 
-        var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
+        var typ = appReaders.Value.Get(AppId.Value)!.GetContentType(Type)!;
 
         var msg = H1($"Metadata for {typ.Name} ({typ.NameId}) in {AppId}\n").ToString();
         var metadata = typ.Metadata.ToList();

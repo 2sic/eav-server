@@ -1,10 +1,9 @@
 ﻿namespace ToSic.Eav.Sys.Insights.Logs;
 
-internal class InsightsPauseLogs(LazySvc<ILogStoreLive> logStore) : InsightsProvider(Link, helpCategory: HiddenFromAutoDisplay , connect: [logStore])
+internal class InsightsPauseLogs(LazySvc<ILogStoreLive> logStore)
+    : InsightsProvider(new() { Name = Link, HelpCategory = HiddenFromAutoDisplay, Title = "Pause Logs" }, connect: [logStore])
 {
     public static string Link = "PauseLogs";
-
-    public override string Title => "Pause Logs";
 
     public override string HtmlBody()
         => PauseLogs(Toggle ?? true);

@@ -9,9 +9,10 @@ namespace ToSic.Eav.Sys.Insights.HtmlHelpers;
 
 public class InsightsHtmlBase: IInsightsLinker
 {
-    internal static string HtmlEncode(string text)
+    internal static string HtmlEncode(string? text)
     {
-        if (text == null) return "";
+        if (text == null)
+            return "";
         var chars = HttpUtility.HtmlEncode(text).ToCharArray();
         var result = new StringBuilder(text.Length + (int)(text.Length * 0.1));
 
@@ -37,21 +38,21 @@ public class InsightsHtmlBase: IInsightsLinker
     internal A DemoLink(string labelAndLink) => Tag.A(labelAndLink).Href(labelAndLink);
 
     internal A LinkTo(string label, string view, int? appId = null, NoParamOrder noParamOrder = default,
-        string key = null, string type = null, string nameId = null, string more = null)
+        string? key = null, string? type = null, string? nameId = null, string? more = null)
     { 
         var link = UrlTo(view, appId, key: key, type: type, nameId: nameId, more: more);
         return Tag.A(label).Href(link);
     }
 
-    public string LinkTo(string name, NoParamOrder protector = default, string label = default, string parameters = default)
+    public string LinkTo(string name, NoParamOrder protector = default, string? label = default, string? parameters = default)
     {
         throw new NotImplementedException();
     }
 
     string IInsightsLinker.LinkBack() => LinkBack().ToString();
 
-    string IInsightsLinker.LinkTo(string label, string view, int? appId, NoParamOrder noParamOrder, string key,
-        string type, string nameId, string more) =>
+    string IInsightsLinker.LinkTo(string label, string view, int? appId, NoParamOrder noParamOrder, string? key,
+        string? type, string? nameId, string? more) =>
         LinkTo(label, view, appId, noParamOrder, key, type, nameId, more).ToString();
 
     internal A LinkBack() => Tag.A( HtmlEncode("🔙 Back")).On("click", "history.back();");
@@ -59,7 +60,7 @@ public class InsightsHtmlBase: IInsightsLinker
     protected bool NiceLink = true;
 
     private string UrlTo(string view, int? appId = null, NoParamOrder noParamOrder = default,
-        string key = null, string type = null, string nameId = null, string more = null)
+        string? key = null, string? type = null, string? nameId = null, string? more = null)
     {
         var link = (NiceLink ? $"./{view}?" : $"details?view={view}")
                    + (appId != null ? "&appid=" + appId : "")

@@ -206,9 +206,9 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         return msg;
     }
 
-    internal string DumpTree(string title, ILog log)
+    internal string DumpTree(string title, ILog? log)
     {
-        var typedLog = (Log)log;
+        var typedLog = (Log)log!;
         var lg = new StringBuilder(
             H1($"{title}") +
             Div($"{typedLog.Created.Dump()}") +

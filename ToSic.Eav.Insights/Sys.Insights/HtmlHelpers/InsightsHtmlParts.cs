@@ -9,9 +9,9 @@ internal class InsightsHtmlParts
     internal const string JsTableSortCdn = "https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/";
 
     internal static IHtmlTag JsTableSort(string id = "table")
-        => Tag.Script().Src(JsTableSortCdn + "tablesort.min.js")
-           + Tag.Script().Src(JsTableSortCdn + "sorts/tablesort.number.min.js")
-           + Tag.Script($"new Tablesort(document.getElementById('{id}'));") as IHtmlTag;
+        => (Tag.Script().Src(JsTableSortCdn + "tablesort.min.js")
+            + Tag.Script().Src(JsTableSortCdn + "sorts/tablesort.number.min.js")
+            + Tag.Script($"new Tablesort(document.getElementById('{id}'));") as IHtmlTag)!;
 
     #endregion
 
