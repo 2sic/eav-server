@@ -140,7 +140,8 @@ public class WorkInputTypes(
         var l = Log.Fn<ICollection<InputTypeInfo>>();
         try
         {
-            var appLoader = appFileSystemLoaderLazy.Value.Init(AppWorkCtx.AppReader, new());
+            var appLoader = appFileSystemLoaderLazy.Value;
+            appLoader.Init(AppWorkCtx.AppReader, new());
             var inputTypes = appLoader.InputTypes();
             return l.Return(inputTypes, $"{inputTypes.Count}");
         }

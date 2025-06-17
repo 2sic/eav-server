@@ -19,39 +19,41 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
     public string Path { get; set; } = null!;
     public string PathShared { get; set; } = null!;
 
-    /// <summary>
-    /// The site to use. This should be used instead of Services.Site,
-    /// since in some cases (e.g. DNN Search) the initial site is not available.
-    /// So in that case it overrides the implementation to get the real site just-in-time.
-    /// </summary>
-    [field: AllowNull, MaybeNull]
-    protected ISite Site => field ??= zoneMapper.SiteOfAppIfSiteInvalid(siteDraft, AppIdentity.AppId);
-
     protected IAppIdentity AppIdentity { get; private set; } = null!;
-    private IAppPaths _appPaths = null!;
     protected LogSettings LogSettings { get; private set; } = new();
 
     #region Inits
 
-    public AppFileSystemLoaderBase Init(IAppReader appReader, LogSettings logSettings)
+    public void Init(IAppReader appReader, LogSettings logSettings, string? optionalOverrideAppFolder = default)
     {
         LogSettings = logSettings;
-        var l = Log.Fn<AppFileSystemLoaderBase>($"{appReader.AppId}, {appReader.Specs.Folder}, ...");
+        var l = Log.Fn($"{appReader.AppId}, {appReader.Specs.Folder}, ...");
         AppIdentity = appReader.PureIdentity();
-        _appPaths = appPathsLazy.Value.Get(appReader, Site);
-        InitPathAfterAppId();
-        return l.Return(this);
+
+        // Get the site - a bit special
+        // The site to use. This should be used instead of Services.Site,
+        // since in some cases (e.g. DNN Search) the initial site is not available.
+        // So in that case it overrides the implementation to get the real site just-in-time.
+        var site = zoneMapper.SiteOfAppIfSiteInvalid(siteDraft, AppIdentity.AppId);
+
+        // Get the app paths helper
+        var appPaths = appPathsLazy.Value.Get(appReader, site);
+        // If an override is provided, use that instead of the default / automatic app folder
+        if (optionalOverrideAppFolder != null)
+            ((AppPaths)appPaths).SetupForUseBeforeAppIsReady(optionalOverrideAppFolder);
+        var ok = InitPathAfterAppId(appPaths);
+        l.Done(ok ? "ok" : "error");
     }
 
     /// <summary>
     /// Init Path After AppId must be in an own method, as each implementation may have something custom to handle this.
     /// </summary>
     /// <returns></returns>
-    protected bool InitPathAfterAppId()
+    private bool InitPathAfterAppId(IAppPaths appPaths)
     {
         var l = Log.Fn<bool>();
-        Path = System.IO.Path.Combine(_appPaths.PhysicalPath, FolderConstants.FolderAppExtensions);
-        PathShared = System.IO.Path.Combine(_appPaths.PhysicalPathShared, FolderConstants.FolderAppExtensions);
+        Path = System.IO.Path.Combine(appPaths.PhysicalPath, FolderConstants.FolderAppExtensions);
+        PathShared = System.IO.Path.Combine(appPaths.PhysicalPathShared, FolderConstants.FolderAppExtensions);
         return l.ReturnTrue($"p:{Path}, ps:{PathShared}");
     }
 

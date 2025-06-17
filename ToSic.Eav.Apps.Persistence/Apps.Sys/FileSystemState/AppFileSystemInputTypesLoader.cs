@@ -10,12 +10,6 @@ namespace ToSic.Eav.Apps.Sys.FileSystemState;
 public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystemLoader> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
     : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppInputTypesLoader
 {
-    public new IAppInputTypesLoader Init(IAppReader reader, LogSettings logSettings)
-    {
-        base.Init(reader, logSettings);
-        return this;
-    }
-
     /// <inheritdoc />
     public ICollection<InputTypeInfo> InputTypes()
     {

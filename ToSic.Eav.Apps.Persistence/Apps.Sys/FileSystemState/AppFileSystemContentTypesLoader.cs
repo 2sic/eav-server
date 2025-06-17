@@ -13,12 +13,6 @@ namespace ToSic.Eav.Apps.Sys.FileSystemState;
 public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSystemLoader, FileSystemLoaderOptions> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
     : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppContentTypesLoader
 {
-    public new IAppContentTypesLoader Init(IAppReader app, LogSettings logSettings)
-    {
-        base.Init(app, logSettings);
-        return this;
-    }
-
     /// <inheritdoc />
     public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource)
     {
@@ -65,7 +59,8 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
     {
         var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>();
         var dir = new DirectoryInfo(Path);
-        if (!dir.Exists) return l.Return([], $"directory do not exist: {dir}");
+        if (!dir.Exists)
+            return l.Return([], $"directory do not exist: {dir}");
         var sub = dir.GetDirectories();
         var subDirs = sub
             .SelectMany(s => s

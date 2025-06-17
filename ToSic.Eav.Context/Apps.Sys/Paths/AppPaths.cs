@@ -32,7 +32,21 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
 
     [field: AllowNull, MaybeNull]
     private ISite Site => field ??= siteOrNull ?? siteLazy.Value;
-    private readonly IAppSpecs _appSpecs = appReader.Specs;
+
+    [field: AllowNull, MaybeNull]
+    private string AppFolder
+    {
+        get => field ??= appReader.Specs.Folder;
+        set;
+    }
+
+    private bool _skipCache;
+
+    public void SetupForUseBeforeAppIsReady(string folder)
+    {
+        AppFolder = folder;
+        _skipCache = true; // skip cache, because we are not sure if the app is ready yet
+    }
 
     /// <summary>
     /// We are having some difficulties that the App is caching the wrong path, so temporarily we'll log
@@ -47,41 +61,51 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
         l.Done();
     }
 
-    private string GetInternal(string name, Func<string> callIfNotFound)
+    private string GetInternal(string name, Func<string> generator)
     {
-        // 2022-02-07 2dm try to drop special case with site-id again, as we shouldn't need this any more
+        // 2022-02-07 2dm try to drop special case with site-id again, as we shouldn't need this anymore
         // 2024-02-01 2dm WIP trouble with App listing apps in other sites
         // it seems that the paths
-        var key = $"AppPath-{name}" + Site.Id; // + _site.Id;
-        var final = appReader.GetCache().GetPiggyBack(key,
-            () =>
-            {
-                var result = callIfNotFound();
-                if (Debug) LogAppPathDetails(nameof(Path), result);
-                return result;
-            });
+        var key = $"AppPath-{name}" + Site.Id;
+        var final = _skipCache
+            ? generator()
+            : appReader
+                .GetCache()
+                .GetPiggyBack(
+                    key,
+                    () =>
+                    {
+                        var result = generator();
+                        if (Debug) LogAppPathDetails(name, result);
+                        return result;
+                    });
         if (Debug) Log.A($"{name}: {final}");
         return final;
     }
 
-    public string Path => GetInternal(nameof(Path), 
-        () => Site.AppAssetsLinkTemplate.Replace(AppLoadConstants.AppFolderPlaceholder, _appSpecs.Folder)
+    [field: AllowNull, MaybeNull]
+    public string Path => field ??= GetInternal(nameof(Path),
+        () => Site.AppAssetsLinkTemplate.Replace(AppLoadConstants.AppFolderPlaceholder, AppFolder)
             .ToAbsolutePathForwardSlash());
 
-    public string PathShared => GetInternal(nameof(PathShared), 
-        () => Combine(config.Value.SharedAppsFolder(), _appSpecs.Folder)
+    [field: AllowNull, MaybeNull]
+    public string PathShared => field ??= GetInternal(nameof(PathShared),
+        () => Combine(config.Value.SharedAppsFolder(), AppFolder)
             .ToAbsolutePathForwardSlash());
 
-    public string PhysicalPath => GetInternal(nameof(PhysicalPath), 
-        () => Combine(Site.AppsRootPhysicalFull, _appSpecs.Folder));
+    [field: AllowNull, MaybeNull]
+    public string PhysicalPath => field ??= GetInternal(nameof(PhysicalPath),
+        () => Combine(Site.AppsRootPhysicalFull, AppFolder));
 
-    public string PhysicalPathShared => GetInternal(nameof(PhysicalPathShared), 
-        () => serverPaths.Value.FullAppPath(Combine(config.Value.SharedAppsFolder(), _appSpecs.Folder)));
+    [field: AllowNull, MaybeNull]
+    public string PhysicalPathShared => field ??= GetInternal(nameof(PhysicalPathShared),
+        () => serverPaths.Value.FullAppPath(Combine(config.Value.SharedAppsFolder(), AppFolder)));
 
-    public string RelativePath => GetInternal(nameof(RelativePath), 
-        () => Combine(Site.AppsRootPhysical, _appSpecs.Folder).Backslash());
-        
-    public string RelativePathShared => GetInternal(nameof(RelativePathShared), 
-        () => Combine(config.Value.SharedAppsFolder(), _appSpecs.Folder)
-            .ToAbsolutePathForwardSlash());
+    [field: AllowNull, MaybeNull]
+    public string RelativePath => field ??= GetInternal(nameof(RelativePath),
+        () => Combine(Site.AppsRootPhysical, AppFolder).Backslash());
+
+    [field: AllowNull, MaybeNull]
+    public string RelativePathShared => field ??= GetInternal(nameof(RelativePathShared),
+        () => Combine(config.Value.SharedAppsFolder(), AppFolder).ToAbsolutePathForwardSlash());
 }

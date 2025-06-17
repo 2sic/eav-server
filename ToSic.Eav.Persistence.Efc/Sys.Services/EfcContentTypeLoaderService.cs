@@ -19,7 +19,7 @@ internal class EfcContentTypeLoaderService(
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
-    internal IImmutableList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes)
+    internal IImmutableList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes, string? folderOrNull)
     {
         var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
         try
@@ -28,7 +28,7 @@ internal class EfcContentTypeLoaderService(
                 return l.Return(dbTypes, "no path");
 
             l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
-            var fileTypes = LoadContentTypesFromFileSystem(appReader);
+            var fileTypes = LoadContentTypesFromFileSystem(appReader, folderOrNull);
             if (fileTypes == null || fileTypes.Count == 0)
                 return l.Return(dbTypes, "no app file types");
 
@@ -38,11 +38,11 @@ internal class EfcContentTypeLoaderService(
             var typeToMerge = dbTypes.ToImmutableOpt();
             var before = typeToMerge.Count;
             var comparer = new EqualityComparer_ContentType();
-            typeToMerge.RemoveAll(t => fileTypes.Contains(t, comparer));
+            typeToMerge = typeToMerge.RemoveAll(t => fileTypes.Contains(t, comparer));
             foreach (var fType in fileTypes)
             {
                 l.A($"Will add {fType.Name}");
-                typeToMerge.Add(fType);
+                typeToMerge = typeToMerge.Add(fType);
             }
 
             return l.Return(typeToMerge, $"before {before}, now {typeToMerge.Count} types");
@@ -57,11 +57,12 @@ internal class EfcContentTypeLoaderService(
     /// Will load file based app content-types.
     /// </summary>
     /// <returns></returns>
-    private IList<IContentType> LoadContentTypesFromFileSystem(IAppReader appReader)
+    private IList<IContentType> LoadContentTypesFromFileSystem(IAppReader appReader, string? folderOrNull)
     {
         var l = Log.Fn<IList<IContentType>>(timer: true);
         // must create a new loader for each app
-        var loader = appFileContentTypesLoader.New().Init(appReader, efcAppLoader.LogSettings);
+        var loader = appFileContentTypesLoader.New();
+        loader.Init(appReader, efcAppLoader.LogSettings, folderOrNull);
         var types = loader.ContentTypes(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }
@@ -140,7 +141,7 @@ internal class EfcContentTypeLoaderService(
         var sharedAttribIds = optimize
             ? contentTypes
                 .Where(c => c.SharedDefinitionId.HasValue)
-                .Select(c => c.SharedDefinitionId.Value)
+                .Select(c => c.SharedDefinitionId!.Value)
                 .Distinct()
                 .ToList()
             : contentTypes

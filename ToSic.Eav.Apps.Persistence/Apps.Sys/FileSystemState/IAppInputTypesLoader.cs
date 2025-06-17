@@ -6,7 +6,7 @@ public interface IAppInputTypesLoader: IHasLog
     /// <summary>
     /// Real constructor, after DI
     /// </summary>
-    IAppInputTypesLoader Init(IAppReader reader, LogSettings logSettings);
+    void Init(IAppReader reader, LogSettings logSettings, string? optionalOverrideAppFolder = default);
 
     /// <summary>
     /// Load all the input types for this app from the folder

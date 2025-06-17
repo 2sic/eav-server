@@ -56,4 +56,5 @@ public interface IAppPaths
     /// </remarks>
     [PrivateApi("not public, not sure if we should surface this")]
     string RelativePathShared { get; }
+
 }
