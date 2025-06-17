@@ -10,12 +10,12 @@ internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCach
     public IAppReader GetOrKeep(IAppIdentity appIdOrReader)
         => appIdOrReader as IAppReader ?? Get(appIdOrReader);
 
-    //public IAppReader? TryGet(IAppIdentity appIdentity)
-    //{
-    //    var l = Log.Fn<IAppReader?>(appIdentity.Show());
-    //    var state = appStates.Get(appIdentity);
-    //    return l.ReturnAndLogIfNull(ToReader(state));
-    //}
+    public IAppReader? TryGet(IAppIdentity appIdentity)
+    {
+        var l = Log.Fn<IAppReader?>(appIdentity.Show());
+        var state = appStates.Get(appIdentity);
+        return l.ReturnAndLogIfNull(ToReader(state));
+    }
     public IAppReader Get(IAppIdentity appIdentity)
     {
         var l = Log.Fn<IAppReader?>(appIdentity.Show());

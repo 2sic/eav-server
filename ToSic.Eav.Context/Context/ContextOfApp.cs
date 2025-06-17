@@ -130,7 +130,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     #endregion
 
-    public IAppReader? AppReaderOrNull => _appReaderOrNull.Get(() => AppIdentity == null! ? null : AppServices.AppReaders.Get(AppIdentity));
+    public IAppReader? AppReaderOrNull => _appReaderOrNull.Get(() => AppIdentity == null! ? null : AppServices.AppReaders.TryGet(AppIdentity));
     private readonly GetOnce<IAppReader?> _appReaderOrNull = new();
 
     public IAppReader AppReaderRequired => AppReaderOrNull ?? throw new NullReferenceException($"Trying to get AppReader but AppIdentity is null");

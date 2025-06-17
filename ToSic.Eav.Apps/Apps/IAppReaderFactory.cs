@@ -57,12 +57,12 @@ public interface IAppReaderFactory
     ///// <returns>The expected app - or `null`.</returns>
     //IAppReader? TryGet(int appId);
 
-    ///// <summary>
-    ///// Get a reader for the specified app.
-    ///// </summary>
-    ///// <param name="appIdentity"></param>
-    ///// <returns></returns>
-    //IAppReader? TryGet(IAppIdentity appIdentity);
+    /// <summary>
+    /// Get a reader for the specified app.
+    /// </summary>
+    /// <param name="appIdentity"></param>
+    /// <returns></returns>
+    IAppReader? TryGet(IAppIdentity appIdentity);
 
     /// <summary>
     /// Get a reader for the specified app.
