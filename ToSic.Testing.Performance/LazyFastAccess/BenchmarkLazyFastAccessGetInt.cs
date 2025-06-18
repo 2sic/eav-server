@@ -35,7 +35,7 @@ public class BenchmarkLazyFastAccessGetInt
     public void RunWithSpecs(bool enableLfa, int runs)
     {
         Console.WriteLine($@"Starting with {Ids.Count} IDs, App has {List.Count()} items");
-        SysPerfSettings.EnableLazyFastAccess = enableLfa;
+        SysPerfSettings.CacheListAutoIndex = enableLfa;
         var totalTime = new TimeSpan();
         for (var i = 0; i < Runs; i++)
         {

@@ -47,7 +47,8 @@ internal class RegisterBuiltInSysFeatures
             AppExportAssetsAdvanced, // v18
 
             // Patron Performance
-            CSharpLinqOptimizations, // v20
+            LinqListOptimizations, // v20
+            CacheListAutoIndex, // v20
 
             // Patron Infrastructure
             SqlCompressDataTimeline, // v15

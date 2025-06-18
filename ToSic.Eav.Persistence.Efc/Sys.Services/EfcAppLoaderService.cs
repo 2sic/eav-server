@@ -147,7 +147,7 @@ public class EfcAppLoaderService(
         // minor message suffix w/optimization and count info
         string MessageSuffix(IAppStateCache appState)
         {
-            var codeWasOptimized = sysFeaturesSvc.IsEnabled(BuiltInFeatures.CSharpLinqOptimizations)
+            var codeWasOptimized = sysFeaturesSvc.IsEnabled(BuiltInFeatures.LinqListOptimizations)
                 ? "(optimized LINQ; Patrons)"
                 : "(standard LINQ; Patrons)";
             return $"{codeWasOptimized}; {appState.List.Count()} items";

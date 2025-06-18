@@ -40,7 +40,7 @@ public class BenchmarkLazyFastAccessOfType
     public void RunWithSpecs(bool enableLfa, int runs)
     {
         Console.WriteLine($@"Starting with {Types.Count} IDs, App has {List.Count()} items; App has {Types.Count} Types");
-        SysPerfSettings.EnableLazyFastAccess = enableLfa;
+        SysPerfSettings.CacheListAutoIndex = enableLfa;
         var totalTime = new TimeSpan();
         for (var i = 0; i < Runs; i++)
         {
@@ -52,7 +52,7 @@ public class BenchmarkLazyFastAccessOfType
     public void RunWithSpecsCol(bool enableLfa, int runs)
     {
         Console.WriteLine($@"Starting with {Types.Count} IDs, App has {List.Count()} items; App has {Types.Count} Types");
-        SysPerfSettings.EnableLazyFastAccess = enableLfa;
+        SysPerfSettings.CacheListAutoIndex = enableLfa;
         var totalTime = new TimeSpan();
         for (var i = 0; i < Runs; i++)
         {

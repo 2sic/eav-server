@@ -33,7 +33,7 @@ public static class IEntityExtensions
 #if DEBUG
         _countOneId++;
 #endif
-        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
+        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
             ? fastList.Fast.Get(id)
             : list.FirstOrDefault(e => e.EntityId == id);
     }
@@ -50,7 +50,7 @@ public static class IEntityExtensions
 #if DEBUG
         _countOneGuid++;
 #endif
-        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
+        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
             ? fastList.Fast.Get(guid)
             : list.FirstOrDefault(e => e.EntityGuid == guid);
     }
@@ -68,7 +68,7 @@ public static class IEntityExtensions
 #if DEBUG
         _countOneRepo++;
 #endif
-        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
+        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
             ? fastList.Fast.GetRepo(id)
             : list.FirstOrDefault(e => e.RepositoryId == id);
     }
@@ -86,7 +86,7 @@ public static class IEntityExtensions
 #if DEBUG
         _countOneHas++;
 #endif
-        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
+        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
             ? fastList.Fast.Has(id)
             : list.Any(e => e.EntityId == id || e.RepositoryId == id);
     }
@@ -104,7 +104,7 @@ public static class IEntityExtensions
 #if DEBUG
         _countOneOfContentType++;
 #endif            
-        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
+        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
             ? fastList.Fast.OfType(typeName)
             : list
                 .Where(e => e.Type.Is(typeName))
@@ -117,7 +117,7 @@ public static class IEntityExtensions
 #if DEBUG
         _countOneOfContentType++;
 #endif            
-        return SysPerfSettings.EnableLazyFastAccess && list is ImmutableSmartList fastList
+        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
             ? fastList.Fast.OfTypeCol(typeName)
             : list
                 .Where(e => e.Type.Is(typeName))
