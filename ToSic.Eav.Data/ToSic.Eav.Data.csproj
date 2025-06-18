@@ -4,10 +4,6 @@
 
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
-  <PropertyGroup>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
   <!--<Target Name="DebugMessage" AfterTargets="Build">
     <Message Text="Nullable Test for '$(TargetFramework)' to output: '$(Nullable)'" Importance="high"/>
   </Target>-->

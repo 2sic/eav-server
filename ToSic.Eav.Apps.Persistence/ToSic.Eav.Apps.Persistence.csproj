@@ -5,10 +5,6 @@
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
   <PropertyGroup>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <RootNamespace>ToSic.Eav</RootNamespace>
   </PropertyGroup>
 

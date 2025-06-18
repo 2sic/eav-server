@@ -4,10 +4,6 @@
 
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
-  <PropertyGroup>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
