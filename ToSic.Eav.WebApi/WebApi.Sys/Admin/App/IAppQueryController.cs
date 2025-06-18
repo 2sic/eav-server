@@ -43,7 +43,7 @@ public interface IAppQueryController
     /// </remarks>
     /// <returns></returns>
     IDictionary<string, IEnumerable<EavLightEntity>> QueryPost(string name,
-        QueryParameters more,
+        QueryParametersDtoFromClient more,
         int? appId = null,
         string? stream = null,
         bool includeGuid = false);
@@ -82,7 +82,7 @@ public interface IAppQueryController
     IDictionary<string, IEnumerable<EavLightEntity>> PublicQueryPost(
         string appPath,
         string name,
-        QueryParameters more,
+        QueryParametersDtoFromClient more,
         string? stream = null
     );
 }

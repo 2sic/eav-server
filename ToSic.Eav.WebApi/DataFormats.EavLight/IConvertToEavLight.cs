@@ -54,7 +54,7 @@ public interface IConvertToEavLight: IConvertEntity<EavLightEntity>, IConvertDat
     IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string>? streams = null);
 
     /// <inheritdoc />
-    IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids);
+    IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string>? streams, string[]? filterGuids);
 
     /// <inheritdoc />
     IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, string streams);
