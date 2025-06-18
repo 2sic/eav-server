@@ -181,8 +181,8 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// </summary>
     /// <param name="field">Optional field name to access</param>
     /// <param name="type">Optional type to filter for</param>
-    /// <returns>List of children, or empty list if not found</returns>
-    IEnumerable<IEntity> Children(string? field = null, string? type = null);
+    /// <returns>List of children, or empty list if not found. List can contain nulls, as there may be "empty" slots.</returns>
+    IEnumerable<IEntity?> Children(string? field = null, string? type = null);
 
     /// <summary>
     /// Get all the parent <see cref="IEntity"/> items - optionally only of a specific type and/or referenced in a specific field

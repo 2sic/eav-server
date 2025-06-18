@@ -23,9 +23,9 @@ internal class InsightsEntity(GenWorkPlus<WorkEntities> workEntities, Generator<
 
         IEntity ent;
         if (int.TryParse(NameId, out var entityId))
-            ent = entities.Get(entityId);
+            ent = entities.Get(entityId)!;
         else if (Guid.TryParse(NameId, out var entityGuid))
-            ent = entities.Get(entityGuid);
+            ent = entities.Get(entityGuid)!;
         else
             throw exceptionMaker.BadRequest("can't use entityId - must be number or guid");
 

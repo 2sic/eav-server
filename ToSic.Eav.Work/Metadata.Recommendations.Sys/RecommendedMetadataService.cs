@@ -76,7 +76,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
         // Only support TargetType which is a predefined
         // Since we only support the metadata-dialog to edit content-type, app, etc. and not anything random/custom
         if (targetTypeId < 0 || !Enum.IsDefined(typeof(TargetTypes), targetTypeId))
-            return l.ReturnNull("invalid target type");
+            return l.Return([], "invalid target type");
 
         // 2.2 Ask the target if it knows of expected types using `MetadataExpected`
         // Check if this object-type has a specific list of Content-Types which it expects

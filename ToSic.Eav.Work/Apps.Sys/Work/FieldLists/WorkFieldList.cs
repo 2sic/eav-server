@@ -44,7 +44,7 @@ public class WorkFieldList(GenWorkDb<WorkEntityUpdate> entityUpdate)
             lists => lists.Replace(index, replacement.Select(r => (true, r)).ToArray()
             ));
 
-    private static List<int?> FieldListIdsWithNulls(IEnumerable<IEntity> list)
+    private static List<int?> FieldListIdsWithNulls(IEnumerable<IEntity?> list)
         => list.Select(p => p?.EntityId).ToList();
 
 }

@@ -15,7 +15,7 @@ internal class InsightsEntityMetadata(GenWorkPlus<WorkEntities> workEntities)
 
         var entity = int.Parse(NameId);
         Log.A($"debug app entity metadata for {AppId} and entity {entity}");
-        var ent = workEntities.New(AppId.Value).Get(entity);
+        var ent = workEntities.New(AppId.Value).Get(entity)!;
 
         var msg = H1($"Entity Metadata for {entity} in {AppId}\n").ToString();
         var metadata = ent.Metadata.ToList();

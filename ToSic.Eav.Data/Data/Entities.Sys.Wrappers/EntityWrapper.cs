@@ -122,7 +122,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     #region support for LINQ enhancements
 
     /// <inheritdoc />
-    public IEnumerable<IEntity> Children(string? field = null, string? type = null)
+    public IEnumerable<IEntity?> Children(string? field = null, string? type = null)
         => Entity.Children(field, type);
 
     /// <inheritdoc />

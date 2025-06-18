@@ -30,16 +30,18 @@ static class IEntitySubListNavigation
             return l.ReturnNull("no child");
         if (!children.Any())
             return l.ReturnNull("no children");
-        if (children.First() == null)
+        var first = children.First();
+        if (first == null)
             return l.ReturnNull("child is null");
-        if (children.First().EntityId == 0)
+        if (first.EntityId == 0)
             return l.ReturnNull("Child is placeholder, no real entries");
 
 
         try
         {
             // Find possible child with the correct title
-            var dynEntityWithTitle = children.FirstOrDefault(e => field.EqualsInsensitive(e.GetBestTitle()));
+            var dynEntityWithTitle = children
+                .FirstOrDefault(e => field.EqualsInsensitive(e?.GetBestTitle()));
 
             if (dynEntityWithTitle == null)
                 return l.ReturnNull("no matching child");

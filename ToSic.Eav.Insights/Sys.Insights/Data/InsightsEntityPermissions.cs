@@ -15,7 +15,7 @@ internal class InsightsEntityPermissions(GenWorkPlus<WorkEntities> workEntities)
 
         var entity = int.Parse(NameId);
         Log.A($"debug app entity permissions for {AppId} and entity {entity}");
-        var ent = workEntities.New(AppId.Value).Get(entity);
+        var ent = workEntities.New(AppId.Value).Get(entity)!;
 
         var msg = H1($"Entity Permissions for {entity} in {AppId}\n").ToString();
         var permissions = ent.Metadata.Permissions
