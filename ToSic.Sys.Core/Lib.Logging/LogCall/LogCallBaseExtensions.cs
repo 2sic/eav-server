@@ -38,16 +38,12 @@ public static class LogCallBaseExtensions
         if (logCall?.Log is not Log log)
             return;
 
-        //if (!logCall.IsOpen)
-        //    log.AddInternal("Log Warning: Wrapper already closed from previous call", null);
-        //logCall.IsOpen = false;
-
         log.WrapDepth--;
         logCall.Entry?.AppendResult(message);
         var final = log.AddInternalReuse(null!, null);
         final.WrapClose = true;
         final.AppendResult(message);
-        if (logCall?.Timer == null)
+        if (!logCall.Timer.IsRunning)
             return;
         logCall.Timer.Stop();
         if (logCall.Entry != null)
