@@ -24,5 +24,5 @@ public interface IServerPaths
 
     string FullContentPath(string virtualPath);
 
-    string FullPathOfReference(string fileReference);
+    string? FullPathOfReference(string fileReference);
 }
