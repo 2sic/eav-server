@@ -80,7 +80,14 @@ public class PropertyStackDump: IPropertyDumper
         var bestMatches = grouped
             .Select(g =>
             {
-                var top = g.First();
+                var top = g
+                              .FirstOrDefault(set => set.Property?.Result switch
+                              {
+                                  null => false,
+                                  string str => !string.IsNullOrEmpty(str),
+                                  _ => true
+                              })
+                          ?? g.First();
                 top.AllOptions = g.Select(i => i).ToList();
                 return top;
             })

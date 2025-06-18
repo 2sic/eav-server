@@ -4,8 +4,10 @@ namespace ToSic.Eav.Data.PropertyDump.Sys;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class PropertyDumpItem()
+public record PropertyDumpItem
 {
+    #region Constants and Static Helpers
+
     public const string Separator = ".";
 
     public static bool ShouldStop(string path)
@@ -23,6 +25,8 @@ public class PropertyDumpItem()
             }
         };
     }
+
+    #endregion
 
     /// <summary>
     /// The source of this item

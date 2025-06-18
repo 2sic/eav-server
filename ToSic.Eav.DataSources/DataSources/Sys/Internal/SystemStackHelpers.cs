@@ -40,7 +40,10 @@ public class SystemStackHelpers
     {
         var final = results
             .GroupBy(original => new { original.Path, original.SourceName }) // remove "duplicate" settings from results
-            .Select(g => g.OrderByDescending(i => i.AllOptions?.Count ?? 0).First());
+            .Select(g => g
+                .OrderByDescending(i => i.AllOptions?.Count ?? 0)
+                .First()
+            );
         return final;
     }
 
