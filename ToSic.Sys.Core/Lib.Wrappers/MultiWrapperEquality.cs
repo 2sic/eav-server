@@ -51,6 +51,9 @@ public static class MultiWrapperEquality
             return a is null; // 2023-08-08 previously returned false every time, which caused problems on null-checks;
         if (ReferenceEquals(a, b))
             return true;
+        if (a?.RootContentsForEqualityCheck is null)
+            return false;
+
         // This is a check if it's exactly that type, but it could be an inherited type, so false must fall to the next check
         if (b is T && a.RootContentsForEqualityCheck.Equals(b))
             return true;
