@@ -2,7 +2,7 @@
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.Apps.Sys.Permissions;
 

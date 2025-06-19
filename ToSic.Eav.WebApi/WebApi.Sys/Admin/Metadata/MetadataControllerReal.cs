@@ -7,7 +7,7 @@ using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Sys;
 using static System.String;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Sys.Admin.Metadata;

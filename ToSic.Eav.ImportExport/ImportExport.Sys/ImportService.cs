@@ -7,7 +7,7 @@ using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Repositories.Sys;
 using Entity = ToSic.Eav.Data.Entities.Sys.Entity;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.ImportExport.Sys;
 

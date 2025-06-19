@@ -5,7 +5,7 @@
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class AppBase<TServices>(TServices services, string logName, object[] connect)
+public abstract class AppBase<TServices>(TServices services, string logName, object[]? connect)
     : ServiceBase<TServices>(services, logName ?? "App.Base", connect: connect), IAppIdentity
     where TServices : MyServicesBase
 {

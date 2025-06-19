@@ -22,32 +22,25 @@ public class AppStateMetadata : IAppStateMetadata
     private AppThingsIdentifiers Target { get; }
 
 
-    public IEntity? AppConfiguration => (_appConfigSynced ??= BuildSyncedMetadata(Owner, AppLoadConstants.TypeAppConfig)).Value;
+    public IEntity? AppConfiguration => (_appConfigSynced ??= BuildSyncedItem(Owner, AppLoadConstants.TypeAppConfig, true)).Value;
     private SynchronizedObject<IEntity?>? _appConfigSynced;
 
-    private static SynchronizedObject<IEntity?> BuildSyncedMetadata(IAppStateCache parent, string staticName)
-    {
-        var synced = new SynchronizedObject<IEntity?>(parent, () => parent.Metadata.FirstOrDefaultOfType(staticName));
-        return synced;
-    }
-
-    private static SynchronizedObject<IEntity?> BuildSyncedItem(IEntitiesSource parent, string staticName)
-    {
-        var synced = new SynchronizedObject<IEntity?>(parent, () => parent.List.FirstOrDefaultOfType(staticName));
-        return synced;
-    }
+    private static SynchronizedObject<IEntity?> BuildSyncedItem(IAppStateCache parent, string staticName, bool useMetadata)
+        => new(parent, () => (useMetadata ? parent.Metadata : parent.List)
+            .FirstOrDefaultOfType(staticName)
+        );
 
 
     /// <summary>
     /// The App-Settings or App-Resources
     /// </summary>
-    public IEntity? MetadataItem => (_appItemSynced ??= BuildSyncedMetadata(Owner, Target.AppType)).Value;
+    public IEntity? MetadataItem => (_appItemSynced ??= BuildSyncedItem(Owner, Target.AppType, true)).Value;
     private SynchronizedObject<IEntity?>? _appItemSynced;
 
-    public IEntity? SystemItem => (_appSystemSynced ??= BuildSyncedItem(Owner, Target.SystemType)).Value;
+    public IEntity? SystemItem => (_appSystemSynced ??= BuildSyncedItem(Owner, Target.SystemType, false)).Value;
     private SynchronizedObject<IEntity?>? _appSystemSynced;
 
-    public IEntity? CustomItem => (_appCustomSynced ??= BuildSyncedItem(Owner, Target.CustomType)).Value;
+    public IEntity? CustomItem => (_appCustomSynced ??= BuildSyncedItem(Owner, Target.CustomType, false)).Value;
     private SynchronizedObject<IEntity?>? _appCustomSynced;
 
 }

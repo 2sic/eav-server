@@ -11,7 +11,6 @@ public class KnownAppsConstants
     /// </summary>
     public const int TransientAppId = -9999999;
 
-    // TODO: 2DM - CONFUSING - is the app called "Default" or "Content" - this seems to be unclear
     public const string ContentAppName = "Content";
     public const string ContentAppFolder = "Content";
     public const string ErrorAppName = "Error"; // it is name of empty Content app (before content templates are installed)

@@ -4,7 +4,7 @@ using ToSic.Lib.LookUp.Engines;
 using ToSic.Lib.LookUp.Sources;
 using static System.String;
 using static System.StringComparer;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 

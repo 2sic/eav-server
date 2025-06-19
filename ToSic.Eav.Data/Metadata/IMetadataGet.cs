@@ -1,6 +1,4 @@
-﻿using IEntity = ToSic.Eav.Data.IEntity;
-
-namespace ToSic.Eav.Metadata;
+﻿namespace ToSic.Eav.Metadata;
 
 /// <summary>
 /// For querying metadata from the data source.

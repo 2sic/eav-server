@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data;
-
-namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps;
 
 public interface IAppReadContentTypes
 {
