@@ -33,6 +33,7 @@ public static class StringExtensions
         => value.HasValue() ? value : null;
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
+    [return: NotNullIfNotNull(nameof(value))]
     public static string[]? SplitNewLine(this string? value) 
         => value?.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
 
