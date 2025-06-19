@@ -69,9 +69,11 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// Gets all files from a folder and subfolder, which fit the import/export filter criteria
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<string> GetAllTransferableFiles(string searchPattern = "*.*")
+    public ICollection<string> GetAllTransferableFiles(string? searchPattern = default)
     {
-        var l = Log.Fn<IEnumerable<string>>();
+        if (string.IsNullOrWhiteSpace(searchPattern))
+            searchPattern = "*.*"; // default search pattern
+        var l = Log.Fn<ICollection<string>>();
         var hardcodedExcludedFolders = GetHardcodedExcludedFolders();
         l.A($"Hardcoded excluded folders count: {hardcodedExcludedFolders.Count}");
 
@@ -79,7 +81,9 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
         {
             // Get exclude search patterns from app.json
             ExcludeSearchPatterns = appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId),
-            FileSearchPatterns = searchPattern.Split(Separator).ToList()
+            FileSearchPatterns = searchPattern!
+                .Split(Separator)
+                .ToListOpt()
         };
 
         var usingAppJson = specs.ExcludeSearchPatterns.Any();
@@ -91,7 +95,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
         l.A("Process excluding files based on hardcoded exclusions");
         var filteredFiles = files
             .Where(file => !IsFileInExcludedFolder(file, hardcodedExcludedFolders))
-            .ToList();
+            .ToListOpt();
 
         return l.Return(filteredFiles, "Done filtering files based on exclusion criteria");
     }
