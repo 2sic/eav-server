@@ -70,7 +70,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <param name="policyMaker"></param>
-    public void Set(string key, object value, IPolicyMaker policyMaker)
+    public void Set(string key, object? value, IPolicyMaker policyMaker)
     {
         var l = Log.Fn($"key: '{key}'");
         try
@@ -110,7 +110,9 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     internal static CacheEntryChangeMonitor CreateCacheNotifyMonitor(IEnumerable<ICanBeCacheDependency> keys)
     {
         // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-        var prefixed = (keys ?? []).Where(x => x != null).Select(ExpandDependencyId);
+        var prefixed = (keys ?? [])
+            .Where(x => x != null)
+            .Select(ExpandDependencyId);
         return Cache.CreateCacheEntryChangeMonitor(prefixed);
     }
 
