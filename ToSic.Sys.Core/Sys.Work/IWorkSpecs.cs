@@ -3,6 +3,4 @@
 /// <summary>
 /// WIP v19.01
 /// </summary>
-public interface IWorkSpecs
-{
-}
+public interface IWorkSpecs;

@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource;
 /// </summary>
 public class DataSourceOptionConverter
 {
-    public DataSourceOptions Create(IDataSourceOptions original, object? other)
+    public DataSourceOptions Create(IDataSourceOptions? original, object? other)
     {
         // other is null
         if (other is null)

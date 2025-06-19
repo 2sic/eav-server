@@ -58,10 +58,12 @@ public static class PathFixer
     }
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
+    [return: NotNullIfNotNull(nameof(original))]
     public static string? TrimLastSlash(this string? original)
         => original?.TrimEnd('/').TrimEnd('\\');
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
+    [return: NotNullIfNotNull(nameof(original))]
     public static string? TrimPrefixSlash(this string? original)
         => original?.TrimStart('/').TrimStart('\\');
 
