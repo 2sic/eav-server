@@ -209,19 +209,19 @@ public sealed class RelationshipFilter : DataSourceBase
         if (compType == CompareType.Auto)
         {
             var getId = GetFieldValue(CompareType.Id, "irrelevant");
-            if (getId.IsError)
-                return l.ReturnAsError(getId.Errors);
+            if (getId.IsError())
+                return l.ReturnAsError(getId.ErrorsSafe());
             var getTitle = GetFieldValue(CompareType.Title, "irrelevant");
-            if (getTitle.IsError)
-                return l.ReturnAsError(getTitle.Errors);
+            if (getTitle.IsError())
+                return l.ReturnAsError(getTitle.ErrorsSafe());
             comparisonOnRelatedItem = CompareTwo(getId.Result, getTitle.Result);
 
         }
         else
         {
             var getValue = GetFieldValue(compType, compAttr);
-            if (getValue.IsError)
-                return l.ReturnAsError(getValue.Errors);
+            if (getValue.IsError())
+                return l.ReturnAsError(getValue.ErrorsSafe());
             comparisonOnRelatedItem = CompareOne(getValue.Result!);
         }
 
@@ -234,8 +234,8 @@ public sealed class RelationshipFilter : DataSourceBase
 
         // pick the correct list-comparison - atm ca. 6 options
         var modeCompareOrError = PickMode(strMode, relationship, comparisonOnRelatedItem!, filterList);
-        if (modeCompareOrError.IsError)
-            return l.ReturnAsError(modeCompareOrError.Errors);
+        if (modeCompareOrError.IsError())
+            return l.ReturnAsError(modeCompareOrError.ErrorsSafe());
         var modeCompare = modeCompareOrError.Result!;
 
         var finalCompare = useNot

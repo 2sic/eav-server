@@ -55,15 +55,16 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     /// </summary>
     /// <returns></returns>
     [PrivateApi]
-    public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine configSource, IDataSource? source = null)
+    public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine? lookUpEngineOrNull, IDataSource? source = null)
     {
         ZoneId = zoneId;
         AppId = appId;
         Definition = _queryBuilderLazy.Value.Create(queryDef, appId);
-        this.Init(configSource);
+        this.Init(lookUpEngineOrNull);
 
         // hook up in, just in case we get parameters from an In
-        if (source == null) return this;
+        if (source == null)
+            return this;
 
         Log.A("found target for Query, will attach");
         _inSource = source;

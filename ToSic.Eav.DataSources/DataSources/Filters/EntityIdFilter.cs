@@ -56,13 +56,14 @@ public class EntityIdFilter : DataSourceBase
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         var entityIdsOrError = CustomConfigurationParse();
-        if (entityIdsOrError.IsError)
-            return l.ReturnAsError(entityIdsOrError.Errors);
+        if (entityIdsOrError.IsError())
+            return l.ReturnAsError(entityIdsOrError.ErrorsSafe());
 
-        var entityIds = entityIdsOrError.Result;
+        var entityIds = entityIdsOrError.Result!;
 
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
         var result = entityIds
             .Select(eid => source.One(eid)!)

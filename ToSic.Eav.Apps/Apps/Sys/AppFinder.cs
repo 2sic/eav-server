@@ -9,7 +9,7 @@ public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appRea
     /// Find the app id from the app-name (usually a guid or "Default").
     /// Can also check the folder name
     /// </summary>
-    public int FindAppId(int zoneId, string appName, bool alsoCheckFolderName = false) 
+    public int FindAppId(int zoneId, string? appName, bool alsoCheckFolderName = false) 
     {
         var l = Log.Fn<int>($"{nameof(zoneId)}:{zoneId}, {nameof(appName)}:{appName}, {nameof(alsoCheckFolderName)}:{alsoCheckFolderName}");
         try

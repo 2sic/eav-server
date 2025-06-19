@@ -69,7 +69,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         l.Done();
     }
 
-    protected virtual IAppIdentity AppIdentity
+    protected virtual IAppIdentity? AppIdentity
     {
         get;
         set
