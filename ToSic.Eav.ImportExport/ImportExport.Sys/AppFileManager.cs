@@ -69,7 +69,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// Gets all files from a folder and subfolder, which fit the import/export filter criteria
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<string> GetAllTransferableFiles(string? searchPattern = "*.*")
+    public IEnumerable<string> GetAllTransferableFiles(string searchPattern = "*.*")
     {
         var l = Log.Fn<IEnumerable<string>>();
         var hardcodedExcludedFolders = GetHardcodedExcludedFolders();

@@ -35,7 +35,8 @@ internal class DataSourcesService(
     /// <param name="options"></param>
     /// <returns></returns>
     [PrivateApi("internal, experimental, only used in tests ATM")]
-    public TDataSource Create<TDataSource>(IDataStream stream, IDataSourceOptions? options = default) where TDataSource : IDataSource
+    public TDataSource Create<TDataSource>(IDataStream stream, IDataSourceOptions? options = default)
+        where TDataSource : IDataSource
     {
         if (stream.Source == null)
             throw new("Unexpected source - stream without a real source. can't process; wip");
@@ -91,7 +92,11 @@ internal class DataSourcesService(
 
     private DataSourceOptions OptionsWithLookUp(IDataSourceOptions? optionsOrNull) =>
         optionsOrNull is not DataSourceOptions typed
-            ? new() { LookUp = lookupResolveLazy.Value.GetLookUpEngine(0) }
+            ? new()
+            {
+                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
+                LookUp = lookupResolveLazy.Value.GetLookUpEngine(0),
+            }
             : typed.LookUp == null
                 ? typed with { LookUp = lookupResolveLazy.Value.GetLookUpEngine(0) }
                 : typed;

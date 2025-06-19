@@ -12,11 +12,17 @@ public class DataSourceOptionConverter
     {
         // other is null
         if (other is null)
-            return original as DataSourceOptions ?? new DataSourceOptions();
+            return original as DataSourceOptions ?? new DataSourceOptions()
+            {
+                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
+            };
 
         var secondDs = Convert(other, throwIfNull: false, throwIfNoMatch: false);
         if (original is not DataSourceOptions typed)
-            return secondDs ?? new DataSourceOptions();
+            return secondDs ?? new DataSourceOptions()
+            {
+                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
+            };
 
         // Most complex case, both are now "real" - must merge
         return typed with
@@ -36,13 +42,21 @@ public class DataSourceOptionConverter
             case null: return null;
             case DataSourceOptions dss: return dss;
             //case IDataSourceOptions ds: return ds;
-            case ILookUpEngine lu: return new() { LookUp = lu };
+            case ILookUpEngine lu: return new()
+            {
+                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
+                LookUp = lu,
+            };
         }
 
         // Check if it's a possible value
         var values = Values(original, throwIfNull: false, throwIfNoMatch: false);
         if (values != null)
-            return new() { Values = values };
+            return new()
+            {
+                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
+                Values = values,
+            };
 
         if (!throwIfNoMatch) return null;
         throw new ArgumentException(
@@ -51,7 +65,7 @@ public class DataSourceOptionConverter
 
     }
 
-    public IImmutableDictionary<string, string>? Values(object original, bool throwIfNull = false, bool throwIfNoMatch = true)
+    public IImmutableDictionary<string, string>? Values(object? original, bool throwIfNull = false, bool throwIfNoMatch = true)
     {
         switch (original)
         {

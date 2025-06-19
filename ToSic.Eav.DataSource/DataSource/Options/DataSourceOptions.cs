@@ -12,10 +12,13 @@ namespace ToSic.Eav.DataSource;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record DataSourceOptions: IDataSourceOptions
 {
+    public DataSourceOptions() { }
+
     public IImmutableDictionary<string, string>? Values { get; init; }
 
     // todo: improve to probably be IAppIdentity or IAppReader
-    public IAppIdentity? AppIdentityOrReader { get; init; }
+    // #WipAppIdentityOrReader must become not null
+    public required IAppIdentity? AppIdentityOrReader { get; init; }
     public ILookUpEngine? LookUp { get; init; }
     public bool? ShowDrafts { get; init; }
     public bool Immutable { get; init; }
