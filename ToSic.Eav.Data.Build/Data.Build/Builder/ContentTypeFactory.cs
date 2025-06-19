@@ -39,7 +39,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         var ctScope = scope ?? ctSpecs?.Scope.NullIfNoValue() ?? ScopeConstants.Default;
 
         // Must be null if no metadata
-        var ctMetadata = ContentTypeDetails(ctSpecs?.Description)?.ToListOfOne();
+        var ctMetadata = ContentTypeDetails(ctSpecs?.Description).ToListOfOneOrNull();
 
         var (attributes, vAttributes) = GenerateAttributes(type);
 
@@ -57,7 +57,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             metadataItems: ctMetadata,
             isDynamic: true,
             attributes: attributes,
-            decorators: vAttributeDecorator?.ToListOfOne()
+            decorators: vAttributeDecorator.ToListOfOneOrNull()
         );
         return l.ReturnAndLog(contentType);
     }
@@ -147,7 +147,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
 
                 // Must be null if no metadata
                 var attrMetadata = ContentTypeAttributeDetails(specs?.Description, specs?.InputTypeWIP)
-                    ?.ToListOfOne();
+                    .ToListOfOneOrNull();
 
                 return ctAttributeBuilder.Create(
                     NoAppId,

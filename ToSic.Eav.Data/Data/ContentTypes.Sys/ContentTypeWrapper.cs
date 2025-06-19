@@ -73,7 +73,7 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
 
     public IMetadataOf Metadata => GetContents()!.Metadata;
 
-    public bool Is(string name) => GetContents()!.Is(name);
+    public bool Is(string? name) => GetContents()!.Is(name);
 
 
     public string? TitleFieldName => GetContents()!.TitleFieldName;

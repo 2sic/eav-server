@@ -30,16 +30,9 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
         return l.Return(this);
     }
 
-    public AppPermissionCheck ForAttribute(IContextOfSite ctx, IAppIdentity appIdentity, IContentTypeAttribute attribute)
+    public AppPermissionCheck For(string purpose, IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<IPermission>? permissions)
     {
-        var l = Log.Fn<AppPermissionCheck>();
-        Init(ctx, appIdentity, permissions: attribute.Permissions);
-        return l.Return(this);
-    }
-
-    public AppPermissionCheck ForCustom(IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<IPermission> permissions)
-    {
-        var l = Log.Fn<AppPermissionCheck>();
+        var l = Log.Fn<AppPermissionCheck>($"For: {purpose}");
         Init(ctx, appIdentity, permissions: permissions);
         return l.Return(this);
     }

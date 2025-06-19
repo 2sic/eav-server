@@ -6,6 +6,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Performance;
 using ToSic.Sys.Security.Permissions;
 using static System.StringComparison;
 using ServiceBase = ToSic.Lib.Services.ServiceBase;
@@ -103,8 +104,10 @@ public class AppUserLanguageCheck(
             if (!ok)
             {
                 var pChecker = checkGenerator.New();
-                var permissions = permissionEntities.Select(p => new Permission(p));
-                pChecker.ForCustom(ctx, readerSafe, permissions);
+                var permissions = permissionEntities
+                    .Select(p => new Permission(p))
+                    .ToListOpt();
+                pChecker.For("user language", ctx, readerSafe, permissions);
                 ok = pChecker.PermissionsAllow(GrantSets.WriteSomething).Allowed;
             }
 

@@ -4,8 +4,14 @@
 public static class ExtensionToListOfOne
 {
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static List<T> ToListOfOne<T>(this T original) => [original];
+    public static List<T>? ToListOfOneOrNull<T>(this T? original)
+        => original == null
+            ? null
+            : [original];
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static List<T> ToListOfOneOrNone<T>(this T original) => original == null ? [] : [original];
+    public static List<T> ToListOfOneOrNone<T>(this T? original)
+        => original == null
+            ? []
+            : [original];
 }
