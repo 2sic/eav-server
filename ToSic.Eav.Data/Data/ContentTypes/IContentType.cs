@@ -92,7 +92,7 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    bool Is(string name);
+    bool Is(string? name);
 
 
     #region WIP 12.03 / 13.02

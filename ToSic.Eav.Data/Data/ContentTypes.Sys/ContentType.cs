@@ -69,7 +69,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     #endregion
 
     /// <inheritdoc />
-    public bool Is(string name)
+    public bool Is(string? name)
         => Name.EqualsInsensitive(name) || NameId.EqualsInsensitive(name);
 
     [JsonIgnore]

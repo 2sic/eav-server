@@ -11,12 +11,12 @@ namespace ToSic.Eav.Data.PropertyStack.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IPropertyStack: IPropertyLookup, IPropertyStackLookup, IHasIdentityNameId
 {
-    IImmutableList<KeyValuePair<string, IPropertyLookup?>> Sources { get; }
+    IImmutableList<KeyValuePair<string, IPropertyLookup>> Sources { get; }
         
     IPropertyLookup? GetSource(string name);
         
     IPropertyStack GetStack(params string[] names);
-    IPropertyStack GetStack(ILog log, params string[] names);
+    IPropertyStack GetStack(ILog? log, params string[] names);
 
     PropReqResult InternalGetPath(PropReqSpecs specs, PropertyLookupPath path);
 }

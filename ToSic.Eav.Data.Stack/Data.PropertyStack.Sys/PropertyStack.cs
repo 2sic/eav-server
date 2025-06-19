@@ -29,8 +29,9 @@ public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
                 var key = !string.IsNullOrWhiteSpace(ep.Key)
                     ? ep.Key
                     : $"auto-named-{++pairCount}";
-                return new KeyValuePair<string, IPropertyLookup?>(key, ep.Value);
+                return new KeyValuePair<string, IPropertyLookup>(key, ep.Value);
             })
+            .Where(pair => pair.Value != null! /* paranoid */)
             .ToImmutableOpt();
 
         return this;

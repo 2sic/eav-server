@@ -9,6 +9,6 @@ public interface IPropertyLookup
     /// </summary>
     /// <returns></returns>
     [PrivateApi]
-    PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path);
+    PropReqResult? FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path);
 
 }

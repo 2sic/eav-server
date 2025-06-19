@@ -28,7 +28,7 @@ public abstract class ValueConverterBase(string logName) : ServiceBase(logName),
     /// </summary>
     protected virtual void LogConversionExceptions(string originalValue, Exception e) { }
 
-    public static bool CouldBeReference(string? reference)
+    public static bool CouldBeReference([NotNullWhen(true)] string? reference)
     {
         if (string.IsNullOrWhiteSpace(reference))
             return false;
@@ -59,6 +59,7 @@ public abstract class ValueConverterBase(string logName) : ServiceBase(logName),
             var result = (parts.IsPage
                              ? ResolvePageLink(parts.Id)
                              : ResolveFileLink(parts.Id, itemGuid))
+                         // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract - paranoid
                          ?? originalValue;
 
             return result + (result == originalValue ? "" : parts.Params);
