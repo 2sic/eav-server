@@ -24,5 +24,6 @@ public interface IServerPaths
 
     string FullContentPath(string virtualPath);
 
+    [return: NotNullIfNotNull(nameof(fileReference))]
     string? FullPathOfReference(string fileReference);
 }

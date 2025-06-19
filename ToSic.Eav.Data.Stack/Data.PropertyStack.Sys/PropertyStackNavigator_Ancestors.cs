@@ -34,7 +34,7 @@ partial class PropertyStackNavigator
                     ? stackLookup.GetNextInStack(specs, 0, path)
                     : innerLookup.FindPropertyInternal(specs, reqResult.Path);
 
-                if (ancestorChild.IsFinal)
+                if (ancestorChild?.IsFinal == true)
                     return l.Return(ancestorChild, "found child of ancestor sibling");
             }
             else

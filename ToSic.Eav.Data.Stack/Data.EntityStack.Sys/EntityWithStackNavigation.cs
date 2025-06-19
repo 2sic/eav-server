@@ -15,8 +15,8 @@ internal class EntityWithStackNavigation(IEntity entity, StackAddress stackAddre
 {
     internal readonly PropertyStackNavigator Navigator = new(entity, stackAddress);
 
-    public override PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path) =>
-        PropertyLookupWithStackNavigation.FindPropertyInternalOfStackWrapper(this, specs, path,
+    public override PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
+        => PropertyLookupWithStackNavigation.FindPropertyInternalOfStackWrapper(this, specs, path,
             EavLogs.Eav + ".EntNav", $"EntityId: {Entity?.EntityId}, Title: {Entity?.GetBestTitle()}");
 
     public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path) 

@@ -8,16 +8,18 @@ public abstract class ServerPathsBase: IServerPaths
 
     public abstract string FullContentPath(string virtualPath);
 
-    public string? FullPathOfReference(string fileReference)
+    [return: NotNullIfNotNull(nameof(fileReference))]
+    public string? FullPathOfReference(string? fileReference)
     {
         if (string.IsNullOrWhiteSpace(fileReference))
             return fileReference;
 
-        var parts = new LinkParts(fileReference);
+        var parts = new LinkParts(fileReference!);
         if (parts.IsPage)
             return fileReference;
 
-        return FullPathOfReference(parts.Id);
+        return FullPathOfReference(parts.Id)
+            ?? fileReference;
     }
 
     protected abstract string? FullPathOfReference(int id);

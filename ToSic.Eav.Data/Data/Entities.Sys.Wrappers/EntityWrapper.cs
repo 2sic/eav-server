@@ -161,7 +161,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
 
 
     [PrivateApi("Internal")]
-    public virtual PropReqResult? FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
+    public virtual PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
         => Entity.FindPropertyInternal(specs, path.Add("Wrap", specs.Field));
 
     // #DropUseOfDumpProperties
