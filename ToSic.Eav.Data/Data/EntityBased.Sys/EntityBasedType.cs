@@ -32,7 +32,7 @@ public abstract class EntityBasedType : IEntityBasedType
     protected EntityBasedType(IEntity entity)
         => Entity = entity;
 
-    protected EntityBasedType(IEntity entity, string[] languageCodes) : this(entity)
+    protected EntityBasedType(IEntity entity, string?[] languageCodes) : this(entity)
         => LookupLanguages = languageCodes ?? [];
 
     //protected EntityBasedType(IEntity entity, string? languageCode) : this(entity)
@@ -57,7 +57,7 @@ public abstract class EntityBasedType : IEntityBasedType
 #pragma warning restore CS8603 // Possible null reference return.
 
     [PrivateApi]
-    protected string[] LookupLanguages { get; } = [];
+    protected string?[] LookupLanguages { get; } = [];
 
 
     /// <summary>

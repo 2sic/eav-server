@@ -23,7 +23,7 @@ public abstract class EntityBasedWithLog: EntityBasedType, IHasLog
     /// <param name="languageCodes">languages to prefer in value lookups</param>
     /// <param name="parentLog">parent log to chain</param>
     /// <param name="logName">Name for the logger</param>
-    protected EntityBasedWithLog(IEntity entity, string[] languageCodes, ILog? parentLog, string logName) : base(entity, languageCodes)
+    protected EntityBasedWithLog(IEntity entity, string?[] languageCodes, ILog? parentLog, string logName) : base(entity, languageCodes)
         => Log = new Log(logName, parentLog);
 
     /// <summary>

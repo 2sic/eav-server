@@ -11,7 +11,7 @@ public static class AnonymousTypesExtensions
     // inspired by https://stackoverflow.com/questions/2483023/how-to-test-if-a-type-is-anonymous
     // and https://stackoverflow.com/questions/1650681/determining-whether-a-type-is-an-anonymous-type
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static bool IsAnonymous(this object? typeOrObject)
+    public static bool IsAnonymous([NotNullWhen(true)] this object? typeOrObject)
     {
         if (typeOrObject == null)
             return false;
