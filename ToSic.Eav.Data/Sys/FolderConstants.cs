@@ -83,11 +83,6 @@ public class FolderConstants
     public const string NewAppFolder = "new-app";
 
     /// <summary>
-    /// Name of folder for templates for new apps
-    /// </summary>
-    public const string NewAppsFolder = "new-apps";
-
-    /// <summary>
     /// HotBuild AppCode folder
     /// </summary>
     public const string AppCode = "AppCode";
