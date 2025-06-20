@@ -14,7 +14,7 @@ static partial class ObjectExtensions
     /// <returns></returns>
 
     // TODO: PROBABLY rename to NullOrMap
-    public static TResult? NullOrGetWith<T, TResult>(this T? obj, Func<T, TResult> func)
+    public static TResult? NullOrGetWith<T, TResult>(this T? obj, Func<T, TResult?> func)
         where T : class
         where TResult : class
         => obj == null ? null : func(obj);
