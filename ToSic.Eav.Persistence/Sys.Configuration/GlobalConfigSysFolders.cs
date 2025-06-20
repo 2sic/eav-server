@@ -159,23 +159,6 @@ public static class GlobalConfigSysFolders
         => config.SetThis(CorrectFolderOrErrorIfInvalid(value, nameof(AppDataTemplateFolder)));
 
     /// <summary>
-    /// The absolute folder where the template of new apps are stored.
-    /// Used when new app is created.
-    /// </summary>
-
-    public static string NewAppsTemplateFolder(this IGlobalConfiguration config)
-        => config.GetThisOrSet(() => Path.Combine(config.GlobalFolder(), FolderConstants.AppDataProtectedFolder, FolderConstants.NewAppsFolder))!;
-
-    /// <summary>
-    /// The absolute folder where the template of new apps are stored.
-    /// Used when new app is created.
-    /// </summary>
-    public static void NewAppsTemplateFolder(this IGlobalConfiguration config, string value)
-        => config.SetThis(CorrectFolderOrErrorIfInvalid(value, nameof(NewAppsTemplateFolder)));
-
-
-
-    /// <summary>
     /// The absolute folder where the 2sxc app temp assemblies for AppCode, assembly dependencies... are stored.
     /// </summary>
     public static string TempAssemblyFolder(this IGlobalConfiguration config)
