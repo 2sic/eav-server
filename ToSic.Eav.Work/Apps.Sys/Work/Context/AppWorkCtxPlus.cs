@@ -16,9 +16,13 @@ public class AppWorkCtxPlus : AppWorkCtx, IAppWorkCtxPlus
     public AppWorkCtxPlus(IAppWorkCtx original, IDataSourcesService? dsf = default, IAppReader? appReader = default, bool? showDrafts = default, IDataSource? data = default) : base(original, appReader)
     {
         var origOfClass = original as AppWorkCtxPlus;
-        DataSourcesFactory = dsf ?? origOfClass?.DataSourcesFactory!;
-        ShowDrafts = showDrafts ?? (original as IAppWorkCtxPlus)?.ShowDrafts ?? origOfClass?.ShowDrafts;
-        _data = data ?? origOfClass?._data;
+        DataSourcesFactory = dsf
+                             ?? origOfClass?.DataSourcesFactory!;
+        ShowDrafts = showDrafts
+                     ?? (original as IAppWorkCtxPlus)?.ShowDrafts
+                     ?? origOfClass?.ShowDrafts;
+        _data = data
+                ?? origOfClass?._data;
     }
 
     public IAppWorkCtxPlus SpawnNewWithPresetData(IDataSource data)

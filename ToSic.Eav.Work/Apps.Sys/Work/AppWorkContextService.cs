@@ -19,23 +19,31 @@ public class AppWorkContextService(
     /// </summary>
     public IAppReaderFactory AppReaders => appReaders.Value;
     
-    public IAppWorkCtx Context(IAppReader appReader) => new AppWorkCtx(appReader);
+
+    public IAppWorkCtx Context(int appId)
+        => new AppWorkCtx(appReaders.Value.Get(appId));
+
+    public IAppWorkCtx Context(IAppReader appReader)
+        => new AppWorkCtx(appReader);
+
+    public IAppWorkCtx Context(IAppIdentity appIdentity)
+        => new AppWorkCtx(appReaders.Value.GetOrKeep(appIdentity));
+
+
+    public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource? data = default)
+        => new AppWorkCtxPlus(dataSourceSvc.Value, appReader: appReaders.Value.Get(appId), showDrafts, data);
 
     public IAppWorkCtxPlus ContextPlus(IAppReader appReader, bool? showDrafts = default, IDataSource? data = default)
         => new AppWorkCtxPlus(dataSourceSvc.Value, appReader, showDrafts, data);
 
-    public IAppWorkCtx Context(int appId) => new AppWorkCtx(appReaders.Value.Get(appId));
-    public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource? data = default)
-        => new AppWorkCtxPlus(dataSourceSvc.Value, appReader: appReaders.Value.Get(appId), showDrafts, data);
-
-    public IAppWorkCtx Context(IAppIdentity appIdentity) => new AppWorkCtx(appReaders.Value.GetOrKeep(appIdentity));
     public IAppWorkCtxPlus ContextPlus(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource? data = default)
         => new AppWorkCtxPlus(dataSourceSvc.Value, appReaders.Value.GetOrKeep(appIdentity), showDrafts, data);
 
     public IAppWorkCtxPlus ToCtxPlus(IAppWorkCtx appCtx, bool? showDrafts = default, IDataSource? data = default)
         => new AppWorkCtxPlus(appCtx, dataSourceSvc.Value, appCtx.AppReader, showDrafts, data);
 
-    public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity) => CtxWithDb(Context(identity).AppReader);
+    public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity)
+        => CtxWithDb(Context(identity).AppReader);
 
     public IAppWorkCtxWithDb CtxWithDb(IAppReader appReader, DbStorage? existingDb = default)
         => existingDb == null
