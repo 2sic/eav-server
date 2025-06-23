@@ -57,5 +57,5 @@ public interface IAppStateCache: ICacheExpiring,
     /// </summary>
     /// <param name="name">name of the type</param>
     /// <returns>a type object or null if not found</returns>
-    IContentType? GetContentType(string name);
+    IContentType? TryGetContentType(string name);
 }

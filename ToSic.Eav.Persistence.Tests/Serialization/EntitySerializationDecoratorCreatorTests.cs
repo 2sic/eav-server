@@ -7,7 +7,7 @@ public class EntitySerializationDecoratorCreatorTests
     private EntitySerializationDecorator FromFieldListTac(List<string> selectFields, bool withGuid = false)
         => new EntitySerializationDecoratorCreator(selectFields, withGuid, null).Generate();
 
-    private void AllPropsAreNull(EntitySerializationDecorator decorator, string skip = default)
+    private void AllPropsAreNull(EntitySerializationDecorator decorator, string? skip = default)
     {
         if (skip != "id")
             Null(decorator.SerializeId);
@@ -27,7 +27,7 @@ public class EntitySerializationDecoratorCreatorTests
             Null(decorator.FilterFieldsEnabled);
         }
     }
-    private EntitySerializationDecorator AllPropsNullReuse(EntitySerializationDecorator decorator, string skip = default)
+    private EntitySerializationDecorator AllPropsNullReuse(EntitySerializationDecorator decorator, string? skip = default)
     {
         AllPropsAreNull(decorator, skip);
         return decorator;

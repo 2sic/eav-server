@@ -12,7 +12,7 @@ partial class PropertyStack
 
     public const char PathSeparator = '.';
 
-    public static string[] SplitPathIntoParts(string path, string? prefixToIgnore = default)
+    public static string[] SplitPathIntoParts(string? path, string? prefixToIgnore = default)
     {
         if (path == null)
             return [];

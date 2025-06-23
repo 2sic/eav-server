@@ -41,8 +41,8 @@ partial class AppState
     /// <param name="name">name of the type</param>
     /// <returns>a type object or null if not found</returns>
     [PrivateApi("was public till 16.09, but only used on IApp where we now have a similar API")]
-    public IContentType? GetContentType(string name) =>
-        AppTypesByName.TryGetValue(name, out var type)
+    public IContentType? TryGetContentType(string name)
+        => AppTypesByName.TryGetValue(name, out var type)
             ? type
             : ParentApp.GetContentType(name);
 
@@ -52,7 +52,7 @@ partial class AppState
     /// <param name="contentTypeId">id of the type as stored in the repository</param>
     /// <returns>a type object or null if not found</returns>
     [PrivateApi("was PublicApi till 16.09 but then it was used on IApp")]
-    internal IContentType? GetContentType(int contentTypeId)
+    internal IContentType? TryGetContentType(int contentTypeId)
     {
         if (AppContentTypesFromRepository == null)
             throw new NullReferenceException($"Error accessing content types for this app, list not initialized.");
@@ -64,7 +64,7 @@ partial class AppState
         var name = AppTypeMap
             .FirstOrDefault(x => x.Key == contentTypeId).Value;
         if (name != null)
-            return GetContentType(name);
+            return TryGetContentType(name);
 
         // TODO: ONLY do this if #SharedAppFeatureEnabled
         // Try to find in parent

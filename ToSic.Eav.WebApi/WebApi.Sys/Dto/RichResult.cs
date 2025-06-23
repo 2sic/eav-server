@@ -62,9 +62,10 @@ public static class RichResultExtensions
     /// <param name="result"></param>
     /// <param name="lc"></param>
     /// <returns></returns>
-    public static T WithTime<T>(this T result, ILogCall lc) where T: RichResult
+    public static T WithTime<T>(this T result, ILogCall? lc) where T: RichResult
     {
-        result.TimeTaken = lc.Timer.ElapsedMilliseconds;
+        if (lc != null)
+            result.TimeTaken = lc.Timer.ElapsedMilliseconds;
         return result;
     }
 }

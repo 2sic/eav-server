@@ -18,7 +18,7 @@ public class SystemStackHelpers
 
 
 
-    public static List<PropertyDumpItem> ApplyKeysFilter(List<PropertyDumpItem> results, string key)
+    public static List<PropertyDumpItem> ApplyKeysFilter(List<PropertyDumpItem> results, string? key)
     {
         if (string.IsNullOrEmpty(key))
             return results;

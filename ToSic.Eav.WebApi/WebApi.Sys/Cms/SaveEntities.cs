@@ -19,8 +19,8 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
 
         var entitiesToImport = itemsToImport
             .Select(bundle => entityBuilder.CreateFrom(
-                    bundle.Entity!,
-                    guid: bundle.Header!.Guid,
+                    bundle.Entity,
+                    guid: bundle.Header.Guid,
                     isPublished: enforceDraft ? false : null
                 )
             )
@@ -41,7 +41,7 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
             
         var idList = items.Select(e =>
             {
-                var foundEntity = workEntities.Get(e.Header!.Guid);
+                var foundEntity = workEntities.Get(e.Header.Guid);
                 var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published" : "draft";
                 var draft = foundEntity  == null ? null : workEntities.AppWorkCtx.AppReader.GetDraft(foundEntity);
                 l.A($"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");

@@ -10,7 +10,7 @@ public static class AppStateMetadataTargetExtensions
 {
     // 2021-11-22 2dm WIP - not used yet
     // Idea was to be able to get Metadata Targets, but I'm not sure if it's useful at all
-    public static string? FindTargetTitle(this IAppReader appReader, int targetType, string key)
+    public static string? FindTargetTitle(this IAppReader appReader, int targetType, string? key)
     {
         if (!Enum.IsDefined(typeof(TargetTypes), targetType))
             return null;
@@ -33,7 +33,7 @@ public static class AppStateMetadataTargetExtensions
                     ? null
                     : appReader.List.One(guidKey)?.Metadata.Target.Title;
             case TargetTypes.ContentType:
-                return appReader.TryGetContentType(key)?.Metadata.Target.Title;
+                return appReader.TryGetContentType(key ?? "#dummy$")?.Metadata.Target.Title;
             case TargetTypes.Zone:
             case TargetTypes.CmsItem:
                 return null;

@@ -41,7 +41,7 @@ public interface ISysFeaturesService: ICacheExpiring, ICanBeCacheDependency
 
 
     [PrivateApi]
-    bool IsEnabled(IEnumerable<Guid> features, string message, [NotNullWhen(true)] out FeaturesDisabledException? exception);
+    bool IsEnabled(IEnumerable<Guid> features, string message, [NotNullWhen(false)] out FeaturesDisabledException? exception);
 
     [PrivateApi]
     string MsgMissingSome(params Guid[] ids);

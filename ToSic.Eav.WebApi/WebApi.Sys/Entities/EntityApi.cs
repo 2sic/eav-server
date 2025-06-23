@@ -44,7 +44,7 @@ public class EntityApi(
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
-    public IEnumerable<IDictionary<string, object>> GetEntities(IAppReader appReader, string contentType, bool showDrafts, string oDataSelect)
+    public IEnumerable<IDictionary<string, object>> GetEntities(IAppReader appReader, string contentType, bool showDrafts, string? oDataSelect)
     {
         var list = workEntities.New(appReader, showDrafts).Get(contentType);
         var converter= entitiesToDicLazy.New();
@@ -53,7 +53,7 @@ public class EntityApi(
         return converter.Convert(list)!;
     }
 
-    public List<BundleWithHeader<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
+    public List<BundleWithHeaderOptional<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
     {
         ReplaceSimpleTypeNames(items);
 
@@ -63,7 +63,7 @@ public class EntityApi(
                 var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
                     ? GetEditableEditionAndMaybeCloneIt(p)
                     : null;
-                return new BundleWithHeader<IEntity>
+                return new BundleWithHeaderOptional<IEntity>
                 {
                     Header = p,
                     Entity = ent

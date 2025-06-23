@@ -14,7 +14,7 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
     /// Returns a list of entities, optionally filtered by contentType.
     /// </summary>
     // 2dm 2023-01-22 #maybeSupportIncludeParentApps
-    public List<EntityForPickerDto> GetForEntityPicker(int appId, ICollection<string> items, string contentTypeName, bool? withDrafts = default, bool allowFromAllScopes = default)
+    public List<EntityForPickerDto> GetForEntityPicker(int appId, ICollection<string> items, string? contentTypeName, bool? withDrafts = default, bool allowFromAllScopes = default)
     {
         var l = Log.Fn<List<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Count}, type:{contentTypeName}");
 
@@ -22,7 +22,9 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
         IContentType? contentType = null;
         if (!IsNullOrEmpty(contentTypeName))
         {
-            contentType = appEnts.AppWorkCtx.AppReader.TryGetContentType(contentTypeName);
+            contentType = IsNullOrWhiteSpace(contentTypeName)
+                ? appEnts.AppWorkCtx.AppReader.TryGetContentType(contentTypeName!)
+                : null;
             l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
             if (contentType == null)
                 return l.Return([],
@@ -35,7 +37,7 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
         if (contentType != null)
         {
             l.A($"filter by type:{contentType.Name}");
-            list = appEnts.Get(contentTypeName).ToList();
+            list = appEnts.Get(contentTypeName!).ToList();
         }
         else
         {

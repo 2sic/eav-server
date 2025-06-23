@@ -15,7 +15,7 @@ public interface IEditController
     /// <param name="items">Identifier objects telling the backend what to provide - usually in the POST.</param>
     /// <param name="appId">AppId of the app we're working in</param>
     /// <returns>Complex object containing the edit-data</returns>
-    EditDto Load(List<ItemIdentifier> items, int appId);
+    EditLoadDto Load(List<ItemIdentifier> items, int appId);
 
     /// <summary>
     /// Save the data from the edit UI.
@@ -25,7 +25,7 @@ public interface IEditController
     /// <param name="appId">Current App ID</param>
     /// <param name="partOfPage">Tell the save operation if this may be tied to a page-publishing workflow</param>
     /// <returns></returns>
-    Dictionary<Guid, int> Save(EditDto package, int appId, bool partOfPage);
+    Dictionary<Guid, int> Save(EditSaveDto package, int appId, bool partOfPage);
     
     /// <summary>
     /// This GET-call will resolve links to files and to pages.

@@ -8,10 +8,10 @@ public static class IEntityListExtensions
         => list.FirstOrDefault(e => e.Type.Is(typeName));
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity GetOrThrow(this IEnumerable<IEntity> entities, string contentType, int id)
+    public static IEntity GetOrThrow(this IEnumerable<IEntity> entities, string? contentType, int id)
         => entities.FindRepoId(id).KeepOrThrowIfInvalid(contentType, id);
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity GetOrThrow(this IEnumerable<IEntity> entities, string contentType, Guid guid)
+    public static IEntity GetOrThrow(this IEnumerable<IEntity> entities, string? contentType, Guid guid)
         => entities.One(guid).KeepOrThrowIfInvalid(contentType, guid);
 }

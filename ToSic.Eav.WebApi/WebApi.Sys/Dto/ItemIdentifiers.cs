@@ -145,12 +145,18 @@ public class ItemIdentifier
 
 public class BundleWithHeader
 {
-    public ItemIdentifier? Header { get; set; }     
+    public required ItemIdentifier Header { get; init; }     
 }
 
+public class BundleWithHeaderOptional<TEntity>
+{
+    public ItemIdentifier? Header { get; set; }     
+    public TEntity? Entity { get; set; }
+
+}
 public class BundleWithHeader<TEntity>: BundleWithHeader
 {
-    public TEntity? Entity { get; set; }
+    public required TEntity Entity { get; init; }
 
 }
 

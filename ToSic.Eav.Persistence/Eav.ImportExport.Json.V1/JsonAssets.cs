@@ -38,8 +38,11 @@ public class JsonAssets
         return ast;
     }
 
-    public bool Create(string realPath, JsonAsset asset, bool overwrite = false)
+    public bool Create(string? realPath, JsonAsset asset, bool overwrite = false)
     {
+        if (string.IsNullOrWhiteSpace(realPath))
+            return false;
+
         // 1. check if target file exists
         if (File.Exists(realPath) && !overwrite)
             return false;

@@ -22,12 +22,15 @@ public class JsonContentType: IJsonWithAssets
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-60)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public ICollection<JsonEntity>? Metadata;
+    public ICollection<JsonEntity>? Metadata { get; init; }
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-50)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public ICollection<JsonAttributeDefinition>? Attributes;
+    public ICollection<JsonAttributeDefinition>? Attributes { get; init; }
+
+    public ICollection<JsonAttributeDefinition> AttributesSafe()
+        => Attributes ?? [];
 
     /// <remarks>V 1.1</remarks>
     [JsonPropertyOrder(-40)]

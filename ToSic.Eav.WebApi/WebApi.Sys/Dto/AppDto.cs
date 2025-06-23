@@ -11,7 +11,7 @@ public class AppDto
     public required bool IsHidden { get; init; }
     public required int? ConfigurationId { get; init; }
     public required int Items { get; init; }
-    public required string Thumbnail { get; init; }
+    public required string? Thumbnail { get; init; }
     public required string Version { get; init; }
 
     /// <summary>
@@ -26,7 +26,7 @@ public class AppDto
     public required bool IsInherited { get; init; }
 
     [JsonPropertyName("lightSpeed")]
-    public required AppMetadataDto Lightspeed { get; init; }
+    public required AppMetadataDto? Lightspeed { get; init; }
 
     public required bool HasCodeWarnings { get; init; }
 }

@@ -58,7 +58,7 @@ public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeatur
     public bool Valid => ValidInternal;
     public static bool ValidInternal; // ATM always false; is used by a static class - not sure why this even exists as I don't think it's set anywhere
         
-    public bool IsEnabled(IEnumerable<Guid> features, string message, [NotNullWhen(true)] out FeaturesDisabledException? exception)
+    public bool IsEnabled(IEnumerable<Guid> features, string message, [NotNullWhen(false)] out FeaturesDisabledException? exception)
     {
         // ReSharper disable PossibleMultipleEnumeration
         var enabled = IsEnabled(features);

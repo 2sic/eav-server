@@ -59,7 +59,7 @@ public class ParentAppState(IAppStateCache? appState, bool inheritTypes, bool in
 
     public IContentType? GetContentType(string name)
         => InheritContentTypes && appState != null
-            ? WrapUnwrappedContentType(appState.GetContentType(name))
+            ? WrapUnwrappedContentType(appState.TryGetContentType(name))
             : null;
 
     private IEnumerable<IContentType> GetInheritedTypes()

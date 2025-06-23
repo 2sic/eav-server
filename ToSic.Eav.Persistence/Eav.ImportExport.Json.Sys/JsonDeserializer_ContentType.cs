@@ -63,7 +63,7 @@ partial class JsonSerializer
 
                 // Prepare ContentType Attributes
                 l.A("deserialize attributes");
-                var attribs = (jsonType.Attributes ?? [])
+                var attribs = (jsonType.AttributesSafe())
                     .Select((jsonAttr, pos) =>
                     {
                         var valType = ValueTypeHelpers.Get(jsonAttr.Type);

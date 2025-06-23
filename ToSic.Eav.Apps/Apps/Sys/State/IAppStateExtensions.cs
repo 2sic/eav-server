@@ -26,6 +26,7 @@ public static class AppStateExtensions
         => hasAppSpecs.AppId == KnownAppsConstants.MetaDataAppId;
 
 
+    [return: NotNullIfNotNull(nameof(entity))]
     public static IEntity? GetDraftOrKeep(this IAppReader appReader, IEntity? entity)
         => appReader.GetDraft(entity) ?? entity;
 

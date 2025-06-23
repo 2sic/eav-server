@@ -3,12 +3,35 @@ using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-public record EditDto
+public record EditDtoShared
+{
+    /// <summary>
+    /// If this set is to be published - default true
+    /// </summary>
+    public bool IsPublished { get; init; } = true;
+
+    /// <summary>
+    /// If this set is to not-published, whether it should branch, leaving the original published
+    /// </summary>
+    public bool DraftShouldBranch { get; init; } = false;
+
+}
+
+public record EditSaveDto: EditDtoShared
 {
     /// <summary>
     /// The items in the load/save package.
     /// </summary>
     public required List<BundleWithHeader<JsonEntity>> Items { get; init; }
+
+}
+
+public record EditLoadDto : EditDtoShared
+{
+    /// <summary>
+    /// The items in the load/save package.
+    /// </summary>
+    public required List<BundleWithHeaderOptional<JsonEntity>> Items { get; init; }
 
     /// <summary>
     /// Content-Type information for the form
@@ -19,16 +42,6 @@ public record EditDto
     /// Relevant input-types and their default labels & configuration
     /// </summary>
     public List<InputTypeInfo> InputTypes { get; init; } = null!;
-
-    /// <summary>
-    /// If this set is to be published - default true
-    /// </summary>
-    public bool IsPublished = true;
-
-    /// <summary>
-    /// If this set is to not-published, whether it should branch, leaving the original published
-    /// </summary>
-    public bool DraftShouldBranch = false;
 
     /// <summary>
     /// Experimental additional data for configuration

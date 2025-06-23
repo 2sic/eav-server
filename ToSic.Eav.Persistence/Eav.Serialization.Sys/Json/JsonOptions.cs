@@ -54,7 +54,7 @@ public static class JsonOptions
     };
 
     // used only for API calls
-    public static JsonSerializerOptions UnsafeJsonWithoutEncodingHtmlOptionsFactory(JsonConverter jc)
+    public static JsonSerializerOptions UnsafeJsonWithoutEncodingHtmlOptionsFactory(JsonConverter? jc)
     {
         var op = new JsonSerializerOptions(DefaultOptions)
         {
@@ -123,7 +123,7 @@ public static class JsonOptions
     /// - It doesn't offer any additional defense-in-depth protections against XSS or information disclosure attacks, such as those which might result from the client and server disagreeing on the charset.
     /// Use the unsafe encoder only when it's known that the client will be interpreting the resulting payload as UTF-8 encoded JSON.
     /// For example, you can use it if the server is sending the response header Content-Type: application/json; charset=utf-8.
-    /// Never allow the raw UnsafeRelaxedJsonEscaping output to be emitted into an HTML page or a <script> element.
+    /// Never allow the raw UnsafeRelaxedJsonEscaping output to be emitted into an HTML page or a {script} element.
     /// </summary>
     /// <param name="value"></param>
     public static void SetUnsafeJsonSerializerOptions(this JsonSerializerOptions value)
