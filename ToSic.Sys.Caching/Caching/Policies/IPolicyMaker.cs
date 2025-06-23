@@ -18,8 +18,8 @@ public interface IPolicyMaker
     /// <returns>A new PolicyMaker with the updated expiration</returns>
     IPolicyMaker SetSlidingExpiration(int seconds);
 
-    IPolicyMaker WatchFiles(IList<string> filePaths);
-    IPolicyMaker WatchFolders(IDictionary<string, bool> folderPaths);
+    IPolicyMaker WatchFiles(IList<string>? filePaths);
+    IPolicyMaker WatchFolders(IDictionary<string, bool>? folderPaths);
     IPolicyMaker WatchCacheKeys(IEnumerable<string>? cacheKeys);
 
     IPolicyMaker WatchNotifyKeys(IEnumerable<ICanBeCacheDependency>? cacheKeys);

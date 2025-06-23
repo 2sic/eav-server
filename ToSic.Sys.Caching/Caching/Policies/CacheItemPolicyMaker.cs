@@ -46,7 +46,7 @@ public record CacheItemPolicyMaker : FunFactActionsBase<CacheItemPolicy>, IPolic
     public IPolicyMaker SetSlidingExpiration(int seconds)
         => SetSlidingExpiration(new TimeSpan(0, 0, seconds));
 
-    public IPolicyMaker WatchFiles(IList<string> filePaths)
+    public IPolicyMaker WatchFiles(IList<string>? filePaths)
         => filePaths is not { Count: > 0 }
             ? this
             : Next(
