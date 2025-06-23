@@ -91,14 +91,15 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     /// <inheritdoc />
     public int OwnerId => Entity.OwnerId;
 
-    /// <inheritdoc />
-    [Obsolete("Should not be used anymore, use Get instead. planned to keep till ca. v20")]
-    public object? GetBestValue(string attributeName, string[] languages)
-        => Entity.GetBestValue(attributeName, languages);
+    // #RemoveV20 #GetBestValue
+    ///// <inheritdoc />
+    //[Obsolete("Should not be used anymore, use Get instead. planned to keep till ca. v20")]
+    //public object? GetBestValue(string attributeName, string[] languages)
+    //    => Entity.GetBestValue(attributeName, languages);
 
-    [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
-    public T? GetBestValue<T>(string attributeName, string[] languages)
-        => Entity.GetBestValue<T>(attributeName, languages);
+    //[Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
+    //public T? GetBestValue<T>(string attributeName, string[] languages)
+    //    => Entity.GetBestValue<T>(attributeName, languages);
 
     /// <inheritdoc />
     public string? GetBestTitle()

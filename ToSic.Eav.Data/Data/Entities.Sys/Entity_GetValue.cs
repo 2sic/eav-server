@@ -7,16 +7,18 @@ partial record Entity
 {
 
     // ReSharper disable once InheritdocInvalidUsage
-    /// <inheritdoc />
-    public object? GetBestValue(string attributeName, string[] languages)
-        => GetPropertyInternal(new(attributeName, languages, false), null).Result;
+
+    // #RemoveV20 #GetBestValue
+    ///// <inheritdoc />
+    //public object? GetBestValue(string attributeName, string[] languages)
+    //    => GetPropertyInternal(new(attributeName, languages, false), null).Result;
 
 
-    // ReSharper disable once InheritdocInvalidUsage
-    /// <inheritdoc />
-    [Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
-    public TVal? GetBestValue<TVal>(string name, string[] languages)
-        => GetBestValue(name, languages).ConvertOrDefault<TVal>();
+    //// ReSharper disable once InheritdocInvalidUsage
+    ///// <inheritdoc />
+    //[Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
+    //public TVal? GetBestValue<TVal>(string name, string[] languages)
+    //    => GetBestValue(name, languages).ConvertOrDefault<TVal>();
 
     PropReqResult IPropertyLookup.FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
         => GetPropertyInternal(specs, path);
