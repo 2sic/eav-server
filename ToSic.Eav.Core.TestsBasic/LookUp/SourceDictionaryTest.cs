@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.LookUp;
+﻿using ToSic.Eav.LookUp.Sources;
+
+namespace ToSic.Eav.LookUp;
 
 public class SourceDictionaryTest
 {
