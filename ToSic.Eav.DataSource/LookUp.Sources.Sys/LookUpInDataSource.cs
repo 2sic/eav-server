@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Context.Sys.ZoneCulture;
-using ToSic.Lib.LookUp.Sources;
 
 namespace ToSic.Eav.LookUp.Sources.Sys;
 
@@ -32,7 +31,7 @@ public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cul
     public override string Get(string key, string format)
     {
         // Check if it has sub-keys to see if it's trying to match an inbound stream
-        var subTokens = CheckAndGetSubToken(key);
+        var subTokens = LookUpHelpers.CheckAndGetSubToken(key);
         if (!subTokens.HasSubToken)
             return string.Empty;
 

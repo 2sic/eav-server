@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Lib.LookUp.Engines;
+using ToSic.Eav.LookUp.Sys.Engines;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Lib.LookUp;
+namespace ToSic.Eav.LookUp;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupLibLookUp

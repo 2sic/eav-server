@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 
-namespace ToSic.Lib.LookUp.Sources;
+namespace ToSic.Eav.LookUp.Sources;
 
 /// <summary>
 /// Look-Up helper to get something from a standard .net NameValueCollection. <br/>
@@ -14,5 +14,5 @@ public class LookUpInNameValueCollection(string name, NameValueCollection list)
     public override string Get(string key, string format) 
         => list == null!
             ? "" 
-            : FormatString(list[key] ?? "", format);
+            : LookUpHelpers.FormatString(list[key] ?? "", format);
 }

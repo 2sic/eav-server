@@ -1,10 +1,10 @@
-﻿using ToSic.Lib.Coding;
-using ToSic.Lib.LookUp.Sources;
+﻿using ToSic.Eav.LookUp.Sources;
+using ToSic.Lib.Coding;
 using ToSic.Lib.Services;
 using static System.StringComparer;
 using DicString = System.Collections.Generic.IDictionary<string, string>;
 
-namespace ToSic.Lib.LookUp.Engines;
+namespace ToSic.Eav.LookUp.Sys.Engines;
 
 /// <summary>
 /// Takes a list of configuration masks (list of tokens) and resolves them with a bunch of LookUps. <br/>

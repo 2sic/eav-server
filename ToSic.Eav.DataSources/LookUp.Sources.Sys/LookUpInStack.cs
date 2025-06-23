@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.PropertyStack.Sys;
-using ToSic.Lib.LookUp.Sources;
 
 namespace ToSic.Eav.LookUp.Sources.Sys;
 
@@ -55,7 +54,7 @@ public class LookUpInStack: LookUpIn<IPropertyStack>
         // Try to just find, and format the result if all is ok
         var propReqResult = Data.InternalGetPath(new(key, _dimensions, true), new());
         if (propReqResult.Result != null)
-            return FormatValue(propReqResult.Result, format, _dimensions);
+            return LookUpHelpers.FormatValue(propReqResult.Result, format, _dimensions);
 
         return string.Empty;
 

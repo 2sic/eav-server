@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.LookUp;
+﻿namespace ToSic.Eav.LookUp.Sys;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class LookUpConstants

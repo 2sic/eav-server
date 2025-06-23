@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
-using ToSic.Lib.LookUp;
-using ToSic.Lib.LookUp.Sources;
+using ToSic.Eav.LookUp;
+using ToSic.Eav.LookUp.Sources;
 
 namespace ToSic.Eav.DataSource.Internal.Query;
 

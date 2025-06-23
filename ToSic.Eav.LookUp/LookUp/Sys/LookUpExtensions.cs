@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Utils;
 
-namespace ToSic.Lib.LookUp;
+namespace ToSic.Eav.LookUp.Sys;
 
 public static class LookUpExtensions
 {

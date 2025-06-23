@@ -1,4 +1,6 @@
-﻿namespace ToSic.Lib.LookUp;
+﻿using ToSic.Eav.LookUp.Sys;
+
+namespace ToSic.Eav.LookUp;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public interface ITweakLookUp

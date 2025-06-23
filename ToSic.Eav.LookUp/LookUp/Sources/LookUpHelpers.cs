@@ -2,33 +2,24 @@
 using System.Text.RegularExpressions;
 using ToSic.Sys.Utils.Culture;
 
-namespace ToSic.Lib.LookUp.Sources;
-
-/// <summary>
-/// Base Class to create your own LookUp Class - used by all Look-Ups. <br/>
-/// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
-/// </summary>
-[PublicApi]
-public abstract class LookUpBase(string name, string? description = "") : ILookUp
+namespace ToSic.Eav.LookUp.Sources;
+public class LookUpHelpers
 {
-
-    #region default methods of interface
-    /// <inheritdoc/>
-    public string Name { get; } = name ?? throw new NullReferenceException("LookUp must have a Name");
-
-    public virtual string Description => description ?? "";
-
     #region Sub-Token analysis and splitting
+
     // this is needed by some key accesses which support sub-properties like Content:Publisher:Location:City...
     // todo: should optimize to use named matches, to ensure that reg-ex changes doesn't change numbering...
     private static readonly Regex SubProperties = new("([a-z]+):([a-z:]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+
+
     /// <summary>
     /// Check if it has sub-tokens and split up the material for further use
     /// </summary>
     /// <param name="original"></param>
     /// <returns></returns>
     [PrivateApi]
-    protected SubToken CheckAndGetSubToken(string original)
+    public static SubToken CheckAndGetSubToken(string original)
     {
         // Do quick-check - without a ":" it doesn't have sub-tokens so stop here
         if (!original.Contains(":"))
@@ -44,18 +35,8 @@ public abstract class LookUpBase(string name, string? description = "") : ILookU
             }
             : new() { HasSubToken = false };
     }
-
-        
     #endregion
 
-
-    /// <inheritdoc/>
-    public abstract string Get(string key, string format);
-
-    /// <inheritdoc/>
-    public virtual string Get(string key) => Get(key, "");
-
-    #endregion
 
     #region Helper functions to Format the result
     /// <summary>
@@ -83,7 +64,7 @@ public abstract class LookUpBase(string name, string? description = "") : ILookU
     /// Take a specific result object (usually from an IEntity property) and format as needed.
     /// </summary>
     /// <returns></returns>
-    protected string FormatValue(object valueObject, string format, string?[] dimensions)
+    public static string FormatValue(object valueObject, string format, string?[] dimensions)
     {
         return Type.GetTypeCode(valueObject.GetType()) switch
         {
@@ -110,16 +91,4 @@ public abstract class LookUpBase(string name, string? description = "") : ILookU
     }
 
     #endregion
-
-    public override string ToString() => $"{GetType().Name}; {Description}";
-
-    ILookUp ICanBeLookUp.LookUp => this;
-}
-
-[PrivateApi]
-public class SubToken
-{
-    public bool HasSubToken;
-    public string? Source;
-    public string? Rest;
 }

@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.LookUp.Sources;
-using ToSic.Lib.LookUp;
-using ToSic.Lib.LookUp.Engines;
+using ToSic.Eav.LookUp.Sys.Engines;
+using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.LookUp;
 

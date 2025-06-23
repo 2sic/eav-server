@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Context.Sys.ZoneCulture;
-using ToSic.Lib.LookUp.Sources;
 
 
 namespace ToSic.Eav.LookUp.Sources;
@@ -42,10 +41,10 @@ public class LookUpInEntity : LookUpIn<IEntity>
         // Try to just find, and format the result if all is ok
         var valueObject = Data.Get(key, languages: _dimensions);
         if (valueObject != null)
-            return FormatValue(valueObject, format, _dimensions);
+            return LookUpHelpers.FormatValue(valueObject, format, _dimensions);
 
         // Not found yet, so check for Navigation-Property (e.g. Manager:Name)
-        var subTokens = CheckAndGetSubToken(key);
+        var subTokens = LookUpHelpers.CheckAndGetSubToken(key);
         if (!subTokens.HasSubToken)
             return string.Empty;
         valueObject = Data.Get(subTokens.Source!, languages: _dimensions);

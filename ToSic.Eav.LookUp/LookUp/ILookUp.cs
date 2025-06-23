@@ -1,6 +1,6 @@
-﻿using ToSic.Lib.LookUp.Engines;
+﻿using ToSic.Eav.LookUp.Sys.Engines;
 
-namespace ToSic.Lib.LookUp;
+namespace ToSic.Eav.LookUp;
 
 /// <summary>
 /// Describes a LookUp source similar to a dictionary, which can be used to resolve keys to values.

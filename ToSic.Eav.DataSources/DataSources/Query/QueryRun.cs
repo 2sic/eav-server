@@ -1,9 +1,10 @@
 ﻿using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSource.Streams.Internal;
+using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sources.Sys;
-using ToSic.Lib.LookUp;
-using ToSic.Lib.LookUp.Engines;
-using ToSic.Lib.LookUp.Sources;
+using ToSic.Eav.LookUp.Sys;
+using ToSic.Eav.LookUp.Sys.Engines;
+using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.DataSources;
 
@@ -139,7 +140,7 @@ public class QueryRun : DataSourceBase
         // ...HasSource() also checked sub-sources, even if it didn't remove them.
         // ...So I think we're safe. If all is ok, remove this comment 2024-Q3
         var sources = Configuration.LookUpEngine.Sources.ToList();
-        var toRemove = sources.GetSource(DataSourceConstants.ParamsSourceName);
+        var toRemove = LookUpExtensions.GetSource(sources, DataSourceConstants.ParamsSourceName);
         if (toRemove != null)
             sources.Remove(toRemove);
 

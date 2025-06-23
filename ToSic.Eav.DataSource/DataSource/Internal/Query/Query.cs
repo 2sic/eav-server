@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Streams.Internal;
-using ToSic.Lib.LookUp.Engines;
-using ToSic.Lib.LookUp.Sources;
+using ToSic.Eav.LookUp.Sources;
+using ToSic.Eav.LookUp.Sys.Engines;
 using static System.String;
 using static System.StringComparer;
 

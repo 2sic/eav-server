@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.LookUp.Sources;
+﻿namespace ToSic.Eav.LookUp.Sources;
 
 /// <summary>
 /// Look Up values from a .net dictionary. Case-Insensitive. <br/>

@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Coding;
 
-namespace ToSic.Lib.LookUp.Engines;
+namespace ToSic.Eav.LookUp.Sys.Engines;
 
 /// <summary>
 /// Resolves Configurations from LookUps. Common use is for configurable DataSources

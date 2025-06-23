@@ -1,8 +1,8 @@
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Lib.LookUp.Engines;
+using ToSic.Eav.LookUp.Sys.Engines;
 
-namespace ToSic.Lib.LookUp;
+namespace ToSic.Eav.LookUp.Sys;
 
 /// <summary>
 /// The BaseTokenReplace class provides the tokenization of tokens formatted  

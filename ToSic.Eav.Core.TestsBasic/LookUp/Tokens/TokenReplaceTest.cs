@@ -1,7 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using ToSic.Lib.LookUp;
-using ToSic.Lib.LookUp.Engines;
-using ToSic.Lib.LookUp.Sources;
+using ToSic.Eav.LookUp;
 
 namespace ToSic.Eav.LookUp.Tokens;
 

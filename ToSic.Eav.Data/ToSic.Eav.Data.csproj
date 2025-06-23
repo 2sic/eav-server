@@ -4,12 +4,8 @@
 
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
-  <!--<Target Name="DebugMessage" AfterTargets="Build">
-    <Message Text="Nullable Test for '$(TargetFramework)' to output: '$(Nullable)'" Importance="high"/>
-  </Target>-->
-
   <ItemGroup>
-    <ProjectReference Include="..\ToSic.Lib.LookUp\ToSic.Lib.LookUp.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.LookUp\ToSic.Eav.LookUp.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Caching\ToSic.Sys.Caching.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Code\ToSic.Sys.Code.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
