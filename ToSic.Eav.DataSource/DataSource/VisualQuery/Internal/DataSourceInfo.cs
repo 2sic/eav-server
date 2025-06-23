@@ -28,7 +28,7 @@ public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>
         ErrorOrNull = error;
     }
 
-    public static DataSourceInfo CreateError(string typeName, bool isGlobal, DataSourceType type, DataSourceInfoError error)
+    public static DataSourceInfo CreateError(string typeName, bool isGlobal, DataSourceType type, DataSourceInfoError? error)
     {
         var vq = new VisualQueryAttribute
         {
