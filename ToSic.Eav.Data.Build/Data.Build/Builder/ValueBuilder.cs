@@ -154,9 +154,9 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
         if (resolveHyperlink && valueType == ValueTypes.Hyperlink && value is string stringValue)
         {
             var converted = valueConverter.Value.ToReference(stringValue);
-            return l.Return((converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'"));
+            return l.Return(converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'");
         }
-        return l.Return((value, "unmodified"));
+        return l.Return(value, "unmodified");
     }
 
 }
