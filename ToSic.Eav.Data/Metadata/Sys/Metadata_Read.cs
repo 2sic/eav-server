@@ -5,21 +5,13 @@ using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Metadata.Sys;
 
-/// <summary>
-/// Metadata of an item (a content-type or another entity). <br/>
-/// It's usually on a <strong>Metadata</strong> property of things that can have metadata.
-/// </summary>
-/// <typeparam name="T">The type this metadata uses as a key - int, string, guid</typeparam>
-/// <remarks>
-/// * Since v15.04 fully #immutable
-/// </remarks>
 partial class Metadata<T>
 {
     #region Get
 
     /// <inheritdoc />
     public TVal? Get<TVal>(string name)
-        => GetMaxOneType<TVal>(name, typeName: null);
+        => GetOfOneTypeOrAny<TVal>(name, typeName: null);
 
     /// <inheritdoc />
     // ReSharper disable once MethodOverloadWithOptionalParameter
@@ -27,14 +19,13 @@ partial class Metadata<T>
     {
         // Check if multiple type names were specified
         var typeNameList = typeNames?.ToListOpt();
-        if (typeNameList.SafeAny())
-            return GetManyTypes<TVal>(name, typeNameList);
-
-        // If not, just use the single type name; could be null.
-        return GetMaxOneType<TVal>(name, typeName);
+        return typeNameList.SafeAny()
+            ? GetManyTypes<TVal>(name, typeNameList) :
+            // If not, just use the single type name; could be null.
+            GetOfOneTypeOrAny<TVal>(name, typeName);
     }
 
-    private TVal? GetMaxOneType<TVal>(string name, string? typeName = null)
+    private TVal? GetOfOneTypeOrAny<TVal>(string name, string? typeName = null)
     {
         var list = typeName == null
             ? MetadataWithoutPermissions

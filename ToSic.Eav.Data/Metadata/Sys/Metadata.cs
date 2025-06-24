@@ -1,13 +1,13 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Entities.Sys.Sources;
 using ToSic.Eav.Metadata.Targets;
-using ToSic.Lib.Helpers;
 using ToSic.Sys.Caching;
 
 namespace ToSic.Eav.Metadata.Sys;
 
 /// <summary>
-/// Metadata of an item (a content-type or another entity). <br/>
+/// Metadata of an item (a content-type or another entity).
+/// 
 /// It's usually on a <strong>Metadata</strong> property of things that can have metadata.
 /// </summary>
 /// <typeparam name="T">The type this metadata uses as a key - int, string, guid</typeparam>
@@ -18,7 +18,6 @@ namespace ToSic.Eav.Metadata.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class Metadata<T> : IMetadata, IMetadataInternals, ITimestamped
 {
-
     #region Constructors
 
     /// <summary>
@@ -81,8 +80,8 @@ public partial class Metadata<T> : IMetadata, IMetadataInternals, ITimestamped
 
     #region Target
 
-    public ITarget Target => _target.Get(() => new Target(_targetType, _metadataTitle, Key))!;
-    private readonly GetOnce<ITarget> _target = new();
+    [field: AllowNull, MaybeNull]
+    public ITarget Target => field ??= new Target(_targetType, _metadataTitle, Key);
     private readonly string _metadataTitle;
 
     #endregion

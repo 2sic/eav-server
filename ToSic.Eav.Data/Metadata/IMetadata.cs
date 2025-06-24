@@ -11,7 +11,8 @@ namespace ToSic.Eav.Metadata;
 /// </summary>
 /// <remarks>
 /// You can either loop through this object (since it's an `IEnumerable`) or ask for values of the metadata,
-/// no matter on what sub-entity the value is stored on.</remarks>
+/// no matter on what sub-entity the value is stored on.
+/// </remarks>
 [PublicApi]
 public interface IMetadata: IEnumerable<IEntity>, IHasPermissions, ITimestamped
 {
@@ -42,6 +43,10 @@ public interface IMetadata: IEnumerable<IEntity>, IHasPermissions, ITimestamped
     /// </param>
     /// <remarks>
     /// Depending on the provided type-parameters, it will only look in certain items, or all items.
+    ///
+    /// History
+    ///
+    /// * Name changed from old `GetBestValue` to simple `Get` in v20.
     /// </remarks>
     /// <returns>A typed value. </returns>
     // ReSharper disable once MethodOverloadWithOptionalParameter
@@ -59,7 +64,7 @@ public interface IMetadata: IEnumerable<IEntity>, IHasPermissions, ITimestamped
     bool HasType(string typeName);
 
     /// <summary>
-    /// Get all Metadata items of a specific type
+    /// Get all Metadata entities of a specific type
     /// </summary>
     /// <param name="typeName">Type Name</param>
     /// <returns></returns>
