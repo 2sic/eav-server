@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.LookUp;
 using ToSic.Lib;
-using ToSic.Eav.LookUp;
 using ToSic.Sys;
 
 namespace ToSic.Eav;

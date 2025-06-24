@@ -20,7 +20,4 @@ namespace ToSic.Eav.DataSources;
     ],
     HelpLink = "https://go.2sxc.org/DsAppRoot")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
-public interface IAppRoot : IDataSource
-{
-
-}
+public interface IAppRoot : IDataSource;
