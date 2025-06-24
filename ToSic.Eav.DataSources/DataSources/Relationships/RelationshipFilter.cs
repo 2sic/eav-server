@@ -171,7 +171,8 @@ public sealed class RelationshipFilter : DataSourceBase
         var filter = Filter.ToLowerInvariant(); // new: make case-insensitive
         var strMode = CompareMode.ToLowerInvariant();
         var useNot = strMode.StartsWith(PrefixNot);
-        if (useNot) strMode = strMode.Substring(PrefixNot.Length);
+        if (useNot)
+            strMode = strMode.Substring(PrefixNot.Length);
 
         if (strMode == "default")
             strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
@@ -234,8 +235,9 @@ public sealed class RelationshipFilter : DataSourceBase
 
         // pick the correct list-comparison - atm ca. 6 options
         var modeCompareOrError = PickMode(strMode, relationship, comparisonOnRelatedItem!, filterList);
-        if (modeCompareOrError.IsError())
+        if (!modeCompareOrError.IsOk)
             return l.ReturnAsError(modeCompareOrError.ErrorsSafe());
+
         var modeCompare = modeCompareOrError.Result!;
 
         var finalCompare = useNot
@@ -278,9 +280,17 @@ public sealed class RelationshipFilter : DataSourceBase
                             return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
                         }),
                         "contains all");
-                return l.Return(new(true, entity => entity.Relationships.Children[relationship]
-                            .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""))
-                    ),
+                return l.Return(new(true, entity =>
+                    {
+                        // If we're looking for "contains" and the value to find is not specified, then
+                        // we treat is as "always true"
+                        var valToFind = valuesToFind.FirstOrDefault() ?? "";
+                        if (valToFind == "")
+                            return true;
+                        var children = entity.Relationships.Children[relationship];
+                        return children
+                            .Any(r => internalCompare(r, valToFind));
+                    }),
                     "contains one");
 
             case CompareModeContainsAny:
