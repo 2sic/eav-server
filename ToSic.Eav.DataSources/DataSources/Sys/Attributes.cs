@@ -117,7 +117,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
                     builtIn: false,
                     contentTypeName: at.Type.Name,
                     // TODO: FILTER html
-                    description: at.Attribute.Metadata.GetBestValue<string>(AttributeMetadataConstants.DescriptionField)
+                    description: at.Attribute.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)
                 )
             )
             .ToList();
@@ -191,7 +191,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
             {
                 var descriptionProvider = sysFieldAttributes
                     .FirstOrDefault(x => x.Key == sysField.Key).Value;
-                var description = descriptionProvider?.Metadata.GetBestValue<string>(AttributeMetadataConstants.DescriptionField)
+                var description = descriptionProvider?.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)
                                   ?? (AttributeNames.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
                                       ? desc
                                       : default);

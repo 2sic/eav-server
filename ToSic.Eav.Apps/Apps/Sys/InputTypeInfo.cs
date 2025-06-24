@@ -14,10 +14,9 @@ namespace ToSic.Eav.Apps.Sys;
 /// This is so that input fields can self-describe.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InputTypeInfo//(string type, string label, string description, string? assets, bool disableI18N, string ngAssets, bool useAdam, string source)
+public class InputTypeInfo
 {
-    public InputTypeInfo(/*string type, string label, string description, string? assets, bool disableI18N, string ngAssets, bool useAdam, string source, */IMetadata? metadata = null)
-        //: this(type, label, description, assets, disableI18N, ngAssets, useAdam, source)
+    public InputTypeInfo(IMetadata? metadata = null)
     {
         if (metadata == null)
             return;
@@ -27,7 +26,7 @@ public class InputTypeInfo//(string type, string label, string description, stri
         if (metadata.HasType(IsObsoleteDecoratorId))
         {
             IsObsolete = true;
-            ObsoleteMessage = metadata.GetBestValue<string>(MessageField, IsObsoleteDecoratorId);
+            ObsoleteMessage = metadata.Get<string>(MessageField, typeName: IsObsoleteDecoratorId);
         }
         if (metadata.HasType(RecommendedDecoratorId))
             IsRecommended = true;

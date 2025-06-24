@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Entities.Sys.Lists;
+using ToSic.Lib.Coding;
 
 namespace ToSic.Eav.Metadata.Sys;
 
@@ -14,11 +15,26 @@ namespace ToSic.Eav.Metadata.Sys;
 /// </remarks>
 partial class Metadata<T>
 {
-
-    #region GetBestValue
+    #region Get
 
     /// <inheritdoc />
-    public TVal? GetBestValue<TVal>(string name, string? typeName = null)
+    public TVal? Get<TVal>(string name)
+        => GetMaxOneType<TVal>(name, typeName: null);
+
+    /// <inheritdoc />
+    // ReSharper disable once MethodOverloadWithOptionalParameter
+    public TVal? Get<TVal>(string name, NoParamOrder noParamOrder = default, string? typeName = null, IEnumerable<string?>? typeNames = default)
+    {
+        // Check if multiple type names were specified
+        var typeNameList = typeNames?.ToListOpt();
+        if (typeNameList.SafeAny())
+            return GetManyTypes<TVal>(name, typeNameList);
+
+        // If not, just use the single type name; could be null.
+        return GetMaxOneType<TVal>(name, typeName);
+    }
+
+    private TVal? GetMaxOneType<TVal>(string name, string? typeName = null)
     {
         var list = typeName == null
             ? MetadataWithoutPermissions
@@ -29,12 +45,11 @@ partial class Metadata<T>
             : found.Get<TVal>(name);
     }
 
-    /// <inheritdoc />
-    public TVal? GetBestValue<TVal>(string name, string?[] typeNames)
+    private TVal? GetManyTypes<TVal>(string name, IList<string?> typeNames)
     {
         foreach (var type in typeNames)
         {
-            var result = GetBestValue<TVal>(name, type);
+            var result = Get<TVal>(name, typeName: type);
             if (!EqualityComparer<TVal>.Default.Equals(result!, default!))
                 return result;
         }

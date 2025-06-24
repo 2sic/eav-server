@@ -82,7 +82,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
             },
 
             // new in 12.01
-            IsEphemeral = a.Metadata.GetBestValue<bool>(MetadataFieldAllIsEphemeral, TypeGeneral),
+            IsEphemeral = a.Metadata.Get<bool>(MetadataFieldAllIsEphemeral, typeName: TypeGeneral),
             HasFormulas = a.HasFormulas(Log),
 
             // Read-Only new in v13
@@ -91,7 +91,9 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
             // #SharedFieldDefinition
             Guid = a.Guid,
             SysSettings = JsonAttributeSysSettings.FromSysSettings(a.SysSettings),
-            ContentType = _withContentType ? new JsonType(type, false, false) : null,
+            ContentType = _withContentType
+                ? new JsonType(type, false, false)
+                : null,
 
             // new 16.08
             ConfigTypes = inputConfigs.ConfigTypes,
@@ -188,10 +190,12 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
     /// </remarks>
     private static string FindInputTypeOrUnknownOld(IContentTypeAttribute attribute)
     {
-        var inputType = attribute.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeGeneral);
+        var inputType = attribute.Metadata.Get<string>(GeneralFieldInputType, typeName: TypeGeneral);
 
         // unknown will let the UI fallback on other mechanisms
-        return string.IsNullOrEmpty(inputType) ? EavConstants.NullNameId : inputType!;
+        return inputType.IsEmpty()
+            ? EavConstants.NullNameId
+            : inputType;
     }
 
     /// <summary>

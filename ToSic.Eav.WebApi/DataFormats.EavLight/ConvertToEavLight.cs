@@ -270,7 +270,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
         excludeAttributes = entity.Type.Attributes
             ?.ToListOpt()
             .Where(a => a.Type == ValueTypes.Empty
-                        || a.Metadata.GetBestValue<bool>(AttributeMetadataConstants.MetadataFieldAllIsEphemeral))
+                        || a.Metadata.Get<bool>(AttributeMetadataConstants.MetadataFieldAllIsEphemeral))
             .Select(a => a.Name)
             .ToListOpt()
             ?? [];

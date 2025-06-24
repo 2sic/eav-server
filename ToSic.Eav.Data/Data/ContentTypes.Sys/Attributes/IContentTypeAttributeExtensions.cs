@@ -18,12 +18,12 @@ public static class IContentTypeAttributeExtensions
     public static string InputType(this IContentTypeAttribute definition)
     {
         // Preferred storage and available in all fields defined after 2sxc ca. 6 or 7
-        var inputType = definition.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeGeneral);
+        var inputType = definition.Metadata.Get<string>(GeneralFieldInputType, typeName: TypeGeneral);
         if (inputType.HasValue())
             return inputType;
             
         // if not available, check older metadata, where it was on the @String
-        inputType = definition.Metadata.GetBestValue<string>(GeneralFieldInputType, TypeString);
+        inputType = definition.Metadata.Get<string>(GeneralFieldInputType, typeName: TypeString);
         // if found, check and maybe add prefix string
         const string prefix = "string-";
         if (inputType.HasValue() && !inputType.StartsWith(prefix))
@@ -38,7 +38,7 @@ public static class IContentTypeAttributeExtensions
 
     public static string EntityFieldItemTypePrimary(this IContentTypeAttribute attribute)
     {
-        var itemTypeName = attribute.Metadata.GetBestValue<string>(AttributeNames.EntityFieldType) ?? "";
+        var itemTypeName = attribute.Metadata.Get<string>(AttributeNames.EntityFieldType) ?? "";
         var typeName = itemTypeName.Split(',').First().Trim();
         return typeName;
     }

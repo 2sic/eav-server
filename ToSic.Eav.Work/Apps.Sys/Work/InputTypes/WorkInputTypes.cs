@@ -184,15 +184,15 @@ public class WorkInputTypes(
                 // 2023-11-10 2dm - changed this to support new input-types based on guid-content-types
                 return new InputTypeInfo(metadata: md)
                 {
-                    Type = md.GetBestValue<string>(nameof(InputTypeDefinition.Type), TypeForInputTypeDefinition)
+                    Type = md.Get<string>(nameof(InputTypeDefinition.Type), typeName: TypeForInputTypeDefinition)
                         .UseFallbackIfNoValue(GetTypeName(it))
                         .TrimStart(FieldTypePrefix[0]),
-                    Label = md.GetBestValue<string>(nameof(InputTypeDefinition.Label), typesToCheckInThisOrder),
-                    Description = md.GetBestValue<string>(nameof(InputTypeDefinition.Description), typesToCheckInThisOrder),
-                    Assets = md.GetBestValue<string>(nameof(InputTypeDefinition.Assets), TypeForInputTypeDefinition),
-                    DisableI18n = md.GetBestValue<bool>(nameof(InputTypeDefinition.DisableI18n), TypeForInputTypeDefinition),
-                    AngularAssets = md.GetBestValue<string>(nameof(InputTypeDefinition.AngularAssets), TypeForInputTypeDefinition),
-                    UseAdam = md.GetBestValue<bool>(nameof(InputTypeDefinition.UseAdam), TypeForInputTypeDefinition),
+                    Label = md.Get<string>(nameof(InputTypeDefinition.Label), typeNames: typesToCheckInThisOrder),
+                    Description = md.Get<string>(nameof(InputTypeDefinition.Description), typeNames: typesToCheckInThisOrder),
+                    Assets = md.Get<string>(nameof(InputTypeDefinition.Assets), typeName: TypeForInputTypeDefinition),
+                    DisableI18n = md.Get<bool>(nameof(InputTypeDefinition.DisableI18n), typeName: TypeForInputTypeDefinition),
+                    AngularAssets = md.Get<string>(nameof(InputTypeDefinition.AngularAssets), typeName: TypeForInputTypeDefinition),
+                    UseAdam = md.Get<bool>(nameof(InputTypeDefinition.UseAdam), typeName: TypeForInputTypeDefinition),
                     Source = "preset",
                 };
             })
