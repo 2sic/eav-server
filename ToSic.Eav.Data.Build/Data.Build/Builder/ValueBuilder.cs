@@ -138,13 +138,29 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
             ? -1
             : editable.IndexOf(oldValueOrNullToAdd);
         if (index == -1)
-            editable.Add(newValue);
+        {
+            // editable is sometimes un-resizable Array
+            if (editable is IValue[] editableArray)
+                editable = Add(editableArray, newValue);
+            else
+                editable.Add(newValue);
+        }
         else
             editable[index] = newValue;
         return editable.ToImmutableSafe();
     }
 
-
+    /// <summary>
+    /// Returns a new array with the specified item added to the end.
+    /// </summary>
+    private static IValue[] Add(IValue[] array, IValue item)
+    {
+        var len = array?.Length ?? 0;
+        var result = new IValue[len + 1];
+        Array.Copy(array ?? [], result, len);
+        result[len] = item;
+        return result;
+    }
 
     public object PreConvertReferences(object value, ValueTypes valueType, bool resolveHyperlink)
     {
@@ -154,9 +170,9 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
         if (resolveHyperlink && valueType == ValueTypes.Hyperlink && value is string stringValue)
         {
             var converted = valueConverter.Value.ToReference(stringValue);
-            return l.Return((converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'"));
+            return l.Return(converted, $"Resolve hyperlink for '{stringValue}' - New value: '{converted}'");
         }
-        return l.Return((value, "unmodified"));
+        return l.Return(value, "unmodified");
     }
 
 }
