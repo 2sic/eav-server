@@ -56,7 +56,7 @@ public class EntityIdFilter : DataSourceBase
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         var entityIdsOrError = CustomConfigurationParse();
-        if (entityIdsOrError.IsError())
+        if (!entityIdsOrError.IsOk)
             return l.ReturnAsError(entityIdsOrError.ErrorsSafe());
 
         var entityIds = entityIdsOrError.Result!;

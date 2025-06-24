@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Internal.Errors;
 using ToSic.Eav.DataSource.Streams.Internal;
-using ToSic.Sys.Users.Permissions;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -96,6 +95,8 @@ public sealed class RelationshipFilter : DataSourceBase
         set => Configuration.SetThisObsolete(value);
     }
 
+    // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+
     /// <summary>
     /// Comparison mode.
     /// "default" and "contains" will check if such a relationship is available
@@ -129,25 +130,26 @@ public sealed class RelationshipFilter : DataSourceBase
         {
             var valLower = value?.ToLowerInvariant();
             if (!_directionPossibleValues.Contains(valLower))
-                throw new("Value '" + value + "'not allowed for ChildOrParent");
+                throw new($"Value '{value}' not allowed for ChildOrParent");
             Configuration.SetThisObsolete(valLower);
         }
     }
 
+    // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
     #endregion
 
     /// <summary>
     /// Constructs a new RelationshipFilter
     /// </summary>
     [PrivateApi]
-    public RelationshipFilter(MyServices services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [userPermissions])
+    public RelationshipFilter(MyServices services/*, ICurrentContextUserPermissionsService userPermissions*/) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [/*userPermissions*/])
     {
-        _userPermissions = userPermissions;
+        //_userPermissions = userPermissions;
         ProvideOut(GetRelationshipsOrFallback);
         // todo: unclear if implemented...
         //ConfigMaskMyConfig(nameof(ChildOrParent), $"{Settings.Direction}||{DefaultDirection}");
     }
-    private readonly ICurrentContextUserPermissionsService _userPermissions;
+    //private readonly ICurrentContextUserPermissionsService _userPermissions;
 
 
     private IImmutableList<IEntity> GetRelationshipsOrFallback()
@@ -210,10 +212,10 @@ public sealed class RelationshipFilter : DataSourceBase
         if (compType == CompareType.Auto)
         {
             var getId = GetFieldValue(CompareType.Id, "irrelevant");
-            if (getId.IsError())
+            if (!getId.IsOk)
                 return l.ReturnAsError(getId.ErrorsSafe());
             var getTitle = GetFieldValue(CompareType.Title, "irrelevant");
-            if (getTitle.IsError())
+            if (!getTitle.IsOk)
                 return l.ReturnAsError(getTitle.ErrorsSafe());
             comparisonOnRelatedItem = CompareTwo(getId.Result, getTitle.Result);
 
@@ -221,7 +223,7 @@ public sealed class RelationshipFilter : DataSourceBase
         else
         {
             var getValue = GetFieldValue(compType, compAttr);
-            if (getValue.IsError())
+            if (!getValue.IsOk)
                 return l.ReturnAsError(getValue.ErrorsSafe());
             comparisonOnRelatedItem = CompareOne(getValue.Result!);
         }
@@ -238,7 +240,7 @@ public sealed class RelationshipFilter : DataSourceBase
         if (!modeCompareOrError.IsOk)
             return l.ReturnAsError(modeCompareOrError.ErrorsSafe());
 
-        var modeCompare = modeCompareOrError.Result!;
+        var modeCompare = modeCompareOrError.Result;
 
         var finalCompare = useNot
             ? e => !modeCompare(e)
@@ -267,16 +269,16 @@ public sealed class RelationshipFilter : DataSourceBase
     /// <param name="internalCompare">internal compare method</param>
     /// <param name="valuesToFind">value-list to compare to</param>
     /// <returns></returns>
-    private ResultOrError<Func<IEntity, bool>?> PickMode(string modeToPick, string relationship, Func<IEntity, string, bool> internalCompare, string[] valuesToFind)
+    private ResultOrError<Func<IEntity, bool>> PickMode(string modeToPick, string relationship, Func<IEntity, string, bool> internalCompare, string[] valuesToFind)
     {
-        var l = Log.Fn<ResultOrError<Func<IEntity, bool>?>>();
+        var l = Log.Fn<ResultOrError<Func<IEntity, bool>>>();
         switch (modeToPick)
         {
             case CompareModeContains:
                 if (valuesToFind.Length > 1)
                     return l.Return(new(true, entity =>
                         {
-                            var rels = entity.Relationships.Children[relationship];
+                            var rels = GetNonNullChildren(entity);
                             return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
                         }),
                         "contains all");
@@ -287,7 +289,7 @@ public sealed class RelationshipFilter : DataSourceBase
                         var valToFind = valuesToFind.FirstOrDefault() ?? "";
                         if (valToFind == "")
                             return true;
-                        var children = entity.Relationships.Children[relationship];
+                        var children = GetNonNullChildren(entity);
                         return children
                             .Any(r => internalCompare(r, valToFind));
                     }),
@@ -297,21 +299,21 @@ public sealed class RelationshipFilter : DataSourceBase
                 // Condition that of the needed relationships, at least one must exist
                 return l.Return(new(true, entity =>
                     {
-                        var rels = entity.Relationships.Children[relationship];
+                        var rels = GetNonNullChildren(entity);
                         return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
                     }),
                     "will use contains any");
 
             case CompareModeAny:
                 return l.Return(new(true,
-                    entity => entity.Relationships.Children[relationship].Any()), 
+                    entity => GetNonNullChildren(entity).Any()), 
                     "will use any");
 
             case CompareModeFirst:
                 // Condition that of the needed relationships, the first must be what we want
                 return l.Return(new(true, entity =>
                     {
-                        var first = entity.Relationships.Children[relationship].FirstOrDefault();
+                        var first = GetNonNullChildren(entity).FirstOrDefault();
                         return first != null && valuesToFind.Any(v => internalCompare(first, v));
                     }),
                     "will use first is");
@@ -320,7 +322,7 @@ public sealed class RelationshipFilter : DataSourceBase
                 // Count relationships
                 if (int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out var count))
                     return l.Return(new(true,
-                            entity => entity.Relationships.Children[relationship].Count() == count),
+                            entity => GetNonNullChildren(entity).Count() == count),
                         "count");
 
                 return l.Return(new(true, _ => false), "count");
@@ -330,37 +332,33 @@ public sealed class RelationshipFilter : DataSourceBase
                             message: $"The mode '{modeToPick}' is invalid")),
                     "error, unknown compare mode");
         }
+
+        IList<IEntity> GetNonNullChildren(IEntity entity)
+            => entity.Relationships.Children[relationship]
+                .Where(e => e != null!)
+                .ToListOpt();
+
     }
 
 
 
-    private static Func<IEntity, string, bool>? CompareTwo(Func<IEntity, string?>? getId, Func<IEntity, string?>? getTitle)
-    {
-        // in case the inner checks prepared an error, then the functions will be null, and we need to forward this
-        if (getId == null || getTitle == null)
-            return null;
-        return (entity, value) => getId(entity) == value || getTitle(entity) == value;
-    }
+    private static Func<IEntity, string, bool> CompareTwo(Func<IEntity, string?> getId, Func<IEntity, string?> getTitle)
+        => (entity, value) => getId(entity) == value || getTitle(entity) == value;
 
-    private static Func<IEntity, string, bool>? CompareOne(Func<IEntity, string>? getValue)
-    {
-        // in case the inner checks prepared an error, then the functions will be null, and we need to forward this
-        if (getValue == null)
-            return null;
-        return (entity, value) => getValue(entity) == value;
-    }
+    private static Func<IEntity, string, bool> CompareOne(Func<IEntity, string> getValue)
+        => (entity, value) => getValue(entity) == value;
 
 
-    private ResultOrError<Func<IEntity, string?>?> GetFieldValue(CompareType type, string fieldName)
+    private ResultOrError<Func<IEntity, string?>> GetFieldValue(CompareType type, string fieldName)
     {
-        var l = Log.Fn<ResultOrError<Func<IEntity, string?>?>>();
+        var l = Log.Fn<ResultOrError<Func<IEntity, string?>>>();
         return type switch
         {
             CompareType.Any => l.Return(new(true, e =>
                 {
                     try
                     {
-                        return e?[fieldName]?[0]?.ToString()?.ToLowerInvariant();
+                        return e[fieldName]?[0]?.ToString()?.ToLowerInvariant();
                     }
                     catch
                     {
@@ -370,8 +368,8 @@ public sealed class RelationshipFilter : DataSourceBase
                                   $"Was trying to compare the attribute '{fieldName}'");
                     }
                 }), $"compare on a normal attribute:{fieldName}"),
-            CompareType.Id => l.Return(new(true, e => e?.EntityId.ToString()), "will compare on ID"),
-            CompareType.Title => l.Return(new(true, e => e?.GetBestTitle()?.ToLowerInvariant()),
+            CompareType.Id => l.Return(new(true, e => e.EntityId.ToString()), "will compare on ID"),
+            CompareType.Title => l.Return(new(true, e => e.GetBestTitle()?.ToLowerInvariant()),
                 "will compare on title"),
             // ReSharper disable once RedundantCaseLabel
             CompareType.Auto => l.Return(
