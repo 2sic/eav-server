@@ -2,6 +2,7 @@
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Sys.Caching;
+using IMetadataSource = ToSic.Eav.Metadata.Sys.IMetadataSource;
 
 
 namespace ToSic.Eav.Apps.Sys.State.Managers;
@@ -140,6 +141,6 @@ internal class AppMetadataManager(IAppIdentity appIdentity, ICacheExpiring cache
 
     public IMetadataSource MetadataSource => this;
 
-    public IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, NoParamOrder protector, string? title = null)
-        => new MetadataOf<T>((int)targetType, key, title ?? "title not known", appSource: this);
+    public IMetadata GetMetadataOf<T>(TargetTypes targetType, T key, NoParamOrder protector, string? title = null)
+        => new Metadata<T>((int)targetType, key, title ?? "title not known", appSource: this);
 }

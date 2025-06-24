@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys.State.Managers;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
+using IMetadataSource = ToSic.Eav.Metadata.Sys.IMetadataSource;
 
 namespace ToSic.Eav.Apps.Sys.State;
 
@@ -9,8 +10,8 @@ partial class AppState:
     IHasMetadataSourceAndExpiring
 {
     [PrivateApi]
-    internal IMetadataOf GetMetadataOf<T>(TargetTypes targetType, T key, string title)
-        => new MetadataOf<T>((int)targetType, key, title, appSource: MetadataManager);
+    internal IMetadata GetMetadataOf<T>(TargetTypes targetType, T key, string title)
+        => new Metadata<T>((int)targetType, key, title, appSource: MetadataManager);
 
     [field: AllowNull, MaybeNull]
     private AppMetadataManager MetadataManager => field ??= CreateMetadataManager();
@@ -33,7 +34,7 @@ partial class AppState:
     /// This is coordinated by the AppStateBuilder.
     /// </remarks>
     [field: AllowNull, MaybeNull]
-    public IMetadataOf Metadata => field ??= GetMetadataOf(TargetTypes.App, AppId, $"App ({AppId}) {Name} ({Folder})");
+    public IMetadata Metadata => field ??= GetMetadataOf(TargetTypes.App, AppId, $"App ({AppId}) {Name} ({Folder})");
 
     /// <inheritdoc />
     public IMetadataSource MetadataSource => MetadataManager;

@@ -38,7 +38,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         int sortOrder = default,
         Guid? guid = default,   // #SharedFieldDefinition
         ContentTypeAttributeSysSettings? sysSettings = default, // #SharedFieldDefinition
-        IMetadataOf? metadata = default,
+        IMetadata? metadata = default,
         IList<IEntity>? metadataItems = default,
         Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = null)
     {
@@ -69,7 +69,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         bool? isTitle = default,
         int? id = default,
         int? sortOrder = default,
-        IMetadataOf? metadata = default,
+        IMetadata? metadata = default,
         List<IEntity>? metadataItems = default,
         Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = null
     )

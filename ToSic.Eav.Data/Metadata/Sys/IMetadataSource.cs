@@ -12,5 +12,5 @@ namespace ToSic.Eav.Metadata.Sys;
 public interface IMetadataSource: 
     ICacheExpiring, 
     IAppIdentity,    // this is used for creating additional metadata on this source
-    IMetadataGet,
+    Metadata.IMetadataSource,
     IMetadataOfSource; // new v18, moved to the primary MetadataSource for now

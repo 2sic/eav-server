@@ -71,7 +71,7 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
 
     public bool IsDynamic => GetContents()!.IsDynamic;
 
-    public IMetadataOf Metadata => GetContents()!.Metadata;
+    public IMetadata Metadata => GetContents()!.Metadata;
 
     public bool Is(string? name) => GetContents()!.Is(name);
 
@@ -85,7 +85,7 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
 
     public bool AlwaysShareConfiguration => GetContents()!.AlwaysShareConfiguration;
 
-    IMetadataOf IHasMetadata.Metadata => ((IHasMetadata)GetContents()!).Metadata;
+    IMetadata IHasMetadata.Metadata => ((IHasMetadata)GetContents()!).Metadata;
 
     public PiggyBack PiggyBack => GetContents()!.PiggyBack;
 }

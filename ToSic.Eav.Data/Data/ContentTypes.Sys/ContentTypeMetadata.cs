@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.ContentTypes.Sys;
 /// </summary>
 [PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeMetadata : MetadataOf<string>
+public class ContentTypeMetadata : Metadata<string>
 {
     /// <summary>
     /// Used in cases where the metadata-provider is already known

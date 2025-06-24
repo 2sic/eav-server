@@ -272,7 +272,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     /// <param name="debug"></param>
     /// <param name="priority"></param>
     /// <returns></returns>
-    private ICollection<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadataOf? md, TargetTypes targetTypeFor, string debug, int priority)
+    private ICollection<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadata? md, TargetTypes targetTypeFor, string debug, int priority)
     {
         var l = Log.Fn<ICollection<MetadataRecommendation>>($"for {targetTypeFor}");
 

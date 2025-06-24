@@ -104,9 +104,9 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     #region Advanced Properties: Metadata, Decorators - all #immutable
 
     /// <inheritdoc />
-    public required IMetadataOf Metadata { get; init; }
+    public required IMetadata Metadata { get; init; }
 
-    IMetadataOf IHasMetadata.Metadata => Metadata;
+    IMetadata IHasMetadata.Metadata => Metadata;
 
     // Decorators - note that ATM we don't seem to use them
     public required IEnumerable<IDecorator<IContentType>> Decorators { get; init; }

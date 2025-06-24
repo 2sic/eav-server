@@ -7,6 +7,7 @@ using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Repositories.Sys;
 using Entity = ToSic.Eav.Data.Entities.Sys.Entity;
+using IMetadataSource = ToSic.Eav.Metadata.Sys.IMetadataSource;
 
 
 namespace ToSic.Eav.ImportExport.Sys;
@@ -182,7 +183,7 @@ public class ImportService(
     }
 
 
-    private List<IEntity> MetadataWithResetIds(IMetadataOf metadata)
+    private List<IEntity> MetadataWithResetIds(IMetadata metadata)
     {
         return metadata.Concat(metadata.Permissions.Select(p => ((ICanBeEntity)p).Entity))
             .Select(e => dataBuilder.Entity.CreateFrom(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))

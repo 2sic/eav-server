@@ -113,7 +113,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public int Version => Entity.Version;
 
     /// <inheritdoc />
-    public IMetadataOf Metadata => Entity.Metadata;
+    public IMetadata Metadata => Entity.Metadata;
 
     /// <inheritdoc />
     public IEnumerable<IPermission> Permissions => Entity.Permissions;

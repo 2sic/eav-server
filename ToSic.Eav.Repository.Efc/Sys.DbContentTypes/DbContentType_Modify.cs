@@ -126,7 +126,7 @@ partial class DbContentType
     /// <param name="attributeId"></param>
     /// <param name="metadata"></param>
     /// <param name="saveOptions"></param>
-    private void SaveAttributeMetadata(int attributeId, IMetadataOf metadata, SaveOptions saveOptions)
+    private void SaveAttributeMetadata(int attributeId, IMetadata metadata, SaveOptions saveOptions)
     {
         // Verify AttributeId before we continue
         if (attributeId is 0 or < 0) // < 0 is ef-core temp id
@@ -158,7 +158,7 @@ partial class DbContentType
     /// <param name="nameId"></param>
     /// <param name="metadata"></param>
     /// <param name="saveOptions"></param>
-    private void SaveTypeMetadata(string nameId, IMetadataOf metadata, SaveOptions saveOptions)
+    private void SaveTypeMetadata(string nameId, IMetadata metadata, SaveOptions saveOptions)
     {
         // Verify AttributeId before we continue
         if (string.IsNullOrEmpty(nameId)) //  attributeId == 0 || attributeId < 0) // < 0 is ef-core temp id

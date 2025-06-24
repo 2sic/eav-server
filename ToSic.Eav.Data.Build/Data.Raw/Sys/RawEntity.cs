@@ -41,5 +41,5 @@ public class RawEntity: RawEntityBase
     /// <summary>
     /// WIP experimental v18.02 - trying to get content-type metadata into the raw entity
     /// </summary>
-    public IMetadataOf? Metadata { get; set; }
+    public IMetadata? Metadata { get; set; }
 }

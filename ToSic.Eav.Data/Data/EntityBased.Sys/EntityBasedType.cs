@@ -53,7 +53,7 @@ public abstract class EntityBasedType : IEntityBasedType
 
     /// <inheritdoc />
 #pragma warning disable CS8603 // Possible null reference return.
-    public IMetadataOf Metadata => Entity?.Metadata;
+    public IMetadata Metadata => Entity?.Metadata;
 #pragma warning restore CS8603 // Possible null reference return.
 
     [PrivateApi]

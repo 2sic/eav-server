@@ -9,11 +9,11 @@ namespace ToSic.Eav.Data.Entities.Sys;
 public class EntityPartsLazy
 {
     internal readonly Func<IEntity, IEntityRelationships> GetRelationshipDelegate;
-    internal readonly Func<Guid, string, IMetadataOf> GetMetadataOfDelegate;
+    internal readonly Func<Guid, string, IMetadata> GetMetadataOfDelegate;
 
     public EntityPartsLazy(
         Func<IEntity, IEntityRelationships>? getRelationshipManager = default,
-        Func<Guid, string, IMetadataOf>? getMetadataOf = default)
+        Func<Guid, string, IMetadata>? getMetadataOf = default)
     {
         GetRelationshipDelegate = getRelationshipManager ?? (e => new EntityRelationships(e, null, null));
         GetMetadataOfDelegate = getMetadataOf ?? EmptyGetMetadataOf;
@@ -35,28 +35,28 @@ public class EntityPartsLazy
                 : CreateMetadataOfAppSources(source)
         );
 
-    private static IMetadataOf EmptyGetMetadataOf(Guid guid, string title)
-        => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
+    private static IMetadata EmptyGetMetadataOf(Guid guid, string title)
+        => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title);
 
-    private static Func<Guid, string, IMetadataOf> CreateMetadataOfAppSources(IHasMetadataSourceAndExpiring? appSource)
-        => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title,
+    private static Func<Guid, string, IMetadata> CreateMetadataOfAppSources(IHasMetadataSourceAndExpiring? appSource)
+        => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title,
             appSource: appSource);
 
-    private static Func<Guid, string, IMetadataOf> CreateMetadataOfItems(IEnumerable<IEntity> items)
-        => (guid, title) => new MetadataOf<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, items: items);
+    private static Func<Guid, string, IMetadata> CreateMetadataOfItems(IEnumerable<IEntity> items)
+        => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, items: items);
 
-    public static Func<TKey, string, IMetadataOf> ReUseMetadataFunc<TKey>(IMetadataOf original) 
+    public static Func<TKey, string, IMetadata> ReUseMetadataFunc<TKey>(IMetadata original) 
         => (_, _) => original;
 
-    public static Func<TKey, string, IMetadataOf> CloneMetadataFunc<TKey>(
-        IMetadataOf original,
+    public static Func<TKey, string, IMetadata> CloneMetadataFunc<TKey>(
+        IMetadata original,
         List<IEntity>? items = default,
         IHasMetadataSourceAndExpiring? appSource = default,
         Func<IHasMetadataSourceAndExpiring>? deferredSource = default
     )
     {
         var specs = ((IMetadataInternals)original).GetCloneSpecs();
-        return (key, title) => new MetadataOf<TKey>(
+        return (key, title) => new Metadata<TKey>(
             targetType: specs.TargetType,
             key: key,
             title: title,

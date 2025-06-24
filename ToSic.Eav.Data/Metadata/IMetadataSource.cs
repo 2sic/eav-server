@@ -4,9 +4,12 @@
 /// For querying metadata from the data source.
 /// Mainly used in the Store, Cache-Systems and Apps.
 /// </summary>
+/// <remarks>
+/// * Was renamed from `IMetadataGet` to `IMetadataSource` in v20 to better reflect its purpose.
+/// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IMetadataGet
+public interface IMetadataSource
 {
     /// <summary>
     /// Get any metadata from the current data source (usually an app)

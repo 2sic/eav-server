@@ -20,7 +20,7 @@ public class ContentTypeAttributeMetadata(
     IEnumerable<IEntity>? items = null,
     IHasMetadataSourceAndExpiring? appSource = null,
     Func<IHasMetadataSourceAndExpiring>? deferredSource = null)
-    : MetadataOf<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", items: items,
+    : Metadata<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", items: items,
         appSource: appSource, deferredSource: deferredSource)
 {
     private ContentTypeAttributeSysSettings SysSettings { get; } = sysSettings ?? new ContentTypeAttributeSysSettings(); // make sure it's never null

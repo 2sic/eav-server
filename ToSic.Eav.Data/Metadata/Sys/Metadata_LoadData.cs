@@ -4,10 +4,10 @@ using ToSic.Sys.Locking;
 
 namespace ToSic.Eav.Metadata.Sys;
 
-partial class MetadataOf<T>
+partial class Metadata<T>
 {
-      /// <summary>
-    /// All entities is internal - because it contains everything
+    /// <summary>
+    /// AllWithHidden is internal - because it contains everything
     /// including permissions-metadata
     /// </summary>
     [PrivateApi]

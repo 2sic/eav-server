@@ -172,7 +172,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// </remarks>
     /// <returns>A typed Metadata provider for this Entity</returns>
 #pragma warning disable CS0108, CS0114
-    IMetadataOf Metadata { get; }
+    IMetadata Metadata { get; }
 #pragma warning restore CS0108, CS0114
 
     #region Children & Parents

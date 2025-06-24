@@ -47,7 +47,7 @@ public record ContentTypeAttribute : IContentTypeAttribute
     #region Metadata and Permissions
 
     /// <inheritdoc />
-    public required IMetadataOf Metadata { get; init; }
+    public required IMetadata Metadata { get; init; }
 
     /// <inheritdoc />
     [PrivateApi("Not public yet, as it's not quite clear what the permissions affect and how to communicate this. Reason is that some affect file access, others have different purposes")]

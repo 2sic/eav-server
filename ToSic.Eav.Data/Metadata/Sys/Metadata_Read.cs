@@ -12,8 +12,7 @@ namespace ToSic.Eav.Metadata.Sys;
 /// <remarks>
 /// * Since v15.04 fully #immutable
 /// </remarks>
-[PrivateApi] // changed 2020-12-09 v11.11 from [PublicApi_Stable_ForUseInYourCode] - as this is a kind of lazy-metadata, we should change it to that
-partial class MetadataOf<T>
+partial class Metadata<T>
 {
 
     #region GetBestValue

@@ -13,5 +13,5 @@ public interface IHasMetadata
     /// Additional information, specs etc. about this thing which has metadata
     /// </summary>
     [JsonIgnore]    // 2024-07-02 experimental, usually explicitly implemented and not meant for serialization
-    IMetadataOf Metadata { get; }
+    IMetadata Metadata { get; }
 }

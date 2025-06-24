@@ -37,5 +37,5 @@ public interface IEntityBasedType: IEntityWrapper
     /// <remarks>
     /// Added in v12.10
     /// </remarks>
-    IMetadataOf Metadata { get; }
+    IMetadata Metadata { get; }
 }

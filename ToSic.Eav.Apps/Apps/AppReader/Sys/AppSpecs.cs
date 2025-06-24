@@ -28,7 +28,7 @@ internal class AppSpecs(AppState appState): IAppSpecs
     /// </summary>
     public IAppConfiguration Configuration => new AppConfiguration(appState.SettingsInApp.AppConfiguration!);
 
-    public IMetadataOf Metadata => appState.Metadata;
+    public IMetadata Metadata => appState.Metadata;
 
     public IAppStateMetadata Settings => appState.SettingsInApp;
 

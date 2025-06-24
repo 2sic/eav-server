@@ -20,7 +20,7 @@ public interface IAppSpecs : IAppIdentity, IHasIdentityNameId
     /// <summary>
     /// Metadata describing the current App.
     /// </summary>
-    IMetadataOf Metadata { get; }
+    IMetadata Metadata { get; }
 
     IAppStateMetadata Settings { get; }
 

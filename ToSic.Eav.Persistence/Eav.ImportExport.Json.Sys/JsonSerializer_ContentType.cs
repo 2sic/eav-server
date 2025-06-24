@@ -90,7 +90,7 @@ partial class JsonSerializer
     /// <param name="a"></param>
     /// <param name="settings"></param>
     /// <returns></returns>
-    private static IMetadataOf? GetMetadataOrSkip(IContentTypeAttribute a, JsonSerializationSettings settings)
+    private static IMetadata? GetMetadataOrSkip(IContentTypeAttribute a, JsonSerializationSettings settings)
     {
         var inheritsMetadata = a.SysSettings?.InheritMetadata == true;
         var skipMetadata = inheritsMetadata && !settings.CtAttributeIncludeInheritedMetadata;

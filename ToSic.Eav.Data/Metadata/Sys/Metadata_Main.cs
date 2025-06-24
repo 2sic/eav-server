@@ -2,10 +2,8 @@
 
 namespace ToSic.Eav.Metadata.Sys;
 
-partial class MetadataOf<T>
+partial class Metadata<T>
 {
-
-
     /// <summary>
     /// All "normal" metadata entities - so it hides the system-entities
     /// like permissions. This is the default view of metadata given by an item

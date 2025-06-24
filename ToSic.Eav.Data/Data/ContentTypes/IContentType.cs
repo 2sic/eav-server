@@ -84,7 +84,7 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     /// <remarks>
     /// The metadata is either already prepared, from the same app, or from a remote app
     /// </remarks>
-    new IMetadataOf Metadata { get; }
+    new IMetadata Metadata { get; }
 
     /// <summary>
     /// Check if this type is the same as a name given.

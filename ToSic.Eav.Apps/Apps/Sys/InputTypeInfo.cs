@@ -16,7 +16,7 @@ namespace ToSic.Eav.Apps.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class InputTypeInfo//(string type, string label, string description, string? assets, bool disableI18N, string ngAssets, bool useAdam, string source)
 {
-    public InputTypeInfo(/*string type, string label, string description, string? assets, bool disableI18N, string ngAssets, bool useAdam, string source, */IMetadataOf? metadata = null)
+    public InputTypeInfo(/*string type, string label, string description, string? assets, bool disableI18N, string ngAssets, bool useAdam, string source, */IMetadata? metadata = null)
         //: this(type, label, description, assets, disableI18N, ngAssets, useAdam, source)
     {
         if (metadata == null)
@@ -51,7 +51,7 @@ public class InputTypeInfo//(string type, string label, string description, stri
 
     public string? Assets { get; init; }
 
-    public IMetadataOf? Metadata { get; }
+    public IMetadata? Metadata { get; }
 
     #region new in 2sxc 10 / eav 5
 
