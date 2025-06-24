@@ -51,7 +51,7 @@ public class MetadataTargetTypes : CustomDataSourceAdvanced
                 Title = value.Docs?.Documentation ?? value.TargetType.ToString()
             })
             // Sort, but ensure all the "Custom" are at the end
-            .OrderBy(s => (s.Title.StartsWith("Custom") ? "Z" : "") + s.Title)
+            .OrderBy(s => (s.Title.StartsWith("Custom") ? "ZZ" : "") + s.Title)
             .ToList();
 
         var dataFactory = DataFactory.SpawnNew(options: new()
