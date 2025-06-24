@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Data.PropertyDump.Sys;
+using ToSic.Eav.Data.Sys.PropertyDump;
 
 namespace ToSic.Eav;
 

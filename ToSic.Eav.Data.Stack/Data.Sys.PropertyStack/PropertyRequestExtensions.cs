@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.Data.PropertyStack.Sys;
+namespace ToSic.Eav.Data.Sys.PropertyStack;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PropertyRequestExtensions

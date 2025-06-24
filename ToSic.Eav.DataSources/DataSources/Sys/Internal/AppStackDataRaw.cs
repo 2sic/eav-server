@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.PropertyDump.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.PropertyDump;
 
 namespace ToSic.Eav.DataSources.Sys.Internal;
 

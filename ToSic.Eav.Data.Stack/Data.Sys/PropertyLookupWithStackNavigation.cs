@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.PropertyStack.Sys;
+﻿using ToSic.Eav.Data.Sys.PropertyStack;
 using ToSic.Eav.Sys;
 using ToSic.Lib.Wrappers;
 

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
-
-namespace ToSic.Eav.Data.PropertyStack.Sys;
+﻿namespace ToSic.Eav.Data.Sys.PropertyStack;
 
 partial class PropertyStackNavigator
 {

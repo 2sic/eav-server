@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.PropertyDump.Sys;
+﻿using ToSic.Eav.Data.Sys.PropertyDump;
 
 namespace ToSic.Eav.Data.Sys;
 public class PropertyDumpNotSupportedFallback: IPropertyDumper

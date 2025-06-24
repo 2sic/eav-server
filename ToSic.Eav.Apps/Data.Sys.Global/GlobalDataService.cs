@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Sys.Global;
 
 namespace ToSic.Eav.Data.Global.Sys;
 internal class GlobalDataService(IAppReaderFactory appReaderFactory): IGlobalDataService

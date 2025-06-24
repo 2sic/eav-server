@@ -1,8 +1,7 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Sys;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Data.PropertyStack.Sys;
+namespace ToSic.Eav.Data.Sys.PropertyStack;
 
 public partial class PropertyStack
 {

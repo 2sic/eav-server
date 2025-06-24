@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.Data.Entities.Sys.Wrappers;
-using ToSic.Eav.Data.PropertyStack.Sys;
-using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.PropertyStack;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.Data.EntityStack.Sys;
+namespace ToSic.Eav.Data.Sys.EntityStack;
 
 /// <summary>
 /// This is a special IEntity-wrapper which will return Stack-Navigation

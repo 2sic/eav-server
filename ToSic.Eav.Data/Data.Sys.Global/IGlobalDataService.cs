@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace ToSic.Eav.Data.Global.Sys;
+namespace ToSic.Eav.Data.Sys.Global;
 
 /// <summary>
 /// Accessor for global content types, which are used for serializers.

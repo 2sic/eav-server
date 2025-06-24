@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Data.Sys;
-using ToSic.Lib.Services;
+﻿using ToSic.Lib.Services;
 
-namespace ToSic.Eav.Data.PropertyDump.Sys;
+namespace ToSic.Eav.Data.Sys.PropertyDump;
 public class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceBase("Eav.DpmSvc"), IPropertyDumpService
 {
     /// <summary>

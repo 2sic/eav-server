@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
-
-namespace ToSic.Eav.Data.PropertyDump.Sys;
+﻿namespace ToSic.Eav.Data.Sys.PropertyDump;
 
 public interface IPropertyDumpService
 {

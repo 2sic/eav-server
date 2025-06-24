@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Data.Global.Sys;
+using ToSic.Eav.Data.Sys.Global;
 
 namespace ToSic.Eav;
 

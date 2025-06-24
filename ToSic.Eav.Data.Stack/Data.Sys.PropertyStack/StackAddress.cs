@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.PropertyStack.Sys;
+﻿namespace ToSic.Eav.Data.Sys.PropertyStack;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class StackAddress
