@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.LookUp;
-
-namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Eav.LookUp;
 
 public static class LookUpTestAccessors
 {
