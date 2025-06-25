@@ -265,17 +265,21 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                         break;
                 }
 
-                if (valContents is List<Guid> or List<Guid?>)
+                if (valContents is IEnumerable<Guid> or IEnumerable<Guid?>)
                 {
-                    var guidList = (valContents as List<Guid>)?.Select(p => (Guid?)p) ??
-                                   ((List<Guid?>)valContents).Select(p => p);
+                    var guidList = (valContents as IEnumerable<Guid>)
+                                   ?.Select(p => (Guid?)p)
+                                   ?? ((IEnumerable<Guid?>)valContents)
+                                   .Select(p => p);
                     AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId,
                         !so.PreserveUntouchedAttributes);
                 }
-                else if (valContents is List<int> or List<int?>)
+                else if (valContents is IEnumerable<int> or IEnumerable<int?>)
                 {
-                    var entityIds = valContents as List<int?> ?? ((List<int>)valContents).Select(v => (int?)v).ToList();
-                    AddToQueue(attribDef.AttributeId, entityIds, dbEntity.EntityId,
+                    var entityIds = valContents as IEnumerable<int?>
+                                    ?? ((IEnumerable<int>)valContents)
+                                    .Select(v => (int?)v);
+                    AddToQueue(attribDef.AttributeId, entityIds.ToList(), dbEntity.EntityId,
                         !so.PreserveUntouchedAttributes);
                 }
             }
