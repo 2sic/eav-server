@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.Data.EntityBased.Sys;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.ImportExport.Sys;

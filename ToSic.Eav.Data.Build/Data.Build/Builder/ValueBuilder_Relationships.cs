@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
-using ToSic.Eav.Data.Entities.Sys.Sources;
-using ToSic.Eav.Data.Relationships.Sys;
-using ToSic.Eav.Data.Values.Sys;
+using ToSic.Eav.Data.Sys.Entities.Sources;
+using ToSic.Eav.Data.Sys.Relationships;
+using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Data.Build;

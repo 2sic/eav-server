@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Entities.Sys.Wrappers;
+﻿using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.PropertyStack;
 using ToSic.Eav.Sys;
 

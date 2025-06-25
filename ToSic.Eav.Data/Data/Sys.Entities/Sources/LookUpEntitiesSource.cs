@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
 
-namespace ToSic.Eav.Data.Entities.Sys.Sources;
+namespace ToSic.Eav.Data.Sys.Entities.Sources;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LookUpEntitiesSource<TKey>(IEnumerable<TKey> keys, ILookup<TKey, IEntity> lookup)

@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.Data.Entities.Sys.Sources;
+namespace ToSic.Eav.Data.Sys.Entities.Sources;
 
 /// <summary>
 /// This marks something which can give a list of entities. Usually used for lazy-loading data, where the source is attached, but the data isn't loaded yet. 

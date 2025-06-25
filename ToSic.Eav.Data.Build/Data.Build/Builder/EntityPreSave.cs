@@ -1,5 +1,6 @@
-﻿using ToSic.Eav.Data.Entities.Sys;
+﻿
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.Data.Build;
 

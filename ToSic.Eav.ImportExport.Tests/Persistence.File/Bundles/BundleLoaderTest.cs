@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Entities.Sys.Lists;
-using ToSic.Eav.Data.Entities.Sys.Sources;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.File;
 using Xunit.Abstractions;

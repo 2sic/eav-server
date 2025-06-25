@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
-using ToSic.Eav.Data.Entities.Sys.Lists;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 namespace ToSic.Eav.Apps.Sys.Work;

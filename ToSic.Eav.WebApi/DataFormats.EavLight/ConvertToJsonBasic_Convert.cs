@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Entities.Sys.Wrappers;
+﻿using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.DataFormats.EavLight;
 

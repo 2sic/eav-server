@@ -1,10 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Eav.Data.Entities.Sys.Wrappers;
 using ToSic.Eav.Metadata;
+
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
-namespace ToSic.Eav.Data.EntityBased.Sys;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 /// <summary>
 /// Foundation for a class which gets its data from an Entity. <br/>

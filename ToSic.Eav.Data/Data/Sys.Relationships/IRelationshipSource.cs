@@ -2,7 +2,7 @@
 
 using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.Data.Relationships.Sys;
+namespace ToSic.Eav.Data.Sys.Relationships;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

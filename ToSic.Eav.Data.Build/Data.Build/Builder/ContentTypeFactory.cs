@@ -2,7 +2,7 @@
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
-using ToSic.Eav.Data.Values.Sys;
+using ToSic.Eav.Data.Sys.Values;
 using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;

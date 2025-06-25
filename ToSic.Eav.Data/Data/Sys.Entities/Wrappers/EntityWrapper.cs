@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Metadata;
 using ToSic.Lib.Coding;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.Data.Entities.Sys.Wrappers;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 /// <summary>
 /// This extends an existing <see cref="IEntity"/> with more properties and information. 

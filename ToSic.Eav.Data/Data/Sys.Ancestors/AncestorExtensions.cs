@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.EntityDecorators;
+﻿using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Data.Sys.Ancestors;

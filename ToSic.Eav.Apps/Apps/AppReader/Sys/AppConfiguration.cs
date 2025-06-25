@@ -2,7 +2,7 @@
 
 // ReSharper disable UnusedMember.Global - we need these, as it's a public API
 
-using ToSic.Eav.Data.EntityBased.Sys;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Apps.AppReader.Sys;

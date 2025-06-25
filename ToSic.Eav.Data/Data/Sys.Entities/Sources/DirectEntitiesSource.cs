@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Entities.Sys.Sources;
+﻿namespace ToSic.Eav.Data.Sys.Entities.Sources;
 
 /// <summary>
 /// An entities source which directly delivers the given entities

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Immutable;
 
-namespace ToSic.Eav.Data.Entities.Sys.Lists;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyFastAccess(IImmutableList<IEntity> list)

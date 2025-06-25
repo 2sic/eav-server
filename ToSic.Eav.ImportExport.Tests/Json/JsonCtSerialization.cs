@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Entities.Sys.Lists;
+﻿using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using Xunit.Abstractions;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.Sys.JsonSerializer;

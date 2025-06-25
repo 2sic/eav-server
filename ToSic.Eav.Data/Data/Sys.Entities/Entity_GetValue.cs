@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Data.Sys;
-using static ToSic.Eav.Data.Sys.AttributeNames;
+﻿using static ToSic.Eav.Data.Sys.AttributeNames;
 
-namespace ToSic.Eav.Data.Entities.Sys;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 partial record Entity
 {

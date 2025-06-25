@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ToSic.Eav.Data.Relationships.Sys;
+namespace ToSic.Eav.Data.Sys.Relationships;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IRelatedEntitiesValue

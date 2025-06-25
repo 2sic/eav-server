@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
 
-namespace ToSic.Eav.Data.Entities.Sys.Lists;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImmutableSmartList: IImmutableList<IEntity>

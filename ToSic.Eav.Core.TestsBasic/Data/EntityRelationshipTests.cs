@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Relationships.Sys;
+using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Data.TestData;
 using Xunit.DependencyInjection;
 

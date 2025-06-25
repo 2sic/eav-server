@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.Data.EntityBased.Sys;
+﻿using ToSic.Eav.Data.Sys.Entities;
 
-namespace ToSic.Eav.Data.InputTypes.Sys;
+namespace ToSic.Eav.Data.Sys.InputTypes;
 
 /// <summary>
 /// Constants related to Input Types

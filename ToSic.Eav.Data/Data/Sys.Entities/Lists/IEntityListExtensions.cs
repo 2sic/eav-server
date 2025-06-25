@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Entities.Sys.Lists;
+﻿namespace ToSic.Eav.Data.Sys.Entities;
 
 public static class IEntityListExtensions
 {

@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace ToSic.Eav.Data.Entities.Sys;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 /// <inheritdoc />
 /// <remarks>Source: http://msdn.microsoft.com/en-us/library/system.collections.ienumerable.getenumerator.aspx </remarks>

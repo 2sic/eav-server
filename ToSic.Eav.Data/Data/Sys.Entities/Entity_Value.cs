@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Data.Sys;
-using ToSic.Lib.Coding;
+﻿using ToSic.Lib.Coding;
 
-namespace ToSic.Eav.Data.Entities.Sys;
+namespace ToSic.Eav.Data.Sys.Entities;
 partial record Entity
 {
     // #DropOldIEntityValue

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Entities.Sys.Sources;
-using ToSic.Eav.Data.Relationships.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
+using ToSic.Eav.Data.Sys.Entities.Sources;
+using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Sys.Caching.Synchronized;
 
 

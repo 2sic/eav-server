@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys.Stack;
-using ToSic.Eav.Data.Entities.Sys.Sources;
-using ToSic.Eav.Data.Relationships.Sys;
+using ToSic.Eav.Data.Sys.Entities.Sources;
+using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Lib.Data;

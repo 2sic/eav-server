@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Data.Entities.Sys.Lists;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.LookUp.Sys.Engines;
 
 

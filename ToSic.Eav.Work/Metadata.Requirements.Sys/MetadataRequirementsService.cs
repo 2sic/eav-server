@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Entities.Sys.Lists;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;

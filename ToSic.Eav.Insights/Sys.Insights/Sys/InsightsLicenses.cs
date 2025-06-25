@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Entities.Sys;
+
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Markup;
 using ToSic.Sys.Capabilities.Fingerprints;

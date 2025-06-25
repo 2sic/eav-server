@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
-using ToSic.Eav.Data.Entities.Sys.Lists;
-using ToSic.Eav.Data.InputTypes.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.InputTypes;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Utils;
 using static System.StringComparer;

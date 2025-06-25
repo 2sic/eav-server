@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Apps.Sys.FileSystemState;
-using ToSic.Eav.Data.InputTypes.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.InputTypes;
 using ToSic.Sys.Utils;
-using static ToSic.Eav.Data.InputTypes.Sys.InputTypeDefinition;
+using static ToSic.Eav.Data.Sys.InputTypes.InputTypeDefinition;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 

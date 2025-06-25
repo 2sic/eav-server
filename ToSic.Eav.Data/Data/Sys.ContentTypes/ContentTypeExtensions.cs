@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Entities.Sys.Lists;
+﻿using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;
 public static class ContentTypeExtensions

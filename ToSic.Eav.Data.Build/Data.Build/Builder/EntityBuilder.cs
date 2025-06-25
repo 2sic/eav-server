@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Data.Entities.Sys;
-using ToSic.Eav.Data.Relationships.Sys;
+﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Sys;

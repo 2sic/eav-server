@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Relationships.Sys;
+﻿namespace ToSic.Eav.Data.Sys.Relationships;
 
 /// <summary>
 /// Represents a Relation between two entities, connecting a parent to a child.

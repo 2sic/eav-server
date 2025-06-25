@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Sys;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Internal intermediate object when retrieving an Entity property.

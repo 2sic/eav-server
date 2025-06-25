@@ -1,8 +1,7 @@
 using System.Collections.Immutable;
-using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.Data.Values.Sys;
+namespace ToSic.Eav.Data.Sys.Values;
 
 /// <summary>
 /// Represents a typed Value object in the memory model

@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Entities.Sys.Lists;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Save;
 
 namespace ToSic.Eav.Apps.Sys.Work;
@@ -75,9 +75,9 @@ public class WorkEntityUpdate(
 
 
 
-    private Data.Entities.Sys.Entity? CreatePartialEntityOld(IEntity orig, Dictionary<string, object?>? values)
+    private Entity? CreatePartialEntityOld(IEntity orig, Dictionary<string, object?>? values)
     {
-        var l = Log.Fn<Data.Entities.Sys.Entity>();
+        var l = Log.Fn<Entity>();
         if (values == null || !values.Any())
             return l.ReturnNull("nothing to save");
 

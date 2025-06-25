@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Caching.PiggyBack;
 
-namespace ToSic.Eav.Data.Entities.Sys;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 partial record Entity : IHasPiggyBack
 {

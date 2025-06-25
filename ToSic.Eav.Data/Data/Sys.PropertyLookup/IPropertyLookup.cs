@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Sys;
+﻿namespace ToSic.Eav.Data;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

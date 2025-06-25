@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Sys;
+﻿namespace ToSic.Eav.Data;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class PropertyLookupPath(List<string>? original = null)

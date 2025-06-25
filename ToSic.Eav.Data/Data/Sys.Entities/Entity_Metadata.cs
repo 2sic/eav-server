@@ -2,7 +2,7 @@
 using ToSic.Lib.Helpers;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.Data.Entities.Sys;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 partial record Entity
 {

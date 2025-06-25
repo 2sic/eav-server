@@ -1,10 +1,12 @@
-﻿using ToSic.Eav.Apps.Sys;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Dimensions;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.Data.Values.Sys;
+using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.DependencyInjection;
 
@@ -16,7 +18,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.MergeEntities;
 [Startup(typeof(StartupTestsApps))]
 public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
-
+    [field: AllowNull, MaybeNull]
     private DimensionBuilder LanguageBuilder => field ??= new();
     private ILanguage Clone(ILanguage orig, bool readOnly) => LanguageBuilder.CreateFrom(orig, readOnly);
 

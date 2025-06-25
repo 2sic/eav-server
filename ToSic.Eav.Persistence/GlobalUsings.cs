@@ -5,7 +5,6 @@ global using System.Collections.Generic;
 global using System.Text.Json.Serialization;
 global using ToSic.Eav.Apps;
 global using ToSic.Eav.Data;
-global using ToSic.Eav.Data.Entities.Sys.Sources;
 global using ToSic.Eav.Metadata;
 global using ToSic.Eav.Serialization;
 global using ToSic.Lib.Documentation;

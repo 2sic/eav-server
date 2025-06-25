@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Sys.Attributes;
 
-namespace ToSic.Eav.Data.Entities.Sys;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 /// <summary>
 /// A basic unit / item of data. Has many <see cref="IAttribute{T}"/>s which then contains <see cref="IValue{T}"/>s which are multi-language. 

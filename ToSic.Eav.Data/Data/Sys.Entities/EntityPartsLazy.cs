@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Relationships.Sys;
+using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
-namespace ToSic.Eav.Data.Entities.Sys;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityPartsLazy

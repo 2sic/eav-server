@@ -1,9 +1,8 @@
 using System.Collections;
-using ToSic.Eav.Data.Entities.Sys.Lists;
-using ToSic.Eav.Data.Relationships.Sys;
+using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.Data.Entities.Sys.Sources;
+namespace ToSic.Eav.Data.Sys.Entities.Sources;
 
 /// <summary>
 /// Delivers entities which are needed. <br/>

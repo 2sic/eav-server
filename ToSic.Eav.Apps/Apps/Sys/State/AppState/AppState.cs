@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.State.Managers;
-using ToSic.Eav.Data.Relationships.Sys;
+using ToSic.Eav.Data.Sys.Relationships;
 
 namespace ToSic.Eav.Apps.Sys.State;
 

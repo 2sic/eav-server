@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
-using ToSic.Eav.Data.Entities.Sys.Lists;
+using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 

@@ -1,9 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Data.Entities.Sys;
+namespace ToSic.Eav.Data.Sys.Entities;
 
 /// <inheritdoc />
 /// <remarks>
