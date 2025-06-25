@@ -1,11 +1,10 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
-using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Lib.Helpers;
 using ToSic.Sys.Caching.PiggyBack;
 
-namespace ToSic.Eav.Data.ContentTypes.Sys;
+namespace ToSic.Eav.Data.Sys.ContentTypes;
 
 /// <summary>
 /// Represents a ContentType

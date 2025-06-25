@@ -1,7 +1,7 @@
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.Data.ContentTypes.Sys;
+namespace ToSic.Eav.Data.Sys.ContentTypes;
 
 /// <summary>
 /// Defines an attribute with name and the type this attribute has.

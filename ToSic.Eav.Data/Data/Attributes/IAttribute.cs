@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Attributes.Sys;
+using ToSic.Eav.Data.Sys.Attributes;
 
 namespace ToSic.Eav.Data;
 

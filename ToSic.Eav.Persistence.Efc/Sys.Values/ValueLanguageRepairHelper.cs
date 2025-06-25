@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Dimensions.Sys;
+﻿using ToSic.Eav.Data.Sys.Dimensions;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Dimensions.Sys;
+using ToSic.Eav.Data.Sys.Dimensions;
 
 namespace ToSic.Eav.Data.Build;
 

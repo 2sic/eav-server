@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Entities.Sys.Wrappers;
 
-namespace ToSic.Eav.Data.EntityDecorators.Sys;
+namespace ToSic.Eav.Data.Sys.EntityDecorators;
 
 [PrivateApi("Still WIP")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

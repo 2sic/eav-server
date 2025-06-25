@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.Data.Ancestors.Sys;
-using ToSic.Eav.Data.ContentTypes.Sys;
-using ToSic.Eav.Data.EntityDecorators.Sys;
+﻿using ToSic.Eav.Data.EntityDecorators.Sys;
+using ToSic.Eav.Data.Sys.Ancestors;
+using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.EntityDecorators;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Serialization.Sys.Options;
 using ToSic.Eav.WebApi.Sys.Dto;

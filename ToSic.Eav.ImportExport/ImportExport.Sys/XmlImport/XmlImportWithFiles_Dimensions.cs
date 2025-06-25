@@ -1,5 +1,5 @@
 ﻿using System.Xml.Linq;
-using ToSic.Eav.Data.Dimensions.Sys;
+using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.ImportExport.Sys.Xml;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 

@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Data.EntityDecorators.Sys;
+﻿using ToSic.Eav.Data.Sys.EntityDecorators;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.Data.Ancestors.Sys;
+namespace ToSic.Eav.Data.Sys.Ancestors;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class AncestorExtensions

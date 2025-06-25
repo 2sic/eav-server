@@ -1,5 +1,5 @@
 ﻿using System.Xml.Linq;
-using ToSic.Eav.Data.Dimensions.Sys;
+using ToSic.Eav.Data.Sys.Dimensions;
 
 namespace ToSic.Eav.ImportExport.Sys.Xml;
 internal class XmlValueListHelper(string envDefLang, ICollection<TargetLanguageToSourceLanguage> langMap, ILog parentLog) : HelperBase(parentLog, "Xml.ValHlp")

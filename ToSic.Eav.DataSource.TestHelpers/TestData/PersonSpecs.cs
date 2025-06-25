@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Dimensions.Sys;
-
-namespace ToSic.Eav.TestData;
+﻿namespace ToSic.Eav.TestData;
 
 public class PersonSpecs
 {

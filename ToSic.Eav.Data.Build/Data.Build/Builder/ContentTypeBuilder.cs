@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Ancestors.Sys;
-using ToSic.Eav.Data.ContentTypes.Sys;
-using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Ancestors;
+using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.EntityDecorators;
 using ToSic.Eav.Metadata.Sys;
 
 namespace ToSic.Eav.Data.Build;

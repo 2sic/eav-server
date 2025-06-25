@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.EntityDecorators.Sys;
+﻿namespace ToSic.Eav.Data.Sys.EntityDecorators;
 
 // ReSharper disable once InconsistentNaming
 public static class IHasDecoratorExtensions

@@ -4,7 +4,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Lib.Helpers;
 
-namespace ToSic.Eav.Data.ContentTypes.Sys;
+namespace ToSic.Eav.Data.Sys.ContentTypes;
 
 /// <summary>
 /// WIP

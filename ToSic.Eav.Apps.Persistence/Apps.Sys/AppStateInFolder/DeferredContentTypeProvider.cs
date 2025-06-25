@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Sys;
+﻿using ToSic.Eav.Data.Sys.ContentTypes;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Apps.Sys.AppStateInFolder;

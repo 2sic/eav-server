@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Sys;
+﻿using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.Serialization;
 

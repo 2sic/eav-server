@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
+﻿namespace ToSic.Eav.Data.Sys.ContentTypes;
 
 /// <summary>
 /// Mark ContentType Properties which should not be converted into Raw Entities

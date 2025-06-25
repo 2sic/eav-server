@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.Data.Dimensions.Sys;
+using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
 using ToSic.Eav.Persistence.Efc.Sys.Services;

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Entities.Sys.Lists;
 
-namespace ToSic.Eav.Data.ContentTypes.Sys;
+namespace ToSic.Eav.Data.Sys.ContentTypes;
 public static class ContentTypeExtensions
 {
     public static ContentTypeDetails? DetailsOrNull(this IContentType contentType)

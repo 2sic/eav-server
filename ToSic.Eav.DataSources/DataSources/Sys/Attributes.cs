@@ -1,9 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Attributes.Sys;
-using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Attributes;
+using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.EntityDecorators;
 using ToSic.Eav.Data.Values.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
 using static ToSic.Eav.DataSource.DataSourceConstants;

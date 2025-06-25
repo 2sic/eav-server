@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.Data.Attributes.Sys;
-using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
-using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.EntityDecorators.Sys;
+using ToSic.Eav.Data.Sys.EntityDecorators;
 
 namespace ToSic.Eav.Data.Builder;
 

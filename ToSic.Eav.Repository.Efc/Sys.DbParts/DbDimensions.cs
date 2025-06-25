@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Dimensions.Sys;
+﻿using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;

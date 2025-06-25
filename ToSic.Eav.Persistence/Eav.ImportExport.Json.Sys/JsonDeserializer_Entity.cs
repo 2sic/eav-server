@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Attributes.Sys;
-using ToSic.Eav.Data.Dimensions.Sys;
 using ToSic.Eav.Data.Entities.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Attributes;
+using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization.Sys.Json;

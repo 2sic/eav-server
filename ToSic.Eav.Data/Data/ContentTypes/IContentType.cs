@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Caching.PiggyBack;
 

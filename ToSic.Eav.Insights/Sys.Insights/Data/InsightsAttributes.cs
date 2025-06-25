@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Sys;
+﻿using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
 

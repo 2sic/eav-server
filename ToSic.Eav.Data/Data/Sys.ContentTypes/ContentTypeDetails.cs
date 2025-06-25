@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.EntityBased.Sys;
 
-namespace ToSic.Eav.Data.ContentTypes.Sys;
+namespace ToSic.Eav.Data.Sys.ContentTypes;
 
 /// <summary>
 /// 

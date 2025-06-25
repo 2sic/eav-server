@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Sys;
+﻿using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Values.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 

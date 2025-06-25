@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Dimensions.Sys;
+﻿namespace ToSic.Eav.Data.Sys.Dimensions;
 
 /// <summary>
 /// The definition of a dimension / language
