@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources.Internal;
+﻿namespace ToSic.Eav.DataSources.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SqlPlatformInfo
