@@ -94,7 +94,8 @@ public class EntityControllerReal(
 
 
     /// <inheritdoc/>
-    public bool Upload(EntityImportDto args) => contentImport.Value.Init(args.AppId).Import(args);
+    public bool Upload(EntityImportDto args)
+        => contentImport.Value.Init(args.AppId).Import(args);
 
 
     /// <inheritdoc/>

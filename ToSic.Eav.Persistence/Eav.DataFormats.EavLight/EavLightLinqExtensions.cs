@@ -25,6 +25,8 @@ public static class EavLightLinqExtensions
             if (collection.Count == 0)
                 return new();
 
+            // Note: this looks fishy, I think one variant would be all we need
+            // no array + List and then unknown...
             if (collection is TSource[] array)
                 return ToEavLight(array, keySelector);
 

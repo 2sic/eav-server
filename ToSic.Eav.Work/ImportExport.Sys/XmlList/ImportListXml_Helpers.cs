@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Xml.Linq;
-
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Sys.Options;
-using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.Sys.Logging;
 
 
@@ -21,11 +19,6 @@ partial class ImportListXml
     public long TimeForMemorySetup;
     public long TimeForDbImport;
     #endregion
-
-    ///// <summary>
-    ///// The xml document to imported.
-    ///// </summary>
-    //public XDocument Document { get; private set; }
 
     /// <summary>
     /// The elements of the xml document.
@@ -64,7 +57,8 @@ partial class ImportListXml
 
     private int _appendEntityCount = 0;
 
-    private Entity AppendEntity(Guid entityGuid, IDictionary<string, IAttribute> values)
+    private Entity AppendEntity(int appId, IContentType contentType, Guid entityGuid,
+        IDictionary<string, IAttribute> values)
     {
         var l = Log.Fn<Entity>();
         if (_appendEntityCount++ < 100)
@@ -73,7 +67,7 @@ partial class ImportListXml
             l.A("Add entity: will stop listing each one...");
         if (_appendEntityCount % 100 == 0)
             l.A("Add entity: Current count:" + _appendEntityCount);
-        var entity = builder.Entity.Create(appId: AppReader.AppId, guid: entityGuid, contentType: ContentType,
+        var entity = builder.Entity.Create(appId: appId, guid: entityGuid, contentType: contentType,
             attributes: builder.Attribute.Create(values));
         ImportEntities.Add(entity);
         return l.Return(entity);
@@ -85,26 +79,24 @@ partial class ImportListXml
     public ImportErrorLog ErrorLog { get; set; } = null!;
 
 
-    private List<Guid> GetCreatedEntityGuids()
-        => ImportEntities
+    private List<Guid> GetCreatedEntityGuids(List<Entity> importEntities)
+        => importEntities
             .Select(entity => entity.EntityGuid != Guid.Empty ? entity.EntityGuid : Guid.NewGuid())
             .ToList();
 
 
-    /// <summary>
-    /// Get the attribute names in the xml document.
-    /// </summary>
-    public IEnumerable<string> Info_AttributeNamesInDocument => DocumentElements
-        .SelectMany(element => element.Elements())
-        .GroupBy(attribute => attribute.Name.LocalName)
-        .Select(group => group.Key)
-        .Where(name => name != XmlConstants.EntityGuid && name != XmlConstants.EntityLanguage)
-        .ToList();
+    ///// <summary>
+    ///// Get the attribute names in the xml document.
+    ///// </summary>
+    //public IEnumerable<string> GetInfo_AttributeNamesInDocument(IEnumerable<XElement> xmlEntities) =>
+    //    xmlEntities
+    //        .SelectMany(element => element.Elements())
+    //        .GroupBy(attribute => attribute.Name.LocalName)
+    //        .Select(group => group.Key)
+    //        .Where(name => name != XmlConstants.EntityGuid && name != XmlConstants.EntityLanguage)
+    //        .ToList();
 
 
-    private IEntity? FindInExisting(Guid guid)
-        => ExistingEntities.FirstOrDefault(e => e.EntityGuid == guid);
-
-
-
+    //private IEntity? FindInExisting(Guid guid)
+    //    => ExistingEntities.One(guid);
 }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Testing.Performance.LazyFastAccess;
 

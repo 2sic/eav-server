@@ -1,7 +1,9 @@
-﻿using ToSic.Eav.Apps;
+﻿using System.Xml.Linq;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.Dimensions;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Sys.ImportHelpers;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.Xml;
@@ -24,8 +26,8 @@ public partial class ImportListXml(
 
     #region Init
 
-    private IContentType ContentType { get; set; } = null!;
-    private List<IEntity> ExistingEntities { get; set; } = null!;
+    //private IContentType ContentType { get; set; } = null!;
+    //private List<IEntity> ExistingEntities { get; set; } = null!;
 
     private IAppReader AppReader { get; set; } = null!;
 
@@ -49,26 +51,29 @@ public partial class ImportListXml(
         ImportDeleteUnmentionedItems deleteSetting, 
         ImportResolveReferenceMode resolveLinkMode)
     {
+        var langs = languages.ToList();
+        var l = Log.Fn<ImportListXml>($"type: {typeName}, langs: {langs.Count}, delete: {deleteSetting}, resolve: {resolveLinkMode}", timer: true);
         ErrorLog = new(Log);
-        var contentType = appReader.TryGetContentType(typeName);
 
         AppReader = appReader;
+        _deleteSetting = deleteSetting;
+        ResolveLinks = resolveLinkMode == ImportResolveReferenceMode.Resolve;
 
+        // Get Content Type and Exit if not found
+        var contentType = appReader.TryGetContentType(typeName);
         if (contentType == null)
         {
             ErrorLog.Add(ImportErrorCode.InvalidContentType);
-            return this;
+            return l.ReturnAsError(this, "content type not found");
         }
+        l.A("Content type ok:" + contentType.Name);
 
-        ContentType = contentType;
-        Log.A("Content type ok:" + contentType.Name);
-
-        ExistingEntities = AppReader.List
+        var existingEntities = appReader.List
             .Where(e => e.Type == contentType)
             .ToList();
-        Log.A($"Existing entities: {ExistingEntities.Count}");
 
-        var langs = languages.ToList();
+        l.A($"Existing entities: {existingEntities.Count}");
+
         if (!langs.Any())
             langs = [string.Empty];
 
@@ -80,28 +85,40 @@ public partial class ImportListXml(
                 .ToList(),
         };
 
-        Log.A($"Languages: {ImportConfig.Languages.Count}, fallback: {ImportConfig.DocLangPrimary}");
-        _deleteSetting = deleteSetting;
-        ResolveLinks = resolveLinkMode == ImportResolveReferenceMode.Resolve;
+        l.A($"Languages: {ImportConfig.Languages.Count}, fallback: {ImportConfig.DocLangPrimary}");
 
         Timer.Start();
         try
         {
-            if (!LoadStreamIntoDocumentElement(dataStream))
-                return this;
-            if (!RunDocumentValidityChecks())
-                return this;
-            ValidateAndImportToMemory();
+            if (!LoadStreamIntoDocumentElement(contentType, dataStream, out var xmlEntities))
+                return l.ReturnAsError(this, "couldn't load stream");
+            if (!RunDocumentValidityChecks(xmlEntities))
+                return l.ReturnAsError(this, "document didn't pass validity checks");
+            
+            // Since all is ok, we can now create the import stats
+            ValidateAndImportToMemory(appReader.AppId, contentType, xmlEntities, existingEntities);
+
+            // Note: this is not very clean yet, it relies on side-effects from the ValidateAndImportToMemory method
+            var existingGuids = GetExistingEntityGuids(existingEntities);
+            var creatingGuids = GetCreatedEntityGuids(ImportEntities);
+            Preparations = new(
+                DocumentElements.ToList(),
+                contentType,
+                existingEntities,
+                _deleteSetting, existingGuids, creatingGuids, GetEntityDeleteGuids(existingGuids, creatingGuids));
+
         }
         catch (Exception exception)
         {
+            l.Ex(exception);
             ErrorLog.Add(ImportErrorCode.Unknown, exception.ToString());
         }
         Timer.Stop();
-        Log.A($"Prep time: {Timer.ElapsedMilliseconds}ms");
+        l.A($"Prep time: {Timer.ElapsedMilliseconds}ms");
         TimeForMemorySetup = Timer.ElapsedMilliseconds;
+        
             
-        return this;
+        return l.ReturnAsOk(this);
     }
 
     #endregion
@@ -110,17 +127,20 @@ public partial class ImportListXml(
     /// Deserialize data xml stream to the memory. The data will also be checked for 
     /// errors.
     /// </summary>
-    private bool ValidateAndImportToMemory()
+    private bool ValidateAndImportToMemory(int appId, IContentType contentType, List<XElement> xmlEntities, List<IEntity> existingEntities)
     {
         var l = Log.Fn<bool>(timer: true);
         var nodesCount = 0;
         var entityGuidManager = new ImportItemGuidManager();
 
-        foreach (var xEntity in DocumentElements)
+        foreach (var xEntity in xmlEntities)
         {
             nodesCount++;
 
-            var nodeLangRaw = xEntity.Element(XmlConstants.EntityLanguage)?.Value.ToLowerInvariant();
+            var nodeLangRaw = xEntity.Element(XmlConstants.EntityLanguage)
+                ?.Value
+                .ToLowerInvariant();
+
             if (ImportConfig.Languages.All(language => language != nodeLangRaw))
             {
                 // problem when DNN does not support the language
@@ -134,7 +154,7 @@ public partial class ImportListXml(
             var entityInImportQueue = GetImportEntity(entityGuid);
             var entityAttributes = builder.Attribute.Mutable(entityInImportQueue?.Attributes);
 
-            foreach (var ctAttribute in ContentType.Attributes)
+            foreach (var ctAttribute in contentType.Attributes)
             {
                 var valType = ctAttribute.Type;
                 var valName = ctAttribute.Name;
@@ -209,7 +229,7 @@ public partial class ImportListXml(
                 }
 
                 // so search for the value in the cache 
-                var existingEnt = FindInExisting(entityGuid);
+                var existingEnt = existingEntities.One(entityGuid);
                 if (existingEnt == null)
                 {
                     ErrorLog.Add(ImportErrorCode.InvalidValueReference, value, nodesCount);
@@ -262,7 +282,7 @@ public partial class ImportListXml(
 
             // entityAttributes was now updated, so we will either update/clone the existing entity, or create a new one
             if (entityInImportQueue == null)
-                AppendEntity(entityGuid, entityAttributes);
+                AppendEntity(appId, contentType, entityGuid, entityAttributes);
             else
             {
                 // note: I'm not sure if this should ever happen, if the same entity already exists
@@ -294,16 +314,17 @@ public partial class ImportListXml(
             return;
         }
 
+        var appReader = AppReader;
         Timer.Start();
         if (_deleteSetting == ImportDeleteUnmentionedItems.All)
         {
-            var idsToDelete = GetEntityDeleteGuids()
-                .Select(g => FindInExisting(g)!.EntityId)
+            var idsToDelete = Preparations.EntityDeleteGuids
+                .Select(g => Preparations.ExistingEntities.One(g)!.EntityId)
                 .ToList();
-            entDelete.New(AppReader).Delete(idsToDelete);
+            entDelete.New(appReader).Delete(idsToDelete);
         }
 
-        var import = importerLazy.Value.Init(AppReader.ZoneId, AppReader.AppId, false, true);
+        var import = importerLazy.Value.Init(appReader.ZoneId, appReader.AppId, false, true);
         import.ImportIntoDb([], ImportEntities);
 
         // important note: don't purge cache here, but the caller MUST do this!

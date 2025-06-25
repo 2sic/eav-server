@@ -38,18 +38,20 @@ public class ContentImportApi(
         var l = Log.Fn<ContentImportResultDto>("eval content - start" + args.DebugInfo);
 
         var import = GetXmlImport(args);
-        var result = import.ErrorLog.HasErrors
-            ? new(!import.ErrorLog.HasErrors, import.ErrorLog.Errors)
-            : new ContentImportResultDto(!import.ErrorLog.HasErrors, new ImportStatisticsDto
+        if (import.ErrorLog.HasErrors)
+            l.ReturnAsError(new(!import.ErrorLog.HasErrors, import.ErrorLog.Errors));
+
+        var stats = import.Preparations;
+        var result = new ContentImportResultDto(!import.ErrorLog.HasErrors, new ImportStatisticsDto
             {
-                AmountOfEntitiesCreated = import.Info_AmountOfEntitiesCreated,
-                AmountOfEntitiesDeleted = import.Info_AmountOfEntitiesDeleted,
-                AmountOfEntitiesUpdated = import.Info_AmountOfEntitiesUpdated,
-                AttributeNamesInDocument = import.Info_AttributeNamesInDocument,
-                AttributeNamesInContentType = import.Info_AttributeNamesInContentType,
-                AttributeNamesNotImported = import.Info_AttributeNamesNotImported,
-                DocumentElementsCount = import.DocumentElements.Count(),
-                LanguagesInDocumentCount = import.Info_LanguagesInDocument.Count()
+                AmountOfEntitiesCreated = stats.EntitiesToCreate,
+                AmountOfEntitiesDeleted = stats.DeleteCount,
+                AmountOfEntitiesUpdated = stats.EntitiesToUpdate,
+                AttributeNamesInDocument = stats.AttributeNamesInDocument,
+                AttributeNamesInContentType = stats.AttributeNamesInContentType,
+                AttributeNamesNotImported = stats.AttributeNamesNotImported,
+                DocumentElementsCount = stats.Count,
+                LanguagesInDocumentCount = stats.LanguagesInDocument.Count()
             });
         return l.Return(result);
     }

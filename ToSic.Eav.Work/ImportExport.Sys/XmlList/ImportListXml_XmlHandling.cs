@@ -7,11 +7,11 @@ namespace ToSic.Eav.ImportExport.Sys.XmlList;
 partial class ImportListXml
 {
 
-    private bool RunDocumentValidityChecks()
+    private bool RunDocumentValidityChecks(List<XElement> xmlEntities)
     {
         var l = Log.Fn<bool>();
         // #1 Assure that each element has a GUID and language child element
-        foreach (var element in DocumentElements)
+        foreach (var element in xmlEntities)
         {
             if (element.Element(XmlConstants.EntityGuid) == null)
                 element.Add(new XElement(XmlConstants.EntityGuid, ""));
@@ -19,8 +19,8 @@ partial class ImportListXml
                 element.Add(new XElement(XmlConstants.EntityLanguage, ""));
         }
 
-        // collect languages and items beloning to each language
-        var documentElementLanguagesAll = DocumentElements
+        // collect languages and items belonging to each language
+        var documentElementLanguagesAll = xmlEntities
             .GroupBy(element => element.Element(XmlConstants.EntityGuid)?.Value)
             .Select(group => group
                 .Select(element => element.Element(XmlConstants.EntityLanguage)?.Value.ToLowerInvariant())
@@ -41,7 +41,8 @@ partial class ImportListXml
         return l.ReturnFalse("error");
     }
 
-    private bool LoadStreamIntoDocumentElement(Stream dataStream)
+    private bool LoadStreamIntoDocumentElement(IContentType contentType, Stream dataStream,
+        [NotNullWhen(true)] out List<XElement>? xmlEntityNodes)
     {
         var l = Log.Fn<bool>(timer: true);
         var document = XDocument.Load(dataStream);
@@ -49,6 +50,7 @@ partial class ImportListXml
         if (document == null)
         {
             ErrorLog.Add(ImportErrorCode.InvalidDocument);
+            xmlEntityNodes = null;
             return l.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
         }
 
@@ -59,7 +61,7 @@ partial class ImportListXml
         if (documentRoot == null)
         {
             const string msg = "can't import - document doesn't have a root element";
-            Log.A(msg);
+            l.A(msg);
             throw l.Ex(new Exception(msg));
         }
 
@@ -70,6 +72,7 @@ partial class ImportListXml
         if (!docNodes.Any())
         {
             ErrorLog.Add(ImportErrorCode.InvalidDocument);
+            xmlEntityNodes = null;
             return l.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
         }
 
@@ -79,13 +82,15 @@ partial class ImportListXml
             .Attribute(XmlConstants.EntityTypeAttribute);
 
         if (documentTypeAttribute?.Value == null ||
-            documentTypeAttribute.Value != ContentType.Name.RemoveSpecialCharacters())
+            documentTypeAttribute.Value != contentType.Name.RemoveSpecialCharacters())
         {
             ErrorLog.Add(ImportErrorCode.InvalidContentType);
-            return l.ReturnFalse($"error: {ImportErrorCode.InvalidContentType} - Trying to import of type {ContentType} but file contains {documentTypeAttribute}");
+            xmlEntityNodes = null;
+            return l.ReturnFalse($"error: {ImportErrorCode.InvalidContentType} - Trying to import of type {contentType} but file contains {documentTypeAttribute}");
         }
 
         DocumentElements = docNodes;
+        xmlEntityNodes = docNodes;
         return l.ReturnTrue("ok");
     }
 
