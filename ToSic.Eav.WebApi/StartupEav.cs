@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.DataSources;
-using ToSic.Eav.Repository.Efc;
 
-namespace ToSic.Eav.Integration;
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Startup;
 
 /// <summary>
 /// Global Eav Configuration

@@ -5,10 +5,11 @@ using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSource.Internal.Catalog;
 using ToSic.Eav.DataSource.Internal.Configuration;
 using ToSic.Eav.DataSource.Internal.Query;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.DataSources;
+namespace ToSic.Eav.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupDataSource
@@ -18,8 +19,6 @@ public static class StartupDataSource
     {
         // Dependencies, new in v15
         services.TryAddTransient<DataSourceBase.MyServices>();
-        //services.TryAddTransient<App.MyServices>();
-        //services.TryAddTransient<DataSourceConfiguration>();
         services.TryAddTransient<IDataSourceConfiguration, DataSourceConfiguration>();
         services.TryAddTransient<DataSourceConfiguration.MyServices>();
         services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
@@ -32,19 +31,9 @@ public static class StartupDataSource
 
         services.TryAddTransient<IAppRoot, AppRoot>();
 
-        //services.TryAddTransient<Sql>();
-        //services.TryAddTransient<Sql.MyServices>();
-        //services.TryAddTransient<SqlPlatformInfo>();
-
-        //services.TryAddTransient<DataTable>();
-
         services.TryAddTransient<QueryBuilder>();
         services.TryAddTransient<QueryDefinitionBuilder>();
         services.TryAddTransient<QueryManager>();
-
-        //services.TryAddTransient<ValueLanguages>();
-
-        //services.TryAddTransient<ITreeMapper, TreeMapper>();
 
         services.TryAddTransient<ConfigurationDataLoader>();
 

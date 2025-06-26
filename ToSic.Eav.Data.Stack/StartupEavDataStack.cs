@@ -2,7 +2,8 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Data.Sys.PropertyDump;
 
-namespace ToSic.Eav;
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavDataStack

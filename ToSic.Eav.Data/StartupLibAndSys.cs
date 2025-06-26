@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.LookUp;
 using ToSic.Lib;
 using ToSic.Sys;
 
-namespace ToSic.Eav;
+// ReSharper disable once CheckNamespace
+namespace ToSic.Eav.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupLibAndSys

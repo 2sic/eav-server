@@ -12,7 +12,7 @@ using ToSic.Eav.Environment.Sys.ServerPaths;
 using ToSic.Sys.Security.Permissions;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavContext
@@ -23,10 +23,6 @@ public static class StartupEavContext
         services.TryAddTransient<IContextOfSite, ContextOfSite>();
         services.TryAddTransient<ContextOfSite>();
         services.TryAddTransient<ContextOfSite.MyServices>();
-
-        //// Context
-        ////services.TryAddTransient<IContextOfApp, ContextOfApp>();
-        ////services.TryAddTransient<ContextOfApp.MyServices>();
 
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
