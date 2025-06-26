@@ -2,6 +2,6 @@
 
 public class LicenseFileResultDto
 {
-    public required bool Success { get; set; } = true;
-    public required string Message { get; set; }
+    public bool Success { get; set; } = true;
+    public string? Message { get; set; }
 }

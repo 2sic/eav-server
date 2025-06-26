@@ -41,7 +41,7 @@ public class LicenseControllerReal(
         {
             if (!string.IsNullOrEmpty(field))
                 return field!;
-            field = globalConfiguration.Value.ConfigFolder()!;
+            field = globalConfiguration.Value.ConfigFolder();
 
             // ensure that path to store files already exits
             Directory.CreateDirectory(field);
@@ -87,12 +87,13 @@ public class LicenseControllerReal(
 
     /// <summary>
     /// Not in use implementation for interface ILicenseController compatibility.
-    /// Instead in use is bool Upload(HttpUploadedFile uploadInfo).
+    /// Instead, the internal one is bool Upload(HttpUploadedFile uploadInfo).
     /// </summary>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [PrivateApi]
-    public LicenseFileResultDto Upload() => throw new NotImplementedException();
+    public LicenseFileResultDto Upload()
+        => throw new NotImplementedException();
 
 
 
@@ -118,7 +119,7 @@ public class LicenseControllerReal(
         }
 
         foreach (var file in files)
-            SaveLicenseFile(file);
+            SaveLicenseFile(file.Name, file.Contents);
 
         // reload license and features
         featuresLoader.Value.LoadLicenseAndFeatures();
@@ -151,7 +152,7 @@ public class LicenseControllerReal(
                 // check for error
                 var licenseFileResultDto = JsonSerializer.Deserialize<LicenseFileResultDto>(content, JsonOptions.UnsafeJsonWithoutEncodingHtml)!;
                 if (!licenseFileResultDto.Success)
-                    return l.ReturnAndLog(licenseFileResultDto, licenseFileResultDto.Message);
+                    return l.ReturnAndLog(licenseFileResultDto, licenseFileResultDto.Message ?? "");
             }
             catch (HttpRequestException e)
             {
@@ -165,10 +166,8 @@ public class LicenseControllerReal(
         // reload license and features
         featuresLoader.Value.LoadLicenseAndFeatures();
 
-        return l.ReturnAndLog(new() { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed." }, "ok");
+        return l.ReturnAsOk(new() { Success = success, Message = $"License file {DefaultLicenseFileName} retrieved and installed." });
     }
-
-    private bool SaveLicenseFile(FileUploadDto file) => SaveLicenseFile(file.Name, file.Contents);
 
     private bool SaveLicenseFile(string fileName, string content)
     {
@@ -200,13 +199,14 @@ public class LicenseControllerReal(
     {
         // rename old file to next free name like filename.001.bak
         var i = 0;
-        var fileExists = true;
+        bool fileExists;
         do
         {
             i++;
             var newFileName = $"{filePath}.{i:000}.bak";
             fileExists = File.Exists(newFileName);
-            if (!fileExists) File.Move(filePath, newFileName);
+            if (!fileExists)
+                File.Move(filePath, newFileName);
         } while (fileExists);
     }
 }
