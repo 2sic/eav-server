@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSourceTests;
 using ToSic.Lib.Logging;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
@@ -32,12 +31,12 @@ internal class RelationshipTestCase : RelationshipTestBase
         DataBuilder dataBuilder,
         string name, 
         string type, 
-        string relationship = null, 
-        string filter = null, 
-        string relAttribute = null,
-        string compareMode = null,
-        string separator = null,
-        string direction = null)
+        string? relationship = null, 
+        string? filter = null, 
+        string? relAttribute = null,
+        string? compareMode = null,
+        string? separator = null,
+        string? direction = null)
     : base(dsSvc, dataBuilder)
     {
         Name = name;

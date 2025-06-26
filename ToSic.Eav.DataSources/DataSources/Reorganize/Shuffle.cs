@@ -1,5 +1,5 @@
 ﻿using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources;
     In = [InStreamDefaultRequired],
     ConfigurationType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
     HelpLink = "https://go.2sxc.org/DsShuffle")]
-public sealed class Shuffle: Eav.DataSource.DataSourceBase
+public sealed class Shuffle: DataSourceBase
 {
     #region Configuration-properties (no config)
 
@@ -65,11 +65,12 @@ public sealed class Shuffle: Eav.DataSource.DataSourceBase
     #region Shuffle based on http://stackoverflow.com/questions/375351/most-efficient-way-to-randomly-sort-shuffle-a-list-of-integers-in-c-sharp/375446#375446
     static readonly Random Generator = new();
 
-    private IImmutableList<T> ShuffleInternal<T>(List<T> sequence, int take) => Log.Func(l =>
+    private IImmutableList<T> ShuffleInternal<T>(List<T> sequence, int take)
     {
+        var l = Log.Fn<IImmutableList<T>>();
         // check if there is actually any data
         if (!sequence.Any())
-            return (sequence.ToImmutableList(), "0 items found to shuffle");
+            return l.Return(sequence.ToImmutableOpt(), "0 items found to shuffle");
 
         var retArray = sequence.ToArray();
         var maxIndex = retArray.Length; // not Length -1, as the random-generator will always be below this
@@ -94,9 +95,9 @@ public sealed class Shuffle: Eav.DataSource.DataSourceBase
 
         var result = retArray
             .Take(maxTake)
-            .ToImmutableList();
-        return (result, maxTake.ToString());
-    });
+            .ToImmutableOpt();
+        return l.Return(result, maxTake.ToString());
+    }
     #endregion
 
 }

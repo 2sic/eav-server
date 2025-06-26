@@ -1,13 +1,12 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using System.Globalization;
-using System.IO;
-using ToSic.Eav.Context;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.Helpers;
-using ToSic.Eav.Internal.Environment;
+using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.ValueConverter.Sys;
+using ToSic.Eav.Environment.Sys.ServerPaths;
+using ToSic.Sys.Users;
 using static System.StringComparison;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -41,7 +40,7 @@ public class Csv : CustomDataSourceAdvanced
     [Configuration]
     public string FilePath
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -75,7 +74,7 @@ public class Csv : CustomDataSourceAdvanced
     [Configuration(Fallback = "\t")]
     public string Delimiter
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "\t");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -90,7 +89,7 @@ public class Csv : CustomDataSourceAdvanced
     [Configuration(Fallback = "CSV")]
     public string ContentType
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "CSV");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -98,7 +97,7 @@ public class Csv : CustomDataSourceAdvanced
     /// Column in the CSV which contains the ID. 
     /// </summary>
     [Configuration]
-    public string IdColumnName
+    public string? IdColumnName
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -109,7 +108,7 @@ public class Csv : CustomDataSourceAdvanced
     /// The CSV column containing the title of the item - for dropdowns etc. and the EntityTitle property. 
     /// </summary>
     [Configuration]
-    public string TitleColumnName
+    public string? TitleColumnName
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -117,16 +116,15 @@ public class Csv : CustomDataSourceAdvanced
 
 
     [PrivateApi]
-    public Csv(MyServices services, IDataFactory dataFactory, IUser user, IServerPaths serverPaths) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv", connect: [user, serverPaths, dataFactory])
+    public Csv(MyServices services, IUser user, IServerPaths serverPaths)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv", connect: [user, serverPaths])
     {
         _user = user;
         _serverPaths = serverPaths;
-        _dataFactory = dataFactory;
         ProvideOut(GetList);
     }
     private readonly IUser _user;
     private readonly IServerPaths _serverPaths;
-    private readonly IDataFactory _dataFactory;
 
 
     private IImmutableList<IEntity> GetList()
@@ -162,8 +160,7 @@ public class Csv : CustomDataSourceAdvanced
                     ? $"Path for Super User only: '{csvPath}'"
                     : "For security reasons the path isn't mentioned here. You'll find it in the Insights."));
 
-        const string commonErrorsIdTitle =
-            "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
+        const string commonErrorsIdTitle = "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -177,12 +174,12 @@ public class Csv : CustomDataSourceAdvanced
         {
             const int idColumnNotDetermined = -999;
             var idColumnIndex = idColumnNotDetermined;
-            string titleColName;
+            string? titleColName;
 
 
             // Parse header - must happen after the first read
             parser.Read();
-            var headers = parser.Record;
+            var headers = parser.Record ?? [];
 
             // If we should find the Column...
             if (!string.IsNullOrEmpty(idColumnName))
@@ -205,9 +202,11 @@ public class Csv : CustomDataSourceAdvanced
             else
             {
                 // The following is a little bit complicated, but it checks that the title specified exists
-                titleColName = headers.FirstOrDefault(colName => colName == titleColumnName)
-                               ?? headers.FirstOrDefault(colName =>
-                                   colName.Equals(titleColumnName, InvariantCultureIgnoreCase));
+                titleColName = headers
+                                   .FirstOrDefault(colName => colName == titleColumnName)
+                               ?? headers
+                                   .FirstOrDefault(colName =>
+                                       colName.Equals(titleColumnName, InvariantCultureIgnoreCase));
                 if (titleColName == null)
                     return l.ReturnAsError(Error.Create(title: "Title column not found",
                         message: $"Title column '{titleColumnName}' cannot be found in the file. " +
@@ -215,9 +214,9 @@ public class Csv : CustomDataSourceAdvanced
                                  $"{commonErrorsIdTitle}"));
             }
 
-            var csvFactory = _dataFactory.New(options: new()
+            var csvFactory = DataFactory.SpawnNew(new()
             {
-                AppId = Constants.TransientAppId,
+                AppId = KnownAppsConstants.TransientAppId,
                 TitleField = titleColName,
                 TypeName = ContentType,
             });
@@ -225,7 +224,7 @@ public class Csv : CustomDataSourceAdvanced
             // Parse data
             while (parser.Read())
             {
-                var fields = parser.Record;
+                var fields = parser.Record ?? [];
 
                 int entityId;
                 // No ID column specified, so use the row number
@@ -237,7 +236,7 @@ public class Csv : CustomDataSourceAdvanced
                         message:
                         $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'."));
 
-                var entityValues = new Dictionary<string, object>();
+                var entityValues = new Dictionary<string, object?>();
                 for (var i = 0; i < headers.Length; i++)
                     entityValues.Add(headers[i], (i < fields.Length) ? fields[i] : null);
 
@@ -245,6 +244,6 @@ public class Csv : CustomDataSourceAdvanced
             }
         }
 
-        return l.Return(entityList.ToImmutableList(), $"{entityList.Count}");
+        return l.Return(entityList.ToImmutableOpt(), $"{entityList.Count}");
     }
 }

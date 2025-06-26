@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Internal;
+﻿using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
 

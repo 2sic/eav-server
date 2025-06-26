@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -20,10 +20,8 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
     HelpLink = "https://go.2sxc.org/DsPaging")]
 
-public sealed class Paging: DataSourceBase
+public sealed class Paging: CustomDataSourceAdvanced
 {
-    private readonly IDataFactory _pagingFactory;
-
     #region Configuration-properties (no config)
 
     private const int DefPageSize = 10;
@@ -65,11 +63,8 @@ public sealed class Paging: DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public Paging(MyServices services, IDataFactory dataFactory): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging")
+    public Paging(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging")
     {
-        ConnectLogs([
-            _pagingFactory = dataFactory.New(options: new() { TypeName = "Paging" })
-        ]);
         ProvideOut(GetList);
         ProvideOut(GetPaging, "Paging");
     }
@@ -87,7 +82,7 @@ public sealed class Paging: DataSourceBase
         var result = source
             .Skip(itemsToSkip)
             .Take(PageSize)
-            .ToImmutableList();
+            .ToImmutableOpt();
         return l.Return(result, $"page:{PageNumber}; size{PageSize}; found:{result.Count}");
     }
 
@@ -98,26 +93,29 @@ public sealed class Paging: DataSourceBase
 
         // Calculate any additional stuff
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
         var itemCount = source.Count;
         var pageCount = Math.Ceiling((decimal)itemCount / PageSize);
 
         // Assemble the entity
-        var paging = new Dictionary<string, object>
+        var paging = new Dictionary<string, object?>
         {
-            { Attributes.TitleNiceName, "Paging Information" },
+            { AttributeNames.TitleNiceName, "Paging Information" },
             { nameof(PageSize), PageSize },
             { nameof(PageNumber), PageNumber },
             { "ItemCount", itemCount },
             { "PageCount", pageCount }
         };
 
-        var entity = _pagingFactory.Create(paging, id: PageNumber);
+        var entity = DataFactory
+            .SpawnNew(options: new() { TypeName = "Paging" })
+            .Create(paging, id: PageNumber);
 
         // Assemble list of this for the stream
         var list = new List<IEntity> { entity };
-        return l.ReturnAsOk(list.ToImmutableList());
+        return l.ReturnAsOk(list.ToImmutableOpt());
     }
 
 }

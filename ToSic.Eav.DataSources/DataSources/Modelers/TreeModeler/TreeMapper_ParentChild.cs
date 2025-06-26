@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Source;
+﻿using ToSic.Eav.Data.EntityPair.Sys;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 
 namespace ToSic.Eav.DataSources;
 
@@ -10,15 +10,15 @@ partial class TreeMapper
         IEnumerable<IEntity> originals,
         string parentIdField,
         string childToParentRefField,
-        string newChildrenField = default,
-        string newParentField = default,
-        LazyLookup<object, IEntity> lookup = default)
+        string? newChildrenField = default,
+        string? newParentField = default,
+        LazyLookup<object, IEntity>? lookup = default)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         // Make sure we have field names in case they were not provided & full-clone entities/relationships
-        newParentField = newParentField ?? DefaultParentFieldName;
-        newChildrenField = newChildrenField ?? DefaultChildrenFieldName;
-        lookup = lookup ?? new LazyLookup<object, IEntity>();
+        newParentField ??= DefaultParentFieldName;
+        newChildrenField ??= DefaultChildrenFieldName;
+        lookup ??= new();
 
         // Prepare - figure out the parent IDs and Reference to Parent ID
         var withKeys = originals
@@ -26,36 +26,40 @@ partial class TreeMapper
             {
                 var ownId = GetKey(e, parentIdField);
                 var relatedId = GetKey(e, childToParentRefField);
-                return new EntityPair<(object OwnId, object RelatedId)>(e, (ownId, relatedId));
+                return new EntityPair<(object? OwnId, object? RelatedId)>(e, (ownId, relatedId));
             })
             .ToList();
 
         var attrBld = _builder.Attribute;
 
-        var result = withKeys.Select(pair =>
+        var result = withKeys
+            .Select(pair =>
             {
                 // Create list of the new attributes with the parent and child relationships
-                var newAttributes = new List<IAttribute>
-                {
-                    attrBld.Relationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup),
-                    attrBld.Relationship(newChildrenField, new List<object> { $"{PrefixForNeeds}{pair.Partner.OwnId}" }, lookup)
-                };
+                var newAttributes = new List<IAttribute>();
+                if (pair.Partner.RelatedId != null)
+                    newAttributes.Add(attrBld.Relationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup));
+                if (pair.Partner.OwnId != null)
+                    newAttributes.Add(attrBld.Relationship(newChildrenField, new List<object> { $"{PrefixForNeeds}{pair.Partner.OwnId}" }, lookup));
                 // Create combine list of attributes and generate an entity from that
                 var attributes = attrBld.Replace(pair.Entity.Attributes, newAttributes);
                 var newEntity = _builder.Entity.CreateFrom(pair.Entity, attributes: attrBld.Create(attributes));
 
                 // Assemble a new pair, for later populating the lookup list
                 // It's important to use the _new_ entity here, because the original is missing the new attributes
-                return new EntityPair<(object OwnId, object RelatedId)>(newEntity, pair.Partner);
+                return new EntityPair<(object? OwnId, object? RelatedId)>(newEntity, pair.Partner);
             })
             .ToList();
 
         // Add lookup to own id
-        lookup.Add(result.Select(pair => new KeyValuePair<object, IEntity>(pair.Partner.OwnId, pair.Entity)));
+        var addWithOwnId = result
+            .Where(pair => pair.Partner.OwnId != null)
+            .Select(pair => new KeyValuePair<object, IEntity>(pair.Partner.OwnId!, pair.Entity));
+        lookup.Add(addWithOwnId);
         // Add list of "Needs:ParentId" so that the parents can find it
         lookup.Add(result.Select(pair => new KeyValuePair<object, IEntity>($"{PrefixForNeeds}{pair.Partner.RelatedId}", pair.Entity)));
 
-        return l.Return(result.Select(r => r.Entity).ToImmutableList());
+        return l.Return(result.Select(r => r.Entity).ToImmutableOpt());
     }
 
     /// <summary>
@@ -65,18 +69,19 @@ partial class TreeMapper
     /// <param name="e"></param>
     /// <param name="attribute"></param>
     /// <returns></returns>
-    private object GetKey(IEntity e, string attribute) => Log.Func(enabled: Debug, func: l =>
+    private object? GetKey(IEntity e, string attribute)
     {
+        var l = Log.Fn<object?>(enabled: Debug);
         try
         {
             var val = e.Get(attribute);
-            l.A(Debug, $"Entity: {e.EntityId}[{attribute}]={val} ({val.GetType().Name})");
-            return val.ToString();
+            l.A($"Entity: {e.EntityId}[{attribute}]={val} ({val?.GetType().Name})");
+            return l.Return(val?.ToString());
         }
         catch (Exception ex)
         {
             l.Ex(ex);
-            return default;
+            return l.ReturnAsError(null);
         }
-    });
+    }
 }

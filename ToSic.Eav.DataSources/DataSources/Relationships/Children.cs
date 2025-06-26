@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Eav.DataSources.Internal;
+﻿using ToSic.Eav.DataSources.Internal;
+using ToSic.Sys.Users.Permissions;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
@@ -23,13 +23,13 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsChildren")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-public class Children(DataSourceBase.MyServices services, IContextResolverUserPermissions userPermissions) : RelationshipDataSourceBase(services, userPermissions, $"{DataSourceConstantsInternal.LogPrefix}.Child")
+public class Children(DataSourceBase.MyServices services, ICurrentContextUserPermissionsService userPermissions) : RelationshipDataSourceBase(services, userPermissions, $"{DataSourceConstantsInternal.LogPrefix}.Child")
 {
     /// <summary>
     /// Name of the field pointing to the children.
     /// If left blank, will use get all children.
     /// </summary>
-    public override string FieldName => Configuration.GetThis();
+    public override string? FieldName => Configuration.GetThis();
 
     /// <summary>
     /// Name of the content-type to get. 
@@ -37,7 +37,7 @@ public class Children(DataSourceBase.MyServices services, IContextResolverUserPe
     ///
     /// Can usually be left empty (recommended).
     /// </summary>
-    public override string ContentTypeName => Configuration.GetThis();
+    public override string? ContentTypeName => Configuration.GetThis();
 
     /// <summary>
     /// Construct function for the get of the related items
@@ -46,7 +46,7 @@ public class Children(DataSourceBase.MyServices services, IContextResolverUserPe
     /// <param name="typeName"></param>
     /// <returns></returns>
     [PrivateApi]
-    protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName) 
+    protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string? fieldName, string? typeName) 
         => o => o.Relationships.FindChildren(fieldName, typeName, Log);
 
 }

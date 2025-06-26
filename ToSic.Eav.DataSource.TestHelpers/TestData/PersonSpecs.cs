@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data.Sys.Dimensions;
 
 namespace ToSic.Eav.TestData;
 

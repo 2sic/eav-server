@@ -1,6 +1,8 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Metadata;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 
@@ -12,7 +14,7 @@ public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixt
 
     [Fact]
     public void PresetAppStateIdIsMinus42() =>
-        Equal(Constants.PresetAppId, appReaders.GetSystemPresetTac().AppId);
+        Equal(KnownAppsConstants.PresetAppId, appReaders.GetSystemPresetTac().AppId);
 
     [Fact]
     public void IsHealthy() =>
@@ -24,18 +26,18 @@ public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixt
 
     [Fact]
     public void PresetAppStateHasNoteDecoratorContentTypeByName() => 
-        NotNull(appReaders.GetSystemPresetTac().GetContentType(Decorators.NoteDecoratorName));
+        NotNull(appReaders.GetSystemPresetTac().TryGetContentTypeTac(KnownDecorators.NoteDecoratorName));
 
     [Fact]
     public void PresetAppStateHasNoteDecoratorContentTypeById() => 
-        NotNull(appReaders.GetSystemPresetTac().GetContentType(Decorators.NoteDecoratorId));
+        NotNull(appReaders.GetSystemPresetTac().TryGetContentTypeTac(KnownDecorators.NoteDecoratorId));
 
     [Fact]
     public void PresetAppStateHasNotes() => 
-        NotEmpty(appReaders.GetSystemPresetTac().List.OfType(Decorators.NoteDecoratorName));
+        NotEmpty(appReaders.GetSystemPresetTac().List.OfType(KnownDecorators.NoteDecoratorName));
 
     [Fact]
     public void PresetAppStateHasPickerDataSourceContentTypeById() => 
-        NotNull(appReaders.GetSystemPresetTac().GetContentType(Decorators.IsPickerDataSourceDecoratorId));
+        NotNull(appReaders.GetSystemPresetTac().TryGetContentTypeTac(KnownDecorators.IsPickerDataSourceDecoratorId));
 
 }

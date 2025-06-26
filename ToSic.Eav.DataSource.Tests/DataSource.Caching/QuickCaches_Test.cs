@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.DataSourceTests;
+﻿using ToSic.Eav.DataSource.Internal.Caching;
 
 namespace ToSic.Eav.DataSource.Caching;
 
@@ -50,7 +48,7 @@ public class QuickCachesTest(DataSourcesTstBuilder dsSvc, IListCacheSvc listCach
 
         False(listCache.HasStreamTac(ds.CacheFullKey), "Should not have it in cache yet");
 
-        listCache.Set(ds.CacheFullKey, ds.ListTac().ToImmutableList(), ds.CacheTimestamp, false, durationInSeconds: 1);
+        listCache.Set(ds.CacheFullKey, ds.ListTac().ToImmutableOpt(), ds.CacheTimestamp, false, durationInSeconds: 1);
         True(listCache.HasStreamTac(ds.CacheFullKey), "Should have it in cache now");
 
         Thread.Sleep(400);

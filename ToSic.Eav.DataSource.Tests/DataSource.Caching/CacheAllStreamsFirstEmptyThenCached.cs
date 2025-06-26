@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.DataSourceTests;
+﻿using ToSic.Eav.DataSource.Internal.Caching;
 
 namespace ToSic.Eav.DataSource.Caching;
 
@@ -14,7 +12,7 @@ namespace ToSic.Eav.DataSource.Caching;
 public class CacheAllStreamsFirstEmptyThenCached(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)
 {
 #if NETCOREAPP
-    [field: AllowNull, MaybeNull]
+    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
 #endif
     private CacheStreamsTestBuilder CacheStreamsTestBuilder => field ??= new(dsSvc, listCache, personTable);
 
@@ -23,7 +21,7 @@ public class CacheAllStreamsFirstEmptyThenCached(DataSourcesTstBuilder dsSvc, IL
     /// </summary>
     private const string FilterIdForThisTestOnly = "1042";
 
-    private string ExpectedCacheId = "DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=" + FilterIdForThisTestOnly;
+    private const string ExpectedCacheId = "DataTable:NoGuid&ContentType=Person&EntityIdField=entityid&ModifiedField=InternalModified&TitleField=FullName>EntityIdFilter:NoGuid&EntityIds=" + FilterIdForThisTestOnly;
 
     [Fact]
     public void CheckNotInBeforeAndInAfterwards()

@@ -1,34 +1,29 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.Internal.Insights;
 using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.WebApi.Admin;
-using ToSic.Eav.WebApi.Admin.Features;
-using ToSic.Eav.WebApi.Admin.Metadata;
-using ToSic.Eav.WebApi.Admin.Query;
-using ToSic.Eav.WebApi.ApiExplorer;
-using ToSic.Eav.WebApi.Cms;
-using ToSic.Eav.WebApi.ImportExport;
-using ToSic.Eav.WebApi.Infrastructure;
-using ToSic.Eav.WebApi.Languages;
-using ToSic.Eav.WebApi.SaveHelpers;
-using ToSic.Eav.WebApi.Serialization;
 using ToSic.Eav.WebApi.Sys;
-using ToSic.Eav.WebApi.Sys.Insights;
+using ToSic.Eav.WebApi.Sys.Admin;
+using ToSic.Eav.WebApi.Sys.Admin.Features;
+using ToSic.Eav.WebApi.Sys.Admin.Metadata;
+using ToSic.Eav.WebApi.Sys.Admin.Query;
+using ToSic.Eav.WebApi.Sys.ApiExplorer;
+using ToSic.Eav.WebApi.Sys.Cms;
+using ToSic.Eav.WebApi.Sys.Entities;
+using ToSic.Eav.WebApi.Sys.Helpers.Http;
+using ToSic.Eav.WebApi.Sys.Helpers.Json;
+using ToSic.Eav.WebApi.Sys.ImportExport;
+using ToSic.Eav.WebApi.Sys.Languages;
 using ToSic.Eav.WebApi.Sys.Licenses;
-using ToSic.Eav.WebApi.Zone;
-using InsightsControllerReal = ToSic.Eav.WebApi.Sys.Insights.InsightsControllerReal;
+using ToSic.Eav.WebApi.Sys.Logs;
+using ToSic.Eav.WebApi.Sys.Zone;
 
-namespace ToSic.Eav.WebApi;
+namespace ToSic.Eav;
 
-[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupWebApi
 {
     public static IServiceCollection AddEavWebApi(this IServiceCollection services)
     {
-        // Insights, the most important core backend
-        services.AddInsights();
-
         // Real Controller Implementations https://go.2sxc.org/proxy-controllers
         services.TryAddTransient<FeatureControllerReal>();
         services.TryAddTransient<MetadataControllerReal>();
@@ -73,48 +68,14 @@ public static class StartupWebApi
         // This ensures that generic backends (.net framework/core) can create a response object
         services.TryAddScoped<IResponseMaker, ResponseMaker>();
 
+        // Helper to decouple Insights from WebApi
+        services.TryAddTransient<IHttpExceptionMaker, HttpExceptionMaker>();
+
         services.AddNetInfrastructure();
 
         return services;
     }
 
-    public static IServiceCollection AddInsights(this IServiceCollection services)
-    {
-        // Insights, the most important core backend
-        services.TryAddTransient<InsightsControllerReal>();
-        services.TryAddTransient<InsightsDataSourceCache>();
-
-        services.AddTransient<IInsightsProvider, InsightsIsAlive>();
-        services.AddTransient<IInsightsProvider, InsightsTypes>();
-        services.AddTransient<IInsightsProvider, InsightsGlobalTypes>();
-        services.AddTransient<IInsightsProvider, InsightsMemoryCache>();
-
-        services.AddTransient<IInsightsProvider, InsightsLogs>();
-        services.AddTransient<IInsightsProvider, InsightsPauseLogs>();
-        services.AddTransient<IInsightsProvider, InsightsLogsFlush>();
-        services.AddTransient<IInsightsProvider, InsightsAppStats>();
-        services.AddTransient<IInsightsProvider, InsightsPurgeApp>();
-        services.AddTransient<IInsightsProvider, InsightsAppsCache>();
-        services.AddTransient<IInsightsProvider, InsightsAppLoadLog>();
-
-        services.AddTransient<IInsightsProvider, InsightsGlobalTypesLog>();
-        services.AddTransient<IInsightsProvider, InsightsTypeMetadata>();
-        services.AddTransient<IInsightsProvider, InsightsTypePermissions>();
-
-        services.AddTransient<IInsightsProvider, InsightsLicenses>();
-        services.AddTransient<IInsightsProvider, InsightsAttributes>();
-        services.AddTransient<IInsightsProvider, InsightsAttributeMetadata>();
-        services.AddTransient<IInsightsProvider, InsightsAttributePermissions>();
-
-        services.AddTransient<IInsightsProvider, InsightsEntity>();
-        services.AddTransient<IInsightsProvider, InsightsEntities>();
-        services.AddTransient<IInsightsProvider, InsightsEntityPermissions>();
-        services.AddTransient<IInsightsProvider, InsightsEntityMetadata>();
-
-        services.AddTransient<IInsightsProvider, InsightsHelp>();
-
-        return services;
-    }
 
     /// <summary>
     /// Add typed EAV WebApi objects.
@@ -133,19 +94,14 @@ public static class StartupWebApi
         return services;
     }
 
-#if NETFRAMEWORK
     public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
     {
+#if NETCOREAPP
+        // Helper to get header, query string and route information from current request
+        services.TryAddScoped<RequestHelper>();
+#endif
+
         return services;
     }
-#else
-        public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
-        {
-            // Helper to get header, query string and route information from current request
-            services.TryAddScoped<RequestHelper>();
-
-            return services;
-        }
-#endif
 
 }

@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using ToSic.Eav.Security.Encryption;
+using ToSic.Sys.Security.Encryption;
+
+#pragma warning disable xUnit1026
 
 namespace ToSic.Eav.Core.Tests.Signature;
 
@@ -12,7 +14,7 @@ public class SignatureDataSha256
     {
         var testNew = Sha256.Hash(message);
         Trace.WriteLine($"Hash: '{testNew}'");
-        Assert.Equal(expected, testNew);
+        Equal(expected, testNew);
     }
 
     [Fact]
@@ -34,6 +36,6 @@ public class SignatureDataSha256
         var isValidSignature = new Sha256().VerifyBase64(TestKeys.SelfSigned2048Sha256.Public, signatureBase64, dataClient);
         Trace.WriteLine($"client:  Signature valid {isValidSignature}");
 
-        Assert.Equal(true, isValidSignature);
+        Equal(true, isValidSignature);
     }
 }

@@ -1,19 +1,13 @@
-﻿using ToSic.Eav.Code;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSourceTests;
+﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Sys;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.TestData;
 
 public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 {
-
-    public DataTablePerson(ICanGetService parent): this(parent.GetService<DataSourcesTstBuilder>(), parent.GetService<DataBuilder>())
-    {
-    }
 
     private static readonly Dictionary<int, DataTable> CachedDs = new();
 
@@ -24,7 +18,7 @@ public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilde
 
         var dataTable = new System.Data.DataTable();
         dataTable.Columns.AddRange([
-            new(Attributes.EntityFieldId, typeof (int)),
+            new(AttributeNames.EntityFieldId, typeof (int)),
             new(PersonSpecs.FieldFullName),
             new(PersonSpecs.FieldFirstName),
             new(PersonSpecs.FieldLastName),

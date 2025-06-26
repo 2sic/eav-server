@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.DataSourceTests;
-
-namespace ToSic.Eav.DataSources.Various;
+﻿namespace ToSic.Eav.DataSources.Various;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class EntityTypeFilterTest(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)

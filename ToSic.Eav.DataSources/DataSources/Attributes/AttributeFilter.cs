@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Build;
 using static System.StringComparer;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -14,14 +14,14 @@ namespace ToSic.Eav.DataSources;
     NiceName = "Remove Attribute/Property",
     UiHint = "Remove attributes/properties to limit what is available",
     Icon = DataSourceIcons.Delete,
-    Type = DataSourceType.Modify, 
+    Type = DataSourceType.Modify,
     NameId = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
     DynamicOut = false,
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.AttributeFilter",
     HelpLink = "https://go.2sxc.org/DsAttributeFilter")]
 
-public class AttributeFilter : Eav.DataSource.DataSourceBase
+public class AttributeFilter : DataSourceBase
 {
     #region Constants
 
@@ -36,7 +36,7 @@ public class AttributeFilter : Eav.DataSource.DataSourceBase
     /// A string containing one or more attribute names. like "FirstName" or "FirstName,LastName,Birthday"
     /// </summary>
     [Configuration]
-    public string AttributeNames
+    public string? AttributeNames
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -48,7 +48,7 @@ public class AttributeFilter : Eav.DataSource.DataSourceBase
     [Configuration(Fallback = ModeKeep)]
     public string Mode
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: ModeKeep);
         set => Configuration.SetThisObsolete(value);
     }
       
@@ -79,9 +79,10 @@ public class AttributeFilter : Eav.DataSource.DataSourceBase
         Configuration.Parse();
 
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
-        var raw = AttributeNames;
+        var raw = AttributeNames ?? "";
         // note: since 2sxc 11.13 we have lines for attributes
         // older data still uses commas since it was single-line
         var attributeNames = raw.Split(raw.Contains("\n") ? '\n' : ',');
@@ -116,7 +117,7 @@ public class AttributeFilter : Eav.DataSource.DataSourceBase
                     .ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
                 return _entityBuilder.CreateFrom(e, attributes: attributes);
             })
-            .ToImmutableList();
+            .ToImmutableOpt();
 
         return l.Return(result, $"modified {result.Count}");
     }

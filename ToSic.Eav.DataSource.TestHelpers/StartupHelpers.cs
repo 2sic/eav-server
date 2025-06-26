@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Testing.Shared;
+using ToSic.Eav.DataSource;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Testing;

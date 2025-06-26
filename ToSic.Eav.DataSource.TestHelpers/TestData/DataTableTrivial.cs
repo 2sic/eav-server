@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Sys;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
-using ToSic.Testing.Shared;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.TestData;
@@ -14,7 +14,7 @@ public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataBuilder dataBuild
     {
         var dataTable = new System.Data.DataTable();
         dataTable.Columns.AddRange([
-            new(Attributes.EntityFieldId, typeof (int)),
+            new(AttributeNames.EntityFieldId, typeof (int)),
             new("EntityTitle"),
             new(PersonSpecs.FieldFirstName),
             new(PersonSpecs.FieldLastName),

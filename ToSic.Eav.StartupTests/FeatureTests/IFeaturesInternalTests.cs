@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Context;
-using ToSic.Eav.Internal.Features;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
+using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Platform;
 using ToSic.Testing.Shared.Platforms;
 
 namespace ToSic.Eav.FeatureTests;
 
-public class IFeaturesInternalTests(IEavFeaturesService featuresInternal) : IClassFixture<DoFixtureStartup<ScenarioFullPatrons>>
+public class IFeaturesInternalTests(ISysFeaturesService featuresInternal) : IClassFixture<DoFixtureStartup<ScenarioFullPatronsWithDb>>
 {
     public class Startup : StartupTestsApps
     {

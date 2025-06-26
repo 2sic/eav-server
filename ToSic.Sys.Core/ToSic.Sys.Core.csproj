@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Sys.props" />
+
+  <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
+
+  <PropertyGroup>
+    <RootNamespace>ToSic</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Different DI for .net 4.5 (using .net core 1.1) and .net Standard 2 -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" /><!-- from Oqtane.Shared.csproj -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" /><!-- from Oqtane.Shared.csproj -->
+  </ItemGroup>
+
+</Project>

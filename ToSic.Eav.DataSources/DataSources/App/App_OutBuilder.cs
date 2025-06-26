@@ -1,8 +1,5 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal;
-using ToSic.Eav.Apps.State;
+﻿using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.DataSource.Streams;
 using ToSic.Eav.DataSource.Streams.Internal;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -16,10 +13,10 @@ partial class App: IDataSourceReset
     private bool _requiresRebuildOfOut = true;
 
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     void IDataSourceReset.Reset() => _requiresRebuildOfOut = true;
     [PrivateApi]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     protected void Reset() => _requiresRebuildOfOut = true;
 
     /// <inheritdoc/>
@@ -88,7 +85,7 @@ partial class App: IDataSourceReset
                     $"Name={typeName}&Drafts={showDraftsForCacheKey}&{nameof(WithAncestors)}={WithAncestors}"),
                 this,
                 typeName,
-                () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableList(),
+                () => BuildTypeStream(upstreamDataSource, typeName).List.ToImmutableOpt(),
                 true,
                 contentType.Scope);
             _out.Add(typeName, deferredStream);

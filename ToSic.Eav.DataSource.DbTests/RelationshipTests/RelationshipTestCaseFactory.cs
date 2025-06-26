@@ -6,12 +6,12 @@ internal class RelationshipTestCaseFactory(DataSourcesTstBuilder dsSvc, DataBuil
 {
     public RelationshipTestCase New(string name,
         string type,
-        string relationship = null,
-        string filter = null,
-        string relAttribute = null,
-        string compareMode = null,
-        string separator = null,
-        string direction = null) =>
+        string? relationship = null,
+        string? filter = null,
+        string? relAttribute = null,
+        string? compareMode = null,
+        string? separator = null,
+        string? direction = null) =>
         new(dsSvc, dataBuilder, name, type, relationship, filter, relAttribute, compareMode,
             separator, direction);
 }

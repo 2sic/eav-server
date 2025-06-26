@@ -47,9 +47,9 @@ public class IsNullOrDefaultTests
 
     private void Test3(object value, bool expected, bool? expectedOnFaDTrue = null, bool? expectedOnFaDFalse = null)
     {
-        Assert.Equal(expected, value.IsNullOrDefaultTac());
-        Assert.Equal(expectedOnFaDTrue ?? expected, value.IsNullOrDefaultTac(true));
-        Assert.Equal(expectedOnFaDFalse ?? expected, value.IsNullOrDefaultTac(false));
+        Equal(expected, value.IsNullOrDefaultTac());
+        Equal(expectedOnFaDTrue ?? expected, value.IsNullOrDefaultTac(true));
+        Equal(expectedOnFaDFalse ?? expected, value.IsNullOrDefaultTac(false));
     }
 
 }

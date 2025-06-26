@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.Context;
+﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Internal.Errors;
 using ToSic.Eav.DataSource.Streams.Internal;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources;
     DynamicOut = false,
     ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
     HelpLink = "https://go.2sxc.org/DsRelationshipFilter")]
-public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
+public sealed class RelationshipFilter : DataSourceBase
 {
     #region Configuration-properties
 
@@ -71,7 +71,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     [Configuration]
     public string Relationship
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -81,19 +81,21 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     [Configuration]
     public string Filter
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
     /// <summary>
     /// The attribute we're looking into, in this case it would be 'Country' because we're checking what Authors are from Switzerland.
     /// </summary>
-    [Configuration(Field = FieldAttributeOnRelationship, Fallback = Attributes.EntityFieldTitle)]
+    [Configuration(Field = FieldAttributeOnRelationship, Fallback = AttributeNames.EntityFieldTitle)]
     public string CompareAttribute
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: AttributeNames.EntityFieldTitle);
         set => Configuration.SetThisObsolete(value);
     }
+
+    // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
     /// <summary>
     /// Comparison mode.
@@ -103,8 +105,8 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     [Configuration(Field = FieldComparison, Fallback = CompareModeContains)]
     public string CompareMode
     {
-        get => Configuration.GetThis();
-        set => Configuration.SetThisObsolete(value.ToLowerInvariant());
+        get => Configuration.GetThis(fallback: CompareModeContains);
+        set => Configuration.SetThisObsolete(value?.ToLowerInvariant());
     }
 
     /// <summary>
@@ -113,8 +115,8 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     [Configuration(Fallback = DefaultSeparator)]
     public string Separator
     {
-        get => Configuration.GetThis();
-        set => Configuration.SetThisObsolete(value.ToLowerInvariant());
+        get => Configuration.GetThis(fallback: DefaultSeparator);
+        set => Configuration.SetThisObsolete(value?.ToLowerInvariant());
     }
 
     /// <summary>
@@ -123,30 +125,31 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
     [Configuration(Field = FieldDirection, Fallback = DefaultDirection)]
     public string ChildOrParent
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: DefaultDirection);
         set
         {
-            var valLower = value.ToLowerInvariant();
+            var valLower = value?.ToLowerInvariant();
             if (!_directionPossibleValues.Contains(valLower))
-                throw new("Value '" + value + "'not allowed for ChildOrParent");
+                throw new($"Value '{value}' not allowed for ChildOrParent");
             Configuration.SetThisObsolete(valLower);
         }
     }
 
+    // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
     #endregion
 
     /// <summary>
     /// Constructs a new RelationshipFilter
     /// </summary>
     [PrivateApi]
-    public RelationshipFilter(MyServices services, IContextResolverUserPermissions userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [userPermissions])
+    public RelationshipFilter(MyServices services/*, ICurrentContextUserPermissionsService userPermissions*/) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [/*userPermissions*/])
     {
-        _userPermissions = userPermissions;
+        //_userPermissions = userPermissions;
         ProvideOut(GetRelationshipsOrFallback);
         // todo: unclear if implemented...
         //ConfigMaskMyConfig(nameof(ChildOrParent), $"{Settings.Direction}||{DefaultDirection}");
     }
-    private readonly IContextResolverUserPermissions _userPermissions;
+    //private readonly ICurrentContextUserPermissionsService _userPermissions;
 
 
     private IImmutableList<IEntity> GetRelationshipsOrFallback()
@@ -154,7 +157,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         var l = Log.Fn<IImmutableList<IEntity>>();
         var res = GetEntities();
         if (!res.Any() && In.HasStreamWithItems(StreamFallbackName))
-            return l.Return(In[StreamFallbackName].List.ToImmutableList(), "fallback");
+            return l.Return(In[StreamFallbackName].List.ToImmutableOpt(), "fallback");
 
         return l.Return(res, "ok");
     }
@@ -167,28 +170,27 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
 
         var relationship = Relationship;
         var compAttr = CompareAttribute;
-        var filter = Filter.ToLowerInvariant(); // new: make case insensitive
+        var filter = Filter.ToLowerInvariant(); // new: make case-insensitive
         var strMode = CompareMode.ToLowerInvariant();
         var useNot = strMode.StartsWith(PrefixNot);
-        if (useNot) strMode = strMode.Substring(PrefixNot.Length);
+        if (useNot)
+            strMode = strMode.Substring(PrefixNot.Length);
 
         if (strMode == "default")
             strMode = "contains"; // 2017-11-18 old default was "default" - this is still in for compatibility
 
         if (!AllCompareModes.Contains(strMode))
-            return l.ReturnAsError(Error.Create(title: "CompareMode unknown", message: $"CompareMode other '{strMode}' is unknown."));
-
-        //if (!Enum.TryParse<CompareModes>(strMode, true, out var mode))
-        //    return (SetError("CompareMode unknown", $"CompareMode other '{strMode}' is unknown."), "error");
+            return l.ReturnAsError(Error.Create(
+                title: "CompareMode unknown",
+                message: $"CompareMode other '{strMode}' is unknown."
+            ));
 
         var childParent = ChildOrParent;
         if (!_directionPossibleValues.Contains(childParent, StringComparer.CurrentCultureIgnoreCase))
-            return l.ReturnAsError(Error.Create(title: "Can only compare Children", message: $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"));
-
-        //var lang = Languages.ToLowerInvariant();
-        //if (lang != "default")
-        //	throw new Exception("Can't filter for languages other than 'default'");
-        //if (lang == "default") lang = ""; // no language is automatically the default language
+            return l.ReturnAsError(Error.Create(
+                title: "Can only compare Children",
+                message: $"ATM can only find related children at the moment, must set {nameof(ChildOrParent)} to '{DefaultDirection}'"
+            ));
 
         var lowAttribName = compAttr.ToLowerInvariant();
         l.A($"get related on relationship:'{relationship}', filter:'{filter}', rel-field:'{compAttr}' mode:'{strMode}', child/parent:'{childParent}'");
@@ -197,33 +199,33 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         if (source is null)
             return l.ReturnAsError(Error.TryGetInFailed());
 
-        var compType = lowAttribName == Attributes.EntityFieldAutoSelect
-            ? CompareType.Auto
-            : lowAttribName == Attributes.EntityFieldId
-                ? CompareType.Id
-                : lowAttribName == Attributes.EntityFieldTitle
-                    ? CompareType.Title
-                    : CompareType.Any;
+        var compType = lowAttribName switch
+        {
+            AttributeNames.EntityFieldAutoSelect => CompareType.Auto,
+            AttributeNames.EntityFieldId => CompareType.Id,
+            AttributeNames.EntityFieldTitle => CompareType.Title,
+            _ => CompareType.Any
+        };
 
         // pick the correct value-comparison
-        Func<IEntity, string, bool> comparisonOnRelatedItem;
+        Func<IEntity, string, bool>? comparisonOnRelatedItem;
         if (compType == CompareType.Auto)
         {
-            var getId = GetFieldValue(CompareType.Id, null);
-            if (getId.IsError)
-                return l.ReturnAsError(getId.Errors);
-            var getTitle = GetFieldValue(CompareType.Title, null);
-            if (getTitle.IsError)
-                return l.ReturnAsError(getTitle.Errors);
+            var getId = GetFieldValue(CompareType.Id, "irrelevant");
+            if (!getId.IsOk)
+                return l.ReturnAsError(getId.ErrorsSafe());
+            var getTitle = GetFieldValue(CompareType.Title, "irrelevant");
+            if (!getTitle.IsOk)
+                return l.ReturnAsError(getTitle.ErrorsSafe());
             comparisonOnRelatedItem = CompareTwo(getId.Result, getTitle.Result);
 
         }
         else
         {
             var getValue = GetFieldValue(compType, compAttr);
-            if (getValue.IsError)
-                return l.ReturnAsError(getValue.Errors);
-            comparisonOnRelatedItem = CompareOne(getValue.Result);
+            if (!getValue.IsOk)
+                return l.ReturnAsError(getValue.ErrorsSafe());
+            comparisonOnRelatedItem = CompareOne(getValue.Result!);
         }
 
         var filterList = Separator == DefaultSeparator
@@ -234,9 +236,10 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         l.A($"will compare mode:{strMode} on:{compType} '{lowAttribName}', values to check ({filterList.Length}):'{filter}'");
 
         // pick the correct list-comparison - atm ca. 6 options
-        var modeCompareOrError = PickMode(strMode, relationship, comparisonOnRelatedItem, filterList);
-        if (modeCompareOrError.IsError)
-            return l.ReturnAsError(modeCompareOrError.Errors);
+        var modeCompareOrError = PickMode(strMode, relationship, comparisonOnRelatedItem!, filterList);
+        if (!modeCompareOrError.IsOk)
+            return l.ReturnAsError(modeCompareOrError.ErrorsSafe());
+
         var modeCompare = modeCompareOrError.Result;
 
         var finalCompare = useNot
@@ -247,7 +250,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
         {
             var selection = source.Where(finalCompare).ToList();
 
-            var results = selection.ToImmutableList();
+            var results = selection.ToImmutableOpt();
 
             return l.Return(results, $"{results.Count}");
         }
@@ -275,34 +278,42 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
                 if (valuesToFind.Length > 1)
                     return l.Return(new(true, entity =>
                         {
-                            var rels = entity.Relationships.Children[relationship];
+                            var rels = GetNonNullChildren(entity);
                             return valuesToFind.All(v => rels.Any(r => internalCompare(r, v)));
                         }),
                         "contains all");
-                return l.Return(new(true, entity => entity.Relationships.Children[relationship]
-                            .Any(r => internalCompare(r, valuesToFind.FirstOrDefault() ?? ""))
-                    ),
+                return l.Return(new(true, entity =>
+                    {
+                        // If we're looking for "contains" and the value to find is not specified, then
+                        // we treat is as "always true"
+                        var valToFind = valuesToFind.FirstOrDefault() ?? "";
+                        if (valToFind == "")
+                            return true;
+                        var children = GetNonNullChildren(entity);
+                        return children
+                            .Any(r => internalCompare(r, valToFind));
+                    }),
                     "contains one");
 
             case CompareModeContainsAny:
                 // Condition that of the needed relationships, at least one must exist
                 return l.Return(new(true, entity =>
                     {
-                        var rels = entity.Relationships.Children[relationship];
+                        var rels = GetNonNullChildren(entity);
                         return valuesToFind.Any(v => rels.Any(r => internalCompare(r, v)));
                     }),
                     "will use contains any");
 
             case CompareModeAny:
                 return l.Return(new(true,
-                    entity => entity.Relationships.Children[relationship].Any()), 
+                    entity => GetNonNullChildren(entity).Any()), 
                     "will use any");
 
             case CompareModeFirst:
                 // Condition that of the needed relationships, the first must be what we want
                 return l.Return(new(true, entity =>
                     {
-                        var first = entity.Relationships.Children[relationship].FirstOrDefault();
+                        var first = GetNonNullChildren(entity).FirstOrDefault();
                         return first != null && valuesToFind.Any(v => internalCompare(first, v));
                     }),
                     "will use first is");
@@ -311,7 +322,7 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
                 // Count relationships
                 if (int.TryParse(valuesToFind.FirstOrDefault() ?? "0", out var count))
                     return l.Return(new(true,
-                            entity => entity.Relationships.Children[relationship].Count() == count),
+                            entity => GetNonNullChildren(entity).Count() == count),
                         "count");
 
                 return l.Return(new(true, _ => false), "count");
@@ -321,36 +332,33 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
                             message: $"The mode '{modeToPick}' is invalid")),
                     "error, unknown compare mode");
         }
+
+        IList<IEntity> GetNonNullChildren(IEntity entity)
+            => entity.Relationships.Children[relationship]
+                .Where(e => e != null!)
+                .ToListOpt();
+
     }
 
 
 
-    private static Func<IEntity, string, bool> CompareTwo(Func<IEntity, string> getId, Func<IEntity, string> getTitle)
-    {
-        // in case the inner checks prepared an error, then the functions will be null and we need to forward this
-        if (getId == null || getTitle == null) return null;
-        return (entity, value) => getId(entity) == value || getTitle(entity) == value;
-    }
+    private static Func<IEntity, string, bool> CompareTwo(Func<IEntity, string?> getId, Func<IEntity, string?> getTitle)
+        => (entity, value) => getId(entity) == value || getTitle(entity) == value;
 
     private static Func<IEntity, string, bool> CompareOne(Func<IEntity, string> getValue)
-    {
-        // in case the inner checks prepared an error, then the functions will be null and we need to forward this
-        if (getValue == null) return null;
-        return (entity, value) => getValue(entity) == value;
-    }
+        => (entity, value) => getValue(entity) == value;
 
 
-    private ResultOrError<Func<IEntity, string>> GetFieldValue(CompareType type, string fieldName) => Log.Func(l =>
+    private ResultOrError<Func<IEntity, string?>> GetFieldValue(CompareType type, string fieldName)
     {
-        switch (type)
+        var l = Log.Fn<ResultOrError<Func<IEntity, string?>>>();
+        return type switch
         {
-            case CompareType.Any:
-                l.A($"compare on a normal attribute:{fieldName}");
-                return new(true, e =>
+            CompareType.Any => l.Return(new(true, e =>
                 {
                     try
                     {
-                        return e?[fieldName]?[0]?.ToString().ToLowerInvariant();
+                        return e[fieldName]?[0]?.ToString()?.ToLowerInvariant();
                     }
                     catch
                     {
@@ -359,19 +367,20 @@ public sealed class RelationshipFilter : Eav.DataSource.DataSourceBase
                                   "Probably comparing an attribute on the related entity that doesn't exist. " +
                                   $"Was trying to compare the attribute '{fieldName}'");
                     }
-                });
-            case CompareType.Id:
-                l.A("will compare on ID");
-                return new(true, e => e?.EntityId.ToString());
-            case CompareType.Title:
-                l.A("will compare on title");
-                return new(true, e => e?.GetBestTitle()?.ToLowerInvariant());
+                }), $"compare on a normal attribute:{fieldName}"),
+            CompareType.Id => l.Return(new(true, e => e.EntityId.ToString()), "will compare on ID"),
+            CompareType.Title => l.Return(new(true, e => e.GetBestTitle()?.ToLowerInvariant()),
+                "will compare on title"),
             // ReSharper disable once RedundantCaseLabel
-            case CompareType.Auto:
-            default:
-                return new ResultOrError<Func<IEntity, string>>(false, null, 
-                    Error.Create(title: "Problem with CompareType", message: $"The CompareType '{type}' is unexpected."));
-        }
-    });
+            CompareType.Auto => l.Return(
+                new(false, null,
+                    Error.Create(title: "Problem with CompareType",
+                        message: $"The CompareType '{type}' is unexpected.")), "error"),
+            _ => l.Return(
+                new(false, null,
+                    Error.Create(title: "Problem with CompareType",
+                        message: $"The CompareType '{type}' is unexpected.")), "error")
+        };
+    }
 
 }

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Metadata;
+using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 
@@ -6,7 +7,7 @@ namespace ToSic.Eav.Persistence.Efc.Tests;
 
 
 [Startup(typeof(StartupTestsApps))]
-public class MetadataTargetTypesTests(ITargetTypes targetTypes) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class MetadataTargetTypesTests(ITargetTypeService targetTypes) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     [Fact]
     public void HasExactly100TargetTypes() =>

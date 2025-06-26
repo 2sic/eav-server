@@ -34,7 +34,7 @@ public class StreamFallbackTst(DataSourcesTstBuilder DsSvc, Generator<DataTableP
         stmf.Attach("Fallback5", inDefaultStream);
 
         Equal(45, stmf.ListTac().Count()); //, "Should have looped through many and found the 45");
-        Equal("ZMany", stmf.ReturnedStreamName);
+        Equal("ZMany", stmf.DebugReturnedStreamName);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class StreamFallbackTst(DataSourcesTstBuilder DsSvc, Generator<DataTableP
         stmf.Attach("3", stmf.InTac()[StreamDefaultName]);
         stmf.Attach("Fallback5", stmf.InTac()[StreamDefaultName]);
         Equal(45, stmf.ListTac().Count()); //, "Should have looped through many and found the 45");
-        Equal("ZMany", stmf.ReturnedStreamName);
+        Equal("ZMany", stmf.DebugReturnedStreamName);
     }
 
     [Fact]

@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.Persistence.File;
+using ToSic.Eav.Apps.Sys.AppStateInFolder;
+using ToSic.Eav.Apps.Sys.Loaders;
 using Xunit.Abstractions;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File.RuntimeLoader;
 
-public class RuntimeLoader400ContentTypes(IAppLoader appLoader, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioMini>>
+public class RuntimeLoader400ContentTypes(IAppStateLoader appStateLoader, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
     /// <summary>
     /// Just a test that tries to load data from a folder with 40 content types - 10x.
@@ -16,7 +16,7 @@ public class RuntimeLoader400ContentTypes(IAppLoader appLoader, ITestOutputHelpe
     {
         // set loader root path, based on test environment
         AdditionalGlobalFolderRepositoryForReflection.PathToUse = TestFiles.GetTestPath(PersistenceTestConstants.Scenario40Types + "\\App_Data\\system");
-        var loader = (AppLoader)appLoader;
+        var loader = (AppStateInFolderLoader)appStateLoader;
         var time = Stopwatch.StartNew();
 
         output.WriteLine($"Note: ATM the first loader is the {nameof(AdditionalGlobalFolderRepositoryForReflection)} - but that is a coincidence, so this test may need to be adjusted in future");

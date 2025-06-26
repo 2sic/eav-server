@@ -5,12 +5,12 @@ using Microsoft.Data.SqlClient;
 #endif
 using System.Text;
 using System.Text.RegularExpressions;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources.Internal;
-using ToSic.Eav.LookUp;
-using ToSic.Eav.Plumbing;
+using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Sys;
+using ToSic.Eav.DataSources.Sys;
+using ToSic.Eav.LookUp.Sys;
 using static System.StringComparison;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -46,7 +46,7 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration]
     public string ConnectionStringName
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -56,7 +56,7 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration]
     public string ConnectionString
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -66,7 +66,7 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration]
     public string SelectCommand
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -76,27 +76,27 @@ public class Sql : CustomDataSourceAdvanced
     [Configuration(Fallback = "SqlData")]
     public string ContentType
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "SqlData");
         set => Configuration.SetThisObsolete(value);
     }
 
     /// <summary>
     /// Name of the Title Attribute of the Source DataTable
     /// </summary>
-    [Configuration(Field = "EntityTitleField", Fallback = Attributes.EntityFieldTitle)]
+    [Configuration(Field = "EntityTitleField", Fallback = AttributeNames.EntityFieldTitle)]
     public string TitleField
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: AttributeNames.EntityFieldTitle);
         set => Configuration.SetThisObsolete(value);
     }
 
     /// <summary>
     /// Name of the Column used as EntityId
     /// </summary>
-    [Configuration(Fallback = Attributes.EntityFieldId)]
+    [Configuration(Fallback = AttributeNames.EntityFieldId)]
     public string EntityIdField
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: AttributeNames.EntityFieldId);
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -133,16 +133,12 @@ public class Sql : CustomDataSourceAdvanced
     /// Initializes a new instance of the SqlDataSource class
     /// </summary>
     [PrivateApi]
-    public Sql(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql")
+    public Sql(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql")
     {
-        ConnectLogs([
-            _dataFactory = dataFactory
-        ]);
         SqlServices = services;
         ProvideOut(GetList);
     }
     [PrivateApi] protected readonly MyServices SqlServices;
-    private readonly IDataFactory _dataFactory;
 
     #endregion
 
@@ -159,13 +155,13 @@ public class Sql : CustomDataSourceAdvanced
     /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
     /// </remarks>
     [PrivateApi]
-    internal Sql Setup(string connectionString, string selectCommand, string contentType, string entityIdField = null, string titleField = null)
+    internal Sql Setup(string connectionString, string selectCommand, string contentType, string? entityIdField = null, string? titleField = null)
     {
         ConnectionString = connectionString;
         SelectCommand = selectCommand;
         ContentType = contentType;
-        EntityIdField = entityIdField ?? Attributes.EntityFieldId;
-        TitleField = titleField ?? Attributes.EntityFieldTitle;
+        EntityIdField = entityIdField ?? AttributeNames.EntityFieldId;
+        TitleField = titleField ?? AttributeNames.EntityFieldTitle;
         return this;
     }
 
@@ -260,7 +256,8 @@ public class Sql : CustomDataSourceAdvanced
                     ? SqlServices.SqlPlatformInfo.DefaultConnectionStringName
                     : conStringNameRaw;
 
-                ConnectionString = SqlServices.SqlPlatformInfo.FindConnectionString(conStringName);
+                ConnectionString = SqlServices.SqlPlatformInfo.FindConnectionString(conStringName)
+                    ?? throw new NullReferenceException("Can't find Connection String Name, returned value is null");
             }
             catch(Exception ex)
             {
@@ -322,10 +319,10 @@ public class Sql : CustomDataSourceAdvanced
                                      ?? columNames.FirstOrDefault();
                     l.A($"will use '{casedTitle}' as title field");
 
-                    var sqlFactory = _dataFactory.New(options: new()
+                    var sqlFactory = DataFactory.SpawnNew(options: new()
                     {
-                        AppId = Constants.TransientAppId,
-                        TitleField = casedTitle,
+                        AppId = KnownAppsConstants.TransientAppId,
+                        TitleField = casedTitle ?? "Unknown",
                         TypeName = ContentType,
                     });
 
@@ -337,7 +334,7 @@ public class Sql : CustomDataSourceAdvanced
                     var columnsToUse = columNames.Where(c => c != casedEntityId).Distinct().ToList();
                     while (reader.Read())
                     {
-                        var entityId = casedEntityId == null ? 0 : global::System.Convert.ToInt32(reader[casedEntityId]);
+                        var entityId = casedEntityId == null ? 0 : Convert.ToInt32(reader[casedEntityId]);
                         var values = columnsToUse.ToDictionary(c => c, c =>
                         {
                             // This conversion is important, because the DB uses a different kind of null, which would cause trouble
@@ -359,6 +356,6 @@ public class Sql : CustomDataSourceAdvanced
             }
         }
 
-        return l.Return(list.ToImmutableList(), $"found:{list.Count}");
+        return l.Return(list.ToImmutableOpt(), $"found:{list.Count}");
     }
 }

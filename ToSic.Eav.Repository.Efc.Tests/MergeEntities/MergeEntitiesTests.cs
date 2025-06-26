@@ -1,8 +1,15 @@
-﻿using ToSic.Eav.Data;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Dimensions;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Save;
+using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.DependencyInjection;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.Repository.Efc.Tests.MergeEntities;
 
@@ -11,7 +18,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.MergeEntities;
 [Startup(typeof(StartupTestsApps))]
 public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
-
+    [field: AllowNull, MaybeNull]
     private DimensionBuilder LanguageBuilder => field ??= new();
     private ILanguage Clone(ILanguage orig, bool readOnly) => LanguageBuilder.CreateFrom(orig, readOnly);
 
@@ -25,7 +32,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
 
     #region Test Data Person tests
 
-    private const int AppId = Constants.TransientAppId;
+    private const int AppId = KnownAppsConstants.TransientAppId;
     //ContentType _ctNull = null;
 
     private IContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
@@ -84,10 +91,10 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
     private static Language langDeCh = new("de-CH", false, 39);//{DimensionId = 39, Key = "de-CH"};
     private static Language langFr = new("fr-FR", false, 99);//{DimensionId = 99, Key = "fr-FR"};
 
-    private static DimensionDefinition langEnDef = new() { DimensionId = 1, EnvironmentKey = "en-US" };
-    private static DimensionDefinition langDeDeDef = new() { DimensionId = 42, EnvironmentKey = "de-DE" };
-    private static DimensionDefinition langDeChDef = new() { DimensionId = 39, EnvironmentKey = "de-CH" };
-    private static DimensionDefinition langFrDef = new() { DimensionId = 99, EnvironmentKey = "fr-FR" };
+    private static DimensionDefinition langEnDef = new() { DimensionId = 1, EnvironmentKey = "en-US", Name = "", Key = "en-us" };
+    private static DimensionDefinition langDeDeDef = new() {DimensionId = 42, EnvironmentKey = "de-DE", Name = "", Key = "de-de" };
+    private static DimensionDefinition langDeChDef = new() {DimensionId = 39, EnvironmentKey = "de-CH", Name = "", Key = "de-ch" };
+    private static DimensionDefinition langFrDef = new() {DimensionId = 99, EnvironmentKey = "fr-FR", Name = "", Key = "fr-fr" };
     private static List<DimensionDefinition> activeLangs = [langEnDef, langDeDeDef, langDeChDef];
 
     #endregion
@@ -134,7 +141,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
 
     IContentType _ctMlProduct => dataBuilder.ContentType.CreateContentTypeTac(appId: -1, name: "Product", attributes: new List<IContentTypeAttribute>
         {
-            ContentTypeAttribute(AppId, Attributes.TitleNiceName, "String", true, 0, 0),
+            ContentTypeAttribute(AppId, AttributeNames.TitleNiceName, "String", true, 0, 0),
             ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
             ContentTypeAttribute(AppId, "Image", "Hyperlink", false, 0, 0),
         }
@@ -143,16 +150,16 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
     private readonly Entity _prodNull = null;
     private Entity ProdNoLang => dataBuilder.CreateEntityTac(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new()
     {
-        { Attributes.TitleNiceName, "Original Product No Lang" },
+        { AttributeNames.TitleNiceName, "Original Product No Lang" },
         { "Teaser", "Original Teaser no lang" },
         { "Image", "file:403" }
-    }, titleField: Attributes.TitleNiceName);
+    }, titleField: AttributeNames.TitleNiceName);
 
     private Entity ProductEntityEn => _prodEn ??= GetProdEn();
     private Entity _prodEn;
     private Entity GetProdEn() 
     {
-        var title = dataBuilder.Attribute.CreateTypedAttributeTac(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
+        var title = dataBuilder.Attribute.CreateTypedAttributeTac(AttributeNames.TitleNiceName, ValueTypes.String, new List<IValue>
         {
             dataBuilder.Value.BuildTac(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn}),
         });
@@ -170,7 +177,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
             {title.Name, title},
             {teaser.Name, teaser},
             {file.Name, file}
-        }, titleField: Attributes.TitleNiceName);
+        }, titleField: AttributeNames.TitleNiceName);
     }
 
 
@@ -180,7 +187,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
 
     private Entity GetProductEntityMl()
     {
-        var title = dataBuilder.Attribute.CreateTypedAttributeTac(Attributes.TitleNiceName, ValueTypes.String, new List<IValue>
+        var title = dataBuilder.Attribute.CreateTypedAttributeTac(AttributeNames.TitleNiceName, ValueTypes.String, new List<IValue>
         {
             dataBuilder.Value.BuildTac(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn }),
             dataBuilder.Value.BuildTac(ValueTypes.String, "Title DE",
@@ -203,7 +210,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
                 new List<ILanguage> { langDeDe, langFr }),
             dataBuilder.Value.BuildTac(ValueTypes.String, "File FR", new List<ILanguage> {langFr }),
             // special test - empty language item
-            dataBuilder.Value.BuildTac(ValueTypes.String, "File without language!", DimensionBuilder.NoLanguages.ToList()),
+            dataBuilder.Value.BuildTac(ValueTypes.String, "File without language!", DataConstants.NoLanguages.ToList()),
             dataBuilder.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
         });
 
@@ -212,7 +219,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
             {title.Name, title},
             {teaser.Name, teaser},
             {file.Name, file}
-        }, titleField: Attributes.TitleNiceName);
+        }, titleField: AttributeNames.TitleNiceName);
     }
 
 
@@ -227,8 +234,8 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
     {
         var merged = entitySaver.TestCreateMergedForSavingTac(_prodNull, ProdNoLang, SaveDefault);
 
-        Single(merged[Attributes.TitleNiceName].ValuesTac());//, "should only have 1");
-        var firstVal = merged[Attributes.TitleNiceName].ValuesTac().First();
+        Single(merged[AttributeNames.TitleNiceName].ValuesTac());//, "should only have 1");
+        var firstVal = merged[AttributeNames.TitleNiceName].ValuesTac().First();
         Empty(firstVal.Languages);//, "should still have no languages");
     }
 
@@ -238,8 +245,8 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
     {
         var merged = entitySaver.TestCreateMergedForSavingTac(ProdNoLang, ProductEntityMl, SaveDefault);
 
-        Equal(2, merged[Attributes.TitleNiceName].ValuesTac().Count());//, "should only have 2, no FR");
-        var deVal = merged[Attributes.TitleNiceName].ValuesTac().First(v => v.Languages.Any(l => l.Key == langDeDe.Key));
+        Equal(2, merged[AttributeNames.TitleNiceName].ValuesTac().Count());//, "should only have 2, no FR");
+        var deVal = merged[AttributeNames.TitleNiceName].ValuesTac().First(v => v.Languages.Any(l => l.Key == langDeDe.Key));
         Equal(2, deVal.Languages.Count());//, "should have 2 language");
     }
 
@@ -248,8 +255,8 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
     {
         var merged = entitySaver.TestCreateMergedForSavingTac(ProdNoLang, ProductEntityMl, SaveKeepUnknownLangs);
 
-        Equal(3, merged[Attributes.TitleNiceName].ValuesTac().Count());// "should have 3, with FR");
-        var deVal = merged[Attributes.TitleNiceName].ValuesTac().First(v => v.Languages.Any(l => l.Key == langFr.Key));
+        Equal(3, merged[AttributeNames.TitleNiceName].ValuesTac().Count());// "should have 3, with FR");
+        var deVal = merged[AttributeNames.TitleNiceName].ValuesTac().First(v => v.Languages.Any(l => l.Key == langFr.Key));
         Single(deVal.Languages);// "should have 1 language");
     }
     #endregion
@@ -260,8 +267,8 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
     {
         var merged = entitySaver.TestCreateMergedForSavingTac(ProdNoLang, ProductEntityEn, SaveDefault);
 
-        Single(merged[Attributes.TitleNiceName].ValuesTac());// "should only have 1");
-        var firstVal = merged[Attributes.TitleNiceName].ValuesTac().First();
+        Single(merged[AttributeNames.TitleNiceName].ValuesTac());// "should only have 1");
+        var firstVal = merged[AttributeNames.TitleNiceName].ValuesTac().First();
         Single(firstVal.Languages);// "should have 1 language");
     }
 
@@ -273,26 +280,26 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
         var merged = entitySaver.TestCreateMergedForSavingTac(mainMultiLang, additionEn, SaveKeepExistingLangs);
 
         // check the titles as expected
-        Equal(2, merged[Attributes.TitleNiceName].ValuesTac()
+        Equal(2, merged[AttributeNames.TitleNiceName].ValuesTac()
             .Count());// "should have 2 titles with languages - EN and a shared DE+CH");
-        Equal(2, merged[Attributes.TitleNiceName].ValuesTac()
+        Equal(2, merged[AttributeNames.TitleNiceName].ValuesTac()
             .Single(v => v.Languages.Any(l => l.Key == langDeDe.Key)).Languages.Count());// "should have 2 languages on the shared DE+CH");
-        Equal(ProductEntityEn.GetTac<string>(Attributes.TitleNiceName),
-            merged.GetTac<string>(Attributes.TitleNiceName, languages: [langEn.Key]));//, "en title should be the en-value");
+        Equal(ProductEntityEn.GetTac<string>(AttributeNames.TitleNiceName),
+            merged.GetTac<string>(AttributeNames.TitleNiceName, languages: [langEn.Key]));//, "en title should be the en-value");
         Equal(
-            mainMultiLang.GetTac<string>(Attributes.TitleNiceName, language: langDeDe.Key),
-            merged.GetTac(Attributes.TitleNiceName, language: langDeDe.Key));//,"de title should be the ML-value"
+            mainMultiLang.GetTac<string>(AttributeNames.TitleNiceName, language: langDeDe.Key),
+            merged.GetTac(AttributeNames.TitleNiceName, language: langDeDe.Key));//,"de title should be the ML-value"
         
         Equal(
-            mainMultiLang.GetTac<string>(Attributes.TitleNiceName, language: langDeCh.Key),
-            merged.GetTac(Attributes.TitleNiceName, language: langDeCh.Key));//,"ch title should be the ML-value"
+            mainMultiLang.GetTac<string>(AttributeNames.TitleNiceName, language: langDeCh.Key),
+            merged.GetTac(AttributeNames.TitleNiceName, language: langDeCh.Key));//,"ch title should be the ML-value"
         
 
         NotEqual(
-            additionEn.GetTac<string>(Attributes.TitleNiceName, language: langDeCh.Key),
-            merged.GetTac(Attributes.TitleNiceName, languages: [langDeCh.Key]).ToString());//,"ch title should not be replaced with the the ML-value"
+            additionEn.GetTac<string>(AttributeNames.TitleNiceName, language: langDeCh.Key),
+            merged.GetTac(AttributeNames.TitleNiceName, languages: [langDeCh.Key]).ToString());//,"ch title should not be replaced with the the ML-value"
         
-        var firstVal = merged[Attributes.TitleNiceName].ValuesTac().First();
+        var firstVal = merged[AttributeNames.TitleNiceName].ValuesTac().First();
         Single(firstVal.Languages);// "should have 1 language");
         Equal(langEn.Key, firstVal.Languages.First().Key);//, "language should be EN-US");
 
@@ -304,7 +311,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
         var merged = entitySaver.TestCreateMergedForSavingTac(ProductEntityMl, ProductEntityEn, SaveKeepExistingLangs);
 
         // check the titles as expected
-        Equal(2, merged[Attributes.TitleNiceName].ValuesTac().Count());// "should have 2 titles with languages - EN and a shared DE+CH");
+        Equal(2, merged[AttributeNames.TitleNiceName].ValuesTac().Count());// "should have 2 titles with languages - EN and a shared DE+CH");
     }
 
     // todo!

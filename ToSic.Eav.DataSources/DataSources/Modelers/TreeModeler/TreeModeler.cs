@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources.Internal;
+﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.DataSources.Internal;
 
 namespace ToSic.Eav.DataSources;
 
@@ -27,7 +28,7 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsTreeModeler")]
 [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
 // ReSharper disable once UnusedMember.Global
-public sealed class TreeModeler : Eav.DataSource.DataSourceBase
+public sealed class TreeModeler : DataSourceBase
 {
     private readonly ITreeMapper _treeMapper;
 
@@ -37,26 +38,26 @@ public sealed class TreeModeler : Eav.DataSource.DataSourceBase
     /// This determines what property is used as ID on the parent.
     /// Currently only allows "EntityId" and "EntityGuid"
     /// </summary>
-    [Configuration(Field = "ParentIdentifierAttribute", Fallback = Attributes.EntityFieldId)]
-    public string Identifier => Configuration.GetThis();
+    [Configuration(Field = "ParentIdentifierAttribute", Fallback = AttributeNames.EntityFieldId)]
+    public string Identifier => Configuration.GetThis(fallback: AttributeNames.EntityFieldId);
 
     /// <summary>
     /// The property on a child which contains the parent ID
     /// </summary>
     [Configuration(Field = "ChildParentAttribute", Fallback = "ParentId")]
-    public string ParentReferenceField => Configuration.GetThis();
+    public string ParentReferenceField => Configuration.GetThis(fallback: "ParentId");
 
     /// <summary>
     /// The name of the new field on the parent, which will reference the children
     /// </summary>
     [Configuration(Field = "TargetChildrenAttribute", Fallback = "Children")]
-    public string NewChildrenField => Configuration.GetThis();
+    public string NewChildrenField => Configuration.GetThis(fallback: "Children");
 
     /// <summary>
     /// Name of the new field on a child, which will reference the parent. 
     /// </summary>
     [Configuration(Field = "TargetParentAttribute", Fallback = "Parent")]
-    public string NewParentField => Configuration.GetThis();
+    public string NewParentField => Configuration.GetThis(fallback: "Parent");
 
     #endregion
 
@@ -81,19 +82,26 @@ public sealed class TreeModeler : Eav.DataSource.DataSourceBase
         Configuration.Parse();
 
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
         switch (Identifier)
         {
-            case Attributes.EntityGuidPascalCase:
+            case AttributeNames.EntityGuidPascalCase:
                 var resultGuid = _treeMapper.AddParentChild(
-                    source, Identifier, ParentReferenceField,
-                    NewChildrenField, NewParentField);
+                    originals: source,
+                    parentIdField: Identifier,
+                    childToParentRefField: ParentReferenceField,
+                    newChildrenField: NewChildrenField,
+                    newParentField: NewParentField);
                 return l.Return(resultGuid, $"Guid: {resultGuid.Count}");
-            case Attributes.EntityIdPascalCase:
+            case AttributeNames.EntityIdPascalCase:
                 var resultInt = _treeMapper.AddParentChild(
-                    source, Identifier, ParentReferenceField,
-                    NewChildrenField, NewParentField);
+                    originals: source,
+                    parentIdField: Identifier,
+                    childToParentRefField: ParentReferenceField,
+                    newChildrenField: NewChildrenField,
+                    newParentField: NewParentField);
                 return l.Return(resultInt, $"int: {resultInt.Count}");
             default:
                 return l.ReturnAsError(Error.Create(

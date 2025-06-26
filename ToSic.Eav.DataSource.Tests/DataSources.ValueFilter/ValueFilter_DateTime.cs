@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.DataSources.ValueFilter;
 using static ToSic.Eav.DataSources.CompareOperators;
 using static ToSic.Eav.TestData.PersonSpecs;
+#pragma warning disable xUnit1026
 
 namespace ToSic.Eav.DataSourceTests;
 // Todo

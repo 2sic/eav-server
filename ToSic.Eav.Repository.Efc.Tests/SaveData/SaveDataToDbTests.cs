@@ -1,8 +1,11 @@
-﻿using ToSic.Eav.Data;
+﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Internal.Environment;
-using ToSic.Eav.Persistence.Efc;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Save;
+using ToSic.Eav.ImportExport.Integration;
+using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Repositories;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Testing.Scenarios;
 using ToSic.Lib.DI;
 using Xunit.DependencyInjection;
@@ -13,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.SaveData;
 /// Make various changes and see if they worked - but rollback any changes afterward using transactions.
 /// </summary>
 [Startup(typeof(StartupTestsApps))]
-public class SaveDataToDbTests(DbDataController dbData, Generator<EfcAppLoader> appLoadGenerator, IImportExportEnvironment environment, EntitySaver entitySaver, DataBuilder dataBuilder)
+public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> appLoadGenerator, IImportExportEnvironment environment, EntitySaver entitySaver, DataBuilder dataBuilder)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 
@@ -105,7 +108,7 @@ public class SaveDataToDbTests(DbDataController dbData, Generator<EfcAppLoader> 
         // load content type to start creating an item...
         var loader1 = appLoadGenerator.New().UseExistingDb(dbi.SqlDb);
         var app1 = loader1.AppStateReaderRawTac(test.AppId);
-        var ct1 = app1.GetContentType(ctName);
+        var ct1 = app1.GetContentTypeTac(ctName);
 
         var newE = dataBuilder.CreateEntityTac(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new()
         {

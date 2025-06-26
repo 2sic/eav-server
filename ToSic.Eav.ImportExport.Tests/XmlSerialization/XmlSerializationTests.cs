@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.ImportExport.Internal.Xml;
+﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Repositories;
 using Xunit.Abstractions;
@@ -7,7 +8,7 @@ using Xunit.DependencyInjection;
 namespace ToSic.Eav.ImportExport.Tests.XmlSerialization;
 
 [Startup(typeof(StartupTestsApps))]
-public class XmlSerializationTests(XmlSerializer xmlSerializer, IRepositoryLoader repoLoader, IAppsCatalog appsCatalog, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioMini>>
+public class XmlSerializationTests(XmlSerializer xmlSerializer, IAppsAndZonesLoaderWithRaw repoLoader, IAppsCatalog appsCatalog, ITestOutputHelper output) : IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
 
     [Fact]

@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Eav.DataSources.Internal;
+﻿using ToSic.Eav.DataSources.Internal;
+using ToSic.Sys.Users.Permissions;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",
     HelpLink = "https://go.2sxc.org/DsParents")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class Parents(DataSourceBase.MyServices services, IContextResolverUserPermissions userPermissions) : RelationshipDataSourceBase(services, userPermissions, $"{DataSourceConstantsInternal.LogPrefix}.Parent")
+public class Parents(DataSourceBase.MyServices services, ICurrentContextUserPermissionsService userPermissions) : RelationshipDataSourceBase(services, userPermissions, $"{DataSourceConstantsInternal.LogPrefix}.Parent")
 {
     /// <summary>
     /// Name of the field (in the parent) pointing to the child.
@@ -30,7 +30,7 @@ public class Parents(DataSourceBase.MyServices services, IContextResolverUserPer
     ///
     /// Example: If a person is referenced by books as both `Author` and `Illustrator` then leaving this empty will get both relationships, but specifying `Author` will only get this person if it's the author. 
     /// </summary>
-    public override string FieldName => Configuration.GetThis();
+    public override string? FieldName => Configuration.GetThis();
 
     /// <summary>
     /// Name of the content-type to get.
@@ -38,7 +38,7 @@ public class Parents(DataSourceBase.MyServices services, IContextResolverUserPer
     ///
     /// Example: If a person is referenced by books (as author) as by companies) as employee, then you may want to only find companies referencing this book. 
     /// </summary>
-    public override string ContentTypeName => Configuration.GetThis();
+    public override string? ContentTypeName => Configuration.GetThis();
 
     /// <summary>
     /// Construct function for the get of the related items
@@ -47,7 +47,7 @@ public class Parents(DataSourceBase.MyServices services, IContextResolverUserPer
     /// <param name="typeName"></param>
     /// <returns></returns>
     [PrivateApi]
-    protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName) 
+    protected override Func<IEntity, IEnumerable<IEntity>> InnerGet(string? fieldName, string? typeName) 
         => o => o.Relationships.FindParents(typeName, fieldName, Log);
 
 }

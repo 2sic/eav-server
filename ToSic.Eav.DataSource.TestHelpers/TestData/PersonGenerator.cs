@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Sys;
 using static ToSic.Eav.TestData.PersonSpecs;
 
 namespace ToSic.Eav.TestData;
@@ -107,6 +108,6 @@ internal class PersonGenerator(DataBuilder dataBuilder)
             ? (object) original
             : dataBuilder.Attribute.CreateTypedAttributeTac(name, type, new List<IValue>
             {
-                dataBuilder.Value.BuildTac(type, original, DimensionBuilder.NoLanguages),
+                dataBuilder.Value.BuildTac(type, original, DataConstants.NoLanguages),
             });
 }

@@ -14,9 +14,9 @@ public class ConvertToString: ConvertTestBase
     [Fact]
     public void StringToString()
     {
-        Assert.Equal(null, (null as string).ConvertOrDefaultTac<string>());
-        Assert.Equal("", "".ConvertOrDefaultTac<string>());
-        Assert.Equal("5", "5".ConvertOrDefaultTac<string>());
+        Equal(null, (null as string).ConvertOrDefaultTac<string>());
+        Equal("", "".ConvertOrDefaultTac<string>());
+        Equal("5", "5".ConvertOrDefaultTac<string>());
     }
 
 
@@ -31,7 +31,7 @@ public class ConvertToString: ConvertTestBase
         ConvT(-5.2, "-5.2", "-5.2");
 
         // Now change threading culture
-        System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("de-DE");
+        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("de-DE");
         ConvT(5.2, "5.2", "5.2");
         ConvT(5.299, "5.299", "5.299");
         ConvT(-5.2, "-5.2", "-5.2");

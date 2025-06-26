@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Sys.props" />
+
+  <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
+
+  <PropertyGroup>
+    <RootNamespace>ToSic.Sys</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
+  </ItemGroup>
+
+</Project>

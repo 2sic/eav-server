@@ -1,6 +1,8 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
-using ToSic.Eav.Data.Internal;
+using ToSic.Eav.Data.Sys.Attributes;
+using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.Data.Builder;
 
@@ -15,7 +17,7 @@ public class ContentTypeFactoryAttributesTests(ContentTypeFactory factory)
         Equal(type, attribute.Type); //, $"{name} type check");
         Equal(isTitle, attribute.IsTitle); //, $"{name} IsTitle check");
         if (description != default)
-            Equal(description, attribute.Metadata.GetBestValue<string>(AttributeMetadata.DescriptionField)); //, $"{name} Description check");
+            Equal(description, attribute.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)); //, $"{name} Description check");
     }
 
     private ContentTypeVirtualAttributes GetVAttribDecorator(Type t) => factory.Create(t).GetDecorator<ContentTypeVirtualAttributes>();

@@ -1,5 +1,5 @@
 ﻿using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -30,7 +30,7 @@ public class OwnerFilter : DataSourceBase
     /// The identity of the user to filter by. Uses the Identity-token convention like dnn:1 is the user #1 in the DNN DB
     /// </summary>
     [Configuration(Field = IdentityCodeField)]
-    public string Identity
+    public string? Identity
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -62,7 +62,7 @@ public class OwnerFilter : DataSourceBase
             ? l.ReturnAsError(Error.TryGetInFailed())
             : l.ReturnAsOk(source
                 .Where(e => e.Owner == identity)
-                .ToImmutableList()
+                .ToImmutableOpt()
             );
     }
 

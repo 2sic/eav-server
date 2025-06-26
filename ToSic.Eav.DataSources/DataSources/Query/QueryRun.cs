@@ -1,7 +1,9 @@
 ﻿using ToSic.Eav.DataSource.Internal.Query;
 using ToSic.Eav.DataSource.Streams.Internal;
-using ToSic.Eav.DataSources.LookUp;
-using ToSic.Eav.LookUp;
+using ToSic.Eav.LookUp.Sources;
+using ToSic.Eav.LookUp.Sources.Sys;
+using ToSic.Eav.LookUp.Sys;
+using ToSic.Eav.LookUp.Sys.Engines;
 
 namespace ToSic.Eav.DataSources;
 
@@ -21,7 +23,7 @@ namespace ToSic.Eav.DataSources;
 )]
 
 // ReSharper disable once UnusedMember.Global
-public class QueryRun : Eav.DataSource.DataSourceBase
+public class QueryRun : DataSourceBase
 {
     private readonly Generator<Query> _queryGenerator;
 
@@ -56,9 +58,10 @@ public class QueryRun : Eav.DataSource.DataSourceBase
 
     #region Out
     /// <inheritdoc/>
-    public override IReadOnlyDictionary<string, IDataStream> Out => (_out ??= new(this, Query?.Out)).AsReadOnly();
+    [field: AllowNull, MaybeNull]
+    public override IReadOnlyDictionary<string, IDataStream> Out
+        => field ??= new StreamDictionary(this, Services.CacheService, streams: Query?.Out).AsReadOnly();
 
-    private StreamDictionary _out;
     #endregion
 
     #region Surface the inner query in the API in case we need to look into it from our Razor Code
@@ -67,12 +70,13 @@ public class QueryRun : Eav.DataSource.DataSourceBase
     /// The inner query object. Will be initialized the first time it's accessed.
     /// </summary>
     [PrivateApi("not sure if showing this has any value - probably not")]
-    internal Query Query => _query ??= BuildQuery();
-    private Query _query;
+    internal Query? Query => field ??= BuildQuery();
+
     #endregion
 
-    private Query BuildQuery() => Log.Func(() =>
+    private Query? BuildQuery()
     {
+        var l = Log.Fn<Query>();
         // parse config to be sure we get the right query name etc.
         Configuration.Parse();
 
@@ -98,29 +102,29 @@ public class QueryRun : Eav.DataSource.DataSourceBase
         // quit if nothing found
         if (configEntity == null)
         {
-            Log.A("no configuration found - empty list");
-            return (null, "silent error");
+            l.A("no configuration found - empty list");
+            return l.ReturnNull("silent error");
         }
 
-        Log.A($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
+        l.A($"Found query settings'{configEntity.GetBestTitle()}' ({configEntity.EntityId}), will continue");
 
 
         var queryDef = configEntity.Children(FieldQuery).FirstOrDefault();
         if (queryDef == null)
         {
-            Log.A("can't find query in configuration - empty list");
-            return (null, "silent error");
+            l.A("can't find query in configuration - empty list");
+            return l.ReturnNull("silent error");
         }
 
         #endregion
 
-        Log.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
+        l.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
         // create the query & set params
         var query = _queryGenerator.New().Init(ZoneId, AppId, queryDef, LookUpWithoutParams());
         query.Params(ResolveParams(configEntity));
-        return (query, "ok");
-    });
+        return l.ReturnAsOk(query);
+    }
 
     /// <summary>
     /// Create a new lookup machine and remove the params which would be in there right now
@@ -135,7 +139,9 @@ public class QueryRun : Eav.DataSource.DataSourceBase
         // ...HasSource() also checked sub-sources, even if it didn't remove them.
         // ...So I think we're safe. If all is ok, remove this comment 2024-Q3
         var sources = Configuration.LookUpEngine.Sources.ToList();
-        sources.Remove(sources.GetSource(DataSourceConstants.ParamsSourceName));
+        var toRemove = LookUpExtensions.GetSource(sources, DataSourceConstants.ParamsSourceName);
+        if (toRemove != null)
+            sources.Remove(toRemove);
 
         var lookUpsWithoutParams = new LookUpEngine(Configuration.LookUpEngine, Log, sources: sources, onlyUseProperties: true, skipOriginalSource: true);
         //if (lookUpsWithoutParams.HasSource(DataSourceConstants.ParamsSourceName))

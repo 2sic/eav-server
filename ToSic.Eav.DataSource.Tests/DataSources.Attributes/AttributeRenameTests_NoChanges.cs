@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.DataSourceTests;
-
-namespace ToSic.Eav.DataSources.Attributes;
+﻿namespace ToSic.Eav.DataSources.Attributes;
 
 public partial class AttributeRenameTests
 {

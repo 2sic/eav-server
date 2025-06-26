@@ -1,14 +1,15 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Persistence.Efc.Models;
-using ToSic.Eav.Repositories;
+using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
+using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
 
 namespace ToSic.Eav.Persistence.Efc.Tests;
 
 [Startup(typeof(StartupTestsApps))]
-public class ZoneLanguages(EavDbContext db, EfcAppLoader loader) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class ZoneLanguages(EavDbContext db, EfcAppLoaderService loader) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private const int MinZones = 4;
     private const int MaxZones = 10;
@@ -28,7 +29,7 @@ public class ZoneLanguages(EavDbContext db, EfcAppLoader loader) : IClassFixture
 #if NETCOREAPP
     [field: AllowNull, MaybeNull]
 #endif
-    private IDictionary<int, Zone> Zones => field ??= ((IRepositoryLoader)loader.UseExistingDb(db)).Zones();
+    private IDictionary<int, Zone> Zones => field ??= ((IAppsAndZonesLoader)loader.UseExistingDb(db)).Zones();
 
     private int DefaultAppId => field != 0 ? field : field = Zones.First().Value.DefaultAppId;
 

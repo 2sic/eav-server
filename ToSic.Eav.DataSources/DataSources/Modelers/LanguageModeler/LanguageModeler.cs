@@ -24,7 +24,7 @@ namespace ToSic.Eav.DataSources;
     In = [DataSourceConstants.StreamDefaultName + "*"],
     HelpLink = "https://go.2sxc.org/DsLanguageModeler")]
 [PublicApi("Brand new in v11.20, WIP, may still change a bit")]
-public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
+public sealed class LanguageModeler : DataSourceBase
 {
 
     #region Constants / Properties
@@ -33,7 +33,7 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
     /// Contains the field map which configures how fields should be connected.
     /// </summary>
     [Configuration]
-    public string FieldMap => Configuration.GetThis();
+    public string FieldMap => Configuration.GetThis(fallback: "");
 
     #endregion
 
@@ -41,11 +41,9 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
     /// Initializes this data source
     /// </summary>
     [PrivateApi]
-    public LanguageModeler(DataBuilder dataBuilder, MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.LngMod")
+    public LanguageModeler(DataBuilder dataBuilder, MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.LngMod", connect: [dataBuilder])
     {
-        ConnectLogs([
-            _dataBuilder = dataBuilder
-        ]);
+        _dataBuilder = dataBuilder;
         ProvideOut(MapLanguagesIntoValues);
     }
 
@@ -83,7 +81,8 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
         #endregion
 
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
         var atBld = _dataBuilder.Attribute;
         var result = new List<IEntity>();
@@ -93,7 +92,7 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
 
             foreach (var map in fieldMap)
             {
-                var newName = map.Target;
+                var newName = map.Target!;
 
                 // if source value contains = it must be a language mapping
                 if (map.HasLanguages)
@@ -107,19 +106,18 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
                         .FirstOrDefault();
 
                     // if there are no values, we'll assume it's a string field
-                    var newAttribute = atBld.Create(newName, firstExistingValue?.Type ?? ValueTypes.String); 
+                    var newAttribute = atBld.Create(newName, firstExistingValue?.Type ?? ValueTypes.String, []);
 
                     // Loop through each source field to add the value to the new attribute
                     foreach (var entry in map.Fields)
                     {
-                        if (!attributes.ContainsKey(entry.OriginalField))
+                        if (!attributes.TryGetValue(entry.OriginalField, out var currentAttribute))
                         {
                             // do not create values for fields which do not exist
                             l.A($"Field mapping ignored for # {entity.EntityId} / language {entry.Language}; source attribute {entry.OriginalField} does not exist.");
                             continue;
                         }
 
-                        var currentAttribute = attributes[entry.OriginalField];
                         var value = currentAttribute.Values.FirstOrDefault()?.ObjectContents;
                         // Remove first, in case the new name replaces an old one
                         newAttribute = atBld.CreateOrUpdate(originalOrNull: newAttribute, name: newName, value: value, type: newAttribute.Type, language: entry.Language);
@@ -130,21 +128,20 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
                 }
                 else // simple re-mapping / renaming
                 {
-                    if (!attributes.ContainsKey(map.Source))
+                    if (!attributes.TryGetValue(map.Source!, out var sourceAttr))
                     {
                         l.A($"Field mapping not possible for #{entity.EntityId}; source attribute {map.Source} does not exist.");
                         continue;
                     }
 
                     // Make a copy to make sure the Name property of the attribute is set correctly
-                    var sourceAttr = attributes[map.Source];
                     var newAttribute = atBld.Create(newName, sourceAttr.Type, sourceAttr.Values.ToList());
                     // Remove first, in case the new name replaces an old one
                     // #immutableTodo
-                    attributes.Remove(map.Source);
+                    attributes.Remove(map.Source!);
                     // Now add the resulting new attribute
                     // #immutableTodo
-                    attributes.Add(map.Target, newAttribute);
+                    attributes.Add(map.Target!, newAttribute);
                 }
             }
 
@@ -153,7 +150,7 @@ public sealed class LanguageModeler : Eav.DataSource.DataSourceBase
             result.Add(modifiedEntity);
         }
 
-        var immutableResults = result.ToImmutableList();
+        var immutableResults = result.ToImmutableOpt();
         return l.Return(immutableResults, $"{immutableResults.Count}");
     }
 }

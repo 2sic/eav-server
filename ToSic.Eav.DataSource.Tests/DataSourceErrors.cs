@@ -1,4 +1,10 @@
-﻿namespace ToSic.Eav;
+﻿using ToSic.Eav.Data.Sys;
+
+namespace ToSic.Eav;
+
+// NOTE: This exists in 2 copies on 2 test projects
+// This is because the shared testing project does not currently reference
+// the Assert.... objects of XUnit, so it can't be moved there ATM.
 
 public static class DataSourceErrors
 {

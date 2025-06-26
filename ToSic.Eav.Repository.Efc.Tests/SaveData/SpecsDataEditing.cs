@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data;
+using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Tests.SaveData;
 
@@ -10,7 +10,7 @@ public class SpecsDataEditing : IAppIdentity
 
     public string ContentTypeName = "DataToModify";
 
-    public string TitleField = Attributes.TitleNiceName;
+    public string TitleField = AttributeNames.TitleNiceName;
 
     public int ExistingItem = 20980;
 

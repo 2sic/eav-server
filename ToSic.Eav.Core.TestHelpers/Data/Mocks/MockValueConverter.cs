@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Mocks;
+﻿using ToSic.Eav.Data.ValueConverter.Sys;
+
+namespace ToSic.Eav.Data.Mocks;
 
 /// <summary>
 /// Will pretend to convert links beginning with "page:" or "link:"
@@ -11,8 +13,10 @@ public class MockValueConverter:IValueConverter
         throw new NotSupportedException("Not supported in provider 'Mock'");
     }
 
-    public string ToValue(string reference, Guid itemGuid)
+    public string? ToValue(string? reference, Guid itemGuid)
     {
+        if (reference == null)
+            return null;
         var refLower = reference.ToLowerInvariant();
         return refLower.StartsWith(ValueConverterBase.PrefixPage + ValueConverterBase.Separator ) 
                || refLower.StartsWith(ValueConverterBase.PrefixFile + ValueConverterBase.Separator)

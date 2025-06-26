@@ -1,13 +1,15 @@
-﻿using ToSic.Eav.Data.Source;
-using ToSic.Eav.ImportExport.Internal;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Entities.Sources;
+using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.File;
-using ToSic.Eav.Repositories;
 using Xunit.Abstractions;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File.Bundles;
 
 
-public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoader> loaderGenerator) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
+public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoader, FileSystemLoaderOptions> loaderGenerator) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
     [Fact]
     public void TypesInBundles()
@@ -31,7 +33,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
     public void ExportConfiguration()
     {
         var entities = new LoaderHelper(PersistenceTestConstants.ScenarioMiniDeep, Log)
-            .LoadAllQueryEntities(loaderGenerator.New(), output);
+            .LoadAllQueryEntities(loaderGenerator, output);
         var systemExportConfiguration = entities.One(new System.Guid("22db39d7-8a59-43be-be68-ea0f28880c10"));
         NotNull(systemExportConfiguration);//, "should find the system export configuration");
 
@@ -43,14 +45,14 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
     private IList<IContentType> LoadAllTypesInBundles()
     {
         var testStorageRoot = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMiniDeep);
-        var loader = loaderGenerator.New()// GetService<FileSystemLoader>()
-            .Init(
-                Constants.PresetAppId,
-                testStorageRoot,
-                RepositoryTypes.TestingDoNotUse,
-                false,
-                null
-            );
+        var loader = loaderGenerator.New(new()
+        {
+            AppId = KnownAppsConstants.PresetAppId,
+            Path = testStorageRoot,
+            RepoType = RepositoryTypes.TestingDoNotUse,
+            IgnoreMissing = false,
+            EntitiesSource = null,
+        });
 
         IList<IContentType> cts;
         try
@@ -66,12 +68,18 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         return cts;
     }
         
-    private List<IEntity> LoadAllEntitiesInBundles()
+    private ICollection<IEntity> LoadAllEntitiesInBundles()
     {
         var testStorageRoot = TestFiles.GetTestPath(PersistenceTestConstants.ScenarioMiniDeep);
         output.WriteLine($"path:'{testStorageRoot}'");
-        var loader = loaderGenerator.New() // GetService<FileSystemLoader>()
-            .Init(Constants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+        var loader = loaderGenerator.New(new()
+        {
+            AppId = KnownAppsConstants.PresetAppId,
+            Path = testStorageRoot,
+            RepoType = RepositoryTypes.TestingDoNotUse,
+            IgnoreMissing = false,
+            EntitiesSource = null
+        });
         var relationshipsSource = new ImmutableEntitiesSource();
         try
         {
@@ -81,7 +89,6 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         {
             output.WriteLine(Log.Dump());
         }
-        return new List<IEntity>();
     }
         
 }

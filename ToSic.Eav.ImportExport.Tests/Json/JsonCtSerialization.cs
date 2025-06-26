@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.ImportExport.Tests.Persistence.File;
+﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using Xunit.Abstractions;
-using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
+using JsonSerializer = ToSic.Eav.ImportExport.Json.Sys.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests.Json;
 
@@ -56,5 +57,5 @@ public class JsonCtSerialization(ITestOutputHelper output, JsonTestHelpers jsonT
         => JsonOfContentType(jsonTestHelper.SerializerOfApp(appId), typeName);
 
     internal static string JsonOfContentType(JsonSerializer ser, string typeName)
-        => JsonTestHelpers.JsonOfContentType(ser, ser.AppReaderOrError.GetContentType(typeName));
+        => JsonTestHelpers.JsonOfContentType(ser, ser.AppReaderOrError.GetContentTypeTac(typeName));
 }

@@ -1,4 +1,5 @@
-﻿namespace ToSic.Eav.Data.PropertyLookup;
+﻿#pragma warning disable xUnit1026
+namespace ToSic.Eav.Data.PropertyLookup;
 
 public class PropertyRequestSpecsTests
 {
@@ -6,13 +7,12 @@ public class PropertyRequestSpecsTests
     public void DimensionsBlankAutoExpand()
     {
         var specs = new PropReqSpecs("TestField");
-        Assert.Equal(new string[] { null }, specs.Dimensions);
+        Equal([null], specs.Dimensions);
     }
 
     [Theory]
-    [InlineData(new[] { (string)null }, new[] { (string)null }, "null, Auto Expand")]
-    [InlineData(new[] { (string)null }, new[] { (string)null }, "null, Auto Expand")]
-    [InlineData(new[] { (string)null }, new[] { (string)null }, "empty, Auto Expand")]
+    [InlineData(new[] { (string)null! }, new[] { (string)null! }, "null, Auto Expand")]
+    [InlineData(new[] { (string)null! }, new[] { (string)null! }, "empty, Auto Expand")]
     [InlineData(new[] { "a", null }, new[] { "a" }, "Auto Expand")]
     [InlineData(new[] { "a", "b", null }, new[] { "a", "b" }, "Auto Expand")]
     [InlineData(new[] { "a", "b", null }, new[] { "a", "b", null }, "Keep, don't add second null")]
@@ -20,7 +20,7 @@ public class PropertyRequestSpecsTests
     public void Dimensions1AutoExpand(string[] expected, string[] input, string displayName)
     {
         var specs = new PropReqSpecs("TestField", input, false);
-        Assert.Equal(expected, specs.Dimensions);
+        Equal(expected, specs.Dimensions);
     }
 
     [Theory]
@@ -29,7 +29,7 @@ public class PropertyRequestSpecsTests
     public void DimensionsNoModUntouched(string[] expected, string[] input, string displayName)
     {
         var specs = new PropReqSpecs("TestField", input, DimsAreFinal: true);
-        Assert.Equal(expected, specs.Dimensions);
+        Equal(expected, specs.Dimensions);
     }
 
 
@@ -37,6 +37,6 @@ public class PropertyRequestSpecsTests
     public void DimensionsWithNullUntouched()
     {
         var specs = new PropReqSpecs("TestField", ["a", null], true);
-        Assert.Equal(new[] { "a", null }, specs.Dimensions);
+        Equal(new[] { "a", null }, specs.Dimensions);
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Internal;
+using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Attributes;
+using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.DataSources.Sys.Types;
-using ToSic.Eav.Plumbing;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -28,7 +30,7 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
 
-public sealed class Attributes: DataSourceBase
+public sealed class Attributes: CustomDataSourceAdvanced
 {
 
     #region Configuration-properties (no config)
@@ -40,7 +42,7 @@ public sealed class Attributes: DataSourceBase
     /// The content-type name
     /// </summary>
     [Configuration(Fallback = TypeNameFallbackToTryToUseInStream)]
-    public string ContentTypeName => Configuration.GetThis();
+    public string ContentTypeName => Configuration.GetThis(fallback: TypeNameFallbackToTryToUseInStream);
         
     #endregion
 
@@ -48,19 +50,13 @@ public sealed class Attributes: DataSourceBase
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppReaderFactory appReaders, MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders, dataFactory])
+    public Attributes(IAppReaderFactory appReaders, MyServices services)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders])
     {
         _appReaders = appReaders;
-        _dataFactory = dataFactory.New(options: new()
-        {
-            TitleField = nameof(IAttributeType.Title),
-            TypeName = AttribContentTypeName,
-        });
-
         ProvideOut(GetList);
     }
     private readonly IAppReaderFactory _appReaders;
-    private readonly IDataFactory _dataFactory;
 
     private IImmutableList<IEntity> GetList()
     {
@@ -76,14 +72,21 @@ public sealed class Attributes: DataSourceBase
 
         var useStream = TypeNameFallbackToTryToUseInStream == ContentTypeName && In.ContainsKey(StreamDefaultName);
         var optionalList = useStream
-            ? In[StreamDefaultName]?.List.ToImmutableList()
+            ? In[StreamDefaultName]?.List.ToImmutableOpt()
             : null;
 
         var appReader = _appReaders.Get(this);
-        var firstEntityInStream = useStream ? optionalList?.FirstOrDefault() : null;
-        var types = useStream 
-            ? (firstEntityInStream?.Type).ToListOfOne()
-            : typeNames.Select(appReader.GetContentType).ToList();
+        var firstEntityInStream = useStream
+            ? optionalList?.FirstOrDefault()
+            : null;
+        var types = (useStream
+                ? [firstEntityInStream?.Type]
+                : typeNames
+                    .Select(appReader.TryGetContentType)
+            )
+            .Where(t => t != null)
+            .Cast<IContentType>()
+            .ToList();
 
 
         if (!types.Any())
@@ -91,19 +94,18 @@ public sealed class Attributes: DataSourceBase
 
         // try to load from type, if it exists
         var attributes = types
-            .SelectMany(t =>
-                t.Attributes?.Select(a => new
+            .SelectMany(t => t
+                .Attributes
+                .Select(a => new
                 {
                     Type = t,
                     Attribute = a,
                     a.Name,
                 })
-                ?? []
             )
             .DistinctBy(set => set.Name)
             .OrderBy(at => at.Name)
             .ToList();
-
 
         // todo: when supporting multiple types, consider adding more info what type they are from
         var list = attributes
@@ -115,7 +117,7 @@ public sealed class Attributes: DataSourceBase
                     builtIn: false,
                     contentTypeName: at.Type.Name,
                     // TODO: FILTER html
-                    description: at.Attribute.Metadata.GetBestValue<string>(AttributeMetadata.DescriptionField)
+                    description: at.Attribute.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)
                 )
             )
             .ToList();
@@ -148,6 +150,7 @@ public sealed class Attributes: DataSourceBase
         var foundFieldNames = list
             .Select(dic => dic[nameof(IAttributeType.Name)] as string)
             .Where(x => x != null)
+            .Cast<string>()
             .ToList();
 
         // Add descriptions of system fields such as Id, Created, Modified etc.
@@ -156,15 +159,22 @@ public sealed class Attributes: DataSourceBase
         list = sysFields.Concat(list).ToList();
 
         // if it didn't work yet, maybe try from stream items
-        var data = list.Select(attribData => _dataFactory.Create(attribData)).ToImmutableList();
+        var dataFactory = DataFactory.SpawnNew(options: new()
+        {
+            TitleField = nameof(IAttributeType.Title),
+            TypeName = AttribContentTypeName,
+        });
+        var data = list
+            .Select(attribData => dataFactory.Create(attribData))
+            .ToImmutableOpt();
         return l.Return(data, $"{data.Count}");
     }
 
-    private static IEnumerable<Dictionary<string, object>> GetSystemFields(List<IContentType> types, List<string> foundFieldNames)
+    private static IEnumerable<Dictionary<string, object?>> GetSystemFields(List<IContentType> types, List<string> foundFieldNames)
     {
         // New 2022-10-17 2dm - Add System fields such as Id, Created, Modified etc.
         // But only if they weren't already added by the content type, so if the ContentType had an "Id" field, we shouldn't override it here.
-        var sysFieldsWhichWereNotAdded = Data.Attributes.SystemFields
+        var sysFieldsWhichWereNotAdded = AttributeNames.SystemFields
             .Where(sysField => !foundFieldNames.Any(f => f.EqualsInsensitive(sysField.Key)))
             .ToList();
 
@@ -173,7 +183,7 @@ public sealed class Attributes: DataSourceBase
         var sysFieldAttributes = types
             .Select(t => t.GetDecorator<ContentTypeVirtualAttributes>())
             .Where(x => x != null)
-            .SelectMany(x => x.VirtualAttributes)
+            .SelectMany(x => x!.VirtualAttributes)
             .ToList();
 
         var additions = sysFieldsWhichWereNotAdded
@@ -181,8 +191,8 @@ public sealed class Attributes: DataSourceBase
             {
                 var descriptionProvider = sysFieldAttributes
                     .FirstOrDefault(x => x.Key == sysField.Key).Value;
-                var description = descriptionProvider?.Metadata.GetBestValue<string>(AttributeMetadata.DescriptionField)
-                                  ?? (Data.Attributes.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
+                var description = descriptionProvider?.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)
+                                  ?? (AttributeNames.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
                                       ? desc
                                       : default);
                 return AsDic(
@@ -199,14 +209,14 @@ public sealed class Attributes: DataSourceBase
         return additions;
     }
 
-    private static Dictionary<string, object> AsDic(
+    private static Dictionary<string, object?> AsDic(
         string name,
         ValueTypes type,
         bool isTitle,
         int sortOrder,
         bool builtIn,
         string contentTypeName,
-        string description = default
+        string? description = default
     ) => new()
         {
             [nameof(IAttributeType.Name)] = name,
@@ -225,12 +235,12 @@ public sealed class Attributes: DataSourceBase
     /// </summary>
     /// <param name="html"></param>
     /// <returns></returns>
-    private static string CleanDescription(string html)
+    private static string? CleanDescription(string? html)
     {
         if (string.IsNullOrWhiteSpace(html))
             return html;
 
-        html = html.Replace("<br>", "\n");
+        html = html!.Replace("<br>", "\n");
         var clean = StripHtml(html);
         var enter = clean.IndexOf("\n", StringComparison.Ordinal);
         var firstLine = enter > 0

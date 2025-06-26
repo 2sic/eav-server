@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Eav.props" />
+
+  <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.LookUp\ToSic.Eav.LookUp.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Caching\ToSic.Sys.Caching.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Code\ToSic.Sys.Code.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Security\ToSic.Sys.Security.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
+  </ItemGroup>
+
+</Project>

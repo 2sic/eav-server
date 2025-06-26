@@ -1,32 +1,32 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Data;
-using ToSic.Eav.Persistence.Efc.Models;
+using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Testing;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.Abstractions;
+using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
 
 namespace ToSic.Eav.Persistence.Efc.Tests;
 
 [Startup(typeof(StartupTestsApps))]
-public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGenerator, ITestOutputHelper output)
+public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoaderService> loaderGenerator, ITestOutputHelper output)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     /// <summary>
     /// AppId of the Blog App in the eav-testing DB
     /// </summary>
-    private const int BlogAppId = 5260;
-    private const int ExpectedContentTypesOnBlog = 7;
+    private const int BlogAppId = ScenarioConstants.AppBlogId;
+    private const int ExpectedContentTypesOnBlog = ScenarioConstants.AppBlogOwnContentTypeCount;
 
-#if NETCOREAPP
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
-#endif
-    private EfcAppLoader Loader => field ??= loaderGenerator.New().UseExistingDb(db);
+    private EfcAppLoaderService Loader => field ??= loaderGenerator.New().UseExistingDb(db);
 
     [Fact]
     public void GetSomething()
     {
-        var results = db.ToSicEavZones.Single(z => z.ZoneId == 1);
+        var results = db.TsDynDataZones.Single(z => z.ZoneId == 1);
         True(results.ZoneId == 1, "zone doesn't fit - it is " + results.ZoneId);
     }
 
@@ -73,5 +73,6 @@ public class Efc11LoadTests(EavDbContext db, Generator<EfcAppLoader> loaderGener
         output.WriteLine($"Loading {max} times took {timer.ElapsedMilliseconds}ms");
     }
 
-    private IList<IContentType> TestLoadCts(int appId) => (Loader as IRepositoryLoader).ContentTypes(appId, null);
+    private ICollection<IContentType> TestLoadCts(int appId)
+        => (Loader as IAppsAndZonesLoader).ContentTypes(appId, null);
 }

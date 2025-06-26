@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.DataSource.Streams;
-using ToSic.Eav.DataSource.Streams.Internal;
+﻿using ToSic.Eav.DataSource.Streams.Internal;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -25,7 +24,7 @@ public sealed class StreamFallback : DataSourceBase
 
     #region Debug-Properties
     [PrivateApi]
-    internal string ReturnedStreamName { get; private set; }
+    internal string? DebugReturnedStreamName { get; private set; }
     #endregion
 
 
@@ -42,16 +41,17 @@ public sealed class StreamFallback : DataSourceBase
     private IImmutableList<IEntity> GetStreamFallback()
     {
         var foundStream = FindIdealFallbackStream();
-        return foundStream?.List.ToImmutableList() ?? [];
+        return foundStream?.List.ToImmutableOpt() ?? [];
     }
 
-    private IDataStream FindIdealFallbackStream() => Log.Func(() =>
+    private IDataStream? FindIdealFallbackStream()
     {
+        var l = Log.Fn<IDataStream>("");
         Configuration.Parse();
 
         // Check if there is a default-stream in with content - if yes, try to return that
         if (In.HasStreamWithItems(StreamDefaultName))
-            return (In[StreamDefaultName], "found default");
+            return l.Return(In[StreamDefaultName], "found default");
 
         // Otherwise alphabetically assemble the remaining in-streams, try to return those that have content
         var streamList = In
@@ -61,10 +61,10 @@ public sealed class StreamFallback : DataSourceBase
         foreach (var stream in streamList)
             if (stream.Value.List.Any())
             {
-                ReturnedStreamName = stream.Key;
-                return (stream.Value, $"will return stream:{ReturnedStreamName}");
+                DebugReturnedStreamName = stream.Key;
+                return l.Return(stream.Value, $"will return stream:{stream.Key}");
             }
 
-        return (null, "didn't find any stream, will return empty");
-    });
+        return l.ReturnNull("didn't find any stream, will return empty");
+    }
 }

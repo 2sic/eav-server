@@ -2,6 +2,6 @@
 
 internal class LanguageToField
 {
-    public string Language;
-    public string OriginalField;
+    public required string Language;
+    public required string OriginalField;
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.StartUp;
-using ToSic.Lib;
+using ToSic.Eav.Data.Build;
+
 #pragma warning disable CA1822
 
 namespace ToSic.Eav;
@@ -17,9 +17,15 @@ public class StartupTestsEavCore
     /// <summary>
     /// Startup helper
     /// </summary>
-    public void ConfigureServices(IServiceCollection services) =>
+    public virtual void ConfigureServices(IServiceCollection services) =>
         services
-            .AddEavCore()
-            .AddEavCoreFallbackServices()
-            .AddLibCore();
+            //.AddEavDataPersistence()
+            .AddEavDataBuild()
+            .AddEavDataStack()
+            .AddEavData()
+            .AddEavCoreLibAndSys()
+
+            .AddEavDataBuildFallbacks()
+            .AddEavDataFallbacks()
+            .AddAllLibAndSysFallbacks();
 }

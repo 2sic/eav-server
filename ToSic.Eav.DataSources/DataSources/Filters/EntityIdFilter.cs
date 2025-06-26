@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource.Internal.Errors;
-using ToSic.Eav.Plumbing;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
     HelpLink = "https://go.2sxc.org/DsIdFilter")]
 
-public class EntityIdFilter : Eav.DataSource.DataSourceBase
+public class EntityIdFilter : DataSourceBase
 {
     #region Configuration-properties
 
@@ -32,7 +32,7 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
     [Configuration]
     public string EntityIds
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set
         {
             // kill any spaces in the string
@@ -56,15 +56,19 @@ public class EntityIdFilter : Eav.DataSource.DataSourceBase
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         var entityIdsOrError = CustomConfigurationParse();
-        if (entityIdsOrError.IsError)
-            return l.ReturnAsError(entityIdsOrError.Errors);
+        if (!entityIdsOrError.IsOk)
+            return l.ReturnAsError(entityIdsOrError.ErrorsSafe());
 
-        var entityIds = entityIdsOrError.Result;
+        var entityIds = entityIdsOrError.Result!;
 
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
-        var result = entityIds.Select(eid => source.One(eid)).Where(e => e != null).ToImmutableList();
+        var result = entityIds
+            .Select(eid => source.One(eid)!)
+            .Where(e => e != null!)
+            .ToImmutableOpt();
 
         l.A(l.Try(() => $"get ids:[{string.Join(",", entityIds)}] found:{result.Count}"));
         return l.ReturnAsOk(result);

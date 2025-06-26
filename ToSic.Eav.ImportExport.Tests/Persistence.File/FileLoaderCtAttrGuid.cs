@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.ImportExport.Tests.Json;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.ImportExport.Tests.Json;
 using ToSic.Eav.Persistence.File;
 using Xunit.Abstractions;
 
@@ -60,17 +61,18 @@ public class FileLoaderCtAttrGuid(ITestOutputHelper output, FileSystemLoader loa
         var ctAuthor = cts.First(ct => ct.Name.Equals(CtAuthorWithSharedAttributes));
 
         // Re-json the author and check
-        var serializer = jsonTestHelper.SerializerOfApp(Constants.PresetAppId);
+        var serializer = jsonTestHelper.SerializerOfApp(KnownAppsConstants.PresetAppId);
         var jsonAuthor = serializer.ToJson(ctAuthor);
-        var jsonFullName = jsonAuthor.Attributes.First(a => a.Name.Equals(FFullName));
+        var attributes = jsonAuthor.AttributesSafe();
+        var jsonFullName = attributes.First(a => a.Name.Equals(FFullName));
         Null(jsonFullName.Guid);
 
-        var jsonKey = jsonAuthor.Attributes.First(a => a.Name.Equals(FKey));
+        var jsonKey = attributes.First(a => a.Name.Equals(FKey));
         NotNull(jsonKey.Guid);
         Equal(SourceKeyGuid, jsonKey.Guid);
         True(jsonKey.SysSettings.Share);
 
-        var jsonKeyInherited = jsonAuthor.Attributes.First(a => a.Name.Equals(FKeyInherited));
+        var jsonKeyInherited = attributes.First(a => a.Name.Equals(FKeyInherited));
         NotNull(jsonKeyInherited.Guid);
         //Equal(0, jsonKeyInherited.SysSettings.ShareLevel);
         Equal(SourceKeyGuid.ToString(), jsonKeyInherited.SysSettings.InheritMetadataOf);

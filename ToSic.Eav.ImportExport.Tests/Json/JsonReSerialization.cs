@@ -1,10 +1,11 @@
-﻿using ToSic.Eav.Repositories;
-using ToSic.Eav.Serialization.Internal;
-using JsonSerializer = ToSic.Eav.ImportExport.Json.JsonSerializer;
+﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Repositories;
+using ToSic.Eav.Serialization.Sys;
+using JsonSerializer = ToSic.Eav.ImportExport.Json.Sys.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests.Json;
 
-public class JsonReSerialization(JsonSerializer jsonSerializer, IRepositoryLoader loader, JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class JsonReSerialization(JsonSerializer jsonSerializer, IAppsAndZonesLoaderWithRaw loader, JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 
     [Fact]

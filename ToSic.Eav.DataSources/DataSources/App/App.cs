@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using ToSic.Eav.Apps;
-using ToSic.Eav.Context;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Services;
 using ToSic.Lib.Helpers;
+using ToSic.Sys.Users.Permissions;
 
 namespace ToSic.Eav.DataSources;
 
@@ -70,7 +70,7 @@ public partial class App : DataSourceBase
     /// * Uses the[immutable convention](xref:NetCode.Conventions.Immutable).
     /// </remarks>
     [PrivateApi("WIP and not sure if this should ever become public")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     [Configuration(Fallback = false)]
     public bool WithAncestors => Configuration.GetThis(false);
 
@@ -79,23 +79,17 @@ public partial class App : DataSourceBase
     #region Constructor / DI
 
 
-    public new class MyServices: MyServicesBase<Eav.DataSource.DataSourceBase.MyServices>
+    public new class MyServices(
+        Eav.DataSource.DataSourceBase.MyServices parentServices,
+        IAppReaderFactory appReaders,
+        IDataSourcesService dataSourceFactory,
+        ICurrentContextUserPermissionsService userPermissions)
+        : MyServicesBase<Eav.DataSource.DataSourceBase.MyServices>(parentServices,
+            connect: [appReaders, dataSourceFactory, userPermissions])
     {
-        public IContextResolverUserPermissions UserPermissions { get; }
-        public IDataSourcesService DataSourceFactory { get; }
-        public IAppReaderFactory AppReaders { get; }
-
-        public MyServices(Eav.DataSource.DataSourceBase.MyServices parentServices,
-            IAppReaderFactory appReaders,
-            IDataSourcesService dataSourceFactory,
-            IContextResolverUserPermissions userPermissions) : base(parentServices)
-        {
-            ConnectLogs([
-                AppReaders = appReaders,
-                DataSourceFactory = dataSourceFactory,
-                UserPermissions = userPermissions
-            ]);
-        }
+        public ICurrentContextUserPermissionsService UserPermissions { get; } = userPermissions;
+        public IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
+        public IAppReaderFactory AppReaders { get; } = appReaders;
     }
 
     /// <summary>
@@ -106,7 +100,7 @@ public partial class App : DataSourceBase
     {
         _services = services;
         // this one is unusual, so don't pre-attach a default data stream to out
-        _out = new(this, null);
+        _out = new(this, Services.CacheService);
     }
 
     private readonly MyServices _services;
@@ -163,6 +157,6 @@ public partial class App : DataSourceBase
     //// TODO: cause obsolete warning when used! #Deprecated
     //public IMetadataSource Metadata => AppState;
 
-    protected IAppReader AppReader => _appState.Get(() => _services.AppReaders.Get(this));
-    private readonly GetOnce<IAppReader> _appState = new();
+    protected IAppReader AppReader => _appReader.Get(() => _services.AppReaders.Get(this))!;
+    private readonly GetOnce<IAppReader> _appReader = new();
 }

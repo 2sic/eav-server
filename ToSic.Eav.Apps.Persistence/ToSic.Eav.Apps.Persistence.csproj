@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Eav.props" />
+
+  <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
+
+  <PropertyGroup>
+    <RootNamespace>ToSic.Eav</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Context\ToSic.Eav.Context.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
+  </ItemGroup>
+
+</Project>

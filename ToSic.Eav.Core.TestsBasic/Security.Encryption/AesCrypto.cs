@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.Security.Encryption;
 using ToSic.Lib.Logging;
+using ToSic.Sys.Security.Encryption;
 
 namespace ToSic.Eav.Core.Tests.Signature;
 
@@ -16,22 +16,22 @@ public class AesCrypto
     public void TestBasicAesCrypto()
     {
         var crypto = GetAes();
-        var encrypted = crypto.EncryptToBase64(TestMessage, new(true) { Password = DummyPassword });
+        var encrypted = crypto.EncryptToBase64(TestMessage, new() { Password = DummyPassword });
         Trace.WriteLine($"encrypted:'{encrypted.Value}'; IV:'{encrypted.Iv}'");
         Trace.WriteLine(crypto.Log.Dump());
-        Assert.NotEqual(TestMessage, encrypted.Value);
-        Assert.NotEqual(PreviousEncryptionSha256, encrypted.Value); //, "each encryption should give a different result - but that's not implemented yet");
+        NotEqual(TestMessage, encrypted.Value);
+        NotEqual(PreviousEncryptionSha256, encrypted.Value); //, "each encryption should give a different result - but that's not implemented yet");
 
         // reset crypto to get a fresh log
         crypto = GetAes();
-        var decrypted = crypto.DecryptFromBase64(encrypted.Value, new(true)
+        var decrypted = crypto.DecryptFromBase64(encrypted.Value, new()
         {
             Password = DummyPassword,
             InitializationVector64 = encrypted.Iv
         });
         Trace.WriteLine($"decrypted:{decrypted}");
         Trace.WriteLine(crypto.Log.Dump());
-        Assert.Equal(TestMessage, decrypted);
+        Equal(TestMessage, decrypted);
     }
 
 }

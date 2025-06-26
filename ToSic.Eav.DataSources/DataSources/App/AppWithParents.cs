@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Internal;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Services;
 
 namespace ToSic.Eav.DataSources;
@@ -10,14 +10,14 @@ internal class AppWithParents: DataSourceBase
 
     public override int AppId
     {
-        get => _appId == 0 ? base.AppId : _appId;
-        protected set => _appId = value;
+        get => field == 0 ? base.AppId : field;
+        protected set;
     }
 
     public override int ZoneId
     {
-        get => _zoneId == 0 ? base.ZoneId : _zoneId;
-        protected set => _zoneId = value;
+        get => field == 0 ? base.ZoneId : field;
+        protected set;
     }
 
     ///// <summary>
@@ -33,8 +33,6 @@ internal class AppWithParents: DataSourceBase
 
     private readonly IAppReaderFactory _appReaders;
     private readonly IDataSourcesService _dataSourceFactory;
-    private int _appId;
-    private int _zoneId;
 
     public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar")
     {
@@ -46,8 +44,9 @@ internal class AppWithParents: DataSourceBase
         ProvideOut(GetList);
     }
 
-    private IImmutableList<IEntity> GetList() => Log.Func(() =>
+    private IImmutableList<IEntity> GetList()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         var appReader = _appReaders.Get(this);
             
         var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions
@@ -71,6 +70,7 @@ internal class AppWithParents: DataSourceBase
 
         var merge = _mergeGenerator.New(attach: initialLink);
 
-        return merge.Out.First().Value.List.ToImmutableList();
-    });
+        var result = merge.Out.First().Value.List.ToImmutableOpt();
+        return l.Return(result, $"{result.Count}");
+    }
 }

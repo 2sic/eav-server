@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.StartUp;
 using ToSic.Eav.TestData;
 using ToSic.Eav.Testing;
-using ToSic.Lib;
 
 namespace ToSic.Eav;
 
@@ -19,13 +17,15 @@ public class StartupCoreDataSourcesAndTestData
     /// <summary>
     /// Startup helper
     /// </summary>
-    public virtual void ConfigureServices(IServiceCollection services) =>
+    public virtual void ConfigureServices(IServiceCollection services)
+    {
         services
             .AddDataSourceTestHelpers()
             .AddTransient<DataTableTrivial>()
             .AddTransient<DataTablePerson>()
             .AddDataSources()
-            .AddEavCore()
-            .AddEavCoreFallbackServices()
-            .AddLibCore();
+            .AddDataSourceSystem();
+
+        services.StartupTestsAppsPersistenceAndBelow();
+    }
 }

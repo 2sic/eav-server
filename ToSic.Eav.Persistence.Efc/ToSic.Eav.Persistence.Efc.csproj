@@ -1,27 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Eav.props" />
+
   <PropertyGroup>
-    <TargetFrameworks>net472;net9.0;</TargetFrameworks>
-    <AssemblyName>ToSic.Eav.Persistence.Efc</AssemblyName>
-    <Configurations>Debug;Release;Debug Oqtane;DebugOqtane;DebugDnn</Configurations>
-    <Deterministic>true</Deterministic>
-    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
-    <!-- Don't generate assembly properties from this XML which should come from the core file, like version - these lines must be in sync in all ToSic.Eav.*.csproj files -->
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <!-- end: Don't generate... -->
-    <LangVersion>default</LangVersion>
+    <RootNamespace>ToSic.Eav.Persistence.Efc</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <!-- generate xml docs -->
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>1701;1702;CS1570;CS1572;CS1573;CS1574;CS1587;CS1591;CS1710;CS1711</NoWarn>
-  </PropertyGroup>
+  <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
+
+  <!--<Import Project="../SharedImports/CsProj.Props/Reference/RazorBlade.props" />-->
 
   <!-- Entity Framework for net451 (DNN) should be 1.1.1 because of DI, but newer version for MVC-->
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
@@ -54,12 +41,15 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0" /><!-- from Oqtane.Server.csproj -->
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\ToSic.Eav.Core\Properties\AssemblyInfoInherited.cs" Link="Properties\AssemblyInfoInherited.cs" />
+    <ProjectReference Include="..\ToSic.Eav.Apps.Persistence\ToSic.Eav.Apps.Persistence.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Data.Build\ToSic.Eav.Data.Build.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.Core\ToSic.Eav.Core.csproj" />
-    <ProjectReference Include="..\ToSic.Lib.Core\ToSic.Lib.Core.csproj" />
-  </ItemGroup>
+
 </Project>

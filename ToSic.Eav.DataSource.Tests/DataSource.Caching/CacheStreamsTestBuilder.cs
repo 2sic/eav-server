@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Internal.Caching;
 using ToSic.Eav.DataSources.Caching;
-using ToSic.Eav.DataSourceTests;
 
 namespace ToSic.Eav.DataSource.Caching;
 
@@ -13,10 +12,19 @@ internal class CacheStreamsTestBuilder(DataSourcesTstBuilder dsSvc, IListCacheSv
         return (filtered, cacheDs);
     }
 
-    public CacheAllStreams CreateCacheDs(IDataSource filtered, object? options = null)
+    public (IDataSource Source, CacheAllStreams Cache) CreateErrorAndCache(int errDuration, int delayError)
+    {
+        var source = delayError == 0
+            ? dsSvc.CreateDataSource<Error>()
+            : dsSvc.CreateDataSourceNew<Error>(options: new { DelaySeconds = delayError});
+        var cacheDs = CreateCacheDs(source, options: new { CacheErrorDurationInSeconds = errDuration });
+        return (source, cacheDs);
+    }
+
+    public CacheAllStreams CreateCacheDs(IDataSource source, object? options = null)
     {
         var cacheAll = dsSvc.CreateDataSourceNew<CacheAllStreams>(options);
-        cacheAll.AttachTac(filtered);
+        cacheAll.AttachTac(source);
         return cacheAll;
     }
 

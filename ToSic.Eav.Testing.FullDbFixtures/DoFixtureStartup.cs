@@ -1,13 +1,19 @@
-﻿using ToSic.Eav.Internal.Loaders;
-using ToSic.Eav.Testing.Scenarios;
+﻿using ToSic.Eav.Testing.Scenarios;
+using ToSic.Lib.DI;
+using ToSic.Sys.Boot;
 
 namespace ToSic.Eav.Testing;
 
 public class DoFixtureStartup<TScenario> where TScenario : TestScenario, new()
 {
-    public DoFixtureStartup(FullDbFixtureHelper fixtureHelper, SystemLoader systemLoader)
+    public DoFixtureStartup(LazySvc<FixtureStartupNoDb> fixtureStartupBasic, LazySvc<FixtureStartupWithDb> fixtureSetupDb, BootCoordinator bootCoordinator)
     {
-        fixtureHelper.Configure(new TScenario());
-        systemLoader.StartUp();
+        var testScenario = new TScenario();
+        if (testScenario.UseDb)
+            fixtureSetupDb.Value.SetupFixtureConfiguration(testScenario);
+        else
+            fixtureStartupBasic.Value.SetupFixtureConfiguration(testScenario);
+
+        bootCoordinator.StartUp();
     }
 }

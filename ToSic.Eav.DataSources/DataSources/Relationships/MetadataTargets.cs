@@ -1,10 +1,8 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSources.Internal;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Plumbing;
-using ToSic.Lib.Helpers;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
@@ -27,14 +25,14 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class MetadataTargets(DataSourceBase.MyServices services, IAppReaderFactory appReaders, IDataFactory dataFactory)
-    : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders, dataFactory])
+public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppReaderFactory appReaders)
+    : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders])
 {
     /// <summary>
     /// Optional TypeName restrictions to only get **Targets** of this Content Type.
     /// </summary>
     [Configuration]
-    public override string ContentTypeName => Configuration.GetThis();
+    public override string? ContentTypeName => Configuration.GetThis();
 
     /// <summary>
     /// If it should filter duplicates. Default is true.
@@ -42,27 +40,21 @@ public class MetadataTargets(DataSourceBase.MyServices services, IAppReaderFacto
     [Configuration(Fallback = true)]
     public bool FilterDuplicates => Configuration.GetThis(true);
 
-    protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string typeName)
+    protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string? typeName)
     {
         var getTargetFunc = GetTargetsFunctionGenerator();
 
-        var relationships = originals.SelectMany(getTargetFunc);
+        var relationships = originals
+            .SelectMany(getTargetFunc);
 
-        if (FilterDuplicates) relationships = relationships.Distinct();
+        if (FilterDuplicates)
+            relationships = relationships.Distinct();
 
         if (typeName.HasValue())
             relationships = relationships.OfType(typeName);
 
         return relationships;
     }
-
-    private IDataFactory ContentTypeFactory => ctFactory.Get(() =>
-    {
-        var opts = ContentTypeUtil.Options with { AppId = AppId, WithMetadata = true };
-        var x = dataFactory.New(options: opts);
-        return x;
-    });
-    private GetOnce<IDataFactory> ctFactory = new();
 
     /// <summary>
     /// Construct function for the get of the related items
@@ -84,19 +76,28 @@ public class MetadataTargets(DataSourceBase.MyServices services, IAppReaderFacto
             // We seem to have a historic setup where we sometimes use IDs and sometimes GUIDs?
             if (mdFor.TargetType == (int)TargetTypes.Entity)
             {
-                if (mdFor.KeyGuid != null)
-                    return [appState.List.One(mdFor.KeyGuid.Value)];
-                if (mdFor.KeyNumber != null)
-                    return [appState.List.One(mdFor.KeyNumber.Value)];
+                var foundEntity = (mdFor.KeyGuid != null)
+                    ? appState.List.One(mdFor.KeyGuid.Value)
+                    : mdFor.KeyNumber != null
+                        ? appState.List.One(mdFor.KeyNumber.Value)
+                        : null;
+                return foundEntity != null
+                    ? [foundEntity]
+                    : [];
             }
 
             if (mdFor.TargetType == (int)TargetTypes.ContentType)
             {
+                var contentTypeFactory =
+                    DataFactory.SpawnNew(options: ContentTypeUtil.Options with { AppId = AppId, WithMetadata = true });
+
                 var key = mdFor.KeyString ?? mdFor.KeyGuid?.ToString();
-                if (key == null) return [];
-                var ct = appState.GetContentType(key);
-                if (ct == null) return [];
-                var ctEntity = ContentTypeFactory.Create(ContentTypeUtil.ToRaw(ct));
+                if (key == null)
+                    return [];
+                var ct = appState.TryGetContentType(key);
+                if (ct == null)
+                    return [];
+                var ctEntity = contentTypeFactory.Create(ContentTypeUtil.ToRaw(ct));
                 return [ctEntity];
             }
 

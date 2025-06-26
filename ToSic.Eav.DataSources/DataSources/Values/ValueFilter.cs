@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.DataSource.Streams;
+﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSources.Internal;
-using ToSic.Eav.Plumbing;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -23,7 +22,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
     HelpLink = "https://go.2sxc.org/DsValueFilter")]
 
-public sealed class ValueFilter : Eav.DataSource.DataSourceBase
+public sealed class ValueFilter : DataSourceBase
 {
     #region Configuration-properties Attribute, Value, Language, Operator
 
@@ -33,7 +32,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     [Configuration]
     public string Attribute
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -43,7 +42,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     [Configuration]
     public string Value
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -53,7 +52,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     [Configuration(Fallback = ValueLanguages.LanguageDefaultPlaceholder)]
     public string Languages
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: ValueLanguages.LanguageDefaultPlaceholder);
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -64,7 +63,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     [Configuration(Fallback = "==")]
     public string Operator
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "==");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -72,7 +71,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
     /// Amount of items to take - then stop filtering. For performance optimization.
     /// </summary>
     [Configuration]
-    public string Take
+    public string? Take
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -103,7 +102,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         return res.Any()
             ? l.Return(res, "found")
             : In.HasStreamWithItems(StreamFallbackName)
-                ? l.Return(In[StreamFallbackName].List.ToImmutableList(), "fallback")
+                ? l.Return(In[StreamFallbackName].List.ToImmutableOpt(), "fallback")
                 : l.Return(res, "final");
     }
 
@@ -118,8 +117,10 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
 
         // Get the In-list and stop if error or empty
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
-        if (!source.Any()) return l.Return(source, "empty");
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
+        if (!source.Any())
+            return l.Return(source, "empty");
 
         var op = Operator.ToLowerInvariant();
 
@@ -127,11 +128,11 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         if (op == CompareOperators.OpNone)
             return l.Return([], CompareOperators.OpNone);
         if (op == CompareOperators.OpAll)
-            return l.Return(ApplyTake(source).ToImmutableList(), CompareOperators.OpAll);
+            return l.Return(ApplyTake(source).ToImmutableOpt(), CompareOperators.OpAll);
 
         // Case 3: Real filter
         // Find first Entity which has this property being not null to detect type
-        var (isSpecial, fieldType) = Attributes.InternalOnlyIsSpecialEntityProperty(fieldName);
+        var (isSpecial, fieldType) = AttributeNames.InternalOnlyIsSpecialEntityProperty(fieldName);
         var firstEntity = isSpecial
             ? source.FirstOrDefault()
             : source.FirstOrDefault(x => x.Attributes.ContainsKey(fieldName) && x.Get(fieldName) != null)
@@ -144,12 +145,14 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
 
         // New mechanism because the filter previously ignored internal properties like Modified, EntityId etc.
         // Using .Value should get everything, incl. modified, EntityId, EntityGuid etc.
-        if (!isSpecial) fieldType = firstEntity[fieldName].Type;
+        if (!isSpecial)
+            fieldType = firstEntity[fieldName]!.Type;
 
 
-        IImmutableList<IEntity> innerErrors = null;
+        IImmutableList<IEntity>? innerErrors = null;
         var compMaker = new ValueComparison((title, message) => innerErrors = Error.Create(title: title, message: message), Log);
-        var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value);
+        var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value)
+            ?? throw new NullReferenceException("Cant' find proper comparison. This is unexpected, please contact support.");
 
         return innerErrors.SafeAny()
             ? l.ReturnAsError(innerErrors)
@@ -167,7 +170,7 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         {
             var results = originals.Where(compare);
             results = ApplyTake(results);
-            return l.ReturnAsOk(results.ToImmutableList());
+            return l.ReturnAsOk(results.ToImmutableOpt());
         }
         catch (Exception ex)
         {
@@ -179,9 +182,14 @@ public sealed class ValueFilter : Eav.DataSource.DataSourceBase
         }
     }
 
-    private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results) => Log.Func(() => int.TryParse(Take, out var tk)
-        ? (results.Take(tk), $"take {tk}")
-        : (results, "take all"));
+    private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results)
+    {
+        var l = Log.Fn<IEnumerable<IEntity>>();
+        var valid = int.TryParse(Take, out var tk);
+        return valid 
+            ? l.Return(results.Take(tk), $"take {tk}")
+            : l.Return(results, "take all");
+    }
 
 
     /// <summary>

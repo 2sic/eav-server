@@ -1,7 +1,7 @@
 ﻿using System.Data;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.Plumbing;
-using IEntity = ToSic.Eav.Data.IEntity;
+using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Sys;
+
 using SqlDataTable = System.Data.DataTable;
 
 
@@ -14,14 +14,17 @@ namespace ToSic.Eav.DataSources;
 [PublicApi]
 public class DataTable : CustomDataSourceAdvanced
 {
-    private readonly IDataFactory _dataFactory;
     // help Link: https://go.2sxc.org/DsDataTable
     #region Configuration-properties
 
     /// <summary>
     /// Source DataTable
     /// </summary>
-    public SqlDataTable Source { get; set; }
+    public SqlDataTable Source
+    {
+        get => field ?? throw new InvalidOperationException("Source DataTable not set. Please use Setup() to set it before using this DataSource.");
+        set;
+    } = null!;
 
     /// <summary>
     /// Name of the ContentType. Defaults to `Data`
@@ -32,27 +35,27 @@ public class DataTable : CustomDataSourceAdvanced
     [Configuration(Fallback = "Data")]
     public string ContentType
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "Data");
         set => Configuration.SetThisObsolete(value);
     }
 
     /// <summary>
     /// Name of the Title Attribute of the Source DataTable
     /// </summary>
-    [Configuration(Fallback = Attributes.EntityFieldTitle)]
+    [Configuration(Fallback = AttributeNames.EntityFieldTitle)]
     public string TitleField
     {
-        get => Configuration.GetThis(fallback: Attributes.EntityFieldTitle);
+        get => Configuration.GetThis(fallback: AttributeNames.EntityFieldTitle);
         set => Configuration.SetThisObsolete(value);
     }
 
     /// <summary>
     /// Name of the Column used as EntityId
     /// </summary>
-    [Configuration(Fallback = Attributes.EntityFieldId)]
+    [Configuration(Fallback = AttributeNames.EntityFieldId)]
     public string EntityIdField
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: AttributeNames.EntityFieldId);
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -60,7 +63,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// Name of the field which would contain a modified timestamp (date/time)
     /// </summary>
     [Configuration]
-    public string ModifiedField
+    public string? ModifiedField
     {
         get => Configuration.GetThis();
         set => Configuration.SetThisObsolete(value);
@@ -73,9 +76,8 @@ public class DataTable : CustomDataSourceAdvanced
     /// Initializes a new instance of the DataTableDataSource class
     /// </summary>
     [PrivateApi]
-    public DataTable(MyServices services, IDataFactory dataFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl", connect: [dataFactory])
+    public DataTable(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl")
     {
-        _dataFactory = dataFactory;
         ProvideOut(GetEntities);
     }
 
@@ -92,7 +94,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// So we changed it, assuming it wasn't actually used as a constructor before, but only in test code. Marked as private for now
     /// </remarks>
     [PrivateApi]
-    internal DataTable Setup(SqlDataTable source, string contentType, string entityIdField = null, string titleField = null, string modifiedField = null)
+    internal DataTable Setup(SqlDataTable source, string contentType, string? entityIdField = null, string? titleField = null, string? modifiedField = null)
     {
         Source = source;
         // Only set the values if they were explicitly provided
@@ -106,30 +108,31 @@ public class DataTable : CustomDataSourceAdvanced
         return this;
     }
 
-    private IImmutableList<IEntity> GetEntities() => Log.Func(l =>
+    private IImmutableList<IEntity> GetEntities()
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         l.A($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
         var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
-        return (result, $"ok: {result.Count}");
-    });
+        return l.Return(result, $"ok: {result.Count}");
+    }
 
     /// <summary>
     /// Convert a DataTable to a Dictionary of EntityModels
     /// </summary>
-    private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string modifiedField = null
-    ) => Log.Func(() =>
+    private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string? modifiedField = null)
     {
+        var l = Log.Fn<IImmutableList<IEntity>>();
         // Validate Columns
         if (!source.Columns.Contains(entityIdField))
             throw new($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
         if (!source.Columns.Contains(titleField))
             throw new($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-        var tblFactory = _dataFactory.New(options: new()
+        var tblFactory = DataFactory.SpawnNew(options: new()
         {
-            AppId = Constants.TransientAppId,
+            AppId = KnownAppsConstants.TransientAppId,
             TitleField = titleField,
             TypeName = contentType,
         });
@@ -139,18 +142,25 @@ public class DataTable : CustomDataSourceAdvanced
 
         foreach (DataRow row in source.Rows)
         {
-            var entityId = global::System.Convert.ToInt32(row[entityIdField]);
-            var values = row.Table.Columns.Cast<DataColumn>().Where(c => c.ColumnName != entityIdField)
-                .ToDictionary(c => c.ColumnName, c => row.Field<object>(c.ColumnName));
-            values = new(values,
-                StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
-            var mod = (string.IsNullOrEmpty(modifiedField) ? null : values[modifiedField] as DateTime?) ?? DateTime.MinValue;
+            var entityId = Convert.ToInt32(row[entityIdField]);
+            var values = row.Table.Columns
+                .Cast<DataColumn>()
+                .Where(c => c.ColumnName != entityIdField)
+                .ToDictionary(
+                    c => c.ColumnName,
+                    c => row.Field<object?>(c.ColumnName)
+                );
+            values = new(values, StringComparer.InvariantCultureIgnoreCase); // recast to ensure case-insensitive
+            var mod = (string.IsNullOrEmpty(modifiedField)
+                          ? null
+                          : values[modifiedField!] as DateTime?)
+                      ?? DateTime.MinValue;
 
             var entity = tblFactory.Create(values, id: entityId, modified: mod);
             result.Add(entity);
         }
 
-        var final = result.ToImmutableList();
-        return (final, $"{final.Count}");
-    });
+        var final = result.ToImmutableOpt();
+        return l.Return(final, $"{final.Count}");
+    }
 }

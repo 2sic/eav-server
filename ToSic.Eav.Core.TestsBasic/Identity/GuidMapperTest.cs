@@ -13,7 +13,7 @@ public class GuidMapperTest(ITestOutputHelper output)
         var data = Guid.NewGuid();
         var compressed = GuidCompressTac(data);
         var uncompressed = GuidRestoreTac(compressed);
-        Assert.Equal(data, uncompressed);
+        Equal(data, uncompressed);
     }
 
     [Fact]
@@ -23,6 +23,6 @@ public class GuidMapperTest(ITestOutputHelper output)
         var compressed = GuidCompressTac(data);
         output.WriteLine($"Compressed: {compressed}");
         var uncompressed = GuidRestoreTac(compressed);
-        Assert.Equal(data, uncompressed);
+        Equal(data, uncompressed);
     }
 }

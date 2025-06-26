@@ -1,42 +1,54 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.Data.Source;
-using ToSic.Eav.Internal.Loaders;
+using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Persistence.File;
-using ToSic.Eav.Repositories;
 using Xunit.Abstractions;
 
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File;
 
 internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(parentLog, "Ldr.Helper")
 {
-    internal IList<IEntity> LoadAllQueryEntities(FileSystemLoader loaderRaw, ITestOutputHelper output)
+    internal IList<IEntity> LoadAllQueryEntities(Generator<FileSystemLoader, FileSystemLoaderOptions> loaderRaw, ITestOutputHelper output)
     {
         var testStorageRoot = TestFiles.GetTestPath(scenarioDeep);
         output.WriteLine($"path:'{testStorageRoot}'");
-        var loader = loaderRaw.Init(Constants.PresetAppId, testStorageRoot, RepositoryTypes.TestingDoNotUse, false, null);
+        var loader = loaderRaw.New(new()
+        {
+            AppId = KnownAppsConstants.PresetAppId,
+            Path = testStorageRoot,
+            RepoType = RepositoryTypes.TestingDoNotUse,
+            IgnoreMissing = false,
+            EntitiesSource = null
+        });
+        //var loader = loaderRaw;
         
         try
         {
-            return DirectEntitiesSource.Using(set => loader.Entities(FsDataConstants.QueriesFolder, 0, set.Source));
+            return DirectEntitiesSource.Using(set => loader.Entities(AppDataFoldersConstants.QueriesFolder, set.Source));
         }
         finally
         {
             output.WriteLine(Log.Dump());
         }
-        return [];
     }
 
-    internal IList<IContentType> LoadAllTypes(FileSystemLoader loaderRaw, ILog log) //, string? subfolderOnly = null)
+    internal ICollection<IContentType> LoadAllTypes(FileSystemLoader loaderRaw, ILog log)
     {
         // Log the root for debugging in case files are missing
-        var testRoot = TestFiles.GetTestPath(scenarioDeep); // PersistenceTestConstants.TestStorageRoot(TestContext);
-        //if (subfolderOnly.HasValue())
-        //    testRoot += subfolderOnly + '\\';
+        var testRoot = TestFiles.GetTestPath(scenarioDeep);
         Trace.WriteLine("Test folder: " + testRoot);
 
-        var loader = loaderRaw
-            .Init(Constants.PresetAppId, testRoot, RepositoryTypes.TestingDoNotUse, /*subfolderOnly != null*/true, null);
-        IList<IContentType> cts;
+        var loader = loaderRaw;
+        loader.Setup(new()
+        {
+            AppId = KnownAppsConstants.PresetAppId,
+            Path = testRoot,
+            RepoType = RepositoryTypes.TestingDoNotUse,
+            IgnoreMissing = true,
+            EntitiesSource = null
+        });
+        ICollection<IContentType> cts;
         try
         {
             cts = loader.ContentTypes();

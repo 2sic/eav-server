@@ -11,21 +11,26 @@ internal class LanguageMap
     /// Will load a configuration line and set the error if something doesn't work out
     /// </summary>
     /// <param name="original"></param>
-    public LanguageMap(string original) => LoadLine(original);
-
-    public string Original;
-    public string Error;
-    public string Target;
-    public string Source;
-    public bool HasLanguages;
-    public LanguageToField[] Fields;
-
-    public List<string> FieldNames => _fieldNames ??= Fields.Select(f => f.OriginalField).ToList();
-    private List<string> _fieldNames;
-
-    public string LoadLine(string original)
+    public LanguageMap(string original)
     {
         Original = original;
+        LoadMapText(original);
+    }
+
+    public string Original;
+    public string? Error;
+    public string? Target;
+    public string? Source;
+    public bool HasLanguages;
+    public LanguageToField[] Fields = [];
+
+    [field: AllowNull, MaybeNull]
+    public IList<string> FieldNames
+        => field ??= Fields.Select(f => f.OriginalField)
+            .ToListOpt();
+
+    private string? LoadMapText(string original)
+    {
         if (string.IsNullOrWhiteSpace(original))
             return Error = "Error - tried to load an empty configuration line";
         var parts = original.Split(':').Select(s => s.Trim()).ToArray();
@@ -36,7 +41,9 @@ internal class LanguageMap
         Target = parts[0];
         Source = parts[1];
 
-        if (!Source.Contains("=")) return Error = null;
+        if (!Source.Contains("="))
+            return Error = null;
+
         HasLanguages = true;
 
         var langMap = Source
@@ -46,20 +53,19 @@ internal class LanguageMap
             .ToArray();
             
         var langPartsError = "";
-        Fields = langMap.Select(m =>
+        Fields = langMap
+            .Select(m =>
             {
                 var langParts = m.Split('=').Select(s => s.Trim()).ToArray();
                 if (langParts.Length != 2)
                 {
-                    langPartsError +=
-                        "Error: Language parts should have exactly one xx-xx=OldFieldName to separate language from key. ";
+                    langPartsError += "Error: Language parts should have exactly one xx-xx=OldFieldName to separate language from key. ";
                     return null;
                 }
 
                 if (langParts[0].Length != 5)
                 {
-                    langPartsError +=
-                        $"Error: language key should be 5 characters - not '{langParts[0]}' ({langParts[0].Length}";
+                    langPartsError += $"Error: language key should be 5 characters - not '{langParts[0]}' ({langParts[0].Length}";
                     return null;
                 }
 
@@ -75,6 +81,8 @@ internal class LanguageMap
                     OriginalField = langParts[1],
                 };
             })
+            .Where(l => l != null)
+            .Cast<LanguageToField>()
             .ToArray();
         if (!string.IsNullOrWhiteSpace(langPartsError))
             return Error = langPartsError;

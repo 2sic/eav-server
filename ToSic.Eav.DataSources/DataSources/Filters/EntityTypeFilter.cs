@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Sys.Entities;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-using IEntity = ToSic.Eav.Data.IEntity;
+
 
 namespace ToSic.Eav.DataSources;
 
@@ -20,7 +21,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
     HelpLink = "https://go.2sxc.org/DsTypeFilter")]
 
-public class EntityTypeFilter : Eav.DataSource.DataSourceBase
+public class EntityTypeFilter : DataSourceBase
 {
     #region Configuration-properties
 
@@ -30,7 +31,7 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
     [Configuration]
     public string TypeName
     {
-        get => Configuration.GetThis();
+        get => Configuration.GetThis(fallback: "");
         set => Configuration.SetThisObsolete(value);
     }
 
@@ -66,11 +67,11 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
         try
         {
             var appState = _appReaders.Get(this);
-            var foundType = appState?.GetContentType(TypeName);
+            var foundType = appState?.TryGetContentType(TypeName);
             if (foundType != null) // maybe it doesn't find it!
             {
-                var result = source.OfType(foundType).ToList();
-                return l.Return(result.ToImmutableList(), "fast");
+                var result = source.OfType(foundType).ToListOpt();
+                return l.Return(result.ToImmutableOpt(), "fast");
             }
         }
         catch (Exception ex)
@@ -85,7 +86,7 @@ public class EntityTypeFilter : Eav.DataSource.DataSourceBase
         //if (!GetRequiredInList(out var originals2))
         //    return (originals2, "error");
 
-        return l.Return(source.OfType(TypeName).ToImmutableList(), "slower");
+        return l.Return(source.OfType(TypeName).ToImmutableOpt(), "slower");
     }
 
 }

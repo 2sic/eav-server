@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context;
+﻿using ToSic.Sys.Users.Permissions;
 
 namespace ToSic.Eav.DataSources.Internal;
 
@@ -14,13 +14,13 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
     /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
     /// </summary>
     [Configuration]
-    public abstract string FieldName { get; }
+    public abstract string? FieldName { get; }
 
     /// <summary>
     /// These should be fully implemented in inheriting class, as the docs change from inheritance to inheritance
     /// </summary>
     [Configuration]
-    public abstract string ContentTypeName { get; }
+    public abstract string? ContentTypeName { get; }
 
     /// <summary>
     /// Will filter duplicate hits from the result.
@@ -31,13 +31,13 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
     /// <summary>
     /// Constructor
     /// </summary>
-    protected RelationshipDataSourceBase(MyServices services, IContextResolverUserPermissions userPermissions, string logName): base(services, logName, connect: [userPermissions])
+    protected RelationshipDataSourceBase(MyServices services, ICurrentContextUserPermissionsService userPermissions, string logName): base(services, logName, connect: [userPermissions])
     {
         _userPermissions = userPermissions;
         ProvideOut(GetRelated);
     }
 
-    private readonly IContextResolverUserPermissions _userPermissions;
+    private readonly ICurrentContextUserPermissionsService _userPermissions;
 
     private IImmutableList<IEntity> GetRelated()
     {
@@ -80,7 +80,7 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
         var distinctList = result.ToList();
 #endif
 
-        return l.ReturnAsOk(result.ToImmutableList());
+        return l.ReturnAsOk(result.ToImmutableOpt());
         // ReSharper restore PossibleMultipleEnumeration
     }
 
@@ -91,6 +91,6 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
     /// <param name="typeName"></param>
     /// <returns></returns>
     [PrivateApi]
-    protected abstract Func<IEntity, IEnumerable<IEntity>> InnerGet(string fieldName, string typeName);
+    protected abstract Func<IEntity, IEnumerable<IEntity>> InnerGet(string? fieldName, string? typeName);
 
 }
