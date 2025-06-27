@@ -237,14 +237,15 @@ public class ContentExportApi(
         var appState = _appCtx.AppReader;
 
         // Content-Types contains the Content-Type as well entities referenced in CT-Attribute Metadata such as Formulas
-        var bundleTypesRaw = export.ContentTypes.Count <= 0
-            ? null
-            : export.ContentTypes
+        var bundleTypesRaw =  export.ContentTypes
                 .Select(appState.GetContentType)
                 .Select(ct => serializer.ToPackage(ct, serSettings))
                 .Select(jsonType => new JsonContentTypeSet
                 {
-                    ContentType = PreserveMarker(export.PreserveMarkers, jsonType.ContentType ?? throw new("Error accessing ContentType in bundle which must have it.")),
+                    ContentType = PreserveMarker(export.PreserveMarkers,
+                        jsonType.ContentType
+                        ?? throw new("Error accessing ContentType in bundle which must have it.")
+                    ),
                     Entities = jsonType.Entities
                 })
                 .ToList();
@@ -252,21 +253,39 @@ public class ContentExportApi(
         // loop through entities and add them to the bundle list
         l.A($"count export entities:{export.Entities.Count}");
 
-        IList<JsonEntity>? bundleEntitiesRaw = export.Entities.Count <= 0
-            ? null
-            : export.Entities
+        var mdDepth = export.EntitiesWithMetadata
+            ? FileSystemLoaderConstants.QueryMetadataDepth
+            : 0;
+        IList<JsonEntity> bundleEntitiesRaw = export.Entities
                 .Select(appState.List.One)
-                .Select(e => serializer.ToJson(e, export.EntitiesWithMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0)!)
+                .Select(e => serializer.ToJson(e, mdDepth)!)
                 .ToList(); // must be mutable ToList!
 
         // Find duplicate related entities
         // as there are various ways they can appear, but we really only need them once
-        var ctEntities = (bundleTypesRaw ?? [])
-            .SelectMany(ct => (ct.Entities ?? []).Select(e => new { Entity = e, Priority = 1, List = ct.Entities! }))
+        var ctEntities = bundleTypesRaw
+            .SelectMany(ct => (ct.Entities ?? [])
+                .Select(e => new
+                {
+                    OwnerCtSet = (JsonContentTypeSet?)ct,
+                    OwnerEntity = (JsonEntity?)null,
+                    Entity = e,
+                    Priority = 1,
+                    //List = ct.Entities!
+                }))
             .ToListOpt();
-        var bundleEntities = (bundleEntitiesRaw ?? [])
-            .Select(e => new { Entity = e, Priority = 0, List = bundleEntitiesRaw! })
+        
+        var bundleEntities = bundleEntitiesRaw
+            .Select(e => new
+            {
+                OwnerCtSet = (JsonContentTypeSet?)null,
+                OwnerEntity = (JsonEntity?)e,
+                Entity = e,
+                Priority = 0,
+                //List = bundleEntitiesRaw!
+            })
             .ToListOpt();
+
         var dupEntities = ctEntities
             .Concat(bundleEntities)
             .GroupBy(e => e.Entity.Id)
@@ -280,7 +299,8 @@ public class ContentExportApi(
             {
                 // To pick keepers we prefer the ones on the content-type,
                 // but otherwise (assuming duplicates) we just keep the first
-                var keep = dupEntity.FirstOrDefault(e => e.Priority == 1)
+                var keep = dupEntity
+                               .FirstOrDefault(e => e.Priority == 1)
                            ?? dupEntity.First();
                 return dupEntity
                     .Where(e => e != keep)
@@ -288,22 +308,46 @@ public class ContentExportApi(
             })
             .ToList();
 
-        foreach (var remove in removes)
-            remove.List.Remove(remove.Entity);
+        // Remove the entities from the types bundles
+        var typesFinal = bundleTypesRaw
+            .Select(t =>
+            {
+                var typeRemovals = removes
+                    .Where(r => r.OwnerCtSet == t)
+                    .ToListOpt();
+                if (typeRemovals.Count == 0)
+                    return t;
+                // remove the entities from the content-type
+                return t with
+                {
+                    Entities = t.Entities! // Entities must exist here, since otherwise the removal-list wouldn't mention it
+                        .Where(e => typeRemovals.All(r => r.Entity.Id != e.Id))
+                        .ToListOpt()
+                };
+            })
+            .ToList();
+
+        // Remove the entities from the entities bundle
+        var entityRemovals = removes
+            .Where(r => r.OwnerEntity != null)
+            .ToListOpt();
+
+        var entitiesFinal = bundleEntitiesRaw
+            .Where(e => entityRemovals.All(er => er.Entity.Id != e.Id))
+            .ToListOpt();
 
         var bundleList = new JsonBundle
         {
-            ContentTypes = bundleTypesRaw,
-            Entities = bundleEntitiesRaw,
+            ContentTypes = typesFinal.Any() ? typesFinal : null,
+            Entities = entitiesFinal.Any() ? entitiesFinal : null,
         };
-
 
         return l.ReturnAsOk(bundleList);
     }
 
     public JsonContentType PreserveMarker(bool preserveMarkers, JsonContentType jsonContentType)
     {
-        Log.A($"preserveMarkers:{preserveMarkers}");
+        var l = Log.Fn<JsonContentType>($"preserveMarkers:{preserveMarkers}");
         if (preserveMarkers)
             return jsonContentType;
 
@@ -314,9 +358,15 @@ public class ContentExportApi(
             .Where(metaData => metaData.Type.Name == ExportDecorator.ContentTypeName)
             .ToList();
 
-        foreach (var item in removeQue)
-            jsonContentType.Metadata.Remove(item);
+        var trimmedMetadata = jsonContentType.Metadata
+            .Where(md => !removeQue.Contains(md))
+            .ToListOpt();
+
+        jsonContentType = jsonContentType with { Metadata = trimmedMetadata };
+
+        //foreach (var item in removeQue)
+        //    jsonContentType.Metadata.Remove(item);
         
-        return jsonContentType;
+        return l.Return(jsonContentType);
     }
 }

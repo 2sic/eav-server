@@ -1,27 +1,27 @@
 ﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
-public class JsonAttributes()
+public record JsonAttributes
 {
     [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, string?>>? String;
+    public Dictionary<string, Dictionary<string, string?>>? String { get; init; }
 
-    [JsonIgnore(Condition = WhenWritingNull)] public Dictionary<string, Dictionary<string, string?>>? Hyperlink;
-
-    [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, string?>>? Custom;
+    [JsonIgnore(Condition = WhenWritingNull)] public Dictionary<string, Dictionary<string, string?>>? Hyperlink { get; init; }
 
     [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, string?>>? Json;
+    public Dictionary<string, Dictionary<string, string?>>? Custom { get; init; }
 
     [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, ICollection<Guid?>>>? Entity;
+    public Dictionary<string, Dictionary<string, string?>>? Json { get; init; }
 
     [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, decimal?>>? Number;
+    public Dictionary<string, Dictionary<string, ICollection<Guid?>>>? Entity { get; init; }
 
     [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, DateTime?>>? DateTime;
+    public Dictionary<string, Dictionary<string, decimal?>>? Number { get; init; }
 
     [JsonIgnore(Condition = WhenWritingNull)]
-    public Dictionary<string, Dictionary<string, bool?>>? Boolean;
+    public Dictionary<string, Dictionary<string, DateTime?>>? DateTime { get; init; }
+
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public Dictionary<string, Dictionary<string, bool?>>? Boolean { get; init; }
 }

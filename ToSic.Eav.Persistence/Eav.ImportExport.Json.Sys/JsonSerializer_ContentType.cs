@@ -72,7 +72,7 @@ partial class JsonSerializer
                 .ToListOpt();
 
             l.A($"Sub items: {mdParts.Count}; Deduplicated: {mdDeduplicated.Count}");
-            package.Entities = ToJsonListWithoutNulls(mdDeduplicated, metadataDepth: 0);
+            package = package with { Entities = ToJsonListWithoutNulls(mdDeduplicated, metadataDepth: 0) };
         }
         catch (Exception ex)
         {
@@ -109,9 +109,8 @@ partial class JsonSerializer
 
     private JsonContentType ToJson(IContentType contentType, JsonSerializationSettings settings)
     {
-        JsonContentTypeShareable? jctShare = null;
-
-        var attribs = contentType.Attributes
+        var attribs = contentType
+            .Attributes
             .OrderBy(a => a.SortOrder)
             .Select(a =>
             {
@@ -136,15 +135,28 @@ partial class JsonSerializer
             .ToListOpt();
 
         // clean up metadata info on this metadata list, as it's already packed inside something it's related to
-        var attribMetadataToResetFor = attribs
-            .Where(a => a.Metadata != null)
-            .SelectMany(a => a.Metadata!)
+        attribs = attribs
+            .Select(at => at with
+            {
+                // If the metadata is not null, then we can reset the "For" property
+                Metadata = at.Metadata
+                    ?.Select(m => m with { For = null })
+                    .ToListOpt()
+            })
             .ToListOpt();
-        foreach (var jsonEntity in attribMetadataToResetFor)
-            jsonEntity.For = null;
+
+        // old before functional
+        //var attribMetadataToResetFor = attribs
+        //    .Where(a => a.Metadata != null)
+        //    .SelectMany(a => a.Metadata!)
+        //    .ToListOpt();
+        //foreach (var jsonEntity in attribMetadataToResetFor)
+        //    jsonEntity.For = null;
 
         var ancestorDecorator = contentType.GetDecorator<IAncestor>();
         var isSharedNew = ancestorDecorator is { Id: not EavConstants.PresetContentTypeFakeParent };
+
+        JsonContentTypeShareable? jctShare = null;
 
         // Note 2021-11-22 2dm - AFAIK this is skipped when creating a JSON for edit-UI
         if (isSharedNew && !settings.CtIncludeInherited)

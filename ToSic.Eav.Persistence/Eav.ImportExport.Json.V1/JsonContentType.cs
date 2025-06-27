@@ -1,23 +1,23 @@
 ﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
-public class JsonContentType: IJsonWithAssets
+public record JsonContentType: IJsonWithAssets
 {
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-100)]   // use negative indexes to ensure that all without Prop-order come afterward
-    public required string Id;
+    public required string Id { get; init; }
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-90)]
-    public required string Name;
+    public required string Name { get; init; }
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-80)]
-    public required string Scope;
+    public required string Scope { get; init; }
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-70)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public JsonContentTypeShareable? Sharing;
+    public JsonContentTypeShareable? Sharing { get; init; }
 
     /// <remarks>V 1.0</remarks>
     [JsonPropertyOrder(-60)]
@@ -35,10 +35,10 @@ public class JsonContentType: IJsonWithAssets
     /// <remarks>V 1.1</remarks>
     [JsonPropertyOrder(-40)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public ICollection<JsonAsset>? Assets { get; set; }
+    public ICollection<JsonAsset>? Assets { get; init; }
 }
 
-public class JsonContentTypeWithTitleWip: JsonContentType
+public record JsonContentTypeWithTitleWip: JsonContentType
 {
     /// <summary>
     /// The title of the content type.
@@ -48,5 +48,5 @@ public class JsonContentTypeWithTitleWip: JsonContentType
     /// </summary>
     [JsonPropertyOrder(-10)]
     [JsonIgnore(Condition = WhenWritingNull)]
-    public string? Title;
+    public string? Title { get; init; }
 }
