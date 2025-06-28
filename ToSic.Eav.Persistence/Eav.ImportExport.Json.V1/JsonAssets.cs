@@ -2,7 +2,7 @@
 
 public class JsonAssets
 {
-    public JsonAsset Get(string realPath, string relativeName, string? storage = null)
+    public JsonAsset Get(string realPath, string relativeName, string storage)
     {
         if (storage == null || !JsonAsset.Storages.Contains(storage))
             throw new ArgumentException($@"'{storage}' not a known value", nameof(storage));
