@@ -11,6 +11,7 @@ public class ImportResultDto
     public ImportResultDto(bool success = false, string? msg = null, Message.MessageTypes type = Message.MessageTypes.Information)
     {
         Success = success;
-        if(msg != null) Messages.Add(new(msg, type));
+        if(msg != null)
+            Messages.Add(new(msg, type));
     }
 }

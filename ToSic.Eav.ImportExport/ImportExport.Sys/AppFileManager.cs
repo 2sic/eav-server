@@ -57,7 +57,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
             {
                 var alreadyExistsMsg = "File '" + Path.GetFileName(destinationFilePath) +
                                        "' not copied because it already exists";
-                Log.A($"warning: {alreadyExistsMsg}");
+                l.A($"warning: {alreadyExistsMsg}");
                 messages.Add(new(alreadyExistsMsg, Message.MessageTypes.Warning));
             }
         }

@@ -56,7 +56,8 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
                 case ValueTypes.Entity:
                     var relationships = new List<int>();
 
-                    void AddRelationshipIfNotNull(int? id) { if (id != null) relationships.Add(id.Value); }
+                    void AddRelationshipIfNotNull(int? id) { if (id != null)
+                        relationships.Add(id.Value); }
                     if (foundValue is IEnumerable foundEnum) // it's a list!
                         foreach (var item in foundEnum)
                             AddRelationshipIfNotNull(CreateSingleRelationshipItem(item));
