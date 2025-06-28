@@ -20,7 +20,9 @@ public class Settings
 
     public static string[] ExcludeRootFolders =
     [
-        FolderConstants.FolderOldDotData, // ".data" should be migrated to new location "App_Data/system", so no need for export for old ".data"
+        // Exclude old ".data"; it may still exist. Should be migrated to new location "App_Data/system", so no need for export for old ".data"
+        FolderConstants.FolderOldDotData,
+        // Exclude zip temporary folders
         $"{FolderConstants.AppDataProtectedFolder}\\{FolderConstants.ZipFolderForSiteFiles}",
         $"{FolderConstants.AppDataProtectedFolder}\\{FolderConstants.ZipFolderForGlobalAppStuff}"
     ];

@@ -337,14 +337,17 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
     /// for import only, migrate app.xml or old 2sexy/.data/app.xml to 2sexy/App_Data
     /// </summary>
     /// <param name="appRootPath"></param>
-    public static void MigrateForImportAppDataFile(string appRootPath)
+    private static void MigrateForImportAppDataFile(string appRootPath)
     {
-        var oldAppFilePath = Path.Combine(appRootPath, FolderConstants.AppDataFile);
-        var oldDataAppFilePath = Path.Combine(appRootPath, FolderConstants.ToSxcFolder, FolderConstants.FolderOldDotData, FolderConstants.AppDataFile);
-        if (!File.Exists(oldAppFilePath) && !File.Exists(oldDataAppFilePath)) return;
+        var oldAppXmlFilePath = Path.Combine(appRootPath, FolderConstants.AppDataFile);
+        var sxcPathInZipData = Path.Combine(appRootPath, FolderConstants.ToSxcFolder);
+        var oldDataAppFilePath = Path.Combine(sxcPathInZipData, FolderConstants.FolderOldDotData, FolderConstants.AppDataFile);
+        if (!File.Exists(oldAppXmlFilePath) && !File.Exists(oldDataAppFilePath))
+            return;
 
-        Directory.CreateDirectory(Path.Combine(appRootPath, FolderConstants.ToSxcFolder, FolderConstants.AppDataProtectedFolder));
-        var newFilePath = Path.Combine(appRootPath, FolderConstants.ToSxcFolder, FolderConstants.AppDataProtectedFolder, FolderConstants.AppDataFile);
+        var pathOfProtectedFolder = Path.Combine(sxcPathInZipData, FolderConstants.AppDataProtectedFolder);
+        Directory.CreateDirectory(pathOfProtectedFolder);
+        var newFilePath = Path.Combine(pathOfProtectedFolder, FolderConstants.AppDataFile);
 
         if (File.Exists(oldDataAppFilePath))
         {
@@ -353,11 +356,11 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
             File.Move(oldDataAppFilePath, newFilePath);
         }
 
-        if (File.Exists(oldAppFilePath))
+        if (File.Exists(oldAppXmlFilePath))
         {
             if (File.Exists(newFilePath))
                 File.Delete(newFilePath);
-            File.Move(oldAppFilePath, newFilePath);
+            File.Move(oldAppXmlFilePath, newFilePath);
         }
     }
 
@@ -378,55 +381,6 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
         if (File.Exists(newFilePath))
             File.Delete(newFilePath);
         File.Move(oldDataAppFilePath, newFilePath);
-
-        //// commented cody will move/copy .data to App_Data with all content
-        //var oldFolderPath = Path.Combine(appRootPath, Eav.Constants.FolderData);
-        //if (!Directory.Exists(oldFolderPath)) return;
-
-        //var newFolderPath = Path.Combine(appRootPath, Eav.Constants.AppDataProtectedFolder);
-        //if (!Directory.Exists(newFolderPath))
-        //{
-        //    Directory.Move(oldFolderPath, newFolderPath);
-        //}
-        //else
-        //{
-        //    CopyDirectory(oldFolderPath, newFolderPath, true);
-        //    Directory.Delete(oldFolderPath, true);
-        //}
     }
-
-    ///// <summary>
-    ///// copy directory with its content
-    ///// based on https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
-    ///// </summary>
-    ///// <param name="sourceDir"></param>
-    ///// <param name="destinationDir"></param>
-    ///// <param name="recursive"></param>
-    ///// <exception cref="DirectoryNotFoundException"></exception>
-    //private static void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
-    //{
-    //    // Get information about the source directory
-    //    var dir = new DirectoryInfo(sourceDir);
-
-    //    // Check if the source directory exists
-    //    if (!dir.Exists)
-    //        return; //throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
-
-    //    // Cache directories before we start copying
-    //    var dirs = dir.GetDirectories();
-
-    //    // Create the destination directory
-    //    Directory.CreateDirectory(destinationDir);
-
-    //    // Get the files in the source directory and copy to the destination directory
-    //    foreach (var file in dir.GetFiles())
-    //        file.CopyTo(Path.Combine(destinationDir, file.Name));
-
-    //    if (!recursive) return;
-
-    //    // If recursive and copying subdirectories, recursively call this method
-    //    foreach (var subDir in dirs)
-    //        CopyDirectory(subDir.FullName, Path.Combine(destinationDir, subDir.Name), true);
-    //}
 
 }
