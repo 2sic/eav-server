@@ -17,11 +17,16 @@ public class QueryPartDefinition(
     ILog parentLog)
     : EntityBasedWithLog(entity!, parentLog, "DS.QrPart")
 {
+    /// <summary>Content-Type name of the query Content-Type</summary>
+    internal static readonly string TypeName = "DataPipelinePart";
+
     /// <summary>
     /// Information for this part, how it's to be displayed in the visual query.
     /// This is a JSON string containing positioning etc.
     /// </summary>
-    public string VisualDesignerData => Get(QueryConstants.VisualDesignerData, "");
+    public string VisualDesignerData => GetThis("");
+
+    public string? PartAssemblyAndType => GetThis<string>(null);
 
     /// <summary>
     /// The .net type which the data source has for this part. <br/>

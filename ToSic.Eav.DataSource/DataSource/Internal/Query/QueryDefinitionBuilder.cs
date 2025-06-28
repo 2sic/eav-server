@@ -15,14 +15,11 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
     private List<QueryPartDefinition> GenerateParts(IEntity entity)
     {
         var l = Log.Fn<List<QueryPartDefinition>>();
-        //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
 
         // Generate parts first
         var temp = entity.Metadata
-            .Where(m => m.Type.Is(QueryConstants.QueryPartTypeName))
+            .Where(m => m.Type.Is(QueryPartDefinition.TypeName))
             .ToList();
-
-        //Log.Add("Metadata Debug: " + (md as MetadataOf<Guid>)?.Debug());
 
         var parts = temp
             .Select(CreatePart)
@@ -32,7 +29,7 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
 
     public QueryPartDefinition CreatePart(IEntity entity)
     {
-        var assemblyAndType = entity.Get<string>(QueryConstants.PartAssemblyAndType)
+        var assemblyAndType = entity.Get<string>(nameof(QueryPartDefinition.PartAssemblyAndType))
                               ?? throw new("Tried to get DataSource Type of a query part, but didn't find anything");
 
         var correctedName = GetCorrectedTypeName(assemblyAndType);

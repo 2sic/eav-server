@@ -88,7 +88,7 @@ public abstract class QueryControllerBase<TImplementation>(
         #region Deserialize some Entity-Values
 
         var pipeline = qDef.Entity.AsDictionary();
-        pipeline[QueryConstants.QueryStreamWiringAttributeName] = qDef.Connections;
+        pipeline[nameof(QueryDefinition.StreamWiring)] = qDef.Connections;
 
         var converter = Services.EntToDicLazy.Value;
         converter.Type.Serialize = true;
@@ -167,7 +167,7 @@ public abstract class QueryControllerBase<TImplementation>(
             .ToListOpt();
 
         // Update Pipeline Entity with new Wirings etc.
-        var wiringString = data.Pipeline[QueryConstants.QueryStreamWiringAttributeName]?.ToString() ?? "";
+        var wiringString = data.Pipeline[nameof(QueryDefinition.StreamWiring)]?.ToString() ?? "";
         var wirings =
             SystemJsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
             ?? [];

@@ -107,15 +107,17 @@ public class WorkQueryMod(
                 continue;
 
             // Update existing DataSource
-            if (dataSource.TryGetValue(QueryConstants.VisualDesignerData, out var designerJson))
-                dataSource[QueryConstants.VisualDesignerData] = designerJson.ToString() ?? ""; // serialize this JSON into string
+            var visualDesignerField = nameof(QueryPartDefinition.VisualDesignerData);
+            if (dataSource.TryGetValue(visualDesignerField, out var designerJson))
+                dataSource[visualDesignerField] = designerJson.ToString() ?? ""; // serialize this JSON into string
 
             if (entityId != null)
                 entUpdate.New(AppWorkCtx.AppReader).UpdateParts(Convert.ToInt32(entityId), dataSource, new());
             // Add new DataSource
             else
             {
-                var newSpecs = entCreate.New(AppWorkCtx.AppReader).Create(QueryConstants.QueryPartTypeName, dataSource,
+                var newSpecs = entCreate.New(AppWorkCtx.AppReader)
+                    .Create(QueryPartDefinition.TypeName, dataSource,
                     new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
                 newDataSources.Add(originalIdentity, newSpecs.EntityGuid);
             }
@@ -175,7 +177,7 @@ public class WorkQueryMod(
                 $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
         // add to new object...then send to save/update
-        values[QueryConstants.QueryStreamWiringAttributeName] = Connections.Serialize(wirings);
+        values[nameof(QueryDefinition.StreamWiring)] = Connections.Serialize(wirings);
         entUpdate.New(AppWorkCtx.AppReader).UpdateParts(id, values, new());
         l.Done();
     }

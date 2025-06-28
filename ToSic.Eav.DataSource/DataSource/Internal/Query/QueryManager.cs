@@ -42,7 +42,7 @@ public class QueryManager(
         try
         {
             var queryEntity = app.List.FindRepoId(entityId);
-            if (queryEntity?.Type.NameId != QueryConstants.QueryTypeName)
+            if (queryEntity?.Type.NameId != QueryDefinition.TypeName)
                 throw new ArgumentException(@"Entity is not an DataQuery Entity", nameof(entityId));
             return l.Return(queryEntity);
         }
@@ -80,7 +80,9 @@ public class QueryManager(
     {
         var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
         var appReader = appReaders.Value.GetOrKeep(appIdOrReader)!;
-        var queries = appReader.List.OfType(QueryConstants.QueryTypeName).ToImmutableOpt();
+        var queries = appReader.List
+            .OfType(QueryDefinition.TypeName)
+            .ToImmutableOpt();
 
         if (recurseParents <= 0)
             return l.Return(queries, "ok, no recursions");

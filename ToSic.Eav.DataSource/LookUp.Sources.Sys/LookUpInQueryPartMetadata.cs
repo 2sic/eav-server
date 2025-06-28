@@ -35,7 +35,7 @@ internal class LookUpInQueryPartMetadata : LookUpInEntity
         if (_initialized)
             return;
         // make sure we get the settings, but not the pipeline-parts, which may also be assigned
-        var sourceData = _parent.Metadata.FirstOrDefault(e => e.Type.NameId != QueryConstants.QueryPartTypeName);
+        var sourceData = _parent.Metadata.FirstOrDefault(e => e.Type.NameId != QueryPartDefinition.TypeName);
         if (sourceData != null)
             SetData(sourceData);
         _initialized = true;
