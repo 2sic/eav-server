@@ -116,7 +116,11 @@ public class QueryManager(
         var result = FindByNameOrGuid(all, nameOrGuid);
         // If nothing found, and we have an old name, try the new name
         if (result == null && nameOrGuid.StartsWith(DataSourceConstantsInternal.SystemQueryPrefixPreV15))
-            result = FindByNameOrGuid(all, nameOrGuid.Replace(DataSourceConstantsInternal.SystemQueryPrefixPreV15, DataSourceConstantsInternal.SystemQueryPrefix));
+        {
+            throw new($"Found a query beginning with {DataSourceConstantsInternal.SystemQueryPrefixPreV15} which is not supported any more. Use the prefix {DataSourceConstantsInternal.SystemQueryPrefix}. The query was: '{nameOrGuid}'");
+            //result = FindByNameOrGuid(all, nameOrGuid.Replace(DataSourceConstantsInternal.SystemQueryPrefixPreV15, DataSourceConstantsInternal.SystemQueryPrefix));
+        }
+
         return l.Return(result, result == null ? "null" : "ok");
     }
 
