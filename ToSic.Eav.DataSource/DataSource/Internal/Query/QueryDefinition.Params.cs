@@ -9,15 +9,15 @@ partial class QueryDefinition
     /// <summary>
     /// The raw Params used in this query, as stored in the IEntity
     /// </summary>
-    private string ParamsRaw => Get<string>(FieldParams, null) ?? "";
+    private string Params => GetThis<string>("");
 
     /// <summary>
     /// The param-dictionary used for the LookUp. All keys will be available in the token [Params:key]
     /// </summary>
     [field: AllowNull, MaybeNull]
-    public IDictionary<string, string> Params
+    public IDictionary<string, string> ParamsDic
     {
-        get => field ??= GenerateParamsDic(ParamsRaw, Log);
+        get => field ??= GenerateParamsDic(Params, Log);
         set;
     }
 
@@ -28,7 +28,7 @@ partial class QueryDefinition
     [field: AllowNull, MaybeNull]
     public ILookUp ParamsLookUp
     {
-        get => field ??= new LookUpInDictionary(DataSourceConstants.ParamsSourceName, Params);
+        get => field ??= new LookUpInDictionary(DataSourceConstants.ParamsSourceName, ParamsDic);
         set;
     }
 
@@ -80,7 +80,7 @@ partial class QueryDefinition
     public void Reset()
     {
         Log.A($"{nameof(Reset)}()");
-        Params = null!;
+        ParamsDic = null!;
         ParamsLookUp = null!;
     }
 }

@@ -22,16 +22,5 @@ public class DataSourceConnections(DataSourceBase parent)
         In.Add(connection);
         (connection.DataSource as DataSourceBase)?.Connections.Out.Add(connection);
     }
-
-    //public void ClearIn()
-    //{
-    //    // Remove from Out of other side
-    //    foreach (var connection in In)
-    //        (connection?.DataSource as DataSourceBase)?.Connections?.Out.Remove(connection);
-            
-    //    In.Clear();
-            
-    //    Parent.In.Clear();
-    //}
         
 }

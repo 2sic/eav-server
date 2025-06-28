@@ -24,11 +24,11 @@ public static class ContentTypeListExtensions
 
         // Make sure the "Default" scope is always included, otherwise it's missing on new apps
         if (!scopes.Contains(ScopeConstants.Default))
-            scopes.Add(ScopeConstants.Default);
+            scopes = scopes.Append(ScopeConstants.Default).ToListOpt();
 
         // Add new Configuration scope for v12.02
         if (!scopes.Contains(ScopeConstants.SystemConfiguration))
-            scopes.Add(ScopeConstants.SystemConfiguration);
+            scopes = scopes.Append(ScopeConstants.SystemConfiguration).ToListOpt();
 
         return scopes
             .OrderBy(s => s)

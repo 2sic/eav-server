@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
-public class JsonHeader
+public record JsonHeader
 {
-    public int V = 1;
+    public int V { get; init; } = 1;
 }

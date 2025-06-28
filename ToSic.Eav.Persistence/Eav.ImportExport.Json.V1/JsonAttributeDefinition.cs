@@ -3,10 +3,10 @@
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json.V1;
 
-public class JsonAttributeDefinition
+public record JsonAttributeDefinition
 {
     [JsonPropertyOrder(1)]
-    public required string Name;
+    public required string Name { get; init; }
 
     /// <summary>
     /// WIP in 16.08+
@@ -14,16 +14,16 @@ public class JsonAttributeDefinition
     /// </summary>
     [JsonIgnore(Condition = WhenWritingNull)]
     [JsonPropertyOrder(3)]
-    public Guid? Guid { get; set; }
+    public Guid? Guid { get; init; }
 
     [JsonPropertyOrder(7)]
-    public required string Type;
+    public required string Type { get; init; }
 
     [JsonPropertyOrder(8)]
-    public required string InputType;
+    public required string InputType { get; init; }
 
     [JsonPropertyOrder(9)]
-    public bool IsTitle;
+    public bool IsTitle { get; init; }
 
     /// <summary>
     /// WIP in 16.08+
@@ -31,12 +31,12 @@ public class JsonAttributeDefinition
     /// </summary>
     [JsonIgnore(Condition = WhenWritingNull)]
     [JsonPropertyOrder(10)]
-    public JsonAttributeSysSettings? SysSettings { get; set; }
+    public JsonAttributeSysSettings? SysSettings { get; init; }
 
     /// <summary>
     /// Metadata Entities for this Attribute such as description, dropdown values etc.
     /// </summary>
     [JsonIgnore(Condition = WhenWritingNull)]
     [JsonPropertyOrder(100)]
-    public ICollection<JsonEntity>? Metadata;
+    public ICollection<JsonEntity>? Metadata { get; init; }
 }

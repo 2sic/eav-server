@@ -109,6 +109,7 @@ public static class IEntityExtensions
                 .ToListOpt();
     }
 
+    // Experimental, only used in performance tests
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IEnumerable<IEntity> OfTypeCol(this IEnumerable<IEntity> list, string typeName)
     {

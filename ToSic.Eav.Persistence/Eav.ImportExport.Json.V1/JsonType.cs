@@ -6,7 +6,7 @@ using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.ImportExport.Json.V1;
 
-public class JsonType
+public record JsonType
 {
     /// <summary>
     /// Main static identifier, usually a guid, in rare cases a string such as "@string-dropdown"
@@ -37,7 +37,7 @@ public class JsonType
     /// ATM only used for Metadata
     /// </summary>
     [JsonIgnore(Condition = WhenWritingNull)]
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 
     /// <summary>
     /// Additional description for the type, usually not included.
@@ -46,7 +46,7 @@ public class JsonType
     /// </summary>
     /// <remarks>Added in v13.02</remarks>
     [JsonIgnore(Condition = WhenWritingNull)]
-    public string? Title { get; set; }
+    public string? Title { get; init; }
 
     /// <summary>
     /// Empty constructor is important for de-serializing

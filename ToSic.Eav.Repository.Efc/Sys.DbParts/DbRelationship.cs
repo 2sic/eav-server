@@ -77,7 +77,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// </summary>
     private void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll)
     {
-        Log.A($"add to queue for i:{entityId}, guids⋮{newValue.Count}");
+        var l = Log.Fn($"id:{entityId}, guids⋮{newValue.Count}");
         _saveQueue.Add(new()
         {
             AttributeId = attributeId,
@@ -85,6 +85,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
             ParentEntityId = entityId,
             FlushAllEntityRelationships = flushAll
         });
+        l.Done();
     }
 
     /// <summary>

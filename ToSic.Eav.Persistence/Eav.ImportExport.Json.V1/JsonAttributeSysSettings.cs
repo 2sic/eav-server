@@ -10,7 +10,7 @@ namespace ToSic.Eav.ImportExport.Json.V1;
 /// WIP 16.08+
 /// #SharedFieldDefinition
 /// </summary>
-public class JsonAttributeSysSettings
+public record JsonAttributeSysSettings
 {
     /// <summary>
     /// Old, remove soon

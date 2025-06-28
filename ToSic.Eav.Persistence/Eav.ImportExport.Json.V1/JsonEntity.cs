@@ -3,36 +3,36 @@
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json.V1;
 
-public class JsonEntity: IJsonWithAssets
+public record JsonEntity: IJsonWithAssets
 {
     /// <remarks>V 1.0</remarks>
-    public int Id;
+    public int Id { get; init; }
 
     /// <remarks>V 1.0</remarks>
-    public int Version;
+    public int Version { get; init; }
 
     /// <remarks>V 1.0</remarks>
-    public Guid Guid;
+    public Guid Guid { get; init; }
 
     /// <remarks>V 1.0</remarks>
-    public required JsonType Type;
+    public required JsonType Type { get; init; }
 
     /// <remarks>V 1.0</remarks>
-    public required JsonAttributes Attributes;
-
-    /// <remarks>V 1.0</remarks>
-    [JsonIgnore(Condition = WhenWritingNull)]
-    public string? Owner;
+    public required JsonAttributes Attributes { get; init; }
 
     /// <remarks>V 1.0</remarks>
     [JsonIgnore(Condition = WhenWritingNull)]
-    public JsonMetadataFor? For;
+    public string? Owner { get; init; }
 
     /// <remarks>V 1.0</remarks>
     [JsonIgnore(Condition = WhenWritingNull)]
-    public ICollection<JsonEntity>? Metadata;
+    public JsonMetadataFor? For { get; init; }
+
+    /// <remarks>V 1.0</remarks>
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public ICollection<JsonEntity>? Metadata { get; init; }
 
     /// <remarks>V 1.1</remarks>
     [JsonIgnore(Condition = WhenWritingNull)]
-    public ICollection<JsonAsset>? Assets { get; set; }
+    public ICollection<JsonAsset>? Assets { get; init; }
 }

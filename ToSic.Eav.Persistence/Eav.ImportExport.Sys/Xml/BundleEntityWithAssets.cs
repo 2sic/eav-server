@@ -3,8 +3,8 @@
 namespace ToSic.Eav.ImportExport.Sys.Xml;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class BundleEntityWithAssets
+public record BundleEntityWithAssets
 {
     public required IEntity Entity { get; init; }
-    public ICollection<JsonAsset> Assets { get; init; }= [];
+    public ICollection<JsonAsset> Assets { get; init; } = [];
 }

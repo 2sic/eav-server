@@ -55,27 +55,32 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
             .Select(o => CopyAndResetIds(o.Value!, Guid.NewGuid(), newMetadataTarget: newParts[o.Guid].EntityGuid));
 
         // Remap the wiring-list of the data-sources from old to new
-        var keyMap = newParts.ToDictionary(pair => pair.Key.ToString(), pair => pair.Value.EntityGuid.ToString());
+        var keyMap = newParts.ToDictionary(
+            pair => pair.Key.ToString(),
+            pair => pair.Value.EntityGuid.ToString()
+        );
         var newWiring = RemapWiringToCopy(query.Connections, keyMap);
 
-
-        var newWiringValues = new List<IValue>
-        {
-            _builder.Value.Value.String(newWiring, [])
-        };
+        var newWiringValue = _builder.Value.Value.String(newWiring, []);
+        var newWiringValues = new List<IValue> { newWiringValue };
         var queryAttributes = query.Entity.Attributes.ToEditableInIgnoreCase();
-        var newWiringAttribute =
-            _builder.Value.Attribute.CreateFrom(queryAttributes[QueryConstants.QueryStreamWiringAttributeName],
-                newWiringValues.ToImmutableOpt());
-        queryAttributes[QueryConstants.QueryStreamWiringAttributeName] = newWiringAttribute;
+        queryAttributes[nameof(QueryDefinition.StreamWiring)] = _builder.Value.Attribute.CreateFrom(
+            queryAttributes[nameof(QueryDefinition.StreamWiring)],
+            newWiringValues.ToImmutableOpt()
+        );
+
+        // Try to add "Copy" to title
+        queryAttributes[nameof(QueryDefinition.Name)] = _builder.Value.Attribute.CreateFrom(
+            queryAttributes[nameof(QueryDefinition.Name)],
+            [_builder.Value.Value.String(query.Title + " Copy", [])]
+        );
 
         var newQuery = _builder.Value.Entity.CreateFrom(query.Entity, id: 0, guid: newQueryGuid, attributes: _builder.Value.Attribute.Create(queryAttributes));
 
         var entityList = newParts
             .Select(p => p.Value)
-            .Concat(newMetadata)
-            .ToListOpt();
-        entityList.Add(newQuery);
+            .Concat(newMetadata);
+        entityList = entityList.Append(newQuery);
 
 
         var entSaver = _entSave.New(AppWorkCtx.AppReader);

@@ -3,7 +3,7 @@
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.ImportExport.Json.V1;
 
-public class JsonFormat: JsonContentTypeSet
+public record JsonFormat: JsonContentTypeSet
 {
     /// <summary>
     /// V1 - header information
@@ -17,14 +17,14 @@ public class JsonFormat: JsonContentTypeSet
     /// </summary>
     [JsonIgnore(Condition = WhenWritingDefault)]
     [JsonPropertyOrder(10)]
-    public List<JsonBundle>? Bundles { get; set; }
+    public List<JsonBundle>? Bundles { get; init; }
 
     /// <summary>
     /// V1 - a single Entity
     /// </summary>
     [JsonPropertyOrder(20)]
     [JsonIgnore(Condition = WhenWritingNull)] 
-    public JsonEntity? Entity;
+    public JsonEntity? Entity { get; init; }
 
     ///// <summary>
     ///// V1 - a single Content-Type

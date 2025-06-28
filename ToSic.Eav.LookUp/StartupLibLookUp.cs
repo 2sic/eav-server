@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.LookUp.Sys.Engines;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.LookUp;
+namespace ToSic.Eav.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupLibLookUp

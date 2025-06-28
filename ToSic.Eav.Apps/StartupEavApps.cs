@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.AppStack;
 using ToSic.Eav.Apps.Sys.Caching;
@@ -10,14 +11,14 @@ using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Data.Sys.Global;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavApps
 {
     public static IServiceCollection AddEavApps(this IServiceCollection services)
     {
-        services.TryAddTransient<AppReader.Sys.AppReader>();
+        services.TryAddTransient<AppReader>();
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
 
         // Global Content Types - needed by the Persistence Layer
@@ -26,10 +27,6 @@ public static class StartupEavApps
         // Runtimes and Managers
         services.TryAddTransient<AppCachePurger>();
         services.TryAddTransient<AppFinder>();
-        
-        // Context
-        //services.TryAddTransient<IContextOfApp, ContextOfApp>();
-        //services.TryAddTransient<ContextOfApp.MyServices>();
 
         // App-State and Cache
         services.AddTransient<AppsCacheSwitch>();

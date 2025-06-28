@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.ValueConverter.Sys;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavDataBuild

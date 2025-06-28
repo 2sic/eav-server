@@ -91,7 +91,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
         var l = Log.Fn<(IDataSource Source, StreamDictionary Out)>(message: $"Query: '{Definition.Entity.GetBestTitle()}'", timer: true);
         // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
         // and the current In
-        var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.Params);
+        var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.ParamsDic);
 
         // now provide an override source for this
         var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, resolvedParams);
@@ -118,7 +118,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
                       "To Re-Run the query with other params, call Reset() first.");
         }
 
-        Definition.Params[key] = value ?? "";
+        Definition.ParamsDic[key] = value ?? "";
         l.Done();
     }
 
@@ -139,7 +139,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     }
 
     /// <inheritdoc />
-    public IDictionary<string, string> Params() => Definition.Params;
+    public IDictionary<string, string> Params() => Definition.ParamsDic;
 
     /// <inheritdoc />
     public void Reset()

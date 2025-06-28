@@ -69,8 +69,8 @@ public class CacheKey(IDataSource dataSource) : ICacheKeyManager
                 return field;
             var keys = UniqueSources()
                 .SelectMany(inStream => inStream.CacheKey.SubKeys)
+                .Append(CachePartialKey)
                 .ToList();
-            keys.Add(CachePartialKey);
             field = [.. keys];
             return field;
         }

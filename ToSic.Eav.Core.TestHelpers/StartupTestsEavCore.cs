@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Data.Build;
+using ToSic.Eav.Startup;
 
 #pragma warning disable CA1822
 

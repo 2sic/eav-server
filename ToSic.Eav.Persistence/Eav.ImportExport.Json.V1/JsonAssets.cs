@@ -2,23 +2,20 @@
 
 public class JsonAssets
 {
-    public JsonAsset Get(string realPath, string relativeName, string? storage = null)
+    public JsonAsset Get(string realPath, string relativeName, string storage)
     {
+        if (storage == null || !JsonAsset.Storages.Contains(storage))
+            throw new ArgumentException($@"'{storage}' not a known value", nameof(storage));
+
         var name = Path.GetFileName(relativeName);
         var folder = Path.GetDirectoryName(relativeName);
         var ast = new JsonAsset
         {
             Name = name,
             Folder = folder,
-            File = null
+            File = null,
+            Storage = storage,
         };
-        if (storage != null)
-        {
-            if (JsonAsset.Storages.Contains(storage))
-                ast.Storage = storage;
-            else
-                throw new ArgumentException($@"'{storage}' not a known value", nameof(storage));
-        }
 
         if (!File.Exists(realPath))
             return ast;
@@ -27,15 +24,18 @@ public class JsonAssets
         var content = File.ReadAllBytes(realPath);
         for (var i = 1; i < 512 && i < content.Length; i++)
             if (content[i] == 0x00 && content[i - 1] == 0x00)
-            {
-                ast.Encoding = JsonAsset.EncodingBase64;
-                ast.File = Convert.ToBase64String(content);
-                return ast;
-            }
+                return ast with
+                {
+                    Encoding = JsonAsset.EncodingBase64,
+                    File = Convert.ToBase64String(content),
+
+                };
 
         // No? return text
-        ast.File = File.ReadAllText(realPath);
-        return ast;
+        return ast with
+        {
+            File = File.ReadAllText(realPath),
+        };
     }
 
     public bool Create(string? realPath, JsonAsset asset, bool overwrite = false)

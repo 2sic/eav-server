@@ -59,31 +59,34 @@ partial class JsonSerializer
             switch (g.Key)
             {
                 case ValueTypes.String:
-                    attribs.String = ToTypedDictionary<string>(gList);
+                    attribs = attribs with { String = ToTypedDictionary<string>(gList) };
                     break;
                 case ValueTypes.Hyperlink:
                     var links = ToTypedDictionary<string>(gList);
-                    attribs.Hyperlink = ValueConvertHyperlinks
-                        ? ConvertReferences(links, entity.EntityGuid)
-                        : links;
+                    attribs = attribs with
+                    {
+                        Hyperlink = ValueConvertHyperlinks
+                            ? ConvertReferences(links, entity.EntityGuid)
+                            : links,
+                    };
                     break;
                 case ValueTypes.Custom:
-                    attribs.Custom = ToTypedDictionary<string>(gList);
+                    attribs = attribs with { Custom = ToTypedDictionary<string>(gList) };
                     break;
                 case ValueTypes.Json:
-                    attribs.Json = ToTypedDictionary<string>(gList);
+                    attribs = attribs with { Json = ToTypedDictionary<string>(gList) };
                     break;
                 case ValueTypes.Number:
-                    attribs.Number = ToTypedDictionary<decimal?>(gList);
+                    attribs = attribs with { Number = ToTypedDictionary<decimal?>(gList) };
                     break;
                 case ValueTypes.DateTime:
-                    attribs.DateTime = ToTypedDictionary<DateTime?>(gList);
+                    attribs = attribs with { DateTime = ToTypedDictionary<DateTime?>(gList) };
                     break;
                 case ValueTypes.Boolean:
-                    attribs.Boolean = ToTypedDictionary<bool?>(gList);
+                    attribs = attribs with { Boolean = ToTypedDictionary<bool?>(gList) };
                     break;
                 case ValueTypes.Entity:
-                    attribs.Entity = ToTypedDictionaryEntity(gList);
+                    attribs = attribs with { Entity = ToTypedDictionaryEntity(gList) };
                     break;
                 case ValueTypes.Empty:
                 case ValueTypes.Undefined:

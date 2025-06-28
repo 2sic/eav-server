@@ -5,13 +5,13 @@
 ///
 /// Should contain a set of things to preserve together
 /// </summary>
-public class JsonBundle
+public record JsonBundle
 {
-    public string Name { get; set; } = "default";
+    public string Name { get; init; } = "default";
 
     [JsonIgnore(Condition = WhenWritingDefault)]
-    public ICollection<JsonContentTypeSet>? ContentTypes { get; set; }
+    public ICollection<JsonContentTypeSet>? ContentTypes { get; init; }
 
     [JsonIgnore(Condition = WhenWritingDefault)]
-    public ICollection<JsonEntity>? Entities { get; set; }
+    public ICollection<JsonEntity>? Entities { get; init; }
 }

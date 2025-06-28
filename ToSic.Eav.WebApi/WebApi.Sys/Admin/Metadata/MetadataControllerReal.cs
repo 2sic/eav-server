@@ -65,7 +65,7 @@ public class MetadataControllerReal(
 
         try
         {
-            mdFor.Title = appReader.FindTargetTitle(targetType, key);
+            mdFor = mdFor with { Title = appReader.FindTargetTitle(targetType, key) };
             l.A($"title: '{mdFor.Title}'");
         }
         catch { /* experimental / ignore */ }
@@ -115,17 +115,17 @@ public class MetadataControllerReal(
             case "guid":
                 if (!Guid.TryParse(key, out var guidKey))
                     return l.Return((null, mdFor), $"error: invalid guid:{key}");
-                mdFor.Guid = guidKey;
+                mdFor = mdFor with { Guid = guidKey };
                 var md = mdSource.GetMetadata(targetType, guidKey, contentType).ToList();
                 return l.Return((md, mdFor), $"guid:{guidKey}; count:{md.Count}");
             case "string":
-                mdFor.String = key;
+                mdFor = mdFor with { String = key };
                 md = mdSource.GetMetadata(targetType, key, contentType).ToList();
                 return l.Return((md, mdFor), $"string:{key}; count:{md.Count}");
             case "number":
                 if (!int.TryParse(key, out var keyInt))
                     return l.Return((null, mdFor), $"error: invalid number:{key}");
-                mdFor.Number = keyInt;
+                mdFor = mdFor with { Number = keyInt };
                 md = mdSource.GetMetadata(targetType, keyInt, contentType).ToList();
                 return l.Return((md, mdFor), $"number:{keyInt}; count:{md.Count}");
             default:
