@@ -20,7 +20,7 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
         var l = Log.Fn<IList<IContentType>>();
         try
         {
-            var extPaths = GetAllExtensionPaths();
+            var extPaths = GetAllExtensionDataPaths();
             l.A($"Found {extPaths.Count} extensions with .data folder");
             var allTypes = extPaths
                 .SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
@@ -56,9 +56,9 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
 
     #region Helpers
 
-    private ICollection<string> GetAllExtensionPaths()
+    private ICollection<string> GetAllExtensionDataPaths()
     {
-        var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>();
+        var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>($"Path: {Path}");
         var dir = new DirectoryInfo(Path);
         if (!dir.Exists)
             return l.Return([], $"directory do not exist: {dir}");
@@ -68,7 +68,8 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
                 .GetDirectories(FolderConstants.AppDataProtectedFolder)
                 .Where(d => d.Exists)
                 .SelectMany(a => a.GetDirectories(FolderConstants.FolderSystem))
-                .Union(s.GetDirectories(FolderConstants.FolderOldDotData))
+                // disabled in v20
+                //.Union(s.GetDirectories(FolderConstants.FolderOldDotData))
             );
         var paths = subDirs
             .Where(d => d.Exists)
