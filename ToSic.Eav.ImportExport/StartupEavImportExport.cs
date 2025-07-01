@@ -7,7 +7,7 @@ using ToSic.Eav.ImportExport.Sys.XmlImport;
 using ToSic.Eav.ImportExport.Sys.Zip;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Apps;
+namespace ToSic.Eav.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavImportExport

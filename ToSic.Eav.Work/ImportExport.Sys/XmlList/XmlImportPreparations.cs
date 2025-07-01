@@ -31,7 +31,7 @@ public class XmlImportPreparations(
     /// The amount of entities deleted in the repository on data import.
     /// </summary>
     public int DeleteCount
-        => deleteSetting == ImportDeleteUnmentionedItems.None ? 0 : entityDeleteGuids.Count;
+        => deleteSetting == ImportDeleteUnmentionedItems.None ? 0 : EntityDeleteGuids.Count;
 
     /// <summary>
     /// The amount of entities created in the repository on data import.
