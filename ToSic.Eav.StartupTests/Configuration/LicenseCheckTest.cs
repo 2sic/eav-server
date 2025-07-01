@@ -13,7 +13,7 @@ public class LicenseCheckTest(ILicenseService licenseService)
     /// <summary>
     /// Name of the license in the license.json file in Scenario Basic
     /// </summary>
-    private const string TestLicenseName = "2sxc Dev - Dev License for 2dm, STV, SDV";
+    private const string TestLicenseName = "2sxc Dev - Dev License for Core Developers"; // name as of v20
     private FeatureSetState GetLicenseOfTest() =>
         licenseService.All.First(l => l.Title == TestLicenseName);
 

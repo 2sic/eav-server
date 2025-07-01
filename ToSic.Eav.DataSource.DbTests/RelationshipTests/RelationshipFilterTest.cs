@@ -39,7 +39,7 @@ public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBui
 
         Trace.Write(Log.Dump());
 
-        True(result.Count == 0, "result.Count == 0");
+        Empty(result);
     }
     [Fact]
     public void DS_RelFil_NoConfigFallback()
