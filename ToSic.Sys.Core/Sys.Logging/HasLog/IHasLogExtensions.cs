@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// Extension to objects having a Log, to connect them to parent logs.

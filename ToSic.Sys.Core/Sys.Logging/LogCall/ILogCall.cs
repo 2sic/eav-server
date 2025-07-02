@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// A log object used to log the activity of a specific function call.

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// Interface to mark classes which can dump their state into the log as a string.

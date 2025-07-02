@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// Experimental - system to generate a code ref trail.

@@ -1,8 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using ToSic.Lib.Memory;
 
-
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

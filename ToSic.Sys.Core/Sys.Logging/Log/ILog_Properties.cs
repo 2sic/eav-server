@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using static ToSic.Lib.Logging.CodeRef;
+using static ToSic.Sys.Logging.CodeRef;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// Extension methods for property getters and setters.

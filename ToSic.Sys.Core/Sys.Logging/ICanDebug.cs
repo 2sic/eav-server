@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// Trivial interface just to ensure that we have debug on/off consistent

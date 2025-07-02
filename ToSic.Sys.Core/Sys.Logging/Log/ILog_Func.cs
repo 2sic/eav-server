@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
-using static ToSic.Lib.Logging.CodeRef;
+using static ToSic.Sys.Logging.CodeRef;
 // ReSharper disable ExplicitCallerInfoArgument
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming

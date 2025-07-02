@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// Special interface to mark things which need to know when the log was connected.

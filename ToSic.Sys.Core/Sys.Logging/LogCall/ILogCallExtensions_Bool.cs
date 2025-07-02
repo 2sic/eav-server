@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Sys.Logging;
 
 // ReSharper disable once InconsistentNaming
 partial class ILogCallExtensions

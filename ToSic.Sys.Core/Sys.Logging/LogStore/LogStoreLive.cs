@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 /// <inheritdoc />
 [PrivateApi]

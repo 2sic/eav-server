@@ -1,6 +1,6 @@
 ﻿using static System.StringComparer;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

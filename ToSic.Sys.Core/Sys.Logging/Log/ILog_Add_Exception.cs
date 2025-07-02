@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 // ReSharper disable once InconsistentNaming
 partial class ILog_Add

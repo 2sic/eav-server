@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using static System.String;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 [PrivateApi("no need to publish this")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

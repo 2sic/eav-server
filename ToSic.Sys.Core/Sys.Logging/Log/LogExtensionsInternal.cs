@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Sys.Logging;
 
 [PrivateApi]
 internal static partial class LogExtensionsInternal

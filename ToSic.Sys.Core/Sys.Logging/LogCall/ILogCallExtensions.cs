@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// Extensions for <see cref="ILogCall"/> objects which don't need to return a value.

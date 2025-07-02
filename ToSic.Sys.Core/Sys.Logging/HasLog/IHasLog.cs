@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// Objects which can log their activity, and share their log with other objects in the chain to produce extensive internal logging.

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// WIP - special class to reduce logging noise

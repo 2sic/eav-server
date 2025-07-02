@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Sys.Logging;
 
 /// <summary>
 /// A mini logger for a function call, which should be closed using a form of `Return(...)` when the function completes.

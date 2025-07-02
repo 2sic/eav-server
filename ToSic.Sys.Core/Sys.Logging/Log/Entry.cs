@@ -1,6 +1,6 @@
 ﻿using ToSic.Lib.Memory;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class Entry: ICanEstimateSize

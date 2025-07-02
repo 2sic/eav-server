@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace ToSic.Lib.Logging;
+namespace ToSic.Sys.Logging;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartUpLogging
