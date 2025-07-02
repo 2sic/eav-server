@@ -9,6 +9,7 @@ global using ToSic.Eav.Data;
 global using ToSic.Eav.DataSource;
 global using ToSic.Eav.DataSource.Internal;
 global using ToSic.Eav.DataSource.VisualQuery;
+global using ToSic.Lib.Coding;
 global using ToSic.Lib.DI;
 global using ToSic.Lib.Documentation;
 global using ToSic.Lib.Logging;

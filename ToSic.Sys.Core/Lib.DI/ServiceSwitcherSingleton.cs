@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Services;
-
-namespace ToSic.Lib.DI;
+﻿namespace ToSic.Lib.DI;
 
 /// <summary>
 /// Similar to the <see cref="ServiceSwitcher{T}"/> but special.

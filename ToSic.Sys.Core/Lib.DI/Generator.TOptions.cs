@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Services;
-
-namespace ToSic.Lib.DI;
+﻿namespace ToSic.Lib.DI;
 
 /// <summary>
 /// Lazy generator to create multiple new services/objects of a specific type.

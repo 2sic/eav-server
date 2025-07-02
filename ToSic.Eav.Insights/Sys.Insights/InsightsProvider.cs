@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Coding;
-
-namespace ToSic.Eav.Sys.Insights;
+﻿namespace ToSic.Eav.Sys.Insights;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class InsightsProvider(

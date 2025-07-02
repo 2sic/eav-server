@@ -1,7 +1,4 @@
-﻿using ToSic.Lib.Coding;
-
-
-namespace ToSic.Lib.Services;
+﻿namespace ToSic.Lib.Services;
 
 public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder protect = default, object[]? connect = default)
     : ServiceBase(logName, protect, connect: connect),
