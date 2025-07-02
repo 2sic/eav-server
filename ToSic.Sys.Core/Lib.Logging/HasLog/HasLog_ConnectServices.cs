@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.DI;
-
-namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Lib.Logging;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class HasLog_ConnectServices

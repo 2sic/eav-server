@@ -4,3 +4,4 @@ global using ToSic.Lib.Coding;
 global using ToSic.Lib.Documentation;
 global using ToSic.Lib.Logging;
 global using ToSic.Lib.Services;
+global using ToSic.Lib.Wrappers;

@@ -1,7 +1,4 @@
-﻿using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-
-namespace ToSic.Sys.Requirements;
+﻿namespace ToSic.Sys.Requirements;
 
 /// <summary>
 /// Internal service to check if a requirement has been met

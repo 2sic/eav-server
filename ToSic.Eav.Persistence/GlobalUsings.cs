@@ -13,5 +13,6 @@ global using ToSic.Lib.Logging;
 global using ToSic.Lib.Services;
 global using ToSic.Sys.Utils;
 global using ToSic.Lib.DI;
+global using ToSic.Lib.Helpers;
 global using ToSic.Sys.Performance;
 global using static System.Text.Json.Serialization.JsonIgnoreCondition;

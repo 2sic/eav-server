@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.DI;
-
-namespace ToSic.Lib.Logging;
+﻿namespace ToSic.Lib.Logging;
 
 /// <summary>
 /// Extension to objects having a Log, to connect them to parent logs.

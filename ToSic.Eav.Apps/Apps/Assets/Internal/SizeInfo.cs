@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Helpers;
-
-namespace ToSic.Eav.Apps.Assets.Internal;
+﻿namespace ToSic.Eav.Apps.Assets.Internal;
 
 /// <inheritdoc />
 [PrivateApi]

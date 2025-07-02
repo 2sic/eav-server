@@ -1,7 +1,5 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.Helpers;
-using ToSic.Lib.Wrappers;
 using ToSic.Sys.Caching.PiggyBack;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;

@@ -7,6 +7,7 @@ global using ToSic.Eav.TestData;
 global using ToSic.Eav.Testing;
 global using ToSic.Eav.Testing.Scenarios;
 global using ToSic.Lib.DI;
+global using ToSic.Lib.Logging;
 global using ToSic.Testing.Shared;
 global using Xunit;
 global using Xunit.DependencyInjection;

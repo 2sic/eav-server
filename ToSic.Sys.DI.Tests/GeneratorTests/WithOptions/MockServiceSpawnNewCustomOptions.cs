@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Services;
-
-namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
+﻿namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 
 /// <summary>
 /// Example service which uses options, but if not set, will use its own defaults.

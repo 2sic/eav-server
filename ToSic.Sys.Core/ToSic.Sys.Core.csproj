@@ -21,4 +21,8 @@
     <PackageReference Include="System.Text.Json" Version="9.0.0" /><!-- from Oqtane.Shared.csproj -->
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Lib.Exceptions\" />
+  </ItemGroup>
+
 </Project>

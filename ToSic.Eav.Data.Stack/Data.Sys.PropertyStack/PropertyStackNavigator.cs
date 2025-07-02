@@ -1,10 +1,9 @@
 ﻿using ToSic.Eav.Sys;
-using ToSic.Lib.Wrappers;
 
 namespace ToSic.Eav.Data.Sys.PropertyStack;
 
 /// <summary>
-/// This is an internal object and it does quite some complex stuff, so we must document it.
+/// This is an internal object, and it does quite some complex stuff, so we must document it.
 /// Image if Razor requests the following setting:
 /// * Settings.GoogleMaps.ApiKey
 ///

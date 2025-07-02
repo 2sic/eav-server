@@ -2,7 +2,6 @@
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
-using ToSic.Lib.Helpers;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;
 

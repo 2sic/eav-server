@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Helpers;
-
-namespace ToSic.Lib.DI;
+﻿namespace ToSic.Lib.DI;
 
 /// <summary>
 /// Helps us create lazy **Service** objects. It has some special features:

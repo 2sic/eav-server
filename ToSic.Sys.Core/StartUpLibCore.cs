@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Lib.DI;
 using ToSic.Sys.Boot;
 using ToSic.Sys.Configuration;
 

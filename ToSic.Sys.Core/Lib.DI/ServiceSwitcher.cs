@@ -1,5 +1,4 @@
-﻿using ToSic.Lib.Helpers;
-using static System.StringComparison;
+﻿using static System.StringComparison;
 
 namespace ToSic.Lib.DI;
 

@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Services;
-
-namespace ToSic.Sys.Startup;
+﻿namespace ToSic.Sys.Startup;
 
 public class LoaderBase: ServiceBase
 {

@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.DI;
-
-namespace ToSic.Lib.Services;
+﻿namespace ToSic.Lib.Services;
 
 internal class DependencyLogs
 {

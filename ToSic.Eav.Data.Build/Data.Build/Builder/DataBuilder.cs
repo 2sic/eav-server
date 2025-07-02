@@ -1,7 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys;
-using ToSic.Lib.DI;
-using ToSic.Lib.Services;
 
 namespace ToSic.Eav.Data.Build;
 
