@@ -1,10 +1,11 @@
 // Global using directives
 
 global using System;
-global using ToSic.Lib.Documentation;
-global using ToSic.Lib.Logging;
+global using ToSic.Sys.Documentation;
+global using ToSic.Sys.Logging;
 global using System.Diagnostics.CodeAnalysis;
-global using ToSic.Lib.Coding;
-global using ToSic.Lib.DI;
-global using ToSic.Lib.Helpers;
-global using ToSic.Lib.Services;
+global using ToSic.Sys.Coding;
+global using ToSic.Sys.Data;
+global using ToSic.Sys.DI;
+global using ToSic.Sys.Helpers;
+global using ToSic.Sys.Services;

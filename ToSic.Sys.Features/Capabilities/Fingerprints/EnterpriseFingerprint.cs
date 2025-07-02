@@ -1,5 +1,4 @@
-﻿using ToSic.Lib.Helpers;
-using ToSic.Sys.Security.Encryption;
+﻿using ToSic.Sys.Security.Encryption;
 
 namespace ToSic.Sys.Capabilities.Fingerprints;
 

@@ -10,7 +10,8 @@ using ToSic.Sys.Performance;
 using ToSic.Sys.Security.Permissions;
 using static System.StringComparison;
 using IMetadataSource = ToSic.Eav.Metadata.Sys.IMetadataSource;
-using ServiceBase = ToSic.Lib.Services.ServiceBase;
+using ServiceBase = ToSic.Sys.Services.ServiceBase;
+using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 
 namespace ToSic.Eav.Context.Sys;
 
@@ -21,7 +22,7 @@ public class AppUserLanguageCheck(
     Generator<AppPermissionCheck> checkGenerator,
     LazySvc<IAppReaderFactory> appReadersLazy,
     LazySvc<ISysFeaturesService> featuresLazy)
-    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, checkGenerator, appReadersLazy, featuresLazy])
+    : Services_ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, checkGenerator, appReadersLazy, featuresLazy])
 {
     /// <summary>
     /// Test if the current user has explicit language editing permissions

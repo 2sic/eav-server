@@ -1,7 +1,7 @@
 // Global using directives
 
-global using ToSic.Lib.Logging;
-global using ToSic.Lib.Services;
+global using ToSic.Sys.Logging;
+global using ToSic.Sys.Services;
 global using Xunit;
 global using static Xunit.Assert;
 

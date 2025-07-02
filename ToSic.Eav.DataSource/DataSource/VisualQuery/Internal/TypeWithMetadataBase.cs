@@ -1,4 +1,4 @@
-﻿using ToSic.Lib.Data;
+﻿using ToSic.Sys.Data;
 
 namespace ToSic.Eav.DataSource.VisualQuery.Internal;
 

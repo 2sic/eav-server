@@ -1,3 +1,3 @@
 // Global using directives
 
-global using ToSic.Lib.DI;
+global using ToSic.Sys.DI;

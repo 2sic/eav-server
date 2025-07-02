@@ -1,4 +1,6 @@
-﻿namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
+﻿using ToSic.Sys.DI;
+
+namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 
 public class GenerateWithDefaultOptionsLightWip(MockServiceWithSetup initialSvc, Generator<MockServiceWithSetup, MockServiceOptions> generator)
 {

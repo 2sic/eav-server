@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Data;
-
-namespace ToSic.Sys.Boot;
+﻿namespace ToSic.Sys.Boot;
 
 /// <summary>
 /// Defines a service (which must be added using AddTransient (not TryAddTransient).

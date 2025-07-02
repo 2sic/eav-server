@@ -8,7 +8,8 @@ using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Sys;
 using static System.String;
 
-using ServiceBase = ToSic.Lib.Services.ServiceBase;
+using ServiceBase = ToSic.Sys.Services.ServiceBase;
+using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Sys.Admin.Metadata;
 
@@ -22,7 +23,7 @@ public class MetadataControllerReal(
     IAppReaderFactory appReaders,
     ITargetTypeService metadataTargets,
     LazySvc<RecommendedMetadataService> mdRead)
-    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appReaders, metadataTargets, mdRead]),
+    : Services_ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appReaders, metadataTargets, mdRead]),
         IMetadataController
 {
     public const string LogSuffix = "MetaDt";
