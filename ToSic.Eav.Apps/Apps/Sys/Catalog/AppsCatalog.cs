@@ -8,7 +8,8 @@ namespace ToSic.Eav.Apps.Sys.Catalog;
 /// The names of the Get etc. will probably change a few more times
 /// </summary>
 [PrivateApi("internal")]
-internal class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
 {
     internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
 
@@ -16,23 +17,18 @@ internal class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
         => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, AppsCacheSwitch.AppLoaderTools), appId);
 
     public IAppIdentityPure PrimaryAppIdentity(int zoneId)
-        => new AppIdentityPure(zoneId, PrimaryAppId(zoneId));
+        => new AppIdentityPure(zoneId, Zones[zoneId].PrimaryAppId);
 
     public IAppIdentityPure DefaultAppIdentity(int zoneId)
-        => new AppIdentityPure(zoneId, DefaultAppId(zoneId));
+        => new AppIdentityPure(zoneId, Zones[zoneId].DefaultAppId);
 
     public string AppNameId(IAppIdentity appIdentity)
         => Zones[appIdentity.ZoneId].Apps[appIdentity.AppId];
 
-    public int DefaultAppId(int zoneId)
-        => Zones[zoneId].DefaultAppId;
-
-    public int PrimaryAppId(int zoneId)
-        => Zones[zoneId].PrimaryAppId;
-
     public IReadOnlyDictionary<int, string> Apps(int zoneId)
         => Zones[zoneId].Apps;
 
+    [field: AllowNull, MaybeNull]
     public IReadOnlyDictionary<int, Zone> Zones => field ??= AppsCacheSwitch.Value.Zones(AppsCacheSwitch.AppLoaderTools);
 
     public Zone Zone(int zoneId) => Zones.TryGetValue(zoneId, out var zone)
