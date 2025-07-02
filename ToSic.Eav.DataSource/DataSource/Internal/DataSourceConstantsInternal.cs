@@ -13,10 +13,13 @@ public class DataSourceConstantsInternal
     [PrivateApi] internal const string V3To4DataSourceDllNew = ", ToSic.Eav.DataSources";
 
     /// <summary>
-    /// Global queries must start with this prefix
+    /// Old prefix for global queries, used before v15.0. Only used to detect old and show error message.
     /// </summary>
     [PrivateApi] internal const string SystemQueryPrefixPreV15 = "Eav.Queries.Global.";
 
+    /// <summary>
+    /// Global queries must start with this prefix
+    /// </summary>
     [PrivateApi] internal const string SystemQueryPrefix = "System.";
 
     [PrivateApi] public static bool IsGlobalQuery(string name) => name.StartsWith(SystemQueryPrefixPreV15) || name.StartsWith(SystemQueryPrefix);

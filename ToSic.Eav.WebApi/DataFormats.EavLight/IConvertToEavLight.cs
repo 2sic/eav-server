@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Internal;
-using ToSic.Lib.Documentation;
 
 // Note: Was "officially" published exactly with this name and namespace in 2021
 // https://github.com/2sic/2sxc/discussions/2558

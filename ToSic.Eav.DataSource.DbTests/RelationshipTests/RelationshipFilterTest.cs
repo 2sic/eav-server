@@ -30,6 +30,11 @@ public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBui
         NotNull(relFilt);//, "relFilt != null");
     }
 
+    /// <summary>
+    /// At the moment v20 this test fails.
+    /// 2dm knows why but isn't sure what to do.
+    /// Please leave the test as-is as a reminder.
+    /// </summary>
     [Fact]
     public void DS_RelFil_NoConfigEmpty()
     {
@@ -41,6 +46,7 @@ public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBui
 
         Empty(result);
     }
+
     [Fact]
     public void DS_RelFil_NoConfigFallback()
     {
