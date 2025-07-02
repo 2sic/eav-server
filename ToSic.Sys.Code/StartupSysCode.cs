@@ -3,7 +3,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.Code.InfoSystem;
 using CodeInfoService = ToSic.Sys.Code.InfoSystem.CodeInfoService;
 
-namespace ToSic.Sys;
+// ReSharper disable once CheckNamespace
+namespace ToSic.Sys.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupSysCode

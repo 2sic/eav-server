@@ -8,7 +8,8 @@ using ToSic.Sys.Capabilities.Platform;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
 
-namespace ToSic.Sys;
+// ReSharper disable once CheckNamespace
+namespace ToSic.Sys.Startup;
 
 public static class SetupSysCapabilities
 {

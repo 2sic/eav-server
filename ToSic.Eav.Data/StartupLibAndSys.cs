@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Lib;
-using ToSic.Sys;
+using ToSic.Sys.Startup;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Startup;

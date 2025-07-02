@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Lib.FunFact;
 using ToSic.Sys.Caching.Monitors;
+using ToSic.Sys.FunctionalFactory;
 using static ToSic.Sys.Caching.MemoryCacheService;
 using static System.Runtime.Caching.ObjectCache;
 

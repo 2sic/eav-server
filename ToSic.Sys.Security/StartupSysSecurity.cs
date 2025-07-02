@@ -4,7 +4,8 @@ using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 using ToSic.Sys.Users.Permissions;
 
-namespace ToSic.Sys;
+// ReSharper disable once CheckNamespace
+namespace ToSic.Sys.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupSysSecurity

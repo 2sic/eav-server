@@ -4,7 +4,7 @@ using ToSic.Sys.Boot;
 using ToSic.Sys.Configuration;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Lib;
+namespace ToSic.Sys.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartUpLibCore

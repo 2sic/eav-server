@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ToSic.Lib.Memory;
+namespace ToSic.Sys.Memory;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MemorySizeEstimator(ILog? parentLog) : HelperBase(parentLog, "Eav.MemSiz")

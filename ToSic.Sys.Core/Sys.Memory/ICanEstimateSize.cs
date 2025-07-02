@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Memory;
+﻿namespace ToSic.Sys.Memory;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ICanEstimateSize

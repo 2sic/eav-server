@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.FunFact;
+﻿namespace ToSic.Sys.FunctionalFactory;
 
 /// <summary>
 /// WIP fluid functional object factory.

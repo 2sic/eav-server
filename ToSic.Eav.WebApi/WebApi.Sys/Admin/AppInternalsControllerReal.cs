@@ -7,7 +7,6 @@ using ToSic.Eav.WebApi.Sys.Admin.Metadata;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Sys.Security.Permissions;
-using ServiceBase = ToSic.Sys.Services.ServiceBase;
 using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;

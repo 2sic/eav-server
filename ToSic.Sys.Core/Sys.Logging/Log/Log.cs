@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Lib.Memory;
+using ToSic.Sys.Memory;
 
 namespace ToSic.Sys.Logging;
 
