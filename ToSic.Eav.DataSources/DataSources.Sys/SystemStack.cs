@@ -43,7 +43,7 @@ public class SystemStack: CustomDataSourceAdvanced
     private readonly IPropertyDumpService _dumpService;
     private readonly AppDataStackService _dataStackService;
 
-    public SystemStack(MyServices services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture, IPropertyDumpService dumpService)
+    public SystemStack(Dependencies services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture, IPropertyDumpService dumpService)
         : base(services, "Ds.AppStk", connect: [appReadFac, zoneCulture, dataStackService, dumpService])
     {
         _appReadFac = appReadFac;

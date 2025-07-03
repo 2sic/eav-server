@@ -25,16 +25,16 @@ namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class QueryControllerBase<TImplementation>(
-    QueryControllerBase<TImplementation>.MyServices services,
+    QueryControllerBase<TImplementation>.Dependencies services,
     string logName,
     object[]? connect = default)
-    : ServiceBase<QueryControllerBase<TImplementation>.MyServices>(services, logName, connect: connect)
+    : ServiceBase<QueryControllerBase<TImplementation>.Dependencies>(services, logName, connect: connect)
     where TImplementation : QueryControllerBase<TImplementation>
 {
 
     #region Constructor / DI / Services
 
-    public class MyServices(
+    public class Dependencies(
         QueryBuilder queryBuilder,
         LazySvc<ConvertToEavLight> entToDicLazy,
         LazySvc<InspectQuery> queryInfoLazy,
@@ -45,7 +45,7 @@ public abstract class QueryControllerBase<TImplementation>(
         Generator<IAppReaderFactory> appStates,
         GenWorkBasic<WorkQueryMod> workUnitQueryMod,
         GenWorkBasic<WorkQueryCopy> workUnitQueryCopy)
-        : MyServicesBase(connect:
+        : DependenciesBase(connect:
         [
             queryBuilder, entToDicLazy, queryInfoLazy, dataSourceCatalogLazy, jsonSerializer, passThrough, queryManager,
             appStates, workUnitQueryMod, workUnitQueryCopy

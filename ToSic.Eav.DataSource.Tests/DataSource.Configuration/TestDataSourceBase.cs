@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSource.Configuration;
 
-public class TestDataSourceBase(DataSourceBase.MyServices services)
+public class TestDataSourceBase(DataSourceBase.Dependencies services)
     : DataSourceBase(services, "Tst.Test")
 {
 

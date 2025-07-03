@@ -52,7 +52,7 @@ public class PublishingFilter : DataSourceBase
     /// Constructs a new PublishingFilter
     /// </summary>
     [PrivateApi]
-    public PublishingFilter(MyServices services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Publsh", connect: [userPermissions])
+    public PublishingFilter(Dependencies services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Publsh", connect: [userPermissions])
     {
         _userPermissions = userPermissions;
         ProvideOut(PublishingFilterList);

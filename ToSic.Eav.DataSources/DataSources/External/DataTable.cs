@@ -76,7 +76,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// Initializes a new instance of the DataTableDataSource class
     /// </summary>
     [PrivateApi]
-    public DataTable(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl")
+    public DataTable(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl")
     {
         ProvideOut(GetEntities);
     }

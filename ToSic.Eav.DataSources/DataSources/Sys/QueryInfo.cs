@@ -53,7 +53,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public QueryInfo(MyServices services,
+    public QueryInfo(Dependencies services,
         LazySvc<QueryManager> queryManager, QueryBuilder queryBuilder, IDataSourceGenerator<Attributes> attributesGenerator) : base(
         services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn", connect: [queryBuilder, queryManager, attributesGenerator])
     {

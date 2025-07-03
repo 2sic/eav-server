@@ -29,7 +29,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public ItemFilterDuplicates(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Duplic")
+    public ItemFilterDuplicates(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Duplic")
     {
         ProvideOut(GetUnique);
         ProvideOut(GetDuplicates, DuplicatesStreamName);

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// Check permissions on something inside an App, like a specific Entity, Content-Type etc.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBase.MyServices services)
+public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBase.Dependencies services)
     : PermissionCheckBase(services, $"{AppConstants.LogName}.PrmChk", connect: [appReaders])
 {
     #region Constructor & DI

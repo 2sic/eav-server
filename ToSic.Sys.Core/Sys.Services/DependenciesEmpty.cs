@@ -5,4 +5,4 @@
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class DependenciesEmpty: MyServicesBase;
+public class DependenciesEmpty: DependenciesBase;

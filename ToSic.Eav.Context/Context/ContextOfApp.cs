@@ -22,16 +22,16 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// These dependencies are a bit special, because they can be re-used for child context-of...
     /// This is why we gave them a much clearer name, not just the normal "Dependencies"
     /// </summary>
-    public new class MyServices(
-        ContextOfSite.MyServices siteServices,
+    public new class Dependencies(
+        ContextOfSite.Dependencies siteServices,
         IAppReaderFactory appReaders,
         LazySvc<ISysFeaturesService> features,
         LazySvc<AppUserLanguageCheck> langChecks,
         Generator<IEnvironmentPermission> environmentPermissions,
         LazySvc<AppDataStackService> settingsStack)
-        : MyServicesBase(connect: [environmentPermissions, appReaders, features, langChecks, settingsStack])
+        : DependenciesBase(connect: [environmentPermissions, appReaders, features, langChecks, settingsStack])
     {
-        public ContextOfSite.MyServices SiteServices { get; } = siteServices;
+        public ContextOfSite.Dependencies SiteServices { get; } = siteServices;
         public IAppReaderFactory AppReaders { get; } = appReaders;
         public LazySvc<ISysFeaturesService> Features { get; } = features;
         public LazySvc<AppUserLanguageCheck> LangChecks { get; } = langChecks;
@@ -43,20 +43,20 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// Constructor for DI
     /// </summary>
     /// <param name="services"></param>
-    public ContextOfApp(MyServices services) : this(services, "Sxc.CtxApp", [])
+    public ContextOfApp(Dependencies services) : this(services, "Sxc.CtxApp", [])
     { }
 
     // 2025-06-13 2dm - sometimes AppIdentity is null, but I'm not sure if this is something that should be kept this way
     // For now, the code works, but we should continuously optimize and review again.
     // Also with the AppReaderOrNull which is null if AppIdentity is null
 #pragma warning disable CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
-    protected ContextOfApp(MyServices services, string logName, object[] connect) : base(services.SiteServices, logName, connect: connect)
+    protected ContextOfApp(Dependencies services, string logName, object[] connect) : base(services.SiteServices, logName, connect: connect)
     {
         AppServices = services;
     }
 #pragma warning restore CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
 
-    protected readonly MyServices AppServices;
+    protected readonly Dependencies AppServices;
 
     #endregion
 

@@ -22,7 +22,7 @@ namespace ToSic.Eav.DataSources.Sys;
 
 public class MetadataTargetTypes : CustomDataSourceAdvanced
 {
-    public MetadataTargetTypes(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
+    public MetadataTargetTypes(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
     {
         ProvideOut(GetList);
     }

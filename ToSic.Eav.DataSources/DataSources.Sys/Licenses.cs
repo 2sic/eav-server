@@ -24,7 +24,7 @@ public sealed class Licenses : CustomDataSource
     /// Constructs a new Scopes DS
     /// </summary>
     [PrivateApi]
-    public Licenses(MyServices services, ILicenseService licenseService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Lics")
+    public Licenses(Dependencies services, ILicenseService licenseService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Lics")
     {
         ConnectLogs([licenseService]);
         ProvideOutRaw(

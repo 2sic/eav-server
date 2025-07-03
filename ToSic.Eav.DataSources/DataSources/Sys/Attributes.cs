@@ -50,7 +50,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppReaderFactory appReaders, MyServices services)
+    public Attributes(IAppReaderFactory appReaders, Dependencies services)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders])
     {
         _appReaders = appReaders;

@@ -19,14 +19,14 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
 {
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public new class MyServices: DataSourceBase.MyServices
+    public new class Dependencies: DataSourceBase.Dependencies
     {
         [PrivateApi]
         public IDataFactory DataFactory { get; }
 
         [PrivateApi]
         [ShowApiWhenReleased(ShowApiMode.Never)]
-        public MyServices(
+        public Dependencies(
             IDataSourceConfiguration configuration,
             LazySvc<DataSourceErrorHelper> errorHandler,
             ConfigurationDataLoader configDataLoader,
@@ -51,7 +51,7 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
     /// this is important, because the date should stay fixed throughout the lifetime of this object
     /// but renew when it is updates
     /// </remarks>
-    protected CustomDataSourceAdvanced(MyServices services, string? logName = null, object[]? connect = null)
+    protected CustomDataSourceAdvanced(Dependencies services, string? logName = null, object[]? connect = null)
         : base(services, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: connect)
     {
         DataFactory = services.DataFactory;

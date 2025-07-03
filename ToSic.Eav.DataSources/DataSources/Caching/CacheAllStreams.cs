@@ -84,7 +84,7 @@ public class CacheAllStreams : DataSourceBase
     /// Constructs a new App DataSource
     /// </summary>
     [PrivateApi]
-    public CacheAllStreams(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.CachAl")
+    public CacheAllStreams(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.CachAl")
     {
         // This one is unusual, so don't pre-attach a default data stream
         // All streams, incl. Default, will be attached in the dynamic Out.

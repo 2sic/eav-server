@@ -22,21 +22,21 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// Otherwise, compiled code would break when we need additional dependencies just for the CustomDataSource.
     /// </summary>
     [PrivateApi]
-    public new class MyServices(
+    public new class Dependencies(
         IDataSourceConfiguration configuration,
         LazySvc<DataSourceErrorHelper> errorHandler,
         ConfigurationDataLoader configDataLoader,
         LazySvc<IDataSourceCacheService> cacheService,
         IDataFactory dataFactory
         )
-        : CustomDataSourceAdvanced.MyServices(configuration, errorHandler, configDataLoader, cacheService, dataFactory);
+        : CustomDataSourceAdvanced.Dependencies(configuration, errorHandler, configDataLoader, cacheService, dataFactory);
 
     /// <summary>
     /// Constructor for creating a Custom DataSource.
     /// </summary>
     /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.MyServices)</param>
     /// <param name="logName">Optional name for logging such as `My.JsonDS`</param>
-    protected internal CustomDataSource(MyServices services, string? logName = null) : base(services, logName ?? "Ds.CustLt")
+    protected internal CustomDataSource(Dependencies services, string? logName = null) : base(services, logName ?? "Ds.CustLt")
     {
         // Provide a default out, in case the overriding class doesn't
         base.ProvideOut(() => GetRaw(GetDefault, null));

@@ -31,7 +31,7 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
     /// <summary>
     /// Constructor
     /// </summary>
-    protected RelationshipDataSourceBase(MyServices services, ICurrentContextUserPermissionsService userPermissions, string logName): base(services, logName, connect: [userPermissions])
+    protected RelationshipDataSourceBase(Dependencies services, ICurrentContextUserPermissionsService userPermissions, string logName): base(services, logName, connect: [userPermissions])
     {
         _userPermissions = userPermissions;
         ProvideOut(GetRelated);

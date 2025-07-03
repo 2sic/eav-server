@@ -57,7 +57,7 @@ public sealed class StreamPick : DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public StreamPick(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.StmPck")
+    public StreamPick(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.StmPck")
     {
         ProvideOut(StreamPickList);
     }

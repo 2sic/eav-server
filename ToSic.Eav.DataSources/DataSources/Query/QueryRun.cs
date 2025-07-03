@@ -48,7 +48,7 @@ public class QueryRun : DataSourceBase
     /// Constructs a new QueryRun
     /// </summary>
     [PrivateApi]
-    public QueryRun(MyServices services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun")
+    public QueryRun(Dependencies services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun")
     {
         ConnectLogs([
             _queryGenerator = queryGenerator

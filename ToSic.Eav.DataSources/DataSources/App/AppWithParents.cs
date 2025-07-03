@@ -34,7 +34,7 @@ internal class AppWithParents: DataSourceBase
     private readonly IAppReaderFactory _appReaders;
     private readonly IDataSourcesService _dataSourceFactory;
 
-    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar")
+    public AppWithParents(Dependencies services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar")
     {
         ConnectLogs([
             _dataSourceFactory = dataSourceFactory,

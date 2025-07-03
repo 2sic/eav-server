@@ -65,7 +65,7 @@ public sealed class TreeModeler : DataSourceBase
     /// Initializes this data source
     /// </summary>
     [PrivateApi]
-    public TreeModeler(MyServices services, ITreeMapper treeMapper) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Tree", connect: [treeMapper])
+    public TreeModeler(Dependencies services, ITreeMapper treeMapper) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Tree", connect: [treeMapper])
     {
         _treeMapper = treeMapper;
         // Specify what out-streams this data-source provides. Usually just one, called "Default"

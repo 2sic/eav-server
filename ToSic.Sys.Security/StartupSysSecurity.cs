@@ -17,7 +17,7 @@ public static class StartupSysSecurity
         services.TryAddTransient<ICurrentContextUserPermissionsService, CurrentContextUserPermissionsService>();
 
         // Permissions helper
-        services.TryAddTransient<PermissionCheckBase.MyServices>();
+        services.TryAddTransient<PermissionCheckBase.Dependencies>();
 
         return services;
     }

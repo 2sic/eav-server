@@ -39,7 +39,7 @@ public sealed class StreamMerge: DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public StreamMerge(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.StMrge")
+    public StreamMerge(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.StMrge")
     {
         ProvideOut(GetAll);
         ProvideOut(GetDistinct, DistinctStream);

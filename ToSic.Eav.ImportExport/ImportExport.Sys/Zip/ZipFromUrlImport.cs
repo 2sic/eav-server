@@ -9,7 +9,7 @@ public class ZipFromUrlImport: ZipImport
 {
     #region DI Constructor
 
-    public ZipFromUrlImport(MyServices services, IGlobalConfiguration globalConfiguration) : base(services)
+    public ZipFromUrlImport(Dependencies services, IGlobalConfiguration globalConfiguration) : base(services)
     {
         ConnectLogs([
             _globalConfiguration = globalConfiguration

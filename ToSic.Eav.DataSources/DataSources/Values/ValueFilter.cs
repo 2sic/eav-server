@@ -83,7 +83,7 @@ public sealed class ValueFilter : DataSourceBase
     /// Constructs a new ValueFilter
     /// </summary>
     [PrivateApi]
-    public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValFil", connect: [valLanguages])
+    public ValueFilter(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValFil", connect: [valLanguages])
     {
         _valueLanguageService = valLanguages;
 

@@ -11,7 +11,7 @@ public static class BreachExtensions
 {
     public static IDataSourceLink CreateEmptyLink(IDataSource ds) => new DataSourceLink(null, dataSource: ds);
 
-    public static CustomDataSource CustomDataSourceLight(CustomDataSource.MyServices services,
+    public static CustomDataSource CustomDataSourceLight(CustomDataSource.Dependencies services,
         IDataSource wrapper,
         NoParamOrder noParamOrder = default,
         string? logName = null)

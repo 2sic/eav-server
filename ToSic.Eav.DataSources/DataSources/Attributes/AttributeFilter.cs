@@ -60,7 +60,7 @@ public class AttributeFilter : DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public AttributeFilter(EntityBuilder entityBuilder, MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtribF")
+    public AttributeFilter(EntityBuilder entityBuilder, Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtribF")
     {
         _entityBuilder = entityBuilder;
         ProvideOut(GetList);

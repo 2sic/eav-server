@@ -5,7 +5,7 @@ using ToSic.Sys.Security.Permissions;
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MultiPermissionsItems(MultiPermissionsApp.MyServices services)
+public class MultiPermissionsItems(MultiPermissionsApp.Dependencies services)
     : MultiPermissionsApp(services, "Sec.MpItms")
 {
     public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)

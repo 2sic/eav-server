@@ -9,15 +9,15 @@ namespace ToSic.Eav.DataSource;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
-internal class DataSourceConfiguration(DataSourceConfiguration.MyServices services)
-    : ServiceBase<DataSourceConfiguration.MyServices>(services, $"{DataSourceConstantsInternal.LogPrefix}.Config"),
+internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies services)
+    : ServiceBase<DataSourceConfiguration.Dependencies>(services, $"{DataSourceConstantsInternal.LogPrefix}.Config"),
         IDataSourceConfiguration
 {
     #region Dependencies - Must be in DI
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public class MyServices(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
-        : MyServicesBase(connect: [zoneCultureResolverLazy])
+    public class Dependencies(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
+        : DependenciesBase(connect: [zoneCultureResolverLazy])
     {
         public LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy { get; } = zoneCultureResolverLazy;
     }

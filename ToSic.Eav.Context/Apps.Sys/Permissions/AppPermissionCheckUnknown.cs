@@ -4,5 +4,5 @@
 
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
-internal sealed class AppPermissionCheckUnknown(IAppReaderFactory appReaders, PermissionCheckBase.MyServices services, WarnUseOfUnknown<AppPermissionCheckUnknown> _)
+internal sealed class AppPermissionCheckUnknown(IAppReaderFactory appReaders, PermissionCheckBase.Dependencies services, WarnUseOfUnknown<AppPermissionCheckUnknown> _)
     : AppPermissionCheck(appReaders, services), IIsUnknown;

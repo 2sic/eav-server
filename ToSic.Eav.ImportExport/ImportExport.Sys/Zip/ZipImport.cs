@@ -8,7 +8,7 @@ using ToSic.Eav.Sys;
 namespace ToSic.Eav.ImportExport.Sys.Zip;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.MyServices>(services, "Zip.Imp")
+public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.Dependencies>(services, "Zip.Imp")
 {
     private int? _initialAppId;
     private int _zoneId;
@@ -17,13 +17,13 @@ public class ZipImport(ZipImport.MyServices services) : ServiceBase<ZipImport.My
 
     public bool AllowCodeImport;
 
-    public class MyServices(
+    public class Dependencies(
         Generator<AppFileManager> fileManagerGenerator,
         IImportExportEnvironment environment,
         Generator<XmlImportWithFiles> xmlImpExpFiles,
         AppCachePurger appCachePurger,
         IAppsCatalog appsCatalog)
-        : MyServicesBase(connect: [fileManagerGenerator, environment, xmlImpExpFiles, appCachePurger, appsCatalog])
+        : DependenciesBase(connect: [fileManagerGenerator, environment, xmlImpExpFiles, appCachePurger, appsCatalog])
     {
         public Generator<AppFileManager> FileManagerGenerator { get; } = fileManagerGenerator;
         public IImportExportEnvironment Environment { get; } = environment;

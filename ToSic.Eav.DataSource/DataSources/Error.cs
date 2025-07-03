@@ -42,7 +42,7 @@ public class Error: DataSourceBase
     /// Constructor to tell the system what out-streams we have.
     /// In this case it's just the "Default" containing a fake exception.
     /// </summary>
-    public Error(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Error")
+    public Error(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Error")
         => ProvideOut(GenerateExceptionStream);
 
     private IImmutableList<IEntity> GenerateExceptionStream()

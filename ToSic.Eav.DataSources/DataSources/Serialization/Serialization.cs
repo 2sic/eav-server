@@ -241,7 +241,7 @@ public partial class Serialization : DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public Serialization(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SerCnf")
+    public Serialization(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SerCnf")
     { }
 
     #region Dynamic Out

@@ -55,7 +55,7 @@ public sealed class Apps: CustomDataSource
     /// Constructs a new Apps DS
     /// </summary>
     [PrivateApi]
-    public Apps(MyServices services, IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Apps")
+    public Apps(Dependencies services, IAppsCatalog appsCatalog, IAppReaderFactory appReaders) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Apps")
     {
         ConnectLogs([appsCatalog, appReaders]);
         ProvideOutRaw(

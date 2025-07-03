@@ -8,16 +8,16 @@ namespace ToSic.Sys.Security.Permissions;
 /// Basic constructor, you must always call Init afterward
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract partial class PermissionCheckBase(PermissionCheckBase.MyServices services, string logName, object[]? connect = default)
-    : ServiceBase<PermissionCheckBase.MyServices>(services, logName, connect: connect), IPermissionCheck
+public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependencies services, string logName, object[]? connect = default)
+    : ServiceBase<PermissionCheckBase.Dependencies>(services, logName, connect: connect), IPermissionCheck
 {
     // ReSharper disable once InconsistentNaming
-    private readonly MyServices services = services;
+    private readonly Dependencies services = services;
 
     #region MyServices
 
-    public class MyServices(ISysFeaturesService features, IEnvironmentPermission environmentPermission)
-        : MyServicesBase(connect: [features, environmentPermission])
+    public class Dependencies(ISysFeaturesService features, IEnvironmentPermission environmentPermission)
+        : DependenciesBase(connect: [features, environmentPermission])
     {
         public ISysFeaturesService Features { get; } = features;
         public IEnvironmentPermission EnvironmentPermission { get; } = environmentPermission;

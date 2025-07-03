@@ -22,13 +22,13 @@ public static class StartupEavImportExport
 
         services.TryAddTransient<ZipExport>();
         services.TryAddTransient<ZipImport>();
-        services.TryAddTransient<ZipImport.MyServices>();
+        services.TryAddTransient<ZipImport.Dependencies>();
         services.TryAddTransient<ZipFromUrlImport>();
         
         // export import stuff
         services.TryAddTransient<ExportImportValueConversion>();
         services.TryAddTransient<XmlImportWithFiles>(); // Note: added v19.03.03 2025-03-11 by 2dm https://github.com/2sic/2sxc/issues/3598
-        services.TryAddTransient<XmlImportWithFiles.MyServices>();
+        services.TryAddTransient<XmlImportWithFiles.Dependencies>();
 
         return services;
     }

@@ -23,8 +23,8 @@ public static class StartupEavPersistence
         services.TryAddTransient<IDataDeserializer, JsonSerializer>();
 
         services.TryAddTransient<JsonSerializer>();
-        services.TryAddTransient<JsonSerializer.MyServices>();
-        services.TryAddTransient<SerializerBase.MyServices>();
+        services.TryAddTransient<JsonSerializer.Dependencies>();
+        services.TryAddTransient<SerializerBase.Dependencies>();
 
         services.TryAddTransient<XmlSerializer>();
 

@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSource;
 /// Consult the guide to upgrade your custom data sources.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Just FYI for people who need to know more about the internal APIs")]
-public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServices>, IDataSource, IAppIdentitySync
+public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Dependencies>, IDataSource, IAppIdentitySync
 {
     /// <summary>
     /// Default Constructor, _protected_.
@@ -25,7 +25,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
     /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
     /// <param name="connect"></param>
     [PrivateApi]
-    protected DataSourceBase(MyServices services, string logName, object[]? connect = default) : base(services, logName, connect: connect)
+    protected DataSourceBase(Dependencies services, string logName, object[]? connect = default) : base(services, logName, connect: connect)
     {
         AutoLoadAllConfigMasks(GetType());
     }

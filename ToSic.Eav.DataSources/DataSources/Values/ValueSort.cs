@@ -61,7 +61,7 @@ public sealed class ValueSort : DataSourceBase
     /// Constructs a new ValueSort
     /// </summary>
     [PrivateApi]
-    public ValueSort(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValSrt", connect: [valLanguages])
+    public ValueSort(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValSrt", connect: [valLanguages])
     {
         _valLanguages = valLanguages;
 

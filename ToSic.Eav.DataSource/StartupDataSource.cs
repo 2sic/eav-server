@@ -18,11 +18,11 @@ public static class StartupDataSource
     public static IServiceCollection AddDataSourceSystem(this IServiceCollection services)
     {
         // Dependencies, new in v15
-        services.TryAddTransient<DataSourceBase.MyServices>();
+        services.TryAddTransient<DataSourceBase.Dependencies>();
         services.TryAddTransient<IDataSourceConfiguration, DataSourceConfiguration>();
-        services.TryAddTransient<DataSourceConfiguration.MyServices>();
-        services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
-        services.TryAddTransient<CustomDataSource.MyServices>();
+        services.TryAddTransient<DataSourceConfiguration.Dependencies>();
+        services.TryAddTransient<CustomDataSourceAdvanced.Dependencies>();
+        services.TryAddTransient<CustomDataSource.Dependencies>();
 
         services.TryAddTransient<DataSourceCatalog>();
         services.TryAddTransient<IDataSourcesService, DataSourcesService>();

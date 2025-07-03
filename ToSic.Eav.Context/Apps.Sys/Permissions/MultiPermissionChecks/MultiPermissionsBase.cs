@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class MultiPermissionsBase<TServices>(TServices services, string logName, object[]? connect = default)
     : ServiceBase<TServices>(services, logName, connect: connect), IMultiPermissionCheck
-    where TServices : MyServicesBase
+    where TServices : DependenciesBase
 {
     /// <summary>
     /// All the permission checks that will be used

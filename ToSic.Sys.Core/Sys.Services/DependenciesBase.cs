@@ -12,10 +12,10 @@
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class MyServicesBase: ILazyInitLog
+public abstract class DependenciesBase: ILazyInitLog
 {
     // ReSharper disable once UnusedParameter.Local
-    protected MyServicesBase(NoParamOrder protect = default, object[]? connect = default)
+    protected DependenciesBase(NoParamOrder protect = default, object[]? connect = default)
     {
         if (connect == null)
             return;
@@ -70,7 +70,7 @@ public static class ServiceDependenciesExtensions
     /// Special format to allow command chaining, so it returns itself.
     /// </summary>
     public static TMyServices ConnectServices<TMyServices>(this TMyServices parent, ILog log)
-        where TMyServices : MyServicesBase
+        where TMyServices : DependenciesBase
     {
         (parent as ILazyInitLog).SetLog(log);
         return parent;

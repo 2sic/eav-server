@@ -41,7 +41,7 @@ public static class StartupWebApi
         // APIs
         services.TryAddTransient<EntityPickerApi>();
         services.TryAddTransient<ContentTypeDtoService>();
-        services.TryAddTransient(typeof(QueryControllerBase<>.MyServices));
+        services.TryAddTransient(typeof(QueryControllerBase<>.Dependencies));
         services.TryAddTransient<ContentExportApi>();
         services.TryAddTransient<ContentImportApi>();
 
@@ -56,7 +56,7 @@ public static class StartupWebApi
         // WIP Converter clean-up v12.05
         // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
         // Here we only register the dependencies, as the final converter must be registered elsewhere
-        services.TryAddTransient<ConvertToEavLight.MyServices>();
+        services.TryAddTransient<ConvertToEavLight.Dependencies>();
         services.TryAddTransient<ConvertToEavLight>();
 
         // json serialization converters eav related

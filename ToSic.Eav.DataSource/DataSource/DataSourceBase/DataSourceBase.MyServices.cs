@@ -14,12 +14,12 @@ partial class DataSourceBase
     /// * Important: The internals of this class are not documented, as they will change with time.
     /// </remarks>
     [PrivateApi]
-    public class MyServices(
+    public class Dependencies(
         IDataSourceConfiguration configuration,
         LazySvc<DataSourceErrorHelper> errorHandler,
         ConfigurationDataLoader configDataLoader,
         LazySvc<IDataSourceCacheService> cacheService)
-        : MyServicesBase(connect: [configuration, errorHandler, configDataLoader, cacheService])
+        : DependenciesBase(connect: [configuration, errorHandler, configDataLoader, cacheService])
     {
         public LazySvc<IDataSourceCacheService> CacheService { get; } = cacheService;
         public IDataSourceConfiguration Configuration { get; } = configuration;

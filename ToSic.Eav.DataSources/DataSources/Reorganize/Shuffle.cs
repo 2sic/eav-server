@@ -45,7 +45,7 @@ public sealed class Shuffle: DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public Shuffle(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Shuffl")
+    public Shuffle(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Shuffl")
     {
         ProvideOut(GetShuffle);
     }

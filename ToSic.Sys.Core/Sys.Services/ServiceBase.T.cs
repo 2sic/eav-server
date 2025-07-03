@@ -7,7 +7,7 @@
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 // #NoEditorBrowsableBecauseOfInheritance
 //[ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : MyServicesBase
+public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : DependenciesBase
 {
     /// <summary>
     /// Constructor for normal case, with services

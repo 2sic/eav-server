@@ -10,15 +10,15 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// Do consolidate permission checks on a set of permissions
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MyServices>
+public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Dependencies>
 {
     #region Constructors and DI
 
-    public class MyServices(
+    public class Dependencies(
         LazySvc<IZoneMapper> zoneMapper,
         Generator<AppPermissionCheck> appPermCheckGenerator,
         Generator<ISysFeaturesService> featIntGen)
-        : MyServicesBase(connect: [zoneMapper, appPermCheckGenerator, featIntGen])
+        : DependenciesBase(connect: [zoneMapper, appPermCheckGenerator, featIntGen])
     {
         internal LazySvc<IZoneMapper> ZoneMapper { get; } = zoneMapper;
         internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; } = appPermCheckGenerator;
@@ -28,9 +28,9 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.MySer
     /// <summary>
     /// Constructor for DI
     /// </summary>
-    public MultiPermissionsApp(MyServices services) : this(services, "Api.Perms") { }
+    public MultiPermissionsApp(Dependencies services) : this(services, "Api.Perms") { }
 
-    protected MultiPermissionsApp(MyServices services, string logName, object[]? connect = default)
+    protected MultiPermissionsApp(Dependencies services, string logName, object[]? connect = default)
         : base(services, logName, connect)
     { }
 

@@ -63,7 +63,7 @@ public class AttributeRename : DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public AttributeRename(DataBuilder dataBuilder, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen", connect: [dataBuilder])
+    public AttributeRename(DataBuilder dataBuilder, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen", connect: [dataBuilder])
     {
         _dataBuilder = dataBuilder;
         ProvideOut(GetList);

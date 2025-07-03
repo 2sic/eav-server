@@ -11,12 +11,12 @@ namespace ToSic.Eav.Context.Sys.Site;
 /// In rare cases you may want to replace them, which is why Site/User have Set Accessors
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSite
+public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfSite
 {
     #region Constructor / DI
 
-    public class MyServices(ISite site, IUser user, Generator<AppPermissionCheck> appPermissionCheck)
-        : MyServicesBase(connect: [site, user, appPermissionCheck])
+    public class Dependencies(ISite site, IUser user, Generator<AppPermissionCheck> appPermissionCheck)
+        : DependenciesBase(connect: [site, user, appPermissionCheck])
     {
         public ISite Site { get; } = site;
         public IUser User { get; } = user;
@@ -27,9 +27,9 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
     /// Constructor for DI
     /// </summary>
     /// <param name="services"></param>
-    public ContextOfSite(MyServices services) : this(services, null) { }
+    public ContextOfSite(Dependencies services) : this(services, null) { }
 
-    protected ContextOfSite(MyServices services, string? logName, object[]? connect = default) : base(services, logName ?? "Eav.CtxSte", connect: connect)
+    protected ContextOfSite(Dependencies services, string? logName, object[]? connect = default) : base(services, logName ?? "Eav.CtxSte", connect: connect)
     {
         Site = Services.Site;
     }

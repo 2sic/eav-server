@@ -116,11 +116,11 @@ public class Sql : CustomDataSourceAdvanced
     #region Constructor
 
     [PrivateApi]
-    public new class MyServices(SqlPlatformInfo sqlPlatformInfo, CustomDataSourceAdvanced.MyServices parentServices)
-        : MyServicesBase(connect: [sqlPlatformInfo])
+    public new class Dependencies(SqlPlatformInfo sqlPlatformInfo, CustomDataSourceAdvanced.Dependencies parentServices)
+        : DependenciesBase(connect: [sqlPlatformInfo])
     {
         public SqlPlatformInfo SqlPlatformInfo { get; } = sqlPlatformInfo;
-        public CustomDataSourceAdvanced.MyServices ParentServices { get; } = parentServices;
+        public CustomDataSourceAdvanced.Dependencies ParentServices { get; } = parentServices;
     }
 
     // Important: This constructor must come BEFORE the other constructors
@@ -129,12 +129,12 @@ public class Sql : CustomDataSourceAdvanced
     /// Initializes a new instance of the SqlDataSource class
     /// </summary>
     [PrivateApi]
-    public Sql(MyServices services) : base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql", connect: [services])
+    public Sql(Dependencies services) : base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql", connect: [services])
     {
         SqlServices = services;
         ProvideOut(GetList);
     }
-    [PrivateApi] protected readonly MyServices SqlServices;
+    [PrivateApi] protected readonly Dependencies SqlServices;
 
     #endregion
 

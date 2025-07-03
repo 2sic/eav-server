@@ -14,7 +14,7 @@ public abstract class MetadataDataSourceBase : CustomDataSourceAdvanced
     /// <summary>
     /// Constructor
     /// </summary>
-    protected MetadataDataSourceBase(MyServices services, string logName, object[]? connect = default) : base(services, logName, connect)
+    protected MetadataDataSourceBase(Dependencies services, string logName, object[]? connect = default) : base(services, logName, connect)
     {
         ProvideOut(GetMetadata);
     }

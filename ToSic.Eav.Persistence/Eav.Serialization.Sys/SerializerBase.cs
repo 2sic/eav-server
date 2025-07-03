@@ -12,12 +12,12 @@ namespace ToSic.Eav.Serialization.Sys;
 /// Constructor for inheriting classes
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class SerializerBase(SerializerBase.MyServices services, string logName) : ServiceBase<SerializerBase.MyServices>(services, logName), IDataSerializer
+public abstract class SerializerBase(SerializerBase.Dependencies services, string logName) : ServiceBase<SerializerBase.Dependencies>(services, logName), IDataSerializer
 {
     #region MyServices
 
-    public class MyServices(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IGlobalDataService globalData, object[]? connect = default)
-        : MyServicesBase(connect: [metadataTargets, dataBuilder, globalData, ..connect ?? []])
+    public class Dependencies(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IGlobalDataService globalData, object[]? connect = default)
+        : DependenciesBase(connect: [metadataTargets, dataBuilder, globalData, ..connect ?? []])
     {
         public DataBuilder DataBuilder { get; } = dataBuilder;
 
