@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.PropertyDump;
 
-namespace ToSic.Eav.DataSources.Sys.Internal;
+namespace ToSic.Eav.DataSources.Sys;
 
 // Note: ATM serves as Raw and as DTO, but should change soon.
 // once we adjust the front end to use the query

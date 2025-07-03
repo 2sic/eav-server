@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Sys.PropertyDump;
 using static ToSic.Eav.Apps.Sys.AppStack.AppStackConstants;
 
-namespace ToSic.Eav.DataSources.Sys.Internal;
+namespace ToSic.Eav.DataSources.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SystemStackHelpers

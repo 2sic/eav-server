@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Context.Sys.ZoneCulture;
 
-namespace ToSic.Eav.DataSources.Internal;
+namespace ToSic.Eav.DataSources.Sys;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

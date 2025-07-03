@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Users.Permissions;
 
-namespace ToSic.Eav.DataSources.Internal;
+namespace ToSic.Eav.DataSources.Sys;
 
 /// <summary>
 /// Base class for Children and Parents - since they share a lot of code

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Sys.Entities.Sources;
 
-namespace ToSic.Eav.DataSources.Internal;
+namespace ToSic.Eav.DataSources.Sys;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
