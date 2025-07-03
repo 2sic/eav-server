@@ -34,7 +34,8 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
             IDataFactory dataFactory)
             : base(configuration, errorHandler, configDataLoader, cacheService)
         {
-            DataFactory = ConnectLog(dataFactory);
+            ConnectLogs([dataFactory]);
+            DataFactory = dataFactory;
         }
     }
 

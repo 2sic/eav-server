@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Sys.Services;
 
 /// <summary>
-/// Base class for all MyServices.
+/// Base class for all Dependency helpers on services.
 /// </summary>
 /// <remarks>
 /// These are helper objects to get dependencies for a class.
@@ -26,38 +26,21 @@ public abstract class DependenciesBase: ILazyInitLog
     /// <summary>
     /// Special helper to keep track of all dependencies which need a log, to init once SetLog is called
     /// </summary>
-    internal DependencyLogs DependencyLogs { get; } = new();
+    internal DependenciesLogHelper LogHelper { get; } = new();
 
     /// <summary>
     /// Add objects to various queues to be auto-initialized when <see cref="ServiceDependenciesExtensions.ConnectServices{TDependencies}"/> is called later on
     /// </summary>
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
     protected void ConnectLogs(object[] services)
-        => DependencyLogs.Add(services);
-
-    // Note: disabled 2025-05-10 2dm, seems unused
-    //[Obsolete("Avoid using, will be removed soon. Use ConnectLogs([...])")]
-    //protected void ConnectServices(params object[] services)
-    //    => DependencyLogs.Add(services);
-
-    /// <summary>
-    /// Experimental Connect-one, may be removed again.
-    /// </summary>
-    /// <typeparam name="TService"></typeparam>
-    /// <param name="service"></param>
-    /// <returns>the service passed in</returns>
-    protected TService ConnectLog<TService>(TService service)
-    {
-        DependencyLogs.Add([service!]);
-        return service;
-    }
+        => LogHelper.Add(services);
 
     internal bool InitDone;
 
     void ILazyInitLog.SetLog(ILog? parentLog)
     {
         if (InitDone) return;
-        DependencyLogs.SetLog(parentLog);
+        LogHelper.SetLog(parentLog);
         InitDone = true;
     }
 }

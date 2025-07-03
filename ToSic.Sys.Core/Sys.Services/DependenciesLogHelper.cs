@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Sys.Services;
 
-internal class DependencyLogs
+internal class DependenciesLogHelper
 {
     /// <summary>
     /// Collects all objects which support `SetLog(Log)` for LazyInitLogs
