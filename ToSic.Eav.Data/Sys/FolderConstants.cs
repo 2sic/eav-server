@@ -1,38 +1,32 @@
 ﻿namespace ToSic.Eav.Sys;
+
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FolderConstants
 {
     /// <summary>
     /// Folder inside an App-folder, containing extensions and other system features
     /// </summary>
-    public const string FolderAppExtensions = "system";
+    public const string AppExtensionsFolder = "system";
 
     /// <summary>
-    /// Data folder - either in the global environment, in plugins or in app-extensions
+    /// OLD Data folder - either in the global environment, in plugins or in app-extensions
     /// </summary>
-    public const string FolderOldDotData = ".data";
+    [PrivateApi("deprecated, no value in showing")]
+    public const string DataFolderOld = ".data";
 
-    public const string FolderSystem = "system"; // ex: ".data";
+    public const string DataSubFolderSystem = "system";
 
-    /// <summary>
-    /// the .databeta (this is for testing only, will never be in the distribution)
-    /// </summary>
-    public const string FolderOldDotDataBeta = ".databeta";
+    public const string DataSubFolderSystemBeta = "system-beta";
 
-    public const string FolderSystemBeta = "system-beta"; // ex. ".databeta";
-
-    /// <summary>
-    /// This is for data-customizations on global 2sxc/environment, which won't get replaced on updates
-    /// </summary>
-    public const string FolderOldDotDataCustom = ".data-custom";
-
-    public const string FolderSystemCustom = "system-custom"; // ".data-custom";
+    public const string DataSubFolderSystemCustom = "system-custom";
 
     /// <summary>
     /// Protected folder - IIS Request filtering default hidden segment
     /// contains the app.xml for export/import of the app
     /// contains the app.json
     /// </summary>
-    public const string AppDataProtectedFolder = "App_Data";
+    public const string DataFolderProtected = "App_Data";
 
     /// <summary>
     /// Folder in app export/import zip, that contains 2sxc application files
@@ -48,7 +42,7 @@ public class FolderConstants
     /// optional json file in App_Data folder with exclude configuration
     /// to define files and folders that will not be exported in app export
     /// </summary>
-    public const string AppJson = "app.json";
+    public const string AppJsonFile = "app.json";
 
     /// <summary>
     /// TemporaryFolder in the global environment
@@ -85,7 +79,7 @@ public class FolderConstants
     /// <summary>
     /// HotBuild AppCode folder
     /// </summary>
-    public const string AppCode = "AppCode";
+    public const string AppCodeFolder = "AppCode";
 
     /// <summary>
     /// Temp folder where the 2sxc app temp assemblies for AppCode, assembly dependencies... are stored.

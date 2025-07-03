@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.ValueConverter.Sys;
+﻿namespace ToSic.Eav.Data.Sys.ValueConverter;
 
 /// <summary>
 /// Marks objects that can convert values - like "file:22" to "/images/logo.jpg" and back.

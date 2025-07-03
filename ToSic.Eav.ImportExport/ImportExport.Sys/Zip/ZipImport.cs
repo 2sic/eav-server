@@ -254,7 +254,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         if (!pendingApp) CopyAppFiles(importMessages, appId, appDirectory);
 
         var tmpAppGlobalFilesRoot = pendingApp
-            ? Path.Combine(appDirectory, FolderConstants.AppDataProtectedFolder)
+            ? Path.Combine(appDirectory, FolderConstants.DataFolderProtected)
             : appDirectory;
         CopyAppGlobalFiles(importMessages, appId, tmpAppGlobalFilesRoot, deleteGlobalTemplates: false, overwriteFiles: true);
         // New in V11 - now that we just imported content types into the /system folder
@@ -267,8 +267,8 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
 
     private static string AppDataProtectedFolderPath(string appDirectory, bool pendingApp)
         => pendingApp
-            ? Path.Combine(appDirectory, FolderConstants.AppDataProtectedFolder)
-            : Path.Combine(appDirectory, FolderConstants.ToSxcFolder, FolderConstants.AppDataProtectedFolder);
+            ? Path.Combine(appDirectory, FolderConstants.DataFolderProtected)
+            : Path.Combine(appDirectory, FolderConstants.ToSxcFolder, FolderConstants.DataFolderProtected);
 
     /// <summary>
     /// Copy all files in 2sexy folder to (portal file system) 2sexy folder
@@ -319,7 +319,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         var l = Log.Fn($"{nameof(appDirectory)}:'{appDirectory}', {nameof(pendingApp)}:{pendingApp}");
         // Handle PortalFiles/SiteFiles folder
         var portalTempRoot = pendingApp
-            ? Path.Combine(appDirectory, FolderConstants.AppDataProtectedFolder, FolderConstants.ZipFolderForSiteFiles)
+            ? Path.Combine(appDirectory, FolderConstants.DataFolderProtected, FolderConstants.ZipFolderForSiteFiles)
             : Path.Combine(appDirectory,
                 FolderConstants.ZipFolderForPortalFiles); // TODO: probably replace with Constants.ZipFolderForSiteFiles
         l.A($"{nameof(portalTempRoot)}:{portalTempRoot}");
@@ -341,11 +341,11 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     {
         var oldAppXmlFilePath = Path.Combine(appRootPath, FolderConstants.AppDataFile);
         var sxcPathInZipData = Path.Combine(appRootPath, FolderConstants.ToSxcFolder);
-        var oldDataAppFilePath = Path.Combine(sxcPathInZipData, FolderConstants.FolderOldDotData, FolderConstants.AppDataFile);
+        var oldDataAppFilePath = Path.Combine(sxcPathInZipData, FolderConstants.DataFolderOld, FolderConstants.AppDataFile);
         if (!File.Exists(oldAppXmlFilePath) && !File.Exists(oldDataAppFilePath))
             return;
 
-        var pathOfProtectedFolder = Path.Combine(sxcPathInZipData, FolderConstants.AppDataProtectedFolder);
+        var pathOfProtectedFolder = Path.Combine(sxcPathInZipData, FolderConstants.DataFolderProtected);
         Directory.CreateDirectory(pathOfProtectedFolder);
         var newFilePath = Path.Combine(pathOfProtectedFolder, FolderConstants.AppDataFile);
 
@@ -371,12 +371,12 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     /// <param name="appRootPath"></param>
     public static void MigrateOldAppDataFile(string appRootPath)
     {
-        var oldDataAppFilePath = Path.Combine(appRootPath, FolderConstants.FolderOldDotData, FolderConstants.AppDataFile);
+        var oldDataAppFilePath = Path.Combine(appRootPath, FolderConstants.DataFolderOld, FolderConstants.AppDataFile);
         if (!File.Exists(oldDataAppFilePath))
             return;
 
-        Directory.CreateDirectory(Path.Combine(appRootPath, FolderConstants.AppDataProtectedFolder));
-        var newFilePath = Path.Combine(appRootPath, FolderConstants.AppDataProtectedFolder, FolderConstants.AppDataFile);
+        Directory.CreateDirectory(Path.Combine(appRootPath, FolderConstants.DataFolderProtected));
+        var newFilePath = Path.Combine(appRootPath, FolderConstants.DataFolderProtected, FolderConstants.AppDataFile);
 
         if (File.Exists(newFilePath))
             File.Delete(newFilePath);

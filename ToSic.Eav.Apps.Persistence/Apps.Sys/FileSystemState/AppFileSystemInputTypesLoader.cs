@@ -51,7 +51,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
                     Label = niceName,
                     Description = "Extension Field",
                     Assets = "",
-                    AngularAssets = $"{placeholder}/{FolderConstants.FolderAppExtensions}/{name}/{JsFile}",
+                    AngularAssets = $"{placeholder}/{FolderConstants.AppExtensionsFolder}/{name}/{JsFile}",
                     DisableI18n = false,
                     UseAdam = false,
                     Source = "file-system",

@@ -10,7 +10,7 @@ namespace ToSic.Sys.Services;
 /// These are mainly records that are SoC helpers which cover one single aspect used in another service.
 /// They are not meant for DI, so the parent logger should be included in the initial call.
 /// </remarks>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public abstract record HelperRecordBase() : IHasLog

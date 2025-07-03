@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.ValueConverter.Sys;
+﻿namespace ToSic.Eav.Data.Sys.ValueConverter;
 
 /// <summary>
 /// Trivial value converter - doesn't convert anything.

@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.EntityPair.Sys;
+using ToSic.Eav.Data.Sys.EntityPair;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Sys.Save;

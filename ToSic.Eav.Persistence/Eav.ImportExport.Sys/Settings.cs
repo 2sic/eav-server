@@ -21,10 +21,10 @@ public class Settings
     public static string[] ExcludeRootFolders =
     [
         // Exclude old ".data"; it may still exist. Should be migrated to new location "App_Data/system", so no need for export for old ".data"
-        FolderConstants.FolderOldDotData,
+        FolderConstants.DataFolderOld,
         // Exclude zip temporary folders
-        $"{FolderConstants.AppDataProtectedFolder}\\{FolderConstants.ZipFolderForSiteFiles}",
-        $"{FolderConstants.AppDataProtectedFolder}\\{FolderConstants.ZipFolderForGlobalAppStuff}"
+        $"{FolderConstants.DataFolderProtected}\\{FolderConstants.ZipFolderForSiteFiles}",
+        $"{FolderConstants.DataFolderProtected}\\{FolderConstants.ZipFolderForGlobalAppStuff}"
     ];
 
     public const string TemplateContentType = "2SexyContent-Template";

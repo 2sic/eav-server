@@ -27,7 +27,7 @@ public class ZipExport(
     private int _appId;
     private int _zoneId;
     private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
-    private const string SourceControlDataFolder = FolderConstants.AppDataProtectedFolder;
+    private const string SourceControlDataFolder = FolderConstants.DataFolderProtected;
     private const string SourceControlDataFile = FolderConstants.AppDataFile;
     private readonly string _blankGuid = Guid.Empty.ToString();
 
@@ -168,7 +168,7 @@ public class ZipExport(
         #endregion
 
         // create tmp App_Data unless exists
-        var tmpAppDataProtectedFolder = Path.Combine(appDirectory.FullName, FolderConstants.ToSxcFolder, FolderConstants.AppDataProtectedFolder);
+        var tmpAppDataProtectedFolder = Path.Combine(appDirectory.FullName, FolderConstants.ToSxcFolder, FolderConstants.DataFolderProtected);
         Directory.CreateDirectory(tmpAppDataProtectedFolder);
 
         // Save export xml

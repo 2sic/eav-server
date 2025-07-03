@@ -4,7 +4,7 @@ using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.Data.ValueConverter.Sys;
+using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization.Sys.Options;
 using static ToSic.Eav.Data.EntityDecorators.Sys.EntitySerializationDecorator;
