@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Internal;
+﻿namespace ToSic.Eav.DataSource.Sys;
 
 /// <summary>
 /// Icon names for use in code.

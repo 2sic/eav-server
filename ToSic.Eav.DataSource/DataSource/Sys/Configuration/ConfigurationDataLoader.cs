@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using ToSic.Eav.Sys;
 
-namespace ToSic.Eav.DataSource.Internal.Configuration;
+namespace ToSic.Eav.DataSource.Sys.Configuration;
 
 [PrivateApi("Internal helper")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

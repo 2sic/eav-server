@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.DataSource.Internal.Errors;
+using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Errors;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 

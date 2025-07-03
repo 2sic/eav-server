@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Internal.Errors;
+﻿namespace ToSic.Eav.DataSource.Sys.Errors;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record ResultOrError<T>(bool IsOk, T? Result, IImmutableList<IEntity>? Errors = null)

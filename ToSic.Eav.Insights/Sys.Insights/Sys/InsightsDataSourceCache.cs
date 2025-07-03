@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using ToSic.Eav.DataSource.Internal.Caching;
+using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Blade;
 using ToSic.Sys.Security.Encryption;

@@ -7,7 +7,7 @@ global using System.Diagnostics.CodeAnalysis;
 global using System.Linq;
 global using ToSic.Eav.Data;
 global using ToSic.Eav.DataSource;
-global using ToSic.Eav.DataSource.Internal;
+global using ToSic.Eav.DataSource.Sys;
 global using ToSic.Eav.DataSource.VisualQuery;
 global using ToSic.Sys.Coding;
 global using ToSic.Sys.DI;

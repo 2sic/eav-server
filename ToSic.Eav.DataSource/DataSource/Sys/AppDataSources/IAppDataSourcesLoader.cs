@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource.VisualQuery.Internal;
 
-namespace ToSic.Eav.DataSource.Internal.AppDataSources;
+namespace ToSic.Eav.DataSource.Sys.AppDataSources;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppDataSourcesLoader

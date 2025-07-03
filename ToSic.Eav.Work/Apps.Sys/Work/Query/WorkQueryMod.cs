@@ -1,11 +1,11 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource.Internal.Query;
+using ToSic.Eav.DataSource.Sys.Query;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 using static System.StringComparer;
-using Connection = ToSic.Eav.DataSource.Internal.Query.Connection;
-using Connections = ToSic.Eav.DataSource.Internal.Query.Connections;
+using Connection = ToSic.Eav.DataSource.Sys.Query.Connection;
+using Connections = ToSic.Eav.DataSource.Sys.Query.Connections;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource.VisualQuery.Internal;
 
-namespace ToSic.Eav.DataSource.Internal.Catalog;
+namespace ToSic.Eav.DataSource.Sys.Catalog;
 
 partial class DataSourceCatalog
 {

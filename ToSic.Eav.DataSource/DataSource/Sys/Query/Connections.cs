@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ToSic.Eav.DataSource.Internal.Query;
+namespace ToSic.Eav.DataSource.Sys.Query;
 
 /// <summary>
 /// Helper for DataPipeline Wiring of DataSources

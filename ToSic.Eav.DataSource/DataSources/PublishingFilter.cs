@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Internal.Query;
+﻿using ToSic.Eav.DataSource.Sys.Query;
 using ToSic.Sys.Users.Permissions;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 

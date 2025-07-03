@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Internal;
+﻿namespace ToSic.Eav.DataSource.Sys;
 
 /// <summary>
 /// Marks objects which can convert a DataSource to another format.

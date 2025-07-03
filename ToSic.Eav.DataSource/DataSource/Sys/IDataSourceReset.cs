@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Internal;
+﻿namespace ToSic.Eav.DataSource.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public  interface IDataSourceReset

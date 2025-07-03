@@ -1,6 +1,4 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.DataSource.Internal;
-using ToSic.Eav.DataSource.Internal.Query;
 
 namespace ToSic.Eav.DataSource.DbTests.Query;
 

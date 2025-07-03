@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.DataSource.Internal.Catalog;
+﻿using ToSic.Eav.DataSource.Sys.Catalog;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
 
-namespace ToSic.Eav.DataSource.Internal.Query;
+namespace ToSic.Eav.DataSource.Sys.Query;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Eav.QDefBl", connect: [catalog])

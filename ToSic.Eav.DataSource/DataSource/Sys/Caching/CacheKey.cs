@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Caching.Keys;
 
-namespace ToSic.Eav.DataSource.Internal.Caching;
+namespace ToSic.Eav.DataSource.Sys.Caching;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class CacheKey(IDataSource dataSource) : ICacheKeyManager

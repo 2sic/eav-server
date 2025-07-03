@@ -1,12 +1,12 @@
-﻿using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.DataSource.Streams.Internal;
+﻿using ToSic.Eav.DataSource.Streams.Internal;
+using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sys.Engines;
 using static System.String;
 using static System.StringComparer;
 
 
-namespace ToSic.Eav.DataSource.Internal.Query;
+namespace ToSic.Eav.DataSource.Sys.Query;
 
 /// <summary>
 /// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 

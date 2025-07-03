@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Internal.Query;
+﻿namespace ToSic.Eav.DataSource.Sys.Query;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

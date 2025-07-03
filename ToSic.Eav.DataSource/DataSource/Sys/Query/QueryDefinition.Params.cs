@@ -2,7 +2,7 @@
 using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.Sources;
 
-namespace ToSic.Eav.DataSource.Internal.Query;
+namespace ToSic.Eav.DataSource.Sys.Query;
 
 partial class QueryDefinition
 {

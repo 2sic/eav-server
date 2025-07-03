@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.DataSource.Internal;
+namespace ToSic.Eav.DataSource.Sys;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.DataSource.Internal.Errors;
+using ToSic.Eav.DataSource.Sys.Errors;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Locking;
 
-
-namespace ToSic.Eav.DataSource.Internal.Caching;
+namespace ToSic.Eav.DataSource.Sys.Caching;
 
 /// <summary>
 /// Responsible for caching lists / streams.

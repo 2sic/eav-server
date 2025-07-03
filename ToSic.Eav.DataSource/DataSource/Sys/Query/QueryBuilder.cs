@@ -2,14 +2,14 @@
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSources;
-using ToSic.Eav.LookUp.Sources.Sys;
-using ToSic.Eav.Services;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.Sources;
+using ToSic.Eav.LookUp.Sources.Sys;
 using ToSic.Eav.LookUp.Sys.Engines;
+using ToSic.Eav.Services;
 using ToSic.Sys.Users.Permissions;
 
-namespace ToSic.Eav.DataSource.Internal.Query;
+namespace ToSic.Eav.DataSource.Sys.Query;
 
 /// <summary>
 /// Factory to create a Data Query

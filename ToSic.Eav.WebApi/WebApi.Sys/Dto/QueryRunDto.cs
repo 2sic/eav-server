@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.DataSource.Internal.Inspect;
+using ToSic.Eav.DataSource.Sys.Inspect;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 

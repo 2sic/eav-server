@@ -3,8 +3,7 @@ using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.LookUp.Sys.Engines;
 
-
-namespace ToSic.Eav.DataSource.Internal.Query;
+namespace ToSic.Eav.DataSource.Sys.Query;
 
 /// <summary>
 /// Helpers to work with Data Queries

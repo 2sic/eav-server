@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys;
 
-namespace ToSic.Eav.DataSource.Internal.Caching;
+namespace ToSic.Eav.DataSource.Sys.Caching;
 
 /// <summary>
 /// Custom Cache Information which only check the app-state for time-stamp.

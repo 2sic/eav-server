@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.DataSource.Internal.Configuration;
+﻿using ToSic.Eav.DataSource.Sys.Caching;
+using ToSic.Eav.DataSource.Sys.Configuration;
 
 namespace ToSic.Eav.DataSource;
 

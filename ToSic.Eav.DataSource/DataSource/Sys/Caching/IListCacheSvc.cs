@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Locking;
 
-namespace ToSic.Eav.DataSource.Internal.Caching;
+namespace ToSic.Eav.DataSource.Sys.Caching;
 
 /// <summary>
 /// Marks objects that can cache lists based on certain rules - including retention time and if up-stream changes should refresh the cache. 

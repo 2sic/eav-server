@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Internal.Query;
+﻿namespace ToSic.Eav.DataSource.Sys.Query;
 
 /// <summary>
 /// Represent a connection which connects two DataSources in a Query

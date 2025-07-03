@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Build;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
-namespace ToSic.Eav.DataSource.Internal;
+namespace ToSic.Eav.DataSource.Sys;
 
 /// <summary>
 /// Special - very internal - helper to breach internal APIs in edge cases where they are needed outside.

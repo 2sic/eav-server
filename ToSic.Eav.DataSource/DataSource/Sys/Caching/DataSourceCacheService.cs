@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.DataSource.Internal.Caching;
+namespace ToSic.Eav.DataSource.Sys.Caching;
 
 [PrivateApi]
 internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheService cache)

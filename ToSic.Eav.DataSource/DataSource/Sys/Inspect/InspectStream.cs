@@ -2,7 +2,7 @@
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Streams.Internal;
 
-namespace ToSic.Eav.DataSource.Internal.Inspect;
+namespace ToSic.Eav.DataSource.Sys.Inspect;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class InspectStream

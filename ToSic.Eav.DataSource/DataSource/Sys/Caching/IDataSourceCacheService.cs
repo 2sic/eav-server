@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Internal.Caching;
+﻿namespace ToSic.Eav.DataSource.Sys.Caching;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.DataSource.Internal.Query;
+﻿using ToSic.Eav.DataSource.Sys.Query;
 
-namespace ToSic.Eav.DataSource.Internal.Inspect;
+namespace ToSic.Eav.DataSource.Sys.Inspect;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class InspectDataSourceDto

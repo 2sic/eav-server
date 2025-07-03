@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.DataSource.Internal.AppDataSources;
+﻿using ToSic.Eav.DataSource.Sys.AppDataSources;
 using ToSic.Eav.DataSource.VisualQuery.Internal;
 using ToSic.Sys.Caching;
 
-namespace ToSic.Eav.DataSource.Internal.Catalog;
+namespace ToSic.Eav.DataSource.Sys.Catalog;
 
 /// <summary>
 /// A cache of all DataSource Types - initialized upon first access ever, then static cache.

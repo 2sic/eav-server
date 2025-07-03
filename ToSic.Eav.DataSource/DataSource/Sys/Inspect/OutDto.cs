@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Internal.Inspect;
+﻿namespace ToSic.Eav.DataSource.Sys.Inspect;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class OutDto

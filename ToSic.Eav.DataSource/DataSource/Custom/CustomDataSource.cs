@@ -2,8 +2,8 @@
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.DataSource.Internal.Configuration;
+using ToSic.Eav.DataSource.Sys.Caching;
+using ToSic.Eav.DataSource.Sys.Configuration;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource;
