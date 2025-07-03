@@ -1,6 +1,4 @@
-﻿using ToSic.Sys.Data;
-
-namespace ToSic.Eav.DataSource.VisualQuery.Internal;
+﻿namespace ToSic.Eav.DataSource.VisualQuery.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class TypeWithMetadataBase<T> : IHasIdentityNameId

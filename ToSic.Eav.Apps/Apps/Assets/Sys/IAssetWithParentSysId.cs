@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Assets.Internal;
+﻿namespace ToSic.Eav.Apps.Assets.Sys;
 
 /// <summary>
 /// This is to enable generic id interfaces

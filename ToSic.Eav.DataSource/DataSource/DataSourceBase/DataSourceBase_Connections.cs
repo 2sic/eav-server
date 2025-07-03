@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using ToSic.Eav.DataSource.Streams.Internal;
+using ToSic.Eav.DataSource.Sys.Streams;
 using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;

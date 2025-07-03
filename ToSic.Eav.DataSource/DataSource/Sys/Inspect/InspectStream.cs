@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource.Streams.Internal;
+using ToSic.Eav.DataSource.Sys.Streams;
 
 namespace ToSic.Eav.DataSource.Sys.Inspect;
 

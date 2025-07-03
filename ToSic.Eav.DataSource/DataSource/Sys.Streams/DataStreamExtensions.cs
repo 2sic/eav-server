@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Streams.Internal;
+﻿namespace ToSic.Eav.DataSource.Sys.Streams;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal static class DataStreamExtensions

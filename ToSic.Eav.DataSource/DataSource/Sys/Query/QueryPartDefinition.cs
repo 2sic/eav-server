@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.DataSource.VisualQuery.Internal;
+using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 

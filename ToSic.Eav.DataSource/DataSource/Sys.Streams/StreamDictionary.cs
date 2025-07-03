@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using ToSic.Eav.DataSource.Sys.Caching;
 
-namespace ToSic.Eav.DataSource.Streams.Internal;
+namespace ToSic.Eav.DataSource.Sys.Streams;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

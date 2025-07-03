@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSources;
 
-namespace ToSic.Eav.DataSource.VisualQuery.Internal;
+namespace ToSic.Eav.DataSource.VisualQuery.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>

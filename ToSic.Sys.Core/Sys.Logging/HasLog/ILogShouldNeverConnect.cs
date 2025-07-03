@@ -8,6 +8,4 @@
 /// quite a bit of trouble.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface ILogShouldNeverConnect
-{
-}
+public interface ILogShouldNeverConnect;

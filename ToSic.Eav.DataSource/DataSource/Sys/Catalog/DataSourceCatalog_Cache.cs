@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.VisualQuery.Internal;
+﻿using ToSic.Eav.DataSource.VisualQuery.Sys;
 using ToSic.Sys.Utils.Assemblies;
 
 namespace ToSic.Eav.DataSource.Sys.Catalog;

@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Sys.Catalog;
-using ToSic.Eav.DataSource.VisualQuery.Internal;
+using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 

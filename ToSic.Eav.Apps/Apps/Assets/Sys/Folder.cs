@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.Apps.Assets.Internal;
+namespace ToSic.Eav.Apps.Assets.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class Folder<TFolderId, TFileId> : IFolder<TFolderId, TFileId>

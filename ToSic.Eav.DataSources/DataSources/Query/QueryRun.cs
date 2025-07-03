@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.DataSource.Streams.Internal;
-using ToSic.Eav.DataSource.Sys;
+﻿using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Query;
+using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sources.Sys;
 using ToSic.Eav.LookUp.Sys;

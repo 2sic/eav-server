@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.DataSources.Internal;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 

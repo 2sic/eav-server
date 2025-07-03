@@ -1,5 +1,5 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Eav.Apps.Assets.Internal;
+using ToSic.Eav.Apps.Assets.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Blade;
 using ToSic.Sys.Caching;

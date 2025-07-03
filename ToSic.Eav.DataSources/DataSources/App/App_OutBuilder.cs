@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.DataSource.Streams.Internal;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Caching;
+using ToSic.Eav.DataSource.Sys.Streams;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;

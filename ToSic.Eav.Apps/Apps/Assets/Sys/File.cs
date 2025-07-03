@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.Apps.Assets.Internal;
+namespace ToSic.Eav.Apps.Assets.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
