@@ -6,7 +6,7 @@
 /// By default, all APIs are private, so you only need this attribute on children of classes marked with `[PublicApi]`
 /// see <see cref="PublicApi"/>.
 /// </summary>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class PrivateApi : Attribute

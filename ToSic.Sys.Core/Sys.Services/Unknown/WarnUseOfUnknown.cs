@@ -1,5 +1,14 @@
 ﻿namespace ToSic.Sys.Services;
 
+/// <summary>
+/// Object which should be used in the DI of Unknown implementations.
+/// </summary>
+/// <example>
+/// TODO
+/// </example>
+/// <typeparam name="T"></typeparam>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class WarnUseOfUnknown<T>
 {
     public WarnUseOfUnknown(ILogStore logStore)

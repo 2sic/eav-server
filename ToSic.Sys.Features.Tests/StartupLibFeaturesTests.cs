@@ -27,5 +27,5 @@ public static class StartupLibFeatures
         => services
             .AddSysCapabilities()
             .AddSysCapabilitiesFallback()
-            .AddLibCore();
+            .AddSysCore();
 }

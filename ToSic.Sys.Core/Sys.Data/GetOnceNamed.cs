@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using static System.StringComparer;
 
-namespace ToSic.Sys.Helpers;
+namespace ToSic.Sys.Data;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Experimental")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

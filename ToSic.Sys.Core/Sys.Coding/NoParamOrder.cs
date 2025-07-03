@@ -1,4 +1,5 @@
-﻿namespace ToSic.Sys.Coding;
+﻿// ReSharper disable GrammarMistakeInComment
+namespace ToSic.Sys.Coding;
 
 /// <summary>
 /// Special placeholder to indicate that all parameters following this should be named.

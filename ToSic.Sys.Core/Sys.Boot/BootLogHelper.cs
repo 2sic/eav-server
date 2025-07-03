@@ -2,6 +2,8 @@
 
 namespace ToSic.Sys.Boot;
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class BootLogHelper
 {
     public static (ILog Main, ILogCall lStandalone, ILogCall lNormal)

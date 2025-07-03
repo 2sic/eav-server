@@ -7,8 +7,8 @@ namespace ToSic.Sys.Services;
 /// Main base class for most services and helpers which have Logs.
 /// Also has an API to auto-connect the logs of child-services.
 /// </summary>
-[PrivateApi]
-// #NoEditorBrowsableBecauseOfInheritance
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+// #NoEditorBrowsableBecauseOfInheritance - would cause side-effects on inheriting classes
 //[ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public abstract class ServiceBase(string logName) : IHasLog

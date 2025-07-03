@@ -1,8 +1,9 @@
 ﻿
 // ReSharper disable once CheckNamespace
-namespace ToSic.Lib;
+namespace ToSic.Sys;
 
-public class LibConstants
+[PrivateApi]
+public class SysConstants
 {
     public const string Unknown = "unknown";
 

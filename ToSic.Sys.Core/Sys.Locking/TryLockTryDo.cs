@@ -3,6 +3,7 @@
 /// <summary>
 /// Execute something if a condition is met, but do it within a lock to avoid duplicate runs
 /// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class TryLockTryDo(object? lockObject = null)
 {

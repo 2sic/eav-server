@@ -12,6 +12,8 @@ namespace ToSic.Sys.Configuration;
 /// Note that accessing any properties should happen through extension methods, which themselves ensure that
 /// default values and cleanup are done.
 /// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IGlobalConfiguration: ILogShouldNeverConnect
 {
     string? GetThis([CallerMemberName] string? key = default);

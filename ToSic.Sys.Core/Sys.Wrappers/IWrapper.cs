@@ -5,8 +5,8 @@
 /// of the hosting system (environment)
 /// </summary>
 /// <typeparam name="T"></typeparam>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[PrivateApi]
 public interface IWrapper<out T>
 {
     /// <summary>

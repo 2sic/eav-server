@@ -1,9 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
 
-//using static ToSic.Eav.Internal.Configuration.GlobalConfigHelpers;
-
 namespace ToSic.Sys.Configuration;
 
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class GlobalConfiguration : IGlobalConfiguration
 {
     internal static IDictionary<string, string> Strings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);

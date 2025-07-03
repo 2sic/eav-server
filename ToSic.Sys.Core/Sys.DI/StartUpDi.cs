@@ -1,13 +1,23 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace ToSic.Sys.DI;
+// ReSharper disable once CheckNamespace
+namespace ToSic.Sys.Startup;
 
+/// <summary>
+/// Startup for Dependency Injection.
+/// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public static class StartUp
+// ReSharper disable once InconsistentNaming
+public static class StartupDI
 {
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IServiceCollection AddLibDiBasics(this IServiceCollection services)
+    /// <summary>
+    /// Add core Dependency Injection prats, such as Lazy, Generator, etc.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddSysDi(this IServiceCollection services)
     {
         // Lazy objects in General
         services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
@@ -19,17 +29,13 @@ public static class StartUp
         services.TryAddTransient(typeof(Generator<>));
         services.TryAddTransient(typeof(Generator<,>));
 
-        // Empty MyServices
-        services.TryAddTransient<MyServicesEmpty>();
-
         return services;
     }
 
     /// <summary>
     /// Add Service Switchers
     /// </summary>
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IServiceCollection AddLibDiServiceSwitchers(this IServiceCollection services)
+    public static IServiceCollection AddSysDiServiceSwitchers(this IServiceCollection services)
     {
         services.TryAddTransient(typeof(ServiceSwitcher<>));
         services.TryAddScoped(typeof(ServiceSwitcherScoped<>)); // note: it's for scoped, and we must use another object name here

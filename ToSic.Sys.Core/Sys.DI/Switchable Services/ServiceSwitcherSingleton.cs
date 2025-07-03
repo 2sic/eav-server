@@ -2,10 +2,13 @@
 
 /// <summary>
 /// Similar to the <see cref="ServiceSwitcher{T}"/> but special.
-/// It will behave as singleton, but will resolved Transient! this is important.
-/// Reason is that this way we don't keep a list of all possible services active in memory, just the one that's been selected.
 /// </summary>
+/// <remarks>
+/// It will behave as singleton, but will resolve Transient! this is important.
+/// Reason is that this way we don't keep a list of all possible services active in memory, just the one that's been selected.
+/// </remarks>
 /// <typeparam name="T"></typeparam>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ServiceSwitcherSingleton<T>(
     ILogStore logStore,

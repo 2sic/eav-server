@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ToSic.Sys.Helpers;
+namespace ToSic.Sys.Data;
 
 /// <summary>
 /// Simple helper class to use on object properties which should be generated once.

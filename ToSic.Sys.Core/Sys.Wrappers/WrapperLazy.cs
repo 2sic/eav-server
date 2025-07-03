@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Sys.Wrappers;
 
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WrapperLazy<T>: Wrapper<T> where T : class
 {

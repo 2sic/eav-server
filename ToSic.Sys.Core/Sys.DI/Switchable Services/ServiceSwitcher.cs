@@ -2,6 +2,12 @@
 
 namespace ToSic.Sys.DI;
 
+/// <summary>
+/// Service to pick one of various services which implement <see cref="ISwitchableService"/>
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="allServices"></param>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{LogScopes.Lib}.SrvSwt"), ILazyLike<T>
     where T : ISwitchableService

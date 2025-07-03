@@ -2,13 +2,15 @@
 
 /// <summary>
 /// Base class for all MyServices.
+/// </summary>
+/// <remarks>
 /// These are helper objects to get dependencies for a class.
 /// It should be used when the owning-class is expected to be inherited.
 /// This is important for _inheriting_ classes to keep a stable constructor.
 ///
 /// Can collect all objects which need the log and init that.
-/// </summary>
-[PublicApi]
+/// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class MyServicesBase: ILazyInitLog
 {

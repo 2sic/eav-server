@@ -5,7 +5,7 @@
 /// Any API / code with this attribute will be published in the docs.
 /// You can apply it to anything, but usually you will only need it on classes. 
 /// </summary>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class PublicApi : Attribute

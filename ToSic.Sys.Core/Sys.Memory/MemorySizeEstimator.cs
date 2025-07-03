@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Memory;
 
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MemorySizeEstimator(ILog? parentLog) : HelperBase(parentLog, "Eav.MemSiz")
 {

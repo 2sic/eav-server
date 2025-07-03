@@ -4,13 +4,16 @@ namespace ToSic.Sys.Services;
 
 /// <summary>
 /// Special type of MyServices (dependency helpers).
+/// </summary>
+/// <remarks>
 /// This one is used to extend dependencies of a base classes <see cref="MyServicesBase{T}"/>.
 /// They must then still have the original Dependencies to get them.
-/// </summary>
+/// </remarks>
 /// <typeparam name="T"></typeparam>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MyServicesBase<T>(T parentServices, NoParamOrder protect = default, object[]? connect = default) : MyServicesBase(connect: connect)
+public class MyServicesBase<T>(T parentServices, NoParamOrder protect = default, object[]? connect = default)
+    : MyServicesBase(connect: connect)
 {
     public T ParentServices { get; } = parentServices;
 

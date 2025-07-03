@@ -10,5 +10,5 @@ public class Startup
             .AddTransient<MockServiceWithSetup>()
             .AddTransient<MockServiceSpawnNewCustomOptions>()
             .AddTransient<MockServiceSpawnNewDefaultOptions>()
-            .AddLibCore();
+            .AddSysCore();
 }

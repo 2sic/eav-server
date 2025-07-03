@@ -5,10 +5,12 @@ namespace ToSic.Sys.Services;
 
 /// <summary>
 /// Main base class for most helpers which don't use Dependency Injection.
+/// </summary>
+/// <remarks>
 /// These are mainly classes that are SoC helpers which cover one single aspect used in another service.
 /// They are not meant for DI, so the parent logger should be included in the initial call.
-/// </summary>
-[PrivateApi]
+/// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public abstract class HelperBase(ILog? parentLog, string logName) : IHasLog

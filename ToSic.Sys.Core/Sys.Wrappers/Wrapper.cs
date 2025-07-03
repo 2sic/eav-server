@@ -4,8 +4,8 @@
 /// Helper base class for all wrappers
 /// </summary>
 /// <typeparam name="T"></typeparam>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[PrivateApi]
 public abstract class Wrapper<T>(T? unwrappedContents) : IWrapper<T>
 {
     private T? _unwrappedContents = unwrappedContents;

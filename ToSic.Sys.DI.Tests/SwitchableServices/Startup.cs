@@ -11,5 +11,5 @@ public class Startup
             .AddTransient<ITestSwitchableService, TestSwitchableFallback>()
             .AddTransient<ITestSwitchableService, TestSwitchableKeep>()
             .AddTransient<ITestSwitchableService, TestSwitchableSkip>()
-            .AddLibCore();
+            .AddSysCore();
 }

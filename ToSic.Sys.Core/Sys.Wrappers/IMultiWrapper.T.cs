@@ -4,7 +4,7 @@
 /// Marks items which can be rewrapped multiple times.
 /// Important to keep track of the originally wrapped item to ensure equality checks
 /// </summary>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IMultiWrapper<out T>
 {

@@ -5,7 +5,10 @@
 /// </summary>
 /// <remarks>
 /// It will run pre-loaders first, then the main loader.
+/// Loaders are registered in the Dependency Injection.
 /// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class BootCoordinator : ServiceBase
 {
     public BootCoordinator(ILogStore logStore, IEnumerable<IBootProcess> bootProcesses)

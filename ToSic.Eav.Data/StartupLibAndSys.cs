@@ -15,7 +15,7 @@ public static class StartupLibAndSys
             .AddSysCode()
             .AddSysCaching()
             .AddSysUtils()
-            .AddLibCore();
+            .AddSysCore();
 
         return services;
     }
