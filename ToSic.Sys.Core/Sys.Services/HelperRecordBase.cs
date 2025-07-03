@@ -4,14 +4,16 @@ using System.Text.Json.Serialization;
 namespace ToSic.Sys.Services;
 
 /// <summary>
-/// Main base class for most record-based helpers which use logging but don't use Dependency Injection.
-/// These are mainly classes that are SoC helpers which cover one single aspect used in another service.
-/// They are not meant for DI, so the parent logger should be included in the initial call.
+/// Main base _record_ for most helpers which don't use Dependency Injection.
 /// </summary>
+/// <remarks>
+/// These are mainly records that are SoC helpers which cover one single aspect used in another service.
+/// They are not meant for DI, so the parent logger should be included in the initial call.
+/// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
-public abstract record RecordHelperBase() : IHasLog
+public abstract record HelperRecordBase() : IHasLog
 {
     /// <inheritdoc />
     [JsonIgnore] // Prevent System.Text.Json from serializing this property

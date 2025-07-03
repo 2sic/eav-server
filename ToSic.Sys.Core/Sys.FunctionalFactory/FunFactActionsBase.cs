@@ -11,7 +11,7 @@ namespace ToSic.Sys.FunctionalFactory;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract record FunFactActionsBase<T> : RecordHelperBase
+public abstract record FunFactActionsBase<T> : HelperRecordBase
 {
     /// <summary>
     /// List of actions to apply to the object
