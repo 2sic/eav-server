@@ -69,9 +69,10 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
     public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity
         => WrapUp(Prepare(list));
 
-    /// <inheritdoc />
-    public IImmutableList<IEntity> Create<T>(IEnumerable<IHasRawEntity<T>> list) where T : IRawEntity
-        => WrapUp(Prepare(list));
+    // #DropIHasRawEntity v20
+    ///// <inheritdoc />
+    //public IImmutableList<IEntity> Create<T>(IEnumerable<IHasRawEntity<T>> list) where T : IRawEntity
+    //    => WrapUp(Prepare(list));
 
     /// <inheritdoc />
     public IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList)
@@ -91,9 +92,10 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
 
     #region Prepare One
 
-    /// <inheritdoc />
-    public EntityPair<T> Prepare<T>(IHasRawEntity<T> withRawEntity) where T: IRawEntity
-        => Prepare(withRawEntity.RawEntity);
+    // #DropIHasRawEntity v20
+    ///// <inheritdoc />
+    //public EntityPair<T> Prepare<T>(IHasRawEntity<T> withRawEntity) where T: IRawEntity
+    //    => Prepare(withRawEntity.RawEntity);
 
     /// <inheritdoc />
     public EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity
@@ -104,9 +106,10 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
 
     #region Prepare Many
 
-    /// <inheritdoc />
-    public IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasRawEntity<T>> data) where T: IRawEntity
-        => data.Select(Prepare).ToListOpt();
+    // #DropIHasRawEntity v20
+    ///// <inheritdoc />
+    //public IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasRawEntity<T>> data) where T: IRawEntity
+    //    => data.Select(Prepare).ToListOpt();
 
     /// <inheritdoc />
     public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : IRawEntity
