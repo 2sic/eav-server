@@ -57,12 +57,6 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
         DataFactory = services.DataFactory;
     }
 
-    protected CustomDataSourceAdvanced(MyServicesBase<MyServices> services, string? logName = null)
-        : base(services.ParentServices, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: [services])
-    {
-        DataFactory = services.ParentServices.DataFactory;
-    }
-
     /// <inheritdoc />
     public override long CacheTimestamp { get; } = DateTime.Now.Ticks;  // Initialize with moment the object was created
 

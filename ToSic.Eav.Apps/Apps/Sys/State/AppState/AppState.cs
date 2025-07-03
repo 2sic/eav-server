@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Sys.State;
 /// </summary>
 [PrivateApi("this is just fyi - was marked as internal till v16.09")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal partial class AppState: AppBase<MyServicesEmpty>, ILogShouldNeverConnect
+internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConnect
 {
     private static bool _loggedToBootLog;
 

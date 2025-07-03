@@ -30,12 +30,6 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.MyServ
         AutoLoadAllConfigMasks(GetType());
     }
 
-    [PrivateApi]
-    protected DataSourceBase(MyServicesBase<MyServices> extendedServices, string logName) : base(extendedServices, logName)
-    {
-        AutoLoadAllConfigMasks(GetType());
-    }
-
     /// <summary>
     /// Load all [Configuration] attributes and ensure we have the config masks.
     /// </summary>

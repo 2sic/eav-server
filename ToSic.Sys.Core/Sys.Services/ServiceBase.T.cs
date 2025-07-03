@@ -22,19 +22,5 @@ public abstract class ServiceBase<TMyServices>: ServiceBase where TMyServices : 
         Services = services.ConnectServices(Log);
     }
 
-    /// <summary>
-    /// Constructor for passing on service dependencies which extend the original MyServices.
-    /// </summary>
-    /// <param name="extendedServices"></param>
-    /// <param name="logName"></param>
-    /// <param name="protect"></param>
-    /// <param name="connect"></param>
-    protected ServiceBase(MyServicesBase<TMyServices> extendedServices, string logName, NoParamOrder protect = default, object[]? connect = default)
-        : this(extendedServices.ParentServices, logName, connect: connect)
-    {
-        // Ensure the extended copy also has SetLog run
-        extendedServices.ConnectServices(Log);
-    }
-
     protected readonly TMyServices Services;
 }

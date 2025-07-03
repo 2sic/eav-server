@@ -29,9 +29,9 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         LazySvc<AppUserLanguageCheck> langChecks,
         Generator<IEnvironmentPermission> environmentPermissions,
         LazySvc<AppDataStackService> settingsStack)
-        : MyServicesBase<ContextOfSite.MyServices>(siteServices,
-            connect: [environmentPermissions, appReaders, features, langChecks, settingsStack])
+        : MyServicesBase(connect: [environmentPermissions, appReaders, features, langChecks, settingsStack])
     {
+        public ContextOfSite.MyServices SiteServices { get; } = siteServices;
         public IAppReaderFactory AppReaders { get; } = appReaders;
         public LazySvc<ISysFeaturesService> Features { get; } = features;
         public LazySvc<AppUserLanguageCheck> LangChecks { get; } = langChecks;
@@ -50,7 +50,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     // For now, the code works, but we should continuously optimize and review again.
     // Also with the AppReaderOrNull which is null if AppIdentity is null
 #pragma warning disable CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
-    protected ContextOfApp(MyServices services, string logName, object[] connect) : base(services, logName, connect: connect)
+    protected ContextOfApp(MyServices services, string logName, object[] connect) : base(services.SiteServices, logName, connect: connect)
     {
         AppServices = services;
     }

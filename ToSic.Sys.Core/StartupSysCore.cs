@@ -26,7 +26,7 @@ public static class StartupSysCore
         services.TryAddTransient(typeof(WarnUseOfUnknown<>));
 
         // Empty MyServices
-        services.TryAddTransient<MyServicesEmpty>();
+        services.TryAddTransient<DependenciesEmpty>();
 
         return services
             .AddSysLogging()

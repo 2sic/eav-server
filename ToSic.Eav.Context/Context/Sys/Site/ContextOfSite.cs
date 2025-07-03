@@ -22,18 +22,14 @@ public class ContextOfSite: ServiceBase<ContextOfSite.MyServices>, IContextOfSit
         public IUser User { get; } = user;
         public Generator<AppPermissionCheck> AppPermissionCheck { get; } = appPermissionCheck;
     }
+
     /// <summary>
     /// Constructor for DI
     /// </summary>
     /// <param name="services"></param>
     public ContextOfSite(MyServices services) : this(services, null) { }
 
-    protected ContextOfSite(MyServices services, string? logName) : base(services, logName ?? "Eav.CtxSte")
-    {
-        Site = Services.Site;
-    }
-    protected ContextOfSite(MyServicesBase<MyServices> services, string? logName, object[] connect)
-        : base(services, logName ?? "Eav.CtxSte", connect: connect)
+    protected ContextOfSite(MyServices services, string? logName, object[]? connect = default) : base(services, logName ?? "Eav.CtxSte", connect: connect)
     {
         Site = Services.Site;
     }

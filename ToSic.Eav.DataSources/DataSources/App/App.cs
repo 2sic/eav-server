@@ -77,15 +77,14 @@ public partial class App : DataSourceBase
 
     #region Constructor / DI
 
-
     public new class MyServices(
         Eav.DataSource.DataSourceBase.MyServices parentServices,
         IAppReaderFactory appReaders,
         IDataSourcesService dataSourceFactory,
         ICurrentContextUserPermissionsService userPermissions)
-        : MyServicesBase<Eav.DataSource.DataSourceBase.MyServices>(parentServices,
-            connect: [appReaders, dataSourceFactory, userPermissions])
+        : MyServicesBase(connect: [appReaders, dataSourceFactory, userPermissions])
     {
+        public DataSourceBase.MyServices ParentServices { get; } = parentServices;
         public ICurrentContextUserPermissionsService UserPermissions { get; } = userPermissions;
         public IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
         public IAppReaderFactory AppReaders { get; } = appReaders;
@@ -95,7 +94,7 @@ public partial class App : DataSourceBase
     /// Constructs a new App DataSource
     /// </summary>
     [PrivateApi]
-    public App(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.EavApp")
+    public App(MyServices services): base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.EavApp", connect: [services])
     {
         _services = services;
         // this one is unusual, so don't pre-attach a default data stream to out
