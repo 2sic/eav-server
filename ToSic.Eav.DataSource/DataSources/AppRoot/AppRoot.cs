@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Lib.Helpers;
 using ToSic.Sys.Caching.Keys;
 
 namespace ToSic.Eav.DataSources;
@@ -14,7 +13,7 @@ namespace ToSic.Eav.DataSources;
 public class AppRoot : DataSourceBase, IAppRoot
 {
     [PrivateApi]
-    public AppRoot(IAppReaderFactory appReaders, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Root")
+    public AppRoot(IAppReaderFactory appReaders, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Root")
     {
         _appReaders = appReaders;
         ProvideOut(() => AppReader.List);

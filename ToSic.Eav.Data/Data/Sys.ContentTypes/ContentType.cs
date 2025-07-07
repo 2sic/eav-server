@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 using ToSic.Eav.Metadata;
-using ToSic.Lib.Helpers;
 using ToSic.Sys.Caching.PiggyBack;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;

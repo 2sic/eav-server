@@ -1,6 +1,3 @@
 ﻿namespace ToSic.Sys.Capabilities.Features;
 
-public partial class BuiltInFeatures
-{
-
-}
+public partial class BuiltInFeatures;

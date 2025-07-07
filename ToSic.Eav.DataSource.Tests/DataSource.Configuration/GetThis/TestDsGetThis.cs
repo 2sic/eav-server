@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.DataSource.Configuration;
 
-public class TestDsGetThis(DataSourceBase.MyServices services) : TestDataSourceBase(services)
+public class TestDsGetThis(DataSourceBase.Dependencies services) : TestDataSourceBase(services)
 {
     public const string ExpectedGetThisString = "ok";
 

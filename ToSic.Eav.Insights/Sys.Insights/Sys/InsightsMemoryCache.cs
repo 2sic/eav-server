@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Caching;
-using ToSic.Eav.Apps.Assets.Internal;
+using ToSic.Eav.Apps.Assets.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
-using ToSic.Lib.Memory;
 using ToSic.Razor.Blade;
 using ToSic.Sys.Caching;
+using ToSic.Sys.Memory;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Sys;

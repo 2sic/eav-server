@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Helpers;
-using ToSic.Lib.Wrappers;
-using static ToSic.Lib.Wrappers.MultiWrapperEquality;
+﻿using static ToSic.Sys.Wrappers.MultiWrapperEquality;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;
 

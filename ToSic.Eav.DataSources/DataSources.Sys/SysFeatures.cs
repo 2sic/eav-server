@@ -1,9 +1,10 @@
-﻿//using System.Linq;
+﻿// Note 2026-07 2dm - I just updated some code to match current API, but the implementation
+// looks like it was commented out for more than a year.
+// Leave for now, unclear why it was created but then commented out again.
+// To reactivate, needs a proper converter for the Features data to IEntity
+
 //using ToSic.Eav.Data.Build;
-//using ToSic.Eav.DataSource;
-//using ToSic.Eav.DataSource.VisualQuery;
-//using ToSic.Eav.Internal.Features;
-//using ToSic.Lib.Documentation;
+//using ToSic.Sys.Capabilities.SysFeatures;
 
 //// ReSharper disable once CheckNamespace
 //namespace ToSic.Eav.DataSources.Sys
@@ -16,7 +17,7 @@
 //    [VisualQuery(
 //        NiceName = "System Capabilities",
 //        UiHint = "List all System Capabilities",
-//        Icon = Icons.TableChart,
+//        Icon = DataSourceIcons.TableChart,
 //        Type = DataSourceType.System,
 //        NameId = "60d50ed9-846f-4f01-b544-76efe97c94a2",
 //        Audience = Audience.Advanced,
@@ -26,19 +27,18 @@
 //    public sealed class SysFeatures : CustomDataSource
 //    {
 
-//        #region Configuration-properties (no config)
-
-//        #endregion
-
 //        /// <inheritdoc />
 //        /// <summary>
 //        /// Constructs a new Scopes DS
 //        /// </summary>
 //        [PrivateApi]
-//        public SysFeatures(MyServices services, SysFeaturesService sysCapabilities) : base(services, $"{DataSourceConstants.LogPrefix}.SysCap")
+//        public SysFeatures(MyServices services, SysFeaturesService sysCapabilities) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SysCap")
 //        {
-//            ConnectServices(sysCapabilities);
-//            ProvideOutRaw(() => sysCapabilities.States.OrderBy(f => f.Aspect.NameId), options: () => new DataFactoryOptions(typeName: "SystemFeatures"));
+//            ConnectLogs([sysCapabilities]);
+//            ProvideOutRaw(() => sysCapabilities.States.OrderBy(f => f.Aspect.NameId), options: () => new DataFactoryOptions
+//            {
+//                TypeName = "SystemFeatures"
+//            });
 //        }
 //    }
 //}

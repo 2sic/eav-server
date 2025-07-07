@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Wrappers;
-
-namespace ToSic.Eav.LookUp.Sources;
+﻿namespace ToSic.Eav.LookUp.Sources;
 
 [PublicApi]
 public abstract class LookUpIn<T>(T data, string name = "source without name", string? description = default)

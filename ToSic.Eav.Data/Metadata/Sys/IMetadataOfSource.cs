@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Coding;
-
-namespace ToSic.Eav.Metadata.Sys;
+﻿namespace ToSic.Eav.Metadata.Sys;
 
 public interface IMetadataOfSource
 {

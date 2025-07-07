@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-using ToSic.Sys.Capabilities.Features;
+﻿using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
 using ToSic.Sys.Utils.Assemblies;
 

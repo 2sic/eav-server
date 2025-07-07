@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Documentation;
-
-namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
+﻿namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 [PrivateApi]
 internal class ApiExplorerJs

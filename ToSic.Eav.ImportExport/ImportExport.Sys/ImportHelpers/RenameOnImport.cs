@@ -150,6 +150,6 @@ internal class RenameOnImport: HelperBase
 
     internal string GetFolderForSiteFiles(bool pendingApp)
         => pendingApp
-            ? Path.Combine(FolderConstants.AppDataProtectedFolder, FolderConstants.ZipFolderForSiteFiles)
+            ? Path.Combine(FolderConstants.DataFolderProtected, FolderConstants.ZipFolderForSiteFiles)
             : FolderConstants.ZipFolderForPortalFiles;
 }

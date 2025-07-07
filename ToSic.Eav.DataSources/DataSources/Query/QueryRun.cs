@@ -1,5 +1,6 @@
-﻿using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Eav.DataSource.Streams.Internal;
+﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Query;
+using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sources.Sys;
 using ToSic.Eav.LookUp.Sys;
@@ -48,7 +49,7 @@ public class QueryRun : DataSourceBase
     /// Constructs a new QueryRun
     /// </summary>
     [PrivateApi]
-    public QueryRun(MyServices services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun")
+    public QueryRun(Dependencies services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun")
     {
         ConnectLogs([
             _queryGenerator = queryGenerator

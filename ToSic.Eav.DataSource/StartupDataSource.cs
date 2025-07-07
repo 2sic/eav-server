@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.DataSource.Internal.AppDataSources;
-using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.DataSource.Internal.Catalog;
-using ToSic.Eav.DataSource.Internal.Configuration;
-using ToSic.Eav.DataSource.Internal.Query;
+using ToSic.Eav.DataSource.Sys.AppDataSources;
+using ToSic.Eav.DataSource.Sys.Caching;
+using ToSic.Eav.DataSource.Sys.Catalog;
+using ToSic.Eav.DataSource.Sys.Configuration;
+using ToSic.Eav.DataSource.Sys.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 
@@ -18,11 +18,11 @@ public static class StartupDataSource
     public static IServiceCollection AddDataSourceSystem(this IServiceCollection services)
     {
         // Dependencies, new in v15
-        services.TryAddTransient<DataSourceBase.MyServices>();
+        services.TryAddTransient<DataSourceBase.Dependencies>();
         services.TryAddTransient<IDataSourceConfiguration, DataSourceConfiguration>();
-        services.TryAddTransient<DataSourceConfiguration.MyServices>();
-        services.TryAddTransient<CustomDataSourceAdvanced.MyServices>();
-        services.TryAddTransient<CustomDataSource.MyServices>();
+        services.TryAddTransient<DataSourceConfiguration.Dependencies>();
+        services.TryAddTransient<CustomDataSourceAdvanced.Dependencies>();
+        services.TryAddTransient<CustomDataSource.Dependencies>();
 
         services.TryAddTransient<DataSourceCatalog>();
         services.TryAddTransient<IDataSourcesService, DataSourcesService>();

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.DataSource.VisualQuery.Internal;
+using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 

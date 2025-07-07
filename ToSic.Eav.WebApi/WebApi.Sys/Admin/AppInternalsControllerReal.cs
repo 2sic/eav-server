@@ -7,7 +7,7 @@ using ToSic.Eav.WebApi.Sys.Admin.Metadata;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Sys.Security.Permissions;
-using ServiceBase = ToSic.Lib.Services.ServiceBase;
+using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -19,7 +19,7 @@ public class AppInternalsControllerReal(
     LazySvc<IAppsCatalog> appCatalog,
     LazySvc<EntityApi> entityApi,
     LazySvc<MetadataControllerReal> metadataControllerReal)
-    : ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appsCatalog, appCatalog, entityApi, metadataControllerReal]),
+    : Services_ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appsCatalog, appCatalog, entityApi, metadataControllerReal]),
         IAppInternalsController
 {
     public const string LogSuffix = "AppInternals";

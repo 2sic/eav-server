@@ -6,7 +6,7 @@ using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
-using ServiceBase = ToSic.Lib.Services.ServiceBase;
+using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 #if NETFRAMEWORK
 using THttpResponseType = System.Net.Http.HttpResponseMessage;
 #else
@@ -24,7 +24,7 @@ public class EntityControllerReal(
     LazySvc<ContentImportApi> contentImport,
     LazySvc<IUser> user,
     IResponseMaker responseMaker)
-    : ServiceBase("Api.EntityRl",
+    : Services_ServiceBase("Api.EntityRl",
         connect: [context, appsCatalog, entityApi, contentExport, contentImport, user, responseMaker]),
         IEntityController
 {

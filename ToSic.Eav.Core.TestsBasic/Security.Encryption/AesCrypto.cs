@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using ToSic.Lib.Logging;
 using ToSic.Sys.Security.Encryption;
 
 namespace ToSic.Eav.Core.Tests.Signature;

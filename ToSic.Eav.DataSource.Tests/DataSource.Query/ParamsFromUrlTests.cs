@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Lib.Logging;
-
-namespace ToSic.Eav.DataSource.Query;
+﻿namespace ToSic.Eav.DataSource.Query;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class ParamsFromUrlTests

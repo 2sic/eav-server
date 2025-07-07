@@ -1,4 +1,5 @@
-﻿using static ToSic.Eav.DataSource.DataSourceConstants;
+﻿using ToSic.Eav.DataSource.Sys;
+using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
 namespace ToSic.Eav.DataSources;
@@ -42,7 +43,7 @@ public class OwnerFilter : DataSourceBase
     /// Constructs a new PublishingFilter
     /// </summary>
     [PrivateApi]
-    public OwnerFilter(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.OwnrFl")
+    public OwnerFilter(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.OwnrFl")
     {
         ProvideOut(GetList);
     }

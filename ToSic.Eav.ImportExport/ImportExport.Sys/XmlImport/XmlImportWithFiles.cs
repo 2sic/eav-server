@@ -7,10 +7,10 @@ using ToSic.Eav.Repositories.Sys;
 namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
-    : ServiceBase<XmlImportWithFiles.MyServices>(services, "Xml.ImpFil")
+public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services)
+    : ServiceBase<XmlImportWithFiles.Dependencies>(services, "Xml.ImpFil")
 {
-    public class MyServices(
+    public class Dependencies(
         LazySvc<ImportService> importerLazy,
         IStorageFactory storageFactory,
         IImportExportEnvironment importExportEnvironment,
@@ -18,7 +18,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.MyServices services)
         IAppsCatalog appsCatalog,
         LazySvc<XmlToEntity> xmlToEntity,
         LazySvc<DataBuilder> multiBuilder)
-        : MyServicesBase(connect: [importerLazy, storageFactory, importExportEnvironment, appsCatalog, xmlToEntity, appCachePurger, multiBuilder])
+        : DependenciesBase(connect: [importerLazy, storageFactory, importExportEnvironment, appsCatalog, xmlToEntity, appCachePurger, multiBuilder])
     {
         public IStorageFactory StorageFactory { get; } = storageFactory;
         public readonly LazySvc<DataBuilder> MultiBuilder = multiBuilder;

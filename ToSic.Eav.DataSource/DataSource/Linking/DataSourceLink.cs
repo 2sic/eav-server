@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Coding;
-
-namespace ToSic.Eav.DataSource;
+﻿namespace ToSic.Eav.DataSource;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

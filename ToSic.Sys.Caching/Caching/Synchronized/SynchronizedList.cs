@@ -6,7 +6,7 @@ namespace ToSic.Sys.Caching.Synchronized;
 /// <summary>
 /// This is an IEnumerable which relies on an up-stream cache, which may change. That would require this IEnumerable to update what it delivers.
 /// </summary>
-/// <typeparam name="T">The type which is enumerated, usually an <see cref="IEntity"/></typeparam>
+/// <typeparam name="T">The type which is enumerated, usually an `IEntity`</typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SynchronizedList<T>: SynchronizedObject<IImmutableList<T>>, IEnumerable<T>

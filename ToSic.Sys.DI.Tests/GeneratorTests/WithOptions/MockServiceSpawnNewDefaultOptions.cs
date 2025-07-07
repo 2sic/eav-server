@@ -1,4 +1,4 @@
-﻿using ToSic.Lib.Services;
+﻿using ToSic.Sys.DI;
 
 namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.DataSource.Streams.Internal;
-using ToSic.Lib.Helpers;
+using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Streams;
 
 
 namespace ToSic.Eav.DataSources;
@@ -242,7 +242,7 @@ public partial class Serialization : DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public Serialization(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SerCnf")
+    public Serialization(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SerCnf")
     { }
 
     #region Dynamic Out

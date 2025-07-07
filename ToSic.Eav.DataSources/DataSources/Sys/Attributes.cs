@@ -5,6 +5,7 @@ using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Values;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -50,7 +51,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public Attributes(IAppReaderFactory appReaders, MyServices services)
+    public Attributes(IAppReaderFactory appReaders, Dependencies services)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders])
     {
         _appReaders = appReaders;

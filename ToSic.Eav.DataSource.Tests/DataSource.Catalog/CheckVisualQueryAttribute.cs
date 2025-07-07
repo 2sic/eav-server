@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.DataSource.Internal.Catalog;
-
-namespace ToSic.Eav.DataSource.Catalog;
+﻿namespace ToSic.Eav.DataSource.Catalog;
 
 /// <summary>
 /// Note: This Test doesn't do anything ATM as it was created at another time.

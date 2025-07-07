@@ -1,5 +1,4 @@
-﻿using ToSic.Lib.DI;
-using ToSic.Sys.Capabilities.Aspects;
+﻿using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Requirements;
 
 namespace ToSic.Sys.Capabilities.SysFeatures;

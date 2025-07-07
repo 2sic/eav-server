@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.Services;
 
 namespace ToSic.Eav.DataSources;
@@ -34,7 +35,7 @@ internal class AppWithParents: DataSourceBase
     private readonly IAppReaderFactory _appReaders;
     private readonly IDataSourcesService _dataSourceFactory;
 
-    public AppWithParents(MyServices services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar")
+    public AppWithParents(Dependencies services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar")
     {
         ConnectLogs([
             _dataSourceFactory = dataSourceFactory,

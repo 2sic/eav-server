@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context.Sys.ZoneMapper;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
 
 
@@ -35,7 +36,7 @@ public sealed class Zones: CustomDataSourceAdvanced
     /// Constructs a new Zones DS
     /// </summary>
     [PrivateApi]
-    public Zones(MyServices services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
+    public Zones(Dependencies services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [zoneMapper, appsCatalog])
     {
         _zoneMapper = zoneMapper;

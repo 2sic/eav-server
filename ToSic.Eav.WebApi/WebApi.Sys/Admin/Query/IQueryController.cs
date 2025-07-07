@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.DataSource.Internal.Query;
-using ToSic.Eav.WebApi.Sys.Dto;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 

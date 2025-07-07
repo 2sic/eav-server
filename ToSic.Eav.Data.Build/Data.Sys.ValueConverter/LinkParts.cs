@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ToSic.Eav.Data.ValueConverter.Sys;
+namespace ToSic.Eav.Data.Sys.ValueConverter;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LinkParts

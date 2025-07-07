@@ -138,6 +138,7 @@ public partial class ListPairTests
         AssertPositions(pair, 2, null, 103);
         AssertPositions(pair, 3, 44, 104);
 
-        Null(changes);//, "should not have any changes");
+        NotNull(changes);//, "should not have any changes");
+        Empty(changes);
     }
 }

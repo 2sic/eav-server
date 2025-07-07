@@ -97,8 +97,7 @@ public class MetadataRequirementsService(
     }
 
     private record ReqStatusPrivate(RequirementDecorator Decorator, string NameId, bool Approved, Aspect? Aspect = default)
-        : RequirementStatus(Approved, Aspect ?? Aspect.None with { NameId = NameId }, "")
-    { }
+        : RequirementStatus(Approved, Aspect ?? Aspect.None with { NameId = NameId }, "");
 
     private ReqStatusPrivate? RequirementMet(IEntity? requirement)
     {

@@ -1,4 +1,6 @@
-﻿namespace ToSic.Lib.DI.GeneratorTests.Basic;
+﻿using ToSic.Sys.DI;
+
+namespace ToSic.Lib.DI.GeneratorTests.Basic;
 
 public class BasicGenerator
 {

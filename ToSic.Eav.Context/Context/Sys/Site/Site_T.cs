@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Wrappers;
-
-namespace ToSic.Eav.Context.Sys.Site;
+﻿namespace ToSic.Eav.Context.Sys.Site;
 
 /// <summary>
 /// A tenant in the environment with a reference to the original thing.

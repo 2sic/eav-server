@@ -215,10 +215,16 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         catch (IOException e)
         {
             l.Ex("Failed loading type - couldn't import type-file, IO exception", e);
+#if DEBUG
+            throw;
+#endif
             return l.ReturnNull();
         }
         catch (Exception e)
         {
+#if DEBUG
+            throw;
+#endif
             l.Ex($"Failed loading type - {infoIfError}", e);
             return l.ReturnNull();
         }

@@ -1,6 +1,4 @@
-﻿using ToSic.Lib;
-
-namespace ToSic.Sys.Capabilities.Features;
+﻿namespace ToSic.Sys.Capabilities.Features;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureSecurity(int impact, string message = "")
@@ -12,5 +10,5 @@ public class FeatureSecurity(int impact, string message = "")
     /// <summary>
     /// For fallback in null-cases, probably not used ATM
     /// </summary>
-    public static FeatureSecurity Unknown = new(0, LibConstants.Unknown);
+    public static FeatureSecurity Unknown = new(0, SysConstants.Unknown);
 }

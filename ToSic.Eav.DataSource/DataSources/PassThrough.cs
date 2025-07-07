@@ -23,12 +23,12 @@ public class PassThrough : DataSourceBase
     /// Constructs a new PassThrough DataSources
     /// </summary>
     [PrivateApi]
-    public PassThrough(MyServices services) : this(services, $"{DataSourceConstantsInternal.LogPrefix}.PasThr")
+    public PassThrough(Dependencies services) : this(services, $"{DataSourceConstantsInternal.LogPrefix}.PasThr")
     {
     }
 
     [PrivateApi]
-    protected PassThrough(MyServices services, string logName) : base(services, logName)
+    protected PassThrough(Dependencies services, string logName) : base(services, logName)
     {
     }
 

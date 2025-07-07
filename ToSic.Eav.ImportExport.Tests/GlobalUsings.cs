@@ -9,7 +9,7 @@ global using ToSic.Eav.Data;
 
 global using ToSic.Eav.Testing;
 global using ToSic.Eav.Testing.Scenarios;
-global using ToSic.Lib.DI;
-global using ToSic.Lib.Logging;
-global using ToSic.Lib.Services;
+global using ToSic.Sys.DI;
+global using ToSic.Sys.Logging;
+global using ToSic.Sys.Services;
 global using static Xunit.Assert;

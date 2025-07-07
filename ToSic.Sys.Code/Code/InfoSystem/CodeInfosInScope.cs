@@ -1,5 +1,4 @@
-﻿using ToSic.Lib.Helpers;
-using ToSic.Sys.Code.Infos;
+﻿using ToSic.Sys.Code.Infos;
 
 namespace ToSic.Sys.Code.InfoSystem;
 

@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource.Internal.Errors;
-using ToSic.Eav.DataSource.Streams.Internal;
+using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Errors;
+using ToSic.Eav.DataSource.Sys.Streams;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -142,7 +143,7 @@ public sealed class RelationshipFilter : DataSourceBase
     /// Constructs a new RelationshipFilter
     /// </summary>
     [PrivateApi]
-    public RelationshipFilter(MyServices services/*, ICurrentContextUserPermissionsService userPermissions*/) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [/*userPermissions*/])
+    public RelationshipFilter(Dependencies services/*, ICurrentContextUserPermissionsService userPermissions*/) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [/*userPermissions*/])
     {
         //_userPermissions = userPermissions;
         ProvideOut(GetRelationshipsOrFallback);

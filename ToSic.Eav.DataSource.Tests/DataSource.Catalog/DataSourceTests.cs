@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.DataSource.Internal.Catalog;
-
-namespace ToSic.Eav.DataSource.Catalog;
+﻿namespace ToSic.Eav.DataSource.Catalog;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class DataSourceTests(DataSourceCatalog dsCatalog)

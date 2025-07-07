@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources.Internal;
+﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSources.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsMetadata")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-public class Metadata(CustomDataSourceAdvanced.MyServices services) : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaDt")
+public class Metadata(CustomDataSourceAdvanced.Dependencies services) : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaDt")
 {
     /// <summary>
     /// Optional Type Name restriction to only get **Metadata** of this Content Type.

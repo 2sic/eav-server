@@ -1,10 +1,8 @@
 ﻿using System.Collections.Immutable;
-
-using ToSic.Eav.Data.EntityPair.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Lib.Services;
+using ToSic.Eav.Data.Sys.EntityPair;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -74,28 +72,30 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// <returns></returns>
     IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity;
 
-    /// <summary>
-    /// Build a complete stream of <see cref="IRawEntity"/>s.
-    /// This is the method to use when you don't plan on doing any post-processing.
-    ///
-    /// If you need post-processing, call `Prepare` instead and finish using `WrapUp`.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <returns></returns>
-    IImmutableList<IEntity> Create<T>(IEnumerable<IHasRawEntity<T>> list) where T: IRawEntity;
+    // #DropIHasRawEntity v20
+    ///// <summary>
+    ///// Build a complete stream of <see cref="IRawEntity"/>s.
+    ///// This is the method to use when you don't plan on doing any post-processing.
+    /////
+    ///// If you need post-processing, call `Prepare` instead and finish using `WrapUp`.
+    ///// </summary>
+    ///// <typeparam name="T"></typeparam>
+    ///// <param name="list"></param>
+    ///// <returns></returns>
+    //IImmutableList<IEntity> Create<T>(IEnumerable<IHasRawEntity<T>> list) where T: IRawEntity;
 
     #endregion
 
 
     #region Prepare One
 
-    /// <summary>
-    /// For objects which delegate the <see cref="IRawEntity"/> to a property.
-    /// </summary>
-    /// <param name="withRawEntity"></param>
-    /// <returns></returns>
-    EntityPair<T> Prepare<T>(IHasRawEntity<T> withRawEntity) where T : IRawEntity;
+    // #DropIHasRawEntity v20
+    ///// <summary>
+    ///// For objects which delegate the <see cref="IRawEntity"/> to a property.
+    ///// </summary>
+    ///// <param name="withRawEntity"></param>
+    ///// <returns></returns>
+    //EntityPair<T> Prepare<T>(IHasRawEntity<T> withRawEntity) where T : IRawEntity;
 
     /// <summary>
     /// For objects which themselves are <see cref="IRawEntity"/>
@@ -108,17 +108,18 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
 
     #region Prepare Many
 
-    /// <summary>
-    /// This will create IEntity but return it in a dictionary mapped to the original.
-    /// This is useful when you intend to do further processing and need to know which original matches the generated entity.
-    ///
-    /// IMPORTANT: WIP
-    /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="data"></param>
-    /// <returns></returns>
-    IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasRawEntity<T>> data) where T : IRawEntity;
+    // #DropIHasRawEntity v20
+    ///// <summary>
+    ///// This will create IEntity but return it in a dictionary mapped to the original.
+    ///// This is useful when you intend to do further processing and need to know which original matches the generated entity.
+    /////
+    ///// IMPORTANT: WIP
+    ///// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
+    ///// </summary>
+    ///// <typeparam name="T"></typeparam>
+    ///// <param name="data"></param>
+    ///// <returns></returns>
+    //IList<EntityPair<T>> Prepare<T>(IEnumerable<IHasRawEntity<T>> data) where T : IRawEntity;
 
     /// <summary>
     /// This will create IEntity but return it in a dictionary mapped to the original.

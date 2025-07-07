@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Testing.Scenarios;
-using ToSic.Lib.DI;
 using ToSic.Sys.Boot;
 
 namespace ToSic.Eav.Testing;

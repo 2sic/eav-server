@@ -7,7 +7,7 @@ namespace ToSic.Eav.TestData;
 
 public class PersonsDataSource: DataSourceBase
 {
-    public PersonsDataSource(MyServices services, DataBuilder dataBuilder): base(services, "TST.Person")
+    public PersonsDataSource(Dependencies services, DataBuilder dataBuilder): base(services, "TST.Person")
     {
         _dataBuilder = dataBuilder;
         ProvideOut(GetPersons);

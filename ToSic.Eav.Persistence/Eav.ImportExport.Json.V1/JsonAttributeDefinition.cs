@@ -19,8 +19,11 @@ public record JsonAttributeDefinition
     [JsonPropertyOrder(7)]
     public required string Type { get; init; }
 
+    /// <summary>
+    /// Note: can be null for older exported json files, so not required, otherwise things fail.
+    /// </summary>
     [JsonPropertyOrder(8)]
-    public required string InputType { get; init; }
+    public string? InputType { get; init; }
 
     [JsonPropertyOrder(9)]
     public bool IsTitle { get; init; }

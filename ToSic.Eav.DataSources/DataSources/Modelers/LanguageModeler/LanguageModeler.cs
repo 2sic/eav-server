@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.Sys;
 
 namespace ToSic.Eav.DataSources;
 
@@ -41,7 +42,7 @@ public sealed class LanguageModeler : DataSourceBase
     /// Initializes this data source
     /// </summary>
     [PrivateApi]
-    public LanguageModeler(DataBuilder dataBuilder, MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.LngMod", connect: [dataBuilder])
+    public LanguageModeler(DataBuilder dataBuilder, Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.LngMod", connect: [dataBuilder])
     {
         _dataBuilder = dataBuilder;
         ProvideOut(MapLanguagesIntoValues);

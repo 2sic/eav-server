@@ -1,4 +1,4 @@
-﻿using ToSic.Lib.Data;
+﻿using ToSic.Sys.Data;
 
 namespace ToSic.Sys.Capabilities.Aspects;
 

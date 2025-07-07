@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -63,7 +64,7 @@ public sealed class Paging: CustomDataSourceAdvanced
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public Paging(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging")
+    public Paging(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging")
     {
         ProvideOut(GetList);
         ProvideOut(GetPaging, "Paging");

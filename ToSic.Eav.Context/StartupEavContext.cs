@@ -22,7 +22,7 @@ public static class StartupEavContext
         // Context
         services.TryAddTransient<IContextOfSite, ContextOfSite>();
         services.TryAddTransient<ContextOfSite>();
-        services.TryAddTransient<ContextOfSite.MyServices>();
+        services.TryAddTransient<ContextOfSite.Dependencies>();
 
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
@@ -30,7 +30,7 @@ public static class StartupEavContext
         services.TryAddTransient<AppPermissionCheck>();
         services.TryAddTransient<MultiPermissionsTypes>();
         services.TryAddTransient<MultiPermissionsApp>();
-        services.TryAddTransient<MultiPermissionsApp.MyServices>();
+        services.TryAddTransient<MultiPermissionsApp.Dependencies>();
 
         // V13 Language Checks
         services.TryAddTransient<AppUserLanguageCheck>();

@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.DataSource.Internal.Query;
+﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Query;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Services;
-using ToSic.Lib.Helpers;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -54,7 +54,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     /// <summary>
     /// Constructs a new Attributes DS
     /// </summary>
-    public QueryInfo(MyServices services,
+    public QueryInfo(Dependencies services,
         LazySvc<QueryManager> queryManager, QueryBuilder queryBuilder, IDataSourceGenerator<Attributes> attributesGenerator) : base(
         services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn", connect: [queryBuilder, queryManager, attributesGenerator])
     {

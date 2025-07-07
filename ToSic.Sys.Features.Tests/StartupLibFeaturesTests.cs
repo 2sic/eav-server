@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Sys;
+using ToSic.Sys.Startup;
 
 namespace ToSic.Lib.Features.Tests;
 
@@ -27,5 +27,5 @@ public static class StartupLibFeatures
         => services
             .AddSysCapabilities()
             .AddSysCapabilitiesFallback()
-            .AddLibCore();
+            .AddSysCore();
 }

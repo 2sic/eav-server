@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.LookUp.Sys;
 using static System.StringComparison;
@@ -116,15 +117,11 @@ public class Sql : CustomDataSourceAdvanced
     #region Constructor
 
     [PrivateApi]
-    public new class MyServices: MyServicesBase<CustomDataSourceAdvanced.MyServices>
+    public new class Dependencies(SqlPlatformInfo sqlPlatformInfo, CustomDataSourceAdvanced.Dependencies parentServices)
+        : DependenciesBase(connect: [sqlPlatformInfo])
     {
-        public SqlPlatformInfo SqlPlatformInfo { get; }
-        public MyServices(SqlPlatformInfo sqlPlatformInfo, CustomDataSourceAdvanced.MyServices parentServices): base(parentServices)
-        {
-            ConnectLogs([
-                SqlPlatformInfo = sqlPlatformInfo
-            ]);
-        }
+        public SqlPlatformInfo SqlPlatformInfo { get; } = sqlPlatformInfo;
+        public CustomDataSourceAdvanced.Dependencies ParentServices { get; } = parentServices;
     }
 
     // Important: This constructor must come BEFORE the other constructors
@@ -133,12 +130,12 @@ public class Sql : CustomDataSourceAdvanced
     /// Initializes a new instance of the SqlDataSource class
     /// </summary>
     [PrivateApi]
-    public Sql(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql")
+    public Sql(Dependencies services) : base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql", connect: [services])
     {
         SqlServices = services;
         ProvideOut(GetList);
     }
-    [PrivateApi] protected readonly MyServices SqlServices;
+    [PrivateApi] protected readonly Dependencies SqlServices;
 
     #endregion
 

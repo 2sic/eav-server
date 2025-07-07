@@ -1,4 +1,4 @@
-﻿using ToSic.Lib.FunFact;
+﻿using ToSic.Sys.FunctionalFactory;
 
 namespace ToSic.Lib.Core.Tests.FunFactTests;
 

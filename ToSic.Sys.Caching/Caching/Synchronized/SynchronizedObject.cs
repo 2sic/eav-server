@@ -3,7 +3,7 @@
 /// <summary>
 /// WIP 12.03
 /// </summary>
-/// <typeparam name="T">The type which is enumerated, usually an <see cref="IEntity"/></typeparam>
+/// <typeparam name="T">The type which is enumerated, usually an `IEntity`</typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SynchronizedObject<T>: ICacheDependent, ICacheExpiring

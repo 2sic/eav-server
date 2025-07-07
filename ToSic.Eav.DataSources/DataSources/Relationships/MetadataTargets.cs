@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.DataSources.Internal;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.Metadata;
 using static ToSic.Eav.DataSource.DataSourceConstants;
@@ -25,7 +25,7 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class MetadataTargets(CustomDataSourceAdvanced.MyServices services, IAppReaderFactory appReaders)
+public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAppReaderFactory appReaders)
     : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders])
 {
     /// <summary>

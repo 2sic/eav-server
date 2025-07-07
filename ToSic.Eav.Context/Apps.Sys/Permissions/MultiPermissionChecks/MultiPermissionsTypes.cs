@@ -4,7 +4,7 @@ using ToSic.Sys.Security.Permissions;
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MultiPermissionsTypes(MultiPermissionsApp.MyServices services, LazySvc<IAppReaderFactory> appReaderFactory)
+public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, LazySvc<IAppReaderFactory> appReaderFactory)
     : MultiPermissionsApp(services, LogName, connect: [appReaderFactory])
 {
     private const string LogName = "Sec.MPTyps";

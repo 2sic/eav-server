@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.DataSource.Internal.Caching;
-
-namespace ToSic.Eav.DataSource.Caching;
+﻿namespace ToSic.Eav.DataSource.Caching;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class QuickCachesTest(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)

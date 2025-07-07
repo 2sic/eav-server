@@ -1,4 +1,7 @@
 ﻿namespace ToSic.Sys.Boot;
+
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public enum BootPhase
 {
     Unknown = 0,

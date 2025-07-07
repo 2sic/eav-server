@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Lib.DI.SwitchableServices.Services;
+using ToSic.Sys.Startup;
 
 namespace ToSic.Lib.DI.SwitchableServices;
 
@@ -10,5 +11,5 @@ public class Startup
             .AddTransient<ITestSwitchableService, TestSwitchableFallback>()
             .AddTransient<ITestSwitchableService, TestSwitchableKeep>()
             .AddTransient<ITestSwitchableService, TestSwitchableSkip>()
-            .AddLibCore();
+            .AddSysCore();
 }

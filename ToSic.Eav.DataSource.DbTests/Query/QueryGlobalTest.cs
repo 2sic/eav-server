@@ -1,6 +1,4 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.DataSource.Internal;
-using ToSic.Eav.DataSource.Internal.Query;
 
 namespace ToSic.Eav.DataSource.DbTests.Query;
 
@@ -38,7 +36,7 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void UseGlobalZonesQuery()
     {
-        var queryEnt = queryManager.FindQuery(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones");
+        var queryEnt = queryManager.FindQuery(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones");
 
         var qDef = queryDefinitionBuilder.Create(queryEnt, AppForQueryTests);
 
@@ -48,4 +46,11 @@ public class QueryGlobalTestJsonSerializer(
         var list = query.ListTac();
         True(list.Count() > 1, "should find a few portals in the eav-testing-DB");
     }
+
+    [Fact]
+    public void UseOldPrefixThrows()
+    {
+        Throws<Exception>(() => queryManager.FindQuery(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones"));
+    }
+
 }

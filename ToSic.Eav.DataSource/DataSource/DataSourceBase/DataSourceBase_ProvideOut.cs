@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Streams.Internal;
+﻿using ToSic.Eav.DataSource.Sys.Streams;
 
 namespace ToSic.Eav.DataSource;
 

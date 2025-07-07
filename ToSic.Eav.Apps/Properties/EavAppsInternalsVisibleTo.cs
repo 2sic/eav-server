@@ -10,3 +10,7 @@
 [assembly: InternalsVisibleTo("ToSic.Eav.Work")]
 
 [assembly: InternalsVisibleTo("ToSic.Eav.WebApi")]
+
+// Unit tests
+[assembly: InternalsVisibleTo("ToSic.Eav.Apps.TestHelpers")]
+[assembly: InternalsVisibleTo("ToSic.Sxc.Various.SystemTests")]

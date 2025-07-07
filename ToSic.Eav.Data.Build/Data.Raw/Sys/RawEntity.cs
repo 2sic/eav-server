@@ -3,11 +3,13 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Raw.Sys;
 
+// #DropIHasRawEntity v20
+///// Typical use case is when you implement <see cref="IHasRawEntity{T}"/>
+
 /// <summary>
 /// A ready-to-use <see cref="IRawEntity"/> which receives all the data in the constructor.
 ///
 /// Use this for scenarios where you don't want to create your own IRawEntity but wish to return this kind of typed object.
-/// Typical use case is when you implement <see cref="IHasRawEntity{T}"/>
 /// </summary>
 /// <remarks>
 /// Added in 15.04

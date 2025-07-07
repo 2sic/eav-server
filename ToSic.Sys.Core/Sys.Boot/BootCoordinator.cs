@@ -1,13 +1,14 @@
-﻿using ToSic.Lib.Services;
-
-namespace ToSic.Sys.Boot;
+﻿namespace ToSic.Sys.Boot;
 
 /// <summary>
 /// The main / overall loader which will coordinate all the loaders.
 /// </summary>
 /// <remarks>
 /// It will run pre-loaders first, then the main loader.
+/// Loaders are registered in the Dependency Injection.
 /// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class BootCoordinator : ServiceBase
 {
     public BootCoordinator(ILogStore logStore, IEnumerable<IBootProcess> bootProcesses)

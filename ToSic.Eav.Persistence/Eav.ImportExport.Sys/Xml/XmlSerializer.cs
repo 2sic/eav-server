@@ -7,7 +7,7 @@ using ToSic.Eav.Serialization.Sys;
 namespace ToSic.Eav.ImportExport.Sys.Xml;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class XmlSerializer(SerializerBase.MyServices services) : SerializerBase(services, "IEx.XmlSer")
+public class XmlSerializer(SerializerBase.Dependencies services) : SerializerBase(services, "IEx.XmlSer")
 {
     [field: AllowNull, MaybeNull]
     private Dictionary<string, int> Dimensions

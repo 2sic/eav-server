@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.DI;
-using ToSic.Lib.Services;
-using ToSic.Sys.Code.Infos;
+﻿using ToSic.Sys.Code.Infos;
 
 namespace ToSic.Sys.Code.InfoSystem;
 

@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.DataSource.Sys;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -28,7 +29,7 @@ public sealed class Scopes : CustomDataSource
     /// Constructs a new Scopes DS
     /// </summary>
     [PrivateApi]
-    public Scopes(MyServices services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes")
+    public Scopes(Dependencies services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes")
     {
         ConnectLogs([_appReadFac = appReadFac]);
         ProvideOutRaw(GetList, options: () => new()

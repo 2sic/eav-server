@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Data.Build;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
@@ -30,6 +29,11 @@ public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBui
         NotNull(relFilt);//, "relFilt != null");
     }
 
+    /// <summary>
+    /// At the moment v20 this test fails.
+    /// 2dm knows why but isn't sure what to do.
+    /// Please leave the test as-is as a reminder.
+    /// </summary>
     [Fact]
     public void DS_RelFil_NoConfigEmpty()
     {
@@ -39,8 +43,9 @@ public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBui
 
         Trace.Write(Log.Dump());
 
-        True(result.Count == 0, "result.Count == 0");
+        Empty(result);
     }
+
     [Fact]
     public void DS_RelFil_NoConfigFallback()
     {

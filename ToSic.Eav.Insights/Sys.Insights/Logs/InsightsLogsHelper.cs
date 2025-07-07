@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using ToSic.Eav.Apps.Assets.Internal;
+using ToSic.Eav.Apps.Assets.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
-using ToSic.Lib.Memory;
 using ToSic.Razor.Blade;
+using ToSic.Sys.Memory;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;

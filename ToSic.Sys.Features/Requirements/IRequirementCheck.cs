@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.DI;
-
-namespace ToSic.Sys.Requirements;
+﻿namespace ToSic.Sys.Requirements;
 
 public interface IRequirementCheck: ISwitchableService
 {

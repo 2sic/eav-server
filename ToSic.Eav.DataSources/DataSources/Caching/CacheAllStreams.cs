@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using ToSic.Eav.DataSource.Streams.Internal;
-using ToSic.Lib.Helpers;
+using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Streams;
 using static System.StringComparer;
 
 namespace ToSic.Eav.DataSources.Caching;
@@ -85,7 +85,7 @@ public class CacheAllStreams : DataSourceBase
     /// Constructs a new App DataSource
     /// </summary>
     [PrivateApi]
-    public CacheAllStreams(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.CachAl")
+    public CacheAllStreams(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.CachAl")
     {
         // This one is unusual, so don't pre-attach a default data stream
         // All streams, incl. Default, will be attached in the dynamic Out.

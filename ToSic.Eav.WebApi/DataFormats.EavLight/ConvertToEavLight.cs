@@ -4,10 +4,9 @@ using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.Data.ValueConverter.Sys;
+using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization.Sys.Options;
-using ToSic.Lib.Documentation;
 using static ToSic.Eav.Data.EntityDecorators.Sys.EntitySerializationDecorator;
 
 namespace ToSic.Eav.DataFormats.EavLight;
@@ -17,15 +16,15 @@ namespace ToSic.Eav.DataFormats.EavLight;
 /// </summary>
 [PrivateApi("Hide Implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyServices>, IConvertToEavLight
+public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependencies>, IConvertToEavLight
 {
     #region Constructor / DI
 
-    public class MyServices(
+    public class Dependencies(
         LazySvc<IAppReaderFactory> appReaders,
         IValueConverter valueConverter,
         IZoneCultureResolver zoneCultureResolver)
-        : MyServicesBase(connect: [appReaders, valueConverter, zoneCultureResolver])
+        : DependenciesBase(connect: [appReaders, valueConverter, zoneCultureResolver])
     {
         public LazySvc<IAppReaderFactory> AppReaders { get; } = appReaders;
         public IValueConverter ValueConverter { get; } = valueConverter;
@@ -38,9 +37,9 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.MyService
     /// This is why it must be public, because otherwise it can't be constructed from eav?
     /// </summary>
     /// <param name="services"></param>
-    public ConvertToEavLight(MyServices services) : this(services, "Eav.CnvE2D") { }
+    public ConvertToEavLight(Dependencies services) : this(services, "Eav.CnvE2D") { }
 
-    private ConvertToEavLight(MyServices services, string logName) : base(services, logName) { }
+    private ConvertToEavLight(Dependencies services, string logName) : base(services, logName) { }
 
 
     #endregion

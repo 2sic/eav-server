@@ -11,7 +11,7 @@ public static class GlobalConfigSysFolders
     /// </summary>
     /// <returns>The folder. Will be generated if it was never set</returns>
     public static string DataFolder(this IGlobalConfiguration config)
-        => config.GetThisOrSet(() => Path.Combine(config.GlobalFolder(), FolderConstants.AppDataProtectedFolder, FolderConstants.FolderSystem))!;
+        => config.GetThisOrSet(() => Path.Combine(config.GlobalFolder(), FolderConstants.DataFolderProtected, FolderConstants.DataSubFolderSystem))!;
 
     /// <summary>
     /// The absolute folder where the data is stored, usually ends in "App_Data\system" (or ".data")
@@ -27,7 +27,7 @@ public static class GlobalConfigSysFolders
     /// </summary>
     /// <returns>The folder, can be null if it was never set</returns>
     public static string DataBetaFolder(this IGlobalConfiguration config)
-        => config.GetThisOrSet(() => Path.Combine(GetDataRoot(config.DataFolder()), FolderConstants.FolderSystemBeta))!;
+        => config.GetThisOrSet(() => Path.Combine(GetDataRoot(config.DataFolder()), FolderConstants.DataSubFolderSystemBeta))!;
 
     /// <summary>
     /// The absolute folder where the beta data is stored, usually ends in "App_Data\system-beta" (or ".databeta")
@@ -43,7 +43,7 @@ public static class GlobalConfigSysFolders
     /// </summary>
     /// <returns>The folder, can be null if it was never set</returns>
     public static string DataCustomFolder(this IGlobalConfiguration config)
-       => config.GetThisOrSet(() => Path.Combine(GetDataRoot(config.DataFolder()), FolderConstants.FolderSystemCustom))!;
+       => config.GetThisOrSet(() => Path.Combine(GetDataRoot(config.DataFolder()), FolderConstants.DataSubFolderSystemCustom))!;
 
     /// <summary>
     /// The absolute folder where the custom data is stored, usually ends in "App_Data\system-custom" (or ".data-custom")
@@ -149,7 +149,7 @@ public static class GlobalConfigSysFolders
     /// Used when new app is created.
     /// </summary>
     public static string AppDataTemplateFolder(this IGlobalConfiguration config)
-        => config.GetThisOrSet(() => Path.Combine(config.GlobalFolder(), FolderConstants.AppDataProtectedFolder, FolderConstants.NewAppFolder))!;
+        => config.GetThisOrSet(() => Path.Combine(config.GlobalFolder(), FolderConstants.DataFolderProtected, FolderConstants.NewAppFolder))!;
 
     /// <summary>
     /// The absolute folder where the template of App_Data with app.json are stored.

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -22,7 +23,7 @@ namespace ToSic.Eav.DataSources.Sys;
 
 public class MetadataTargetTypes : CustomDataSourceAdvanced
 {
-    public MetadataTargetTypes(MyServices services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
+    public MetadataTargetTypes(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
     {
         ProvideOut(GetList);
     }

@@ -2,9 +2,8 @@
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.DataSource.Internal.Caching;
-using ToSic.Eav.DataSource.Internal.Configuration;
-using ToSic.Lib.Coding;
+using ToSic.Eav.DataSource.Sys.Caching;
+using ToSic.Eav.DataSource.Sys.Configuration;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource;
@@ -23,21 +22,21 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// Otherwise, compiled code would break when we need additional dependencies just for the CustomDataSource.
     /// </summary>
     [PrivateApi]
-    public new class MyServices(
+    public new class Dependencies(
         IDataSourceConfiguration configuration,
         LazySvc<DataSourceErrorHelper> errorHandler,
         ConfigurationDataLoader configDataLoader,
         LazySvc<IDataSourceCacheService> cacheService,
         IDataFactory dataFactory
         )
-        : CustomDataSourceAdvanced.MyServices(configuration, errorHandler, configDataLoader, cacheService, dataFactory);
+        : CustomDataSourceAdvanced.Dependencies(configuration, errorHandler, configDataLoader, cacheService, dataFactory);
 
     /// <summary>
     /// Constructor for creating a Custom DataSource.
     /// </summary>
     /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.MyServices)</param>
     /// <param name="logName">Optional name for logging such as `My.JsonDS`</param>
-    protected internal CustomDataSource(MyServices services, string? logName = null) : base(services, logName ?? "Ds.CustLt")
+    protected internal CustomDataSource(Dependencies services, string? logName = null) : base(services, logName ?? "Ds.CustLt")
     {
         // Provide a default out, in case the overriding class doesn't
         base.ProvideOut(() => GetRaw(GetDefault, null));
@@ -57,6 +56,9 @@ public class CustomDataSource: CustomDataSourceAdvanced
 
     protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 
+    // #DropIHasRawEntity v20
+    ///// * <see cref="IHasRawEntity{T}"/>
+
     /// <summary>
     /// Provide data on the `Out` of this DataSource.
     /// This is a very generic version which takes any function that generates a list of something.
@@ -65,7 +67,6 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// Note that the `source` must create a list (`IEnumerable`) of any of the following (all items must have the same type):
     /// * <see cref="IEntity"/>
     /// * <see cref="IRawEntity"/>
-    /// * <see cref="IHasRawEntity{T}"/>
     ///
     /// If you know what data type you're creating, you should look at the other ProvideOut* methods.
     /// </summary>
@@ -80,13 +81,14 @@ public class CustomDataSource: CustomDataSourceAdvanced
         Func<DataFactoryOptions>? options = default) =>
         base.ProvideOut(() => GetAny(data, options), name);
 
-    [PrivateApi]
-    protected internal void ProvideOutRaw<T>(
-        Func<IEnumerable<IHasRawEntity<T>>> data,
-        NoParamOrder noParamOrder = default,
-        string name = StreamDefaultName,
-        Func<DataFactoryOptions>? options = default) where T : IRawEntity =>
-        base.ProvideOut(() => GetHasRaw(data, options), name);
+    // #DropIHasRawEntity v20
+    //[PrivateApi]
+    //protected internal void ProvideOutRaw<T>(
+    //    Func<IEnumerable<IHasRawEntity<T>>> data,
+    //    NoParamOrder noParamOrder = default,
+    //    string name = StreamDefaultName,
+    //    Func<DataFactoryOptions>? options = default) where T : IRawEntity =>
+    //    base.ProvideOut(() => GetHasRaw(data, options), name);
 
     [PrivateApi]
     protected internal void ProvideOutRaw<T>(
@@ -156,19 +158,22 @@ public class CustomDataSource: CustomDataSourceAdvanced
             return l.Return(result, "was IRawEntity");
         }
 
+        // #DropIHasRawEntity v20
         // Do this first, to make all the data be IRawEntity
-        if (data.All(i => i is IHasRawEntity))
-        {
-            var raw = data.Cast<IHasRawEntity<IRawEntity>>().ToList();
-            var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
-            return l.Return(result, "was IHasRawEntity");
-        }
+        //if (data.All(i => i is IHasRawEntity))
+        //{
+        //    var raw = data.Cast<IHasRawEntity<IRawEntity>>().ToList();
+        //    var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
+        //    return l.Return(result, "was IHasRawEntity");
+        //}
 
         // todo - maybe also process IHasEntity - but only after doing the raw entities
 
         var err = Error.Create(title: $"Error in {nameof(ProvideOutRaw)}",
             message: "The list received was tested against all possible data types but non matched. " +
-                     $"Expected was a list of either {nameof(IEntity)}, {nameof(IRawEntity)}, {nameof(IHasRawEntity<IRawEntity>)}. " +
+                     // #DropIHasRawEntity v20
+                     //$"Expected was a list of either {nameof(IEntity)}, {nameof(IRawEntity)}, {nameof(IHasRawEntity<IRawEntity>)}. " +
+                     $"Expected was a list of either {nameof(IEntity)}, {nameof(IRawEntity)}. " +
                      "Note that all items must be of the same type. ");
         return l.ReturnAsError(err);
     }
@@ -194,23 +199,24 @@ public class CustomDataSource: CustomDataSourceAdvanced
         return l.Return(result, $"Got {result.Count} items");
     }
 
-    private IImmutableList<IEntity> GetHasRaw<T>(Func<IEnumerable<IHasRawEntity<T>>>? source, Func<DataFactoryOptions>? options)
-        where T: IRawEntity
-    {
-        var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
+    // #DropIHasRawEntity v20
+    //private IImmutableList<IEntity> GetHasRaw<T>(Func<IEnumerable<IHasRawEntity<T>>>? source, Func<DataFactoryOptions>? options)
+    //    where T: IRawEntity
+    //{
+    //    var l = Log.Fn<IImmutableList<IEntity>>();
+    //    Configuration.Parse();
 
-        // Get raw entities - from _source or from override method
-        var raw = source?.Invoke()?.ToList();
+    //    // Get raw entities - from _source or from override method
+    //    var raw = source?.Invoke()?.ToList();
 
-        // If we didn't get anything, return empty
-        if (raw.SafeNone())
-            return l.Return([], "no items returned");
+    //    // If we didn't get anything, return empty
+    //    if (raw.SafeNone())
+    //        return l.Return([], "no items returned");
 
-        // Transform result to IEntity
-        var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
-        return l.Return(result, $"Got {result.Count} items");
-    }
+    //    // Transform result to IEntity
+    //    var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
+    //    return l.Return(result, $"Got {result.Count} items");
+    //}
 
 
 }

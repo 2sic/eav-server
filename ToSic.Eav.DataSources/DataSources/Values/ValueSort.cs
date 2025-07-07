@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSources.Internal;
+using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSources.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -61,7 +62,7 @@ public sealed class ValueSort : DataSourceBase
     /// Constructs a new ValueSort
     /// </summary>
     [PrivateApi]
-    public ValueSort(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValSrt", connect: [valLanguages])
+    public ValueSort(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValSrt", connect: [valLanguages])
     {
         _valLanguages = valLanguages;
 

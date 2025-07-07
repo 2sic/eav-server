@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSource.Streams.Internal;
+﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Streams;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -33,7 +34,7 @@ public sealed class StreamFallback : DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public StreamFallback(MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FallBk")
+    public StreamFallback(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FallBk")
     {
         ProvideOut(GetStreamFallback);
     }

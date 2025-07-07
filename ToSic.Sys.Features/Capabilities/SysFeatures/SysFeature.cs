@@ -1,5 +1,4 @@
-﻿using ToSic.Lib;
-using ToSic.Sys.Capabilities.Features;
+﻿using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Sys.Capabilities.SysFeatures;
@@ -26,7 +25,7 @@ public record SysFeature : Feature
 
     public override string Link
     {
-        get => field.UseFallbackIfNoValue(LibConstants.GoUrlSysFeats);
+        get => field.UseFallbackIfNoValue(SysConstants.GoUrlSysFeats);
         init;
     }
 

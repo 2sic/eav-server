@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Helpers;
-
-namespace ToSic.Eav.DataSource;
+﻿namespace ToSic.Eav.DataSource;
 
 partial class DataSourceBase: IDataSourceLinkable
 {

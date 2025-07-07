@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Loaders;
-using ToSic.Lib.Logging;
 
 namespace ToSic.Testing.Performance.LoadPresetApp;
 internal class TestLoadPresetApp(IAppStateLoader appLoader)

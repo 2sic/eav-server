@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Capabilities.Licenses;
+﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Sys.Capabilities.Licenses;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -24,7 +25,7 @@ public sealed class Licenses : CustomDataSource
     /// Constructs a new Scopes DS
     /// </summary>
     [PrivateApi]
-    public Licenses(MyServices services, ILicenseService licenseService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Lics")
+    public Licenses(Dependencies services, ILicenseService licenseService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Lics")
     {
         ConnectLogs([licenseService]);
         ProvideOutRaw(

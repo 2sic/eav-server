@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource.Streams.Internal;
-using ToSic.Eav.DataSources.Internal;
+using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Streams;
+using ToSic.Eav.DataSources.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -83,7 +84,7 @@ public sealed class ValueFilter : DataSourceBase
     /// Constructs a new ValueFilter
     /// </summary>
     [PrivateApi]
-    public ValueFilter(ValueLanguages valLanguages, MyServices services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValFil", connect: [valLanguages])
+    public ValueFilter(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValFil", connect: [valLanguages])
     {
         _valueLanguageService = valLanguages;
 
@@ -151,12 +152,16 @@ public sealed class ValueFilter : DataSourceBase
 
         IImmutableList<IEntity>? innerErrors = null;
         var compMaker = new ValueComparison((title, message) => innerErrors = Error.Create(title: title, message: message), Log);
-        var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value)
-            ?? throw new NullReferenceException("Cant' find proper comparison. This is unexpected, please contact support.");
+        var compare = compMaker.GetComparison(fieldType, fieldName, op, languages, Value);
+            // ?? throw new NullReferenceException("Cant' find proper comparison. This is unexpected, please contact support.");
 
-        return innerErrors.SafeAny()
-            ? l.ReturnAsError(innerErrors)
-            : l.ReturnAsOk(GetFilteredWithLinq(source, compare));
+        if (innerErrors.SafeAny())
+            return l.ReturnAsError(innerErrors);
+
+        if (compare == null)
+            throw new NullReferenceException("Cant' find proper comparison, and no error-entities were created. This is unexpected, please contact support.");
+
+        return l.ReturnAsOk(GetFilteredWithLinq(source, compare));
 
         // Note: the alternate GetFilteredWithLoop has more logging, activate in serious cases
         // Note that the code might not be 100% identical, but it should help find issues

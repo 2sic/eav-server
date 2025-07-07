@@ -1,7 +1,4 @@
-﻿using ToSic.Lib;
-using ToSic.Lib.Services;
-
-#pragma warning disable CS9113 // Parameter is unread.
+﻿#pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Sys.Users;
 
@@ -25,7 +22,7 @@ internal sealed class UserUnknown(WarnUseOfUnknown<UserUnknown> _) : IUser, IIsU
 
     public int Id => 0;
 
-    public string Username => LibConstants.Unknown;
+    public string Username => SysConstants.Unknown;
 
     public string Name => Username;
 

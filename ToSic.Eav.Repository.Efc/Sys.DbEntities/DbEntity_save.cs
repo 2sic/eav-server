@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.EntityPair.Sys;
+﻿using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;

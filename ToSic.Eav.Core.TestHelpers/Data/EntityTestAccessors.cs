@@ -1,6 +1,4 @@
-﻿using ToSic.Lib.Coding;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 public static class EntityTestAccessors
 {
