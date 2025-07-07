@@ -47,7 +47,8 @@ public class SynchronizedObject<T>: ICacheDependent, ICacheExpiring
     {
         get
         {
-            if (Cache != null && !CacheChanged()) return Cache;
+            if (Cache != null && !CacheChanged())
+                return Cache;
 
             Cache = RebuildCache();
             RebuildCount++;
@@ -60,8 +61,10 @@ public class SynchronizedObject<T>: ICacheDependent, ICacheExpiring
     public long CacheTimestamp { get; private set; }
 
     /// <inheritdoc />
-    public bool CacheChanged(long dependentTimeStamp) => Upstream.CacheChanged(dependentTimeStamp);
+    public bool CacheChanged(long dependentTimeStamp)
+        => Upstream.CacheChanged(dependentTimeStamp);
 
     /// <inheritdoc />
-    public bool CacheChanged() => Upstream.CacheChanged(CacheTimestamp);
+    public bool CacheChanged()
+        => Upstream.CacheChanged(CacheTimestamp);
 }
