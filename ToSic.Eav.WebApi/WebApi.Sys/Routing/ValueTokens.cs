@@ -19,12 +19,9 @@ public class ValueTokens
     public const string Field = "{" + VarNames.Field + "}";
 
     // Sets / Pairs of placeholders
-    public const string SetControllerAction = Controller + "/" + Action;
-    public const string SetTypeAndId = ContentType + "/" + Id;
-    public const string SetTypeAndGuid = ContentType + "/" + Guid;
-    public const string SetTypeGuidField = SetTypeAndGuid + "/" + Field;
-    public const string SetTypeGuidFieldAction = SetTypeGuidField + "/" + Action;
-
-    // Sets for Query
-    public const string SetNameAndStream = Name + "/" + Stream;
+    public const string SetControllerAction = $"{Controller}/{Action}";
+    public const string SetTypeAndId = $"{ContentType}/{Id}";
+    public const string SetTypeAndGuid = $"{ContentType}/{Guid}";
+    public const string SetTypeGuidField = $"{SetTypeAndGuid}/{Field}";
+    public const string SetTypeGuidFieldAction = $"{SetTypeGuidField}/{Action}";
 }
