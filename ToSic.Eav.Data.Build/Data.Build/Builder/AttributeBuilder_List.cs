@@ -64,7 +64,7 @@ partial class AttributeBuilder
                 var valuesModelList = new List<IValue>();
                 if (pair.Value != null)
                 {
-                    var valueModel = ValueBuilder.Build(attributeType, pair.Value, languages);
+                    var valueModel = valueBuilder.Build(attributeType, pair.Value, languages);
                     valuesModelList.Add(valueModel);
                 }
 
