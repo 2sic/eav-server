@@ -55,7 +55,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     {
         DbContext.Versioning.GetTransactionId();
 
-        // Delete app using StoredProcedure
+        // Delete app
         DbContext.DoInTransaction(() =>
             {
                 // Explanation: as json entities were added much later, the built-in SP to delete apps doesn't handle them correctly
@@ -66,29 +66,30 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
                 // Between these steps, the command must be sent to the DB, so it actually allows doing the next step
 
                 // 0. Find all json-entities, as these are the ones we treat specially
-                var jsonEntitiesInApp = DbContext.SqlDb.TsDynDataEntities
-                    .Where(e => e.ContentTypeId == DbEntity.RepoIdForJsonEntities
-                                && e.AppId == appId);
-                    
+                var jsonEntitiesInAppSql = $@"SELECT e.EntityId FROM TsDynDataEntity e WHERE e.ContentTypeId = @p0 AND e.AppId = @p1";
+
                 // If we plan to rebuild the app from the App.xml, then the config item shouldn't be deleted
                 if (!fullDelete)
-                    jsonEntitiesInApp =
-                        jsonEntitiesInApp.Where(entity => entity.ContentType != AppLoadConstants.TypeAppConfig);
+                    jsonEntitiesInAppSql = $@"SELECT e.EntityId FROM TsDynDataEntity e WHERE e.ContentTypeId = @p0 AND e.AppId = @p1 AND e.ContentTypeId != @p2";
 
                 // 1. remove all relationships to/from these json entities
                 // note that actually there can only be relationships TO json entities, as all from will be in the json, 
                 // but just to be sure (maybe there's historic data that's off) we'll do both
-
-                var allJsonItemsToDelete = DbContext.SqlDb.TsDynDataRelationships
-                    .Where(r => 
-                        jsonEntitiesInApp.Any(e => e.EntityId == r.ChildEntityId || e.EntityId == r.ParentEntityId));
-                DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(allJsonItemsToDelete));
+                DbContext.DoAndSave(() => ExecuteSqlCommand($@"
+                    DELETE r
+                    FROM TsDynDataRelationship r
+                    WHERE r.ChildEntityId IN ({jsonEntitiesInAppSql})
+                       OR r.ParentEntityId IN ({jsonEntitiesInAppSql})"
+                    , DbEntity.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
 
                 // 2. remove all json entities, which won't be handled by the SP
-                DbContext.DoAndSave(() => DbContext.SqlDb.RemoveRange(jsonEntitiesInApp));
+                DbContext.DoAndSave(() => ExecuteSqlCommand($@"
+                    DELETE e
+                    FROM TsDynDataEntity e
+                    WHERE e.EntityId IN ({jsonEntitiesInAppSql})"
+                    , DbEntity.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
 
-                // Now let the Stored Procedure do the remaining clean-up
-                //DeleteAppWithStoredProcedure(appId);
+                // Now let do the remaining clean-up
                 DbContext.DoAndSave(() => DeleteAppWithoutStoredProcedure(appId, fullDelete));
             }
         );
@@ -107,62 +108,76 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// </remarks>
     private void DeleteAppWithoutStoredProcedure(int appId, bool alsoDeleteAppEntry)
     {
-        var db = DbContext.SqlDb;
-        var appContentTypes = db.TsDynDataContentTypes
-            .Where(a => a.AppId == appId);
-        
-        // WIP v13 - now with Inherited Apps, we have entities which point to a content-type which doesn't belong to the App itself
-        const bool useV12Method = false;
-        var appEntities = useV12Method
-            ? db.TsDynDataEntities.Join(appContentTypes, e => e.ContentTypeId, ct => ct.ContentTypeId, (e, ct) => e)
-            : db.TsDynDataEntities.Where(e => e.AppId == appId);
+        // Use raw SQL for each delete to ensure server-side execution and efficiency
 
         // Delete Value-Dimensions
-        var appValues = db.TsDynDataValues.Join(
-            appEntities,
-            v => v.EntityId,
-            e => e.EntityId,
-            (v, e) => v);
-        var valDimensions = db.TsDynDataValueDimensions.Join(
-            appValues,
-            vd => vd.ValueId,
-            v => v.ValueId,
-            (vd, v) => vd);
-        db.RemoveRange(valDimensions);
-        db.RemoveRange(appValues);
+        ExecuteSqlCommand(@"
+            DELETE vd
+            FROM TsDynDataValueDimension vd
+            INNER JOIN TsDynDataValue v ON vd.ValueId = v.ValueId
+            INNER JOIN TsDynDataEntity e ON v.EntityId = e.EntityId
+            WHERE e.AppId = @p0
+        ", appId);
 
-        // Delete Parent-EntityRelationships & Child-EntityRelationships
-        var dbRelTable = db.TsDynDataRelationships;
-        var relationshipsWithAppParents = dbRelTable.Join(
-            appEntities,
-            rel => rel.ParentEntityId,
-            e => e.EntityId,
-            (rel, e) => rel);
-        db.RemoveRange(relationshipsWithAppParents);
-        var relationshipsWithAppChildren = dbRelTable.Join(
-            appEntities,
-            rel => rel.ChildEntityId,
-            e => e.EntityId,
-            (rel, e) => rel);
-        db.RemoveRange(relationshipsWithAppChildren);
+        // Delete Values
+        ExecuteSqlCommand(@"
+            DELETE v
+            FROM TsDynDataValue v
+            INNER JOIN TsDynDataEntity e ON v.EntityId = e.EntityId
+            WHERE e.AppId = @p0
+        ", appId);
+
+        // Delete Parent-EntityRelationships
+        ExecuteSqlCommand(@"
+            DELETE r
+            FROM TsDynDataRelationship r
+            INNER JOIN TsDynDataEntity e ON r.ParentEntityId = e.EntityId
+            WHERE e.AppId = @p0
+        ", appId);
+
+        // Delete Child-EntityRelationships
+        ExecuteSqlCommand(@"
+            DELETE r
+            FROM TsDynDataRelationship r
+            INNER JOIN TsDynDataEntity e ON r.ChildEntityId = e.EntityId
+            WHERE e.AppId = @p0
+        ", appId);
 
         // Delete Entities
-        db.RemoveRange(appEntities);
+        ExecuteSqlCommand(@"
+            DELETE e
+            FROM TsDynDataEntity e
+            WHERE e.AppId = @p0
+        ", appId);
 
         // Delete Attributes
-        var attributes = db.TsDynDataAttributes.Join(
-            appContentTypes,
-            a => a.ContentTypeId,
-            ct => ct.ContentTypeId,
-            (a, ct) => a);
-        db.RemoveRange(attributes);
+        ExecuteSqlCommand(@"
+            DELETE a
+            FROM TsDynDataAttribute a
+            INNER JOIN TsDynDataContentType ct ON a.ContentTypeId = ct.ContentTypeId
+            WHERE ct.AppId = @p0
+        ", appId);
 
         // Delete Content-Types
-        db.RemoveRange(appContentTypes);
+        ExecuteSqlCommand(@"
+            DELETE ct
+            FROM TsDynDataContentType ct
+            WHERE ct.AppId = @p0
+        ", appId);
 
         // Delete App
         if (alsoDeleteAppEntry)
-            db.TsDynDataApps.Remove(db.TsDynDataApps.First(a => a.AppId == appId));
+            ExecuteSqlCommand(@"
+                DELETE FROM TsDynDataApp WHERE AppId = @p0
+            ", appId);
     }
 
+    private void ExecuteSqlCommand(string sql, params object[] parameters)
+    {
+#if NETFRAMEWORK
+        DbContext.SqlDb.Database.ExecuteSqlCommand(sql, parameters);
+#else
+        DbContext.SqlDb.Database.ExecuteSqlRaw(sql, parameters);
+#endif
+    }
 }
