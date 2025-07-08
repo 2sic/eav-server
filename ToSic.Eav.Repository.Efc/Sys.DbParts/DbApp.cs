@@ -107,10 +107,10 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
         var db = DbContext.SqlDb;
         var appContentTypes = db.TsDynDataContentTypes
             .Where(a => a.AppId == appId)
-            .ToList();
+            /*.ToList()*/;
         var contentTypeIds = appContentTypes
             .Select(ct => ct.ContentTypeId)
-            .ToArray();
+            /*.ToArray()*/;
             
         // WIP v13 - now with Inherited Apps, we have entities which point to a content-type which doesn't belong to the App itself
         const bool useV12Method = false;
@@ -120,7 +120,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
             ? db.TsDynDataEntities.Where(e => Enumerable.Contains(appContentTypes, e.ContentTypeNavigation))
             : db.TsDynDataEntities.Where(e => e.AppId == appId);
 
-        var entityIds = appEntities.Select(e => e.EntityId).ToArray();
+        var entityIds = appEntities.Select(e => e.EntityId)/*.ToArray()*/;
 
         // Delete Value-Dimensions
         var appValues = db.TsDynDataValues
@@ -129,13 +129,13 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
             .Where(v => Enumerable.Contains(entityIds, v.EntityId));
         var appValueIds = appValues
             .Select(a => a.ValueId)
-            .ToList();
+            /*.ToList()*/;
         var valDimensions = db.TsDynDataValueDimensions
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
             //.Where(vd => appValueIds.Contains(vd.ValueId));
             .Where(vd => Enumerable.Contains(appValueIds, vd.ValueId));
         db.RemoveRange(valDimensions);
-        db.RemoveRange(appValues.ToList());
+        db.RemoveRange(appValues/*.ToList()*/);
 
 
         // Delete Parent-EntityRelationships & Child-EntityRelationships
@@ -144,12 +144,12 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
             //.Where(rel => entityIds.Contains(rel.ParentEntityId));
             .Where(rel => Enumerable.Contains(entityIds, rel.ParentEntityId));
-        db.RemoveRange(relationshipsWithAppParents.ToList());
+        db.RemoveRange(relationshipsWithAppParents/*.ToList()*/);
         var relationshipsWithAppChildren = dbRelTable
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
             //.Where(rel => entityIds.Contains(rel.ChildEntityId ?? -1));
             .Where(rel => Enumerable.Contains(entityIds, rel.ChildEntityId ?? -1));
-        db.RemoveRange(relationshipsWithAppChildren.ToList());
+        db.RemoveRange(relationshipsWithAppChildren/*.ToList()*/);
 
         // Delete Entities
         db.RemoveRange(appEntities);
@@ -159,7 +159,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
                 // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                 //.Where(a => contentTypeIds.Contains(a.ContentTypeId));
                 .Where(a => Enumerable.Contains(contentTypeIds, a.ContentTypeId));
-        db.RemoveRange(attributes.ToList());
+        db.RemoveRange(attributes/*.ToList()*/);
 
         //-- Delete Attributes not in use anywhere (Attribute not in any Set, no Values/Related Entities)
         //DELETE FROM ToSIC_EAV_Attributes
