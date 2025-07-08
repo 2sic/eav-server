@@ -98,80 +98,63 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// <summary>
     /// Replacement for SQL call to ToSIC_EAV_DeleteApp
     /// It was developed as part of the solution to enable re-initializing an app from the xml file.
-    /// In future, we'll probably never use the stored procedure any more, but we're leaving it in for now, in case something fails. 
     /// </summary>
     /// <param name="appId"></param>
     /// <param name="alsoDeleteAppEntry"></param>
+    /// <remarks>
+    /// EF Core 2.1 doesn't have any built-in "DELETE WHERE…" on IQueryable
+    /// RemoveRange(query) will still pull each entity into change-tracker and issue one DELETE per row.
+    /// </remarks>
     private void DeleteAppWithoutStoredProcedure(int appId, bool alsoDeleteAppEntry)
     {
         var db = DbContext.SqlDb;
         var appContentTypes = db.TsDynDataContentTypes
-            .Where(a => a.AppId == appId)
-            /*.ToList()*/;
-        var contentTypeIds = appContentTypes
-            .Select(ct => ct.ContentTypeId)
-            /*.ToArray()*/;
-            
+            .Where(a => a.AppId == appId);
+        
         // WIP v13 - now with Inherited Apps, we have entities which point to a content-type which doesn't belong to the App itself
         const bool useV12Method = false;
         var appEntities = useV12Method
-        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-            //? db.ToSicEavEntities.Where(e => appContentTypes.Contains(e.AttributeSet))
-            ? db.TsDynDataEntities.Where(e => Enumerable.Contains(appContentTypes, e.ContentTypeNavigation))
+            ? db.TsDynDataEntities.Join(appContentTypes, e => e.ContentTypeId, ct => ct.ContentTypeId, (e, ct) => e)
             : db.TsDynDataEntities.Where(e => e.AppId == appId);
 
-        var entityIds = appEntities.Select(e => e.EntityId)/*.ToArray()*/;
-
         // Delete Value-Dimensions
-        var appValues = db.TsDynDataValues
-        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-            //.Where(v => entityIds.Contains(v.EntityId));
-            .Where(v => Enumerable.Contains(entityIds, v.EntityId));
-        var appValueIds = appValues
-            .Select(a => a.ValueId)
-            /*.ToList()*/;
-        var valDimensions = db.TsDynDataValueDimensions
-        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-            //.Where(vd => appValueIds.Contains(vd.ValueId));
-            .Where(vd => Enumerable.Contains(appValueIds, vd.ValueId));
+        var appValues = db.TsDynDataValues.Join(
+            appEntities,
+            v => v.EntityId,
+            e => e.EntityId,
+            (v, e) => v);
+        var valDimensions = db.TsDynDataValueDimensions.Join(
+            appValues,
+            vd => vd.ValueId,
+            v => v.ValueId,
+            (vd, v) => vd);
         db.RemoveRange(valDimensions);
-        db.RemoveRange(appValues/*.ToList()*/);
-
+        db.RemoveRange(appValues);
 
         // Delete Parent-EntityRelationships & Child-EntityRelationships
         var dbRelTable = db.TsDynDataRelationships;
-        var relationshipsWithAppParents = dbRelTable
-        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-            //.Where(rel => entityIds.Contains(rel.ParentEntityId));
-            .Where(rel => Enumerable.Contains(entityIds, rel.ParentEntityId));
-        db.RemoveRange(relationshipsWithAppParents/*.ToList()*/);
-        var relationshipsWithAppChildren = dbRelTable
-        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-            //.Where(rel => entityIds.Contains(rel.ChildEntityId ?? -1));
-            .Where(rel => Enumerable.Contains(entityIds, rel.ChildEntityId ?? -1));
-        db.RemoveRange(relationshipsWithAppChildren/*.ToList()*/);
+        var relationshipsWithAppParents = dbRelTable.Join(
+            appEntities,
+            rel => rel.ParentEntityId,
+            e => e.EntityId,
+            (rel, e) => rel);
+        db.RemoveRange(relationshipsWithAppParents);
+        var relationshipsWithAppChildren = dbRelTable.Join(
+            appEntities,
+            rel => rel.ChildEntityId,
+            e => e.EntityId,
+            (rel, e) => rel);
+        db.RemoveRange(relationshipsWithAppChildren);
 
         // Delete Entities
         db.RemoveRange(appEntities);
 
         // Delete Attributes
-        var attributes = db.TsDynDataAttributes
-                // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-                //.Where(a => contentTypeIds.Contains(a.ContentTypeId));
-                .Where(a => Enumerable.Contains(contentTypeIds, a.ContentTypeId));
-        db.RemoveRange(attributes/*.ToList()*/);
-
-        //-- Delete Attributes not in use anywhere (Attribute not in any Set, no Values/Related Entities)
-        //DELETE FROM ToSIC_EAV_Attributes
-        //FROM            ToSIC_EAV_Attributes LEFT OUTER JOIN
-        //						 ToSIC_EAV_AttributesInSets ON ToSIC_EAV_Attributes.AttributeID = ToSIC_EAV_AttributesInSets.AttributeID LEFT OUTER JOIN
-        //						 ToSIC_EAV_EntityRelationships ON ToSIC_EAV_Attributes.AttributeID = ToSIC_EAV_EntityRelationships.AttributeID LEFT OUTER JOIN
-        //						 ToSIC_EAV_Values ON ToSIC_EAV_Attributes.AttributeID = ToSIC_EAV_Values.AttributeID
-        //WHERE        (ToSIC_EAV_Values.ValueID IS NULL) AND (ToSIC_EAV_EntityRelationships.AttributeID IS NULL) AND (ToSIC_EAV_AttributesInSets.AttributeID IS NULL)
-
-        // note: we'll skip this for now, I don't think it's relevant...?
-
-        // Delete Attribute-In-Sets
+        var attributes = db.TsDynDataAttributes.Join(
+            appContentTypes,
+            a => a.ContentTypeId,
+            ct => ct.ContentTypeId,
+            (a, ct) => a);
         db.RemoveRange(attributes);
 
         // Delete Content-Types
