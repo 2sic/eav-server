@@ -62,7 +62,7 @@ public class AppDataStackService(IAppReaderFactory appReaderFactory, ILogStore w
         // Note: the PiggyBack _must_ store the synchronized object, and NOT some List<...> with the resulting data
         // Only then will a future access get the correct items.
         // Before v20, it did some more data filtering and stored a reduced list
-        // but that resulting in disabling the SynchronizedObject, so changes often didn't get cache-busted any more.
+        // but that resulting in disabling the SynchronizedObject, so changes often didn't get cache-busted anymore.
         var sources = appState.PiggyBack.GetOrGenerate(
             $"{PiggyBackId}{target.Target}",
             () => Create(target).FullStack(Log)
