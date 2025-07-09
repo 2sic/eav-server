@@ -18,12 +18,13 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     /// </summary>
     string Name { get; }
 
-    /// <summary>
-    /// Static name - can be a GUID or a system-term for special types
-    /// </summary>
-    /// <remarks>being deprecated in V13, to be replaced with NameId</remarks>
-    [Obsolete("Deprecated in v13, please use NameId instead")]
-    string StaticName { get; }
+    // #DropContentTypeStaticName
+    ///// <summary>
+    ///// Static name - can be a GUID or a system-term for special types
+    ///// </summary>
+    ///// <remarks>being deprecated in V13, to be replaced with NameId</remarks>
+    //[Obsolete("Deprecated in v13, please use NameId instead")]
+    //string StaticName { get; }
 
     /// <summary>
     /// A unique id/name of the content-type. Previously called StaticName.
@@ -42,12 +43,13 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     /// </summary>
     int Id { get; }
 
-    /// <summary>
-    /// Old name for Id, please use Id instead
-    /// </summary>
-    /// <remarks>Deprecated in v13</remarks>
-    [Obsolete("Deprecated in V13, please use Id instead.")]
-    int ContentTypeId { get; }
+    // #DropContentTypeId
+    ///// <summary>
+    ///// Old name for Id, please use Id instead
+    ///// </summary>
+    ///// <remarks>Deprecated in v13</remarks>
+    //[Obsolete("Deprecated in V13, please use Id instead.")]
+    //int ContentTypeId { get; }
 
 
     /// <summary>
