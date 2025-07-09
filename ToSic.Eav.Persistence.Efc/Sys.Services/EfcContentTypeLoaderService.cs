@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Values;
+using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
@@ -123,7 +124,9 @@ internal class EfcContentTypeLoaderService(
                         // metadata: attrMetadata,
                         metaSourceFinder: () => source,
                         guid: a.Guid,
-                        sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
+                        sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
+                        // before v20
+                        //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
                     )),
                 IsGhost = set.InheritContentTypeId,
                 SharedDefinitionId = set.InheritContentTypeId,
@@ -168,7 +171,10 @@ internal class EfcContentTypeLoaderService(
                         metaSourceFinder: () => appStates.Get(s.AppId),
                         // #SharedFieldDefinition
                         //guid: a.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
-                        sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings))
+                        sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
+                        // Before v20
+                        //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
+                        )
                     )
                 );
 
