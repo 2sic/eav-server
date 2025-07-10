@@ -212,6 +212,8 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             ct = dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: Options.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
             return l.Return(ct, $"file size was: {json.Length}");
         }
+#pragma warning disable CS0162 // Unreachable code detected
+        // ReSharper disable HeuristicUnreachableCode
         catch (IOException e)
         {
             l.Ex("Failed loading type - couldn't import type-file, IO exception", e);
@@ -228,6 +230,8 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             l.Ex($"Failed loading type - {infoIfError}", e);
             return l.ReturnNull();
         }
+        // ReSharper restore HeuristicUnreachableCode
+#pragma warning restore CS0162 // Unreachable code detected
     }
     #endregion
 

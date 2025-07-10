@@ -8,7 +8,7 @@ public class JsonSchema
     /// <summary>
     /// The name, such as the field name or the content-type name.
     /// </summary>
-    public string Title { get; init; }
+    public required string Title { get; init; }
 
     /// <summary>
     /// Optional description.
@@ -19,7 +19,7 @@ public class JsonSchema
     /// <summary>
     /// The data type such as `array`, `boolean`, `string` etc.
     /// </summary>
-    public string Type { get; init; }
+    public required string Type { get; init; }
 
     [JsonIgnore(Condition = WhenWritingDefault)]
     public string? Format { get; init; }
