@@ -11,15 +11,15 @@ namespace ToSic.Sys.Caching.Synchronized;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SynchronizedList<T>: SynchronizedObject<IImmutableList<T>>, IEnumerable<T>
 {
-    /// <summary>
-    /// Initialized a new list which depends on another source
-    /// </summary>
-    /// <param name="upstream">the upstream cache which can tell us if a refresh is necessary</param>
-    /// <param name="rebuild">the method which rebuilds the list</param>
-    [Obsolete("You should prefer the Func<Immutable> signature")]
-    public SynchronizedList(ICacheExpiring upstream, Func<List<T>> rebuild): base(upstream, () => rebuild().ToImmutableOpt())
-    {
-    }
+    ///// <summary>
+    ///// Initialized a new list which depends on another source
+    ///// </summary>
+    ///// <param name="upstream">the upstream cache which can tell us if a refresh is necessary</param>
+    ///// <param name="rebuild">the method which rebuilds the list</param>
+    //[Obsolete("You should prefer the Func<Immutable> signature")]
+    //public SynchronizedList(ICacheExpiring upstream, Func<List<T>> rebuild): base(upstream, () => rebuild().ToImmutableOpt())
+    //{
+    //}
 
     /// <summary>
     /// Initialized a new list which depends on another source

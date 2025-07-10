@@ -94,7 +94,11 @@ public static class IEntityExtensions
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, IContentType type)
-        => list.Where(e => type.Equals(e.Type));
+    {
+        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
+            ? fastList.OfType(type.NameId)  // reuse existing functionality & index but using the most reliable nameId
+            : list.Where(e => type.Equals(e.Type)).ToListOpt();
+    }
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, string typeName)
@@ -108,6 +112,15 @@ public static class IEntityExtensions
                 .Where(e => e.Type.Is(typeName))
                 .ToListOpt();
     }
+
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    public static IEntity? FirstOrDefaultOfType(this IEnumerable<IEntity> list, string typeName)
+    {
+        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
+            ? fastList.Fast.OfType(typeName).FirstOrDefault()
+            : list.FirstOrDefault(e => e.Type.Is(typeName));
+    }
+
 
     // Experimental, only used in performance tests
     [ShowApiWhenReleased(ShowApiMode.Never)]
