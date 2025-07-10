@@ -20,16 +20,16 @@ internal class EfcContentTypeLoaderService(
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
-    internal IImmutableList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes, string? folderOrNull)
+    internal IImmutableList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes, string? appFolderBeforeReaderIsReady)
     {
-        var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
+        var l = Log.Fn<IImmutableList<IContentType>>($"{nameof(appFolderBeforeReaderIsReady)}: '{appFolderBeforeReaderIsReady}'", timer: true);
         try
         {
             if (string.IsNullOrEmpty(appReader.Specs.Folder))
                 return l.Return(dbTypes, "no path");
 
             l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
-            var fileTypes = LoadContentTypesFromFileSystem(appReader, folderOrNull);
+            var fileTypes = LoadContentTypesFromFileSystem(appReader, appFolderBeforeReaderIsReady);
             if (fileTypes == null || fileTypes.Count == 0)
                 return l.Return(dbTypes, "no app file types");
 
@@ -58,12 +58,12 @@ internal class EfcContentTypeLoaderService(
     /// Will load file based app content-types.
     /// </summary>
     /// <returns></returns>
-    private IList<IContentType> LoadContentTypesFromFileSystem(IAppReader appReader, string? folderOrNull)
+    private IList<IContentType> LoadContentTypesFromFileSystem(IAppReader appReader, string? appFolderBeforeReaderIsReady)
     {
         var l = Log.Fn<IList<IContentType>>(timer: true);
         // must create a new loader for each app
         var loader = appFileContentTypesLoader.New();
-        loader.Init(appReader, efcAppLoader.LogSettings, folderOrNull);
+        loader.Init(appReader, efcAppLoader.LogSettings, appFolderBeforeReaderIsReady);
         var types = loader.ContentTypes(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }

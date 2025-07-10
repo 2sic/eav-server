@@ -216,13 +216,13 @@ public class EfcAppLoaderService(
         {
             var l = Log.Fn();
             codeRefTrail.WithHere();
-            string? folderOrNull = null;
+            string? optionalOverrideAppFolder = null;
             // prepare metadata lists & relationships etc.
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
                 AddSqlTime(InitMetadataLists(builder));
                 var (name, folder) = PreLoadAppPath(state.AppId);
-                folderOrNull = folder;
+                optionalOverrideAppFolder = folder;
                 //builder.SetNameAndFolder(name, folder);
             }
             else
@@ -234,7 +234,7 @@ public class EfcAppLoaderService(
                 var typeTimer = Stopwatch.StartNew();
                 var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
-                var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge, folderOrNull);
+                var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge, optionalOverrideAppFolder);
                 builder.InitContentTypes(dbTypes.ToListOpt());
                 typeTimer.Stop();
                 l.A($"timers types:{typeTimer.Elapsed}");

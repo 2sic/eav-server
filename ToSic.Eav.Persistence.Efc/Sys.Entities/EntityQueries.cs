@@ -5,12 +5,19 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(parentLog, "Efc.EntQry")
 {
-    internal IQueryable<TsDynDataEntity> EntitiesOfAppQuery(int appId, int[] entityIds, string? filterType = null)
+    /// <summary>
+    /// Get entities of a specific app - all or just a selection.
+    /// </summary>
+    /// <param name="appId">The App ID</param>
+    /// <param name="entityIds">List of specific entities to load; usually when doing partial updates.</param>
+    /// <param name="filterJsonType">Optional type-name to filter; will only work for JSON types (system provided content-types) as their definition is in another DB column.</param>
+    /// <returns></returns>
+    internal IQueryable<TsDynDataEntity> EntitiesOfAppQuery(int appId, int[] entityIds, string? filterJsonType = null)
     {
         var filterIds = entityIds.Length > 0;
-        var filterByType = filterType != null;
+        var filterByType = filterJsonType != null;
         var l = Log.Fn<IQueryable<TsDynDataEntity>>(
-            $"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterType)}: '{filterType}'",
+            $"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterJsonType)}: '{filterJsonType}'",
             timer: true);
 
         var query = db.TsDynDataEntities
@@ -25,7 +32,7 @@ internal class EntityQueries(EavDbContext db, ILog parentLog) : HelperBase(paren
         l.A($"entityId filter: {(filterIds ? "enabled" : "none")}");
 
         if (filterByType)
-            query = query.Where(e => e.ContentType == filterType);
+            query = query.Where(e => e.ContentType == filterJsonType);
         l.A($"type filter: {(filterByType ? "enabled" : "none")}");
 
         return l.Return(query);
