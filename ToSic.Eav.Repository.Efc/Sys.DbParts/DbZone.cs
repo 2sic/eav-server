@@ -27,7 +27,7 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
 
     public bool AddMissingPrimaryApps()
     {
-        var l = Log.Fn<bool>();
+        var l = LogSummary.Fn<bool>();
 
         var zonesWithoutPrimary = DbContext.SqlDb.TsDynDataZones
             .Include(z => z.TsDynDataApps)

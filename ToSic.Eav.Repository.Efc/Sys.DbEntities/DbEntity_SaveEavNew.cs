@@ -8,7 +8,7 @@ partial class DbEntity
 
     private TsDynDataEntity CreateDbRecord(IEntity newEnt, int transactionId, int contentTypeId)
     {
-        var l = Log.Fn<TsDynDataEntity>($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
+        var l = LogDetails.Fn<TsDynDataEntity>($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
         var dbEnt = new TsDynDataEntity
         {
             AppId = DbContext.AppId,

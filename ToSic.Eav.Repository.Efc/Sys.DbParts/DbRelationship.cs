@@ -8,7 +8,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     internal void DoWhileQueueingRelationships(Action action)
     {
         var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-        Log.Do($"relationship queue:{randomId} start", () =>
+        LogSummary.Do($"relationship queue:{randomId} start", () =>
         {
             // 1. check if it's the outermost call, in which case afterwards we import
             var willPurgeQueue = _isOutermostCall;
@@ -36,7 +36,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// </summary>
     private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages)
     {
-        var l = Log.Fn(timer: true);
+        var l = LogDetails.Fn(timer: true);
         packages.ForEach(p => l.A(l.Try(() => $"i:{p.EntityStubWithChildren.EntityId}, a:{p.AttributeId}, keys:[{string.Join(",", p.Targets)}]")));
         // remove existing Relationships that are not in new list
         var existingRelationships = packages
@@ -77,7 +77,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// </summary>
     private void AddToQueue(int attributeId, List<Guid?> newValue, int entityId, bool flushAll)
     {
-        var l = Log.Fn($"id:{entityId}, guids⋮{newValue.Count}");
+        var l = LogDetails.Fn($"id:{entityId}, guids⋮{newValue.Count}");
         _saveQueue.Add(new()
         {
             AttributeId = attributeId,
@@ -93,7 +93,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// </summary>
     private void AddToQueue(int attributeId, List<int?> newValue, int entityId, bool flushAll)
     {
-        Log.A($"add to int for i:{entityId}, ints⋮{newValue.Count}");
+        var l = LogDetails.Fn($"add to int for i:{entityId}, ints⋮{newValue.Count}");
         _saveQueue.Add(new()
         {
             AttributeId = attributeId,
@@ -101,6 +101,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
             ParentEntityId = entityId,
             FlushAllEntityRelationships = flushAll
         });
+        l.Done();
     }
 
     /// <summary>
@@ -108,7 +109,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// </summary>
     private void ImportRelationshipQueueAndSave()
     {
-        var l = Log.Fn(timer: true);
+        var l = LogSummary.Fn(timer: true);
         // if SaveOptions determines it, clear all existing relationships first
         var fullFlush = _saveQueue
             .Where(r => r.FlushAllEntityRelationships)
@@ -189,7 +190,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
 
     internal void FlushChildrenRelationships(ICollection<int> parentIds)
     {
-        var l = Log.Fn($"will do full-flush for {parentIds?.Count} items", timer: true);
+        var l = LogDetails.Fn($"will do full-flush for {parentIds?.Count} items", timer: true);
         // Delete all existing relationships - but not the target, just the relationship
         // note: can't use .Clear(), as that will try to actually delete the children
         if (parentIds is not { Count: > 0 })
@@ -233,7 +234,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
 
     internal void ChangeRelationships(IEntity eToSave, TsDynDataEntity dbEntity, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
     {
-        var l = Log.Fn(timer: true);
+        var l = LogDetails.Fn(timer: true);
         // some initial error checking
         if (dbEntity.EntityId <= 0)
             throw new("can't work on relationships if entity doesn't have a repository id yet");

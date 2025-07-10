@@ -9,14 +9,16 @@ partial class DbEntity
     private string GenerateJsonOrReportWhyNot(IEntity newEnt, bool logDetails)
     {
         string jsonExport;
-        if (logDetails) Log.A($"will serialize-json id:{newEnt.EntityId}");
+        if (logDetails)
+            LogDetails.A($"will serialize-json id:{newEnt.EntityId}");
         try
         {
             jsonExport = Serializer.Serialize(newEnt);
         }
         catch
         {
-            if (logDetails) Log.A("Error serializing - will repeat with detailed with logging");
+            if (logDetails)
+                LogDetails.A("Error serializing - will repeat with detailed with logging");
             Serializer.LinkLog(Log);
             jsonExport = Serializer.Serialize(newEnt);
         }

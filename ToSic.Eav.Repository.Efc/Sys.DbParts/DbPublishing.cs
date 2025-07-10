@@ -8,8 +8,9 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
     /// <param name="entityId"></param>
     /// <param name="draftToPublishForJson">Item to be published as the original, for serialization</param>
     /// <returns>The published Entity</returns>
-    internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson) => Log.Do($"{nameof(entityId)}:{entityId}", l =>
+    internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson)
     {
+        var l = LogDetails.Fn($"{nameof(entityId)}:{entityId}");
         var unpublishedDbEnt = DbContext.Entities.GetDbEntityFull(entityId);
         if (!unpublishedDbEnt.IsPublished)
             l.A("found item is draft, will use this to publish");
@@ -67,7 +68,8 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
 
         l.A("About to save...");
         DbContext.SqlDb.SaveChanges();
-    });
+        l.Done("saved");
+    }
 
     /// <summary>
     /// Should clean up branches of this item, and set the one and only as published
@@ -78,7 +80,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
     /// <returns></returns>
     internal TsDynDataEntity ClearDraftBranchAndSetPublishedState(TsDynDataEntity publishedEntity, int? draftId = null, bool newPublishedState = true)
     {
-        Log.A($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
+        var l = LogDetails.Fn<TsDynDataEntity>($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
         var unpublishedEntityId = draftId ?? DbContext.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
 
         // if additional draft exists, must clear that first
@@ -87,7 +89,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
 
         publishedEntity.IsPublished = newPublishedState;
 
-        return publishedEntity;
+        return l.Return(publishedEntity);
     }
 
     /// <summary>
@@ -100,7 +102,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
             .Where(e => e.PublishedEntityId == entityId && !e.TransDeletedId.HasValue)
             .Select(e => (int?) e.EntityId)
             .SingleOrDefault();
-        Log.A($"GetDraftBranchEntityId({entityId}) found {draftId}");
+        LogDetails.A($"GetDraftBranchEntityId({entityId}) found {draftId}");
         return draftId;
     }
 
@@ -110,7 +112,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
     /// <param name="entityIds">EntityId of the Published Entity</param>
     internal Dictionary<int, int?> GetDraftBranchMap(List<int> entityIds)
     {
-        var l = Log.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
+        var l = LogDetails.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
         var nullList = entityIds.Cast<int?>().ToList();
         var ids = DbContext.SqlDb.TsDynDataEntities
             .Where(e => nullList.Contains(e.PublishedEntityId) && !e.TransDeletedId.HasValue)

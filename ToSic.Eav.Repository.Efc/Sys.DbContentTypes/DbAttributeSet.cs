@@ -28,7 +28,7 @@ internal class DbAttributeSet(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
 
     private List<TsDynDataContentType> GetDbContentTypes(int appId, string name, bool alsoCheckNiceName = false)
     {
-        var l = Log.Fn<List<TsDynDataContentType>>($"{nameof(appId)}: {appId}; {nameof(name)}: {name}; {nameof(alsoCheckNiceName)}: {alsoCheckNiceName}");
+        var l = LogSummary.Fn<List<TsDynDataContentType>>($"{nameof(appId)}: {appId}; {nameof(name)}: {name}; {nameof(alsoCheckNiceName)}: {alsoCheckNiceName}");
         var byStaticName = GetDbContentTypeCoreQuery(appId)
             .Where(s => s.StaticName == name)
             .ToList();
@@ -45,7 +45,7 @@ internal class DbAttributeSet(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
 
     internal int GetDbContentTypeId(string name)
     {
-        var l = Log.Fn<int>($"{nameof(name)}: {name}");
+        var l = LogDetails.Fn<int>($"{nameof(name)}: {name}");
         try
         {
             var preparedError = $"too many or too few content types found for the content-type '{name}'.";

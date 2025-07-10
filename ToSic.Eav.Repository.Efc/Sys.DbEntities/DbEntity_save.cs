@@ -12,7 +12,7 @@ partial class DbEntity
     {
         var newEnt = entityOptionPair.Entity;
         var so = entityOptionPair.Partner;
-        var l = Log.Fn<int>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{logDetails}");
+        var l = LogDetails.Fn<int>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{logDetails}");
 
         #region Step 1: Do some initial error checking and preparations
 
@@ -241,7 +241,7 @@ partial class DbEntity
     private (int? ExistingDraftId, bool HasDraft, IEntity Entity) GetDraftAndCorrectIdAndBranching(IEntity newEnt,
         SaveOptions so, bool logDetails) 
     {
-        var l = Log.Fn<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true);
+        var l = LogDetails.Fn<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true);
 
         // If ID == 0, it's new, so only continue, if we were given an EntityId
         if (newEnt.EntityId <= 0)

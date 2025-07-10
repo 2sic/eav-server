@@ -7,7 +7,7 @@ partial class DbEntity
     {
         get
         {
-            DbContext.Log.A(nameof(EntityQuery));
+            LogDetails.A(nameof(EntityQuery));
             return DbContext.SqlDb.TsDynDataEntities
                 .Include(e => e.RelationshipsWithThisAsParent)
                 .Include(e => e.RelationshipsWithThisAsChild)
@@ -23,7 +23,7 @@ partial class DbEntity
     /// <returns>Entity or throws InvalidOperationException</returns>
     internal TsDynDataEntity GetDbEntityFull(int entityId)
     {
-        var l = DbContext.Log.Fn<TsDynDataEntity>($"Get {entityId}");
+        var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
         var found = EntityQuery.Single(e => e.EntityId == entityId);
         return l.ReturnAsOk(found);
     }
@@ -34,7 +34,7 @@ partial class DbEntity
     /// <returns>Entity or throws InvalidOperationException</returns>
     internal TsDynDataEntity GetDbEntityStub(int entityId)
     {
-        var l = DbContext.Log.Fn<TsDynDataEntity>($"Get {entityId}");
+        var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
         var found = DbContext.SqlDb.TsDynDataEntities.Single(e => e.EntityId == entityId);
         return l.ReturnAsOk(found);
     }
@@ -45,7 +45,7 @@ partial class DbEntity
     /// <returns>Entity or throws InvalidOperationException</returns>
     internal TsDynDataEntity[] GetDbEntitiesWithChildren(int[] repositoryIds)
     {
-        var l = DbContext.Log.Fn<TsDynDataEntity[]>($"Get {repositoryIds.Length}", timer: true);
+        var l = LogDetails.Fn<TsDynDataEntity[]>($"Get {repositoryIds.Length}", timer: true);
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
         // var found = EntityQuery.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
         //var found = EntityQuery
@@ -112,7 +112,7 @@ partial class DbEntity
     internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuids)
     {
         // GetEntity should never return a draft entity that has a published version
-        var l = Log.Fn<Dictionary<Guid, int>>($"Guids: {entityGuids.Length}; [{string.Join(",", entityGuids)}]", timer: true);
+        var l = LogDetails.Fn<Dictionary<Guid, int>>($"Guids: {entityGuids.Length}; [{string.Join(",", entityGuids)}]", timer: true);
 
         var getEntityQuery = GetEntityStubsByGuid(entityGuids);
         var dbEntityList = getEntityQuery.ToList(); // necessary for EF 3 - before GroupBy so it's then done in memory and not in SQL

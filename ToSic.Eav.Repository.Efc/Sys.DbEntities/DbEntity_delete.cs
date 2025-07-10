@@ -10,9 +10,9 @@ partial class DbEntity
 
     internal bool DeleteEntity(int[] repositoryId, bool autoSave = true, bool removeFromParents = false)
     {
-        Log.A($"DeleteEntity(rep-ids:{repositoryId.Length}, remove-from-parents:{removeFromParents}, auto-save:{autoSave})");
+        var l = LogDetails.Fn<bool>($"DeleteEntity(rep-ids:{repositoryId.Length}, remove-from-parents:{removeFromParents}, auto-save:{autoSave})");
         if (repositoryId.Length == 0 || repositoryId.Contains(0))
-            return false;
+            return l.ReturnFalse();
 
         // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
         // note that as this is a DB-entity, the EntityId is actually the repositoryId
@@ -21,7 +21,9 @@ partial class DbEntity
 
         #region Delete Related Records (Values, Value-Dimensions, Relationships)
         // Delete all Value-Dimensions
-        var valueDimensions = entities.SelectMany(e => e.TsDynDataValues.SelectMany(v => v.TsDynDataValueDimensions)).ToList();
+        var valueDimensions = entities
+            .SelectMany(e => e.TsDynDataValues.SelectMany(v => v.TsDynDataValueDimensions))
+            .ToList();
         DbContext.SqlDb.RemoveRange(valueDimensions);
 
         // Delete all Values
@@ -41,17 +43,18 @@ partial class DbEntity
             // If entity was Published, set Deleted-Flag
             if (entity.IsPublished)
             {
-                Log.A("was published, will mark as deleted");
+                l.A("was published, will mark as deleted");
                 entity.TransDeletedId = DbContext.Versioning.GetTransactionId();
                 // Also delete the Draft (if any)
                 draftBranchMap.TryGetValue(entity.EntityId, out var draftEntityId);
                 //var draftEntityId = DbContext.Publishing.GetDraftBranchEntityId(entity.EntityId);
-                if (draftEntityId.HasValue) DeleteEntity(draftEntityId.Value);
+                if (draftEntityId.HasValue)
+                    DeleteEntity(draftEntityId.Value);
             }
             // If entity was a Draft, really delete that Entity
             else
             {
-                Log.A("was draft, will really delete");
+                l.A("was draft, will really delete");
                 // Delete all Child-Relationships
                 DeleteRelationships(entity.RelationshipsWithThisAsChild);
                 DbContext.SqlDb.Remove(entity);
@@ -60,19 +63,17 @@ partial class DbEntity
         if (autoSave)
             DbContext.SqlDb.SaveChanges();
 
-        Log.A("DeleteEntity(...) done");
-
-        return true;
+        return l.ReturnTrue("DeleteEntity(...) done"); ;
     }
 
     private void DeleteRelationships(ICollection<TsDynDataRelationship> relationships)
     {
-        Log.A($"DeleteRelationships({relationships?.Count})");
+        var l = Log.Fn($"DeleteRelationships({relationships?.Count})");
         if ((relationships?.Count ?? 0) == 0)
-            Log.A("No relationships to delete");
+            l.A("No relationships to delete");
         else
             relationships?.ToList().ForEach(r => DbContext.SqlDb.TsDynDataRelationships.Remove(r));
-        Log.A("/DeleteRelationships(...)");
+        l.Done();
     }
         
 }

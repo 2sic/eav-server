@@ -4,7 +4,7 @@ partial class DbEntity
 {
     private (int ContentTypeId, List<TsDynDataAttribute> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
     {
-        var l = Log.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
+        var l = LogDetails.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
         if (saveJson)
             return l.Return((RepoIdForJsonEntities, []), $"json - no attributes, CT: {RepoIdForJsonEntities}");
 

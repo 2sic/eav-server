@@ -1,12 +1,18 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal class DbPartBase: HelperBase
+// Note: Don't connect service - this was initialized before...
+internal class DbPartBase(DbStorage.DbStorage dbStorage, string logName) : HelperBase(dbStorage.Log, logName)
 {
-    protected DbStorage.DbStorage DbContext { get; }
+    protected DbStorage.DbStorage DbContext { get; } = dbStorage;
 
-    internal DbPartBase(DbStorage.DbStorage dbStorage, string logName): base(dbStorage.Log, logName)
-    {
-        // Don't connect service - this was initialized before...
-        DbContext = dbStorage;
-    }
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog? LogDetails =>
+        DbContext.LogDetails == null ? null : field ??= Log;
+
+    internal ILog? LogSummary =>
+        DbContext.LogSummary == null ? null : field ??= Log;
+
 }

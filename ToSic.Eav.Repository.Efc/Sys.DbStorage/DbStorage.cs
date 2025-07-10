@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Json.Sys;
@@ -26,7 +27,8 @@ public class DbStorage(
     Generator<JsonSerializer> jsonSerializerGenerator,
     ILogStore logStore,
     LazySvc<Compressor> compressor,
-    DataBuilder builder)
+    DataBuilder builder,
+    DataImportLogSettings importLogSettings)
     : ServiceBase("Db.Data",
         connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder]
     ), IStorage, IAppIdentity
@@ -142,6 +144,22 @@ public class DbStorage(
 
     internal Generator<JsonSerializer> JsonSerializerGenerator { get; } = jsonSerializerGenerator;
 
+    #region Logging
+
+    [field: AllowNull, MaybeNull]
+    private LogSettings LogSettings { get => field ??= importLogSettings.GetLogSettings(); set; } = new();
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog? LogDetails => Log.IfDetails(LogSettings);
+
+    internal ILog? LogSummary => Log.IfSummary(LogSettings);
+
+    #endregion
+
+
     /// <summary>
     /// New factory setup using the better paradigm.
     /// TODO: try to shift all others to use this mechanism as well.
@@ -151,7 +169,10 @@ public class DbStorage(
     {
         Init(options.ZoneId, options.AppId, options.ParentAppId);
 
-        // TODO: Also keep the logSettings in the options...
+        // Keep log settings...
+        LogSettings = options.LogSettings;
+        //LogDetails = Log.IfDetails(LogSettings);
+        //LogSummary = Log.IfSummary(LogSettings);
     }
 
 
@@ -229,7 +250,7 @@ public class DbStorage(
 
     private void PurgeAppCacheIfReady()
     {
-        var l = Log.Fn($"{_purgeAppCacheOnSave}");
+        var l = LogSummary.Fn($"{_purgeAppCacheOnSave}");
         if (_purgeAppCacheOnSave)
             appsCache.Purge(this);
         l.Done();
@@ -241,7 +262,7 @@ public class DbStorage(
 
     internal void DoAndSave(Action action, string? message = null)
     {
-        var l = Log.Fn(message: message, timer: true);
+        var l = LogSummary.Fn(message: message, timer: true);
         action.Invoke();
         SqlDb.SaveChanges();
         l.Done();
@@ -250,7 +271,7 @@ public class DbStorage(
 
     internal void DoAndSaveWithoutChangeDetection(Action action, string? message = null)
     {
-        var l = Log.Fn(timer: true, message: message);
+        var l = LogSummary.Fn(timer: true, message: message);
         action.Invoke();
 
         var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
@@ -279,7 +300,7 @@ public class DbStorage(
             ? SqlDb.Database.BeginTransaction()
             : null;
 
-        var l = Log.Fn(timer: true, message: $"id:{randomId} - create new trans:{ownTransaction != null}");
+        var l = LogSummary.Fn(timer: true, message: $"id:{randomId} - create new trans:{ownTransaction != null}");
         {
             try
             {
@@ -307,7 +328,7 @@ public class DbStorage(
 
     public void DoButSkipAppCachePurge(Action action)
     {
-        var l = Log.Fn(timer: true);
+        var l = LogSummary.Fn(timer: true);
         var before = _purgeAppCacheOnSave;
         _purgeAppCacheOnSave = false;
         action.Invoke();
@@ -317,7 +338,7 @@ public class DbStorage(
 
     public void DoWithDelayedCacheInvalidation(Action action)
     {
-        var l = Log.Fn(timer: true);
+        var l = LogSummary.Fn(timer: true);
         _purgeAppCacheOnSave = false;
         action.Invoke();
 
@@ -359,7 +380,7 @@ public class DbStorage(
     /// <returns></returns>
     public List<int> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = Log.Fn<List<int>>(timer: true);
+        var l = LogSummary.Fn<List<int>>(timer: true);
         logStore.Add("save-data", Log);
         return l.ReturnAsOk(Entities.SaveEntity(entityOptionPairs));
     }
@@ -392,7 +413,7 @@ public class DbStorage(
 
     public int CreateApp(string guidName, int? inheritAppId = null)
     {
-        var l = Log.Fn<int>($"guid:{guidName}, inheritAppId:{inheritAppId}");
+        var l = LogSummary.Fn<int>($"guid:{guidName}, inheritAppId:{inheritAppId}");
         var app = App.AddApp(null, guidName, inheritAppId);
         SqlDb.SaveChanges(); // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
         return l.Return(app.AppId, $"Created App with Id:{app.AppId} and Name:{app.Name} in ZoneId:{ZoneId}");

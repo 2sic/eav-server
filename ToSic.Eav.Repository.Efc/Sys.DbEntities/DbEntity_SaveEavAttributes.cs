@@ -13,7 +13,7 @@ partial class DbEntity
     /// <param name="entityId"></param>
     private bool ClearAttributesInDbModel(int entityId)
     {
-        var l = Log.Fn<bool>(timer: true);
+        var l = LogDetails.Fn<bool>(timer: true);
         var val = DbContext.SqlDb.TsDynDataValues
             .Include(v => v.TsDynDataValueDimensions)
             .Where(v => v.EntityId == entityId)
@@ -36,11 +36,11 @@ partial class DbEntity
         int transactionId,
         bool logDetails)
     {
-        var l = Log.Fn($"id:{newEnt.EntityId}", timer: true);
+        var l = LogDetails.Fn($"id:{newEnt.EntityId}", timer: true);
         if (!_attributeQueueActive)
             throw new("Attribute save-queue not ready - should be wrapped");
         foreach (var attribute in newEnt.Attributes.Values)
-            Log.Do($"InnerAttribute:{attribute.Name}", () =>
+            LogDetails.Do($"InnerAttribute:{attribute.Name}", () =>
             {
                 // find attribute definition
                 var attribDef =
@@ -88,7 +88,7 @@ partial class DbEntity
                     #endregion
 
                     if (logDetails)
-                        Log.A(Log.Try(() =>
+                        LogDetails.A(LogDetails.Try(() =>
                             $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count()}, dim⋮{toSicEavValuesDimensions?.Count}"));
 
                     var newVal = new TsDynDataValue
@@ -109,7 +109,7 @@ partial class DbEntity
     internal void DoWhileQueueingAttributes(Action action)
     {
         var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-        var l = Log.Fn($"attribute queue:{randomId} start");
+        var l = LogSummary.Fn($"attribute queue:{randomId} start");
         if (_attributeUpdateQueue.Any())
             throw new("Attribute queue started while already containing stuff - bad!");
         _attributeQueueActive = true;
@@ -133,7 +133,7 @@ partial class DbEntity
 
     private void AttributeQueueRun()
     {
-        var l = Log.Fn(timer: true);
+        var l = LogDetails.Fn(timer: true);
         _attributeUpdateQueue.ForEach(a => a.Invoke());
         _attributeUpdateQueue.Clear();
         l.Done();
