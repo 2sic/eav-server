@@ -94,11 +94,12 @@ internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDes
         return l.Return(sqlTime.Elapsed);
     }
 
-    public List<TempEntity> LoadEntitiesFromDb(int appId, int[] entityIds, string? filterType = null)
-    {
-        var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterType)}: '{filterType}'", timer: true);
 
-        var entitiesQuery = EntityQueries.EntitiesOfAppQuery(appId, entityIds, filterType);
+    public List<TempEntity> LoadEntitiesFromDb(int appId, int[] entityIds, string? filterJsonType = null)
+    {
+        var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterJsonType)}: '{filterJsonType}'", timer: true);
+
+        var entitiesQuery = EntityQueries.EntitiesOfAppQuery(appId, entityIds, filterJsonType);
 
         // TODO: @STV - THIS FAILS IN THE unit test .net 9 but not in .net 472 - why? Same EF .net 9.0.1 problem?
         var rawEntities = entitiesQuery

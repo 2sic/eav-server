@@ -221,9 +221,8 @@ public class EfcAppLoaderService(
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
                 AddSqlTime(InitMetadataLists(builder));
-                var (name, folder) = PreLoadAppPath(state.AppId);
+                var (_, folder) = PreLoadAppPath(state.AppId);
                 optionalOverrideAppFolder = folder;
-                //builder.SetNameAndFolder(name, folder);
             }
             else
                 l.A("skipping metadata load");
@@ -290,26 +289,25 @@ public class EfcAppLoaderService(
     private (string? Name, string? Path) PreLoadAppPath(int appId)
     {
         var l = Log.Fn<(string? Name, string? Path)>($"{nameof(appId)}: {appId}");
-        var nullTuple = (null as string, null as string);
         try
         {
             // Get all Entities in the 2SexyContent-App scope
             var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, sysFeaturesSvc);
             var dbEntity = entityLoader.LoadEntitiesFromDb(appId, [], AppLoadConstants.TypeAppConfig);
             if (dbEntity.Count == 0)
-                return l.Return(nullTuple, "not in db");
+                return l.Return((null, null), "not in db");
 
             // Get the first one as it should be the one containing the App-Configuration
             // WARNING: This looks a bit fishy, I think it shouldn't just assume the first one is the right one
             var json = dbEntity.FirstOrDefault()?.Json;
             if (string.IsNullOrEmpty(json))
-                return l.Return(nullTuple, "no json");
+                return l.Return((null, null), "no json");
 
             l.A("app Entity found - this json: " + json);
             var serializer = dataDeserializer.New();
             serializer.Initialize(appId, [], null);
             if (serializer.Deserialize(json!, true, true) is not Entity appEntity)
-                return l.Return(nullTuple, "can't deserialize");
+                return l.Return((null, null), "can't deserialize");
             var path = appEntity.Get<string>(AppLoadConstants.FieldFolder);
             var name = appEntity.Get<string>(AppLoadConstants.FieldName);
 
@@ -321,7 +319,7 @@ public class EfcAppLoaderService(
             l.Ex(ex);
         }
 
-        return l.Return(nullTuple, "error");
+        return l.Return((null, null), "error");
     }
 
 
