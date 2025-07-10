@@ -1,11 +1,12 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Apps.Sys.LogSettings;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Repositories.Sys;
-using Entity = ToSic.Eav.Data.Sys.Entities.Entity;
 using IMetadataSource = ToSic.Eav.Metadata.Sys.IMetadataSource;
 
 
@@ -16,11 +17,12 @@ namespace ToSic.Eav.ImportExport.Sys;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportService(
-    IStorageFactory storageFactory,
+    Generator<IStorage, StorageOptions> storageFactory,
     IImportExportEnvironment importExportEnvironment,
     LazySvc<EntitySaver> entitySaverLazy,
-    DataBuilder dataBuilder)
-    : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataBuilder])
+    DataBuilder dataBuilder,
+    DataImportLogSettings logSettings)
+    : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataBuilder, logSettings])
 {
     #region Constructor / DI
 
@@ -33,8 +35,7 @@ public class ImportService(
         // Get the DB controller - it can handle zoneId being null
         // It's important to not use AppWorkContext or similar, because that would
         // try to load the App into cache, and initialize the App before it's fully imported
-        //var dbController = genDbDataController.New().Init(zoneId, appId, parentAppId);
-        var storage = storageFactory.New(new(zoneId, appId, parentAppId));
+        var storage = storageFactory.New(new(zoneId, appId, parentAppId, logSettings.GetLogSettings()));
         Storage = storage;
         _appId = appId;
         _zoneId = zoneId;

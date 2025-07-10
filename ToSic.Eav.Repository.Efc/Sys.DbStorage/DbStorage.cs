@@ -142,6 +142,16 @@ public class DbStorage(
     internal Generator<JsonSerializer> JsonSerializerGenerator { get; } = jsonSerializerGenerator;
 
     /// <summary>
+    /// New factory setup using the better paradigm.
+    /// TODO: try to shift all others to use this mechanism as well.
+    /// </summary>
+    /// <param name="options"></param>
+    public void Setup(StorageOptions options)
+    {
+        Init(options.ZoneId, options.AppId, options.ParentAppId);
+    }
+
+    /// <summary>
     /// Set ZoneId, AppId and ParentAppId on current context.
     /// </summary>
     /// <param name="appReader"></param>
@@ -391,4 +401,5 @@ public class DbStorage(
         SqlDb.SaveChanges(); // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
         return l.Return(app.AppId, $"Created App with Id:{app.AppId} and Name:{app.Name} in ZoneId:{ZoneId}");
     }
+
 }

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Repositories.Sys;
 /// This interface should ensure that storage layers can be swapped out as is necessary
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IStorage: IHasLog
+public interface IStorage: IServiceWithSetup<StorageOptions>, IHasLog
 {
     #region Transaction Support
 

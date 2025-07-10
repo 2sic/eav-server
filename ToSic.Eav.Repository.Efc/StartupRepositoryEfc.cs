@@ -39,8 +39,7 @@ public static class StartupRepositoryEfc
         services.TryAddTransient<IAppsAndZonesLoaderWithRaw, EfcAppsAndZonesLoader>();
         services.AddTransient<IBootProcess, BootWarmUpEavSql>();
 
-        services.TryAddTransient<IStorageFactory, StorageFactoryEfc>();
-
+        services.TryAddTransient<IStorage, DbStorage>();
         return services;
     }
 }

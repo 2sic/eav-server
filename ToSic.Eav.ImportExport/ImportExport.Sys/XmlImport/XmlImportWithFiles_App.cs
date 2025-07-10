@@ -46,7 +46,7 @@ partial class XmlImportWithFiles
 
             // Adding app to EAV
             //var eavDc = Services.DbDataForNewApp.Value.Init(zoneId, null);
-            var storage = Services.StorageFactory.New(new(zoneId, null, null));
+            var storage = Services.StorageFactory.New(new(zoneId, null, null, Services.LogSettings.GetLogSettings()));
 
             // ParentApp
             parentAppId = inheritAppId ?? GetParentAppId(xmlSource, storage);

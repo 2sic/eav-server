@@ -8,8 +8,6 @@ using ToSic.Eav.ImportExport.Sys.ImportHelpers;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.Sys.Logging;
-using Entity = ToSic.Eav.Data.Sys.Entities.Entity;
-
 
 namespace ToSic.Eav.ImportExport.Sys.XmlList;
 
@@ -25,9 +23,6 @@ public partial class ImportListXml(
 {
 
     #region Init
-
-    //private IContentType ContentType { get; set; } = null!;
-    //private List<IEntity> ExistingEntities { get; set; } = null!;
 
     private IAppReader AppReader { get; set; } = null!;
 
@@ -98,7 +93,7 @@ public partial class ImportListXml(
             // Since all is ok, we can now create the import stats
             ValidateAndImportToMemory(appReader.AppId, contentType, xmlEntities, existingEntities);
 
-            // Note: this is not very clean yet, it relies on side-effects from the ValidateAndImportToMemory method
+            // Note: this is not very clean yet, it relies on side effects from the ValidateAndImportToMemory method
             var existingGuids = GetExistingEntityGuids(existingEntities);
             var creatingGuids = GetCreatedEntityGuids(ImportEntities);
             Preparations = new(

@@ -7,7 +7,6 @@ using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Apps.Sys.PresetLoaders;
-using ToSic.Eav.Repositories.Sys;
 using ToSic.Sys.Boot;
 using ToSic.Sys.Utils.Assemblies;
 
@@ -58,8 +57,6 @@ public static class StartupEavAppsPersistence
         services.TryAddTransient<IAppContentTypesLoader, AppContentTypesLoaderUnknown>();
 
         services.TryAddTransient<IAppStateLoader, AppStateLoaderUnknown>();
-
-        services.TryAddTransient<IStorageFactory, StorageFactoryUnknown>();
 
         services.TryAddTransient<IAppInitializedChecker, AppInitializedCheckerUnknown>();
 
