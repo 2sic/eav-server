@@ -70,7 +70,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
 
                 // If we plan to rebuild the app from the App.xml, then the config item shouldn't be deleted
                 if (!fullDelete)
-                    jsonEntitiesInAppSql = $@"SELECT e.EntityId FROM TsDynDataEntity e WHERE e.ContentTypeId = @p0 AND e.AppId = @p1 AND e.ContentTypeId != @p2";
+                    jsonEntitiesInAppSql = $@"SELECT e.EntityId FROM TsDynDataEntity e WHERE e.ContentTypeId = @p0 AND e.AppId = @p1 AND e.ContentType != @p2";
 
                 // 1. remove all relationships to/from these json entities
                 // note that actually there can only be relationships TO json entities, as all from will be in the json, 
