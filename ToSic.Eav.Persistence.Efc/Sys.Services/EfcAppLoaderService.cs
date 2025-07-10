@@ -1,14 +1,15 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.Build;
-
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
@@ -64,6 +65,7 @@ public class EfcAppLoaderService(
     /// <summary>
     /// The current primary language - mainly for ordering values with primary language first
     /// </summary>
+    [field: AllowNull, MaybeNull]
     public string PrimaryLanguage
     {
         get
@@ -81,7 +83,7 @@ public class EfcAppLoaderService(
 
     #region LogSettings
 
-
+    [field: AllowNull, MaybeNull]
     public LogSettings LogSettings => field
         ??= new AppLoaderLogSettings(sysFeaturesSvc).GetLogSettings();
     
@@ -342,7 +344,7 @@ public class EfcAppLoaderService(
     {
         var l = Log.Fn<TimeSpan>($"{builder.AppState.Show()}", timer: true);
         builder.InitMetadata();
-        return l.Return(l?.Timer?.Elapsed ?? new TimeSpan(0));
+        return l.Return(l?.Timer.Elapsed ?? new TimeSpan(0));
     }
 
     #endregion

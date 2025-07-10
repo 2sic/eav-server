@@ -8,6 +8,7 @@ using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 
@@ -30,7 +31,7 @@ internal class EfcContentTypeLoaderService(
 
             l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
             var fileTypes = LoadContentTypesFromFileSystem(appReader, appFolderBeforeReaderIsReady);
-            if (fileTypes == null || fileTypes.Count == 0)
+            if (fileTypes.SafeNone())
                 return l.Return(dbTypes, "no app file types");
 
             l.A($"Will check {fileTypes.Count} items");

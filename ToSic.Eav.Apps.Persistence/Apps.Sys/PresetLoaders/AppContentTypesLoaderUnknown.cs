@@ -6,7 +6,7 @@ internal class AppContentTypesLoaderUnknown: ServiceBase, IAppContentTypesLoader
 {
     public AppContentTypesLoaderUnknown(WarnUseOfUnknown<AppContentTypesLoaderUnknown> _) : base(LogScopes.NotImplemented + ".RepLdr") { }
 
-    public void Init(IAppReader app, LogSettings logSettings, string? appFolderBeforeReaderIsReady = default)
+    public void Init(IAppReader app, ToSic.Sys.Logging.LogSettings logSettings, string? appFolderBeforeReaderIsReady = default)
     {
         Log.A("Unknown App Repo loader - won't load anything");
     }

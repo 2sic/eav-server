@@ -7,6 +7,6 @@ namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
 internal class AppStateLoaderUnknown(WarnUseOfUnknown<AppStateLoaderUnknown> _, Generator<IAppStateBuilder> stateBuilder): ServiceBase("Eav.BscRnt"), IAppStateLoader, IIsUnknown
 {
-    public IAppStateBuilder LoadFullAppState(LogSettings logSettings)
+    public IAppStateBuilder LoadFullAppState(ToSic.Sys.Logging.LogSettings logSettings)
         => stateBuilder.New().InitForPreset(); 
 }

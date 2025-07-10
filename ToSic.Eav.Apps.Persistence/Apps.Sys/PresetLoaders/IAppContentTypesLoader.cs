@@ -10,7 +10,7 @@ public interface IAppContentTypesLoader
     /// <summary>
     /// Real constructor, after DI
     /// </summary>
-    void Init(IAppReader reader, LogSettings logSettings, string? appFolderBeforeReaderIsReady = default);
+    void Init(IAppReader reader, ToSic.Sys.Logging.LogSettings logSettings, string? appFolderBeforeReaderIsReady = default);
 
     /// <summary>
     /// Get all ContentTypes for specified AppId.

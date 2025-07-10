@@ -24,9 +24,4 @@ public interface ILogCall: ILog, IHasLog
     /// A stopwatch object which is used for timing purposes on this call.
     /// </summary>
     Stopwatch Timer { get; }
-
-    ///// <summary>
-    ///// Reference to the parent log.
-    ///// </summary>
-    //ILog? Log { get; }
 }

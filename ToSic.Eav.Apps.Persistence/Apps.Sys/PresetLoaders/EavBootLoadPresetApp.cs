@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Sys.Boot;
 using ToSic.Sys.Capabilities.Features;
 
