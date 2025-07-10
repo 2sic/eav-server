@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
@@ -68,6 +67,8 @@ public class DbStorage(
             try
             {
                 // try to get using dependency injection
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+                // Paranoid...
                 return field = userLazy.Value?.IdentityToken ?? UserNameUnknown;
             }
             catch
@@ -149,20 +150,15 @@ public class DbStorage(
     public void Setup(StorageOptions options)
     {
         Init(options.ZoneId, options.AppId, options.ParentAppId);
+
+        // TODO: Also keep the logSettings in the options...
     }
 
-    /// <summary>
-    /// Set ZoneId, AppId and ParentAppId on current context.
-    /// </summary>
-    /// <param name="appReader"></param>
-    /// <returns></returns>
-    public DbStorage Init(IAppReader appReader)
-        => Init(appReader.ZoneId, appReader.AppId, appReader.GetParentCache()?.AppId);
 
     /// <summary>
     /// Set ZoneId and AppId on current context.
     /// </summary>
-    public DbStorage Init(int? zoneId, int? appId, int? parentAppId = default)
+    private DbStorage Init(int? zoneId, int? appId, int? parentAppId = default)
     {
         // No matter what scenario we have, always set the parent app id - if given
         // todo: maybe later also try to detect it, if we see the need for it

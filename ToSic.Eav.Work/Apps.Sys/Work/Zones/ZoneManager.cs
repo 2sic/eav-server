@@ -1,10 +1,11 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZoneManager(LazySvc<DbStorage> dbLazy, LazySvc<AppCachePurger> appCachePurger)
+public class ZoneManager(Generator<DbStorage, StorageOptions> dbLazy, LazySvc<AppCachePurger> appCachePurger)
     : ServiceBase("App.Zone", connect: [dbLazy, appCachePurger]), IZoneIdentity
 {
 
@@ -16,7 +17,8 @@ public class ZoneManager(LazySvc<DbStorage> dbLazy, LazySvc<AppCachePurger> appC
         return this;
     }
 
-    internal DbStorage DbStorage => field ??= dbLazy.Value.Init(ZoneId, null);
+    [field: AllowNull, MaybeNull]
+    internal DbStorage DbStorage => field ??= dbLazy.New(new(ZoneId, null));
 
 
     #region App management

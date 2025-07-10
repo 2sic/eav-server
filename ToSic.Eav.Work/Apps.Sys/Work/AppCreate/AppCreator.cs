@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Sys.Work;
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppCreator(
-    DbStorage db,
+    Generator<DbStorage, StorageOptions> db,
     IAppsAndZonesLoaderWithRaw appsAndZonesLoader,
     AppCachePurger appCachePurger,
     Generator<AppInitializer> appInitGenerator)
@@ -51,7 +52,9 @@ public class AppCreator(
     private int CreateInDb(string appGuid, int? inheritAppId)
     {
         var l = Log.Fn<int>("create new app");
-        var app = db.Init(_zoneId, null, inheritAppId).App.AddApp(null, appGuid, inheritAppId);
+
+        var app = db.New(new(_zoneId, null, inheritAppId))
+            .App.AddApp(null, appGuid, inheritAppId);
 
         appCachePurger.PurgeZoneList();
         l.A($"app created a:{app.AppId}, guid:{appGuid}");

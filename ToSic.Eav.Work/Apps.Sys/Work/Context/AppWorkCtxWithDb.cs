@@ -1,16 +1,17 @@
-﻿using ToSic.Eav.Repository.Efc.Sys.DbStorage;
+﻿using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkCtxWithDb : AppWorkCtx, IAppWorkCtxWithDb
 {
-    private readonly LazySvc<DbStorage>? _dbLazy;
+    private readonly Generator<DbStorage, StorageOptions> _dbLazy = null!;
 
     [field: AllowNull, MaybeNull]
-    public DbStorage DbStorage => field ??= _dbLazy!.Value;
+    public DbStorage DbStorage => field ??= _dbLazy.New(new(AppReader));
 
-    public AppWorkCtxWithDb(LazySvc<DbStorage> dbLazy, IAppReader appReader) : base(appReader)
+    public AppWorkCtxWithDb(Generator<DbStorage, StorageOptions> dbLazy, IAppReader appReader) : base(appReader)
     {
         _dbLazy = dbLazy;
     }

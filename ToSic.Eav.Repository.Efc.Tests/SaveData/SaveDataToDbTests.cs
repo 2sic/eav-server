@@ -24,19 +24,19 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
     {
         var test = new SpecsDataEditing();
         var so = environment.SaveOptions(test.ZoneId);
-        var dbi = dbData.Init(test.ZoneId, test.AppId);
-        var transaction = dbi.SqlDb.Database.BeginTransaction();
+        dbData.Setup(new(test.ZoneId, test.AppId, null, new()));
+        var transaction = dbData.SqlDb.Database.BeginTransaction();
 
         // load an entity
-        var loader1 = appLoadGenerator.New().UseExistingDb(dbi.SqlDb);
+        var loader1 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb);
         var app1 = loader1.AppStateReaderRawTac(test.AppId);
         var itm1 = app1.List.One(test.ExistingItem);
 
         // save it
-        dbi.Save([itm1], so);
+        dbData.Save([itm1], so);
 
         // re-load it
-        var loader2 = appLoadGenerator.New().UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
+        var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
         var itm2 = app2.List.One(test.ExistingItem);
 
@@ -57,11 +57,11 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
             PreserveUnknownLanguages = true,
         };
 
-        var dbi = dbData.Init(test.ZoneId, test.AppId);
-        var transaction = dbi.SqlDb.Database.BeginTransaction();
+        dbData.Setup(new(test.ZoneId, test.AppId, null, new()));
+        var transaction = dbData.SqlDb.Database.BeginTransaction();
 
         // todo: load a simple, 1 language entity
-        var loader1 = appLoadGenerator.New().UseExistingDb(dbi.SqlDb);
+        var loader1 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb);
         var app1 = loader1.AppStateReaderRawTac(test.AppId);
         var itm1 = app1.List.One(test.ExistingItem);
 
@@ -74,10 +74,10 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         var saveEntity = entitySaver.TestCreateMergedForSavingTac(itm1, itmNewTitle, so);
 
         // save it
-        dbi.Save([saveEntity], so);
+        dbData.Save([saveEntity], so);
 
         // reload it
-        var loader2 = appLoadGenerator.New().UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
+        var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
         var itm2 = app2.List.One(test.ExistingItem);
 
@@ -101,11 +101,11 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
             PreserveUnknownLanguages = true,
         };
 
-        var dbi = dbData.Init(test.ZoneId, test.AppId);
-        var transaction = dbi.SqlDb.Database.BeginTransaction();
+        dbData.Setup(new(test.ZoneId, test.AppId, null, new()));
+        var transaction = dbData.SqlDb.Database.BeginTransaction();
 
         // load content type to start creating an item...
-        var loader1 = appLoadGenerator.New().UseExistingDb(dbi.SqlDb);
+        var loader1 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb);
         var app1 = loader1.AppStateReaderRawTac(test.AppId);
         var ct1 = app1.GetContentTypeTac(ctName);
 
@@ -117,10 +117,10 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         var saveEntity = entitySaver.TestCreateMergedForSavingTac(null, newE, so);
 
         // save it
-        var newId = dbi.Save([saveEntity], so);
+        var newId = dbData.Save([saveEntity], so);
 
         // reload it
-        var loader2 = appLoadGenerator.New().UseExistingDb(dbi.SqlDb); // use existing db context because the transaction is still open
+        var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
         var itm2 = app2.List.One(newId.First());
 
