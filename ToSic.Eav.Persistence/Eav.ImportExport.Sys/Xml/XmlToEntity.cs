@@ -19,8 +19,10 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
     : ServiceBase("Imp.XmlEnt", connect: [dataBuilder, globalData])
 {
 
-    public XmlToEntity Init(int appId, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang, ICollection<DimensionDefinition> envLanguages, string envDefLang)
+    public XmlToEntity Init(int appId, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang,
+        ICollection<DimensionDefinition> envLanguages, string envDefLang, LogSettings logSettings)
     {
+        LogSettings = logSettings;
         AppId = appId;
         envLanguages = envLanguages
             .OrderByDescending(p => p.Matches(envDefLang))
@@ -35,10 +37,25 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
 
     public int AppId { get; private set; }
 
+    #region Detailed Logging
+
+    [field: AllowNull, MaybeNull]
+    private LogSettings LogSettings { get; set; } = null!;
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    private ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
+
+    //private ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
+
+    #endregion
+
 
     private ICollection<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(ICollection<DimensionDefinition> envLanguages, string envDefLang, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang)
     {
-        var l = Log.Fn<ICollection<TargetLanguageToSourceLanguage>>($"Env has {envLanguages.Count} languages");
+        var l = LogDetails.Fn<ICollection<TargetLanguageToSourceLanguage>>($"Env has {envLanguages.Count} languages");
         ICollection<TargetLanguageToSourceLanguage> result;
         // if the environment doesn't have languages defined, we'll create a temp-entry for the main language to allow mapping
         if (envLanguages.Any())
@@ -140,7 +157,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
     /// <param name="mdTarget"></param>
     internal Entity BuildEntityFromXml(XElement xEntity, Target mdTarget)
     {
-        var wrap = Log.Fn<Entity>();
+        var wrap = LogDetails.Fn<Entity>();
         var finalAttributes = new Dictionary<string, IAttribute>();
 
         // Group values by StaticName
@@ -164,7 +181,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
         // Process each attribute (values grouped by StaticName)
         foreach (var sourceAttrib in valuesGroupedByStaticName)
         {
-            var lAttrib = Log.Fn(sourceAttrib.StaticName);
+            var lAttrib = LogDetails.Fn(sourceAttrib.StaticName);
             //var xmlValuesOfAttrib = sourceAttrib.Values;
             //var tempTargetValues = new List<XmlValueToImport>();
 
@@ -189,7 +206,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
             //}
 
             // Process each target's language
-            var tempTargetValues = new XmlValueListHelper(EnvDefLang, EnvLangs, Log).CreateList(sourceAttrib.Values);
+            var tempTargetValues = new XmlValueListHelper(EnvDefLang, EnvLangs, Log, LogSettings).CreateList(sourceAttrib.Values);
 
             // construct value elements
             var currentAttributesImportValues = tempTargetValues
@@ -263,7 +280,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
     ///// <param name="readOnly"></param>
     //private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, List<XmlValueToImport> tempTargetValues, TargetLanguageToSourceLanguage envLang, bool readOnly)
     //{
-    //    var l = Log.Fn();
+    //    var l = LogDetails.Fn();
     //    var logText = "";
     //    var dimensionsToAdd = new List<ILanguage>();
     //    if (EnvLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
@@ -294,7 +311,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
 
     //private XElement GetFallbackAttributeInXml(ICollection<XElement> xmlValuesOfAttrib)
     //{
-    //    var l = Log.Fn<XElement>();
+    //    var l = LogDetails.Fn<XElement>();
     //    // First, try to take a fallback node without language assignments
     //    var sourceValueNode = xmlValuesOfAttrib
     //        .FirstOrDefault(xv =>
@@ -317,7 +334,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
 
     //private (XElement? Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, ICollection<XElement> xmlValuesOfAttrib)
     //{
-    //    var l = Log.Fn<(XElement? Element, bool ReadOnly)>(envLang.EnvironmentKey);
+    //    var l = LogDetails.Fn<(XElement? Element, bool ReadOnly)>(envLang.EnvironmentKey);
     //    XElement? sourceValueNode = null;
     //    var readOnly = false;
 

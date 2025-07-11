@@ -27,11 +27,12 @@ partial class XmlImportWithFiles
 
     private IContentType? BuildContentTypeFromXml(XElement xmlContentType)
     {
-        var l = Log.Fn<IContentType>();
+        var l = LogSummary.Fn<IContentType>();
         var ctElement = xmlContentType.Element(XmlConstants.Attributes);
         var typeName = xmlContentType.Attribute(XmlConstants.Name)!.Value;
 
         var attributes = new List<IContentTypeAttribute>();
+        var metadataCount = 0;
         if (ctElement != null)
         {
             // Figure out which one is the title
@@ -63,7 +64,7 @@ partial class XmlImportWithFiles
                     .Elements(XmlConstants.Entity)
                     .ToList();
                 var attributeMetadata = BuildEntities(xmlMetadata, (int)TargetTypes.Attribute);
-
+                metadataCount += attributeMetadata.Count;
                 // #SharedFieldDefinition
                 Guid? guid = null;
                 if (Guid.TryParse(xmlField.Attribute(XmlConstants.Guid)?.Value, out var result))
@@ -85,7 +86,9 @@ partial class XmlImportWithFiles
                 l.A($"Attribute: {nameId} ({fieldTypeName}) with {xmlMetadata.Count} metadata items");
 
             }
+
         }
+
 
 
         #region check for shared type and if it's allowed
@@ -119,7 +122,7 @@ partial class XmlImportWithFiles
         );
 
 
-        return l.Return(ct, "ok");
+        return l.Return(ct, $"ok, metadataCount:{metadataCount}");
     }
 
 }

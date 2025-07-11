@@ -10,9 +10,9 @@ partial class DbEntity
     /// </summary>
     /// <param name="entityOptionPairs"></param>
     /// <returns></returns>
-    internal List<int> SaveEntity(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
+    internal List<int> SaveEntities(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = LogSummary.Fn<List<int>>($"count:{entityOptionPairs?.Count}");
+        var l = LogDetails.Fn<List<int>>($"count:{entityOptionPairs?.Count}");
 
         if (entityOptionPairs == null || entityOptionPairs.Count == 0)
             return l.Return([], "Entities to save are null, skip");

@@ -268,7 +268,7 @@ public class DbStorage(
 
     private void PurgeAppCacheIfReady()
     {
-        var l = LogSummary.Fn($"{_purgeAppCacheOnSave}");
+        var l = LogDetails.Fn($"{_purgeAppCacheOnSave}");
         if (_purgeAppCacheOnSave)
             appsCache.Purge(this);
         l.Done();
@@ -280,7 +280,7 @@ public class DbStorage(
 
     internal void DoAndSave(Action action, string? message = null)
     {
-        var l = LogSummary.Fn(message: message, timer: true);
+        var l = LogDetails.Fn(message: message, timer: true);
         action.Invoke();
         SqlDb.SaveChanges();
         l.Done();
@@ -289,7 +289,7 @@ public class DbStorage(
 
     internal void DoAndSaveWithoutChangeDetection(Action action, string? message = null)
     {
-        var l = LogSummary.Fn(timer: true, message: message);
+        var l = LogDetails.Fn(timer: true, message: message);
         action.Invoke();
 
         var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
@@ -317,8 +317,8 @@ public class DbStorage(
         var ownTransaction = SqlDb.Database.CurrentTransaction == null
             ? SqlDb.Database.BeginTransaction()
             : null;
-
-        var l = LogSummary.Fn(timer: true, message: $"id:{randomId} - create new trans:{ownTransaction != null}");
+        var log = ownTransaction == null ? LogDetails : LogSummary;
+        var l = log.Fn(timer: true, message: $"id:{randomId} - create new trans:{ownTransaction != null}");
         {
             try
             {
@@ -369,6 +369,7 @@ public class DbStorage(
     /// The loader must use the same connection, to ensure it runs in existing transactions.
     /// Otherwise, the loader would be blocked from getting intermediate data while we're running changes. 
     /// </summary>
+    [field: AllowNull, MaybeNull]
     public IAppsAndZonesLoaderWithRaw Loader => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
 
     public void DoWhileQueuingVersioning(Action action)
@@ -398,9 +399,9 @@ public class DbStorage(
     /// <returns></returns>
     public List<int> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = LogSummary.Fn<List<int>>(timer: true);
+        var l = LogDetails.Fn<List<int>>(timer: true);
         logStore.Add("save-data", Log);
-        return l.ReturnAsOk(Entities.SaveEntity(entityOptionPairs));
+        return l.ReturnAsOk(Entities.SaveEntities(entityOptionPairs));
     }
 
     public void Save(List<IContentType> contentTypes, SaveOptions saveOptions)

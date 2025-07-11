@@ -27,7 +27,7 @@ partial class JsonSerializer
     [return: NotNullIfNotNull(nameof(entity))]
     public JsonEntity? ToJson(IEntity? entity, int metadataDepth = 0)
     {
-        var l = Log.Fn<JsonEntity>($"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
+        var l = LogDsDetails.Fn<JsonEntity>($"id:{entity?.EntityId}, meta-depth:{metadataDepth}");
         // do a null-check, because sometimes code could ask to serialize not-yet existing entities
         if (entity == null)
             return l.ReturnNull("is null");

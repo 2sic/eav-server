@@ -16,7 +16,7 @@ partial class XmlImportWithFiles
     /// </summary>
     public bool ImportXml(int zoneId, int appId, int? parentAppId, XDocument doc, bool leaveExistingValuesUntouched = true)
     {
-        var l = Log.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
+        var l = LogSummary.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
         // #WipDecoupleDbFromImport
         //Services.DbDataForAppImport.Value.Init(zoneId, appId, parentAppId);
             
@@ -57,7 +57,7 @@ partial class XmlImportWithFiles
 
         var targetDimensions = Services.AppsCatalog.Zone(zoneId).Languages;
 
-        XmlBuilder = Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, targetDimensions, DefaultLanguage);
+        XmlBuilder = Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, targetDimensions, DefaultLanguage, LogSettings);
         #endregion
 
         var atsNodes = xmlSource
@@ -82,7 +82,7 @@ partial class XmlImportWithFiles
 
         Messages.AddRange(import.Storage.ImportLogToBeRefactored);
 
-        return l.ReturnTrue("done");
+        return l.ReturnTrue($"done, importTypes:{importTypes.Count}, importEntities:{importEntities.Count}");
     }
 
 

@@ -8,7 +8,8 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     internal void DoWhileQueueingRelationships(Action action)
     {
         var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-        LogSummary.Do($"relationship queue:{randomId} start", () =>
+        var log = _isOutermostCall ? LogSummary : LogDetails;
+        log.Do($"relationship queue:{randomId} start", () =>
         {
             // 1. check if it's the outermost call, in which case afterwards we import
             var willPurgeQueue = _isOutermostCall;

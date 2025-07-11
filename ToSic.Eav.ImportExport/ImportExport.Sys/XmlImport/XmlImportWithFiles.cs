@@ -49,6 +49,21 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
 
     private bool AllowUpdateOnSharedTypes { get; set; }
 
+    #region Detailed Logging
+
+    [field: AllowNull, MaybeNull]
+    private LogSettings LogSettings => field ??= Services.LogSettings.GetLogSettings();
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
+
+    internal ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
+
+    #endregion
+
     #region Constructor / DI
 
     /// <summary>
