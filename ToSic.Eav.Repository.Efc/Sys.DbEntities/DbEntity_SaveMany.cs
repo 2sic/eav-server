@@ -5,6 +5,8 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
+    internal PreprocessEntityForDbStorage Preprocessor { get; set; } = null!;
+
     /// <summary>
     /// Save a list of entities in one large go
     /// </summary>
@@ -19,9 +21,14 @@ partial class DbEntity
 
         var ids = new List<int>();
         var idx = 0;
-        FlushTypeAttributesCache(); // for safety, in case previously new types were imported
-        _entityDraftMapCache = DbContext.Publishing
-            .GetDraftBranchMap(entityOptionPairs.Select(e => e.Entity.EntityId).ToList());
+
+        Preprocessor = new(DbContext, builder);
+        Preprocessor.Start(entityOptionPairs);
+
+        //StructureAnalyzer.FlushTypeAttributesCache(); // for safety, in case previously new types were imported
+
+        //_entityDraftMapCache = DbContext.Publishing
+        //    .GetDraftBranchMap(entityOptionPairs.Select(e => e.Entity.EntityId).ToList());
 
         DbContext.DoInTransaction(
             () => DbContext.Versioning.DoAndSaveHistoryQueue(
@@ -32,8 +39,8 @@ partial class DbEntity
                             foreach (var pair in entityOptionPairs)
                             {
                                 idx++;
-                                var logDetails = idx < MaxToLogDetails;
-                                if (idx == MaxToLogDetails)
+                                var logDetails = idx < DbConstant.MaxToLogDetails;
+                                if (idx == DbConstant.MaxToLogDetails)
                                     l.A($"Hit #{idx}, will stop logging details");
                                 DbContext.DoAndSaveWithoutChangeDetection(
                                     () => ids.Add(SaveEntity(pair, logDetails)),

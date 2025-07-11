@@ -80,14 +80,14 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
                     FROM TsDynDataRelationship r
                     WHERE r.ChildEntityId IN ({jsonEntitiesInAppSql})
                        OR r.ParentEntityId IN ({jsonEntitiesInAppSql})"
-                    , DbEntity.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
+                    , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
 
                 // 2. remove all json entities, which won't be handled by the SP
                 DbContext.DoAndSave(() => ExecuteSqlCommand($@"
                     DELETE e
                     FROM TsDynDataEntity e
                     WHERE e.EntityId IN ({jsonEntitiesInAppSql})"
-                    , DbEntity.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
+                    , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
 
                 // Now let do the remaining clean-up
                 DbContext.DoAndSave(() => DeleteAppWithoutStoredProcedure(appId, fullDelete));

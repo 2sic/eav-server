@@ -6,7 +6,7 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 partial class DbEntity
 {
 
-    private TsDynDataEntity CreateDbRecord(IEntity newEnt, int transactionId, int contentTypeId)
+    public TsDynDataEntity CreateDbRecord(IEntity newEnt, int transactionId, int contentTypeId)
     {
         var l = LogDetails.Fn<TsDynDataEntity>($"a:{DbContext.AppId}, guid:{newEnt.EntityGuid}, type:{contentTypeId}");
         var dbEnt = new TsDynDataEntity

@@ -2,6 +2,7 @@
 
 global using System;
 global using System.Collections.Generic;
+global using System.Diagnostics.CodeAnalysis;
 global using Microsoft.EntityFrameworkCore;
 global using ToSic.Eav.Apps;
 global using ToSic.Eav.Data;

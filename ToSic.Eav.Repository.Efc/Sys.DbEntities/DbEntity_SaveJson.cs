@@ -4,9 +4,8 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
-    private static bool UseJson(IEntity newEnt) => newEnt.Type.RepositoryType != RepositoryTypes.Sql;
 
-    private string GenerateJsonOrReportWhyNot(IEntity newEnt, bool logDetails)
+    internal string GenerateJsonOrReportWhyNot(IEntity newEnt, bool logDetails)
     {
         string jsonExport;
         if (logDetails)
