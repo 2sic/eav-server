@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSource.Caching;
+﻿using ToSic.Eav.DataSource.Sys.Caching;
+
+namespace ToSic.Eav.DataSource.Caching;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class CacheAllStreamsIdenticalSetups(DataSourcesTstBuilder dsSvc, IListCacheSvc listCache, DataTablePerson personTable)

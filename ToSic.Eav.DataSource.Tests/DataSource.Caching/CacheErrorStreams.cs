@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.DataSource.Caching;
+﻿using ToSic.Eav.DataSource.Sys.Caching;
+using ToSic.Eav.DataSource.Sys.Errors;
+
+namespace ToSic.Eav.DataSource.Caching;
 
 /// <summary>
 /// This test needs to be in an own class, to avoid the cache from being affected by other tests

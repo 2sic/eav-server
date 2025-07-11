@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSource.Query;
+﻿using ToSic.Eav.DataSource.Sys.Query;
+
+namespace ToSic.Eav.DataSource.Query;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class ParamsFromUrlTests
