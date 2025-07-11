@@ -34,7 +34,7 @@ public static class StartupDataSource
         services.TryAddTransient<QueryBuilder>();
         services.TryAddTransient<QueryDefinitionBuilder>();
         services.TryAddTransient<QueryManager>();
-
+        services.TryAddTransient(typeof(QueryManager<>)); // new v20
         services.TryAddTransient<ConfigurationDataLoader>();
 
         services.TryAddTransient<IDataSourceCacheService, DataSourceCacheService>();

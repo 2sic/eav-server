@@ -38,14 +38,6 @@ public class ContentImportApi(
     [field: AllowNull, MaybeNull]
     private LogSettings LogSettings => field ??= importLogSettings.GetLogSettings();
 
-    /// <summary>
-    /// Logger for the details of the deserialization process.
-    /// Goal is that it can be enabled/disabled as needed.
-    /// </summary>
-    internal ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
-
-    internal ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
-
     #endregion
 
 

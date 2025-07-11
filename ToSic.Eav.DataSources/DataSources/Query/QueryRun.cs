@@ -122,7 +122,8 @@ public class QueryRun : DataSourceBase
         l.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
         // create the query & set params
-        var query = _queryGenerator.New().Init(ZoneId, AppId, queryDef, LookUpWithoutParams());
+        var query = _queryGenerator.New();
+        query.Init(ZoneId, AppId, queryDef, LookUpWithoutParams());
         query.Params(ResolveParams(configEntity));
         return l.ReturnAsOk(query);
     }

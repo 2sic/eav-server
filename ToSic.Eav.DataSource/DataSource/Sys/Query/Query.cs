@@ -13,7 +13,7 @@ namespace ToSic.Eav.DataSource.Sys.Query;
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
+public class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 {
     #region Configuration-properties
 
@@ -55,7 +55,7 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     /// </summary>
     /// <returns></returns>
     [PrivateApi]
-    public Query Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine? lookUpEngineOrNull, IDataSource? source = null)
+    public void Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine? lookUpEngineOrNull, IDataSource? source = null)
     {
         ZoneId = zoneId;
         AppId = appId;
@@ -64,11 +64,9 @@ public sealed class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 
         // hook up in, just in case we get parameters from an In
         if (source == null)
-            return this;
+            Log.A("found target for Query, will attach");
 
-        Log.A("found target for Query, will attach");
         _inSource = source;
-        return this;
     }
 
     [PublicApi]
