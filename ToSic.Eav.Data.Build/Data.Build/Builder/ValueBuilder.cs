@@ -10,23 +10,8 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : ServiceBase("Eav.ValBld")
+public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : ServiceWithSetup<DataBuilderOptions>("DaB.ValBld")
 {
-    /// <summary>
-    /// Temporary solution to allow unknown value types.
-    /// ATM only used for special cases such as the SharePoint DataSource,
-    /// to pass through values that are not known to the EAV.
-    /// ATM not really used, but the thought is that we would enforce this if we see problems appearing.
-    /// </summary>
-    // ReSharper disable once NotAccessedField.Local
-    private bool _allowUnknownValueTypes;
-
-    public ValueBuilder Setup(bool allowUnknownValueTypes = false)
-    {
-        _allowUnknownValueTypes = allowUnknownValueTypes;
-        return this;
-    }
-
     /// <summary>
     /// Create/clone a value based on an original which will supply most of the values.
     /// </summary>
@@ -144,7 +129,7 @@ public partial class ValueBuilder(LazySvc<IValueConverter> valueConverter) : Ser
 
     public object PreConvertReferences(object value, ValueTypes valueType, bool resolveHyperlink)
     {
-        var l = Log.Fn<object>();
+        var l = Log.IfDetails(Options.LogSettings).Fn<object>();
         if (value is IAttribute)
             throw new ArgumentException($"Value must be a simple value but it's an {nameof(IAttribute)}");
         if (resolveHyperlink && valueType == ValueTypes.Hyperlink && value is string stringValue)

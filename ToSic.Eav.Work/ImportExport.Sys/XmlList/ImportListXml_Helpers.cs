@@ -49,7 +49,7 @@ partial class ImportListXml
 
     private Entity? GetImportEntity(Guid entityGuid)
     {
-        var l = Log.Fn<Entity?>();
+        var l = LogDetails.Fn<Entity?>();
         var result = ImportEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
         return l.Return(result, result == null ? "null" : $"Will modify entity from existing import list {entityGuid}");
     }
@@ -60,15 +60,15 @@ partial class ImportListXml
     private Entity AppendEntity(int appId, IContentType contentType, Guid entityGuid,
         IDictionary<string, IAttribute> values)
     {
-        var l = Log.Fn<Entity>();
+        var l = LogDetails.Fn<Entity>();
         if (_appendEntityCount++ < 100)
             l.A($"Add entity to import list {entityGuid}");
         if (_appendEntityCount == 100)
             l.A("Add entity: will stop listing each one...");
         if (_appendEntityCount % 100 == 0)
             l.A("Add entity: Current count:" + _appendEntityCount);
-        var entity = builder.Entity.Create(appId: appId, guid: entityGuid, contentType: contentType,
-            attributes: builder.Attribute.Create(values));
+        var entity = DataBuilder.Entity.Create(appId: appId, guid: entityGuid, contentType: contentType,
+            attributes: DataBuilder.Attribute.Create(values));
         ImportEntities.Add(entity);
         return l.Return(entity);
     }

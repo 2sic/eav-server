@@ -30,7 +30,7 @@ public class DbStorage(
     DataBuilder builder,
     DataImportLogSettings importLogSettings)
     : ServiceBase("Db.Data",
-        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder]
+        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder, importLogSettings]
     ), IStorage, IAppIdentity
 {
 

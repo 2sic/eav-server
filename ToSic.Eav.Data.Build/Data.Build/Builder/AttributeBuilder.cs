@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data.Build;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilder languageBuilder)
-    : ServiceBase("Dta.AttBld", connect: [languageBuilder, valueBuilder])
+    : ServiceWithSetup<DataBuilderOptions>("DaB.AttBld", connect: [languageBuilder, valueBuilder])
 {
 
     /// <summary>
@@ -63,7 +63,7 @@ public partial class AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilde
         bool languageReadOnly = false
     )
     {
-        var l = Log.Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
+        var l = Log.IfDetails(Options.LogSettings).Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
         var valueLanguages = languageBuilder.GetBestValueLanguages(language, languageReadOnly);
 
         var valueWithLanguages = valueBuilder.Build(type, value, valueLanguages.ToImmutableOpt());

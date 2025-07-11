@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys.XmlList;
 using ToSic.Eav.Serialization.Sys;
@@ -19,8 +20,9 @@ public class ContentImportApi(
     AppCachePurger appCachePurger,
     GenWorkDb<WorkEntitySave> workEntSave,
     IAppsCatalog appsCatalog,
-    IAppReaderFactory appReaders
-) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appsCatalog, appReaders])
+    IAppReaderFactory appReaders,
+    DataImportLogSettings importLogSettings
+) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appsCatalog, appReaders, importLogSettings])
 {
     private IAppReader _appReader = null!;
 
@@ -30,6 +32,21 @@ public class ContentImportApi(
         _appReader = appReaders.Get(appId);
         return l.Return(this);
     }
+
+    #region Detailed Logging
+
+    [field: AllowNull, MaybeNull]
+    private LogSettings LogSettings => field ??= importLogSettings.GetLogSettings();
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
+
+    internal ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
+
+    #endregion
 
 
     [HttpPost]
@@ -88,7 +105,8 @@ public class ContentImportApi(
             contextLanguages,
             args.DefaultLanguage,
             args.ClearEntities,
-            args.ImportResourcesReferences
+            args.ImportResourcesReferences,
+            LogSettings
         );
         return l.Return(importer);
     }

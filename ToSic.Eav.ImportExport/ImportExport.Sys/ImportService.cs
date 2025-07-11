@@ -24,6 +24,21 @@ public class ImportService(
     DataImportLogSettings logSettings)
     : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataBuilder, logSettings])
 {
+    #region Detailed Logging
+
+    [field: AllowNull, MaybeNull]
+    private LogSettings LogSettings { get; set; } = null!;
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
+
+    internal ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
+
+    #endregion
+
     #region Constructor / DI
 
     private const int ChunkLimitToStartChunking = 2500;
@@ -35,7 +50,8 @@ public class ImportService(
         // Get the DB controller - it can handle zoneId being null
         // It's important to not use AppWorkContext or similar, because that would
         // try to load the App into cache, and initialize the App before it's fully imported
-        var storage = storageFactory.New(new(zoneId, appId, parentAppId, logSettings.GetLogSettings()));
+        LogSettings = logSettings.GetLogSettings();
+        var storage = storageFactory.New(new(zoneId, appId, parentAppId, LogSettings));
         Storage = storage;
         _appId = appId;
         _zoneId = zoneId;
@@ -66,7 +82,7 @@ public class ImportService(
     /// </summary>
     public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities) 
     {
-        var l = Log.Fn($"types: {newTypes.Count}; entities: {newEntities.Count}", timer: true);
+        var l = LogSummary.Fn($"types: {newTypes.Count}; entities: {newEntities.Count}", timer: true);
         Storage.DoWithDelayedCacheInvalidation(() =>
         {
             #region import Content-Types if any were included but rollback transaction if necessary
@@ -80,7 +96,7 @@ public class ImportService(
                     // important: must always create a new loader, because it will cache content-types which hurts the import
                     Storage.DoWhileQueuingVersioning(() =>
                     {
-                        var nonSysTypes = Log.Quick(message: "Import Types in Sys-Scope", timer: true, func: () =>
+                        var nonSysTypes = LogSummary.Quick(message: "Import Types in Sys-Scope", timer: true, func: () =>
                         {
                             // load everything, as content-type metadata is normal entities
                             // but disable initialized, as this could cause initialize stuff we're about to import
@@ -122,7 +138,7 @@ public class ImportService(
             else
             {
                 var appStateTemp = Storage.Loader.AppReaderRaw(_appId, new()); // load all entities
-                var newIEntitiesRaw = Log.Quick(message: "Pre-Import Entities merge", timer: true,
+                var newIEntitiesRaw = LogSummary.Quick(message: "Pre-Import Entities merge", timer: true,
                     func: () => newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
                         .Select(pair => pair?.Entity)
@@ -171,7 +187,7 @@ public class ImportService(
 
     private void MergeAndSaveContentTypes(IAppReader appReader, List<IContentType> contentTypes)
     {
-        var l = Log.Fn(timer: true);
+        var l = LogSummary.Fn(timer: true);
         // Here's the problem! #badmergeofmetadata
         var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appReader, type));
         var so = importExportEnvironment.SaveOptions(_zoneId) with
@@ -192,7 +208,7 @@ public class ImportService(
 
     private IContentType MergeContentTypeUpdateWithExisting(IAppReader appReader, IContentType contentType)
     {
-        var l = Log.Fn<IContentType>();
+        var l = LogDetails.Fn<IContentType>();
 
         l.A("New CT, must reset attributes");
 
@@ -261,7 +277,7 @@ public class ImportService(
             // Must Reset guid, reset, otherwise the save process assumes it already exists in the DB; NOTE: clone would be ok
             return new EntityPair<SaveOptions>(dataBuilder.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0), SaveOptions);
 
-        return entitySaverLazy.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
+        return entitySaverLazy.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions, logSettings: LogSettings);
     }
 
 
@@ -271,9 +287,9 @@ public class ImportService(
     private IEntityPair<SaveOptions>? CreateMergedForSaving<T>(IEntity update, T appState, SaveOptions saveOptions)
         where T : IAppReadEntities, IAppReadContentTypes
     {
-        var l = Log.Fn<IEntityPair<SaveOptions>>();
+        var l = LogDetails.Fn<IEntityPair<SaveOptions>>();
         _mergeCountToStopLogging++;
-        var logDetails = _mergeCountToStopLogging <= LogMaxMerges;
+        var logDetails = LogSettings.Details && _mergeCountToStopLogging <= LogMaxMerges;
         if (_mergeCountToStopLogging == LogMaxMerges)
             l.A($"Hit {LogMaxMerges} merges, will stop logging details");
 
@@ -310,7 +326,7 @@ public class ImportService(
 
         // now update (main) entity id from existing - since it already exists
         var original = existingEntities.First();
-        var result = entitySaverLazy.Value.CreateMergedForSaving(original, update, saveOptions, newId: original.EntityId, newType: typeReset, logDetails: logDetails);
+        var result = entitySaverLazy.Value.CreateMergedForSaving(original, update, saveOptions, newId: original.EntityId, newType: typeReset, logSettings: LogSettings);
         return l.Return(result, "ok");
     }
 
