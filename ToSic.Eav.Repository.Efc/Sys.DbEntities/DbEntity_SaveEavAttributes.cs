@@ -109,7 +109,7 @@ partial class DbEntity
     internal void DoWhileQueueingAttributes(Action action)
     {
         var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-        var l = LogSummary.Fn($"attribute queue:{randomId} start");
+        var l = LogDetails.Fn($"attribute queue:{randomId} start");
         if (_attributeUpdateQueue.Any())
             throw new("Attribute queue started while already containing stuff - bad!");
         _attributeQueueActive = true;

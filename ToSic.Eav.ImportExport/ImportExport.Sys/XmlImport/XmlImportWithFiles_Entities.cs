@@ -20,7 +20,7 @@ partial class XmlImportWithFiles
     /// <returns></returns>
     private List<IEntity> BuildEntities(List<XElement> entities, int targetTypeId) 
     {
-        var l = Log.Fn<List<IEntity>>($"for {entities?.Count}; type {targetTypeId}");
+        var l = LogDetails.Fn<List<IEntity>>($"for {entities?.Count}; type {targetTypeId}");
         if (entities == null)
             return l.Return([], "empty");
         var result = entities
@@ -38,7 +38,7 @@ partial class XmlImportWithFiles
     /// <returns></returns>
     private IEntity BuildEntity(XElement entityNode, int targetType)
     {
-        var l = Log.Fn<IEntity>($"assignment-type: {targetType}");
+        var l = LogDetails.Fn<IEntity>($"assignment-type: {targetType}");
 
         #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
 

@@ -33,16 +33,16 @@ public class ImportService(
     /// Logger for the details of the deserialization process.
     /// Goal is that it can be enabled/disabled as needed.
     /// </summary>
-    internal ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
+    private ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
 
-    internal ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
+    private ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
 
     #endregion
 
     #region Constructor / DI
 
-    private const int ChunkLimitToStartChunking = 2500;
-    private const int ChunkSizeAboveLimit = 500;
+    private const int ChunkLimitToStartChunking = 25000;
+    private const int ChunkSizeAboveLimit = 25000;
 
 
     public ImportService Init(int zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes, int? parentAppId = default)
