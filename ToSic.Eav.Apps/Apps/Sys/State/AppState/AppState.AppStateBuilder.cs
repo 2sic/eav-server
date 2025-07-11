@@ -137,9 +137,9 @@ partial class AppState
                 .OrderBy(e => e.EntityId)
                 .FirstOrDefault();
             if (st.Name.IsEmptyOrWs())
-                st.Name = config?.Get<string>(AppLoadConstants.FieldName) ?? "error";
+                st.Name = config?.Get<string>(AppLoadConstants.FieldName) ?? "error-app-name-no-config";
             if (st.Folder.IsEmptyOrWs())
-                st.Folder = config?.Get<string>(AppLoadConstants.FieldFolder) ?? "error";
+                st.Folder = config?.Get<string>(AppLoadConstants.FieldFolder) ?? "error-app-folder-no-config";
 
             // Last corrections for the DefaultApp "Content"
             if (st.NameId == KnownAppsConstants.DefaultAppGuid)
