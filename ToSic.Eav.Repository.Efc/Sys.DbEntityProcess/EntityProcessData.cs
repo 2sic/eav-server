@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.Data.Sys.Save;
+﻿using ToSic.Eav.Data.Sys.Dimensions;
+using ToSic.Eav.Data.Sys.Save;
 
-namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
+namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 public record EntityProcessData
 {
@@ -8,6 +9,7 @@ public record EntityProcessData
 
     public required IEntity NewEntity { get; init; }
     public required SaveOptions Options { get; init; }
+    public List<DimensionDefinition> Languages => Options.Languages ?? throw new ("languages missing in save-options. cannot continue");
     public required bool LogDetails { get; init; }
     public required int Progress { get; init; }
 
@@ -43,7 +45,12 @@ public record EntityProcessData
 
     #endregion
 
+    #region FinalResults
 
+    public int FinalId => DbEntity!.EntityId;
+    public Guid FinalGuid => DbEntity!.EntityGuid;
+
+    #endregion
 
     public Exception? Exception { get; init; }
 

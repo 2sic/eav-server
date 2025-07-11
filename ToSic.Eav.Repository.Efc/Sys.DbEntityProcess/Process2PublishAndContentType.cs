@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Repository.Efc.Sys.DbEntities;
-
-namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class Process2PublishAndContentType() : Process0Base("DB.EPrc2")
 {
     public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)

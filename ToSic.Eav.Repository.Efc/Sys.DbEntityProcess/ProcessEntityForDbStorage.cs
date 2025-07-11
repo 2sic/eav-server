@@ -1,35 +1,17 @@
 ﻿using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
-namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
+namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 /// <summary>
 /// Experimental
 ///
 /// Trying to extract logic steps for an entity to better reorganize sequencing.
 /// </summary>
-internal class PreprocessEntityForDbStorage(DbStorage.DbStorage dbStorage, DataBuilder builder) : ServiceBase("DB.PrepEy")
+internal class ProcessEntityForDbStorage(DbStorage.DbStorage dbStorage, DataBuilder builder) : ServiceBase("DB.PrepEy")
 {
-    #region Logging
-
-    //internal ILog? LogDetails => dbStorage.LogDetails == null ? null : field ??= Log;
-
-    //internal ILog? LogSummary => dbStorage.LogSummary == null ? null : field ??= Log;
-
-    #endregion
 
     #region Helpers & Setup
-
-    //[field: AllowNull, MaybeNull]
-    //public EntityAnalyzeStructure StructureAnalyzer => field ??= new(dbStorage, LogDetails);
-
-    //[field: AllowNull, MaybeNull]
-    //public EntityAnalyzePublishing PublishingAnalyzer => field ??= new(dbStorage, builder, LogDetails);
-
-    //public DbEntity DbEntity => dbStorage.Entities;
-
-    //public int TransactionId { get; set; }
 
     public EntityProcessServices Services { get; set; } = null!;
 
@@ -37,13 +19,6 @@ internal class PreprocessEntityForDbStorage(DbStorage.DbStorage dbStorage, DataB
     {
         Services = new(dbStorage, builder);
         Services.Start(entityOptionPairs);
-
-        //// code as before, but we can probably remove later as object will not be reused....
-        //StructureAnalyzer.FlushTypeAttributesCache(); // for safety, in case previously new types were imported
-
-        //PublishingAnalyzer.Start(entityOptionPairs);
-
-        //TransactionId = dbStorage.Versioning.GetTransactionId();
     }
 
 
@@ -74,9 +49,21 @@ internal class PreprocessEntityForDbStorage(DbStorage.DbStorage dbStorage, DataB
     [
         new Process1Preflight(),
         new Process2PublishAndContentType(),
+        
         new Process3New1LastChecks(),
         new Process3New2DbStoreHeader(),
-        new Process3Upd1DbPreload()
+        new Process3New3DbStoreJson(),
+
+        new Process3Upd1DbPreload(),
+        new Process3Upd2PrepareUpdate(),
+        new Process3Upd3ClearValues(),
+
+        new Process4TableValues(),
+        new Process4JsonValues(),
+
+        new Process5TableRelationships(),
+
+        new Process6Versioning(),
     ];
 
     //public EntityProcessData Process1Preflight(EntityProcessData data)

@@ -20,7 +20,7 @@ internal class Process1Preflight(): Process0Base("DB.EPrc1")
         #region Test what languages are given, and check if they exist in the target system
 
         // continue here - must ensure that the languages are passed in, cached - or are cached on the DbEntity... for multiple saves
-        var zoneLangs = data.Options.Languages ?? throw new("languages missing in save-options. cannot continue");
+        var zoneLangs = data.Languages;
 
         var usedLanguages = data.NewEntity.GetUsedLanguages();
         if (usedLanguages.Count > 0)

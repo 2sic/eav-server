@@ -25,7 +25,7 @@ partial class DbEntity
         return jsonExport;
     }
 
-    private void DropEavAttributesForJsonItem(IEntity newEnt)
+    internal void DropEavAttributesForJsonItem(IEntity newEnt)
     {
         // in update scenarios, the old data could have been a db-model, so clear that
         ClearAttributesInDbModel(newEnt.EntityId);

@@ -3,12 +3,9 @@
 partial class DbEntity
 {
     /// <summary>
-    /// Delete an Entity
+    /// Delete one or more Entities
     /// </summary>
-    internal bool DeleteEntity(int repositoryId, bool autoSave = true, bool removeFromParents = false) 
-        => DeleteEntity([repositoryId], autoSave, removeFromParents);
-
-    internal bool DeleteEntity(int[] repositoryId, bool autoSave = true, bool removeFromParents = false)
+    internal bool DeleteEntities(int[] repositoryId, bool autoSave = true, bool removeFromParents = false)
     {
         var l = LogDetails.Fn<bool>($"DeleteEntity(rep-ids:{repositoryId.Length}, remove-from-parents:{removeFromParents}, auto-save:{autoSave})");
         if (repositoryId.Length == 0 || repositoryId.Contains(0))
@@ -49,7 +46,7 @@ partial class DbEntity
                 draftBranchMap.TryGetValue(entity.EntityId, out var draftEntityId);
                 //var draftEntityId = DbContext.Publishing.GetDraftBranchEntityId(entity.EntityId);
                 if (draftEntityId.HasValue)
-                    DeleteEntity(draftEntityId.Value);
+                    DeleteEntities([draftEntityId.Value]);
             }
             // If entity was a Draft, really delete that Entity
             else

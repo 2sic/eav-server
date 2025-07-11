@@ -63,7 +63,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
             DbContext.Values.CloneEntitySimpleValues(unpublishedDbEnt, publishedEntity);
 
             // delete the Draft Entity
-            DbContext.Entities.DeleteEntity(unpublishedDbEnt.EntityId, false);
+            DbContext.Entities.DeleteEntities([unpublishedDbEnt.EntityId], false);
         }
 
         l.A("About to save...");
@@ -85,7 +85,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
 
         // if additional draft exists, must clear that first
         if (unpublishedEntityId != null)
-            DbContext.Entities.DeleteEntity(unpublishedEntityId.Value);
+            DbContext.Entities.DeleteEntities([unpublishedEntityId.Value]);
 
         publishedEntity.IsPublished = newPublishedState;
 

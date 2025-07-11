@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Repository.Efc.Sys.DbEntities;
-
-namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class Process3New1LastChecks() : Process0Base("DB.EPr3n1")
 {
     public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)

@@ -57,7 +57,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         var repositoryIds = deleteIds.ToArray();
         var ok = false;
         var dc = AppWorkCtx.DbStorage;
-        dc.DoButSkipAppCachePurge(() => ok = dc.Entities.DeleteEntity(repositoryIds, true, true));
+        dc.DoButSkipAppCachePurge(() => ok = dc.Entities.DeleteEntities(repositoryIds, true, true));
 
         // remove entity from cache
         // introduced in v15.05 to reduce work on entity delete

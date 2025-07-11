@@ -42,7 +42,7 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
         // Delete Draft (if any)
         var entityDraft = AppWorkCtx.DbStorage.Publishing.GetDraftBranchEntityId(entityId);
         if (entityDraft.HasValue)
-            AppWorkCtx.DbStorage.Entities.DeleteEntity(entityDraft.Value);
+            AppWorkCtx.DbStorage.Entities.DeleteEntities([entityDraft.Value]);
 
         AppCachePurger.Purge(AppWorkCtx);
     }

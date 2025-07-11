@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
+using ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
-    internal PreprocessEntityForDbStorage Preprocessor { get; set; } = null!;
+    internal ProcessEntityForDbStorage Preprocessor { get; set; } = null!;
 
     /// <summary>
     /// Save a list of entities in one large go

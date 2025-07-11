@@ -117,6 +117,8 @@ partial class DbEntity
                     .GetDbEntityFull(newEnt.EntityId); // get the published one (entityId is always the published id)
 
                 var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
+
+
                 var paramsMsg =
                     $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newState:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}";
                 l.Do(paramsMsg, () =>
@@ -131,13 +133,10 @@ partial class DbEntity
                     if (stateChanged || hasAdditionalDraft)
                     {
                         // now reset the branch/entity-state to properly set the state / purge the draft
-                        dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt,
-                            existingDraftId,
-                            newEnt.IsPublished);
+                        dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId, newEnt.IsPublished);
 
                         // update ID of the save-entity, as it's used again later on...
                         resetId = dbEnt.EntityId;
-                        //newEnt.ResetEntityId(dbEnt.EntityId);
                     }
 
                     #endregion
@@ -191,8 +190,8 @@ partial class DbEntity
             if (!saveJson)
             {
                 // save all the values we just added
-                SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, zoneLangs, transactionId, logDetails);
-                DbContext.Relationships.ChangeRelationships(newEnt, dbEnt, attributeDefs, so);
+                SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt.EntityId, zoneLangs, logDetails);
+                DbContext.Relationships.ChangeRelationships(newEnt, dbEnt.EntityId, attributeDefs, so);
             }
             else if (isNew)
                 if (logDetails)

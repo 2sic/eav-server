@@ -28,12 +28,11 @@ partial class DbEntity
         return l.ReturnTrue("ok");
     }
 
-    private void SaveAttributesAsEav(IEntity newEnt,
+    internal void SaveAttributesAsEav(IEntity newEnt,
         SaveOptions so,
         List<TsDynDataAttribute> dbAttributes,
-        TsDynDataEntity dbEnt,
-        List<DimensionDefinition> _zoneLangs,
-        int transactionId,
+        int entityId,
+        List<DimensionDefinition> zoneLangs,
         bool logDetails)
     {
         var l = LogDetails.Fn($"id:{newEnt.EntityId}", timer: true);
@@ -68,7 +67,7 @@ partial class DbEntity
                         toSicEavValuesDimensions = value.Languages
                             ?.Select(lng => new TsDynDataValueDimension
                             {
-                                DimensionId = _zoneLangs
+                                DimensionId = zoneLangs
                                     .Single(ol => ol.Matches(lng.Key))
                                     .DimensionId,
                                 ReadOnly = lng.ReadOnly
@@ -96,7 +95,7 @@ partial class DbEntity
                         AttributeId = attribDef.AttributeId,
                         Value = value.Serialized ?? "",
                         TsDynDataValueDimensions = toSicEavValuesDimensions,
-                        EntityId = dbEnt.EntityId
+                        EntityId = entityId
                     };
                     AttributeQueueAdd(() => DbContext.SqlDb.TsDynDataValues.Add(newVal));
                 }

@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Repository.Efc.Sys.DbEntities;
-
-
-namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class Process3New2DbStoreHeader() : Process0Base("DB.EPr3n2")
 {
     public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
@@ -22,16 +19,11 @@ internal class Process3New2DbStoreHeader() : Process0Base("DB.EPr3n2")
 
         if (data.SaveJson)
         {
-            var l3 = l.Fn($"id:{data.NewEntity.EntityId}, guid:{data.NewEntity.EntityGuid}");
             data.DbEntity.Json = data.JsonExport;
             data.DbEntity.ContentType = data.NewEntity.Type.NameId;
-            services.DbStorage.DoAndSaveWithoutChangeDetection(() => services.DbStorage.SqlDb.Update(data.DbEntity),
-                "update json");
-            l3.Done();
         }
-        l.Done($"i:{data.DbEntity.EntityId}, guid:{data.DbEntity.EntityGuid}");
 
-        return l.Return(data);
+        return l.Return(data, $"i:{data.DbEntity.EntityId}, guid:{data.DbEntity.EntityGuid}");
     }
 
 }

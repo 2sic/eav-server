@@ -233,11 +233,11 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
 
     #endregion
 
-    internal void ChangeRelationships(IEntity eToSave, TsDynDataEntity dbEntity, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
+    internal void ChangeRelationships(IEntity eToSave, int entityId, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
     {
         var l = LogDetails.Fn(timer: true);
         // some initial error checking
-        if (dbEntity.EntityId <= 0)
+        if (entityId <= 0)
             throw new("can't work on relationships if entity doesn't have a repository id yet");
 
         DoWhileQueueingRelationships(() =>
@@ -274,16 +274,14 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                                    ?.Select(p => (Guid?)p)
                                    ?? ((IEnumerable<Guid?>)valContents)
                                    .Select(p => p);
-                    AddToQueue(attribDef.AttributeId, guidList.ToList(), dbEntity.EntityId,
-                        !so.PreserveUntouchedAttributes);
+                    AddToQueue(attribDef.AttributeId, guidList.ToList(), entityId, !so.PreserveUntouchedAttributes);
                 }
                 else if (valContents is IEnumerable<int> or IEnumerable<int?>)
                 {
                     var entityIds = valContents as IEnumerable<int?>
                                     ?? ((IEnumerable<int>)valContents)
                                     .Select(v => (int?)v);
-                    AddToQueue(attribDef.AttributeId, entityIds.ToList(), dbEntity.EntityId,
-                        !so.PreserveUntouchedAttributes);
+                    AddToQueue(attribDef.AttributeId, entityIds.ToList(), entityId, !so.PreserveUntouchedAttributes);
                 }
             }
         });

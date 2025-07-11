@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Repository.Efc.Sys.DbEntities;
-
-namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 /// <summary>
 /// Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
@@ -9,12 +7,12 @@ internal class Process3Upd1DbPreload(): Process0Base("Db.EPr3u1")
 {
     public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
     {
+        if (data.IsNew)
+            return data;
+
         base.Process(services, data);
         var l = services.LogDetails.Fn<EntityProcessData>();
-
-        if (data.IsNew)
-            return l.Return(data, "new, skip");
-
+        
         // get the published one (entityId is always the published id)
         var dbEntity = services.DbEntity.GetDbEntityFull(data.NewEntity.EntityId);
 
