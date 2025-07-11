@@ -1,16 +1,16 @@
 ﻿
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
-using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
+using ToSic.Eav.Persistence.Efc.Sys.Services;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 
-internal class ValueQueriesPro(EavDbContext context, ILog parentLog): HelperBase(parentLog, "Efc.ValQry")
+internal class ValueQueriesPro(EfcAppLoaderService appLoader, ILog parentLog): HelperBase(parentLog, "Efc.ValQry")
 {
     internal (IQueryable<TsDynDataValue> Query, List<TsDynDataDimension> Dimensions) AllValuesQuery(int appId)
     {
-        var l = Log.Fn<(IQueryable<TsDynDataValue>, List<TsDynDataDimension>)>(timer: true);
+        var l = Log.IfSummary(appLoader.LogSettings).Fn<(IQueryable<TsDynDataValue>, List<TsDynDataDimension>)>(timer: true);
 
-        var dimensions = context.TsDynDataDimensions.ToList(); // materialise (very fast)
+        var dimensions = appLoader.Context.TsDynDataDimensions.ToList(); // materialise (very fast)
 
         //var values = context.TsDynDataValues
         //        .Join(context.TsDynDataEntities, v => v.EntityId, e => e.EntityId, (v, e) => new { v, e })
@@ -18,7 +18,7 @@ internal class ValueQueriesPro(EavDbContext context, ILog parentLog): HelperBase
         //        .Select(@t => @t.v)
         //    .Include(v => v.TsDynDataValueDimensions);
 
-        var values = context.TsDynDataValues
+        var values = appLoader.Context.TsDynDataValues
             .Where(@t => @t.Entity.AppId == appId)
             .Include(v => v.TsDynDataValueDimensions);
 

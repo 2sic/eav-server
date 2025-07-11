@@ -39,12 +39,13 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     /// Set the init-command as needed
     /// </summary>
     /// <param name="newInitCall"></param>
-    public Generator<TService> SetInit(Action<TService> newInitCall)
+    /// <param name="allowReplace">Allow replacing the set-init</param>
+    public Generator<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
     {
 #if DEBUG
         // Warn if we're accidentally replacing init-call, but only do this on debug
         // In most cases it has no consequences, but we should write code that avoids this
-        if (_initCall != null)
+        if (_initCall != null && !allowReplace)
             throw new($"You tried to call {nameof(SetInit)} twice. This should never happen");
 #endif
         _initCall = newInitCall;

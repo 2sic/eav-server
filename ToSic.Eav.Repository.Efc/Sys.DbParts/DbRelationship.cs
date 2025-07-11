@@ -109,7 +109,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// </summary>
     private void ImportRelationshipQueueAndSave()
     {
-        var l = LogSummary.Fn(timer: true);
+        var lSum = LogSummary.Fn(timer: true);
         // if SaveOptions determines it, clear all existing relationships first
         var fullFlush = _saveQueue
             .Where(r => r.FlushAllEntityRelationships)
@@ -122,7 +122,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
             {
                 FlushChildrenRelationships(fullFlush);
 
-                l.A($"will add relationships⋮{_saveQueue.Count}");
+                LogDetails.A($"will add relationships⋮{_saveQueue.Count}");
 
                 var parentIds = _saveQueue
                     .Select(rel => rel.ParentEntityId)
@@ -130,7 +130,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                 if (parentIds.Any(p => p <= 0))
                     throw new("some parent has no id provided, can't update relationships");
                 var parents = DbContext.Entities.GetDbEntitiesWithChildren(parentIds);
-                l.A("Found parents to map:" + parents.Length);
+                LogDetails.A("Found parents to map:" + parents.Length);
 
                 var allTargets = _saveQueue
                     .Where(rel => rel.ChildEntityGuids != null)
@@ -140,9 +140,9 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                     )
                     .Distinct()
                     .ToArray();
-                l.A("Total target IDs: " + allTargets.Length);
+                LogDetails.A("Total target IDs: " + allTargets.Length);
                 var dbTargetIds = DbContext.Entities.GetMostCurrentDbEntities(allTargets);
-                l.A("Total target entities (should match): " + dbTargetIds.Count);
+                LogDetails.A("Total target entities (should match): " + dbTargetIds.Count);
 
                 var updates = new List<RelationshipUpdatePackage>();
                 foreach (var relationship in _saveQueue)
@@ -174,7 +174,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
         );
 
         _saveQueue.Clear();
-        l.Done("done");
+        lSum.Done("done");
     }
 
     private class RelationshipUpdatePackage(TsDynDataEntity entityStubWithChildren, int attributeId, ICollection<int?> relationships)

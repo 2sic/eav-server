@@ -153,9 +153,17 @@ public class DbStorage(
     /// Logger for the details of the deserialization process.
     /// Goal is that it can be enabled/disabled as needed.
     /// </summary>
-    internal ILog? LogDetails => Log.IfDetails(LogSettings);
+    internal ILog? LogDetails
+    {
+        get => field ??= Log.IfDetails(LogSettings);
+        set;
+    }
 
-    internal ILog? LogSummary => Log.IfSummary(LogSettings);
+    internal ILog? LogSummary
+    {
+        get => field ??= Log.IfSummary(LogSettings);
+        set;
+    }
 
     #endregion
 
@@ -169,10 +177,20 @@ public class DbStorage(
     {
         Init(options.ZoneId, options.AppId, options.ParentAppId);
 
-        // Keep log settings...
-        LogSettings = options.LogSettings;
-        //LogDetails = Log.IfDetails(LogSettings);
-        //LogSummary = Log.IfSummary(LogSettings);
+        ConfigureLogging(options.LogSettings);
+    }
+
+    // WIP, not final architecture...
+    public void ConfigureLogging(LogSettings logSettings)
+    {
+        var l = Log.Fn($"Settings: {logSettings}");
+        // Store settings and reset the loggers, so they retrieve it again next time.
+        LogSettings = logSettings;
+        LogDetails = null;
+        LogSummary = null;
+
+        JsonSerializerGenerator.SetInit(ser => ser.ConfigureLogging(logSettings), allowReplace: true);
+        l.Done();
     }
 
 

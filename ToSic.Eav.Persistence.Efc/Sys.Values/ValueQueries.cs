@@ -1,10 +1,10 @@
 ﻿
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
-using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
+using ToSic.Eav.Persistence.Efc.Sys.Services;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 
-internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(parentLog, "Efc.ValQry")
+internal class ValueQueries(EfcAppLoaderService appLoader, ILog parentLog): HelperBase(parentLog, "Efc.ValQry")
 {
     // 2025-04-28: this is the old version, which was slower - remove ca. 2025-Q3 #EfcSpeedUpValueLoading
     ///// <remarks>
@@ -36,11 +36,11 @@ internal class ValueQueries(EavDbContext context, ILog parentLog): HelperBase(pa
     /// </remarks>
     internal IQueryable<TsDynDataValue> ChunkValuesQuery(ICollection<int> entityIds)
     {
-        var l = Log.Fn<IQueryable<TsDynDataValue>>(timer: true);
+        var l = Log.IfSummary(appLoader.LogSettings).Fn<IQueryable<TsDynDataValue>>(timer: true);
 
         //var dimensions = context.TsDynDataDimensions.ToList(); // materialise (very fast)
 
-        var values = context.TsDynDataValues
+        var values = appLoader.Context.TsDynDataValues
             .Where(v => entityIds.Contains(v.EntityId))
             .Include(v => v.Attribute)
             .Include(v => v.TsDynDataValueDimensions)

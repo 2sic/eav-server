@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Persistence.Efc.Sys.Relationships;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
@@ -9,21 +10,22 @@ using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
-internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, ISysFeaturesService featuresSvc)
-    : HelperBase(efcAppLoader.Log, "Efc.EntLdr")
+internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, ISysFeaturesService featuresSvc)
+    : HelperBase(appLoader.Log, "Efc.EntLdr")
 {
     public const int IdChunkSize = 5000;
     public const int MaxLogDetailsCount = 250;
 
     internal int AddLogCount;
 
-    internal EntityQueries EntityQueries => field ??= new(efcAppLoader.Context, Log);
+    [field: AllowNull, MaybeNull]
+    internal EntityQueries EntityQueries => field ??= new(appLoader.Context, Log);
 
 
     internal TimeSpan LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[]? entityIds = null)
     {
         codeRefTrail.WithHere();
-        var l = Log.Fn<TimeSpan>($"{builder.Reader.AppId}, {entityIds?.Length ?? 0}", timer: true);
+        var l = Log.IfSummary(appLoader.LogSettings).Fn<TimeSpan>($"{builder.Reader.AppId}, {entityIds?.Length ?? 0}", timer: true);
         AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
         var appId = builder.Reader.AppId;
 
@@ -41,7 +43,7 @@ internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDes
         // Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
         var sqlTime = Stopwatch.StartNew();
         if (filterByEntityIds)
-            entityIds = new PublishingHelper(efcAppLoader).AddEntityIdOfPartnerEntities(entityIds);
+            entityIds = new PublishingHelper(appLoader).AddEntityIdOfPartnerEntities(entityIds);
         sqlTime.Stop();
 
         #endregion
@@ -52,16 +54,16 @@ internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDes
         var rawEntities = LoadEntitiesFromDb(appId, entityIds);
         sqlTime.Stop();
 
-        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, !filterByEntityIds, rawEntities, featuresSvc, Log);
+        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, !filterByEntityIds, rawEntities, featuresSvc, Log.IfDetails(appLoader.LogSettings));
 
-        var relLoader = new RelationshipLoader(efcAppLoader, detailsLoadSpecs);
+        var relLoader = new RelationshipLoader(appLoader, detailsLoadSpecs);
         var relatedEntities = relLoader.LoadRelationships();
         codeRefTrail.AddMessage($"Raw entities: {rawEntities.Count}");
 
         // load attributes & values
         var attributes = featuresSvc.IsEnabled(BuiltInFeatures.SqlLoadPerformance)
-            ? new ValueLoaderPro(efcAppLoader, detailsLoadSpecs).LoadValues()
-            : new ValueLoaderStandard(efcAppLoader, detailsLoadSpecs).LoadValues();
+            ? new ValueLoaderPro(appLoader, detailsLoadSpecs).LoadValues()
+            : new ValueLoaderStandard(appLoader, detailsLoadSpecs).LoadValues();
 
         #endregion
 
@@ -69,10 +71,10 @@ internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDes
 
         var serializer = dataDeserializer.New();
         serializer.Initialize(builder.Reader);
-        serializer.ConfigureLogging(efcAppLoader.LogSettings);
-        l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
+        serializer.ConfigureLogging(appLoader.LogSettings);
+        l.A($"🪵 Using LogSettings: {appLoader.LogSettings}");
 
-        var logDetails = efcAppLoader.LogSettings.Enabled && efcAppLoader.LogSettings.Details;
+        var logDetails = appLoader.LogSettings.Enabled && appLoader.LogSettings.Details;
 
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)
@@ -80,7 +82,7 @@ internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDes
             if (AddLogCount++ == MaxLogDetailsCount)
                 l.A($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-            var newEntity = EntityBuildHelper.BuildNewEntity(dataBuilder, builder.Reader, rawEntity, serializer, relatedEntities, attributes, efcAppLoader.PrimaryLanguage);
+            var newEntity = EntityBuildHelper.BuildNewEntity(dataBuilder, builder.Reader, rawEntity, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage);
 
             // If entity is a draft, also include references to Published Entity
             builder.Add(newEntity, rawEntity.PublishedEntityId, logDetails && AddLogCount <= MaxLogDetailsCount);
@@ -97,7 +99,7 @@ internal class EntityLoader(EfcAppLoaderService efcAppLoader, Generator<IDataDes
 
     public List<TempEntity> LoadEntitiesFromDb(int appId, int[] entityIds, string? filterJsonType = null)
     {
-        var l = Log.Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterJsonType)}: '{filterJsonType}'", timer: true);
+        var l = Log.IfSummary(appLoader.LogSettings).Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterJsonType)}: '{filterJsonType}'", timer: true);
 
         var entitiesQuery = EntityQueries.EntitiesOfAppQuery(appId, entityIds, filterJsonType);
 

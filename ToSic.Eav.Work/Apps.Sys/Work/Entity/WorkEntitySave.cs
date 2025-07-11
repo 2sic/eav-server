@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Entities;
@@ -20,7 +21,8 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntitySave(
     LazySvc<DataBuilder> multiBuilder,
     AppsCacheSwitch appsCache,
-    LazySvc<IImportExportEnvironment> environmentLazy
+    LazySvc<IImportExportEnvironment> environmentLazy,
+    DataImportLogSettings importLogSettings
     )
     : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntSav", connect: [multiBuilder, appsCache, environmentLazy])
 {
@@ -103,6 +105,7 @@ public class WorkEntitySave(
 
             List<int> intIds = null!;
             var dc = AppWorkCtx.DbStorage;
+            dc.ConfigureLogging(importLogSettings.GetLogSettings());
             dc.DoButSkipAppCachePurge(() => intIds = dc.Save(pairsToSave));
 
             // Tell the cache to do a partial update

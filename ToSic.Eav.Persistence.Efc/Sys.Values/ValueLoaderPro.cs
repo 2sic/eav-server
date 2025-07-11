@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.Dimensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
@@ -9,11 +10,12 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSpecs specs)
     : ValueLoaderStandard(appLoader, specs, "Efc.VlLdPr")
 {
-    private ValueQueriesPro ValueQueries => field ??= new(AppLoader.Context, Log);
+    [field: AllowNull, MaybeNull]
+    private ValueQueriesPro ValueQueries => field ??= new(AppLoader, Log);
 
     public override Dictionary<int, ICollection<TempAttributeWithValues>> LoadValues()
     {
-        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
+        var l = Log.IfDetails(appLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
 
         // Check if we should use the optimized code, which only works for loading everything
         if (!Specs.LoadAll)

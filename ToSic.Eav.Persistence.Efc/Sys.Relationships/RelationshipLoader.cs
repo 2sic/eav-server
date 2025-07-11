@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Persistence.Efc.Sys.TempModels;
@@ -10,15 +11,16 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Relationships;
 
 internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLoadSpecs specs) : HelperBase(appLoader.Log, "Efc.ValLdr")
 {
-    internal RelationshipQueries RelationshipQueries => field ??= new(appLoader.Context, Log);
+    [field: AllowNull, MaybeNull]
+    internal RelationshipQueries RelationshipQueries => field ??= new(appLoader, Log);
 
     public Dictionary<int, ICollection<TempRelationshipList>> LoadRelationships()
     {
-        var l = Log.Fn<Dictionary<int, ICollection<TempRelationshipList>>>(timer: true);
+        var l = Log.IfDetails(appLoader.LogSettings).Fn<Dictionary<int, ICollection<TempRelationshipList>>>(timer: true);
 
         // Load relationships in batches / chunks
         var sqlTime = Stopwatch.StartNew();
-        var lRelationshipSql = Log.Fn("Relationship SQL", timer: true);
+        var lRelationshipSql = Log.IfDetails(appLoader.LogSettings).Fn("Relationship SQL", timer: true);
         var relChunks = specs.IdsToLoadChunks
             .Select(idList => GetRelationshipChunkOptimizedSql(specs.AppId, idList))
             .SelectMany(chunk => chunk)
@@ -53,7 +55,7 @@ internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLo
     //}
     private List<LoadingRelationship> GetRelationshipChunkOptimizedSql(int appId, List<int> entityIds)
     {
-        var l = Log.Fn<List<LoadingRelationship>>($"app: {appId}, ids: {entityIds.Count}", timer: true);
+        var l = Log.IfDetails(appLoader.LogSettings).Fn<List<LoadingRelationship>>($"app: {appId}, ids: {entityIds.Count}", timer: true);
         var relationships = RelationshipQueries
             .RelationshipChunkQueryOptimized(appId, entityIds)
             .Select(rel => new LoadingRelationship(rel, rel.Attribute.StaticName))
@@ -89,7 +91,7 @@ internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLo
     //}
     private Dictionary<int, ICollection<TempRelationshipList>> GroupUniqueRelationshipsOptimized(IReadOnlyCollection<LoadingRelationship> relationships)
     {
-        var l = Log.Fn<Dictionary<int, ICollection<TempRelationshipList>>>($"items: {relationships.Count}", timer: true);
+        var l = Log.IfDetails(appLoader.LogSettings).Fn<Dictionary<int, ICollection<TempRelationshipList>>>($"items: {relationships.Count}", timer: true);
 
         l.A("experiment!");
         // Filter out duplicates, as the relationship manager doesn't need/want to count them, just establish relationship
