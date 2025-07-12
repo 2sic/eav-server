@@ -27,7 +27,13 @@ partial class DbEntity
             Json = null // use null, as we must wait to serialize till we have the entityId
         };
 
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(dbEnt), "save new");
+        // Moved down to better batch
+        //DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(dbEnt), "save new");
         return l.ReturnAsOk(dbEnt);
+    }
+
+    public void SaveNew(IEnumerable<TsDynDataEntity> newDbEntities)
+    {
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.AddRange(newDbEntities), "save new");
     }
 }

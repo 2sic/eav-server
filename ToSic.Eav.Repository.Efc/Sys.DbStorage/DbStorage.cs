@@ -12,6 +12,7 @@ using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
 using ToSic.Sys.Utils.Compression;
 
@@ -27,9 +28,10 @@ public class DbStorage(
     ILogStore logStore,
     LazySvc<Compressor> compressor,
     DataBuilder builder,
-    DataImportLogSettings importLogSettings)
+    DataImportLogSettings importLogSettings,
+    ISysFeaturesService features)
     : ServiceBase("Db.Data",
-        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder, importLogSettings]
+        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder, importLogSettings, features]
     ), IStorage, IAppIdentity
 {
 
@@ -68,8 +70,7 @@ public class DbStorage(
             try
             {
                 // try to get using dependency injection
-                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-                // Paranoid...
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract - Paranoid...
                 return field = userLazy.Value?.IdentityToken ?? UserNameUnknown;
             }
             catch
@@ -142,6 +143,8 @@ public class DbStorage(
     }
 
     internal Generator<JsonSerializer> JsonSerializerGenerator { get; } = jsonSerializerGenerator;
+
+    internal ISysFeaturesService Features => features;
 
     #region Logging
 
@@ -374,8 +377,8 @@ public class DbStorage(
     public void DoWhileQueuingVersioning(Action action)
         => Versioning.DoAndSaveHistoryQueue(action);
 
-    public void DoWhileQueueingRelationships(Action action)
-        => Relationships.DoWhileQueueingRelationships(action);
+    //public void DoWhileQueueingRelationships(Action action)
+    //    => Relationships.DoWhileQueueingRelationships(action);
 
     /// <summary>
     /// Save a list of entities together in a transaction.

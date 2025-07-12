@@ -9,7 +9,11 @@ internal class Process3New2DbStoreHeader() : Process0Base("DB.EPr3n2")
         if (!data.IsNew)
             return l.Return(data, "not new, skip");
 
-        data = data with { DbEntity = services.DbEntity.CreateDbRecord(data.NewEntity, services.TransactionId, data.ContentTypeId) };
+        data = data with
+        {
+            DbEntity = services.DbEntity.CreateDbRecord(data.NewEntity, services.TransactionId, data.ContentTypeId)
+        };
+        services.DbEntity.SaveNew([data.DbEntity]);
 
         // update the ID - for versioning and/or json persistence
         data = data with { NewEntity = services.Builder.Entity.CreateFrom(data.NewEntity, id: data.DbEntity.EntityId) };

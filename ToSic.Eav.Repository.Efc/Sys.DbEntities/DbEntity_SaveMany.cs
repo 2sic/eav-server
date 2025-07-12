@@ -1,12 +1,13 @@
 ﻿using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
-    internal ProcessEntityForDbStorage Preprocessor { get; set; } = null!;
+    internal SaveEntityProcess Preprocessor { get; set; } = null!;
 
     /// <summary>
     /// Save a list of entities in one large go
@@ -15,7 +16,10 @@ partial class DbEntity
     /// <returns></returns>
     internal List<int> SaveEntities(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = LogDetails.Fn<List<int>>($"count:{entityOptionPairs?.Count}");
+        // wrong toggle, but it's something people don't have ATM
+        var useNewSave = DbContext.Features.IsEnabled(BuiltInFeatures.LinqListOptimizations);
+
+        var l = LogSummary.Fn<List<int>>($"count:{entityOptionPairs?.Count}; Optimized: {useNewSave}");
 
         if (entityOptionPairs == null || entityOptionPairs.Count == 0)
             return l.Return([], "Entities to save are null, skip");
@@ -26,11 +30,6 @@ partial class DbEntity
         Preprocessor = new(DbContext, builder);
         Preprocessor.Start(entityOptionPairs);
 
-        //StructureAnalyzer.FlushTypeAttributesCache(); // for safety, in case previously new types were imported
-
-        //_entityDraftMapCache = DbContext.Publishing
-        //    .GetDraftBranchMap(entityOptionPairs.Select(e => e.Entity.EntityId).ToList());
-
         DbContext.DoInTransaction(
             () => DbContext.Versioning.DoAndSaveHistoryQueue(
                 () => DbContext.Relationships.DoWhileQueueingRelationships(
@@ -39,14 +38,24 @@ partial class DbEntity
                         {
                             foreach (var pair in entityOptionPairs)
                             {
+                                // Logging, but only the first 250 or so entries...
                                 idx++;
                                 var logDetails = idx < DbConstant.MaxToLogDetails;
                                 if (idx == DbConstant.MaxToLogDetails)
                                     l.A($"Hit #{idx}, will stop logging details");
-                                DbContext.DoAndSaveWithoutChangeDetection(
-                                    () => ids.Add(SaveEntity(pair, logDetails)),
-                                    "SaveMany"
-                                );
+
+                                // Actually do the work...
+                                if (useNewSave)
+                                {
+                                    Preprocessor.Process(pair, logDetails);
+                                }
+                                else
+                                {
+                                    DbContext.DoAndSaveWithoutChangeDetection(
+                                        () => ids.Add(SaveEntity(pair, logDetails)),
+                                        "SaveMany"
+                                    );
+                                }
                             }
                         }
                     )
