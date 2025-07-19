@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
-internal class EntityAnalyzeStructure(DbStorage.DbStorage DbContext, ILog? LogDetails) : HelperBase(LogDetails, "Db.AzStrc")
+internal class EntityAnalyzeStructure(DbStorage.DbStorage dbStorage, ILog? log) : HelperBase(log, "Db.AzStrc")
 {
     internal (int ContentTypeId, List<TsDynDataAttribute> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
     {
-        var l = LogDetails.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
+        var l = log.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
         if (saveJson)
             return l.Return((DbConstant.RepoIdForJsonEntities, []), $"json - no attributes, CT: {DbConstant.RepoIdForJsonEntities}");
 
@@ -14,7 +14,7 @@ internal class EntityAnalyzeStructure(DbStorage.DbStorage DbContext, ILog? LogDe
         {
             var typeNameId = newEnt.Type.NameId;
             if (!_ctNameIdCache.ContainsKey(typeNameId))
-                _ctNameIdCache[typeNameId] = DbContext.AttribSet.GetDbContentTypeId(typeNameId);
+                _ctNameIdCache[typeNameId] = dbStorage.AttribSet.GetDbContentTypeId(typeNameId);
             contentTypeId = _ctNameIdCache[typeNameId];
         }
 
@@ -22,7 +22,7 @@ internal class EntityAnalyzeStructure(DbStorage.DbStorage DbContext, ILog? LogDe
             l.A($"Id on type: {newEnt.Type.Id}; NameId: {newEnt.Type.NameId}; Final ID: {contentTypeId}");
 
         if (!_ctCache.ContainsKey(contentTypeId))
-            _ctCache[contentTypeId] = DbContext.Attributes.GetAttributeDefinitions(contentTypeId).ToList();
+            _ctCache[contentTypeId] = dbStorage.Attributes.GetAttributeDefinitions(contentTypeId).ToList();
         var attributes = _ctCache[contentTypeId];
 
         if (logDetails)
