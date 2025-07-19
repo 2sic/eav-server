@@ -17,11 +17,12 @@ partial class DbEntity
     internal List<int> SaveEntities(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
         // wrong toggle, but it's something people don't have ATM
-        var useNewSave = DbContext.Features.IsEnabled(BuiltInFeatures.LinqListOptimizations);
+        var useNewSave = DbContext.Features.IsEnabled(BuiltInFeatures.DataImportParallel);
+        var useParallel = DbContext.Features.IsEnabled(BuiltInFeatures.DataImportParallel);
 
-        var l = LogSummary.Fn<List<int>>($"count:{entityOptionPairs?.Count}; Optimized: {useNewSave}");
+        var l = LogSummary.Fn<List<int>>($"count:{entityOptionPairs.Count}; Optimized: {useNewSave}");
 
-        if (entityOptionPairs == null || entityOptionPairs.Count == 0)
+        if (entityOptionPairs.Count == 0)
             return l.Return([], "Entities to save are null, skip");
 
         var ids = new List<int>();

@@ -2,7 +2,7 @@
 
 namespace ToSic.Sys.Capabilities.Features;
 
-public partial class BuiltInFeatures
+public partial class  BuiltInFeatures
 {
     public static List<FeatureLicenseRule> ForPatronPerformanceAutoEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronPerformance, true);
 
@@ -48,5 +48,25 @@ public partial class BuiltInFeatures
         }
     };
 
+    // TODO: guid not final!
+    public static readonly Feature DataImportParallel = new()
+    {
+        NameId = nameof(DataImportParallel),
+        Guid = new("f64be738-0000-4f15-0000-418370000855"),
+        Name = "DataImportParallel TODO",
+        IsPublic = false,
+        Ui = true,
+        Description = "DataImportParallel TODO.",
+        Security = FeaturesCatalogRules.Security0Neutral,
+        LicenseRules = ForPatronPerformanceAutoEnabled,
+
+        //// depending on the state of this feature, we will activate some static code enhancements
+        //RunOnStateChange = (state, log) =>
+        //{
+        //    var isEnabled = state.IsEnabled;
+        //    SysPerfSettings.CacheListAutoIndex = isEnabled;
+        //    log.A($"Set {nameof(SysPerfSettings.CacheListAutoIndex)} = {SysPerfSettings.PreferArray}");
+        //}
+    };
 
 }
