@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.Dimensions;
+using ToSic.Eav.Data.Sys.EntityPair;
 
 namespace ToSic.Eav.Data.Sys.Save;
 
@@ -39,4 +40,18 @@ public record SaveOptions
         $"UnknownLangs:{PreserveUnknownLanguages}, " +
         $"draft-branch:{DraftShouldBranch}, Lang1:{PrimaryLanguage}, langs⋮{Languages?.Count}, " +
         $"DiscardAttrsNotInType:{DiscardAttributesNotInType}";
+
+    /// <summary>
+    /// Add a specific save options to a list of entities.
+    /// Probably WIP, as it will probably not be needed once all code works with entity-pairs
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <returns></returns>
+    public ICollection<IEntityPair<SaveOptions>> AddToAll(List<IEntity> entities)
+    {
+        var pairs = entities
+            .Select(IEntityPair<SaveOptions> (e) => new EntityPair<SaveOptions>(e, this))
+            .ToListOpt();
+        return pairs;
+    }
 }

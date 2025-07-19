@@ -388,9 +388,7 @@ public class DbStorage(
     /// <returns></returns>
     public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
     {
-        var pairs = entities
-            .Select(IEntityPair<SaveOptions> (e) => new EntityPair<SaveOptions>(e, saveOptions))
-            .ToListOpt();
+        var pairs = saveOptions.AddToAll(entities);
         return Save(pairs);
     }
 
