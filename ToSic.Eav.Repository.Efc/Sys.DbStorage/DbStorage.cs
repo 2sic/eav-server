@@ -377,21 +377,6 @@ public class DbStorage(
     public void DoWhileQueuingVersioning(Action action)
         => Versioning.DoAndSaveHistoryQueue(action);
 
-    //public void DoWhileQueueingRelationships(Action action)
-    //    => Relationships.DoWhileQueueingRelationships(action);
-
-    /// <summary>
-    /// Save a list of entities together in a transaction.
-    /// </summary>
-    /// <param name="entities"></param>
-    /// <param name="saveOptions">never null!</param>
-    /// <returns></returns>
-    public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
-    {
-        var pairs = saveOptions.AddToAll(entities);
-        return Save(pairs);
-    }
-
     /// <summary>
     /// Save a list of entities together in a transaction.
     /// </summary>

@@ -149,7 +149,9 @@ partial class DbContentType
             md.KeyNumber = attributeId;
             entities.Add(entity);
         }
-        DbContext.Save(entities, saveOptions); // don't use the standard save options, as this is attributes only
+
+        var withOptions = saveOptions.AddToAll(entities);
+        DbContext.Save(withOptions); // don't use the standard save options, as this is attributes only
     }
         
     /// <summary>
@@ -166,7 +168,8 @@ partial class DbContentType
             
         var entities = new List<IEntity>();
         // if possible, try to get the complete list which is usually hidden in IMetadataOfItem
-        var sourceList = (metadata as IMetadataInternals)?.AllWithHidden as IEnumerable<IEntity> 
+        var sourceList = (metadata as IMetadataInternals)
+                         ?.AllWithHidden as IEnumerable<IEntity> 
                          ?? metadata;
         foreach (var entity in sourceList)
         {
@@ -180,7 +183,8 @@ partial class DbContentType
             md.KeyString = nameId;
             entities.Add(entity);
         }
-        DbContext.Save(entities, saveOptions); // don't use the standard save options, as this is attributes only
+        var withOptions = saveOptions.AddToAll(entities);
+        DbContext.Save(withOptions); // don't use the standard save options, as this is attributes only
     }
 
 }

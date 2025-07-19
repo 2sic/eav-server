@@ -160,7 +160,6 @@ public class ImportService(
 
                 var newIEntities = newIEntitiesRaw.ChunkBy(chunkSize);
 
-
                 // Import in chunks
                 var cNum = 0;
                 // HACK 2022-05-05 2dm experimental, but not activated
@@ -174,7 +173,8 @@ public class ImportService(
                     {
                         cNum++;
                         l.A($"Importing Chunk {cNum} #{(cNum - 1) * chunkSize + 1} - #{cNum * chunkSize}");
-                        Storage.DoInTransaction(() => Storage.Save(chunk, SaveOptions));
+                        var withOptions = SaveOptions.AddToAll(chunk);
+                        Storage.DoInTransaction(() => Storage.Save(withOptions));
                     })
                     //))
                     ;

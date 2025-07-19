@@ -30,10 +30,10 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         // load an entity
         var loader1 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb);
         var app1 = loader1.AppStateReaderRawTac(test.AppId);
-        var itm1 = app1.List.One(test.ExistingItem);
+        var itm1 = app1.List.One(test.ExistingItem)!;
 
         // save it
-        dbData.Save([itm1], so);
+        dbData.Save(so.AddToAll([itm1]));
 
         // re-load it
         var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
@@ -74,7 +74,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         var saveEntity = entitySaver.TestCreateMergedForSavingTac(itm1, itmNewTitle, so);
 
         // save it
-        dbData.Save([saveEntity], so);
+        dbData.Save(so.AddToAll([saveEntity]));
 
         // reload it
         var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
@@ -117,7 +117,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         var saveEntity = entitySaver.TestCreateMergedForSavingTac(null, newE, so);
 
         // save it
-        var newId = dbData.Save([saveEntity], so);
+        var newId = dbData.Save(so.AddToAll([saveEntity]));
 
         // reload it
         var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
