@@ -3,10 +3,8 @@
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class Process1Preflight(): Process0Base("DB.EPrc1")
 {
-    public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
+    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
-        base.Process(services, data);
-
         var newEnt = data.NewEntity;
 
         var l = services.LogDetails.Fn<EntityProcessData>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{data.LogDetails}");

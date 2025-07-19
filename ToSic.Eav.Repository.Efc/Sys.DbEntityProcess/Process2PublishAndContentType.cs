@@ -1,9 +1,8 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class Process2PublishAndContentType() : Process0Base("DB.EPrc2")
 {
-    public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
+    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
-        base.Process(services, data);
         var l = services.LogDetails.Fn<EntityProcessData>();
 
         #region Step 2: check header record - does it already exist, what ID should we use, etc.

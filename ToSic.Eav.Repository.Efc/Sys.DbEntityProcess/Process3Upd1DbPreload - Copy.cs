@@ -5,12 +5,11 @@
 /// </summary>
 internal class Process3Upd1DbPreload(): Process0Base("Db.EPr3u1")
 {
-    public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
+    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
         if (data.IsNew)
             return data;
 
-        base.Process(services, data);
         var l = services.LogDetails.Fn<EntityProcessData>();
         
         // get the published one (entityId is always the published id)

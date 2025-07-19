@@ -7,12 +7,11 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 /// </summary>
 internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
 {
-    public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
+    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
         if (data.IsNew)
             return data;
 
-        base.Process(services, data);
 
         var dbEnt = data.DbEntity!;
         var newEnt = data.NewEntity;

@@ -1,9 +1,8 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class Process3New3DbStoreJson() : Process0Base("DB.EPr3n3")
 {
-    public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
+    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
-        base.Process(services, data);
         var l = services.LogDetails.Fn<EntityProcessData>();
 
         if (!data.IsNew)

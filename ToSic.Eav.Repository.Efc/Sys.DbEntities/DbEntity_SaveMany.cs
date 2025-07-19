@@ -48,13 +48,23 @@ partial class DbEntity
                                 // Actually do the work...
                                 if (useNewSave)
                                 {
-                                    Preprocessor.Process(pair, logDetails);
+                                    DbContext.DoAndSaveWithoutChangeDetection(
+                                        () =>
+                                        {
+                                            ICollection<EntityProcessData> data = [EntityProcessData.CreateInstance(pair, logDetails)];
+                                            var result = Preprocessor.Process(data);
+                                            ids.Add(result.First().FinalId);
+                                            TempLastSaveGuid = result.First().FinalGuid;
+                                        },
+                                        "SaveMany-new"
+                                    );
+
                                 }
                                 else
                                 {
                                     DbContext.DoAndSaveWithoutChangeDetection(
                                         () => ids.Add(SaveEntity(pair, logDetails)),
-                                        "SaveMany"
+                                        "SaveMany-old"
                                     );
                                 }
                             }

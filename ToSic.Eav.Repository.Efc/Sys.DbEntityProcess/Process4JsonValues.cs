@@ -3,12 +3,11 @@
 
 internal class Process4JsonValues(): Process0Base("Db.EPr4JV")
 {
-    public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
+    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
         if (!data.SaveJson)
             return data;
 
-        base.Process(services, data);
         var l = services.LogDetails.Fn<EntityProcessData>();
 
         // careful - this is different from before, but I believe the previous one was wrong...

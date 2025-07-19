@@ -5,12 +5,8 @@
 /// </summary>
 internal class Process6Versioning(): Process0Base("Db.EPr6Vr")
 {
-    public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
+    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
-        //if (data.IsNew)
-        //    return data;
-
-        base.Process(services, data);
         var l = services.LogDetails.Fn<EntityProcessData>();
 
         if (data.JsonExport == null)

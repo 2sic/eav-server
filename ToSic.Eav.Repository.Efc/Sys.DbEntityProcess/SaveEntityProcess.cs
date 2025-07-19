@@ -23,46 +23,46 @@ internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataBuilder buil
 
     #endregion
 
-    public EntityProcessData Process(IEntityPair<SaveOptions> entityOptionPair, bool logDetails)
+    public ICollection<EntityProcessData> Process(ICollection<EntityProcessData> data)
     {
         // 1. Prepare data
-        var data = new EntityProcessData
-        {
-            NewEntity = entityOptionPair.Entity,
-            Options = entityOptionPair.Partner,
-            LogDetails = logDetails,
-            Progress = 0,
-        };
+        //ICollection<EntityProcessData> data = [EntityProcessData.CreateInstance(entityOptionPair, logDetails)];
 
         foreach (var process in GetStandardProcess())
         {
             data = process.Process(Services, data.NextStep());
-            if (data.Exception != null)
-                throw data.Exception;
+            if (data.HasException(out var exception))
+                throw exception;
         }
 
         return data;
     }
 
-    private List<IEntityProcess> GetStandardProcess() =>
-    [
-        new Process1Preflight(),
-        new Process2PublishAndContentType(),
-        
-        new Process3New1LastChecks(),
-        new Process3New2DbStoreHeader(),
-        new Process3New3DbStoreJson(),
+    private List<IEntityProcess> GetStandardProcess()
+    {
+        List<IEntityProcess> processors = 
+        [
+            new Process1Preflight(),
+            new Process2PublishAndContentType(),
 
-        new Process3Upd1DbPreload(),
-        new Process3Upd2PrepareUpdate(),
-        new Process3Upd3ClearValues(),
+            new Process3New1LastChecks(),
+            new Process3New2DbStoreHeader(),
+            new Process3New3DbStoreJson(),
 
-        new Process4TableValues(),
-        new Process4JsonValues(),
+            new Process3Upd1DbPreload(),
+            new Process3Upd2PrepareUpdate(),
+            new Process3Upd3ClearValues(),
 
-        new Process5TableRelationships(),
+            new Process4TableValues(),
+            new Process4JsonValues(),
 
-        new Process6Versioning(),
-    ];
+            new Process5TableRelationships(),
 
+            new Process6Versioning(),
+        ];
+
+        foreach (var process in processors)
+            process.LinkLog(Services.LogDetails);
+        return processors;
+    }
 }

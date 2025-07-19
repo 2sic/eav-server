@@ -5,12 +5,11 @@
 /// </summary>
 internal class Process3Upd3ClearValues(): Process0Base("Db.EPr3u3")
 {
-    public override EntityProcessData Process(EntityProcessServices services, EntityProcessData data)
+    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
         if (data.IsNew)
             return data;
 
-        base.Process(services, data);
         var l = services.LogDetails.Fn<EntityProcessData>();
 
         // first, clean up all existing attributes / values (flush)
