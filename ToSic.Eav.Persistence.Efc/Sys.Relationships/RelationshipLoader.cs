@@ -33,7 +33,7 @@ internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLo
 
         appLoader.AddSqlTime(sqlTime.Elapsed);
 
-        return l.Return(relatedEntities, $"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms");
+        return l.Return(relatedEntities, $"Found {relatedEntities.Count} entity relationships in {sqlTime.ElapsedMilliseconds}ms; {appLoader.Context.TrackingInfo()}");
     }
 
     /// <summary>

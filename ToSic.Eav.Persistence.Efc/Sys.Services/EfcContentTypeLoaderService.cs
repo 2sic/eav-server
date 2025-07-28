@@ -6,6 +6,7 @@ using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Sys;
+using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
@@ -90,7 +91,9 @@ internal class EfcContentTypeLoaderService(
         var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
+
         var query = efcAppLoader.Context.TsDynDataContentTypes
+            .AsNoTrackingOptional(featuresSvc)
             .Where(set => set.AppId == appId && set.TransDeletedId == null);
 
         var contentTypesSql = query
@@ -216,7 +219,7 @@ internal class EfcContentTypeLoaderService(
         efcAppLoader.AddSqlTime(sqlTime.Elapsed);
         var final = newTypes.ToImmutableOpt();
 
-        return l.Return(final, $"{final.Count}");
+        return l.Return(final, $"{final.Count}; {efcAppLoader.Context.TrackingInfo()}");
     }
 
 }

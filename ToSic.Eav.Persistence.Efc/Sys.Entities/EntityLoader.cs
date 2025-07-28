@@ -19,7 +19,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
     internal int AddLogCount;
 
     [field: AllowNull, MaybeNull]
-    internal EntityQueries EntityQueries => field ??= new(appLoader.Context, Log);
+    internal EntityQueries EntityQueries => field ??= new(appLoader.Context, appLoader.FeaturesService, Log);
 
 
     internal TimeSpan LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[]? entityIds = null)
@@ -121,7 +121,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
                 Json = e.Json,
             })
             .ToList();
-        l.A($"Query executed and converted to {nameof(TempEntity)}");
+        l.A($"Query executed and converted to {nameof(TempEntity)}; {appLoader.Context.TrackingInfo()}");
 
         return l.Return(rawEntities, $"found: {rawEntities.Count}");
     }

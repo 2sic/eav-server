@@ -83,6 +83,8 @@ public class EfcAppLoaderService(
 
     #region LogSettings
 
+    public ISysFeaturesService FeaturesService => sysFeaturesSvc;
+
     [field: AllowNull, MaybeNull]
     public LogSettings LogSettings => field
         ??= new AppLoaderLogSettings(sysFeaturesSvc).GetLogSettings();

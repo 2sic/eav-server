@@ -1,5 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Sys;
+using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 
@@ -13,12 +15,15 @@ internal class EfcZoneLoaderService(EfcAppLoaderService appLoader): HelperBase(a
         var l = log.Fn<IDictionary<int, Zone>>(timer: true);
 
         // Build the tree of zones incl. their default(Content) and Primary apps
-        var lSql = log.Fn("Zone SQL", timer: true);
+        var lSql = log.Fn($"Zone SQL; {appLoader.Context.TrackingInfo()}", timer: true);
+
         var zonesSql = appLoader.Context.TsDynDataZones
+            .AsNoTrackingOptional(appLoader.FeaturesService)
             .Include(z => z.TsDynDataApps)
             .Include(z => z.TsDynDataDimensions)
             .ThenInclude(d => d.ParentNavigation)
             .ToList();
+
         lSql.Done($"Zones: {zonesSql.Count}");
 
         var zones = zonesSql
@@ -43,7 +48,7 @@ internal class EfcZoneLoaderService(EfcAppLoaderService appLoader): HelperBase(a
 
                     return new Zone(z.ZoneId, primary, content, appDictionary, languages);
                 });
-        return l.Return(zones, $"{zones.Count}");
+        return l.Return(zones, $"{zones.Count}; {appLoader.Context.TrackingInfo()}");
     }
 
 }
