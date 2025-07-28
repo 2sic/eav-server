@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 
 internal class Process5TableRelationships(): Process0Base("Db.EPr5TR")

@@ -13,7 +13,7 @@ partial class DbEntity
 
         // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
         // note that as this is a DB-entity, the EntityId is actually the repositoryId
-        var entities = DbContext.Entities.GetDbEntities(repositoryId);
+        var entities = DbContext.Entities.GetDbEntitiesFull(repositoryId);
 
 
         #region Delete Related Records (Values, Value-Dimensions, Relationships)

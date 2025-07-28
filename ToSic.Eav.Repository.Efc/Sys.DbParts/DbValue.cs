@@ -10,7 +10,8 @@ internal class DbValue(DbStorage.DbStorage db) : DbPartBase(db, "Db.Values")
         var l = LogDetails.Fn($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
         // Clear values on target (including Dimensions). Must be done in separate steps, would cause un-allowed null-Foreign-Keys
         var delCount = 0;
-        if (target.TsDynDataValues.Any()) delCount += target.TsDynDataValues.Count();
+        if (target.TsDynDataValues.Any())
+            delCount += target.TsDynDataValues.Count();
 
         // Add all Values with Dimensions
         var cloneCount = 0;

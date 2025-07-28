@@ -6,19 +6,41 @@
 internal class Process3Upd3ClearValues(): Process0Base("Db.EPr3u3")
 {
     public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
+        => throw new NotSupportedException("Single item call not supported");
+
+    //{
+    //    if (data.IsNew)
+    //        return data;
+    //    var l = services.LogDetails.Fn<EntityProcessData>();
+    //    // first, clean up all existing attributes / values (flush)
+    //    // this is necessary after remove, because otherwise EF state tracking gets messed up
+    //    services.DbStorage.DoAndSave(
+    //        () => data.DbEntity!.TsDynDataValues.Clear(),
+    //        "Flush values"
+    //    );
+    //    return l.Return(data);
+    //}
+
+    public override ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
     {
-        if (data.IsNew)
+        // Skip if all are new
+        if (data.All(d => d.IsNew))
             return data;
 
-        var l = services.LogDetails.Fn<EntityProcessData>();
+        var l = GetLogCall(services, logProcess);
 
         // first, clean up all existing attributes / values (flush)
         // this is necessary after remove, because otherwise EF state tracking gets messed up
         services.DbStorage.DoAndSave(
-            () => data.DbEntity!.TsDynDataValues.Clear(),
+            () =>
+            {
+                foreach (var entityProcessData in data.Where(d => !d.IsNew))
+                    entityProcessData.DbEntity!.TsDynDataValues.Clear();
+            },
             "Flush values"
         );
 
         return l.Return(data);
+
     }
 }

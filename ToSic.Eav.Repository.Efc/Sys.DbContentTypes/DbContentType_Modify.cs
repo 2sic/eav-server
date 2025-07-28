@@ -83,11 +83,12 @@ partial class DbContentType
 
 
     internal void ExtendSaveContentTypes(List<IContentType> contentTypes, SaveOptions saveOptions)
-        => DbContext.Relationships.DoWhileQueueingRelationships(()
-            => contentTypes.Cast<ContentType>()
-                .ToList()
-                .ForEach(ct => ExtendSaveContentTypes(ct, saveOptions))
-        );
+        => DbContext.Relationships.DoWhileQueueingRelationships(() =>
+        {
+            var typed = contentTypes.Cast<ContentType>().ToList();
+            foreach (var ct in typed)
+                ExtendSaveContentTypes(ct, saveOptions);
+        });
 
     /// <summary>
     /// Import a Content-Type with all Attributes and AttributeMetaData

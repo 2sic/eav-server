@@ -12,15 +12,21 @@ internal abstract class Process0Base(string logName): HelperBase(null, logName),
     /// <summary>
     /// Process all - often not implemented again; unless there are certain optimizations.
     /// </summary>
-    /// <param name="services"></param>
-    /// <param name="data"></param>
     /// <returns></returns>
-    public virtual ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data)
+    public virtual ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
     {
+        var l = GetLogCall(services, logProcess);
+
         var result = data
             .Select(d => ProcessOne(services, d))
             .ToListOpt();
-        return result;
+
+        return l.Return(result);
     }
 
+    protected ILogCall<ICollection<EntityProcessData>>? GetLogCall(EntityProcessServices services, bool logProcess)
+    {
+        var log = logProcess ? services.LogSummary : services.LogDetails;
+        return log.Fn<ICollection<EntityProcessData>>(GetType().Name, timer: true);
+    }
 }

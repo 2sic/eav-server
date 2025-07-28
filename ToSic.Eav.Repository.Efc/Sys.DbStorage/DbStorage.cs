@@ -283,7 +283,7 @@ public class DbStorage(
 
     internal void DoAndSave(Action action, string? message = null)
     {
-        var l = LogDetails.Fn(message: message, timer: true);
+        var l = LogSummary.Fn(message: message, timer: true);
         action.Invoke();
         SqlDb.SaveChanges();
         l.Done();
@@ -292,7 +292,7 @@ public class DbStorage(
 
     internal void DoAndSaveWithoutChangeDetection(Action action, string? message = null)
     {
-        var l = LogDetails.Fn(timer: true, message: message);
+        var l = LogSummary.Fn(timer: true, message: message);
         action.Invoke();
 
         var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;

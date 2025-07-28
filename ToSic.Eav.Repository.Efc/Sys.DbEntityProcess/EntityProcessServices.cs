@@ -7,7 +7,7 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class EntityProcessServices(
     DbStorage.DbStorage dbStorage,
     DataBuilder builder,
-    ICollection<IEntityPair<SaveOptions>> entityOptionPairs) : ServiceBase("DB.PrepEy")
+    ICollection<IEntityPair<SaveOptions>> entityOptionPairs, ILog parentLog) : HelperBase(parentLog, "DB.PrepEy")
 {
     #region Logging
 

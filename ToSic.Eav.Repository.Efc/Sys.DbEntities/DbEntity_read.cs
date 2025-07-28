@@ -60,11 +60,12 @@ partial class DbEntity
         return l.Return(found, found.Length.ToString());
     }
 
-    private List<TsDynDataEntity> GetDbEntities(int[] entityIds)
+    public List<TsDynDataEntity> GetDbEntitiesFull(int[] entityIds)
     {
-        var queryBase = EntityQuery
-            .Include(e => e.TsDynDataValues)
-            .ThenInclude(v => v.TsDynDataValueDimensions);
+        // 2025-07-28 2dm removed the Include, as they are currently in the EntityQuery - though not sure if relevant
+        var queryBase = EntityQuery;
+            //.Include(e => e.TsDynDataValues)
+            //.ThenInclude(v => v.TsDynDataValueDimensions);
 
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
         // => IncludeMultiple(EntityQuery, includes).Where(e => entityIds.Contains(e.EntityId)).ToList();
