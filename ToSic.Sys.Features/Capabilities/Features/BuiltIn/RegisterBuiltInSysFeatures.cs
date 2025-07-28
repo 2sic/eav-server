@@ -50,6 +50,7 @@ internal class RegisterBuiltInSysFeatures
             LinqListOptimizations, // v20
             CacheListAutoIndex, // v20
             DataImportParallel, // temp v20
+            DbOptimizeTracking, // temp v20
 
             // Patron Infrastructure
             SqlCompressDataTimeline, // v15

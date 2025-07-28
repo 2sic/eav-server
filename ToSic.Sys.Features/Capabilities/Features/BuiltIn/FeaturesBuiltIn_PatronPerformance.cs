@@ -69,4 +69,25 @@ public partial class  BuiltInFeatures
         //}
     };
 
+    // TODO: guid not final!
+    public static readonly Feature DbOptimizeTracking = new()
+    {
+        NameId = nameof(DbOptimizeTracking),
+        Guid = new("52E1AB3F-DEBD-4F97-ACA6-925122B96035"),
+        Name = "DataImproveDbTracking TODO",
+        IsPublic = false,
+        Ui = true,
+        Description = "DataImproveDbTracking TODO.",
+        Security = FeaturesCatalogRules.Security0Neutral,
+        LicenseRules = ForPatronPerformanceAutoEnabled,
+
+        //// depending on the state of this feature, we will activate some static code enhancements
+        //RunOnStateChange = (state, log) =>
+        //{
+        //    var isEnabled = state.IsEnabled;
+        //    SysPerfSettings.CacheListAutoIndex = isEnabled;
+        //    log.A($"Set {nameof(SysPerfSettings.CacheListAutoIndex)} = {SysPerfSettings.PreferArray}");
+        //}
+    };
+
 }
