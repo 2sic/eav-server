@@ -1,20 +1,24 @@
 ﻿using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
+using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
-    private int SaveEntity(IEntityPair<SaveOptions> entityOptionPair, bool logDetails)
+    private EntityIdentity SaveEntity(IEntityPair<SaveOptions> entityOptionPair, SaveEntityProcess saveProcess, bool logDetails)
     {
         var newEnt = entityOptionPair.Entity;
-        var so = entityOptionPair.Partner;
-        var l = LogDetails.Fn<int>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{logDetails}");
 
-        #region Step 1: Do some initial error checking and preparations
-
+        // Paranoid pre-check
         if (newEnt == null)
             throw new ArgumentNullException(nameof(newEnt));
+
+        var so = entityOptionPair.Partner;
+        var l = LogDetails.Fn<EntityIdentity>($"id:{newEnt.EntityId}/{newEnt.EntityGuid}, logDetails:{logDetails}");
+
+        #region Step 1: Do some initial error checking and preparations
 
         if (newEnt.Type == null)
             throw new("trying to save entity without known content-type, cannot continue");
@@ -56,14 +60,14 @@ partial class DbEntity
         // If we think we'll update an existing entity...
         // ...we have to check if we'll actually update the draft of the entity
         // ...or create a new draft (branch)
-        var (existingDraftId, hasAdditionalDraft, entity) = Preprocessor.Services.PublishingAnalyzer.GetDraftAndCorrectIdAndBranching(newEnt, so, logDetails);
+        var (existingDraftId, hasAdditionalDraft, entity) = saveProcess.Services.PublishingAnalyzer.GetDraftAndCorrectIdAndBranching(newEnt, so, logDetails);
         newEnt = entity; // may have been replaced with an updated IEntity during corrections
 
         var isNew = newEnt.EntityId <= 0; // remember how we want to work...
         if (logDetails)
             l.A($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
 
-        var (contentTypeId, attributeDefs) = Preprocessor.Services.StructureAnalyzer.GetContentTypeAndAttribIds(saveJson, newEnt, logDetails);
+        var (contentTypeId, attributeDefs) = saveProcess.Services.StructureAnalyzer.GetContentTypeAndAttribIds(saveJson, newEnt, logDetails);
 
         #endregion Step 2
 
@@ -71,6 +75,7 @@ partial class DbEntity
         var entityId = 0;
         TsDynDataEntity? dbEnt;
         string? jsonExport = null;
+        var tempLastSaveGuid = Guid.Empty;
 
         var transactionId = DbContext.Versioning.GetTransactionId();
 
@@ -216,20 +221,13 @@ partial class DbEntity
             #region Workaround for preserving the last guid (temp - improve some day...)
 
             entityId = dbEnt.EntityId; // remember the ID for later
-            TempLastSaveGuid = dbEnt.EntityGuid;
+            tempLastSaveGuid = dbEnt.EntityGuid;
 
             #endregion
 
         }); // end of transaction
 
-        return l.Return(entityId, $"done id:{entityId}");
+        return l.Return(new(entityId, tempLastSaveGuid), $"done id:{entityId}");
     }
-
-    /// <summary>
-    /// Temp helper to provide the last guid to the caller
-    /// this is a messy workaround, must find a better way someday...
-    /// </summary>
-    public Guid TempLastSaveGuid;
-
 
 }

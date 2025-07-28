@@ -8,26 +8,12 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 ///
 /// Trying to extract logic steps for an entity to better reorganize sequencing.
 /// </summary>
-internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataBuilder builder) : ServiceBase("DB.PrepEy")
+internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataBuilder builder, ICollection<IEntityPair<SaveOptions>> entityOptionPairs) : ServiceBase("DB.PrepEy")
 {
-
-    #region Helpers & Setup
-
-    public EntityProcessServices Services { get; set; } = null!;
-
-    public void Start(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
-    {
-        Services = new(dbStorage, builder);
-        Services.Start(entityOptionPairs);
-    }
-
-    #endregion
+    public EntityProcessServices Services { get; } = new(dbStorage, builder, entityOptionPairs);
 
     public ICollection<EntityProcessData> Process(ICollection<EntityProcessData> data)
     {
-        // 1. Prepare data
-        //ICollection<EntityProcessData> data = [EntityProcessData.CreateInstance(entityOptionPair, logDetails)];
-
         foreach (var process in GetStandardProcess())
         {
             data = process.Process(Services, data.NextStep());

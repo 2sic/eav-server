@@ -122,7 +122,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         // reload it
         var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
-        var itm2 = app2.List.One(newId.First());
+        var itm2 = app2.List.One(newId.First().Id);
 
         Equal(ctTitle, itm2.GetBestTitle());//, "title should be loaded as saved" );
 

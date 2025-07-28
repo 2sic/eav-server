@@ -2,14 +2,12 @@
 using ToSic.Eav.Data.Sys.Save;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
-internal class EntityAnalyzePublishing(DbStorage.DbStorage DbContext, DataBuilder builder, ILog? LogDetails) : HelperBase(LogDetails, "Db.AzPubl")
+internal class EntityAnalyzePublishing(DbStorage.DbStorage dbStorage, DataBuilder builder, ICollection<IEntityPair<SaveOptions>> entityOptionPairs, ILog? log) : HelperBase(log, "Db.AzPubl")
 {
-    public void Start(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
-    {
-        _entityDraftMapCache = DbContext.Publishing
-            .GetDraftBranchMap(entityOptionPairs.Select(e => e.Entity.EntityId).ToList());
+    [field: AllowNull, MaybeNull]
+    private Dictionary<int, int?> EntityDraftMapCache => field ??= dbStorage.Publishing
+        .GetDraftBranchMap(entityOptionPairs.Select(e => e.Entity.EntityId).ToList());
 
-    }
 
     /// <summary>
     /// Get the draft-id and branching info, 
@@ -22,7 +20,7 @@ internal class EntityAnalyzePublishing(DbStorage.DbStorage DbContext, DataBuilde
     internal (int? ExistingDraftId, bool HasDraft, IEntity Entity) GetDraftAndCorrectIdAndBranching(IEntity newEnt,
         SaveOptions so, bool logDetails)
     {
-        var l = LogDetails.Fn<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true);
+        var l = Log.Fn<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true);
 
         // If ID == 0, it's new, so only continue, if we were given an EntityId
         if (newEnt.EntityId <= 0)
@@ -32,9 +30,9 @@ internal class EntityAnalyzePublishing(DbStorage.DbStorage DbContext, DataBuilde
             l.A("entity id > 0 - will check draft/branching");
 
         // find a draft of this - note that it won't find anything, if the item itself is the draft
-        if (_entityDraftMapCache == null)
+        if (EntityDraftMapCache == null)
             throw new("Needs cached list of draft-branches, but list is null");
-        if (!_entityDraftMapCache.TryGetValue(newEnt.EntityId, out var existingDraftId))
+        if (!EntityDraftMapCache.TryGetValue(newEnt.EntityId, out var existingDraftId))
             throw new("Expected item to be preloaded in draft-branching map, but not found");
 
         // only true, if there is an "attached" draft; false if the item itself is draft
@@ -59,7 +57,7 @@ internal class EntityAnalyzePublishing(DbStorage.DbStorage DbContext, DataBuilde
         if (logDetails)
             l.A($"Will look for original {newEnt.EntityId} to check if it's not published.");
         // check if the original is also not published, with must prevent a second branch!
-        var entityInDb = DbContext.Entities.GetDbEntityStub(newEnt.EntityId);
+        var entityInDb = dbStorage.Entities.GetDbEntityStub(newEnt.EntityId);
         if (!entityInDb.IsPublished)
         {
             if (logDetails)
@@ -80,5 +78,4 @@ internal class EntityAnalyzePublishing(DbStorage.DbStorage DbContext, DataBuilde
             existingDraftId?.ToString() ?? "null");
     }
 
-    private Dictionary<int, int?>? _entityDraftMapCache;
 }

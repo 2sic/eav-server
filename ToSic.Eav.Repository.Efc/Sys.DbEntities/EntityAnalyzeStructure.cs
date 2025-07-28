@@ -3,7 +3,7 @@ internal class EntityAnalyzeStructure(DbStorage.DbStorage dbStorage, ILog? log) 
 {
     internal (int ContentTypeId, List<TsDynDataAttribute> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
     {
-        var l = log.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
+        var l = Log.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
         if (saveJson)
             return l.Return((DbConstant.RepoIdForJsonEntities, []), $"json - no attributes, CT: {DbConstant.RepoIdForJsonEntities}");
 
@@ -34,6 +34,4 @@ internal class EntityAnalyzeStructure(DbStorage.DbStorage dbStorage, ILog? log) 
 
     private readonly Dictionary<string, int> _ctNameIdCache = new(StringComparer.InvariantCultureIgnoreCase);
     private readonly Dictionary<int, List<TsDynDataAttribute>> _ctCache = new();
-
-    public void FlushTypeAttributesCache() => _ctCache.Clear();
 }

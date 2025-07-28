@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
+using ToSic.Eav.Repositories.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
@@ -59,6 +60,8 @@ public record EntityProcessData
 
     public int FinalId => DbEntity!.EntityId;
     public Guid FinalGuid => DbEntity!.EntityGuid;
+
+    public EntityIdentity Ids => new(DbEntity!.EntityId, DbEntity!.EntityGuid);
 
     #endregion
 

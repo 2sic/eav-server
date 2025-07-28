@@ -4,7 +4,10 @@ using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
-internal class EntityProcessServices(DbStorage.DbStorage dbStorage, DataBuilder builder) : ServiceBase("DB.PrepEy")
+internal class EntityProcessServices(
+    DbStorage.DbStorage dbStorage,
+    DataBuilder builder,
+    ICollection<IEntityPair<SaveOptions>> entityOptionPairs) : ServiceBase("DB.PrepEy")
 {
     #region Logging
 
@@ -29,19 +32,10 @@ internal class EntityProcessServices(DbStorage.DbStorage dbStorage, DataBuilder 
     public EntityAnalyzeStructure StructureAnalyzer => field ??= new(DbStorage, LogDetails);
 
     [field: AllowNull, MaybeNull]
-    public EntityAnalyzePublishing PublishingAnalyzer => field ??= new(DbStorage, Builder, LogDetails);
+    public EntityAnalyzePublishing PublishingAnalyzer => field ??= new(DbStorage, Builder, entityOptionPairs, LogDetails);
 
-    public int TransactionId { get; set; }
-
-    public void Start(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
-    {
-        // code as before, but we can probably remove later as object will not be reused....
-        StructureAnalyzer.FlushTypeAttributesCache(); // for safety, in case previously new types were imported
-
-        PublishingAnalyzer.Start(entityOptionPairs);
-
-        TransactionId = DbStorage.Versioning.GetTransactionId();
-    }
+    public int TransactionId => _transactionId ??= DbStorage.Versioning.GetTransactionId();
+    private int? _transactionId;
 
     #endregion
 }

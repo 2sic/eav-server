@@ -68,7 +68,7 @@ public interface IStorage: IServiceWithSetup<StorageOptions>, IHasLog
     /// </summary>
     /// <param name="entityOptionPairs"></param>
     /// <returns></returns>
-    List<int> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs);
+    List<EntityIdentity> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs);
 
     #endregion
 

@@ -11,6 +11,7 @@ using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
+using ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
@@ -382,9 +383,9 @@ public class DbStorage(
     /// </summary>
     /// <param name="entityOptionPairs"></param>
     /// <returns></returns>
-    public List<int> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
+    public List<EntityIdentity> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = LogDetails.Fn<List<int>>(timer: true);
+        var l = LogDetails.Fn<List<EntityIdentity>>(timer: true);
         logStore.Add("save-data", Log);
         return l.ReturnAsOk(Entities.SaveEntities(entityOptionPairs));
     }
