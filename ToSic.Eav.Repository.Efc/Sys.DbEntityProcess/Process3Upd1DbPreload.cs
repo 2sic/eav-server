@@ -38,7 +38,7 @@ internal class Process3Upd1DbPreload(): Process0Base("Db.EPr3u1")
             .ToArray();
 
         // get the published one (entityId is always the published id)
-        var dataEntities = services.DbEntity.GetDbEntitiesFull(ids);
+        var dataEntities = services.DbEntity.GetDbEntitiesFullUntracked(ids);
 
         // new: always change the draft if there is one! - it will then either get published, or not...
         data = data
