@@ -187,31 +187,62 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
         lSum.Done("done");
     }
 
+    // IMPORTANT: 2dm made changes to this 2025-07-29 for ca. v20.00-04, but couldn't test it.
+    // It probably works, but not verified, as it's almost never used, except probably when migrating non-json entities to json
     internal void FlushChildrenRelationships(ICollection<int> parentIds)
     {
         var l = LogSummary.Fn($"will do full-flush for {parentIds.Count} items", timer: true);
+
         // Delete all existing relationships - but not the target, just the relationship
         // note: can't use .Clear(), as that will try to actually delete the children
-        if (parentIds is not { Count: > 0 })
+        if (parentIds.Count == 0)
         {
             l.Done("no parent IDs");
             return;
         }
 
-        foreach (var id in parentIds)
+        // intermediate save (important) so that EF state tracking works
+        // ^^^ note: not sure if this is still relevant
+        DbContext.DoAndSaveWithoutChangeDetection(() =>
         {
             var ent = DbContext.SqlDb.TsDynDataEntities
                 .Include(e => e.RelationshipsWithThisAsParent)
-                .Single(e => e.EntityId == id);
+                .Where(e => Enumerable.Contains(parentIds, e.EntityId))
+                .SelectMany(e => e.RelationshipsWithThisAsParent)
+                .ToListOpt();
 
-            foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
-                DbContext.SqlDb.TsDynDataRelationships.Remove(relationToDelete);
-        }
-
-        // intermediate save (important) so that EF state tracking works
-        DbContext.SqlDb.SaveChanges();
+            DbContext.SqlDb.TsDynDataRelationships.RemoveRange(ent);
+        });
         l.Done();
     }
+
+
+    // old before 2025-07-29; del ca. 2025-Q3
+    //internal void FlushChildrenRelationships(ICollection<int> parentIds)
+    //{
+    //    var l = LogSummary.Fn($"will do full-flush for {parentIds.Count} items", timer: true);
+    //    // Delete all existing relationships - but not the target, just the relationship
+    //    // note: can't use .Clear(), as that will try to actually delete the children
+    //    if (parentIds is not { Count: > 0 })
+    //    {
+    //        l.Done("no parent IDs");
+    //        return;
+    //    }
+
+    //    foreach (var id in parentIds)
+    //    {
+    //        var ent = DbContext.SqlDb.TsDynDataEntities
+    //            .Include(e => e.RelationshipsWithThisAsParent)
+    //            .Single(e => e.EntityId == id);
+
+    //        foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
+    //            DbContext.SqlDb.TsDynDataRelationships.Remove(relationToDelete);
+    //    }
+
+    //    // intermediate save (important) so that EF state tracking works
+    //    DbContext.SqlDb.SaveChanges();
+    //    l.Done();
+    //}
 
     internal void ChangeRelationships(IEntity eToSave, int entityId, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
     {

@@ -34,7 +34,7 @@ public class ZoneManager(Generator<DbStorage, StorageOptions> dbLazy, LazySvc<Ap
     public void SaveLanguage(string cultureCode, string cultureText, bool active)
     {
         var l = Log.Fn($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
-        DbStorage.Dimensions.AddOrUpdateLanguage(cultureCode, cultureText, active);
+        DbStorage.Dimensions.AddOrUpdateZoneDimension(cultureCode, cultureText, active);
         appCachePurger.Value.PurgeZoneList();
         l.Done();
     }

@@ -10,6 +10,7 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
         // Because of changes in EF 3.x we had to split where part on server and client.
         return DbContext.SqlDb
             .TsDynDataDimensions
+            .AsNoTracking()
             .Where(d => d.ZoneId == DbContext.ZoneId) // This is evaluated on the SQL server
             .ToList()
             .Where(d =>
@@ -22,17 +23,19 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// <summary>
     /// Update a single Dimension
     /// </summary>
-    private void UpdateDimension(int dimensionId, bool? active = null, string? name = null)
+    private void UpdateZoneDimension(int dimensionId, bool? active = null, string? name = null)
     {
         var dimension = DbContext.SqlDb
             .TsDynDataDimensions
+            .AsNoTracking()
             .Single(d => d.DimensionId == dimensionId);
+
         if (active.HasValue)
             dimension.Active = active.Value;
         if (name != null)
             dimension.Name = name;
 
-        DbContext.SqlDb.SaveChanges();
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dimension));
     }
 
     /// <summary>
@@ -42,15 +45,15 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// <param name="cultureCode"></param>
     /// <param name="cultureText"></param>
     /// <param name="active"></param>
-    internal void AddOrUpdateLanguage(string cultureCode, string cultureText, bool active)
+    internal void AddOrUpdateZoneDimension(string cultureCode, string cultureText, bool active)
     {
-        var eavLanguage = GetLanguages(true)
+        var eavLanguage = GetLanguagesUntracked(true)
             .FirstOrDefault(l => l.Matches(cultureCode));
         // If the language exists in EAV, set the active state, else add it
         if (eavLanguage != null)
-            UpdateDimension(eavLanguage.DimensionId, active);
+            UpdateZoneDimension(eavLanguage.DimensionId, active);
         else
-            AddLanguage(cultureText, cultureCode);
+            AddZoneDimension(cultureText, cultureCode);
     }
 
 
@@ -59,26 +62,24 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// This is used by the "create new zone" code
     /// </summary>
     internal void AddRootCultureNode(string systemKey, string name, TsDynDataZone zone)
-    {
-        var newDimension = new TsDynDataDimension
+        => DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(new TsDynDataDimension
         {
             Key = systemKey,
             Name = name,
             Zone = zone,
             ParentNavigation = null,
             Active = true,
-        };
-        DbContext.SqlDb.Add(newDimension);
-        DbContext.SqlDb.SaveChanges();
-    }
+        }));
 
     #region Languages
 
     /// <summary>
     /// Get all Languages of current Zone and App
     /// </summary>
-    private ICollection<DimensionDefinition> GetLanguages(bool includeInactive = false) =>
-        DbContext.SqlDb.TsDynDataDimensions
+    private ICollection<DimensionDefinition> GetLanguagesUntracked(bool includeInactive = false)
+        => DbContext.SqlDb.TsDynDataDimensions
+            .AsNoTracking()
+            .Include(d => d.ParentNavigation)
             .Where(d => d.ZoneId == DbContext.ZoneId) // This is evaluated on the SQL server
             .ToList()
             .Where(d =>
@@ -92,19 +93,15 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// <summary>
     /// Add a new Language to current Zone
     /// </summary>
-    private void AddLanguage(string name, string externalKey)
-    {
-        var newLanguage = new TsDynDataDimension
+    private void AddZoneDimension(string name, string externalKey)
+        => DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(new TsDynDataDimension
         {
             Name = name,
             EnvironmentKey = externalKey,
             Parent = GetDimensionId(EavConstants.CultureSystemKey, null),
             ZoneId = DbContext.ZoneId,
             Active = true
-        };
-        DbContext.SqlDb.Add(newLanguage);
-        DbContext.SqlDb.SaveChanges();
-    }
-        
+        }));
+
     #endregion
 }
