@@ -292,12 +292,15 @@ public class DbStorage(
     internal void DoAndSaveWithoutChangeDetection(Action action, string? message = null)
     {
         var l = LogSummary.Fn(timer: true, message: message);
+
+        // 2025-07-29 moving this up and out of try to better set it before action is invoked.
+        var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
+        SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
+
         action.Invoke();
 
-        var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
         try
         {
-            SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
             SqlDb.SaveChanges();
         }
         catch (Exception ex)
