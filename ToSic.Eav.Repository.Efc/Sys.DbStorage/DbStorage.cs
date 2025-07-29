@@ -418,8 +418,7 @@ public class DbStorage(
     public int CreateApp(string guidName, int? inheritAppId = null)
     {
         var l = LogSummary.Fn<int>($"guid:{guidName}, inheritAppId:{inheritAppId}");
-        var app = App.AddApp(null, guidName, inheritAppId);
-        SqlDb.SaveChanges(); // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
+        var app = App.AddAppAndSave(ZoneId, guidName, inheritAppId);
         return l.Return(app.AppId, $"Created App with Id:{app.AppId} and Name:{app.Name} in ZoneId:{ZoneId}");
     }
 

@@ -15,10 +15,10 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
 
         DbContext.Dimensions.AddRootCultureNode(EavConstants.CultureSystemKey, "Culture Root", newZone);
 
-        DbContext.App.AddApp(newZone, KnownAppsConstants.DefaultAppGuid);
+        DbContext.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.DefaultAppGuid);
 
         // We reliably auto-init the site-app by default
-        DbContext.App.AddApp(newZone, KnownAppsConstants.PrimaryAppGuid);
+        DbContext.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.PrimaryAppGuid);
 
         return newZone.ZoneId;
     }

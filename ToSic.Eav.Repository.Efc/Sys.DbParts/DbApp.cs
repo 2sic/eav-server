@@ -12,15 +12,12 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// <summary>
     /// Add a new App
     /// </summary>
-    internal TsDynDataApp AddApp(TsDynDataZone? zone, string guidName, int? inheritAppId = null)
+    internal (int AppId, string Name) AddAppAndSave(int zoneId, string guidName, int? inheritAppId = null)
     {
-        // Use provided zone or if null, use the one which was pre-initialized for this DbApp Context
-        zone = zone ?? DbContext.SqlDb.TsDynDataZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);
-
         var newApp = new TsDynDataApp 
         {
             Name = guidName,
-            Zone = zone
+            ZoneId = zoneId,
         };
 
         // New v13 Inherited Apps - wrap in try catch because if something fails, many things could break too early for people to be able to fix
@@ -40,9 +37,9 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
         catch { /* ignore */ }
 
         // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
-        DbContext.DoAndSave(() => DbContext.SqlDb.Add(newApp)); 
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(newApp)); 
 
-        return newApp;
+        return (newApp.AppId, newApp.Name);
     }
 
 

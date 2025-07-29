@@ -54,7 +54,7 @@ public class AppCreator(
         var l = Log.Fn<int>("create new app");
 
         var app = db.New(new(_zoneId, null, inheritAppId))
-            .App.AddApp(null, appGuid, inheritAppId);
+            .App.AddAppAndSave(_zoneId, appGuid, inheritAppId);
 
         appCachePurger.PurgeZoneList();
         l.A($"app created a:{app.AppId}, guid:{appGuid}");
