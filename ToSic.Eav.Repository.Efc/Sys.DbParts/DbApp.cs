@@ -47,7 +47,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// Delete an existing App with any Values and Attributes
     /// </summary>
     /// <param name="appId">AppId to delete</param>
-    /// <param name="fullDelete">If true, the entire App is removed. Otherwise just all the contents is cleared</param>
+    /// <param name="fullDelete">If true, the entire App is removed. Otherwise, just all the contents is cleared</param>
     internal void DeleteApp(int appId, bool fullDelete)
     {
         DbContext.Versioning.GetTransactionId();
@@ -72,22 +72,22 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
                 // 1. remove all relationships to/from these json entities
                 // note that actually there can only be relationships TO json entities, as all from will be in the json, 
                 // but just to be sure (maybe there's historic data that's off) we'll do both
-                DbContext.DoAndSave(() => ExecuteSqlCommand($@"
+                ExecuteSqlCommand($@"
                     DELETE r
                     FROM TsDynDataRelationship r
                     WHERE r.ChildEntityId IN ({jsonEntitiesInAppSql})
                        OR r.ParentEntityId IN ({jsonEntitiesInAppSql})"
-                    , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
+                    , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig);
 
                 // 2. remove all json entities, which won't be handled by the SP
-                DbContext.DoAndSave(() => ExecuteSqlCommand($@"
+                ExecuteSqlCommand($@"
                     DELETE e
                     FROM TsDynDataEntity e
                     WHERE e.EntityId IN ({jsonEntitiesInAppSql})"
-                    , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
+                    , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig);
 
                 // Now let do the remaining clean-up
-                DbContext.DoAndSave(() => DeleteAppWithoutStoredProcedure(appId, fullDelete));
+                DeleteAppWithoutStoredProcedure(appId, fullDelete);
             }
         );
     }
