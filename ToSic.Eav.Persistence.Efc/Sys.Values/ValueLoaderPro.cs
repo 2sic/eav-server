@@ -15,7 +15,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
 
     public override Dictionary<int, ICollection<TempAttributeWithValues>> LoadValues()
     {
-        var l = Log.IfDetails(appLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
+        var l = Log.IfDetails(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
 
         // Check if we should use the optimized code, which only works for loading everything
         if (!Specs.LoadAll)
