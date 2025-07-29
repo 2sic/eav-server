@@ -30,42 +30,45 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
         {
             l.A("there was no published (not branched), so will just set this to published");
             unpublishedDbEnt.IsPublished = true;
+            l.A("About to save...");
+            DbContext.SqlDb.SaveChanges();
+            l.Done("saved");
+            return;
         }
+
+
         // Replace currently published Entity with draft Entity and delete the draft
-        else
+        var publishedId = unpublishedDbEnt.PublishedEntityId.Value;
+        l.A(
+            "There is a published item, will update that with the draft-data and delete the draft afterwards");
+        var publishedEntity = DbContext.Entities.GetDbEntityFull(publishedId);
+        var json = unpublishedDbEnt.Json;
+        var isJson = !string.IsNullOrEmpty(json);
+        l.A($"this is a json:{isJson}");
+
+        if (isJson)
         {
-            var publishedId = unpublishedDbEnt.PublishedEntityId.Value;
-            l.A(
-                "There is a published item, will update that with the draft-data and delete the draft afterwards");
-            var publishedEntity = DbContext.Entities.GetDbEntityFull(publishedId);
-            var json = unpublishedDbEnt.Json;
-            var isJson = !string.IsNullOrEmpty(json);
-            l.A($"this is a json:{isJson}");
+            l.A($"Must convert back to entity, to then modify the EntityId. The json: {json}");
+            // update the content-id
+            var cloneWithPublishedId = builder.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
 
-            if (isJson)
-            {
-                l.A($"Must convert back to entity, to then modify the EntityId. The json: {json}");
-                // update the content-id
-                var cloneWithPublishedId = builder.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
-                //draftToPublishForJson.ResetEntityId(publishedId);
+            var serializer = DbContext.JsonSerializerGenerator.New();
+            json = serializer.Serialize(cloneWithPublishedId);
 
-                var serializer = DbContext.JsonSerializerGenerator.New();
-                json = serializer.Serialize(cloneWithPublishedId);
+            l.A($"changed - final json: {json}");
+        }
 
-                l.A($"changed - final json: {json}");
-            }
-
-            publishedEntity.Json = json; // if it's using the new format
-            publishedEntity.TransModifiedId = unpublishedDbEnt.TransModifiedId; // transfer last-modified date (not to today, but to last edit)
-            DbContext.Values.CloneRelationshipsAndSave(unpublishedDbEnt, publishedEntity); // relationships need special treatment and intermediate save!
-            DbContext.Values.CloneEntitySimpleValues(unpublishedDbEnt, publishedEntity);
+        publishedEntity.Json = json; // if it's using the new format
+        publishedEntity.TransModifiedId = unpublishedDbEnt.TransModifiedId; // transfer last-modified date (not to today, but to last edit)
+        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        {
+            DbContext.Values.CloneRelationshipsAndQueueUntracked(unpublishedDbEnt, publishedEntity); // relationships need special treatment and intermediate save!
+            DbContext.Values.CloneEntitySimpleValuesAndQueueUntracked(unpublishedDbEnt, publishedEntity);
 
             // delete the Draft Entity
             DbContext.Entities.DeleteEntities([unpublishedDbEnt.EntityId], false);
-        }
+        });
 
-        l.A("About to save...");
-        DbContext.SqlDb.SaveChanges();
         l.Done("saved");
     }
 

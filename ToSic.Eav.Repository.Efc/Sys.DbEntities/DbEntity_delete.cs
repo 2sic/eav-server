@@ -17,6 +17,7 @@ partial class DbEntity
 
 
         #region Delete Related Records (Values, Value-Dimensions, Relationships)
+
         // Delete all Value-Dimensions
         var valueDimensions = entities
             .SelectMany(e => e.TsDynDataValues.SelectMany(v => v.TsDynDataValueDimensions))
@@ -24,12 +25,12 @@ partial class DbEntity
         DbContext.SqlDb.RemoveRange(valueDimensions);
 
         // Delete all Values
-        DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.TsDynDataValues).ToList());
+        DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.TsDynDataValues).ToListOpt());
 
         // Delete all Parent-Relationships
-        DeleteRelationships(entities.SelectMany(e => e.RelationshipsWithThisAsParent).ToList());
+        DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.RelationshipsWithThisAsParent).ToListOpt());
         if (removeFromParents)
-            DeleteRelationships(entities.SelectMany(e => e.RelationshipsWithThisAsChild).ToList());
+            DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.RelationshipsWithThisAsChild).ToListOpt());
 
         #endregion
 
@@ -53,24 +54,24 @@ partial class DbEntity
             {
                 l.A("was draft, will really delete");
                 // Delete all Child-Relationships
-                DeleteRelationships(entity.RelationshipsWithThisAsChild);
+                DbContext.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToListOpt());
                 DbContext.SqlDb.Remove(entity);
             }
         });
         if (autoSave)
-            DbContext.SqlDb.SaveChanges();
+            DbContext.DoAndSaveWithoutChangeDetection(() => {});
 
         return l.ReturnTrue("DeleteEntity(...) done"); ;
     }
 
-    private void DeleteRelationships(ICollection<TsDynDataRelationship> relationships)
-    {
-        var l = Log.Fn($"DeleteRelationships({relationships?.Count})");
-        if ((relationships?.Count ?? 0) == 0)
-            l.A("No relationships to delete");
-        else
-            relationships?.ToList().ForEach(r => DbContext.SqlDb.TsDynDataRelationships.Remove(r));
-        l.Done();
-    }
+    //private void DeleteRelationshipsUntracked(ICollection<TsDynDataRelationship> relationships)
+    //{
+    //    var l = Log.Fn($"DeleteRelationships({relationships?.Count})");
+    //    if ((relationships?.Count ?? 0) == 0)
+    //        l.A("No relationships to delete");
+    //    else
+    //        DbContext.SqlDb.RemoveRange(relationships.ToList());
+    //    l.Done();
+    //}
         
 }
