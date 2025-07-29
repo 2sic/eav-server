@@ -3,6 +3,9 @@ using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.EntityPair;
+using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Sys;
@@ -90,7 +93,20 @@ public class AppInitializer(
             appReader = repoLoader.New().AppReaderRaw(appReader.AppId, codeRefTrail.WithHere());
         }
 
-        addList.ForEach(task => MetadataEnsureTypeAndSingleEntity(appReader, task));
+        var entities = addList
+            .Select(task => MetadataEnsureTypeAndSingleEntity(appReader, task))
+            .ToListOpt();
+
+        if (entities.Any())
+        {
+            var entSaver = entitySave.New(appReader);
+            var withOptions = entities.Select(e => new EntityPair<SaveOptions>(e, entSaver.SaveOptions())).ToListOpt();
+            entSaver.Save(withOptions);
+
+        }
+
+        //foreach (var task in addList)
+        //    MetadataEnsureTypeAndSingleEntity(appReader, task);
 
         // Reset App-State to ensure it's reloaded with the added configuration
         CachePurger.Purge(appReader);
@@ -128,9 +144,9 @@ public class AppInitializer(
         return l.Return(addedTypes);
     }
         
-    private void MetadataEnsureTypeAndSingleEntity(IAppReader appReader, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
+    private Entity MetadataEnsureTypeAndSingleEntity(IAppReader appReader, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
     {
-        var l = Log.Fn($"{cTypeAndOrEntity.SetName} for app {appReader.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
+        var l = Log.Fn<Entity>($"{cTypeAndOrEntity.SetName} for app {appReader.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
         var ct = FindContentType(appReader, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
 
         // if it's still null, we have a problem...
@@ -146,9 +162,7 @@ public class AppInitializer(
         var newEnt = builder.Value.Entity
             .Create(appId: appReader.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
 
-        var entSaver = entitySave.New(appReader);
-        entSaver.Save(newEnt, entSaver.SaveOptions());
-        l.Done();
+        return l.Return(newEnt);
     }
 
     private IContentType? FindContentType(IAppReadContentTypes appStateRaw, string setName, bool inAppType)
