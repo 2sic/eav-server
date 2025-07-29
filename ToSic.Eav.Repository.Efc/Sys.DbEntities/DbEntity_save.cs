@@ -180,7 +180,7 @@ partial class DbEntity
 
                     // first, clean up all existing attributes / values (flush)
                     // this is necessary after remove, because otherwise EF state tracking gets messed up
-                    DbContext.DoAndSave(
+                    DbContext.DoAndSaveObsoleteOnlyUsedInOldSaveRoutine(
                         () => dbEnt.TsDynDataValues.Clear(),
                         "Flush values"
                     );

@@ -280,7 +280,7 @@ public class DbStorage(
 
     #region Shorthand for do & save
 
-    internal void DoAndSave(Action action, string? message = null)
+    internal void DoAndSaveObsoleteOnlyUsedInOldSaveRoutine(Action action, string? message = null)
     {
         var l = LogSummary.Fn(message: message, timer: true);
         action.Invoke();
