@@ -34,8 +34,8 @@ internal class Process3Upd3ClearValues(): Process0Base("Db.EPr3u3")
         services.DbStorage.DoAndSave(
             () =>
             {
-                foreach (var entityProcessData in data.Where(d => !d.IsNew))
-                    entityProcessData.DbEntity!.TsDynDataValues.Clear();
+                foreach (var d in data.Where(d => !d.IsNew))
+                    d.DbEntity!.TsDynDataValues.Clear();
             },
             "Flush values"
         );

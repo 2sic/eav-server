@@ -95,7 +95,7 @@ partial class DbEntity
                 }
 
                 dbEnt = CreateDbRecord(newEnt, transactionId, contentTypeId);
-                SaveNewNoChangeDetection([dbEnt]);
+                SaveCreatedNoChangeDetection([dbEnt]);
                 // update the ID - for versioning and/or json persistence
                 newEnt = builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
 
@@ -203,7 +203,7 @@ partial class DbEntity
                 if (logDetails)
                     l.A("won't save properties / relationships in db model as it's json");
                 else
-                    DropEavAttributesForJsonItem(newEnt);
+                    DropAttributesAndRelationshipsForJsonItem(newEnt.EntityId);
 
             #endregion
 

@@ -18,7 +18,7 @@ internal class Process4JsonValues(): Process0Base("Db.EPr4JV")
                 l.A("won't save properties / relationships in db model as it's json");
         }
         else
-            services.DbEntity.DropEavAttributesForJsonItem(data.NewEntity);
+            services.DbEntity.DropAttributesAndRelationshipsForJsonItem(data.NewEntity.EntityId);
 
         return l.Return(data);
     }

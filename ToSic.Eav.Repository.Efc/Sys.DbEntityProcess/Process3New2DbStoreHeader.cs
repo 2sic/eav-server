@@ -48,7 +48,7 @@ internal class Process3New2DbStoreHeader() : Process0Base("DB.EPr3n2")
         var newEntities = data
             .Where(d => d.IsNew)
             .Select(d => d.DbEntity!);
-        services.DbEntity.SaveNewNoChangeDetection(newEntities);
+        services.DbEntity.SaveCreatedNoChangeDetection(newEntities);
 
         // Update the IDs in the NewEntity for versioning and/or json persistence
         data = data

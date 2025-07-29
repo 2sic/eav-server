@@ -25,10 +25,10 @@ partial class DbEntity
         return jsonExport;
     }
 
-    internal void DropEavAttributesForJsonItem(IEntity newEnt)
+    internal void DropAttributesAndRelationshipsForJsonItem(int entityId)
     {
         // in update scenarios, the old data could have been a db-model, so clear that
-        ClearAttributesInDbModel(newEnt.EntityId);
-        DbContext.Relationships.FlushChildrenRelationships([newEnt.EntityId]);
+        ClearValuesInDbModel(entityId);
+        DbContext.Relationships.FlushChildrenRelationships([entityId]);
     }
 }

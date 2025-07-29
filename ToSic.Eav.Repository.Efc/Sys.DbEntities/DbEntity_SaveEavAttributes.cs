@@ -20,7 +20,7 @@ partial class DbEntity
     /// Important when updating json-entities, to ensure we don't keep trash around
     /// </summary>
     /// <param name="entityId"></param>
-    private bool ClearAttributesInDbModel(int entityId)
+    private bool ClearValuesInDbModel(int entityId)
     {
         var l = LogDetails.Fn<bool>(timer: true);
         var val = DbContext.SqlDb.TsDynDataValues
