@@ -14,7 +14,7 @@ internal class EntityAnalyzeStructure(DbStorage.DbStorage dbStorage, ILog? log) 
         {
             var typeNameId = newEnt.Type.NameId;
             if (!_ctNameIdCache.ContainsKey(typeNameId))
-                _ctNameIdCache[typeNameId] = dbStorage.AttribSet.GetDbContentTypeId(typeNameId);
+                _ctNameIdCache[typeNameId] = dbStorage.ContentTypes.GetDbContentTypeId(typeNameId);
             contentTypeId = _ctNameIdCache[typeNameId];
         }
 

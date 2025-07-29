@@ -9,7 +9,7 @@ public class WorkContentTypesMod() : WorkUnitBase<IAppWorkCtxWithDb>("ApS.InpGet
     {
         var l = Log.Fn();
         AppWorkCtx.DbStorage.DoAndSave(() =>
-            AppWorkCtx.DbStorage.AttribSet.PrepareDbAttribSet(nameId, nameId, scope, false, AppWorkCtx.AppId));
+            AppWorkCtx.DbStorage.ContentTypes.PrepareDbContentType(nameId, nameId, scope, false, AppWorkCtx.AppId));
         l.Done();
     }
 

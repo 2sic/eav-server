@@ -100,7 +100,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
         var sysSettings = Serializer.Serialize(contentTypeAttribute.SysSettings);
 
-        var contentType = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentTypeId)
+        var contentType = DbContext.ContentTypes.GetDbContentType(DbContext.AppId, contentTypeId)
             ?? throw new($"Can't find {contentTypeId} in DB.");
 
         if (!AttributeNames.StaticNameValidation.IsMatch(nameId))

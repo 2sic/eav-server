@@ -100,7 +100,7 @@ public class DbStorage(
     [field: AllowNull, MaybeNull]
     internal DbRelationship Relationships => field ??= new(this);
     [field: AllowNull, MaybeNull]
-    internal DbAttributeSet AttribSet => field ??= new(this);
+    internal DbContentTypes.DbContentTypes ContentTypes => field ??= new(this);
     [field: AllowNull, MaybeNull]
     internal DbPublishing Publishing => field ??= new(this, builder);
     [field: AllowNull, MaybeNull]

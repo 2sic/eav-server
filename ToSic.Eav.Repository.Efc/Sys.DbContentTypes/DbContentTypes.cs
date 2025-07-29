@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 
-internal class DbAttributeSet(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSet")
+internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSet")
 {
     private IQueryable<TsDynDataContentType> GetDbContentTypeCoreQuery(int appId)
         => DbContext.SqlDb.TsDynDataContentTypes
@@ -89,10 +89,10 @@ internal class DbAttributeSet(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
     /// <summary>
     /// Test whether Content-Type exists on specified App and is not deleted
     /// </summary>
-    private bool DbAttribSetExists(int appId, string staticName)
+    private bool DbContentTypeExists(int appId, string staticName)
         => GetDbContentTypeCoreQuery(appId).Any(a => a.StaticName == staticName);
 
-    internal TsDynDataContentType? PrepareDbAttribSet(string name, string nameId, string scope, bool skipExisting, int? appId)
+    internal TsDynDataContentType? PrepareDbContentType(string name, string nameId, string scope, bool skipExisting, int? appId)
     {
         if (string.IsNullOrEmpty(nameId))
             nameId = Guid.NewGuid().ToString();
@@ -100,7 +100,7 @@ internal class DbAttributeSet(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
         var targetAppId = appId ?? DbContext.AppId;
 
         // ensure Content-Type with StaticName doesn't exist on App
-        if (DbContext.AttribSet.DbAttribSetExists(targetAppId, nameId))
+        if (DbContext.ContentTypes.DbContentTypeExists(targetAppId, nameId))
         {
             if (skipExisting)
                 return null;

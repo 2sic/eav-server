@@ -47,11 +47,11 @@ partial class DbContentType
 
     private int? GetOrCreateContentType(ContentType contentType)
     {
-        var newType = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
+        var newType = DbContext.ContentTypes.GetDbContentType(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
 
         // add new Content-Type, do basic configuration if possible, then save
         if (newType == null)
-            newType = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, contentType.NameId, contentType.Scope, false, null)
+            newType = DbContext.ContentTypes.PrepareDbContentType(contentType.Name, contentType.NameId, contentType.Scope, false, null)
                 ?? throw new($"Can't create content type {contentType.Name}/{contentType.NameId}");
 
         // to use existing Content-Type, do some minimal conflict-checking
