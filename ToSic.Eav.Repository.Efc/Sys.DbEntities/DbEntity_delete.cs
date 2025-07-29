@@ -13,7 +13,7 @@ partial class DbEntity
 
         // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
         // note that as this is a DB-entity, the EntityId is actually the repositoryId
-        var entities = DbContext.Entities.GetDbEntitiesFull(repositoryId);
+        var entities = DbContext.Entities.GetDbEntitiesFullUntracked(repositoryId);
 
 
         #region Delete Related Records (Values, Value-Dimensions, Relationships)
@@ -43,11 +43,10 @@ partial class DbEntity
             {
                 l.A("was published, will mark as deleted");
                 entity.TransDeletedId = DbContext.Versioning.GetTransactionId();
-                // Also delete the Draft (if any)
+                // Also delete the Draft (if any) - but don't auto-save, as we would do that below
                 draftBranchMap.TryGetValue(entity.EntityId, out var draftEntityId);
-                //var draftEntityId = DbContext.Publishing.GetDraftBranchEntityId(entity.EntityId);
                 if (draftEntityId.HasValue)
-                    DeleteEntities([draftEntityId.Value]);
+                    DeleteEntities([draftEntityId.Value], autoSave: false);
             }
             // If entity was a Draft, really delete that Entity
             else
@@ -55,8 +54,10 @@ partial class DbEntity
                 l.A("was draft, will really delete");
                 // Delete all Child-Relationships
                 DbContext.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToListOpt());
-                DbContext.SqlDb.Remove(entity);
             }
+
+            // Also remove the entity itself
+            DbContext.SqlDb.Remove(entity);
         });
         if (autoSave)
             DbContext.DoAndSaveWithoutChangeDetection(() => {});
