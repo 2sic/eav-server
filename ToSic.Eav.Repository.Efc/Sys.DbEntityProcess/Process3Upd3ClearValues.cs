@@ -31,16 +31,34 @@ internal class Process3Upd3ClearValues(): Process0Base("Db.EPr3u3")
 
         // first, clean up all existing attributes / values (flush)
         // this is necessary after remove, because otherwise EF state tracking gets messed up
-        services.DbStorage.DoAndSave(
-            () =>
+        services.DbStorage.DoAndSaveWithoutChangeDetection(() =>
             {
-                foreach (var d in data.Where(d => !d.IsNew))
-                    d.DbEntity!.TsDynDataValues.Clear();
+                foreach (var d in data)
+                {
+                    // Skip new items
+                    if (d.IsNew)
+                        continue;
+                    // d.DbEntity!.TsDynDataValues.Clear();
+                    services.DbStorage.SqlDb.RemoveRange(d.DbEntity!.TsDynDataValues);
+                }
             },
             "Flush values"
         );
 
-        return l.Return(data);
+        var result = data
+            .Select(d =>
+            {
+                if (d.IsNew)
+                    return d;
+
+                // make sure the remaining data doesn't have the values; just in case...
+                // not purely functional, but ok I guess;
+                d.DbEntity!.TsDynDataValues = [];
+                return d;
+            })
+            .ToListOpt();
+
+        return l.Return(result);
 
     }
 }
