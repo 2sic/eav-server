@@ -48,46 +48,28 @@ public partial class  BuiltInFeatures
         }
     };
 
-    // TODO: guid not final!
-    public static readonly Feature DataImportParallel = new()
+    public static readonly Feature DatabaseWriteOptimized = new()
     {
-        NameId = nameof(DataImportParallel),
-        Guid = new("f64be738-0000-4f15-0000-418370000855"),
-        Name = "DataImportParallel TODO",
+        NameId = nameof(DatabaseWriteOptimized),
+        Guid = new("e73a3601-3fd1-454c-ad56-61bd581ed481"),
+        Name = "Database performance with optimized write/save",
         IsPublic = false,
         Ui = true,
-        Description = "DataImportParallel TODO.",
+        Description = "Perform data save operations in a new optimized, parallel execution. Way fewer DB operations and up to 10x faster in large imports.",
         Security = FeaturesCatalogRules.Security0Neutral,
         LicenseRules = ForPatronPerformanceAutoEnabled,
-
-        //// depending on the state of this feature, we will activate some static code enhancements
-        //RunOnStateChange = (state, log) =>
-        //{
-        //    var isEnabled = state.IsEnabled;
-        //    SysPerfSettings.CacheListAutoIndex = isEnabled;
-        //    log.A($"Set {nameof(SysPerfSettings.CacheListAutoIndex)} = {SysPerfSettings.PreferArray}");
-        //}
     };
 
-    // TODO: guid not final!
-    public static readonly Feature DbOptimizeTracking = new()
+    public static readonly Feature DatabaseTrackingOptimized = new()
     {
-        NameId = nameof(DbOptimizeTracking),
-        Guid = new("52E1AB3F-DEBD-4F97-ACA6-925122B96035"),
-        Name = "DataImproveDbTracking TODO",
+        NameId = nameof(DatabaseTrackingOptimized),
+        Guid = new("dd0dbfec-7675-4f7d-9742-9e7c819cef2f"),
+        Name = "Improve performance change tracking",
         IsPublic = false,
         Ui = true,
-        Description = "DataImproveDbTracking TODO.",
+        Description = "Performance improvements in EntityFramework regarding change tracking.",
         Security = FeaturesCatalogRules.Security0Neutral,
         LicenseRules = ForPatronPerformanceAutoEnabled,
-
-        //// depending on the state of this feature, we will activate some static code enhancements
-        //RunOnStateChange = (state, log) =>
-        //{
-        //    var isEnabled = state.IsEnabled;
-        //    SysPerfSettings.CacheListAutoIndex = isEnabled;
-        //    log.A($"Set {nameof(SysPerfSettings.CacheListAutoIndex)} = {SysPerfSettings.PreferArray}");
-        //}
     };
 
 }

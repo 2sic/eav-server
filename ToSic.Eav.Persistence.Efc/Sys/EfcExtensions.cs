@@ -10,7 +10,7 @@ public static class EfcExtensions
         bool preferUntracked = true)
         where TEntity : class
     {
-        return preferUntracked && featuresSvc.IsEnabled(BuiltInFeatures.DbOptimizeTracking)
+        return preferUntracked && featuresSvc.IsEnabled(BuiltInFeatures.DatabaseTrackingOptimized)
             ? source.AsNoTracking()
             : source;
     }

@@ -17,7 +17,7 @@ partial class DbEntity
     {
         // wrong toggle, but it's something people don't have ATM
         //var useNewSave = DbContext.Features.IsEnabled(BuiltInFeatures.DataImportParallel);
-        var useParallel = DbContext.Features.IsEnabled(BuiltInFeatures.DataImportParallel);
+        var useParallel = DbContext.Features.IsEnabled(BuiltInFeatures.DatabaseWriteOptimized);
 
         var l = LogSummary.Fn<List<EntityIdentity>>($"count:{entityOptionPairs.Count}; Optimized: {useParallel}");
 
