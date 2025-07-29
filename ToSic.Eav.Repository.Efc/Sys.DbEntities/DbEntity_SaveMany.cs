@@ -52,7 +52,7 @@ partial class DbEntity
 
         DbContext.DoInTransaction(
             () => DbContext.Versioning.DoAndSaveHistoryQueue(
-                () => DbContext.Relationships.DoWhileQueueingRelationships(
+                () => DbContext.Relationships.DoWhileQueueingRelationshipsUntracked(
                     () => DoWhileQueueingAttributes(
                         () => DbContext.DoAndSaveWithoutChangeDetection(() => result = saveProcess.Process(data, true), "SaveMany-new"))
                 )
@@ -81,7 +81,7 @@ partial class DbEntity
 
         DbContext.DoInTransaction(
             () => DbContext.Versioning.DoAndSaveHistoryQueue(
-                () => DbContext.Relationships.DoWhileQueueingRelationships(
+                () => DbContext.Relationships.DoWhileQueueingRelationshipsUntracked(
                     () => DoWhileQueueingAttributes(
                         () =>
                         {
@@ -126,7 +126,7 @@ partial class DbEntity
 
         DbContext.DoInTransaction(
             () => DbContext.Versioning.DoAndSaveHistoryQueue(
-                () => DbContext.Relationships.DoWhileQueueingRelationships(
+                () => DbContext.Relationships.DoWhileQueueingRelationshipsUntracked(
                     () => DoWhileQueueingAttributes(
                         () =>
                         {

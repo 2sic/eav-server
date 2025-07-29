@@ -5,7 +5,7 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels")
 {
-    internal void DoWhileQueueingRelationships(Action action)
+    internal void DoWhileQueueingRelationshipsUntracked(Action action)
     {
         var randomId = Guid.NewGuid().ToString().Substring(0, 4);
         var log = _isOutermostCall ? LogSummary : LogDetails;
@@ -20,7 +20,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
             // 4. now check if we were the outermost call, in if yes, save the data
             if (willPurgeQueue)
             {
-                ImportRelationshipQueueAndSave();
+                ImportRelationshipQueueAndSaveUntracked();
                 _isOutermostCall = true; // reactivate, in case this is called again
             }
         });
@@ -35,7 +35,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// <summary>
     /// Update Relationships of an Entity
     /// </summary>
-    private void UpdateEntityRelationshipsAndSave(List<RelationshipUpdatePackage> packages)
+    private void UpdateEntityRelationshipsAndSaveUntracked(ICollection<RelationshipUpdatePackage> packages)
     {
         var l = LogSummary.Fn($"Packages: {packages.Count}", timer: true);
         
@@ -85,7 +85,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// <summary>
     /// Import Entity Relationships Queue (Populated by UpdateEntityRelationships) and Clear Queue afterward.
     /// </summary>
-    private void ImportRelationshipQueueAndSave()
+    private void ImportRelationshipQueueAndSaveUntracked()
     {
         var lSum = LogSummary.Fn(timer: true);
         // if SaveOptions determines it, clear all existing relationships first
@@ -122,39 +122,64 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                 var dbTargetIds = DbContext.Entities.GetMostCurrentDbEntities(allTargets);
                 LogDetails.A("Total target entities (should match): " + dbTargetIds.Count);
 
-                var updates = new List<RelationshipUpdatePackage>();
-                foreach (var relationship in _saveQueue)
-                {
-                    var entityWithChildren = parents.Single(e => e.EntityId == relationship.ParentEntityId);
+                var updates = _saveQueue
+                    .Select(relationship =>
+                    {
+                        var entityWithChildren = parents.Single(e => e.EntityId == relationship.ParentEntityId);
 
-                    // start with the ID list - or if it doesn't exist, a new list
-                    var childEntityIds = relationship.ChildEntityIds ?? [];
+                        // start with the ID list - or if it doesn't exist, a new list
+                        var childEntityIds = relationship.ChildEntityIds ?? [];
 
-                    // if additional / alternative guids were specified, use those
-                    if (childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)
-                        foreach (var childGuid in relationship.ChildEntityGuids)
-                            try
-                            {
-                                childEntityIds.Add(childGuid.HasValue
+                        // if additional / alternative guids were specified, use those
+                        if (childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)
+                            childEntityIds = relationship.ChildEntityGuids
+                                .Select(childGuid => childGuid.HasValue
                                     ? dbTargetIds.TryGetValue(childGuid.Value, out var id)
                                         ? id
                                         : new int?()
-                                    : new());
-                            }
-                            catch (InvalidOperationException)
-                            {
-                                // ignore, may occur if the child entity doesn't exist / wasn't created successfully
-                            }
+                                    : new()
+                                )
+                                .ToListOpt();
 
-                    updates.Add(new()
-                    {
-                        AttributeId = relationship.AttributeId,
-                        EntityStubWithChildren = entityWithChildren,
-                        Targets = childEntityIds
-                    });
-                }
+                        return new RelationshipUpdatePackage
+                        {
+                            AttributeId = relationship.AttributeId,
+                            EntityStubWithChildren = entityWithChildren,
+                            Targets = childEntityIds
+                        };
+                    })
+                    .ToListOpt();
 
-                UpdateEntityRelationshipsAndSave(updates);
+                // Old before 2025-07-29; del ca. 2025-Q3
+                //foreach (var relationship in _saveQueue)
+                //{
+                //    var entityWithChildren = parents.Single(e => e.EntityId == relationship.ParentEntityId);
+                //    // start with the ID list - or if it doesn't exist, a new list
+                //    var childEntityIds = relationship.ChildEntityIds ?? [];
+                //    // if additional / alternative guids were specified, use those
+                //    if (childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)
+                //        foreach (var childGuid in relationship.ChildEntityGuids)
+                //            try
+                //            {
+                //                childEntityIds.Add(childGuid.HasValue
+                //                    ? dbTargetIds.TryGetValue(childGuid.Value, out var id)
+                //                        ? id
+                //                        : new int?()
+                //                    : new());
+                //            }
+                //            catch (InvalidOperationException)
+                //            {
+                //                // ignore, may occur if the child entity doesn't exist / wasn't created successfully
+                //            }
+                //    updates.Add(new()
+                //    {
+                //        AttributeId = relationship.AttributeId,
+                //        EntityStubWithChildren = entityWithChildren,
+                //        Targets = childEntityIds
+                //    });
+                //}
+
+                UpdateEntityRelationshipsAndSaveUntracked(updates);
             }
         );
 

@@ -83,7 +83,7 @@ partial class DbContentType
 
 
     internal void ExtendSaveContentTypes(List<IContentType> contentTypes, SaveOptions saveOptions)
-        => DbContext.Relationships.DoWhileQueueingRelationships(() =>
+        => DbContext.Relationships.DoWhileQueueingRelationshipsUntracked(() =>
         {
             var typed = contentTypes.Cast<ContentType>().ToList();
             foreach (var ct in typed)

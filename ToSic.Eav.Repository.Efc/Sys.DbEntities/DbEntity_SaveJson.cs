@@ -28,7 +28,7 @@ partial class DbEntity
     internal void DropAttributesAndRelationshipsForJsonItem(int entityId)
     {
         // in update scenarios, the old data could have been a db-model, so clear that
-        ClearValuesInDbModel(entityId);
+        ClearValuesInDbUntracked(entityId);
         DbContext.Relationships.FlushChildrenRelationships([entityId]);
     }
 }

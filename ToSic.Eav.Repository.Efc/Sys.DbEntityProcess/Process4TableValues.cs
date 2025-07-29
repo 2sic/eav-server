@@ -10,7 +10,7 @@ internal class Process4TableValues(): Process0Base("Db.EPr4TV")
         var l = services.LogDetails.Fn<EntityProcessData>();
 
         // save all the values we just added
-        services.DbEntity.SaveAttributesAsEav(data.NewEntity, data.Options, data.AttributeDefs, data.DbEntity!.EntityId, data.Languages, data.LogDetails);
+        services.DbEntity.SaveAttributesAsEavUntracked(data.NewEntity, data.Options, data.AttributeDefs, data.DbEntity!.EntityId, data.Languages, data.LogDetails);
 
         return l.Return(data);
     }

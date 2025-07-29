@@ -196,7 +196,7 @@ partial class DbEntity
             if (!saveJson)
             {
                 // save all the values we just added
-                SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt.EntityId, zoneLangs, logDetails);
+                SaveAttributesAsEavUntracked(newEnt, so, attributeDefs, dbEnt.EntityId, zoneLangs, logDetails);
                 DbContext.Relationships.ChangeRelationships(newEnt, dbEnt.EntityId, attributeDefs, so);
             }
             else if (isNew)

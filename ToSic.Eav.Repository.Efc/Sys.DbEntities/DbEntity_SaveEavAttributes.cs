@@ -13,14 +13,15 @@ partial class DbEntity
     /// <summary>
     /// List of actions in the queue for saving
     /// </summary>
-    private readonly List<Action> _attributeUpdateQueue = [];
+    //private readonly List<Action> _attributeUpdateQueue = [];
+    private readonly List<TsDynDataValue> _valueUpdateQueue = [];
 
     /// <summary>
     /// Remove values and attached dimensions of these values from the DB
     /// Important when updating json-entities, to ensure we don't keep trash around
     /// </summary>
     /// <param name="entityId"></param>
-    private bool ClearValuesInDbModel(int entityId)
+    private bool ClearValuesInDbUntracked(int entityId)
     {
         var l = LogDetails.Fn<bool>(timer: true);
         var val = DbContext.SqlDb.TsDynDataValues
@@ -37,7 +38,7 @@ partial class DbEntity
         return l.ReturnTrue("ok");
     }
 
-    internal void SaveAttributesAsEav(IEntity newEnt,
+    internal void SaveAttributesAsEavUntracked(IEntity newEnt,
         SaveOptions so,
         List<TsDynDataAttribute> dbAttributes,
         int entityId,
@@ -48,19 +49,19 @@ partial class DbEntity
         if (!_attributeQueueActive)
             throw new("Attribute save-queue not ready - should be wrapped");
 
-        foreach (var attribute in newEnt.Attributes.Values)
+        foreach (var value in newEnt.Attributes.Values)
         {
-            var l = lMain.Fn($"InnerAttribute:{attribute.Name}");
+            var l = lMain.Fn($"InnerAttribute:{value.Name}");
             
             // find attribute definition
             var attribDef = dbAttributes
-                .SingleOrDefault(a => string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
+                .SingleOrDefault(a => string.Equals(a.StaticName, value.Name, StringComparison.InvariantCultureIgnoreCase));
 
             // If attribute definition missing, either throw or ignore
             if (attribDef == null)
             {
                 if (!so.DiscardAttributesNotInType)
-                    throw new($"trying to save attribute {attribute.Name} but can\'t find definition in DB");
+                    throw new($"trying to save attribute {value.Name} but can\'t find definition in DB");
                 l.Done("attribute not found, will skip according to save-options");
                 continue;
             }
@@ -72,14 +73,14 @@ partial class DbEntity
                 continue;
             }
 
-            foreach (var value in attribute.Values)
+            foreach (var valueAtom in value.Values)
             {
                 #region prepare languages - has extensive error reporting, to help in case any db-data is bad
 
                 List<TsDynDataValueDimension>? toSicEavValuesDimensions;
                 try
                 {
-                    toSicEavValuesDimensions = value.Languages
+                    toSicEavValuesDimensions = valueAtom.Languages
                         ?.Select(lng => new TsDynDataValueDimension
                         {
                             DimensionId = zoneLangs
@@ -103,16 +104,17 @@ partial class DbEntity
 
                 if (logDetails)
                     LogDetails.A(LogDetails.Try(() =>
-                        $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count()}, dim⋮{toSicEavValuesDimensions?.Count}"));
+                        $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{value.Values?.Count()}, dim⋮{toSicEavValuesDimensions?.Count}"));
 
                 var newVal = new TsDynDataValue
                 {
                     AttributeId = attribDef.AttributeId,
-                    Value = value.Serialized ?? "",
+                    Value = valueAtom.Serialized ?? "",
                     TsDynDataValueDimensions = toSicEavValuesDimensions,
                     EntityId = entityId
                 };
-                _attributeUpdateQueue.Add(() => DbContext.SqlDb.TsDynDataValues.Add(newVal));
+                _valueUpdateQueue.Add(newVal);
+                //_attributeUpdateQueue.Add(() => DbContext.SqlDb.TsDynDataValues.Add(newVal));
             }
 
             l.Done();
@@ -124,8 +126,9 @@ partial class DbEntity
     {
         var randomId = Guid.NewGuid().ToString().Substring(0, 4);
         var l = LogDetails.Fn($"attribute queue:{randomId} start");
-        
-        if (_attributeUpdateQueue.Any())
+
+        //if (_attributeUpdateQueue.Any())
+        if (_valueUpdateQueue.Any())
             throw new("Attribute queue started while already containing stuff - bad!");
 
         _attributeQueueActive = true;
@@ -134,17 +137,19 @@ partial class DbEntity
         action.Invoke();
 
         // 4. now check if we were the outermost call, in if yes, save the data
-        DbContext.DoAndSaveWithoutChangeDetection(AttributeQueueSave);
+        DbContext.DoAndSaveWithoutChangeDetection(AttributeQueueAdd);
         _attributeQueueActive = false;
         l.Done();
     }
 
-    private void AttributeQueueSave()
+    private void AttributeQueueAdd()
     {
-        var l = LogSummary.Fn($"Attributes: {_attributeUpdateQueue.Count}", timer: true);
-        foreach (var a in _attributeUpdateQueue)
-            a.Invoke();
-        _attributeUpdateQueue.Clear();
+        var l = LogSummary.Fn($"Attributes: {_valueUpdateQueue.Count}", timer: true);
+        //foreach (var a in _attributeUpdateQueue)
+        //    a.Invoke();
+        DbContext.SqlDb.TsDynDataValues.AddRange(_valueUpdateQueue);
+        _valueUpdateQueue.Clear();
+        //_attributeUpdateQueue.Clear();
         l.Done();
     }
 }

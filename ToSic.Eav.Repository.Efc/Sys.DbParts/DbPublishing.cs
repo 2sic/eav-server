@@ -56,10 +56,8 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
             }
 
             publishedEntity.Json = json; // if it's using the new format
-            publishedEntity.TransModifiedId =
-                unpublishedDbEnt.TransModifiedId; // transfer last-modified date (not to today, but to last edit)
-            DbContext.Values.CloneRelationshipsAndSave(unpublishedDbEnt,
-                publishedEntity); // relationships need special treatment and intermediate save!
+            publishedEntity.TransModifiedId = unpublishedDbEnt.TransModifiedId; // transfer last-modified date (not to today, but to last edit)
+            DbContext.Values.CloneRelationshipsAndSave(unpublishedDbEnt, publishedEntity); // relationships need special treatment and intermediate save!
             DbContext.Values.CloneEntitySimpleValues(unpublishedDbEnt, publishedEntity);
 
             // delete the Draft Entity
