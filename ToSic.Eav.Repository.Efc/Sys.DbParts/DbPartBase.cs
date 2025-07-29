@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 // Note: Don't connect service - this was initialized before...
-internal class DbPartBase(DbStorage.DbStorage dbStorage, string logName) : HelperBase(dbStorage.Log, logName)
+internal class DbPartBase(DbStorage.DbStorage dbStore, string logName) : HelperBase(dbStore.Log, logName)
 {
-    protected DbStorage.DbStorage DbContext { get; } = dbStorage;
+    protected DbStorage.DbStorage DbContext { get; } = dbStore;
 
     /// <summary>
     /// Logger for the details of the deserialization process.

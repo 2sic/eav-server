@@ -94,8 +94,9 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
     private int AppendToEndAndSave(int contentTypeId, IContentTypeAttribute contentTypeAttribute)
     {
         var maxIndex = DbContext.SqlDb.TsDynDataAttributes
+            .AsNoTracking()
             .Where(a => a.ContentTypeId == contentTypeId)
-            .ToList() // important because it otherwise has problems with the next step...
+            .ToListOpt() // important because it otherwise has problems with the next step...
             .Max(s => (int?) s.SortOrder);
 
         return AddAttributeAndSave(contentTypeId, contentTypeAttribute, maxIndex + 1 ?? 0);
@@ -135,8 +136,9 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         };
 
         // Set Attribute as Title if there's no title field in this set
-        if (!contentType.TsDynDataAttributes.Any(a => a.IsTitle))
-            newAttribute.IsTitle = true;
+        if (DbContext.ProcessOptions.TypeAttributeAutoSetTitle)
+            if (!contentType.TsDynDataAttributes.Any(a => a.IsTitle))
+                newAttribute.IsTitle = true;
 
 
         DbContext.DoAndSaveWithoutChangeDetection(() =>
@@ -144,7 +146,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             DbContext.SqlDb.Add(newAttribute);
 
             // If it's not a title, then we don't have to unset any old title fields
-            if (!isTitle)
+            if (!isTitle || !DbContext.ProcessOptions.TypeAttributeAutoCorrectTitle)
                 return;
 
             // unset old Title Fields

@@ -51,7 +51,7 @@ public class ImportService(
         // It's important to not use AppWorkContext or similar, because that would
         // try to load the App into cache, and initialize the App before it's fully imported
         LogSettings = logSettings.GetLogSettings();
-        var storage = storageFactory.New(new(zoneId, appId, parentAppId, LogSettings));
+        var storage = storageFactory.New(new(zoneId, appId, parentAppId, LogSettings, SaveProcessOptions.Import));
         Storage = storage;
         _appId = appId;
         _zoneId = zoneId;

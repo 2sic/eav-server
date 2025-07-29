@@ -14,6 +14,7 @@ partial class DbAttribute
         contentTypeId = DbContext.ContentType.ResolvePotentialGhostContentTypeId(contentTypeId);
 
         return DbContext.SqlDb.TsDynDataAttributes
+            .AsNoTracking()
             .Where(attributes => attributes.ContentTypeId == contentTypeId)
             .OrderBy(attributes => attributes.SortOrder);
     }

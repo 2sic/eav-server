@@ -117,7 +117,6 @@ public class DbStorage(
 
     public List<Message> ImportLogToBeRefactored { get; } = [];
 
-
     #region Constructor and Init
 
     private static bool _loggedToBootLog;
@@ -169,6 +168,7 @@ public class DbStorage(
 
     #endregion
 
+    public SaveProcessOptions ProcessOptions { get; private set; } = null!;
 
     /// <summary>
     /// New factory setup using the better paradigm.
@@ -177,6 +177,8 @@ public class DbStorage(
     /// <param name="options"></param>
     public void Setup(StorageOptions options)
     {
+        ProcessOptions = options.ProcessOptions;
+
         Init(options.ZoneId, options.AppId, options.ParentAppId);
 
         ConfigureLogging(options.LogSettings);
@@ -199,7 +201,7 @@ public class DbStorage(
     /// <summary>
     /// Set ZoneId and AppId on current context.
     /// </summary>
-    private DbStorage Init(int? zoneId, int? appId, int? parentAppId = default)
+    private void Init(int? zoneId, int? appId, int? parentAppId = default)
     {
         // No matter what scenario we have, always set the parent app id - if given
         // todo: maybe later also try to detect it, if we see the need for it
@@ -212,7 +214,7 @@ public class DbStorage(
             {
                 _zoneId = KnownAppsConstants.DefaultZoneId;
                 _appId = KnownAppsConstants.MetaDataAppId;
-                return this;
+                return;
             }
             // If only AppId is supplied, look up it's zone and use that
             else
@@ -225,7 +227,7 @@ public class DbStorage(
                     throw new ArgumentException($@"App with id {appId.Value} doesn't exist.", nameof(appId));
                 _appId = appId.Value;
                 _zoneId = zoneIdOfApp.Value;
-                return this;
+                return;
             }
 
         // if only ZoneId was supplied, use that...
@@ -240,8 +242,6 @@ public class DbStorage(
         }
         else
             _appId = SqlDb.TsDynDataApps.First(a => a.Name == KnownAppsConstants.DefaultAppGuid).AppId;
-
-        return this;
     }
 
     #endregion
@@ -297,7 +297,16 @@ public class DbStorage(
         var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
         SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
 
-        action.Invoke();
+        // Wrap invoke in a try/catch to specifically catch tracking errors
+        try {
+            action.Invoke();
+        }
+        catch (Exception ex)
+        {
+            l.A($"error: action failed, {ex.Message}");
+            l.Ex(ex);
+            throw;
+        }
 
         try
         {

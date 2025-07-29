@@ -12,6 +12,7 @@ partial class DbContentType
     private void SortAttributes(int contentTypeId, IContentType contentType)
     {
         var attributeList = DbContext.SqlDb.TsDynDataAttributes
+            .AsNoTracking()
             .Where(a => a.ContentTypeId == contentTypeId)
             .ToList();
 
@@ -33,6 +34,7 @@ partial class DbContentType
     public void SortAttributes(int contentTypeId, List<int> newOrder)
     {
         var attributeList = DbContext.SqlDb.TsDynDataAttributes
+            .AsNoTracking()
             .Where(a => a.ContentTypeId == contentTypeId)
             .ToList();
         attributeList = attributeList

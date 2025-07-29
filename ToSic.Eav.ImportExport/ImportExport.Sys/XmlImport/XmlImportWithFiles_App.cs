@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Repositories.Sys;
 
@@ -45,8 +46,7 @@ partial class XmlImportWithFiles
                 appGuid = Guid.NewGuid().ToString();
 
             // Adding app to EAV
-            //var eavDc = Services.DbDataForNewApp.Value.Init(zoneId, null);
-            var storage = Services.StorageFactory.New(new(zoneId, null, null, Services.LogSettings.GetLogSettings()));
+            var storage = Services.StorageFactory.New(new(zoneId, null, null, Services.LogSettings.GetLogSettings(), SaveProcessOptions.CreateApp));
 
             // ParentApp
             parentAppId = inheritAppId ?? GetParentAppId(xmlSource, storage);
