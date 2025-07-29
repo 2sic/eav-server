@@ -10,49 +10,63 @@ partial class DbContentType
 {
     public void AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
     {
-        var ct = GetTypeByStaticName(staticName) 
-                 ?? Create(scope, usesConfigurationOfOtherSet, alwaysShareConfig);
-
-        ct.Name = name;
-        ct.Scope = scope;
-        ct.TransCreatedId = DbContext.Versioning.GetTransactionId();
-
         // save first, to ensure it has an Id
-        DbContext.SqlDb.SaveChanges();
+        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        {
+            var ct = TryGetTypeByStaticNameUntracked(staticName);
+
+            if (ct != null)
+            {
+                ct.Name = name;
+                ct.Scope = scope;
+                ct.TransCreatedId = DbContext.Versioning.GetTransactionId();
+                DbContext.SqlDb.Update(ct);
+            }
+            else
+            {
+                DbContext.SqlDb.Add(Create(name, scope, usesConfigurationOfOtherSet, alwaysShareConfig));
+            }
+        });
     }
 
-    private TsDynDataContentType Create(string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
+    private TsDynDataContentType Create(string name, string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
     {
         var ct = new TsDynDataContentType
         {
             AppId = DbContext.AppId,
+            Name = name,
             StaticName = Guid.NewGuid().ToString(),
             Scope = scope == "" ? null : scope,
             InheritContentTypeId = usesConfigurationOfOtherSet,
-            IsGlobal = alwaysShareConfig
+            IsGlobal = alwaysShareConfig,
+            TransCreatedId = DbContext.Versioning.GetTransactionId(),
         };
-        DbContext.SqlDb.Add(ct);
+        
         return ct;
     }
 
 
     public void Delete(string nameId)
     {
-        var setToDelete = GetTypeByStaticName(nameId)
+        var setToDelete = TryGetTypeByStaticNameUntracked(nameId)
             ?? throw new ArgumentException($@"Tried to delete but can't find {nameId}", nameof(nameId));
         setToDelete.TransDeletedId = DbContext.Versioning.GetTransactionId();
-        DbContext.SqlDb.SaveChanges();
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(setToDelete));
     }
 
 
     private int? GetOrCreateContentType(ContentType contentType)
     {
-        var newType = DbContext.ContentTypes.GetDbContentType(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
-
+        var newType = DbContext.ContentTypes.TryGetDbContentTypeUntracked(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
+        var isUpdate = newType != null;
+        
         // add new Content-Type, do basic configuration if possible, then save
         if (newType == null)
+        {
             newType = DbContext.ContentTypes.PrepareDbContentType(contentType.Name, contentType.NameId, contentType.Scope, false, null)
-                ?? throw new($"Can't create content type {contentType.Name}/{contentType.NameId}");
+                   ?? throw new($"Can't create content type {contentType.Name}/{contentType.NameId}");
+
+        }
 
         // to use existing Content-Type, do some minimal conflict-checking
         else
@@ -75,7 +89,13 @@ partial class DbContentType
         }
 
         newType.IsGlobal = contentType.AlwaysShareConfiguration;
-        DbContext.SqlDb.SaveChanges();
+        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        {
+            if (isUpdate)
+                DbContext.SqlDb.Update(newType);
+            else
+                DbContext.SqlDb.Add(newType);
+        });
 
         return newType.ContentTypeId;
     }

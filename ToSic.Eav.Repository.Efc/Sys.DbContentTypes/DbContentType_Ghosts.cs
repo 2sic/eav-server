@@ -32,7 +32,7 @@ partial class DbContentType
 
     public void CreateGhost(string staticName)
     {
-        var ct = GetTypeByStaticName(staticName);
+        var ct = TryGetTypeByStaticNameUntracked(staticName);
         if (ct != null)
             throw new("current App already has a content-type with this static name - cannot continue");
 

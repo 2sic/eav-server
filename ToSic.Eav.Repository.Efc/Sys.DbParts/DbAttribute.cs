@@ -100,7 +100,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
         var sysSettings = Serializer.Serialize(contentTypeAttribute.SysSettings);
 
-        var contentType = DbContext.ContentTypes.GetDbContentType(DbContext.AppId, contentTypeId)
+        var contentType = DbContext.ContentTypes.TryGetDbContentTypeUntracked(DbContext.AppId, contentTypeId)
             ?? throw new($"Can't find {contentTypeId} in DB.");
 
         if (!AttributeNames.StaticNameValidation.IsMatch(nameId))
@@ -117,7 +117,8 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             TransCreatedId = DbContext.Versioning.GetTransactionId(),
             Guid = contentTypeAttribute.Guid,
             SysSettings = sysSettings,
-            ContentType = contentType,
+            //ContentType = contentType,
+            ContentTypeId = contentType.ContentTypeId,
             SortOrder = sortOrder,
             IsTitle = isTitle
         };
