@@ -43,7 +43,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
         var publishedId = unpublishedDbEnt.PublishedEntityId.Value;
         l.A(
             "There is a published item, will update that with the draft-data and delete the draft afterwards");
-        var publishedEntity = DbContext.Entities.GetDbEntityFull(publishedId);
+        var publishedEntity = DbContext.Entities.GetDbEntityFull(publishedId, preferUntracked: true);
         var json = unpublishedDbEnt.Json;
         var isJson = !string.IsNullOrEmpty(json);
         l.A($"this is a json:{isJson}");

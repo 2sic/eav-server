@@ -14,9 +14,9 @@ public interface ITypeController
     /// Create a ghost-content-type (very advanced feature)
     /// </summary>
     /// <param name="appId"></param>
-    /// <param name="sourceStaticName"></param>
+    /// <param name="sourceNameId"></param>
     /// <returns></returns>
-    bool AddGhost(int appId, string sourceStaticName);
+    bool AddGhost(int appId, string sourceNameId);
 
     /// <summary>
     /// Delete a content-type from an app
