@@ -45,7 +45,14 @@ partial class DbContentType
     private void PersistAttributeOrder(List<TsDynDataAttribute> attributeList)
     {
         var index = 0;
-        DbContext.DoAndSave(() => attributeList.ForEach(a => a.SortOrder = index++));
+        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        {
+            foreach (var a in attributeList)
+            {
+                a.SortOrder = index++;
+                DbContext.SqlDb.Update(a);
+            }
+        });
     }
 
 }
