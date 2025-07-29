@@ -122,8 +122,6 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
             AppId = targetAppId
         };
 
-        DbContext.SqlDb.Add(newSet);
-
         return newSet;
     }
         
