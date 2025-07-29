@@ -32,8 +32,6 @@ partial class DbEntity
         return l.ReturnAsOk(dbEnt);
     }
 
-    public void SaveNew(IEnumerable<TsDynDataEntity> newDbEntities)
-    {
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.AddRange(newDbEntities), "save new");
-    }
+    public void SaveCreatedNoChangeDetection(IEnumerable<TsDynDataEntity> newDbEntities)
+        => DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.AddRange(newDbEntities), "save new");
 }

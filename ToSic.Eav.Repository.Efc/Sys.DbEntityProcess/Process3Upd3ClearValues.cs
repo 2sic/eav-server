@@ -23,11 +23,11 @@ internal class Process3Upd3ClearValues(): Process0Base("Db.EPr3u3")
 
     public override ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
     {
+        var l = GetLogCall(services, logProcess);
+
         // Skip if all are new
         if (data.All(d => d.IsNew))
-            return data;
-
-        var l = GetLogCall(services, logProcess);
+            return l.Return(data, "all new, none update, skip");
 
         // first, clean up all existing attributes / values (flush)
         // this is necessary after remove, because otherwise EF state tracking gets messed up

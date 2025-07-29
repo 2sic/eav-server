@@ -25,11 +25,12 @@ internal class Process3Upd1DbPreload(): Process0Base("Db.EPr3u1")
 
     public override ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
     {
+        var l = GetLogCall(services, logProcess);
+
         // Skip if all are new
         if (data.All(d => d.IsNew))
-            return data;
+            return l.Return(data, "all new, none update, skip");
 
-        var l = GetLogCall(services, logProcess);
 
         var ids = data
             .Where(d => !d.IsNew)

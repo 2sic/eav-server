@@ -95,7 +95,7 @@ partial class DbEntity
                 }
 
                 dbEnt = CreateDbRecord(newEnt, transactionId, contentTypeId);
-                SaveNew([dbEnt]);
+                SaveNewNoChangeDetection([dbEnt]);
                 // update the ID - for versioning and/or json persistence
                 newEnt = builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
 
