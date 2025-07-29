@@ -62,10 +62,9 @@ partial class DbContentType
             IsGlobal = false, // this is copy, never re-share
             TransCreatedId = DbContext.Versioning.GetTransactionId()
         };
-        DbContext.SqlDb.Add(newSet);
 
         // save first, to ensure it has an Id
-        DbContext.SqlDb.SaveChanges();
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(newSet));
     }
 
 
