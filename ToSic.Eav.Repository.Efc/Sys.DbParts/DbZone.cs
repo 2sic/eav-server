@@ -46,7 +46,7 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
                 Zone = zone
             }).ToList();
 
-        DbContext.DoAndSave(() => DbContext.SqlDb.AddRange(newZones));
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.AddRange(newZones));
 
         return l.ReturnTrue($"added {newZones.Count}");
     }
