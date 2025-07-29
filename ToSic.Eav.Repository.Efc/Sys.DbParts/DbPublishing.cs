@@ -11,7 +11,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
     internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson)
     {
         var l = LogDetails.Fn($"{nameof(entityId)}:{entityId}");
-        var unpublishedDbEnt = DbContext.Entities.GetDbEntityFull(entityId);
+        var unpublishedDbEnt = DbContext.Entities.GetDbEntityFull(entityId, preferUntracked: true);
         if (!unpublishedDbEnt.IsPublished)
             l.A("found item is draft, will use this to publish");
         else
@@ -22,16 +22,18 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
             l.A($"found draft: {draftId}");
             if (!draftId.HasValue)
                 throw new EntityAlreadyPublishedException($"EntityId {entityId} is already published");
-            unpublishedDbEnt = DbContext.Entities.GetDbEntityFull(draftId.Value);
+            unpublishedDbEnt = DbContext.Entities.GetDbEntityFull(draftId.Value, preferUntracked: true);
         }
 
         // Publish Draft-Entity
         if (!unpublishedDbEnt.PublishedEntityId.HasValue)
         {
-            l.A("there was no published (not branched), so will just set this to published");
-            unpublishedDbEnt.IsPublished = true;
-            l.A("About to save...");
-            DbContext.SqlDb.SaveChanges();
+            l.A($"there was no published (not branched), so will just set this to published; {db.SqlDb.TrackingInfo()}");
+            DbContext.DoAndSaveWithoutChangeDetection(() =>
+            {
+                unpublishedDbEnt.IsPublished = true;
+                DbContext.SqlDb.Update(unpublishedDbEnt);
+            });
             l.Done("saved");
             return;
         }
@@ -67,6 +69,9 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
 
             // delete the Draft Entity
             DbContext.Entities.DeleteEntities([unpublishedDbEnt.EntityId], false);
+
+            // also make sure the json/modified etc. are updated, since we're not tracking changes
+            DbContext.SqlDb.Update(publishedEntity);
         });
 
         l.Done("saved");

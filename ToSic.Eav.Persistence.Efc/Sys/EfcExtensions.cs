@@ -6,10 +6,11 @@ public static class EfcExtensions
 {
     public static IQueryable<TEntity> AsNoTrackingOptional<TEntity>(
         [NotNull] this IQueryable<TEntity> source,
-        ISysFeaturesService featuresSvc)
+        ISysFeaturesService featuresSvc,
+        bool preferUntracked = true)
         where TEntity : class
     {
-        return featuresSvc.IsEnabled(BuiltInFeatures.DbOptimizeTracking)
+        return preferUntracked && featuresSvc.IsEnabled(BuiltInFeatures.DbOptimizeTracking)
             ? source.AsNoTracking()
             : source;
     }

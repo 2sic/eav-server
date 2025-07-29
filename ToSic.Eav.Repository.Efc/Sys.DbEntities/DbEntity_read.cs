@@ -1,30 +1,30 @@
-﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
+﻿using ToSic.Eav.Persistence.Efc.Sys;
+using ToSic.Sys.Capabilities.Features;
+
+namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
-
-    private IQueryable<TsDynDataEntity> EntityQuery
+    private IQueryable<TsDynDataEntity> GetEntityQuery(bool preferUntracked = false)
     {
-        get
-        {
-            LogDetails.A(nameof(EntityQuery));
-            return DbContext.SqlDb.TsDynDataEntities
-                .Include(e => e.RelationshipsWithThisAsParent)
-                .Include(e => e.RelationshipsWithThisAsChild)
-                .Include(e => e.TsDynDataValues)
-                .ThenInclude(v => v.TsDynDataValueDimensions)
-                .ThenInclude(d => d.Dimension);
-        }
+        LogDetails.A(nameof(GetEntityQuery));
+
+        return DbContext.SqlDb.TsDynDataEntities.AsNoTrackingOptional(DbContext.Features, preferUntracked)
+            .Include(e => e.RelationshipsWithThisAsParent)
+            .Include(e => e.RelationshipsWithThisAsChild)
+            .Include(e => e.TsDynDataValues)
+            .ThenInclude(v => v.TsDynDataValueDimensions)
+            .ThenInclude(d => d.Dimension);
     }
 
     /// <summary>
     /// Get a single Entity by EntityId
     /// </summary>
     /// <returns>Entity or throws InvalidOperationException</returns>
-    internal TsDynDataEntity GetDbEntityFull(int entityId)
+    internal TsDynDataEntity GetDbEntityFull(int entityId, bool preferUntracked = false)
     {
         var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
-        var found = EntityQuery.Single(e => e.EntityId == entityId);
+        var found = GetEntityQuery().Single(e => e.EntityId == entityId);
         return l.ReturnAsOk(found);
     }
 
@@ -63,7 +63,7 @@ partial class DbEntity
     public List<TsDynDataEntity> GetDbEntitiesFull(int[] entityIds)
     {
         // 2025-07-28 2dm removed the Include, as they are currently in the EntityQuery - though not sure if relevant
-        var queryBase = EntityQuery;
+        var queryBase = GetEntityQuery();
             //.Include(e => e.TsDynDataValues)
             //.ThenInclude(v => v.TsDynDataValueDimensions);
 
