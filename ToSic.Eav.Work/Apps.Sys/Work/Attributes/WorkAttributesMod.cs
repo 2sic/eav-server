@@ -127,7 +127,7 @@ public class WorkAttributesMod(
             l.W("Setting up field share but feature is not enabled / licensed.");
 
         // get field attributeId
-        var attribute = AppWorkCtx.DbStorage.Attributes.Get(attributeId)
+        var attribute = AppWorkCtx.DbStorage.Attributes.GetUntracked(attributeId)
             ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
 
         // update with the Share = share (hide we'll ignore for now, it's for future needs)
@@ -160,7 +160,7 @@ public class WorkAttributesMod(
             l.W("Setting up field share but feature is not enabled / licensed.");
 
         // get field attributeId
-        var attribute = AppWorkCtx.DbStorage.Attributes.Get(attributeId)
+        var attribute = AppWorkCtx.DbStorage.Attributes.GetUntracked(attributeId)
             ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
 
         // set InheritMetadataOf to the guid above(as string)

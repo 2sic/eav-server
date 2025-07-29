@@ -122,24 +122,32 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             SortOrder = sortOrder,
             IsTitle = isTitle
         };
-        DbContext.SqlDb.Add(newAttribute);
 
         // Set Attribute as Title if there's no title field in this set
         if (!contentType.TsDynDataAttributes.Any(a => a.IsTitle))
             newAttribute.IsTitle = true;
 
-        if (isTitle)
-        {
-            // unset old Title Fields
-            var oldTitleFields = contentType
-                .TsDynDataAttributes
-                .Where(a => a.IsTitle && a.StaticName != nameId)
-                .ToListOpt();
-            foreach (var titleField in oldTitleFields)
-                titleField.IsTitle = false;
-        }
 
-        DbContext.SqlDb.SaveChanges();
+        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        {
+            if (isTitle)
+            {
+                // unset old Title Fields
+                var oldTitleFields = contentType
+                    .TsDynDataAttributes
+                    .Where(a => a.IsTitle && a.StaticName != nameId)
+                    .ToListOpt();
+
+                foreach (var titleField in oldTitleFields)
+                    if (titleField.IsTitle) // only change if it was set as title, to avoid unnecessary updates
+                    {
+                        titleField.IsTitle = false;
+                        DbContext.SqlDb.Update(titleField);
+                    }
+            }
+
+            DbContext.SqlDb.Add(newAttribute);
+        });
         return newAttribute.AttributeId;
     }
         
