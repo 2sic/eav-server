@@ -51,11 +51,6 @@ partial class XmlImportWithFiles
             // ParentApp
             parentAppId = inheritAppId ?? GetParentAppId(xmlSource, storage);
 
-            // #WipDecoupleDbFromImport
-            //var app = eavDc.App.AddApp(null, appGuid, parentAppId);
-            //eavDc.SqlDb.SaveChanges();
-            //appId = app.AppId;
-
             appId = storage.CreateApp(appGuid, parentAppId);
         }
         // Otherwise use the current app (the Content/Default app) to import into

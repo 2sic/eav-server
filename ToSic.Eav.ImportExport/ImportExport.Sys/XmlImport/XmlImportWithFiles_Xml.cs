@@ -17,8 +17,6 @@ partial class XmlImportWithFiles
     public bool ImportXml(int zoneId, int appId, int? parentAppId, XDocument doc, bool leaveExistingValuesUntouched = true)
     {
         var l = LogSummary.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
-        // #WipDecoupleDbFromImport
-        //Services.DbDataForAppImport.Value.Init(zoneId, appId, parentAppId);
             
         AppId = appId;
         ZoneId = zoneId;
