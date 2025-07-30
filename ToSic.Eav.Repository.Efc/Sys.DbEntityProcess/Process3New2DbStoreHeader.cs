@@ -44,7 +44,7 @@ internal class Process3New2DbStoreHeader() : Process0Base("DB.EPr3n2")
                 })
             .ToListOpt();
 
-        // Save the new ones
+        // Save the new ones, afterward the entities have IDs
         var newEntities = data
             .Where(d => d.IsNew)
             .Select(d => d.DbEntity!);
@@ -54,24 +54,17 @@ internal class Process3New2DbStoreHeader() : Process0Base("DB.EPr3n2")
         data = data
             .Select(d =>
             {
-                if (!d.IsNew)
-                    return d; // skip, not new
-
                 // Update the IDs in the NewEntity for versioning and/or json persistence
-                var updated = services.Builder.Entity.CreateFrom(d.NewEntity, id: d.DbEntity!.EntityId);
-                // Prepare export for save json OR versioning later on
-                var jsonExport = services.DbEntity.GenerateJsonOrReportWhyNot(updated, d.LogDetails);
+                var entityWithCorrectId = d.IsNew
+                    ? services.Builder.Entity.CreateFrom(d.NewEntity, id: d.DbEntity!.EntityId)
+                    : d.NewEntity;
 
-                // If we plan to save the JSON, update the DbEntity
-                if (d.SaveJson)
-                {
-                    d.DbEntity!.Json = jsonExport;
-                    d.DbEntity.ContentType = updated.Type.NameId;
-                }
+                // Prepare export for save json OR versioning later on
+                var jsonExport = services.DbEntity.GenerateJsonOrReportWhyNot(entityWithCorrectId, d.LogDetails);
 
                 return d with
                 {
-                    NewEntity = updated,
+                    NewEntity = entityWithCorrectId,
                     JsonExport = jsonExport
                 };
             })

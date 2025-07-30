@@ -74,7 +74,36 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
                 dbEnt.ContentType = null;
         }
 
-        data = data with { DbEntity = dbEnt };
+        data = data with
+        {
+            DbEntity = dbEnt
+        };
+
+        return l.Return(data);
+    }
+
+    public override ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
+    {
+        var l = GetLogCall(services, logProcess);
+        // Skip if all are NOT new
+        if (data.All(d => d.IsNew))
+            return l.Return(data, "all new, skip");
+        
+        // Process each item
+        data = data
+            .Select(d => ProcessOne(services, d))
+            .ToListOpt();
+
+        // If any of them must be stored as JSON, then save the headers again with the updated JSON
+        // This is a bit confusing, since it already happens for new entities before
+        // we should probably sync this so it's less confusing
+        var updates = data
+            .Where(d => d.SaveJson)
+            .Select(d => d.DbEntity!)
+            .ToListOpt();
+
+        if (updates.Any())
+            services.DbStorage.DoAndSaveWithoutChangeDetection(() => services.DbStorage.SqlDb.UpdateRange(updates), "update json");
 
         return l.Return(data);
     }
