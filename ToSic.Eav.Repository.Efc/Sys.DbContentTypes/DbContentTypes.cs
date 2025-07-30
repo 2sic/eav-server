@@ -5,14 +5,14 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSet")
 {
     internal IQueryable<TsDynDataContentType> GetDbContentTypeWithAttributesUntracked(int appId)
-        => DbContext.SqlDb.TsDynDataContentTypes
+        => DbStore.SqlDb.TsDynDataContentTypes
             .AsNoTracking()
             .Include(a => a.TsDynDataAttributes)
             .Where(a => a.AppId == appId && !a.TransDeletedId.HasValue);
 
 
     internal IQueryable<TsDynDataContentType> GetDbContentTypeWithAttributesTracked(int appId)
-        => DbContext.SqlDb.TsDynDataContentTypes
+        => DbStore.SqlDb.TsDynDataContentTypes
             .Include(a => a.TsDynDataAttributes)
             .Where(a => a.AppId == appId && !a.TransDeletedId.HasValue);
 
@@ -40,15 +40,15 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
         try
         {
             var preparedError = $"too many or too few content types found for the content-type '{name}'.";
-            var found = GetDbContentTypesUntracked(DbContext.AppId, name, alsoCheckNiceName: true);
+            var found = GetDbContentTypesUntracked(DbStore.AppId, name, alsoCheckNiceName: true);
 
             // If nothing found check parent app
             if (found.Count == 0)
             {
                 // If we have exactly 1 parent, it's not inherited, so we should stop now.
-                var parentAppIds = DbContext.AppIds.Skip(1).ToArray();
+                var parentAppIds = DbStore.AppIds.Skip(1).ToArray();
                 if (parentAppIds.Length == 0)
-                    throw l.Ex(new Exception($"{preparedError} No custom parent apps found for app {DbContext.AppId}"));
+                    throw l.Ex(new Exception($"{preparedError} No custom parent apps found for app {DbStore.AppId}"));
 
                 var parentId = parentAppIds.First();
                 l.A($"Not found on main app, will check parent: {parentId}");
@@ -63,7 +63,7 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
         }
         catch (InvalidOperationException ex)
         {
-            throw new($"Unable to get Content-Type with StaticName \"{name}\" in app {DbContext.AppId}", ex);
+            throw new($"Unable to get Content-Type with StaticName \"{name}\" in app {DbStore.AppId}", ex);
         }
     }
 
@@ -78,10 +78,10 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
         if (string.IsNullOrEmpty(nameId))
             nameId = Guid.NewGuid().ToString();
 
-        var targetAppId = appId ?? DbContext.AppId;
+        var targetAppId = appId ?? DbStore.AppId;
 
         // ensure Content-Type with StaticName doesn't exist on App
-        if (DbContext.ContentTypes.DbContentTypeExists(targetAppId, nameId))
+        if (DbStore.ContentTypes.DbContentTypeExists(targetAppId, nameId))
         {
             if (skipExisting)
                 return null;
@@ -93,7 +93,7 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
             Name = name,
             StaticName = nameId,
             Scope = scope,
-            TransCreatedId = DbContext.Versioning.GetTransactionId(),
+            TransCreatedId = DbStore.Versioning.GetTransactionId(),
             AppId = targetAppId
         };
 

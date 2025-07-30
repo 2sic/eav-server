@@ -28,11 +28,11 @@ internal  partial class DbVersioning: DbPartBase
     /// <remarks>Also opens the SQL Connection to ensure this TransactionId is used for Auditing on this SQL Connection</remarks>
     internal int GetTransactionId()
     {
-        var userName = DbContext.UserIdentityToken;
+        var userName = DbStore.UserIdentityToken;
         if (_mainTransactionId != 0)
             return _mainTransactionId;
 
-        var con = DbContext.SqlDb.Database.GetDbConnection();
+        var con = DbStore.SqlDb.Database.GetDbConnection();
         if (con.State != ConnectionState.Open)
             con.Open(); // make sure same connection is used later
 
@@ -44,7 +44,7 @@ internal  partial class DbVersioning: DbPartBase
         cmd.Parameters.Add(new SqlParameter("@userName", userName));
 
         // enlist in any transaction EF is already using
-        var curTx = DbContext.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
+        var curTx = DbStore.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
         if (curTx != null)
             cmd.Transaction = curTx;
 
@@ -85,7 +85,7 @@ internal  partial class DbVersioning: DbPartBase
     private void Save()
     {
         var l = LogDetails.Fn(timer: true);
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.TsDynDataHistories.AddRange(_queue));
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.TsDynDataHistories.AddRange(_queue));
         _queue.Clear();
         l.Done();
     }

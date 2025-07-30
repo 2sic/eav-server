@@ -13,7 +13,7 @@ partial class DbEntity
 
         // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
         // note that as this is a DB-entity, the EntityId is actually the repositoryId
-        var entities = DbContext.Entities.GetDbEntitiesFullUntracked(repositoryId);
+        var entities = DbStore.Entities.GetDbEntitiesFullUntracked(repositoryId);
 
 
         #region Delete Related Records (Values, Value-Dimensions, Relationships)
@@ -22,19 +22,19 @@ partial class DbEntity
         var valueDimensions = entities
             .SelectMany(e => e.TsDynDataValues.SelectMany(v => v.TsDynDataValueDimensions))
             .ToList();
-        DbContext.SqlDb.RemoveRange(valueDimensions);
+        DbStore.SqlDb.RemoveRange(valueDimensions);
 
         // Delete all Values
-        DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.TsDynDataValues).ToListOpt());
+        DbStore.SqlDb.RemoveRange(entities.SelectMany(e => e.TsDynDataValues).ToListOpt());
 
         // Delete all Parent-Relationships
-        DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.RelationshipsWithThisAsParent).ToListOpt());
+        DbStore.SqlDb.RemoveRange(entities.SelectMany(e => e.RelationshipsWithThisAsParent).ToListOpt());
         if (removeFromParents)
-            DbContext.SqlDb.RemoveRange(entities.SelectMany(e => e.RelationshipsWithThisAsChild).ToListOpt());
+            DbStore.SqlDb.RemoveRange(entities.SelectMany(e => e.RelationshipsWithThisAsChild).ToListOpt());
 
         #endregion
 
-        var draftBranchMap = DbContext.Publishing.GetDraftBranchMap(entities.Select(e => e.EntityId).ToList());
+        var draftBranchMap = DbStore.Publishing.GetDraftBranchMap(entities.Select(e => e.EntityId).ToList());
 
         entities.ForEach(entity =>
         {
@@ -42,7 +42,7 @@ partial class DbEntity
             if (entity.IsPublished)
             {
                 l.A("was published, will mark as deleted");
-                entity.TransDeletedId = DbContext.Versioning.GetTransactionId();
+                entity.TransDeletedId = DbStore.Versioning.GetTransactionId();
                 // Also delete the Draft (if any) - but don't auto-save, as we would do that below
                 draftBranchMap.TryGetValue(entity.EntityId, out var draftEntityId);
                 if (draftEntityId.HasValue)
@@ -53,14 +53,14 @@ partial class DbEntity
             {
                 l.A("was draft, will really delete");
                 // Delete all Child-Relationships
-                DbContext.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToListOpt());
+                DbStore.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToListOpt());
             }
 
             // Also remove the entity itself
-            DbContext.SqlDb.Remove(entity);
+            DbStore.SqlDb.Remove(entity);
         });
         if (autoSave)
-            DbContext.DoAndSaveWithoutChangeDetection(() => {});
+            DbStore.DoAndSaveWithoutChangeDetection(() => {});
 
         return l.ReturnTrue("DeleteEntity(...) done"); ;
     }

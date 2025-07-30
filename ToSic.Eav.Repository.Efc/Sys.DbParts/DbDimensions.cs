@@ -8,10 +8,10 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     private int GetDimensionId(string systemKey, string? externalKey)
     {
         // Because of changes in EF 3.x we had to split where part on server and client.
-        return DbContext.SqlDb
+        return DbStore.SqlDb
             .TsDynDataDimensions
             .AsNoTracking()
-            .Where(d => d.ZoneId == DbContext.ZoneId) // This is evaluated on the SQL server
+            .Where(d => d.ZoneId == DbStore.ZoneId) // This is evaluated on the SQL server
             .ToList()
             .Where(d =>
                 string.Equals(d.EnvironmentKey, externalKey, StringComparison.InvariantCultureIgnoreCase)
@@ -24,9 +24,9 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// Update a single Dimension
     /// </summary>
     private void UpdateZoneDimension(int dimensionId, bool? active = null, string? name = null)
-        => DbContext.DoAndSaveTracked(() =>
+        => DbStore.DoAndSaveTracked(() =>
         {
-            var dimension = DbContext.SqlDb
+            var dimension = DbStore.SqlDb
                 .TsDynDataDimensions
                 .Single(d => d.DimensionId == dimensionId);
 
@@ -60,7 +60,7 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// This is used by the "create new zone" code
     /// </summary>
     internal void AddRootCultureNode(string systemKey, string name, TsDynDataZone zone)
-        => DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(new TsDynDataDimension
+        => DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Add(new TsDynDataDimension
         {
             Key = systemKey,
             Name = name,
@@ -75,10 +75,10 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// Get all Languages of current Zone and App
     /// </summary>
     private ICollection<DimensionDefinition> GetLanguagesUntracked(bool includeInactive = false)
-        => DbContext.SqlDb.TsDynDataDimensions
+        => DbStore.SqlDb.TsDynDataDimensions
             .AsNoTracking()
             .Include(d => d.ParentNavigation)
-            .Where(d => d.ZoneId == DbContext.ZoneId) // This is evaluated on the SQL server
+            .Where(d => d.ZoneId == DbStore.ZoneId) // This is evaluated on the SQL server
             .ToList()
             .Where(d =>
                 d.Parent.HasValue
@@ -92,12 +92,12 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// Add a new Language to current Zone
     /// </summary>
     private void AddZoneDimension(string name, string externalKey)
-        => DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(new TsDynDataDimension
+        => DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Add(new TsDynDataDimension
         {
             Name = name,
             EnvironmentKey = externalKey,
             Parent = GetDimensionId(EavConstants.CultureSystemKey, null),
-            ZoneId = DbContext.ZoneId,
+            ZoneId = DbStore.ZoneId,
             Active = true
         }));
 

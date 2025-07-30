@@ -11,14 +11,14 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
     public int AddZone(string name)
     {
         var newZone = new TsDynDataZone { Name = name };
-        DbContext.SqlDb.Add(newZone);
+        DbStore.SqlDb.Add(newZone);
 
-        DbContext.Dimensions.AddRootCultureNode(EavConstants.CultureSystemKey, "Culture Root", newZone);
+        DbStore.Dimensions.AddRootCultureNode(EavConstants.CultureSystemKey, "Culture Root", newZone);
 
-        DbContext.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.DefaultAppGuid);
+        DbStore.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.DefaultAppGuid);
 
         // We reliably auto-init the site-app by default
-        DbContext.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.PrimaryAppGuid);
+        DbStore.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.PrimaryAppGuid);
 
         return newZone.ZoneId;
     }
@@ -29,7 +29,7 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
     {
         var l = LogSummary.Fn<bool>();
 
-        var zonesWithoutPrimary = DbContext.SqlDb.TsDynDataZones
+        var zonesWithoutPrimary = DbStore.SqlDb.TsDynDataZones
             .Include(z => z.TsDynDataApps)
             .Include(z => z.TsDynDataDimensions)
             // Skip "default" zone as that is a single purpose technical zone
@@ -46,7 +46,7 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
                 Zone = zone
             }).ToList();
 
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.AddRange(newZones));
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.AddRange(newZones));
 
         return l.ReturnTrue($"added {newZones.Count}");
     }

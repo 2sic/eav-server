@@ -54,21 +54,21 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
         // Delete all existing relationships (important, because the order, which is part of the key, is important afterward)
         // this is necessary after remove, because otherwise EF state tracking gets messed up
         if (existingRelationships.Count > 0)
-            DbContext.DoAndSaveWithoutChangeDetection(
-                () => DbContext.SqlDb.TsDynDataRelationships.RemoveRange(existingRelationships),
+            DbStore.DoAndSaveWithoutChangeDetection(
+                () => DbStore.SqlDb.TsDynDataRelationships.RemoveRange(existingRelationships),
                 $"found existing rels⋮{existingRelationships.Count} to flush");
         else
             l.A("No existing relationships to remove; skip.");
 
         // now save the changed relationships
-        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        DbStore.DoAndSaveWithoutChangeDetection(() =>
             {
                 foreach (var p in packages)
                 {
                     var newEntityIds = p.Targets.ToList();
                     // Create new relationships which didn't exist before
                     for (var i = 0; i < newEntityIds.Count; i++)
-                        DbContext.SqlDb.TsDynDataRelationships.Add(new()
+                        DbStore.SqlDb.TsDynDataRelationships.Add(new()
                         {
                             AttributeId = p.AttributeId,
                             ChildEntityId = newEntityIds[i],
@@ -96,7 +96,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
             .Select(g => g.First())
             .ToList();
 
-        DbContext.DoInTransaction(() =>
+        DbStore.DoInTransaction(() =>
             {
                 FlushChildrenRelationships(fullFlush);
 
@@ -107,7 +107,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                     .ToArray();
                 if (parentIds.Any(p => p <= 0))
                     throw new("some parent has no id provided, can't update relationships");
-                var parents = DbContext.Entities.GetDbEntitiesWithChildren(parentIds);
+                var parents = DbStore.Entities.GetDbEntitiesWithChildren(parentIds);
                 LogDetails.A("Found parents to map:" + parents.Length);
 
                 var allTargets = _saveQueue
@@ -119,7 +119,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                     .Distinct()
                     .ToArray();
                 LogDetails.A("Total target IDs: " + allTargets.Length);
-                var dbTargetIds = DbContext.Entities.GetMostCurrentDbEntities(allTargets);
+                var dbTargetIds = DbStore.Entities.GetMostCurrentDbEntities(allTargets);
                 LogDetails.A("Total target entities (should match): " + dbTargetIds.Count);
 
                 var updates = _saveQueue
@@ -203,15 +203,15 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
 
         // intermediate save (important) so that EF state tracking works
         // ^^^ note: not sure if this is still relevant
-        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        DbStore.DoAndSaveWithoutChangeDetection(() =>
         {
-            var ent = DbContext.SqlDb.TsDynDataEntities
+            var ent = DbStore.SqlDb.TsDynDataEntities
                 .Include(e => e.RelationshipsWithThisAsParent)
                 .Where(e => Enumerable.Contains(parentIds, e.EntityId))
                 .SelectMany(e => e.RelationshipsWithThisAsParent)
                 .ToListOpt();
 
-            DbContext.SqlDb.TsDynDataRelationships.RemoveRange(ent);
+            DbStore.SqlDb.TsDynDataRelationships.RemoveRange(ent);
         });
         l.Done();
     }

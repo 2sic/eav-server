@@ -37,7 +37,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
         catch { /* ignore */ }
 
         // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(newApp)); 
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Add(newApp)); 
 
         return (newApp.AppId, newApp.Name);
     }
@@ -50,10 +50,10 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// <param name="fullDelete">If true, the entire App is removed. Otherwise, just all the contents is cleared</param>
     internal void DeleteApp(int appId, bool fullDelete)
     {
-        DbContext.Versioning.GetTransactionId();
+        DbStore.Versioning.GetTransactionId();
 
         // Delete app
-        DbContext.DoInTransaction(() =>
+        DbStore.DoInTransaction(() =>
             {
                 // Explanation: as json entities were added much later, the built-in SP to delete apps doesn't handle them correctly
                 // We could update the Stored Procedure, but that's always hard to handle, so we prefer to just do it in code
@@ -172,9 +172,9 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     private void ExecuteSqlCommand(string sql, params object[] parameters)
     {
 #if NETFRAMEWORK
-        DbContext.SqlDb.Database.ExecuteSqlCommand(sql, parameters);
+        DbStore.SqlDb.Database.ExecuteSqlCommand(sql, parameters);
 #else
-        DbContext.SqlDb.Database.ExecuteSqlRaw(sql, parameters);
+        DbStore.SqlDb.Database.ExecuteSqlRaw(sql, parameters);
 #endif
     }
 }

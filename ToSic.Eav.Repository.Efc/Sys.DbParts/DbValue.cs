@@ -10,7 +10,7 @@ internal class DbValue(DbStorage.DbStorage db) : DbPartBase(db, "Db.Values")
         var l = LogDetails.Fn<ICollection<TsDynDataValue>>($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
         
         // Clear values on target (including Dimensions). Must be done in separate steps, would cause un-allowed null-Foreign-Keys
-        DbContext.SqlDb.RemoveRange(target.TsDynDataValues);
+        DbStore.SqlDb.RemoveRange(target.TsDynDataValues);
 
         // Add all Values with Dimensions
         var additions = source.TsDynDataValues
@@ -35,7 +35,7 @@ internal class DbValue(DbStorage.DbStorage db) : DbPartBase(db, "Db.Values")
             })
             .ToListOpt();
 
-        DbContext.SqlDb.AddRange(additions);
+        DbStore.SqlDb.AddRange(additions);
 
         l.A($"DelCount: {target.TsDynDataValues.Count}, cloneCount:{additions.Count} (note: should be 0 if json)");
         return l.Return(additions, $"/CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
@@ -61,8 +61,8 @@ internal class DbValue(DbStorage.DbStorage db) : DbPartBase(db, "Db.Values")
             })
             .ToListOpt();
 
-        DbContext.SqlDb.RemoveRange(target.RelationshipsWithThisAsParent);
-        DbContext.SqlDb.AddRange(additions);
+        DbStore.SqlDb.RemoveRange(target.RelationshipsWithThisAsParent);
+        DbStore.SqlDb.AddRange(additions);
 
         l.Done();
     }

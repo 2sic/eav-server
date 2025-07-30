@@ -10,9 +10,9 @@ partial class DbContentType
     /// <param name="contentTypeId"></param>
     /// <param name="contentType"></param>
     private void SortAttributes(int contentTypeId, IContentType contentType)
-        => DbContext.DoAndSaveTracked(() =>
+        => DbStore.DoAndSaveTracked(() =>
         {
-            var attributeList = DbContext.SqlDb.TsDynDataAttributes
+            var attributeList = DbStore.SqlDb.TsDynDataAttributes
                 .Where(a => a.ContentTypeId == contentTypeId)
                 .ToList();
 
@@ -33,9 +33,9 @@ partial class DbContentType
     /// <param name="contentTypeId"></param>
     /// <param name="newOrder">Array of attribute ids which defines the new sort order</param>
     public void SortAttributes(int contentTypeId, List<int> newOrder)
-        => DbContext.DoAndSaveTracked(() =>
+        => DbStore.DoAndSaveTracked(() =>
         {
-            var attributeList = DbContext.SqlDb.TsDynDataAttributes
+            var attributeList = DbStore.SqlDb.TsDynDataAttributes
                 .Where(a => a.ContentTypeId == contentTypeId)
                 .ToList();
 

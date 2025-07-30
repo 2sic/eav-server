@@ -24,7 +24,7 @@ partial class DbEntity
     private bool ClearValuesInDbUntracked(int entityId)
     {
         var l = LogDetails.Fn<bool>(timer: true);
-        var val = DbContext.SqlDb.TsDynDataValues
+        var val = DbStore.SqlDb.TsDynDataValues
             .Include(v => v.TsDynDataValueDimensions)
             .Where(v => v.EntityId == entityId)
             .ToList();
@@ -33,8 +33,8 @@ partial class DbEntity
             return l.ReturnFalse("no changes");
 
         var dims = val.SelectMany(v => v.TsDynDataValueDimensions);
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(dims));
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(val));
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.RemoveRange(dims));
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.RemoveRange(val));
         return l.ReturnTrue("ok");
     }
 
@@ -137,7 +137,7 @@ partial class DbEntity
         action.Invoke();
 
         // 4. now check if we were the outermost call, in if yes, save the data
-        DbContext.DoAndSaveWithoutChangeDetection(AttributeQueueAdd);
+        DbStore.DoAndSaveWithoutChangeDetection(AttributeQueueAdd);
         _attributeQueueActive = false;
         l.Done();
     }
@@ -147,7 +147,7 @@ partial class DbEntity
         var l = LogSummary.Fn($"Attributes: {_valueUpdateQueue.Count}", timer: true);
         //foreach (var a in _attributeUpdateQueue)
         //    a.Invoke();
-        DbContext.SqlDb.TsDynDataValues.AddRange(_valueUpdateQueue);
+        DbStore.SqlDb.TsDynDataValues.AddRange(_valueUpdateQueue);
         _valueUpdateQueue.Clear();
         //_attributeUpdateQueue.Clear();
         l.Done();

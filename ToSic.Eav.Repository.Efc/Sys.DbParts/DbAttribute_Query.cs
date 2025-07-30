@@ -11,9 +11,9 @@ partial class DbAttribute
         if (contentTypeId <= 0)
             throw new ArgumentOutOfRangeException(nameof(contentTypeId), "should never be 0 - this is a bug because of the new Immutable, report to iJungleboy");
 
-        contentTypeId = DbContext.ContentType.ResolvePotentialGhostContentTypeId(contentTypeId);
+        contentTypeId = DbStore.ContentType.ResolvePotentialGhostContentTypeId(contentTypeId);
 
-        return DbContext.SqlDb.TsDynDataAttributes
+        return DbStore.SqlDb.TsDynDataAttributes
             .AsNoTracking()
             .Where(attributes => attributes.ContentTypeId == contentTypeId)
             .OrderBy(attributes => attributes.SortOrder);
@@ -27,21 +27,21 @@ partial class DbAttribute
     /// <param name="staticName"></param>
     /// <returns></returns>
     private bool AttributeExistsInSet(int contentTypeId, string staticName)
-        => DbContext.SqlDb.TsDynDataAttributes.Any(s =>
+        => DbStore.SqlDb.TsDynDataAttributes.Any(s =>
             s.StaticName == staticName
             && !s.TransDeletedId.HasValue
             && s.ContentTypeId == contentTypeId
-            && s.ContentType.AppId == DbContext.AppId);
+            && s.ContentType.AppId == DbStore.AppId);
 
 
     // new parts
     public string[] DataTypeNames()
-        => DbContext.SqlDb.TsDynDataAttributeTypes
+        => DbStore.SqlDb.TsDynDataAttributeTypes
             .OrderBy(a => a.Type)
             .Select(a => a.Type)
             .ToArray();
 
     public TsDynDataAttribute? GetTracked(int attributeId) 
-        => DbContext.SqlDb.TsDynDataAttributes
+        => DbStore.SqlDb.TsDynDataAttributes
             .FirstOrDefault(a => a.AttributeId == attributeId);
 }

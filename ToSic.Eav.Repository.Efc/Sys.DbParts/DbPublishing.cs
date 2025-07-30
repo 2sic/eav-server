@@ -11,7 +11,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
     internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson)
     {
         var l = LogDetails.Fn($"{nameof(entityId)}:{entityId}");
-        var unpublishedDbEnt = DbContext.Entities.GetDbEntityFull(entityId, preferUntracked: true);
+        var unpublishedDbEnt = DbStore.Entities.GetDbEntityFull(entityId, preferUntracked: true);
         if (!unpublishedDbEnt.IsPublished)
             l.A("found item is draft, will use this to publish");
         else
@@ -22,17 +22,17 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
             l.A($"found draft: {draftId}");
             if (!draftId.HasValue)
                 throw new EntityAlreadyPublishedException($"EntityId {entityId} is already published");
-            unpublishedDbEnt = DbContext.Entities.GetDbEntityFull(draftId.Value, preferUntracked: true);
+            unpublishedDbEnt = DbStore.Entities.GetDbEntityFull(draftId.Value, preferUntracked: true);
         }
 
         // Publish Draft-Entity
         if (!unpublishedDbEnt.PublishedEntityId.HasValue)
         {
             l.A($"there was no published (not branched), so will just set this to published; {db.SqlDb.TrackingInfo()}");
-            DbContext.DoAndSaveWithoutChangeDetection(() =>
+            DbStore.DoAndSaveWithoutChangeDetection(() =>
             {
                 unpublishedDbEnt.IsPublished = true;
-                DbContext.SqlDb.Update(unpublishedDbEnt);
+                DbStore.SqlDb.Update(unpublishedDbEnt);
             });
             l.Done("saved");
             return;
@@ -43,7 +43,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
         var publishedId = unpublishedDbEnt.PublishedEntityId.Value;
         l.A(
             "There is a published item, will update that with the draft-data and delete the draft afterwards");
-        var publishedEntity = DbContext.Entities.GetDbEntityFull(publishedId, preferUntracked: true);
+        var publishedEntity = DbStore.Entities.GetDbEntityFull(publishedId, preferUntracked: true);
         var json = unpublishedDbEnt.Json;
         var isJson = !string.IsNullOrEmpty(json);
         l.A($"this is a json:{isJson}");
@@ -54,7 +54,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
             // update the content-id
             var cloneWithPublishedId = builder.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
 
-            var serializer = DbContext.JsonSerializerGenerator.New();
+            var serializer = DbStore.JsonSerializerGenerator.New();
             json = serializer.Serialize(cloneWithPublishedId);
 
             l.A($"changed - final json: {json}");
@@ -62,16 +62,16 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
 
         publishedEntity.Json = json; // if it's using the new format
         publishedEntity.TransModifiedId = unpublishedDbEnt.TransModifiedId; // transfer last-modified date (not to today, but to last edit)
-        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        DbStore.DoAndSaveWithoutChangeDetection(() =>
         {
-            DbContext.Values.CloneRelationshipsAndQueueUntracked(unpublishedDbEnt, publishedEntity); // relationships need special treatment and intermediate save!
-            DbContext.Values.CloneEntitySimpleValuesAndQueueUntracked(unpublishedDbEnt, publishedEntity);
+            DbStore.Values.CloneRelationshipsAndQueueUntracked(unpublishedDbEnt, publishedEntity); // relationships need special treatment and intermediate save!
+            DbStore.Values.CloneEntitySimpleValuesAndQueueUntracked(unpublishedDbEnt, publishedEntity);
 
             // delete the Draft Entity
-            DbContext.Entities.DeleteEntities([unpublishedDbEnt.EntityId], false);
+            DbStore.Entities.DeleteEntities([unpublishedDbEnt.EntityId], false);
 
             // also make sure the json/modified etc. are updated, since we're not tracking changes
-            DbContext.SqlDb.Update(publishedEntity);
+            DbStore.SqlDb.Update(publishedEntity);
         });
 
         l.Done("saved");
@@ -87,11 +87,11 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
     internal TsDynDataEntity ClearDraftBranchAndSetPublishedState(TsDynDataEntity publishedEntity, int? draftId = null, bool newPublishedState = true)
     {
         var l = LogDetails.Fn<TsDynDataEntity>($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
-        var unpublishedEntityId = draftId ?? DbContext.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
+        var unpublishedEntityId = draftId ?? DbStore.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
 
         // if additional draft exists, must clear that first
         if (unpublishedEntityId != null)
-            DbContext.Entities.DeleteEntities([unpublishedEntityId.Value]);
+            DbStore.Entities.DeleteEntities([unpublishedEntityId.Value]);
 
         publishedEntity.IsPublished = newPublishedState;
 
@@ -104,7 +104,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
     /// <param name="entityId">EntityId of the Published Entity</param>
     internal int? GetDraftBranchEntityId(int entityId)
     {
-        var draftId = DbContext.SqlDb.TsDynDataEntities
+        var draftId = DbStore.SqlDb.TsDynDataEntities
             .Where(e => e.PublishedEntityId == entityId && !e.TransDeletedId.HasValue)
             .Select(e => (int?) e.EntityId)
             .SingleOrDefault();
@@ -120,7 +120,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
     {
         var l = LogDetails.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
         var nullList = entityIds.Cast<int?>().ToList();
-        var ids = DbContext.SqlDb.TsDynDataEntities
+        var ids = DbStore.SqlDb.TsDynDataEntities
             .Where(e => nullList.Contains(e.PublishedEntityId) && !e.TransDeletedId.HasValue)
             .Select(e => new {e.EntityId, e.PublishedEntityId })
             .ToList();

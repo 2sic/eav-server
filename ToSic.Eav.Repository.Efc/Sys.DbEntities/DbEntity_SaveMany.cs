@@ -17,14 +17,14 @@ partial class DbEntity
     {
         // wrong toggle, but it's something people don't have ATM
         //var useNewSave = DbContext.Features.IsEnabled(BuiltInFeatures.DataImportParallel);
-        var useParallel = DbContext.Features.IsEnabled(BuiltInFeatures.DatabaseWriteOptimized);
+        var useParallel = DbStore.Features.IsEnabled(BuiltInFeatures.DatabaseWriteOptimized);
 
         var l = LogSummary.Fn<List<EntityIdentity>>($"count:{entityOptionPairs.Count}; Optimized: {useParallel}");
 
         if (entityOptionPairs.Count == 0)
             return l.Return([], "Entities to save are empty, skip");
 
-        var saveProcess = new SaveEntityProcess(DbContext, builder, entityOptionPairs, Log);
+        var saveProcess = new SaveEntityProcess(DbStore, builder, entityOptionPairs, Log);
 
         var ids = useParallel
             ? SaveEntitiesParallel(saveProcess, entityOptionPairs)
@@ -50,9 +50,9 @@ partial class DbEntity
 
         IEnumerable<EntityProcessData> result = null!;
 
-        DbContext.DoInTransaction(
-            () => DbContext.Versioning.DoAndSaveHistoryQueue(
-                () => DbContext.Relationships.DoWhileQueueingRelationshipsUntracked(
+        DbStore.DoInTransaction(
+            () => DbStore.Versioning.DoAndSaveHistoryQueue(
+                () => DbStore.Relationships.DoWhileQueueingRelationshipsUntracked(
                     () => DoWhileQueueingAttributes(
                         () => result = saveProcess.Process(data, true)
                     )
@@ -80,9 +80,9 @@ partial class DbEntity
         var ids = new List<EntityIdentity>();
         var idx = 0;
 
-        DbContext.DoInTransaction(
-            () => DbContext.Versioning.DoAndSaveHistoryQueue(
-                () => DbContext.Relationships.DoWhileQueueingRelationshipsUntracked(
+        DbStore.DoInTransaction(
+            () => DbStore.Versioning.DoAndSaveHistoryQueue(
+                () => DbStore.Relationships.DoWhileQueueingRelationshipsUntracked(
                     () => DoWhileQueueingAttributes(
                         () =>
                         {
@@ -119,9 +119,9 @@ partial class DbEntity
         var ids = new List<EntityIdentity>();
         var idx = 0;
 
-        DbContext.DoInTransaction(
-            () => DbContext.Versioning.DoAndSaveHistoryQueue(
-                () => DbContext.Relationships.DoWhileQueueingRelationshipsUntracked(
+        DbStore.DoInTransaction(
+            () => DbStore.Versioning.DoAndSaveHistoryQueue(
+                () => DbStore.Relationships.DoWhileQueueingRelationshipsUntracked(
                     () => DoWhileQueueingAttributes(
                         () =>
                         {
@@ -133,7 +133,7 @@ partial class DbEntity
                                 if (idx == DbConstant.MaxToLogDetails)
                                     l.A($"Hit #{idx}, will stop logging details");
 
-                                DbContext.DoAndSaveWithoutChangeDetection(
+                                DbStore.DoAndSaveWithoutChangeDetection(
                                     () =>
                                     {
                                         var saved = SaveEntity(pair, saveProcess, logDetails);

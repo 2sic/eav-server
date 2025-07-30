@@ -11,7 +11,7 @@ partial class DbContentType
     /// <param name="contentTypeId">ContentTypeId to resolve</param>
     internal int ResolvePotentialGhostContentTypeId(int contentTypeId)
     {
-        var usesConfigurationOfContentType = DbContext.SqlDb.TsDynDataContentTypes
+        var usesConfigurationOfContentType = DbStore.SqlDb.TsDynDataContentTypes
             .Where(a => a.ContentTypeId == contentTypeId)
             .Select(a => a.InheritContentTypeId)
             .Single();
@@ -20,7 +20,7 @@ partial class DbContentType
 
     private List<TsDynDataContentType> FindPotentialGhostSources(string contentTypeParentName)
     {
-        var ghostType = DbContext.SqlDb.TsDynDataContentTypes.Where(
+        var ghostType = DbStore.SqlDb.TsDynDataContentTypes.Where(
                 a => a.StaticName == contentTypeParentName
                      && a.TransDeletedId == null
                      && a.InheritContentTypeId == null).
@@ -37,7 +37,7 @@ partial class DbContentType
             throw new("current App already has a content-type with this static name - cannot continue");
 
         // find the original
-        var attSets = DbContext.SqlDb.TsDynDataContentTypes
+        var attSets = DbStore.SqlDb.TsDynDataContentTypes
             .Where(ats => ats.StaticName == staticName
                           && !ats.InheritContentTypeId.HasValue    // never duplicate a clone/ghost
                           && ats.TransDeletedId == null                 // never duplicate a deleted
@@ -54,17 +54,17 @@ partial class DbContentType
         var attSet = attSets.First();
         var newSet = new TsDynDataContentType
         {
-            AppId = DbContext.AppId, // needs the new, current appid
+            AppId = DbStore.AppId, // needs the new, current appid
             StaticName = attSet.StaticName,
             Name = attSet.Name,
             Scope = attSet.Scope,
             InheritContentTypeId = attSet.ContentTypeId,
             IsGlobal = false, // this is copy, never re-share
-            TransCreatedId = DbContext.Versioning.GetTransactionId()
+            TransCreatedId = DbStore.Versioning.GetTransactionId()
         };
 
         // save first, to ensure it has an Id
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(newSet));
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Add(newSet));
     }
 
 
@@ -75,17 +75,17 @@ partial class DbContentType
     private int FindGhostParentIdOrLogWarnings(string contentTypeParentName)
     {
         // Look for the potential source of this ghost
-        var ghostContentTypes = DbContext.ContentType.FindPotentialGhostSources(contentTypeParentName);
+        var ghostContentTypes = DbStore.ContentType.FindPotentialGhostSources(contentTypeParentName);
 
         if (ghostContentTypes.Count == 1)
             return ghostContentTypes.First().ContentTypeId;
 
         // If multiple masters are found, use first and add a warning message
         if (ghostContentTypes.Count > 1)
-            DbContext.ImportLogToBeRefactored.Add(new($"Multiple potential master Content-Types found for StaticName: {contentTypeParentName}", Message.MessageTypes.Warning));
+            DbStore.ImportLogToBeRefactored.Add(new($"Multiple potential master Content-Types found for StaticName: {contentTypeParentName}", Message.MessageTypes.Warning));
 
         // nothing found - report error
-        DbContext.ImportLogToBeRefactored.Add(new($"Content-Type not imported because master set not found: {contentTypeParentName}", Message.MessageTypes.Warning));
+        DbStore.ImportLogToBeRefactored.Add(new($"Content-Type not imported because master set not found: {contentTypeParentName}", Message.MessageTypes.Warning));
         return 0;
     }
 

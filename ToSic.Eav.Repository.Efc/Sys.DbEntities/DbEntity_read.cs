@@ -8,7 +8,7 @@ partial class DbEntity
     {
         LogDetails.A(nameof(GetEntityQuery));
 
-        return DbContext.SqlDb.TsDynDataEntities.AsNoTrackingOptional(DbContext.Features, preferUntracked)
+        return DbStore.SqlDb.TsDynDataEntities.AsNoTrackingOptional(DbStore.Features, preferUntracked)
             .Include(e => e.RelationshipsWithThisAsParent)
             .Include(e => e.RelationshipsWithThisAsChild)
             .Include(e => e.TsDynDataValues)
@@ -34,7 +34,7 @@ partial class DbEntity
     internal TsDynDataEntity GetDbEntityStub(int entityId)
     {
         var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
-        var found = DbContext.SqlDb.TsDynDataEntities.Single(e => e.EntityId == entityId);
+        var found = DbStore.SqlDb.TsDynDataEntities.Single(e => e.EntityId == entityId);
         return l.ReturnAsOk(found);
     }
 
@@ -52,7 +52,7 @@ partial class DbEntity
         //    .ToArray();
 
         // var found = DbContext.SqlDb.ToSicEavEntities.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
-        var found = DbContext.SqlDb.TsDynDataEntities
+        var found = DbStore.SqlDb.TsDynDataEntities
             .Include(e => e.RelationshipsWithThisAsParent)
             .Where(e => Enumerable.Contains(repositoryIds, e.EntityId))
             .ToArray();
@@ -94,13 +94,13 @@ partial class DbEntity
 
     internal IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid entityGuid)
         //=> EntityQuery
-        => DbContext.SqlDb.TsDynDataEntities
+        => DbStore.SqlDb.TsDynDataEntities
             .Where(e => e.EntityGuid == entityGuid
                         && !e.TransDeletedId.HasValue
                         && !e.ContentTypeNavigation.TransDeletedId.HasValue
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId));
-                        && Enumerable.Contains(DbContext.AppIds, e.AppId)
+                        && Enumerable.Contains(DbStore.AppIds, e.AppId)
             );
 
     /// <summary>
@@ -138,7 +138,7 @@ partial class DbEntity
     // 2020-10-07 2dm experiment with fewer requests
     private IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid[] entityGuid)
         //=> EntityQuery
-        => DbContext.SqlDb.TsDynDataEntities
+        => DbStore.SqlDb.TsDynDataEntities
             .Where(e =>
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // entityGuid.Contains(e.EntityGuid)
@@ -147,7 +147,7 @@ partial class DbEntity
                         && e.ContentTypeNavigation.TransDeletedId == null
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId)
-                        && Enumerable.Contains(DbContext.AppIds, e.AppId)
+                        && Enumerable.Contains(DbStore.AppIds, e.AppId)
             );
 
 
