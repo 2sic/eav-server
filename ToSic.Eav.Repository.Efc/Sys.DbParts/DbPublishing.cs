@@ -62,16 +62,26 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
 
         publishedEntity.Json = json; // if it's using the new format
         publishedEntity.TransModifiedId = unpublishedDbEnt.TransModifiedId; // transfer last-modified date (not to today, but to last edit)
-        DbStore.DoAndSaveWithoutChangeDetection(() =>
+
+        DbStore.DoInTransaction(() =>
         {
-            DbStore.Values.CloneRelationshipsAndQueueUntracked(unpublishedDbEnt, publishedEntity); // relationships need special treatment and intermediate save!
-            DbStore.Values.CloneEntitySimpleValuesAndQueueUntracked(unpublishedDbEnt, publishedEntity);
+            DbStore.DoAndSaveWithoutChangeDetection(() =>
+            {
+                // Add Relationships and simple values
+                DbStore.Values.CloneRelationshipsAndQueueUntracked(unpublishedDbEnt, publishedEntity); 
+                DbStore.Values.CloneEntitySimpleValuesAndQueueUntracked(unpublishedDbEnt, publishedEntity);
 
-            // delete the Draft Entity
-            DbStore.Entities.DeleteEntities([unpublishedDbEnt.EntityId], false);
+                // Save the changes to the published entity
+                DbStore.SqlDb.Update(publishedEntity);
+            });
 
-            // also make sure the json/modified etc. are updated, since we're not tracking changes
-            DbStore.SqlDb.Update(publishedEntity);
+            // Delete will touch many objects which were used before for cloning
+            // which would cause trouble in the EF change tracking
+            DbStore.FlushChangeTracking();
+
+            // Do delete
+            // Do this change in a separate step, as the delete may touch properties which could mix in the change tracking
+            DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.Entities.DeleteEntities([unpublishedDbEnt.EntityId], false));
         });
 
         l.Done("saved");

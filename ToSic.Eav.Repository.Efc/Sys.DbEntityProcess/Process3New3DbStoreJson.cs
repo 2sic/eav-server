@@ -8,20 +8,20 @@ internal class Process3New3DbStoreJson() : Process0Base("DB.EPr3n3")
 
         var l = services.LogDetails.Fn<EntityProcessData>();
 
-        if (!data.IsNew)
-            return l.Return(data, "not new, skip");
+        //if (!data.IsNew)
+        //    return l.Return(data, "not new, skip");
         
-        if (data is { SaveJson: true, DbEntity: not null })
-            services.DbStorage.DoAndSaveWithoutChangeDetection(() =>
-            {
-                if (string.IsNullOrEmpty(data.JsonExport))
-                    throw new ArgumentNullException(nameof(data.JsonExport));
+        //if (data is { SaveJson: true, DbEntity: not null })
+        //    services.DbStorage.DoAndSaveWithoutChangeDetection(() =>
+        //    {
+        //        if (string.IsNullOrEmpty(data.JsonExport))
+        //            throw new ArgumentNullException(nameof(data.JsonExport));
 
-                data.DbEntity!.Json = data.JsonExport;
-                data.DbEntity.ContentType = data.NewEntity.Type.NameId;
+        //        data.DbEntity!.Json = data.JsonExport;
+        //        data.DbEntity.ContentType = data.NewEntity.Type.NameId;
 
-                services.DbStorage.SqlDb.Update(data.DbEntity);
-            }, "update json");
+        //        services.DbStorage.SqlDb.Update(data.DbEntity);
+        //    }, "update json");
 
         return l.Return(data);
     }

@@ -3,7 +3,7 @@
 /// <summary>
 /// Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
 /// </summary>
-internal class Process3Upd1DbPreload(): Process0Base("Db.EPr3u1")
+internal class Process3Upd1DbPreloadExisting(): Process0Base("Db.EPr3u1")
 {
     public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
         => throw new NotSupportedException("Single item call not supported");
@@ -44,6 +44,7 @@ internal class Process3Upd1DbPreload(): Process0Base("Db.EPr3u1")
         data = data
             .Select(d =>
             {
+                // New was already created / added before and will be missing here
                 if (d.IsNew)
                     return d;
 

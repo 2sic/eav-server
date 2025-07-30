@@ -54,6 +54,8 @@ public record EntityProcessData
     // 3b
     public bool StateChanged { get; init; }
 
+    public bool HeaderNeedsUpdate { get; init; }
+
     #endregion
 
     #region FinalResults

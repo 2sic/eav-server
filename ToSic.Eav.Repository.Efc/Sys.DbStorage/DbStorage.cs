@@ -297,6 +297,24 @@ public class DbStorage(
         l.Done();
     }
 
+    internal void FlushChangeTracking()
+    {
+        var changes = SqlDb.ChangeTracker.Entries()
+            //.Where(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Added ||
+            //            e.State == Microsoft.EntityFrameworkCore.EntityState.Modified ||
+            //            e.State == Microsoft.EntityFrameworkCore.EntityState.Deleted)
+            .ToList();
+
+        var l = LogSummary.Fn($"FlushChangeTracking: {changes.Count} changes", timer: true);
+
+        foreach (var change in changes)
+        {
+            // ReSharper disable once PossibleNullReferenceException
+            change.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            l.A($"Detached: {change.Entity.GetType().Name} {change.State}");
+        }
+        l.Done($"Flushed {changes.Count} changes");
+    }
 
     internal void DoAndSaveWithoutChangeDetection(Action action, string? message = null)
     {

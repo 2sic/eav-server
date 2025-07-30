@@ -64,12 +64,12 @@ internal class Process3New2DbStoreNewHeaders() : Process0Base("DB.EPr3n2")
                     : d.NewEntity;
 
                 // Prepare export for save json OR versioning later on
-                var jsonExport = services.DbEntity.GenerateJsonOrReportWhyNot(entityWithCorrectId, d.LogDetails);
+                //var jsonExport = services.DbEntity.GenerateJsonOrReportWhyNot(entityWithCorrectId, d.LogDetails);
 
                 return d with
                 {
                     NewEntity = entityWithCorrectId,
-                    JsonExport = jsonExport
+                    //JsonExport = jsonExport
                 };
             })
             .ToListOpt();

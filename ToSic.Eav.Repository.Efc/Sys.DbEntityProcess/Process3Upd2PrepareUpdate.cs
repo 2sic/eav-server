@@ -9,8 +9,8 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
 {
     public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
-        if (data.IsNew)
-            return data;
+        //if (data.IsNew)
+        //    return data;
 
 
         var dbEnt = data.DbEntity!;
@@ -22,30 +22,35 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
                                    $"newState:{newEnt.IsPublished}, state-changed:{data.StateChanged}, " +
                                    $"has-additional-draft:{data.HasAdditionalDraft}");
 
-        #region If draft but should be published, correct what's necessary
-
-        // Update as Published but Current Entity is a Draft-Entity
-        // case 1: saved entity is a draft and save wants to publish
-        // case 2: new data is set to not publish, but we don't want a branch
-        int? resetId = default;
-        if (data.StateChanged || data.HasAdditionalDraft)
+        // If Update, then check draft etc.
+        if (!data.IsNew)
         {
-            // now reset the branch/entity-state to properly set the state / purge the draft
-            dbEnt = services.DbStorage.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, data.ExistingDraftId, data.NewEntity.IsPublished);
+            #region If draft but should be published, correct what's necessary
 
-            // update ID of the save-entity, as it's used again later on...
-            resetId = dbEnt.EntityId;
+            // Update as Published but Current Entity is a Draft-Entity
+            // case 1: saved entity is a draft and save wants to publish
+            // case 2: new data is set to not publish, but we don't want a branch
+            int? resetId = default;
+            if (data.StateChanged || data.HasAdditionalDraft)
+            {
+                // now reset the branch/entity-state to properly set the state / purge the draft
+                dbEnt = services.DbStorage.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, data.ExistingDraftId,
+                    data.NewEntity.IsPublished);
+
+                // update ID of the save-entity, as it's used again later on...
+                resetId = dbEnt.EntityId;
+            }
+
+            #endregion
+
+            // update transactionId modified for the DB record
+            dbEnt.TransModifiedId = services.TransactionId;
+
+            // increase version
+            dbEnt.Version++;
+            //newEnt = _factory.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
+            newEnt = services.Builder.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
         }
-
-        #endregion
-
-        // update transactionId modified for the DB record
-        dbEnt.TransModifiedId = services.TransactionId;
-
-        // increase version
-        dbEnt.Version++;
-        //newEnt = _factory.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
-        newEnt = services.Builder.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
 
         // prepare export for save json OR versioning later on
         data = data with
@@ -54,11 +59,13 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
             JsonExport = services.Serializer.Serialize(newEnt)
         };
 
+        var headerNeedsUpdate = false;
         if (data.SaveJson)
         {
             dbEnt.Json = data.JsonExport;
             dbEnt.ContentTypeId = data.ContentTypeId; // in case the previous entity wasn't json stored yet
             dbEnt.ContentType = newEnt.Type.NameId; // in case the previous entity wasn't json stored yet
+            headerNeedsUpdate = true;
         }
         // super exotic case - maybe it was a json before, but isn't any more...
         // this probably only happens on the master system, where we maintain the 
@@ -67,27 +74,40 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
         else
         {
             if (dbEnt.ContentTypeId == DbConstant.RepoIdForJsonEntities)
+            {
                 dbEnt.ContentTypeId = data.ContentTypeId;
+                headerNeedsUpdate = true;
+            }
+
             if (dbEnt.Json != null)
+            {
                 dbEnt.Json = null;
+                headerNeedsUpdate = true;
+            }
+
             if (dbEnt.ContentType != null)
+            {
                 dbEnt.ContentType = null;
+                headerNeedsUpdate = true;
+            }
         }
 
         data = data with
         {
-            DbEntity = dbEnt
+            DbEntity = dbEnt,
+            HeaderNeedsUpdate = headerNeedsUpdate,
         };
 
         return l.Return(data);
     }
 
+    // TODO: PROBABLY MOVE INTO OWN PROCESS
     public override ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
     {
         var l = GetLogCall(services, logProcess);
         // Skip if all are NOT new
-        if (data.All(d => d.IsNew))
-            return l.Return(data, "all new, skip");
+        //if (data.All(d => d.IsNew))
+        //    return l.Return(data, "all new, skip");
         
         // Process each item
         data = data
@@ -98,7 +118,7 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
         // This is a bit confusing, since it already happens for new entities before
         // we should probably sync this so it's less confusing
         var updates = data
-            .Where(d => d.SaveJson)
+            .Where(d => d.HeaderNeedsUpdate)
             .Select(d => d.DbEntity!)
             .ToListOpt();
 
