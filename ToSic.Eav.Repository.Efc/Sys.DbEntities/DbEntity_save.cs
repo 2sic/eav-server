@@ -212,7 +212,7 @@ partial class DbEntity
 
             if (jsonExport == null)
                 throw new("trying to save version history entry, but jsonExport isn't ready");
-            DbStore.Versioning.AddToHistoryQueue(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
+            DbStore.Versioning.AddAndSave(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
 
             #endregion
 

@@ -34,13 +34,6 @@ public interface IStorage: IServiceWithSetup<StorageOptions>, IHasLog
 
     #endregion
 
-    #region Versioning Queue
-
-    void DoWhileQueuingVersioning(Action action);
-
-    #endregion
-
-
     #region Loader
 
     /// <summary>

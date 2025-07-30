@@ -400,9 +400,6 @@ public class DbStorage(
     [field: AllowNull, MaybeNull]
     public IAppsAndZonesLoaderWithRaw Loader => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
 
-    public void DoWhileQueuingVersioning(Action action)
-        => Versioning.DoAndSaveHistoryQueue(action);
-
     /// <summary>
     /// Save a list of entities together in a transaction.
     /// </summary>

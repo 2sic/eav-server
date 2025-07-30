@@ -66,7 +66,7 @@ partial class DbVersioning
                 User = d.Log.User,
                 Json = includeData
                     ? (string.IsNullOrEmpty(d.History.Json)
-                        ? _compressor.Value.Decompress(d.History.CJson)
+                        ? compressor.Value.Decompress(d.History.CJson)
                         : d.History.Json)
                     : null
             })

@@ -94,39 +94,36 @@ public class ImportService(
                 {
                     // get initial data state for further processing, content-typed definitions etc.
                     // important: must always create a new loader, because it will cache content-types which hurts the import
-                    Storage.DoWhileQueuingVersioning(() =>
+                    var nonSysTypes = LogSummary.Quick(message: "Import Types in Sys-Scope", timer: true, func: () =>
                     {
-                        var nonSysTypes = LogSummary.Quick(message: "Import Types in Sys-Scope", timer: true, func: () =>
-                        {
-                            // load everything, as content-type metadata is normal entities
-                            // but disable initialized, as this could cause initialize stuff we're about to import
-                            var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
-                            var newTypeList = newTypes.ToList();
-                            // first: import the attribute sets in the system scope, as they may be needed by others...
-                            // ...and would need a cache-refresh before 
-                            var newSysTypes = newTypeList
-                                .Where(a => a.Scope?.StartsWith(ScopeConstants.System) ?? false)
-                                .ToList();
-                            if (newSysTypes.Any())
-                                MergeAndSaveContentTypes(appReaderRaw, newSysTypes);
+                        // load everything, as content-type metadata is normal entities
+                        // but disable initialized, as this could cause initialize stuff we're about to import
+                        var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
+                        var newTypeList = newTypes.ToList();
+                        // first: import the attribute sets in the system scope, as they may be needed by others...
+                        // ...and would need a cache-refresh before 
+                        var newSysTypes = newTypeList
+                            .Where(a => a.Scope?.StartsWith(ScopeConstants.System) ?? false)
+                            .ToList();
+                        if (newSysTypes.Any())
+                            MergeAndSaveContentTypes(appReaderRaw, newSysTypes);
 
-                            return newTypeList
-                                .Where(a => !newSysTypes.Contains(a))
-                                .ToList();
-                        });
-
-                        var lInner = l.Fn(message: "Import Types in non-Sys scopes", timer: true);
-                        if (nonSysTypes.Any())
-                        {
-                            // now reload the app state as it has new content-types
-                            // and it may need these to load the remaining attributes of the content-types
-                            var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
-
-                            // now the remaining Content-Types
-                            MergeAndSaveContentTypes(appReaderRaw, nonSysTypes);
-                        }
-                        lInner.Done();
+                        return newTypeList
+                            .Where(a => !newSysTypes.Contains(a))
+                            .ToList();
                     });
+
+                    var lInner = l.Fn(message: "Import Types in non-Sys scopes", timer: true);
+                    if (nonSysTypes.Any())
+                    {
+                        // now reload the app state as it has new content-types
+                        // and it may need these to load the remaining attributes of the content-types
+                        var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
+
+                        // now the remaining Content-Types
+                        MergeAndSaveContentTypes(appReaderRaw, nonSysTypes);
+                    }
+                    lInner.Done();
                 });
 
             #endregion
