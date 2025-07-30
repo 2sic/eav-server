@@ -13,12 +13,10 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
     /// Set an Attribute as Title on a Content-Type
     /// </summary>
     public void SetTitleAttribute(int attributeId, int contentTypeId)
-    {
-        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        => DbContext.DoAndSaveTracked(() =>
         {
             // unset other Attributes with isTitle=true
             var all = DbContext.SqlDb.TsDynDataAttributes
-                .AsNoTracking()
                 .Where(s => s.ContentTypeId == contentTypeId)
                 .ToListOpt();
 
@@ -27,14 +25,11 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
                 // check the one we want to set as title
                 if (attribute.AttributeId == attributeId)
                     attribute.IsTitle = true;
-                else if (!attribute.IsTitle)
-                    continue; // skip if it was not set as title, to avoid unnecessary updates
-                else
+                // Check others which were previously titles
+                else if (attribute.IsTitle)
                     attribute.IsTitle = false;
-                DbContext.SqlDb.Update(attribute);
             }
         });
-    }
 
     internal int GetOrCreateAttributeDefinition(int contentTypeId, ContentTypeAttribute newAtt)
     {
