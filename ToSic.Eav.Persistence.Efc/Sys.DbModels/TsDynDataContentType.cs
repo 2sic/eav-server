@@ -1,6 +1,7 @@
 ﻿// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
-#nullable disable // This is EFC code; values will be auto-generated on compile
+
+// https://learn.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
 
 namespace ToSic.Eav.Persistence.Efc.Sys.DbModels;
 
@@ -9,11 +10,11 @@ public partial class TsDynDataContentType
 {
     public int ContentTypeId { get; set; }
 
-    public string StaticName { get; set; }
+    public required string StaticName { get; set; }
 
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    public string Scope { get; set; }
+    public required string Scope { get; set; }
 
     public int TransCreatedId { get; set; }
 
@@ -27,19 +28,17 @@ public partial class TsDynDataContentType
 
     public bool IsGlobal { get; set; } = false;
 
-    // public string Json { get; set; }
+    public string? SysSettings { get; set; }
 
-    public string SysSettings { get; set; }
+    public virtual TsDynDataApp App { get; set; } = null!;
 
-    public virtual TsDynDataApp App { get; set; }
+    public virtual TsDynDataTransaction TransCreated { get; set; } = null!;
 
-    public virtual TsDynDataTransaction TransCreated { get; set; }
+    public virtual TsDynDataTransaction TransModified { get; set; } = null!;
 
-    public virtual TsDynDataTransaction TransModified { get; set; }
+    public virtual TsDynDataTransaction? TransDeleted { get; set; }
 
-    public virtual TsDynDataTransaction TransDeleted { get; set; }
-
-    public virtual TsDynDataContentType InheritContentTypeNavigation { get; set; }
+    public virtual TsDynDataContentType? InheritContentTypeNavigation { get; set; }
 
     public virtual ICollection<TsDynDataContentType> InverseInheritContentTypesNavigation { get; set; } = new HashSet<TsDynDataContentType>();
 
@@ -47,8 +46,4 @@ public partial class TsDynDataContentType
 
     public virtual ICollection<TsDynDataEntity> TsDynDataEntities { get; set; } = new HashSet<TsDynDataEntity>();
 
-
-
-    // 2dm added
-    //public virtual ICollection<ToSicEavAttributesInSets> ToSicEavAttributesInSharedSets { get; set; }
 }

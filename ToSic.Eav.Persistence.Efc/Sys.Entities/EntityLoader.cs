@@ -74,7 +74,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
         serializer.ConfigureLogging(appLoader.LogSettings);
         l.A($"🪵 Using LogSettings: {appLoader.LogSettings}");
 
-        var logDetails = appLoader.LogSettings.Enabled && appLoader.LogSettings.Details;
+        var logDetails = appLoader.LogSettings is { Enabled: true, Details: true };
 
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)
