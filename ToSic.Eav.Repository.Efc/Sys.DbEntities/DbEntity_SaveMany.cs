@@ -50,9 +50,7 @@ partial class DbEntity
 
         IEnumerable<EntityProcessData> result = null!;
 
-        DbStore.DoInTransaction(
-            () => DoWhileQueueingAttributes(() => result = saveProcess.Process(data, true))
-        );
+        DbStore.DoInTransaction(() => result = saveProcess.Process(data, true));
 
         var ids = result
             .Select(d => d.Ids)
@@ -75,24 +73,22 @@ partial class DbEntity
         var idx = 0;
 
         DbStore.DoInTransaction(
-            () => DoWhileQueueingAttributes(
-                () =>
+            () => 
+            {
+                foreach (var pair in entityOptionPairs)
                 {
-                    foreach (var pair in entityOptionPairs)
-                    {
-                        // Logging, but only the first 250 or so entries...
-                        idx++;
-                        var logDetails = idx < DbConstant.MaxToLogDetails;
-                        if (idx == DbConstant.MaxToLogDetails)
-                            l.A($"Hit #{idx}, will stop logging details");
+                    // Logging, but only the first 250 or so entries...
+                    idx++;
+                    var logDetails = idx < DbConstant.MaxToLogDetails;
+                    if (idx == DbConstant.MaxToLogDetails)
+                        l.A($"Hit #{idx}, will stop logging details");
 
-                        // Actually do the work...
-                        ICollection<EntityProcessData> data = [EntityProcessData.CreateInstance(pair, logDetails)];
-                        var result = saveProcess.Process(data, false);
-                        ids.Add(result.First().Ids);
-                    }
+                    // Actually do the work...
+                    ICollection<EntityProcessData> data = [EntityProcessData.CreateInstance(pair, logDetails)];
+                    var result = saveProcess.Process(data, false);
+                    ids.Add(result.First().Ids);
                 }
-            )
+            }
         );
         return l.Return(ids);
     }
@@ -110,28 +106,26 @@ partial class DbEntity
         var idx = 0;
 
         DbStore.DoInTransaction(
-            () => DoWhileQueueingAttributes(
-                () =>
+            () =>
+            {
+                foreach (var pair in entityOptionPairs)
                 {
-                    foreach (var pair in entityOptionPairs)
-                    {
-                        // Logging, but only the first 250 or so entries...
-                        idx++;
-                        var logDetails = idx < DbConstant.MaxToLogDetails;
-                        if (idx == DbConstant.MaxToLogDetails)
-                            l.A($"Hit #{idx}, will stop logging details");
+                    // Logging, but only the first 250 or so entries...
+                    idx++;
+                    var logDetails = idx < DbConstant.MaxToLogDetails;
+                    if (idx == DbConstant.MaxToLogDetails)
+                        l.A($"Hit #{idx}, will stop logging details");
 
-                        DbStore.DoAndSaveWithoutChangeDetection(
-                            () =>
-                            {
-                                var saved = SaveEntity(pair, saveProcess, logDetails);
-                                ids.Add(saved);
-                            },
-                            "SaveMany-old"
-                        );
-                    }
+                    DbStore.DoAndSaveWithoutChangeDetection(
+                        () =>
+                        {
+                            var saved = SaveEntity(pair, saveProcess, logDetails);
+                            ids.Add(saved);
+                        },
+                        "SaveMany-old"
+                    );
                 }
-            )
+            }
         );
         return l.Return(ids);
     }
