@@ -28,12 +28,17 @@ public record SaveOptions
     public bool DraftShouldBranch { get; init; } = true;
 
     /// <summary>
+    /// Internal message to attach to save operations, so it's easier to debug what's happening; optional; not much used yet.
+    /// </summary>
+    public string? Message { get; init; }
+
+    /// <summary>
     /// 
     /// </summary>
     public bool DiscardAttributesNotInType { get; init; } = false;
 
     public override string ToString() =>
-        $"save opts PUntouchedAt:{PreserveUntouchedAttributes}, " +
+        $"save opts '{Message}' PUntouchedAt:{PreserveUntouchedAttributes}, " +
         $"PUnknownAt:{PreserveUnknownAttributes}, " +
         $"SkipExistingAt:{SkipExistingAttributes}" +
         $"ExistLangs:{PreserveExistingLanguages}, " +
