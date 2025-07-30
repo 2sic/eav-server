@@ -38,22 +38,16 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
 
     internal int GetOrCreateAttributeDefinition(int contentTypeId, ContentTypeAttribute newAtt)
     {
-        int destAttribId;
+        // try to add new Attribute
         if (!AttributeExistsInSet(contentTypeId, newAtt.Name))
-        {
-            // try to add new Attribute
-            destAttribId = AppendToEndAndSave(contentTypeId, newAtt);
-        }
-        else
-        {
-            DbContext.ImportLogToBeRefactored.Add(new("Attribute already exists" + newAtt.Name, Message.MessageTypes.Information) );
-            destAttribId = GetAttribute(contentTypeId, name: newAtt.Name).AttributeId;
-        }
-        return destAttribId;
+            return AppendToEndAndSave(contentTypeId, newAtt);
+
+        DbContext.ImportLogToBeRefactored.Add(new("Attribute already exists" + newAtt.Name, Message.MessageTypes.Information) );
+        return GetAttributeUntracked(contentTypeId, name: newAtt.Name).AttributeId;
     }
 
 
-    private TsDynDataAttribute GetAttribute(int contentTypeId, int attributeId = 0, string? name = null)
+    private TsDynDataAttribute GetAttributeUntracked(int contentTypeId, int attributeId = 0, string? name = null)
     {
         try
         {
@@ -76,15 +70,13 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         if (string.IsNullOrWhiteSpace(newName))
             throw new("can't rename to something empty");
 
-        // ensure that it's in the set
-        var attr = DbContext.SqlDb.TsDynDataAttributes
-            .AsNoTracking()
-            .Single(a => a.AttributeId == attributeId && a.ContentTypeId == contentTypeId);
-        
-        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        DbContext.DoAndSaveTracked(() =>
         {
+            // ensure that it's in the set
+            var attr = DbContext.SqlDb.TsDynDataAttributes
+                .Single(a => a.AttributeId == attributeId && a.ContentTypeId == contentTypeId);
+
             attr.StaticName = newName;
-            DbContext.SqlDb.Update(attr);
         });
     }
 
@@ -113,8 +105,10 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
         var sysSettings = Serializer.Serialize(contentTypeAttribute.SysSettings);
 
-        var contentType = DbContext.ContentTypes.TryGetDbContentTypeUntracked(DbContext.AppId, contentTypeId)
-            ?? throw new($"Can't find {contentTypeId} in DB.");
+        var contentType = DbContext.ContentTypes
+                              .GetDbContentTypeWithAttributesTracked(DbContext.AppId)
+                              .SingleOrDefault(a => a.ContentTypeId == contentTypeId)
+                          ?? throw new($"Can't find {contentTypeId} in DB.");
 
         if (!AttributeNames.StaticNameValidation.IsMatch(nameId))
             throw new($"Attribute static name \"{nameId}\" is invalid. {AttributeNames.StaticNameErrorMessage}");
@@ -123,6 +117,12 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         if (AttributeExistsInSet(contentType.ContentTypeId, nameId))
             throw new ArgumentException($@"An Attribute with the static name {nameId} already exists", nameof(nameId));
 
+        // Set Attribute as Title if there's no title field in this set
+        if (DbContext.ProcessOptions.TypeAttributeAutoSetTitle)
+            if (!contentType.TsDynDataAttributes.Any(a => a.IsTitle))
+                isTitle = true;
+
+        // Build...
         var newAttribute = new TsDynDataAttribute
         {
             Type = type,
@@ -135,32 +135,24 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             IsTitle = isTitle
         };
 
-        // Set Attribute as Title if there's no title field in this set
-        if (DbContext.ProcessOptions.TypeAttributeAutoSetTitle)
-            if (!contentType.TsDynDataAttributes.Any(a => a.IsTitle))
-                newAttribute.IsTitle = true;
-
-
-        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        DbContext.DoAndSaveTracked(() =>
         {
             DbContext.SqlDb.Add(newAttribute);
 
-            // If it's not a title, then we don't have to unset any old title fields
+            // If it's not a title, then we don't have to unset any old title fields, so exit early
             if (!isTitle || !DbContext.ProcessOptions.TypeAttributeAutoCorrectTitle)
                 return;
 
-            // unset old Title Fields
+            // unset old Title Fields...
             var oldTitleFields = contentType
                 .TsDynDataAttributes
                 .Where(a => a.IsTitle && a.StaticName != nameId)
                 .ToListOpt();
 
+            // ...only change if it was set as title, to avoid unnecessary updates
             foreach (var titleField in oldTitleFields)
-                if (titleField.IsTitle) // only change if it was set as title, to avoid unnecessary updates
-                {
+                if (titleField.IsTitle)
                     titleField.IsTitle = false;
-                    DbContext.SqlDb.Update(titleField);
-                }
 
         });
         return newAttribute.AttributeId;
@@ -178,11 +170,8 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
                 .Include(v => v.TsDynDataValueDimensions)
                 .Where(a => a.AttributeId == attributeId).ToList();
 
-            values.ForEach(v =>
-            {
-                v.TsDynDataValueDimensions.ToList().ForEach(vd => DbContext.SqlDb.Remove(vd));
-                DbContext.SqlDb.Remove(v);
-            });
+            foreach (var v in values)
+                DbContext.SqlDb.RemoveRange(v.TsDynDataValueDimensions);
 
             var attr = DbContext.SqlDb.TsDynDataAttributes
                 .AsNoTracking()
@@ -196,7 +185,5 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         }));
         return true;
     }
-
-
 
 }

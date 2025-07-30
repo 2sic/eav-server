@@ -4,7 +4,7 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 
 internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSet")
 {
-    private IQueryable<TsDynDataContentType> GetDbContentTypeCoreQueryUntracked(int appId)
+    internal IQueryable<TsDynDataContentType> GetDbContentTypeWithAttributesUntracked(int appId)
         => DbContext.SqlDb.TsDynDataContentTypes
             .AsNoTracking()
             .Include(a => a.TsDynDataAttributes)
@@ -27,6 +27,10 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
 
         if (byStaticName != null || !alsoCheckNiceName)
             return byStaticName;
+    internal IQueryable<TsDynDataContentType> GetDbContentTypeWithAttributesTracked(int appId)
+        => DbContext.SqlDb.TsDynDataContentTypes
+            .Include(a => a.TsDynDataAttributes)
+            .Where(a => a.AppId == appId && !a.TransDeletedId.HasValue);
 
         return GetDbContentTypeCoreQueryUntracked(appId)
             .SingleOrDefault(a => a.Name == nameId);
