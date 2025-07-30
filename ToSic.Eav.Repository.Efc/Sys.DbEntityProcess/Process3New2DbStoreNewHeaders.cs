@@ -1,5 +1,5 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
-internal class Process3New2DbStoreHeader() : Process0Base("DB.EPr3n2")
+internal class Process3New2DbStoreNewHeaders() : Process0Base("DB.EPr3n2")
 {
     public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
         => throw new NotSupportedException("Single item call not supported");
@@ -48,7 +48,11 @@ internal class Process3New2DbStoreHeader() : Process0Base("DB.EPr3n2")
         var newEntities = data
             .Where(d => d.IsNew)
             .Select(d => d.DbEntity!);
-        services.DbEntity.SaveCreatedNoChangeDetection(newEntities);
+
+        services.DbStorage.DoAndSaveWithoutChangeDetection(() =>
+        {
+            services.DbStorage.SqlDb.AddRange(newEntities);
+        }, "save new");
 
         // Update the IDs in the NewEntity for versioning and/or json persistence
         data = data

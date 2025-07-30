@@ -33,7 +33,7 @@ internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataBuilder buil
             new Process2PublishAndContentType(),
 
             new Process3New1LastChecks(),
-            new Process3New2DbStoreHeader(),
+            new Process3New2DbStoreNewHeaders(),
             new Process3New3DbStoreJson(),
 
             new Process3Upd1DbPreload(),
