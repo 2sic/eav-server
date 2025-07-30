@@ -6,7 +6,6 @@ using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Sys;
-using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
@@ -76,6 +75,7 @@ internal class EfcContentTypeLoaderService(
     internal IImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSourceAndExpiring source)
     {
         // WARNING: 2022-01-18 2dm
+        // AMENDMENT: 2025-07-30 2dm - this has been quite since 2022, but I think I recently observed it after many list imports (suddenly the list of content-types had an error because of DI having been destroyed)
         // I believe there is an issue which can pop up from time to time, but I'm not sure if it's only in dev setup
         // The problem is that content-types and attributes get metadata from another app
         // That app is retrieved once needed - but the object retrieving it is given here (the AppState)
