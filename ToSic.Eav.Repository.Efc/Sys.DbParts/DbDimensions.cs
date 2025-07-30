@@ -24,19 +24,17 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
     /// Update a single Dimension
     /// </summary>
     private void UpdateZoneDimension(int dimensionId, bool? active = null, string? name = null)
-    {
-        var dimension = DbContext.SqlDb
-            .TsDynDataDimensions
-            .AsNoTracking()
-            .Single(d => d.DimensionId == dimensionId);
+        => DbContext.DoAndSaveTracked(() =>
+        {
+            var dimension = DbContext.SqlDb
+                .TsDynDataDimensions
+                .Single(d => d.DimensionId == dimensionId);
 
-        if (active.HasValue)
-            dimension.Active = active.Value;
-        if (name != null)
-            dimension.Name = name;
-
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dimension));
-    }
+            if (active.HasValue)
+                dimension.Active = active.Value;
+            if (name != null)
+                dimension.Name = name;
+        });
 
     /// <summary>
     /// Add or update a language. Must use this kind of logic because the client doesn't know if a language

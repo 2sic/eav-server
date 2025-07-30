@@ -132,16 +132,16 @@ public class WorkAttributesMod(
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
             l.W("Setting up field share but feature is not enabled / licensed.");
 
-        // get field attributeId
-        var attribute = AppWorkCtx.DbStorage.Attributes.GetUntracked(attributeId)
-            ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
-
         var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other attribute change
-        AppWorkCtx.DbStorage.DoAndSaveWithoutChangeDetection(() =>
+        AppWorkCtx.DbStorage.DoAndSaveTracked(() =>
         {
+            // get field attributeId
+            var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
+                ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+
             // ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
             if (attribute.Guid.HasValue == false)
                 attribute.Guid = Guid.NewGuid();
@@ -151,7 +151,6 @@ public class WorkAttributesMod(
             {
                 Share = share,
             });
-            AppWorkCtx.DbStorage.SqlDb.Update(attribute);
         });
 
         return l.ReturnTrue();
@@ -164,16 +163,17 @@ public class WorkAttributesMod(
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
             l.W("Setting up field share but feature is not enabled / licensed.");
 
-        // get field attributeId
-        var attribute = AppWorkCtx.DbStorage.Attributes.GetUntracked(attributeId)
-            ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
-
+        // Prepare serializer
         var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other attribute change
-        AppWorkCtx.DbStorage.DoAndSaveWithoutChangeDetection(() =>
+        AppWorkCtx.DbStorage.DoAndSaveTracked(() =>
         {
+            // get field attributeId
+            var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
+                ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+
             // set InheritMetadataOf to the guid above(as string)
             attribute.SysSettings = serializer.Serialize(new()
             {
@@ -182,7 +182,6 @@ public class WorkAttributesMod(
                 InheritMetadataOfPrimary = false,
                 InheritMetadataOf = new() { [inheritMetadataOf] = "" },
             });
-            AppWorkCtx.DbStorage.SqlDb.Update(attribute);
         });
 
         return l.ReturnTrue();

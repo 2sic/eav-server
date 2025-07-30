@@ -41,8 +41,7 @@ partial class DbAttribute
             .Select(a => a.Type)
             .ToArray();
 
-    public TsDynDataAttribute? GetUntracked(int attributeId) 
+    public TsDynDataAttribute? GetTracked(int attributeId) 
         => DbContext.SqlDb.TsDynDataAttributes
-            .AsNoTracking()
             .FirstOrDefault(a => a.AttributeId == attributeId);
 }
