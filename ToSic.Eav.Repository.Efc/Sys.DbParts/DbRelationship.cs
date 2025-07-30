@@ -5,32 +5,6 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels")
 {
-    internal void DoWhileQueueingRelationshipsUntracked(Action action)
-    {
-        var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-        var log = _isOutermostCall ? LogSummary : LogDetails;
-        log.Do($"relationship queue:{randomId} start", () =>
-        {
-            // 1. check if it's the outermost call, in which case afterward we import
-            var willPurgeQueue = _isOutermostCall;
-            // 2. make sure any follow-up calls are not regarded as outermost
-            _isOutermostCall = false;
-            // 3. now run the inner code
-            action.Invoke();
-            // 4. now check if we were the outermost call, in if yes, save the data
-            if (willPurgeQueue)
-            {
-                ImportRelationshipQueueAndSaveUntracked();
-                _isOutermostCall = true; // reactivate, in case this is called again
-            }
-        });
-    }
-
-    private bool _isOutermostCall = true;
-
-    private readonly List<RelationshipToSave> _saveQueue = [];
-
-
 
     /// <summary>
     /// Update Relationships of an Entity
@@ -85,11 +59,11 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// <summary>
     /// Import Entity Relationships Queue (Populated by UpdateEntityRelationships) and Clear Queue afterward.
     /// </summary>
-    private void ImportRelationshipQueueAndSaveUntracked()
+    internal void ImportRelationshipQueueAndSaveUntracked(ICollection<RelationshipToSave> list)
     {
         var lSum = LogSummary.Fn(timer: true);
         // if SaveOptions determines it, clear all existing relationships first
-        var fullFlush = _saveQueue
+        var fullFlush = list
             .Where(r => r.FlushAllEntityRelationships)
             .Select(r => r.ParentEntityId)
             .GroupBy(id => id)
@@ -100,9 +74,9 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
             {
                 FlushChildrenRelationships(fullFlush);
 
-                LogDetails.A($"will add relationships⋮{_saveQueue.Count}");
+                LogDetails.A($"will add relationships⋮{list.Count}");
 
-                var parentIds = _saveQueue
+                var parentIds = list
                     .Select(rel => rel.ParentEntityId)
                     .ToArray();
                 if (parentIds.Any(p => p <= 0))
@@ -110,7 +84,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                 var parents = DbStore.Entities.GetDbEntitiesWithChildren(parentIds);
                 LogDetails.A("Found parents to map:" + parents.Length);
 
-                var allTargets = _saveQueue
+                var allTargets = list
                     .Where(rel => rel.ChildEntityGuids != null)
                     .SelectMany(rel => rel.ChildEntityGuids!
                         .Where(g => g.HasValue)
@@ -122,7 +96,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                 var dbTargetIds = DbStore.Entities.GetMostCurrentDbEntities(allTargets);
                 LogDetails.A("Total target entities (should match): " + dbTargetIds.Count);
 
-                var updates = _saveQueue
+                var updates = list
                     .Select(relationship =>
                     {
                         var entityWithChildren = parents.Single(e => e.EntityId == relationship.ParentEntityId);
@@ -149,6 +123,9 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                         };
                     })
                     .ToListOpt();
+
+                UpdateEntityRelationshipsAndSaveUntracked(updates);
+
 
                 // Old before 2025-07-29; del ca. 2025-Q3
                 //foreach (var relationship in _saveQueue)
@@ -178,12 +155,10 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                 //        Targets = childEntityIds
                 //    });
                 //}
-
-                UpdateEntityRelationshipsAndSaveUntracked(updates);
+                //UpdateEntityRelationshipsAndSaveUntracked(updates);
             }
         );
 
-        _saveQueue.Clear();
         lSum.Done("done");
     }
 
@@ -246,59 +221,72 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
 
     internal void ChangeRelationships(IEntity eToSave, int entityId, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
     {
-        var l = LogDetails.Fn(timer: true);
+        var relTasks = GetChangeRelationships(eToSave, entityId, attributeDefs, so);
+        ImportRelationshipQueueAndSaveUntracked(relTasks);
+    }
+
+    internal ICollection<RelationshipToSave> GetChangeRelationships(IEntity eToSave, int entityId, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
+    {
+        var l = LogDetails.Fn<ICollection<RelationshipToSave>>(timer: true);
         // some initial error checking
         if (entityId <= 0)
             throw new("can't work on relationships if entity doesn't have a repository id yet");
 
         // put all relationships into queue
-        foreach (var attribute in eToSave.Attributes.Values)
-        {
-            // find attribute definition - will be null if the attribute cannot be found - in which case ignore
-            var attribDef = attributeDefs.SingleOrDefault(a =>
-                string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
-            if (attribDef is not { Type: nameof(ValueTypes.Entity) })
-                continue;
+        var relTasks = eToSave.Attributes.Values
+            .Select(attribute =>
+                {
+                    // find attribute definition - will be null if the attribute cannot be found - in which case ignore
+                    var attribDef = attributeDefs.SingleOrDefault(a =>
+                        string.Equals(a.StaticName, attribute.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (attribDef is not { Type: nameof(ValueTypes.Entity) })
+                        return null!;
 
-            // check if there is anything at all (type doesn't matter yet)
-            var valContents = attribute.Values.FirstOrDefault()?.ObjectContents;
-            if (valContents == null)
-                continue;
-            
-            valContents = valContents switch
-            {
-                IRelatedEntitiesValue entities => entities.Identifiers,
-                Guid guid => new List<Guid> { guid },
-                int i => new List<int> { i },
-                _ => valContents
-            };
+                    // check if there is anything at all (type doesn't matter yet)
+                    var valContents = attribute.Values.FirstOrDefault()?.ObjectContents;
+                    if (valContents == null)
+                        return null!;
 
-            var guidList = (valContents as IEnumerable<Guid>)?.Select(p => (Guid?)p)
-                           ?? (valContents as IEnumerable<Guid?>)?.Select(p => p);
+                    valContents = valContents switch
+                    {
+                        IRelatedEntitiesValue entities => entities.Identifiers,
+                        Guid guid => new List<Guid> { guid },
+                        int i => new List<int> { i },
+                        _ => valContents
+                    };
 
-            var entityIds = valContents as IEnumerable<int?>
-                            ?? (valContents as IEnumerable<int>)?.Select(v => (int?)v);
+                    var guidList = (valContents as IEnumerable<Guid>)?.Select(p => (Guid?)p)
+                                   ?? (valContents as IEnumerable<Guid?>)?.Select(p => p);
 
-            AddToQueue(attribDef.AttributeId, guidRels: guidList?.ToList(), intRels: entityIds?.ToList(), entityId, !so.PreserveUntouchedAttributes);
-        }
-        l.Done();
+                    var entityIds = valContents as IEnumerable<int?>
+                                    ?? (valContents as IEnumerable<int>)?.Select(v => (int?)v);
+
+                    var rel = PrepTask(attribDef.AttributeId, guidRels: guidList?.ToList(),
+                        intRels: entityIds?.ToList(), entityId, !so.PreserveUntouchedAttributes);
+                    return rel;
+                }
+            )
+            .Where(t => t != null!)
+            .ToListOpt();
+
+        return l.Return(relTasks);
     }
 
     /// <summary>
     /// Update Relationships of an Entity. Update isn't done until ImportEntityRelationshipsQueue() is called!
     /// </summary>
-    private void AddToQueue(int attributeId, List<Guid?>? guidRels, List<int?>? intRels, int entityId, bool flushAll)
+    private RelationshipToSave PrepTask(int attributeId, List<Guid?>? guidRels, List<int?>? intRels, int entityId, bool flushAll)
     {
-        var l = LogDetails.Fn($"id:{entityId}, guids⋮{guidRels?.Count}, ints⋮{intRels?.Count}");
-        _saveQueue.Add(new()
+        var l = LogDetails.Fn<RelationshipToSave>($"id:{entityId}, guids⋮{guidRels?.Count}, ints⋮{intRels?.Count}");
+        var rel = new RelationshipToSave
         {
             AttributeId = attributeId,
             ChildEntityGuids = guidRels,
             ChildEntityIds = intRels,
             ParentEntityId = entityId,
             FlushAllEntityRelationships = flushAll
-        });
-        l.Done();
+        };
+        return l.Return(rel);
     }
 
 }

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal struct RelationshipToSave
+internal record RelationshipToSave
 {
     public required int AttributeId { get; init; }
     public ICollection<Guid?>? ChildEntityGuids { get; init; }

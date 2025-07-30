@@ -4,14 +4,32 @@
 internal class Process5TableRelationships(): Process0Base("Db.EPr5TR")
 {
     public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
+        => throw new NotSupportedException("Single item call not supported");
+
+    //{
+    //    if (data.SaveJson)
+    //        return data;
+
+    //    var l = services.LogDetails.Fn<EntityProcessData>();
+
+    //    // save all the values we just added
+    //    services.DbStorage.Relationships.ChangeRelationships(data.NewEntity, data.DbEntity!.EntityId, data.AttributeDefs, data.Options);
+
+    //    return l.Return(data);
+    //}
+
+    public override ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
     {
-        if (data.SaveJson)
-            return data;
+        var l = GetLogCall(services, logProcess);
 
-        var l = services.LogDetails.Fn<EntityProcessData>();
+        if (data.All(d => d.SaveJson))
+            return l.Return(data, "all SavoJson, none update, skip");
 
-        // save all the values we just added
-        services.DbStorage.Relationships.ChangeRelationships(data.NewEntity, data.DbEntity!.EntityId, data.AttributeDefs, data.Options);
+        var relChanges = data
+            .SelectMany(d => services.DbStorage.Relationships.GetChangeRelationships(d.NewEntity, d.DbEntity!.EntityId, d.AttributeDefs, d.Options))
+            .ToListOpt();
+
+        services.DbStorage.Relationships.ImportRelationshipQueueAndSaveUntracked(relChanges);
 
         return l.Return(data);
     }

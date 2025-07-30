@@ -47,13 +47,6 @@ public interface IStorage: IServiceWithSetup<StorageOptions>, IHasLog
     List<Message> ImportLogToBeRefactored { get; }
     #endregion
 
-
-    #region Relationship Import / Queue
-
-    //void DoWhileQueueingRelationships(Action action);
-
-    #endregion
-
     #region Entities
 
     /// <summary>
