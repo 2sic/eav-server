@@ -130,18 +130,32 @@ internal class RelationshipComparer : IEqualityComparer<TsDynDataRelationship>
 {
     public bool Equals(TsDynDataRelationship? x, TsDynDataRelationship? y)
     {
-        if (x == null && y == null)
+        // inspired by ms docs https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iequalitycomparer-1?view=net-9.0
+        if (ReferenceEquals(x, y))
             return true;
-        if (x == null)
+
+        if (x is null || y is null)
             return false;
-        if (y == null)
-            return false;
+
+//#if DEBUG
+//        if (x.ParentEntityId == 927)
+//        {
+//            var z = x;
+//        }
+//#endif
+
         return x.AttributeId == y.AttributeId
                && x.SortOrder == y.SortOrder
                && x.ParentEntityId == y.ParentEntityId
                && x.ChildEntityId == y.ChildEntityId;
     }
 
+    /// <summary>
+    /// This is very important - it must return the same value for the similar objects to then be fully compared.
+    /// Note that according to my research, an overflow will automatically start at negative maximum value.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public int GetHashCode(TsDynDataRelationship obj)
-        => obj.GetHashCode();
+        => obj.ParentEntityId + obj.AttributeId + (obj.ChildEntityId ?? 0) + obj.SortOrder;
 }

@@ -30,7 +30,8 @@ internal class AppRelationshipManager(AppState upstream): SynchronizedList<IEnti
             // Keep only the ones which use a LazyEntitiesSource
             var lazyEntityValues = relationshipAttributes
                 .Select(a => a.Typed.First().TypedContents as LazyEntitiesSource)
-                .Where(tc => tc != null);
+                .Where(tc => tc != null)
+                .ToListOpt();
 
             foreach (var value in lazyEntityValues)
             foreach (var childId in value?.ResolvedEntityIds.Where(id => id != null).Cast<int>() ?? [])
