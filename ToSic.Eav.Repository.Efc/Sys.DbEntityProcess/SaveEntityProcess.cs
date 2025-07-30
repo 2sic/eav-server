@@ -13,9 +13,21 @@ internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataBuilder buil
     [field: AllowNull, MaybeNull]
     public EntityProcessServices Services => field ??= new(dbStorage, builder, entityOptionPairs, Log);
 
-    public ICollection<EntityProcessData> Process(ICollection<EntityProcessData> data, bool logProcess)
+    public ICollection<EntityProcessData> ProcessBatch1(ICollection<EntityProcessData> data, bool logProcess)
+        => ProcessBatch(data, GetStandardProcessBatch1(), logProcess);
+
+    /// <summary>
+    /// Batch 2 must run after all the entities have been created, to map the relationships
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="logProcess"></param>
+    /// <returns></returns>
+    public ICollection<EntityProcessData> ProcessBatch2(ICollection<EntityProcessData> data, bool logProcess)
+        => ProcessBatch(data, GetStandardProcessBatch2(), logProcess);
+
+    public ICollection<EntityProcessData> ProcessBatch(ICollection<EntityProcessData> data, List<IEntityProcess> batch, bool logProcess)
     {
-        foreach (var process in GetStandardProcess())
+        foreach (var process in batch)
         {
             data = process.Process(Services, data.NextStep(), logProcess);
             if (data.HasException(out var exception))
@@ -25,7 +37,7 @@ internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataBuilder buil
         return data;
     }
 
-    private List<IEntityProcess> GetStandardProcess()
+    private List<IEntityProcess> GetStandardProcessBatch1()
     {
         List<IEntityProcess> processors = 
         [
@@ -43,6 +55,18 @@ internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataBuilder buil
             new Process4TableValues(),
             new Process4JsonValues(),
 
+            //new Process5TableRelationships(),
+            //new Process6Versioning(),
+        ];
+
+        foreach (var process in processors)
+            process.LinkLog(Services.LogDetails);
+        return processors;
+    }
+    private List<IEntityProcess> GetStandardProcessBatch2()
+    {
+        List<IEntityProcess> processors = 
+        [
             new Process5TableRelationships(),
 
             new Process6Versioning(),

@@ -48,9 +48,13 @@ partial class DbEntity
             .Select((eop, i) => EntityProcessData.CreateInstance(eop, i < DbConstant.MaxToLogDetails))
             .ToListOpt();
 
-        IEnumerable<EntityProcessData> result = null!;
+        ICollection<EntityProcessData> result = null!;
 
-        DbStore.DoInTransaction(() => result = saveProcess.Process(data, true));
+        DbStore.DoInTransaction(() =>
+        {
+            result = saveProcess.ProcessBatch1(data, true);
+            result = saveProcess.ProcessBatch2(result, true);
+        });
 
         var ids = result
             .Select(d => d.Ids)
@@ -75,6 +79,8 @@ partial class DbEntity
         DbStore.DoInTransaction(
             () => 
             {
+                List<EntityProcessData> batch1 = [];
+
                 foreach (var pair in entityOptionPairs)
                 {
                     // Logging, but only the first 250 or so entries...
@@ -85,7 +91,13 @@ partial class DbEntity
 
                     // Actually do the work...
                     ICollection<EntityProcessData> data = [EntityProcessData.CreateInstance(pair, logDetails)];
-                    var result = saveProcess.Process(data, false);
+                    var result = saveProcess.ProcessBatch1(data, false);
+                    batch1.AddRange(result);
+                }
+
+                foreach (var pair in batch1)
+                {
+                    var result = saveProcess.ProcessBatch2([pair], false);
                     ids.Add(result.First().Ids);
                 }
             }
