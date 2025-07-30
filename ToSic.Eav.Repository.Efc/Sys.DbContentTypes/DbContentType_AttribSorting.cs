@@ -10,8 +10,7 @@ partial class DbContentType
     /// <param name="contentTypeId"></param>
     /// <param name="contentType"></param>
     private void SortAttributes(int contentTypeId, IContentType contentType)
-    {
-        DbContext.DoAndSaveTracked(() =>
+        => DbContext.DoAndSaveTracked(() =>
         {
             var attributeList = DbContext.SqlDb.TsDynDataAttributes
                 .Where(a => a.ContentTypeId == contentTypeId)
@@ -26,7 +25,6 @@ partial class DbContentType
 
             ApplyAttributeOrder(attributeList);
         });
-    }
 
 
     /// <summary>
@@ -35,19 +33,18 @@ partial class DbContentType
     /// <param name="contentTypeId"></param>
     /// <param name="newOrder">Array of attribute ids which defines the new sort order</param>
     public void SortAttributes(int contentTypeId, List<int> newOrder)
-    {
-        DbContext.DoAndSaveTracked(() =>
+        => DbContext.DoAndSaveTracked(() =>
         {
             var attributeList = DbContext.SqlDb.TsDynDataAttributes
                 .Where(a => a.ContentTypeId == contentTypeId)
                 .ToList();
+
             attributeList = attributeList
                 .OrderBy(a => newOrder.IndexOf(a.AttributeId))
                 .ToList();
 
             ApplyAttributeOrder(attributeList);
         });
-    }
 
     private static void ApplyAttributeOrder(List<TsDynDataAttribute> attributeList)
     {
