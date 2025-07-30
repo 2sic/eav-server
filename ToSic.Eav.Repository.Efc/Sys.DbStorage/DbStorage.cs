@@ -280,11 +280,20 @@ public class DbStorage(
 
     #region Shorthand for do & save
 
+    /// <summary>
+    /// Make sure that save calls are atomic and not nested.
+    /// </summary>
+    public bool IsWithinSave;
+
     internal void DoAndSaveTracked(Action action, string? message = null)
     {
         var l = LogSummary.Fn(message: message, timer: true);
+        if (IsWithinSave)
+            throw new("DoAndSaveTracked was called while already within a save operation. This is not allowed.");
+        IsWithinSave = true;
         action.Invoke();
         SqlDb.SaveChanges();
+        IsWithinSave = false;
         l.Done();
     }
 
@@ -292,6 +301,10 @@ public class DbStorage(
     internal void DoAndSaveWithoutChangeDetection(Action action, string? message = null)
     {
         var l = LogSummary.Fn(timer: true, message: message);
+
+        if (IsWithinSave)
+            throw new("DoAndSaveWithoutChangeDetection was called while already within a save operation. This is not allowed.");
+        IsWithinSave = true;
 
         // 2025-07-29 moving this up and out of try to better set it before action is invoked.
         var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
@@ -322,6 +335,7 @@ public class DbStorage(
             SqlDb.ChangeTracker.AutoDetectChangesEnabled = preserve;
             l.Done();
         }
+        IsWithinSave = false;
     }
 
 

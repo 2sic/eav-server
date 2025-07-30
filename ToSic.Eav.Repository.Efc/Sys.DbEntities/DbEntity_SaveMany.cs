@@ -54,7 +54,8 @@ partial class DbEntity
             () => DbContext.Versioning.DoAndSaveHistoryQueue(
                 () => DbContext.Relationships.DoWhileQueueingRelationshipsUntracked(
                     () => DoWhileQueueingAttributes(
-                        () => DbContext.DoAndSaveWithoutChangeDetection(() => result = saveProcess.Process(data, true), "SaveMany-new"))
+                        () => result = saveProcess.Process(data, true)
+                    )
                 )
             )
         );
