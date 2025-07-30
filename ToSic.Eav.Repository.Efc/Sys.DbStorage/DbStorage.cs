@@ -280,7 +280,7 @@ public class DbStorage(
 
     #region Shorthand for do & save
 
-    internal void DoAndSaveObsoleteOnlyUsedInOldSaveRoutine(Action action, string? message = null)
+    internal void DoAndSaveTracked(Action action, string? message = null)
     {
         var l = LogSummary.Fn(message: message, timer: true);
         action.Invoke();
@@ -298,15 +298,15 @@ public class DbStorage(
         SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
 
         // Wrap invoke in a try/catch to specifically catch tracking errors
-        try {
+        //try {
             action.Invoke();
-        }
-        catch (Exception ex)
-        {
-            l.A($"error: action failed, {ex.Message}");
-            l.Ex(ex);
-            throw;
-        }
+        //}
+        //catch (Exception ex)
+        //{
+        //    l.A($"error: action failed, {ex.Message}");
+        //    l.Ex(ex);
+        //    throw;
+        //}
 
         try
         {
