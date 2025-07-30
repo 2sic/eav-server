@@ -2,36 +2,31 @@
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Metadata.Targets;
-using ToSic.Eav.Persistence.Sys.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 
 partial class DbContentType
 {
     public void AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
-    {
-        // save first, to ensure it has an Id
-        DbContext.DoAndSaveWithoutChangeDetection(() =>
+        => DbContext.DoAndSaveTracked(() =>
         {
-            var ct = TryGetTypeByStaticNameUntracked(staticName);
+            var ct = TryGetTypeByStaticTracked(staticName);
 
+            // If exists, do update
             if (ct != null)
             {
                 ct.Name = name;
                 ct.Scope = scope;
                 ct.TransCreatedId = DbContext.Versioning.GetTransactionId();
-                DbContext.SqlDb.Update(ct);
+                return;
             }
-            else
-            {
-                DbContext.SqlDb.Add(Create(name, scope, usesConfigurationOfOtherSet, alwaysShareConfig));
-            }
-        });
-    }
 
-    private TsDynDataContentType Create(string name, string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
-    {
-        var ct = new TsDynDataContentType
+            // If not exists, create new
+            DbContext.SqlDb.Add(PrepareNew(name, scope, usesConfigurationOfOtherSet, alwaysShareConfig));
+        });
+
+    private TsDynDataContentType PrepareNew(string name, string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
+        => new()
         {
             AppId = DbContext.AppId,
             Name = name,
@@ -41,43 +36,48 @@ partial class DbContentType
             IsGlobal = alwaysShareConfig,
             TransCreatedId = DbContext.Versioning.GetTransactionId(),
         };
-        
-        return ct;
-    }
 
 
     public void Delete(string nameId)
-    {
-        var setToDelete = TryGetTypeByStaticNameUntracked(nameId)
-            ?? throw new ArgumentException($@"Tried to delete but can't find {nameId}", nameof(nameId));
-        setToDelete.TransDeletedId = DbContext.Versioning.GetTransactionId();
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(setToDelete));
-    }
+        => DbContext.DoAndSaveTracked(() =>
+        {
+            var setToDelete = TryGetTypeByStaticTracked(nameId)
+                              ?? throw new ArgumentException($@"Tried to delete but can't find {nameId}",
+                                  nameof(nameId));
+            setToDelete.TransDeletedId = DbContext.Versioning.GetTransactionId();
+        });
 
 
     private int? GetOrCreateContentType(ContentType contentType)
     {
-        var newType = DbContext.ContentTypes.TryGetDbContentTypeUntracked(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
-        var isUpdate = newType != null;
+        var newType = DbContext.ContentTypes
+            .GetDbContentTypeWithAttributesUntracked(DbContext.AppId)
+            .SingleOrDefault(a => a.StaticName == contentType.NameId);
+
+        //var isUpdate = newType != null;
         
-        // add new Content-Type, do basic configuration if possible, then save
-        if (newType == null)
-        {
-            newType = DbContext.ContentTypes.PrepareDbContentType(contentType.Name, contentType.NameId, contentType.Scope, false, null)
-                   ?? throw new($"Can't create content type {contentType.Name}/{contentType.NameId}");
-
-        }
-
         // to use existing Content-Type, do some minimal conflict-checking
-        else
+        if (newType != null)
         {
-            DbContext.ImportLogToBeRefactored.Add(new($"Content-Type already exists{contentType.NameId}|{contentType.Name}", Message.MessageTypes.Information));
-            if (newType.InheritContentTypeId.HasValue)
-            {
-                DbContext.ImportLogToBeRefactored.Add(new("Not allowed to import/extend an Content-Type which uses Configuration of another Content-Type: " + contentType.NameId, Message.MessageTypes.Error));
-                return null;
-            }
+            // TODO: VERY UNCLEAR why we are adding special messages on a Get-situation...
+            // 2025-07-30 disable all these messages and null-return, I believe this is very old stuff which doesn't make sense anymore
+            //DbContext.ImportLogToBeRefactored.Add(new($"Content-Type already exists{contentType.NameId}|{contentType.Name}", Message.MessageTypes.Information));
+            //if (newType.InheritContentTypeId.HasValue)
+            //{
+            //    DbContext.ImportLogToBeRefactored.Add(new("Not allowed to import/extend an Content-Type which uses Configuration of another Content-Type: " +
+            //                                              contentType.NameId, Message.MessageTypes.Error));
+            //    return null;
+            //}
+
+            return newType.ContentTypeId;
         }
+
+        // add new Content-Type, do basic configuration if possible, then save
+        newType = DbContext.ContentTypes.PrepareDbContentType(contentType.Name, contentType.NameId,
+                      contentType.Scope, false, null)
+                  ?? throw new($"Can't create content type {contentType.Name}/{contentType.NameId}");
+
+        #region Moved Here 2025-07-30 as it changes something to a ghost / global type, which I believe can only be done on creation; previously it could have also been an edit...
 
         // If a "Ghost"-content type is specified, try to assign that
         if (!string.IsNullOrEmpty(contentType.OnSaveUseParentStaticName))
@@ -89,13 +89,10 @@ partial class DbContentType
         }
 
         newType.IsGlobal = contentType.AlwaysShareConfiguration;
-        DbContext.DoAndSaveWithoutChangeDetection(() =>
-        {
-            if (isUpdate)
-                DbContext.SqlDb.Update(newType);
-            else
-                DbContext.SqlDb.Add(newType);
-        });
+
+        #endregion
+
+        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Add(newType));
 
         return newType.ContentTypeId;
     }

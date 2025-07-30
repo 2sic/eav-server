@@ -10,42 +10,23 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
             .Include(a => a.TsDynDataAttributes)
             .Where(a => a.AppId == appId && !a.TransDeletedId.HasValue);
 
-    /// <summary>
-    /// Get a single ContentType
-    /// </summary>
-    internal TsDynDataContentType? TryGetDbContentTypeUntracked(int appId, int contentTypeId)
-        => GetDbContentTypeCoreQueryUntracked(appId)
-            .SingleOrDefault(a => a.ContentTypeId == contentTypeId);
 
-    /// <summary>
-    /// Get a single ContentType
-    /// </summary>
-    public TsDynDataContentType? TryGetDbContentTypeUntracked(int appId, string nameId, bool alsoCheckNiceName = false)
-    {
-        var byStaticName = GetDbContentTypeCoreQueryUntracked(appId)
-            .SingleOrDefault(a => a.StaticName == nameId);
-
-        if (byStaticName != null || !alsoCheckNiceName)
-            return byStaticName;
     internal IQueryable<TsDynDataContentType> GetDbContentTypeWithAttributesTracked(int appId)
         => DbContext.SqlDb.TsDynDataContentTypes
             .Include(a => a.TsDynDataAttributes)
             .Where(a => a.AppId == appId && !a.TransDeletedId.HasValue);
 
-        return GetDbContentTypeCoreQueryUntracked(appId)
-            .SingleOrDefault(a => a.Name == nameId);
-    }
 
     private List<TsDynDataContentType> GetDbContentTypesUntracked(int appId, string name, bool alsoCheckNiceName = false)
     {
         var l = LogSummary.Fn<List<TsDynDataContentType>>($"{nameof(appId)}: {appId}; {nameof(name)}: {name}; {nameof(alsoCheckNiceName)}: {alsoCheckNiceName}");
-        var byStaticName = GetDbContentTypeCoreQueryUntracked(appId)
+        var byStaticName = GetDbContentTypeWithAttributesUntracked(appId)
             .Where(s => s.StaticName == name)
             .ToList();
         if (byStaticName.Any() || !alsoCheckNiceName)
             return l.Return(byStaticName);
 
-        var byNiceName = GetDbContentTypeCoreQueryUntracked(appId)
+        var byNiceName = GetDbContentTypeWithAttributesUntracked(appId)
             .Where(s => s.Name == name)
             .ToList();
 
@@ -74,16 +55,6 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
                 found = GetDbContentTypesUntracked(parentId, name, alsoCheckNiceName: true);
             }
 
-            //var found = GetSetCoreQuery(appId)
-            //    .Where(s => s.StaticName == name)
-            //    .ToList();
-
-            //// if not found, try the non-static name as fallback
-            //if (found.Count == 0)
-            //    found = GetSetCoreQuery(appId)
-            //        .Where(s => s.Name == name)
-            //        .ToList();
-
             if (found.Count != 1)
                 throw new($"{preparedError} Found {found.Count}");
 
@@ -100,7 +71,7 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
     /// Test whether Content-Type exists on specified App and is not deleted
     /// </summary>
     private bool DbContentTypeExists(int appId, string staticName)
-        => GetDbContentTypeCoreQueryUntracked(appId).Any(a => a.StaticName == staticName);
+        => GetDbContentTypeWithAttributesUntracked(appId).Any(a => a.StaticName == staticName);
 
     internal TsDynDataContentType? PrepareDbContentType(string name, string nameId, string scope, bool skipExisting, int? appId)
     {

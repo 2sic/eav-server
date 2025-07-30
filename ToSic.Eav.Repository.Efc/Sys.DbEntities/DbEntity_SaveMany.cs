@@ -95,15 +95,9 @@ partial class DbEntity
                                     l.A($"Hit #{idx}, will stop logging details");
 
                                 // Actually do the work...
-                                DbContext.DoAndSaveWithoutChangeDetection(
-                                    () =>
-                                    {
-                                        ICollection<EntityProcessData> data = [EntityProcessData.CreateInstance(pair, logDetails)];
-                                        var result = saveProcess.Process(data, false);
-                                        ids.Add(result.First().Ids);
-                                    },
-                                    "SaveMany-new"
-                                );
+                                ICollection<EntityProcessData> data = [EntityProcessData.CreateInstance(pair, logDetails)];
+                                var result = saveProcess.Process(data, false);
+                                ids.Add(result.First().Ids);
                             }
                         }
                     )
