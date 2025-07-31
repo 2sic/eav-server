@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPartBase(db, "Db.Publ")
+internal class DbPublishing(DbStorage.DbStorage dbStore, DataBuilder builder) : DbPartBase(dbStore, "Db.Publ")
 {
     /// <summary>
     /// Publish a Draft-Entity
@@ -28,7 +28,7 @@ internal class DbPublishing(DbStorage.DbStorage db, DataBuilder builder) : DbPar
         // Publish Draft-Entity
         if (!unpublishedDbEnt.PublishedEntityId.HasValue)
         {
-            l.A($"there was no published (not branched), so will just set this to published; {db.SqlDb.TrackingInfo()}");
+            l.A($"there was no published (not branched), so will just set this to published; {DbStore.SqlDb.TrackingInfo()}");
             DbStore.DoAndSaveWithoutChangeDetection(() =>
             {
                 unpublishedDbEnt.IsPublished = true;
