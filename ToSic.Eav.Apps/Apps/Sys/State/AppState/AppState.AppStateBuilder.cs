@@ -67,13 +67,13 @@ partial class AppState
                 // first set a lock, to ensure that only one update/load is running at the same time
                 lock (this)
                 {
-                    var lInLock = l.Fn($"loading: {st.Loading} (app loading start in lock)");
+                    var lInLock = l.Fn($"loading: {st._loading} (app loading start in lock)");
                         // only if loading is true will the AppState object accept changes
-                        st.Loading = true;
+                        st._loading = true;
                         loader.Invoke(st);
                         st.CacheResetTimestamp("load complete");
                         _ = EnsureNameAndFolderInitialized();
-                        if (!st.FirstLoadCompleted) st.FirstLoadCompleted = true;
+                        if (!st._firstLoadCompleted) st._firstLoadCompleted = true;
                     lInLock.Done($"done - dynamic load count: {st.DynamicUpdatesCount}");
                 }
             }
@@ -86,7 +86,7 @@ partial class AppState
             finally
             {
                 // set loading to false again, to ensure that AppState won't accept changes
-                st.Loading = false;
+                st._loading = false;
                 lState.Done();
             }
 
@@ -226,7 +226,7 @@ partial class AppState
         {
             var st = AppStateTyped;
             var l = Log.Fn($"for a#{st.AppId}");
-            if (!st.Loading)
+            if (!st._loading)
                 throw new("trying to init metadata, but not in loading state. set that first!");
             st.Log.A("remove all items");
             st.Entities.Clear();
@@ -271,7 +271,7 @@ partial class AppState
         public void Add(IEntity newEntity, int? publishedId, bool log)
         {
             var st = AppStateTyped;
-            if (!st.Loading)
+            if (!st._loading)
                 throw new("trying to add entity, but not in loading state. set that first!");
 
             if (newEntity.RepositoryId == 0)
@@ -282,7 +282,7 @@ partial class AppState
             st.Entities.AddOrReplace(newEntity.RepositoryId, newEntity); // add like this, it could also be an update
             st.MetadataManager.Register(newEntity, true);
 
-            if (st.FirstLoadCompleted)
+            if (st._firstLoadCompleted)
                 st.DynamicUpdatesCount++;
 
             if (log)
@@ -323,7 +323,7 @@ partial class AppState
             var st = AppStateTyped;
             var l = st.Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
 
-            if (!st.Loading)
+            if (!st._loading)
                 throw new("trying to set content-types, but not in loading state. set that first!");
 
             if (st.Entities.Any())

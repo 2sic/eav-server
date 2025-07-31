@@ -2,19 +2,23 @@
 
 partial class AppState
 {
+    #region Load Status and Statistics
+
     /// <summary>
     /// Shows that the app is loading / building up the data.
     /// </summary>
-    private bool Loading;
+    private bool _loading;
 
     /// <summary>
     /// Shows that the initial load has completed
     /// </summary>
-    private bool FirstLoadCompleted;
+    private bool _firstLoadCompleted;
 
     /// <summary>
     /// Show how many times the app has been Dynamically updated - in case we run into cache rebuild problems.
     /// </summary>
     public int DynamicUpdatesCount { get; private set; }
-    
+
+    #endregion
+
 }
