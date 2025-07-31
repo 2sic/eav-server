@@ -94,7 +94,7 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
                 v.Value,
                 v.TsDynDataValueDimensions
                     .Select(ILanguage (lng) =>
-                        new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId))
+                        new Language(lng.Dimension.EnvironmentKey! /* is never null on a non-root culture */, lng.ReadOnly, lng.DimensionId))
                     .ToListOpt()
             ))
             .ToListOpt();

@@ -26,7 +26,7 @@ internal class Process4TableValues(): Process0Base("Db.EPr4TV")
 
         var changes = data
             .Where(d => !d.SaveJson)
-            .SelectMany(d => services.DbEntity.GetSaveAttributesAsEavUntracked(d.NewEntity, d.Options, d.AttributeDefs, d.DbEntity!.EntityId, d.Languages, d.LogDetails))
+            .SelectMany(d => services.DbEntity.GetSaveAttributesAsEavUntracked(d.NewEntity, d.Options, d.AttributeDefs!, d.DbEntity!.EntityId, d.Languages, d.LogDetails))
             .ToListOpt();
 
         services.DbEntity.SaveAttributeChanges(changes);

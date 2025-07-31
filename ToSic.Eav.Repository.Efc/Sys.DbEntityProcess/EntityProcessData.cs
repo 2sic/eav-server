@@ -40,7 +40,7 @@ public record EntityProcessData
     public int? ExistingDraftId { get; init; }
     public bool HasAdditionalDraft { get; init; }
     public int ContentTypeId { get; init; }
-    public List<TsDynDataAttribute> AttributeDefs { get; init; }
+    public List<TsDynDataAttribute>? AttributeDefs { get; init; }
 
     #endregion
 

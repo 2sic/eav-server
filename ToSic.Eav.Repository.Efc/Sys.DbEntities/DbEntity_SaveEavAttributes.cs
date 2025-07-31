@@ -111,7 +111,7 @@ partial class DbEntity
                         {
                             AttributeId = attribDef.AttributeId,
                             Value = valueAtom.Serialized ?? "",
-                            TsDynDataValueDimensions = toSicEavValuesDimensions,
+                            TsDynDataValueDimensions = toSicEavValuesDimensions!, /* ignore null warning, save works with this list being null */
                             EntityId = entityId
                         };
                         return l.Return(newVal);

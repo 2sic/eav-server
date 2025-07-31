@@ -32,7 +32,7 @@ public partial class TsDynDataAttribute
 
     public virtual TsDynDataAttributeType? TypeNavigation { get; set; }
 
-    public virtual TsDynDataContentType? ContentType { get; set; }
+    public virtual TsDynDataContentType ContentType { get; set; } = null!;
 
     public virtual TsDynDataTransaction? TransCreated { get; set; }
 

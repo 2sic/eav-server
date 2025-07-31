@@ -202,7 +202,7 @@ internal class EfcContentTypeLoaderService(
                 name: set.Name,
                 nameId: set.StaticName,
                 id: set.ContentTypeId,
-                scope: set.Scope,
+                scope: set.Scope!,
                 parentTypeId: set.IsGhost,
                 configZoneId: set.ZoneId,
                 configAppId: set.AppId,

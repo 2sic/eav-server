@@ -82,7 +82,7 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
             .ToList()
             .Where(d =>
                 d.Parent.HasValue
-                && d.ParentNavigation.Key == EavConstants.CultureSystemKey
+                && d.ParentNavigation!.Key == EavConstants.CultureSystemKey
                 && (includeInactive || d.Active)
             )
             .Select(d => d.AsDimensionDefinition)

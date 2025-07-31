@@ -27,7 +27,7 @@ internal class Process5TableRelationships(): Process0Base("Db.EPr5TR")
 
         var relChanges = data
             .Where(d => !d.SaveJson)
-            .SelectMany(d => services.DbStorage.Relationships.GetChangeRelationships(d.NewEntity, d.DbEntity!.EntityId, d.AttributeDefs, d.Options))
+            .SelectMany(d => services.DbStorage.Relationships.GetChangeRelationships(d.NewEntity, d.DbEntity!.EntityId, d.AttributeDefs!, d.Options))
             .ToListOpt();
 
         services.DbStorage.Relationships.ImportRelationshipQueueAndSaveUntracked(relChanges);
