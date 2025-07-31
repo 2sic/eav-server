@@ -132,7 +132,7 @@ partial class AppState
             l.A("Trying to load Name/Folder from App package entity");
             // note: we sometimes have a (still unsolved) problem, that the AppConfig is generated multiple times
             // so the OfType().OrderBy() should ensure that we really only take the first=oldest one.
-            var config = st.List
+            var config = st.Entities.ImmutableList
                 .OfType(AppLoadConstants.TypeAppConfig)
                 .OrderBy(e => e.EntityId)
                 .FirstOrDefault();
@@ -168,8 +168,10 @@ partial class AppState
         {
             var st = AppStateTyped;
             var l = log ? st.Log.Fn<bool>() : null;
-            var previous = st.Index.TryGetValue(newEntity.EntityId, out var prev) ? prev : null;
-            var draftEnt = st.GetDraft(previous);
+            var previous = st.Entities.Index.TryGetValue(newEntity.EntityId, out var prev)
+                ? prev
+                : null;
+            var draftEnt = st.Publishing.GetDraft(previous);
 
             // check if we went from draft-branch to published, because in this case, we have to remove the last draft
             const string noChangePrefix = "remove obsolete draft - no change:";
@@ -190,7 +192,7 @@ partial class AppState
             if (draftId == null)
                 return l.ReturnFalse("remove obsolete draft - no draft, won't remove");
             
-            st.Index.Remove(draftId.Value);
+            st.Entities.Remove(draftId.Value);
             return l.ReturnTrue($"remove obsolete draft - found draft, will remove {draftId.Value}");
         }
 
@@ -227,7 +229,7 @@ partial class AppState
             if (!st.Loading)
                 throw new("trying to init metadata, but not in loading state. set that first!");
             st.Log.A("remove all items");
-            st.Index.Clear();
+            st.Entities.Clear();
             st.MetadataManager.Reset();
             l.Done();
         }
@@ -253,10 +255,10 @@ partial class AppState
                 foreach (var id in repositoryIds)
                 {
                     // Remove any drafts that are related if necessary
-                    if (st.Index.TryGetValue(id, out var oldEntity))
+                    if (st.Entities.Index.TryGetValue(id, out var oldEntity))
                         st.MetadataManager.Register(oldEntity, false);
 
-                    st.Index.Remove(id);
+                    st.Entities.Remove(id);
 
                     if (log) Log.A($"removed entity {id}");
                 }
@@ -277,7 +279,7 @@ partial class AppState
 
             RemoveObsoleteDraft(newEntity, log);
             _ = MapDraftToPublished((Entity)newEntity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
-            st.Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
+            st.Entities.AddOrReplace(newEntity.RepositoryId, newEntity); // add like this, it could also be an update
             st.MetadataManager.Register(newEntity, true);
 
             if (st.FirstLoadCompleted)
@@ -324,9 +326,8 @@ partial class AppState
             if (!st.Loading)
                 throw new("trying to set content-types, but not in loading state. set that first!");
 
-            if (st.MetadataManager == null || st.Index.Any())
-                throw new(
-                    "can't set content types before setting Metadata manager, or after entities-list already exists");
+            if (st.Entities.Any())
+                throw new("can't set content types before setting Metadata manager, or after entities-list already exists");
 
             if (contentTypes == null)
                 throw new ArgumentException(@"contentTypes must always be non-null", nameof(contentTypes));
