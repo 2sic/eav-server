@@ -12,7 +12,7 @@ public partial class TsDynDataTransaction
 
     public DateTime Timestamp { get; set; }
 
-    public string User { get; set; }
+    public string? User { get; set; }
 
     public virtual ICollection<TsDynDataAttribute> TsDynDataAttributesTransCreated { get; set; } = new HashSet<TsDynDataAttribute>();
 

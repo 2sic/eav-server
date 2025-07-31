@@ -14,7 +14,7 @@ public partial class TsDynDataContentType
 
     public required string Name { get; set; }
 
-    public required string Scope { get; set; }
+    public string? Scope { get; set; }
 
     public int TransCreatedId { get; set; }
 
@@ -38,7 +38,7 @@ public partial class TsDynDataContentType
 
     public virtual TsDynDataTransaction? TransDeleted { get; set; }
 
-    public virtual TsDynDataContentType? InheritContentTypeNavigation { get; set; }
+    public virtual TsDynDataContentType InheritContentTypeNavigation { get; set; } = null!;
 
     public virtual ICollection<TsDynDataContentType> InverseInheritContentTypesNavigation { get; set; } = new HashSet<TsDynDataContentType>();
 

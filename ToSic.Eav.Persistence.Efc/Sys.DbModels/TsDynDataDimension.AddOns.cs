@@ -10,8 +10,8 @@ public partial class TsDynDataDimension
             DimensionId = DimensionId,
             Parent = Parent,
             Name = Name,
-            Key = Key,
-            EnvironmentKey = EnvironmentKey,
+            Key = Key!, /* is never null on a non-root culture */
+            EnvironmentKey = EnvironmentKey!, /* is never null on a non-root culture */
             Active = Active,
         };
 }
