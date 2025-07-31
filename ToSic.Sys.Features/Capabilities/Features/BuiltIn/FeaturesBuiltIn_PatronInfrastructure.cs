@@ -19,16 +19,4 @@ public partial class BuiltInFeatures
         LicenseRules = ForPatronInfrastructureAutoEnabled
     };
 
-    public static readonly Feature SqlLoadPerformance = new()
-    {
-        NameId = nameof(SqlLoadPerformance),
-        Guid = new("f63d8b5f-21aa-4fbd-8e14-5507ff6426a2"),
-        Name = "Improve SQL performance accessing the data base",
-        IsPublic = false,
-        Ui = true,
-        Description = "Improve SQL performance accessing the data base, for example when loading data. Can double the speed of loading data.",
-        Security = FeaturesCatalogRules.Security0Neutral,
-        LicenseRules = ForPatronInfrastructureAutoEnabled
-    };
-
 }

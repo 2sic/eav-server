@@ -72,4 +72,27 @@ public partial class  BuiltInFeatures
         LicenseRules = ForPatronPerformanceAutoEnabled,
     };
 
+    // TODO: PROBABLY RENAME TO SqlPerformance
+    public static readonly Feature SqlLoadPerformance = new()
+    {
+        NameId = nameof(SqlLoadPerformance),
+        Guid = new("f63d8b5f-21aa-4fbd-8e14-5507ff6426a2"),
+        Name = "Improve SQL performance accessing the data base",
+        IsPublic = false,
+        Ui = true,
+        Description = "Improve SQL performance accessing the data base, for example when loading data. Can speed up loading data by 2x - 5x.",
+        Security = FeaturesCatalogRules.Security0Neutral,
+        LicenseRules = ForPatronPerformanceAutoEnabled,
+        ConfigurationContentType = "e523fd1a-f9e3-4e73-826e-1433e8afca8a", // 🥷SqlPerformance
+    };
+
+    /// <summary>
+    /// Dummy class to manage the keys we want to read of the configuration
+    /// </summary>
+    public class SqlPerformanceConfig
+    {
+        public int RelationshipLoadChunking;
+    }
+
+
 }
