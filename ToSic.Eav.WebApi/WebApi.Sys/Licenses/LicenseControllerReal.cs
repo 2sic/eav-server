@@ -58,15 +58,16 @@ public class LicenseControllerReal(
             .Where(l => !l.FeatureLicense)
             .OrderBy(l => l.Priority);
 
-        var allFeatures = featuresLazy.Value.All;
+        var allFeatures = featuresLazy.Value.All.ToListOpt();
 
         var dto = licenses
             .Select(l =>
             {
                 var state = licSvc.State(l);
                 var isEnabled = licSvc.IsEnabled(l);
+
                 var features = allFeatures
-                    .Where(f => f.License?.Name == l.Name)
+                    .Where(f => f.Aspect.LicenseRules.Any(lr => lr.FeatureSet.Name == l.Name))
                     .OrderBy(f => f.NameId)
                     .Select(f => new FeatureStateDto(f))
                     .ToList();
