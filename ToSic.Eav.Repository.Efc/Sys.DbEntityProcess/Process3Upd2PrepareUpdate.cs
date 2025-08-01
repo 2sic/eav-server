@@ -9,9 +9,8 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
 {
     public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
-        //if (data.IsNew)
-        //    return data;
-
+        // Track if we make changes to the header to decide later if we need to save again
+        var headerNeedsUpdate = false;
 
         var dbEnt = data.DbEntity!;
         var newEnt = data.NewEntity;
@@ -25,6 +24,7 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
         // If Update, then check draft etc.
         if (!data.IsNew)
         {
+
             #region If draft but should be published, correct what's necessary
 
             // Update as Published but Current Entity is a Draft-Entity
@@ -33,12 +33,16 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
             int? resetId = default;
             if (data.StateChanged || data.HasAdditionalDraft)
             {
+                var publishedBefore = dbEnt.IsPublished;
                 // now reset the branch/entity-state to properly set the state / purge the draft
                 dbEnt = services.DbStorage.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, data.ExistingDraftId,
                     data.NewEntity.IsPublished);
 
                 // update ID of the save-entity, as it's used again later on...
                 resetId = dbEnt.EntityId;
+
+                if (dbEnt.IsPublished != publishedBefore)
+                    headerNeedsUpdate = true;
             }
 
             #endregion
@@ -59,7 +63,6 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
             JsonExport = services.Serializer.Serialize(newEnt)
         };
 
-        var headerNeedsUpdate = false;
         if (data.SaveJson)
         {
             dbEnt.Json = data.JsonExport;
