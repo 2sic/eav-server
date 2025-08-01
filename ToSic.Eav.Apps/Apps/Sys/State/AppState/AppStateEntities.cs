@@ -29,19 +29,19 @@ internal class AppStateEntities(AppState appState)
     private ReadOnlyDictionary<int, IEntity> RebuildIndex()
         => new(IndexRaw);
 
-    public void AddOrReplace(int index, IEntity entity)
+    internal void AddOrReplace(int index, IEntity entity)
     {
         IndexRaw[entity.EntityId] = entity;
         Index = null!; // Update the index after adding a new entity
     }
 
-    public void Remove(int id)
+    internal void Remove(int id)
     {
         IndexRaw.Remove(id);
         Index = null!;
     }
 
-    public void Clear()
+    internal void Clear()
     {
         IndexRaw.Clear();
         Index = null!;

@@ -148,7 +148,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
                 
                 // Note: all must be Entity, but this setup just ensures the compiler sees it that way
                 foreach (var entity in entities.Where(e => e is Entity).Cast<Entity>()) 
-                    builder.Add(entity as Entity, null, logDetails);
+                    builder.Add(entity, null, logDetails);
             }
             catch (Exception ex)
             {
