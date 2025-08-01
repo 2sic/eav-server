@@ -196,23 +196,30 @@ partial class AppState
             return l.ReturnTrue($"remove obsolete draft - found draft, will remove {draftId.Value}");
         }
 
-        /// <summary>
-        /// Reconnect / wire drafts to the published item
-        /// </summary>
-        private bool MapDraftToPublished(Entity newEntity, int? publishedId, bool log)
-        {
-            var st = AppStateTyped;
-            var l = log ? st.Log.Fn<bool>() : null;
-            // fix: #3070, publishedId sometimes has value 0, but that one should not be used
-            if (newEntity.IsPublished || !publishedId.HasValue || publishedId.Value == 0)
-                return l.ReturnFalse();
+        // 2025-08-01 #FinallyMakeEntityIdImmutable
+        ///// <summary>
+        ///// Reconnect / wire drafts to the published item
+        ///// </summary>
+        //private Entity MapDraftToPublished(Entity newEntity, int? publishedId, bool log)
+        //{
+        //    var st = AppStateTyped;
+        //    var l = log ? st.Log.Fn<Entity>() : null;
+        //    // fix: #3070, publishedId sometimes has value 0, but that one should not be used
+        //    if (newEntity.IsPublished || !publishedId.HasValue || publishedId.Value == 0)
+        //        return l.Return(newEntity);
 
-            l.A($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
+        //    l.A($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 
-            // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-            newEntity.EntityId = publishedId.Value; // this is not immutable, but probably not an issue because it is not in the index yet
-            return l.ReturnTrue();
-        }
+        //    // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
+
+        //    // 2025-08-01 WIP immutability
+        //    //newEntity.EntityId = publishedId.Value; // this is not immutable, but probably not an issue because it is not in the index yet
+        //    var updated = newEntity with
+        //    {
+        //        EntityId = publishedId.Value,
+        //    };
+        //    return l.Return(updated);
+        //}
 
 
         #endregion
@@ -260,7 +267,8 @@ partial class AppState
 
                     st.Entities.Remove(id);
 
-                    if (log) Log.A($"removed entity {id}");
+                    if (log)
+                        Log.A($"removed entity {id}");
                 }
             });
         }
@@ -272,14 +280,15 @@ partial class AppState
         {
             var st = AppStateTyped;
             if (!st._loading)
-                throw new("trying to add entity, but not in loading state. set that first!");
+                throw new("trying to add entity, but cache is not in loading state. set that first!");
 
             if (newEntity.RepositoryId == 0)
-                throw new("Entities without real ID not supported yet");
+                throw new("Entities without repository ID supported yet");
 
             RemoveObsoleteDraft(newEntity, log);
-            _ = MapDraftToPublished((Entity)newEntity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
-            st.Entities.AddOrReplace(newEntity.RepositoryId, newEntity); // add like this, it could also be an update
+            // 2025-08-01 #FinallyMakeEntityIdImmutable
+            //newEntity = MapDraftToPublished((Entity)newEntity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
+            st.Entities.AddOrReplace(newEntity); // add like this, it could also be an update
             st.MetadataManager.Register(newEntity, true);
 
             if (st._firstLoadCompleted)

@@ -18,7 +18,7 @@ public abstract record EntityLight //: IEntityLight
     public required int AppId { get; init; }
 
     /// <inheritdoc />
-    public required int EntityId { get; set; } // NOTE: not nice implementation, as it has a set; but won't bleed as the interface only has get
+    public required int EntityId { get; init; } // NOTE: not nice implementation, as it has a set; but won't bleed as the interface only has get
 
     /// <inheritdoc />
     public required Guid EntityGuid { get; init; }

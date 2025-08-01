@@ -22,32 +22,32 @@ internal class AppStateEntities(AppState appState)
         set;
     }
 
-    public int Count => IndexRaw.Count;
+    public int Count => IndexRepoId.Count;
 
-    private Dictionary<int, IEntity> IndexRaw { get; } = [];
+    private Dictionary<int, IEntity> IndexRepoId { get; } = [];
 
     private ReadOnlyDictionary<int, IEntity> RebuildIndex()
-        => new(IndexRaw);
+        => new(IndexRepoId);
 
-    internal void AddOrReplace(int index, IEntity entity)
+    internal void AddOrReplace(IEntity entity)
     {
-        IndexRaw[entity.EntityId] = entity;
+        IndexRepoId[entity.RepositoryId] = entity;
         Index = null!; // Update the index after adding a new entity
     }
 
     internal void Remove(int id)
     {
-        IndexRaw.Remove(id);
+        IndexRepoId.Remove(id);
         Index = null!;
     }
 
     internal void Clear()
     {
-        IndexRaw.Clear();
+        IndexRepoId.Clear();
         Index = null!;
     }
 
-    public bool Any() => IndexRaw.Any();
+    public bool Any() => IndexRepoId.Any();
 
     internal SynchronizedEntityList BuildList()
     {
