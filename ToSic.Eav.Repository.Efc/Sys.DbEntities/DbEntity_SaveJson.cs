@@ -4,9 +4,8 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
-    private static bool UseJson(IEntity newEnt) => newEnt.Type.RepositoryType != RepositoryTypes.Sql;
 
-    private string GenerateJsonOrReportWhyNot(IEntity newEnt, bool logDetails)
+    internal string GenerateJsonOrReportWhyNot(IEntity newEnt, bool logDetails)
     {
         string jsonExport;
         if (logDetails)
@@ -26,10 +25,10 @@ partial class DbEntity
         return jsonExport;
     }
 
-    private void DropEavAttributesForJsonItem(IEntity newEnt)
+    internal void DropAttributesAndRelationshipsForJsonItem(int entityId)
     {
         // in update scenarios, the old data could have been a db-model, so clear that
-        ClearAttributesInDbModel(newEnt.EntityId);
-        DbContext.Relationships.FlushChildrenRelationships([newEnt.EntityId]);
+        ClearValuesInDbUntracked(entityId);
+        DbStore.Relationships.FlushChildrenRelationships([entityId]);
     }
 }

@@ -5,16 +5,15 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
-
     /// <summary>
     /// Remove values and attached dimensions of these values from the DB
     /// Important when updating json-entities, to ensure we don't keep trash around
     /// </summary>
     /// <param name="entityId"></param>
-    private bool ClearAttributesInDbModel(int entityId)
+    private bool ClearValuesInDbUntracked(int entityId)
     {
         var l = LogDetails.Fn<bool>(timer: true);
-        var val = DbContext.SqlDb.TsDynDataValues
+        var val = DbStore.SqlDb.TsDynDataValues
             .Include(v => v.TsDynDataValueDimensions)
             .Where(v => v.EntityId == entityId)
             .ToList();
@@ -23,119 +22,112 @@ partial class DbEntity
             return l.ReturnFalse("no changes");
 
         var dims = val.SelectMany(v => v.TsDynDataValueDimensions);
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(dims));
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.RemoveRange(val));
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.RemoveRange(dims));
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.RemoveRange(val));
         return l.ReturnTrue("ok");
     }
 
-    private void SaveAttributesAsEav(IEntity newEnt,
+    internal void SaveAttributesAsEavUntracked(IEntity newEnt,
         SaveOptions so,
         List<TsDynDataAttribute> dbAttributes,
-        TsDynDataEntity dbEnt,
-        List<DimensionDefinition> _zoneLangs,
-        int transactionId,
+        int entityId,
+        List<DimensionDefinition> zoneLangs,
         bool logDetails)
     {
-        var l = LogDetails.Fn($"id:{newEnt.EntityId}", timer: true);
-        if (!_attributeQueueActive)
-            throw new("Attribute save-queue not ready - should be wrapped");
-        foreach (var attribute in newEnt.Attributes.Values)
-            LogDetails.Do($"InnerAttribute:{attribute.Name}", () =>
+        var listOfChanges = GetSaveAttributesAsEavUntracked(newEnt, so, dbAttributes, entityId, zoneLangs, logDetails);
+        SaveAttributeChanges(listOfChanges);
+    }
+
+    internal ICollection<TsDynDataValue> GetSaveAttributesAsEavUntracked(IEntity newEnt,
+        SaveOptions so,
+        List<TsDynDataAttribute> dbAttributes,
+        int entityId,
+        List<DimensionDefinition> zoneLangs,
+        bool logDetails)
+    {
+        var lMain = LogDetails.Fn<ICollection<TsDynDataValue>>($"id:{newEnt.EntityId}", timer: true);
+
+        var listOfChanges = newEnt.Attributes.Values
+            .SelectMany(value =>
             {
+                var l = lMain.Fn<TsDynDataValue>($"InnerAttribute:{value.Name}");
+
                 // find attribute definition
-                var attribDef =
-                    dbAttributes.SingleOrDefault(
-                        a => string.Equals(a.StaticName, attribute.Name,
-                            StringComparison.InvariantCultureIgnoreCase));
+                var attribDef = dbAttributes
+                    .SingleOrDefault(a =>
+                        string.Equals(a.StaticName, value.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                // If attribute definition missing, either throw or ignore
                 if (attribDef == null)
                 {
                     if (!so.DiscardAttributesNotInType)
-                        throw new(
-                            $"trying to save attribute {attribute.Name} but can\'t find definition in DB");
-                    return "attribute not found, will skip according to save-options";
+                        throw new($"trying to save attribute {value.Name} but can\'t find definition in DB");
+                    l.Done("attribute not found, will skip according to save-options");
+                    return [];
                 }
 
+                // Skip relationship attributes
                 if (attribDef.Type == nameof(ValueTypes.Entity))
-                    return "type is entity, skip for now as relationships are processed later";
-
-                foreach (var value in attribute.Values)
                 {
-                    #region prepare languages - has extensive error reporting, to help in case any db-data is bad
-
-                    List<TsDynDataValueDimension>? toSicEavValuesDimensions;
-                    try
-                    {
-                        toSicEavValuesDimensions = value.Languages
-                            ?.Select(lng => new TsDynDataValueDimension
-                            {
-                                DimensionId = _zoneLangs
-                                    .Single(ol => ol.Matches(lng.Key))
-                                    .DimensionId,
-                                ReadOnly = lng.ReadOnly
-                            })
-                            .ToList();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new(
-                            "something went wrong building the languages to save - " +
-                            "your DB probably has some wrong language information which doesn't match; " +
-                            "maybe even a duplicate entry for a language code" +
-                            " - see https://github.com/2sic/2sxc/issues/1293",
-                            ex);
-                    }
-
-                    #endregion
-
-                    if (logDetails)
-                        LogDetails.A(LogDetails.Try(() =>
-                            $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{attribute.Values?.Count()}, dim⋮{toSicEavValuesDimensions?.Count}"));
-
-                    var newVal = new TsDynDataValue
-                    {
-                        AttributeId = attribDef.AttributeId,
-                        Value = value.Serialized ?? "",
-                        TsDynDataValueDimensions = toSicEavValuesDimensions,
-                        EntityId = dbEnt.EntityId
-                    };
-                    AttributeQueueAdd(() => DbContext.SqlDb.TsDynDataValues.Add(newVal));
+                    l.Done("type is entity, skip for now as relationships are processed later");
+                    return [];
                 }
 
-                return "ok";
-            });
-        l.Done();
+                var atomList = value.Values
+                    .Select(valueAtom =>
+                    {
+                        #region prepare languages - has extensive error reporting, to help in case any db-data is bad
+
+                        List<TsDynDataValueDimension>? toSicEavValuesDimensions;
+                        try
+                        {
+                            toSicEavValuesDimensions = valueAtom.Languages
+                                ?.Select(lng => new TsDynDataValueDimension
+                                {
+                                    DimensionId = zoneLangs
+                                        .Single(ol => ol.Matches(lng.Key))
+                                        .DimensionId,
+                                    ReadOnly = lng.ReadOnly
+                                })
+                                .ToList();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new(
+                                "something went wrong building the languages to save - " +
+                                "your DB probably has some wrong language information which doesn't match; " +
+                                "maybe even a duplicate entry for a language code" +
+                                " - see https://github.com/2sic/2sxc/issues/1293",
+                                ex);
+                        }
+
+                        #endregion
+
+                        if (logDetails)
+                            LogDetails.A(LogDetails.Try(() =>
+                                $"add attrib:{attribDef.AttributeId}/{attribDef.StaticName} vals⋮{value.Values?.Count()}, dim⋮{toSicEavValuesDimensions?.Count}"));
+
+                        var newVal = new TsDynDataValue
+                        {
+                            AttributeId = attribDef.AttributeId,
+                            Value = valueAtom.Serialized ?? "",
+                            TsDynDataValueDimensions = toSicEavValuesDimensions!, /* ignore null warning, save works with this list being null */
+                            EntityId = entityId
+                        };
+                        return l.Return(newVal);
+                    })
+                    .ToList();
+                return atomList;
+            })
+            .ToListOpt();
+
+        return lMain.Return(listOfChanges);
     }
 
-    internal void DoWhileQueueingAttributes(Action action)
+    internal void SaveAttributeChanges(ICollection<TsDynDataValue> changes)
     {
-        var randomId = Guid.NewGuid().ToString().Substring(0, 4);
-        var l = LogDetails.Fn($"attribute queue:{randomId} start");
-        if (_attributeUpdateQueue.Any())
-            throw new("Attribute queue started while already containing stuff - bad!");
-        _attributeQueueActive = true;
-        // 1. check if it's the outermost call, in which case afterwards we import
-        //var willPurgeQueue = _isOutermostCall;
-        // 2. make sure any follow-up calls are not regarded as outermost
-        //_isOutermostCall = false;
-        // 3. now run the inner code
-        action.Invoke();
-        // 4. now check if we were the outermost call, in if yes, save the data
-        DbContext.DoAndSaveWithoutChangeDetection(AttributeQueueRun);
-        _attributeQueueActive = false;
-        l.Done();
-    }
-
-    // ReSharper disable once RedundantDefaultMemberInitializer
-    private bool _attributeQueueActive = false;
-    private readonly List<Action> _attributeUpdateQueue = [];
-
-    private void AttributeQueueAdd(Action next) => _attributeUpdateQueue.Add(next);
-
-    private void AttributeQueueRun()
-    {
-        var l = LogDetails.Fn(timer: true);
-        _attributeUpdateQueue.ForEach(a => a.Invoke());
-        _attributeUpdateQueue.Clear();
+        var l = LogSummary.Fn($"Attributes: {changes.Count}", timer: true);
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.TsDynDataValues.AddRange(changes));
         l.Done();
     }
 }

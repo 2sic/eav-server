@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.Apps.Sys;
+﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.LogSettings;
@@ -13,6 +12,7 @@ using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
 using ToSic.Sys.Utils.Compression;
 
@@ -28,9 +28,10 @@ public class DbStorage(
     ILogStore logStore,
     LazySvc<Compressor> compressor,
     DataBuilder builder,
-    DataImportLogSettings importLogSettings)
+    DataImportLogSettings importLogSettings,
+    ISysFeaturesService features)
     : ServiceBase("Db.Data",
-        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder, importLogSettings]
+        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder, importLogSettings, features]
     ), IStorage, IAppIdentity
 {
 
@@ -69,8 +70,7 @@ public class DbStorage(
             try
             {
                 // try to get using dependency injection
-                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-                // Paranoid...
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract - Paranoid...
                 return field = userLazy.Value?.IdentityToken ?? UserNameUnknown;
             }
             catch
@@ -100,7 +100,7 @@ public class DbStorage(
     [field: AllowNull, MaybeNull]
     internal DbRelationship Relationships => field ??= new(this);
     [field: AllowNull, MaybeNull]
-    internal DbAttributeSet AttribSet => field ??= new(this);
+    internal DbContentTypes.DbContentTypes ContentTypes => field ??= new(this);
     [field: AllowNull, MaybeNull]
     internal DbPublishing Publishing => field ??= new(this, builder);
     [field: AllowNull, MaybeNull]
@@ -116,7 +116,6 @@ public class DbStorage(
 
 
     public List<Message> ImportLogToBeRefactored { get; } = [];
-
 
     #region Constructor and Init
 
@@ -144,6 +143,8 @@ public class DbStorage(
 
     internal Generator<JsonSerializer> JsonSerializerGenerator { get; } = jsonSerializerGenerator;
 
+    internal ISysFeaturesService Features => features;
+
     #region Logging
 
     [field: AllowNull, MaybeNull]
@@ -167,6 +168,7 @@ public class DbStorage(
 
     #endregion
 
+    public SaveProcessOptions ProcessOptions { get; private set; } = null!;
 
     /// <summary>
     /// New factory setup using the better paradigm.
@@ -175,6 +177,8 @@ public class DbStorage(
     /// <param name="options"></param>
     public void Setup(StorageOptions options)
     {
+        ProcessOptions = options.ProcessOptions;
+
         Init(options.ZoneId, options.AppId, options.ParentAppId);
 
         ConfigureLogging(options.LogSettings);
@@ -197,7 +201,7 @@ public class DbStorage(
     /// <summary>
     /// Set ZoneId and AppId on current context.
     /// </summary>
-    private DbStorage Init(int? zoneId, int? appId, int? parentAppId = default)
+    private void Init(int? zoneId, int? appId, int? parentAppId = default)
     {
         // No matter what scenario we have, always set the parent app id - if given
         // todo: maybe later also try to detect it, if we see the need for it
@@ -210,7 +214,7 @@ public class DbStorage(
             {
                 _zoneId = KnownAppsConstants.DefaultZoneId;
                 _appId = KnownAppsConstants.MetaDataAppId;
-                return this;
+                return;
             }
             // If only AppId is supplied, look up it's zone and use that
             else
@@ -223,7 +227,7 @@ public class DbStorage(
                     throw new ArgumentException($@"App with id {appId.Value} doesn't exist.", nameof(appId));
                 _appId = appId.Value;
                 _zoneId = zoneIdOfApp.Value;
-                return this;
+                return;
             }
 
         // if only ZoneId was supplied, use that...
@@ -238,8 +242,6 @@ public class DbStorage(
         }
         else
             _appId = SqlDb.TsDynDataApps.First(a => a.Name == KnownAppsConstants.DefaultAppGuid).AppId;
-
-        return this;
     }
 
     #endregion
@@ -278,24 +280,67 @@ public class DbStorage(
 
     #region Shorthand for do & save
 
-    internal void DoAndSave(Action action, string? message = null)
+    /// <summary>
+    /// Make sure that save calls are atomic and not nested.
+    /// </summary>
+    public bool IsWithinSave;
+
+    internal void DoAndSaveTracked(Action action, string? message = null)
     {
-        var l = LogDetails.Fn(message: message, timer: true);
+        var l = LogSummary.Fn(message: message, timer: true);
+        if (IsWithinSave)
+            throw new("DoAndSaveTracked was called while already within a save operation. This is not allowed.");
+        IsWithinSave = true;
         action.Invoke();
         SqlDb.SaveChanges();
+        IsWithinSave = false;
         l.Done();
     }
 
+    internal void FlushChangeTracking()
+    {
+        var changes = SqlDb.ChangeTracker.Entries()
+            //.Where(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Added ||
+            //            e.State == Microsoft.EntityFrameworkCore.EntityState.Modified ||
+            //            e.State == Microsoft.EntityFrameworkCore.EntityState.Deleted)
+            .ToList();
+
+        var l = LogSummary.Fn($"FlushChangeTracking: {changes.Count} changes", timer: true);
+
+        foreach (var change in changes)
+        {
+            // ReSharper disable once PossibleNullReferenceException
+            change.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            l.A($"Detached: {change.Entity.GetType().Name} {change.State}");
+        }
+        l.Done($"Flushed {changes.Count} changes");
+    }
 
     internal void DoAndSaveWithoutChangeDetection(Action action, string? message = null)
     {
-        var l = LogDetails.Fn(timer: true, message: message);
-        action.Invoke();
+        var l = LogSummary.Fn(timer: true, message: message);
 
+        if (IsWithinSave)
+            throw new("DoAndSaveWithoutChangeDetection was called while already within a save operation. This is not allowed.");
+        IsWithinSave = true;
+
+        // 2025-07-29 moving this up and out of try to better set it before action is invoked.
         var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
+        SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        // Wrap invoke in a try/catch to specifically catch tracking errors
+        //try {
+            action.Invoke();
+        //}
+        //catch (Exception ex)
+        //{
+        //    l.A($"error: action failed, {ex.Message}");
+        //    l.Ex(ex);
+        //    throw;
+        //}
+
         try
         {
-            SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
             SqlDb.SaveChanges();
         }
         catch (Exception ex)
@@ -308,6 +353,7 @@ public class DbStorage(
             SqlDb.ChangeTracker.AutoDetectChangesEnabled = preserve;
             l.Done();
         }
+        IsWithinSave = false;
     }
 
 
@@ -372,34 +418,14 @@ public class DbStorage(
     [field: AllowNull, MaybeNull]
     public IAppsAndZonesLoaderWithRaw Loader => field ??= efcLoaderLazy.Value.UseExistingDb(SqlDb);
 
-    public void DoWhileQueuingVersioning(Action action)
-        => Versioning.DoAndSaveHistoryQueue(action);
-
-    public void DoWhileQueueingRelationships(Action action)
-        => Relationships.DoWhileQueueingRelationships(action);
-
-    /// <summary>
-    /// Save a list of entities together in a transaction.
-    /// </summary>
-    /// <param name="entities"></param>
-    /// <param name="saveOptions">never null!</param>
-    /// <returns></returns>
-    public List<int> Save(List<IEntity> entities, SaveOptions saveOptions)
-    {
-        var pairs = entities
-            .Select(IEntityPair<SaveOptions> (e) => new EntityPair<SaveOptions>(e, saveOptions))
-            .ToListOpt();
-        return Save(pairs);
-    }
-
     /// <summary>
     /// Save a list of entities together in a transaction.
     /// </summary>
     /// <param name="entityOptionPairs"></param>
     /// <returns></returns>
-    public List<int> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
+    public List<EntityIdentity> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = LogDetails.Fn<List<int>>(timer: true);
+        var l = LogDetails.Fn<List<EntityIdentity>>(timer: true);
         logStore.Add("save-data", Log);
         return l.ReturnAsOk(Entities.SaveEntities(entityOptionPairs));
     }
@@ -433,8 +459,7 @@ public class DbStorage(
     public int CreateApp(string guidName, int? inheritAppId = null)
     {
         var l = LogSummary.Fn<int>($"guid:{guidName}, inheritAppId:{inheritAppId}");
-        var app = App.AddApp(null, guidName, inheritAppId);
-        SqlDb.SaveChanges(); // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
+        var app = App.AddAppAndSave(ZoneId, guidName, inheritAppId);
         return l.Return(app.AppId, $"Created App with Id:{app.AppId} and Name:{app.Name} in ZoneId:{ZoneId}");
     }
 

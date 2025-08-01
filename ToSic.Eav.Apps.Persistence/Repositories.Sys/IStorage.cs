@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Persistence.Sys.Logging;
 
@@ -33,19 +34,6 @@ public interface IStorage: IServiceWithSetup<StorageOptions>, IHasLog
 
     #endregion
 
-    #region Versioning QUeue
-
-    void DoWhileQueuingVersioning(Action action);
-
-    #endregion
-
-    #region RelationshipQueue
-
-    void DoWhileQueueingRelationships(Action action);
-
-    #endregion
-
-
     #region Loader
 
     /// <summary>
@@ -59,16 +47,14 @@ public interface IStorage: IServiceWithSetup<StorageOptions>, IHasLog
     List<Message> ImportLogToBeRefactored { get; }
     #endregion
 
-
-    #region Relationship Import / Queue
-
-    //void DoWhileQueueingRelationships(Action action);
-
-    #endregion
-
     #region Entities
 
-    List<int> Save(List<IEntity> entities, SaveOptions saveOptions);
+    /// <summary>
+    /// Save a list of entities together in a transaction.
+    /// </summary>
+    /// <param name="entityOptionPairs"></param>
+    /// <returns></returns>
+    List<EntityIdentity> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs);
 
     #endregion
 
@@ -83,4 +69,5 @@ public interface IStorage: IServiceWithSetup<StorageOptions>, IHasLog
     int GetParentAppId(string parentAppGuid, int parentAppId);
 
     int CreateApp(string guidName, int? inheritAppId = null);
+
 }

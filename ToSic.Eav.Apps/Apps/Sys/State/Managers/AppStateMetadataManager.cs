@@ -65,7 +65,8 @@ internal class AppMetadataManager(IAppIdentity appIdentity, ICacheExpiring cache
     internal void Register(IEntity entity, bool add)
     {
         var md = entity.MetadataFor;
-        if (!md.IsMetadata) return;
+        if (!md.IsMetadata)
+            return;
 
         // Try guid first. Note that an item can be assigned to both a guid, string and an int if necessary, though not commonly used
         if (md.KeyGuid.HasValue)
@@ -89,7 +90,9 @@ internal class AppMetadataManager(IAppIdentity appIdentity, ICacheExpiring cache
             indexOfType = metadataIndex[mdTargetType] = new();
 
         // Ensure that the assignment type (like 4) the target guid (like a350320-3502-afg0-...) exists, otherwise create empty list
-        var list = indexOfType.TryGetValue(mdValue, out var lst) ? lst : indexOfType[mdValue] = [];
+        var list = indexOfType.TryGetValue(mdValue, out var lst)
+            ? lst
+            : indexOfType[mdValue] = [];
 
         // in case it was already in this index, remove first
         var found = list.One(entity.EntityId);

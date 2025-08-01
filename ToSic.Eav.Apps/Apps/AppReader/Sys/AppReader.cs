@@ -44,13 +44,13 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
     #region Normal Data / Entities / List / Draft / Publish
 
     public IImmutableList<IEntity> List
-        => _appState.List;
+        => _appState.Entities.ImmutableList;
 
     public IEntity? GetDraft(IEntity? entity)
-        => _appState.GetDraft(entity);
+        => _appState.Publishing.GetDraft(entity);
 
     public IEntity? GetPublished(IEntity? entity)
-        => _appState.GetPublished(entity);
+        => _appState.Publishing.GetPublished(entity);
 
     #endregion
 

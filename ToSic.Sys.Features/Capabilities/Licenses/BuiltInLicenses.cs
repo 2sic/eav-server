@@ -140,7 +140,7 @@ public class BuiltInLicenses
     public static readonly FeatureSet.FeatureSet PatronInfrastructure = new()
     {
         NameId = LicensePrefix + nameof(PatronInfrastructure), Priority = 503,
-        Name = "Patron Infrastructure",
+        Name = "Patron Infrastructure (Performance)",
         Guid = new("68b2c253-25b9-4b4f-b9d5-f95fd2ef9d75"),
         Description = "Patrons who wish to save cost by optimizing their infrastructure."
     };
@@ -150,8 +150,7 @@ public class BuiltInLicenses
         NameId = LicensePrefix + nameof(WebFarmCache), Priority = 301,
         Name = "WebFarmCache",
         Guid = new("ed5ca2e7-4c13-422c-ad8f-e47e78e3d0d9"),
-        Description =
-            "DNN installations which run as a Farm can enable WebFarm caching to ensure the servers are in sync when something is edited."
+        Description = "DNN installations which run as a Farm can enable WebFarm caching to ensure the servers are in sync when something is edited."
     };
 
     public static readonly FeatureSet.FeatureSet EnterpriseCms = new()

@@ -15,6 +15,6 @@ internal class TempEntity
     public required string Owner;
     public DateTime Created;
     public DateTime Modified;
-    public required string Json;
+    public required string? Json;
     //public string ContentType;
 }

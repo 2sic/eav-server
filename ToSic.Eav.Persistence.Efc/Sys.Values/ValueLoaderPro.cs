@@ -15,7 +15,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
 
     public override Dictionary<int, ICollection<TempAttributeWithValues>> LoadValues()
     {
-        var l = Log.IfDetails(appLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
+        var l = Log.IfDetails(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
 
         // Check if we should use the optimized code, which only works for loading everything
         if (!Specs.LoadAll)
@@ -83,7 +83,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
                 v.Value,
                 v.TsDynDataValueDimensions
                     .Select(ILanguage (lng) =>
-                        new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId))
+                        new Language(lng.Dimension.EnvironmentKey! /* is never null on a non-root culture */, lng.ReadOnly, lng.DimensionId))
                     .ToList() // ToList is an important optimization, ask 2dm. Do NOT change to ToListOpt (which is an EAV extension, not EF Core compatible!),
             ))
             .ToListOpt();

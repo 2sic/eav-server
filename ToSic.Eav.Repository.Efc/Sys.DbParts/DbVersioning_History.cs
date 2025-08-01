@@ -41,7 +41,7 @@ partial class DbVersioning
     private List<ItemHistory> GetItemHistory(int entityId, int historyId, bool includeData)
     {
         // get Versions from History
-        var rootQuery = DbContext.SqlDb.TsDynDataHistories
+        var rootQuery = DbStore.SqlDb.TsDynDataHistories
             .Where(t =>
                 t.SourceTable == EntitiesTableName
                 && t.Operation == EavConstants.HistoryEntityJson
@@ -53,7 +53,7 @@ partial class DbVersioning
 
         var entityVersions = rootQuery
             .OrderByDescending(t => t.Timestamp)
-            .Join(DbContext.SqlDb.TsDynDataTransactions,
+            .Join(DbStore.SqlDb.TsDynDataTransactions,
                 t => t.TransactionId,
                 c => c.TransactionId,
                 (history, log) => new { History = history, Log = log }
@@ -66,7 +66,7 @@ partial class DbVersioning
                 User = d.Log.User,
                 Json = includeData
                     ? (string.IsNullOrEmpty(d.History.Json)
-                        ? _compressor.Value.Decompress(d.History.CJson)
+                        ? compressor.Value.Decompress(d.History.CJson!)
                         : d.History.Json)
                     : null
             })

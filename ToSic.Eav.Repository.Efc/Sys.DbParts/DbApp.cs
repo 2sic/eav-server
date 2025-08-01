@@ -12,15 +12,12 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// <summary>
     /// Add a new App
     /// </summary>
-    internal TsDynDataApp AddApp(TsDynDataZone? zone, string guidName, int? inheritAppId = null)
+    internal (int AppId, string Name) AddAppAndSave(int zoneId, string guidName, int? inheritAppId = null)
     {
-        // Use provided zone or if null, use the one which was pre-initialized for this DbApp Context
-        zone = zone ?? DbContext.SqlDb.TsDynDataZones.SingleOrDefault(z => z.ZoneId == DbContext.ZoneId);
-
         var newApp = new TsDynDataApp 
         {
             Name = guidName,
-            Zone = zone
+            ZoneId = zoneId,
         };
 
         // New v13 Inherited Apps - wrap in try catch because if something fails, many things could break too early for people to be able to fix
@@ -40,9 +37,9 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
         catch { /* ignore */ }
 
         // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
-        DbContext.DoAndSave(() => DbContext.SqlDb.Add(newApp)); 
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Add(newApp)); 
 
-        return newApp;
+        return (newApp.AppId, newApp.Name);
     }
 
 
@@ -50,13 +47,13 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// Delete an existing App with any Values and Attributes
     /// </summary>
     /// <param name="appId">AppId to delete</param>
-    /// <param name="fullDelete">If true, the entire App is removed. Otherwise just all the contents is cleared</param>
+    /// <param name="fullDelete">If true, the entire App is removed. Otherwise, just all the contents is cleared</param>
     internal void DeleteApp(int appId, bool fullDelete)
     {
-        DbContext.Versioning.GetTransactionId();
+        DbStore.Versioning.GetTransactionId();
 
         // Delete app
-        DbContext.DoInTransaction(() =>
+        DbStore.DoInTransaction(() =>
             {
                 // Explanation: as json entities were added much later, the built-in SP to delete apps doesn't handle them correctly
                 // We could update the Stored Procedure, but that's always hard to handle, so we prefer to just do it in code
@@ -75,22 +72,22 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
                 // 1. remove all relationships to/from these json entities
                 // note that actually there can only be relationships TO json entities, as all from will be in the json, 
                 // but just to be sure (maybe there's historic data that's off) we'll do both
-                DbContext.DoAndSave(() => ExecuteSqlCommand($@"
+                ExecuteSqlCommand($@"
                     DELETE r
                     FROM TsDynDataRelationship r
                     WHERE r.ChildEntityId IN ({jsonEntitiesInAppSql})
                        OR r.ParentEntityId IN ({jsonEntitiesInAppSql})"
-                    , DbEntity.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
+                    , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig);
 
                 // 2. remove all json entities, which won't be handled by the SP
-                DbContext.DoAndSave(() => ExecuteSqlCommand($@"
+                ExecuteSqlCommand($@"
                     DELETE e
                     FROM TsDynDataEntity e
                     WHERE e.EntityId IN ({jsonEntitiesInAppSql})"
-                    , DbEntity.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig));
+                    , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig);
 
                 // Now let do the remaining clean-up
-                DbContext.DoAndSave(() => DeleteAppWithoutStoredProcedure(appId, fullDelete));
+                DeleteAppWithoutStoredProcedure(appId, fullDelete);
             }
         );
     }
@@ -175,9 +172,9 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     private void ExecuteSqlCommand(string sql, params object[] parameters)
     {
 #if NETFRAMEWORK
-        DbContext.SqlDb.Database.ExecuteSqlCommand(sql, parameters);
+        DbStore.SqlDb.Database.ExecuteSqlCommand(sql, parameters);
 #else
-        DbContext.SqlDb.Database.ExecuteSqlRaw(sql, parameters);
+        DbStore.SqlDb.Database.ExecuteSqlRaw(sql, parameters);
 #endif
     }
 }

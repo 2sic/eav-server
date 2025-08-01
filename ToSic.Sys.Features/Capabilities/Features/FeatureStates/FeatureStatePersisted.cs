@@ -22,7 +22,8 @@ public record FeatureStatePersisted
     [JsonPropertyName("enabled")]
     public bool? Enabled { get; init; }
 
-    public bool EnabledRespectingExpiry() => Enabled == true && Expires > DateTime.Now;
+    public bool GetEnabledRespectingDefaultAndExpiry(bool enabledByDefault)
+        => (Enabled ?? enabledByDefault) && Expires > DateTime.Now;
 
     /// <summary>
     /// Expiry of this feature

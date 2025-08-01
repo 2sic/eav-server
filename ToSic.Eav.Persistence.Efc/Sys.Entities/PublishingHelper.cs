@@ -6,7 +6,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 internal class PublishingHelper(EfcAppLoaderService appLoader): HelperBase(appLoader.Log, "Efc.PubHlp")
 {
     [field: AllowNull, MaybeNull]
-    internal EntityQueries EntityQueries => field ??= new(appLoader.Context, Log);
+    internal EntityQueries EntityQueries => field ??= new(appLoader.Context, appLoader.FeaturesService, Log);
 
     public int[] AddEntityIdOfPartnerEntities(int[] publishedIds)
     {

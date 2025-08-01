@@ -11,40 +11,39 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityBuildHelper
 {
-    internal static IEntity BuildNewEntity(
-        DataBuilder dataBuilder,
+    internal static IEntity BuildNewEntity(DataBuilder dataBuilder,
         IAppReader appReader,
-        TempEntity e,
+        TempEntity rawEntity,
         IDataDeserializer serializer,
         Dictionary<int, ICollection<TempRelationshipList>> relatedEntities,
         Dictionary<int, ICollection<TempAttributeWithValues>> attributes,
-        string primaryLanguage)
+        string primaryLanguage, ILogCall<TimeSpan>? logCall)
     {
 
-        if (e.Json != null)
+        if (rawEntity.Json != null)
         {
-            var fromJson = serializer.Deserialize(e.Json, false, true);
+            var fromJson = serializer.Deserialize(rawEntity.Json, false, true);
             // add properties which are not in the json
             // ReSharper disable once PossibleNullReferenceException
             var clonedExtended = dataBuilder.Entity.CreateFrom(fromJson,
-                isPublished: e.IsPublished,
-                created: e.Created,
-                modified: e.Modified,
-                owner: e.Owner
+                isPublished: rawEntity.IsPublished,
+                created: rawEntity.Created,
+                modified: rawEntity.Modified,
+                owner: rawEntity.Owner
             );
             return clonedExtended;
         }
 
-        var contentType = appReader.GetContentTypeRequired(e.ContentTypeId);
+        var contentType = appReader.GetContentTypeRequired(rawEntity.ContentTypeId);
 
         // Prepare relationships to add to AttributeGenerator
         var emptyValueList = new List<(string StaticName, IValue)>();
         var stateCache = appReader.GetCache();
-        var preparedRelationships = relatedEntities.TryGetValue(e.EntityId, out var rawRels)
+        var preparedRelationships = relatedEntities.TryGetValue(rawEntity.EntityId, out var rawRels)
             ? rawRels.Select(r => (r.StaticName, dataBuilder.Value.Relationship(r.Children, stateCache))).ToList()
             : emptyValueList;
 
-        var attributeValuesLookup = !attributes.TryGetValue(e.EntityId, out var attribValues)
+        var attributeValuesLookup = !attributes.TryGetValue(rawEntity.EntityId, out var attribValues)
             ? emptyValueList
             : attribValues
                 .Select(a => new
@@ -69,21 +68,30 @@ internal class EntityBuildHelper
             .Concat(attributeValuesLookup)
             .ToLookup(x => x.Item1, x => x.Item2, InvariantCultureIgnoreCase);
 
+        // 2025-08-01 #FinallyMakeEntityIdImmutable
+        // Determine official EntityId, since our cache may need a different one in case of a draft
+        var entityId = rawEntity.EntityId;
+        if (rawEntity is { IsPublished: false, PublishedEntityId: not null } && rawEntity.PublishedEntityId != 0)
+        {
+            logCall.A($"map draft to published for new: {rawEntity.EntityId} on {entityId}");
+            entityId = rawEntity.PublishedEntityId.Value;
+        }
+
         // Get all Attributes of that Content-Type
         var newAttributes = dataBuilder.Attribute.Create(contentType, mergedValueLookups);
         var partsBuilder = EntityPartsLazy.ForAppAndOptionalMetadata(source: stateCache, metadata: null);
         var newEntity = dataBuilder.Entity.Create(
             appId: appReader.AppId,
-            guid: e.EntityGuid,
-            entityId: e.EntityId,
-            repositoryId: e.EntityId,
-            metadataFor: e.MetadataFor,
+            guid: rawEntity.EntityGuid,
+            entityId: entityId, // rawEntity.EntityId,
+            repositoryId: rawEntity.EntityId,
+            metadataFor: rawEntity.MetadataFor,
             contentType: contentType,
-            isPublished: e.IsPublished,
-            created: e.Created,
-            modified: e.Modified,
-            owner: e.Owner,
-            version: e.Version,
+            isPublished: rawEntity.IsPublished,
+            created: rawEntity.Created,
+            modified: rawEntity.Modified,
+            owner: rawEntity.Owner,
+            version: rawEntity.Version,
             attributes: newAttributes,
             partsBuilder: partsBuilder
         );

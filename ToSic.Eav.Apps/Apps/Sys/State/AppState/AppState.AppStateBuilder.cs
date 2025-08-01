@@ -67,13 +67,13 @@ partial class AppState
                 // first set a lock, to ensure that only one update/load is running at the same time
                 lock (this)
                 {
-                    var lInLock = l.Fn($"loading: {st.Loading} (app loading start in lock)");
+                    var lInLock = l.Fn($"loading: {st._loading} (app loading start in lock)");
                         // only if loading is true will the AppState object accept changes
-                        st.Loading = true;
+                        st._loading = true;
                         loader.Invoke(st);
                         st.CacheResetTimestamp("load complete");
                         _ = EnsureNameAndFolderInitialized();
-                        if (!st.FirstLoadCompleted) st.FirstLoadCompleted = true;
+                        if (!st._firstLoadCompleted) st._firstLoadCompleted = true;
                     lInLock.Done($"done - dynamic load count: {st.DynamicUpdatesCount}");
                 }
             }
@@ -86,7 +86,7 @@ partial class AppState
             finally
             {
                 // set loading to false again, to ensure that AppState won't accept changes
-                st.Loading = false;
+                st._loading = false;
                 lState.Done();
             }
 
@@ -132,7 +132,7 @@ partial class AppState
             l.A("Trying to load Name/Folder from App package entity");
             // note: we sometimes have a (still unsolved) problem, that the AppConfig is generated multiple times
             // so the OfType().OrderBy() should ensure that we really only take the first=oldest one.
-            var config = st.List
+            var config = st.Entities.ImmutableList
                 .OfType(AppLoadConstants.TypeAppConfig)
                 .OrderBy(e => e.EntityId)
                 .FirstOrDefault();
@@ -168,8 +168,10 @@ partial class AppState
         {
             var st = AppStateTyped;
             var l = log ? st.Log.Fn<bool>() : null;
-            var previous = st.Index.TryGetValue(newEntity.EntityId, out var prev) ? prev : null;
-            var draftEnt = st.GetDraft(previous);
+            var previous = st.Entities.Index.TryGetValue(newEntity.EntityId, out var prev)
+                ? prev
+                : null;
+            var draftEnt = st.Publishing.GetDraft(previous);
 
             // check if we went from draft-branch to published, because in this case, we have to remove the last draft
             const string noChangePrefix = "remove obsolete draft - no change:";
@@ -190,27 +192,34 @@ partial class AppState
             if (draftId == null)
                 return l.ReturnFalse("remove obsolete draft - no draft, won't remove");
             
-            st.Index.Remove(draftId.Value);
+            st.Entities.Remove(draftId.Value);
             return l.ReturnTrue($"remove obsolete draft - found draft, will remove {draftId.Value}");
         }
 
-        /// <summary>
-        /// Reconnect / wire drafts to the published item
-        /// </summary>
-        private bool MapDraftToPublished(Entity newEntity, int? publishedId, bool log)
-        {
-            var st = AppStateTyped;
-            var l = log ? st.Log.Fn<bool>() : null;
-            // fix: #3070, publishedId sometimes has value 0, but that one should not be used
-            if (newEntity.IsPublished || !publishedId.HasValue || publishedId.Value == 0)
-                return l.ReturnFalse();
+        // 2025-08-01 #FinallyMakeEntityIdImmutable
+        ///// <summary>
+        ///// Reconnect / wire drafts to the published item
+        ///// </summary>
+        //private Entity MapDraftToPublished(Entity newEntity, int? publishedId, bool log)
+        //{
+        //    var st = AppStateTyped;
+        //    var l = log ? st.Log.Fn<Entity>() : null;
+        //    // fix: #3070, publishedId sometimes has value 0, but that one should not be used
+        //    if (newEntity.IsPublished || !publishedId.HasValue || publishedId.Value == 0)
+        //        return l.Return(newEntity);
 
-            l.A($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
+        //    l.A($"map draft to published for new: {newEntity.EntityId} on {publishedId}");
 
-            // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
-            newEntity.EntityId = publishedId.Value; // this is not immutable, but probably not an issue because it is not in the index yet
-            return l.ReturnTrue();
-        }
+        //    // Published Entity is already in the Entities-List as EntityIds is validated/extended before and Draft-EntityID is always higher as Published EntityId
+
+        //    // 2025-08-01 WIP immutability
+        //    //newEntity.EntityId = publishedId.Value; // this is not immutable, but probably not an issue because it is not in the index yet
+        //    var updated = newEntity with
+        //    {
+        //        EntityId = publishedId.Value,
+        //    };
+        //    return l.Return(updated);
+        //}
 
 
         #endregion
@@ -224,10 +233,10 @@ partial class AppState
         {
             var st = AppStateTyped;
             var l = Log.Fn($"for a#{st.AppId}");
-            if (!st.Loading)
+            if (!st._loading)
                 throw new("trying to init metadata, but not in loading state. set that first!");
             st.Log.A("remove all items");
-            st.Index.Clear();
+            st.Entities.Clear();
             st.MetadataManager.Reset();
             l.Done();
         }
@@ -253,12 +262,13 @@ partial class AppState
                 foreach (var id in repositoryIds)
                 {
                     // Remove any drafts that are related if necessary
-                    if (st.Index.TryGetValue(id, out var oldEntity))
+                    if (st.Entities.Index.TryGetValue(id, out var oldEntity))
                         st.MetadataManager.Register(oldEntity, false);
 
-                    st.Index.Remove(id);
+                    st.Entities.Remove(id);
 
-                    if (log) Log.A($"removed entity {id}");
+                    if (log)
+                        Log.A($"removed entity {id}");
                 }
             });
         }
@@ -269,18 +279,19 @@ partial class AppState
         public void Add(IEntity newEntity, int? publishedId, bool log)
         {
             var st = AppStateTyped;
-            if (!st.Loading)
-                throw new("trying to add entity, but not in loading state. set that first!");
+            if (!st._loading)
+                throw new("trying to add entity, but cache is not in loading state. set that first!");
 
             if (newEntity.RepositoryId == 0)
-                throw new("Entities without real ID not supported yet");
+                throw new("Entities without repository ID supported yet");
 
             RemoveObsoleteDraft(newEntity, log);
-            _ = MapDraftToPublished((Entity)newEntity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
-            st.Index[newEntity.RepositoryId] = newEntity; // add like this, it could also be an update
+            // 2025-08-01 #FinallyMakeEntityIdImmutable
+            //newEntity = MapDraftToPublished((Entity)newEntity, publishedId, log); // this is not immutable, but probably not an issue because it is not in the index yet
+            st.Entities.AddOrReplace(newEntity); // add like this, it could also be an update
             st.MetadataManager.Register(newEntity, true);
 
-            if (st.FirstLoadCompleted)
+            if (st._firstLoadCompleted)
                 st.DynamicUpdatesCount++;
 
             if (log)
@@ -321,12 +332,11 @@ partial class AppState
             var st = AppStateTyped;
             var l = st.Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
 
-            if (!st.Loading)
+            if (!st._loading)
                 throw new("trying to set content-types, but not in loading state. set that first!");
 
-            if (st.MetadataManager == null || st.Index.Any())
-                throw new(
-                    "can't set content types before setting Metadata manager, or after entities-list already exists");
+            if (st.Entities.Any())
+                throw new("can't set content types before setting Metadata manager, or after entities-list already exists");
 
             if (contentTypes == null)
                 throw new ArgumentException(@"contentTypes must always be non-null", nameof(contentTypes));

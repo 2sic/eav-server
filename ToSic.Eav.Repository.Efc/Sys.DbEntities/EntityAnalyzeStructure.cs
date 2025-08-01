@@ -1,12 +1,11 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
-
-partial class DbEntity
+internal class EntityAnalyzeStructure(DbStorage.DbStorage dbStorage, ILog? log) : HelperBase(log, "Db.AzStrc")
 {
-    private (int ContentTypeId, List<TsDynDataAttribute> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
+    internal (int ContentTypeId, List<TsDynDataAttribute> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
     {
-        var l = LogDetails.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
+        var l = Log.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
         if (saveJson)
-            return l.Return((RepoIdForJsonEntities, []), $"json - no attributes, CT: {RepoIdForJsonEntities}");
+            return l.Return((DbConstant.RepoIdForJsonEntities, []), $"json - no attributes, CT: {DbConstant.RepoIdForJsonEntities}");
 
         // 2023-02-28 2dm now #immutable, so the ID is not updated when a type was just imported
         // So if the TypeId is 0 (or anything invalid) it's a new type, and must be retrieved first
@@ -15,7 +14,7 @@ partial class DbEntity
         {
             var typeNameId = newEnt.Type.NameId;
             if (!_ctNameIdCache.ContainsKey(typeNameId))
-                _ctNameIdCache[typeNameId] = DbContext.AttribSet.GetDbContentTypeId(typeNameId);
+                _ctNameIdCache[typeNameId] = dbStorage.ContentTypes.GetDbContentTypeId(typeNameId);
             contentTypeId = _ctNameIdCache[typeNameId];
         }
 
@@ -23,7 +22,7 @@ partial class DbEntity
             l.A($"Id on type: {newEnt.Type.Id}; NameId: {newEnt.Type.NameId}; Final ID: {contentTypeId}");
 
         if (!_ctCache.ContainsKey(contentTypeId))
-            _ctCache[contentTypeId] = DbContext.Attributes.GetAttributeDefinitions(contentTypeId).ToList();
+            _ctCache[contentTypeId] = dbStorage.Attributes.GetAttributeDefinitions(contentTypeId).ToList();
         var attributes = _ctCache[contentTypeId];
 
         if (logDetails)
@@ -35,5 +34,4 @@ partial class DbEntity
 
     private readonly Dictionary<string, int> _ctNameIdCache = new(StringComparer.InvariantCultureIgnoreCase);
     private readonly Dictionary<int, List<TsDynDataAttribute>> _ctCache = new();
-    private void FlushTypeAttributesCache() => _ctCache.Clear();
 }

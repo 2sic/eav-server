@@ -24,7 +24,7 @@ partial class AppState
     {
         get => field ?? throw new NullReferenceException($"Can't use {nameof(AppTypesByName)} until it's been initialized");
         set;
-    }
+    } = null!;
 
     private IImmutableList<IContentType>? AppContentTypesFromRepository { get; set; }
 
@@ -32,7 +32,7 @@ partial class AppState
     {
         get => field ?? throw new NullReferenceException($"Can't use {nameof(AppTypeMap)} until it's been initialized");
         set;
-    }
+    } = null!;
     private bool _appContentTypesShouldBeLoaded;
 
     /// <summary>

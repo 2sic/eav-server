@@ -9,7 +9,7 @@ public record Feature: Aspect
 {
     #region Static Constructors
     
-    private static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule>? licRules, string nameId, Guid guid)
+    private static IReadOnlyList<FeatureLicenseRule> CreateLicenseRules(IEnumerable<FeatureLicenseRule> licRules, string nameId, Guid guid)
     {
         //var newRules = licRules
         //                   ?.ToList()
@@ -28,7 +28,7 @@ public record Feature: Aspect
         //newRules.Add(ownRule);
         IEnumerable<FeatureLicenseRule> rules =
         [
-            ..licRules ?? [],
+            ..licRules,
             ownRule
         ];
         return rules.ToImmutableOpt();
@@ -49,7 +49,7 @@ public record Feature: Aspect
             Ui = false,
             Description = "Unknown feature",
             Security = FeatureSecurity.Unknown,
-            LicenseRules = null!
+            LicenseRules = []
         };
 
     #endregion
@@ -98,7 +98,7 @@ public record Feature: Aspect
         init;
     }
 
-    public required IEnumerable<FeatureLicenseRule> LicenseRules { get; init; }
+    public required ICollection<FeatureLicenseRule> LicenseRules { get; init; }
 
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
     public IReadOnlyList<FeatureLicenseRule> LicenseRulesList => field ??= CreateLicenseRules(LicenseRules, NameId, Guid);

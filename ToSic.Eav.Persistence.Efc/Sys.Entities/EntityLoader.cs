@@ -13,19 +13,28 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, ISysFeaturesService featuresSvc)
     : HelperBase(appLoader.Log, "Efc.EntLdr")
 {
-    public const int IdChunkSize = 5000;
+    /// <summary>
+    /// Default safe chunk size for any system.
+    /// </summary>
+    private const int RelationshipsIdChunkSizeDefault = 1000;       // todo: possibly reduce for "save default" once we know if there is a limit in SQL
+
+    /// <summary>
+    /// Higher chunk size for Enterprise, where we assume that the database is more powerful and can handle larger chunks.
+    /// </summary>
+    private const int RelationshipsIdChunkSizeEnterprise = 25000;   // todo: enhance once we know if there is a limit in SQL
     public const int MaxLogDetailsCount = 250;
 
     internal int AddLogCount;
 
     [field: AllowNull, MaybeNull]
-    internal EntityQueries EntityQueries => field ??= new(appLoader.Context, Log);
+    internal EntityQueries EntityQueries => field ??= new(appLoader.Context, appLoader.FeaturesService, Log);
 
 
     internal TimeSpan LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[]? entityIds = null)
     {
         codeRefTrail.WithHere();
-        var l = Log.IfSummary(appLoader.LogSettings).Fn<TimeSpan>($"{builder.Reader.AppId}, {entityIds?.Length ?? 0}", timer: true);
+        var l = Log.IfSummary(appLoader.LogSettings)
+            .Fn<TimeSpan>($"{builder.Reader.AppId}, {entityIds?.Length ?? 0}", timer: true);
         AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
         var appId = builder.Reader.AppId;
 
@@ -54,14 +63,18 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
         var rawEntities = LoadEntitiesFromDb(appId, entityIds);
         sqlTime.Stop();
 
-        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, !filterByEntityIds, rawEntities, featuresSvc, Log.IfDetails(appLoader.LogSettings));
+        // If optimized is enabled, then we tweak chunking size and skip unique checks if not necessary
+        var optimized = appLoader.FeaturesService.IsEnabled(BuiltInFeatures.SqlLoadPerformance);
+        var chunkSize = GetBestChunkSize(optimized);
+
+        var detailsLoadSpecs = new EntityDetailsLoadSpecs(appId, !filterByEntityIds, rawEntities, featuresSvc, optimized, chunkSize, Log.IfDetails(appLoader.LogSettings));
 
         var relLoader = new RelationshipLoader(appLoader, detailsLoadSpecs);
         var relatedEntities = relLoader.LoadRelationships();
         codeRefTrail.AddMessage($"Raw entities: {rawEntities.Count}");
 
         // load attributes & values
-        var attributes = featuresSvc.IsEnabled(BuiltInFeatures.SqlLoadPerformance)
+        var attributes = optimized
             ? new ValueLoaderPro(appLoader, detailsLoadSpecs).LoadValues()
             : new ValueLoaderStandard(appLoader, detailsLoadSpecs).LoadValues();
 
@@ -74,7 +87,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
         serializer.ConfigureLogging(appLoader.LogSettings);
         l.A($"🪵 Using LogSettings: {appLoader.LogSettings}");
 
-        var logDetails = appLoader.LogSettings.Enabled && appLoader.LogSettings.Details;
+        var logDetails = appLoader.LogSettings is { Enabled: true, Details: true };
 
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)
@@ -82,7 +95,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
             if (AddLogCount++ == MaxLogDetailsCount)
                 l.A($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-            var newEntity = EntityBuildHelper.BuildNewEntity(dataBuilder, builder.Reader, rawEntity, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage);
+            var newEntity = EntityBuildHelper.BuildNewEntity(dataBuilder, builder.Reader, rawEntity, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, l);
 
             // If entity is a draft, also include references to Published Entity
             builder.Add(newEntity, rawEntity.PublishedEntityId, logDetails && AddLogCount <= MaxLogDetailsCount);
@@ -96,6 +109,17 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
         return l.Return(sqlTime.Elapsed);
     }
 
+    private int GetBestChunkSize(bool optimized)
+    {
+        if (!optimized)
+            return RelationshipsIdChunkSizeDefault;
+
+        var intChunkSize = featuresSvc.Get(BuiltInFeatures.SqlLoadPerformance.NameId)
+            .ConfigInt(nameof(BuiltInFeatures.SqlPerformanceConfig.RelationshipLoadChunking),
+                RelationshipsIdChunkSizeEnterprise, 10, 1000000);
+            
+        return intChunkSize;
+    }
 
     public List<TempEntity> LoadEntitiesFromDb(int appId, int[] entityIds, string? filterJsonType = null)
     {
@@ -121,7 +145,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
                 Json = e.Json,
             })
             .ToList();
-        l.A($"Query executed and converted to {nameof(TempEntity)}");
+        l.A($"Query executed and converted to {nameof(TempEntity)}; {appLoader.Context.TrackingInfo()}");
 
         return l.Return(rawEntities, $"found: {rawEntities.Count}");
     }

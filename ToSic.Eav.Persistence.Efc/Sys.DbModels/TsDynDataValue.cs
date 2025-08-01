@@ -1,6 +1,7 @@
 ﻿// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
-#nullable disable // This is EFC code; values will be auto-generated on compile
+
+// https://learn.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
 
 namespace ToSic.Eav.Persistence.Efc.Sys.DbModels;
 
@@ -13,11 +14,11 @@ public partial class TsDynDataValue//: RepoValue
 
     public int AttributeId { get; set; }
 
-    public string Value { get; set; }
+    public string? Value { get; set; }
 
-    public virtual TsDynDataAttribute Attribute { get; set; }
+    public virtual TsDynDataAttribute Attribute { get; set; } = null!;
 
-    public virtual TsDynDataEntity Entity { get; set; }
+    public virtual TsDynDataEntity Entity { get; set; } = null!;
 
 
     public virtual ICollection<TsDynDataValueDimension> TsDynDataValueDimensions { get; set; } = new HashSet<TsDynDataValueDimension>();

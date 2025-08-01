@@ -75,6 +75,7 @@ internal class EfcContentTypeLoaderService(
     internal IImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSourceAndExpiring source)
     {
         // WARNING: 2022-01-18 2dm
+        // AMENDMENT: 2025-07-30 2dm - this has been quite since 2022, but I think I recently observed it after many list imports (suddenly the list of content-types had an error because of DI having been destroyed)
         // I believe there is an issue which can pop up from time to time, but I'm not sure if it's only in dev setup
         // The problem is that content-types and attributes get metadata from another app
         // That app is retrieved once needed - but the object retrieving it is given here (the AppState)
@@ -90,7 +91,9 @@ internal class EfcContentTypeLoaderService(
         var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
+
         var query = efcAppLoader.Context.TsDynDataContentTypes
+            .AsNoTrackingOptional(featuresSvc)
             .Where(set => set.AppId == appId && set.TransDeletedId == null);
 
         var contentTypesSql = query
@@ -199,7 +202,7 @@ internal class EfcContentTypeLoaderService(
                 name: set.Name,
                 nameId: set.StaticName,
                 id: set.ContentTypeId,
-                scope: set.Scope,
+                scope: set.Scope!,
                 parentTypeId: set.IsGhost,
                 configZoneId: set.ZoneId,
                 configAppId: set.AppId,
@@ -216,7 +219,7 @@ internal class EfcContentTypeLoaderService(
         efcAppLoader.AddSqlTime(sqlTime.Elapsed);
         var final = newTypes.ToImmutableOpt();
 
-        return l.Return(final, $"{final.Count}");
+        return l.Return(final, $"{final.Count}; {efcAppLoader.Context.TrackingInfo()}");
     }
 
 }

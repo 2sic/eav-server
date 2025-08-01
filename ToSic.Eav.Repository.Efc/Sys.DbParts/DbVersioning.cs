@@ -1,38 +1,35 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Storage;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Utils.Compression;
+
 #if NETFRAMEWORK
+using System.Data.SqlClient;
 #else
 using Microsoft.Data.SqlClient;
 #endif
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal  partial class DbVersioning: DbPartBase
+internal  partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> compressor) : DbPartBase(db, "Db.Version")
 {
-    private readonly LazySvc<Compressor> _compressor;
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
-    internal DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> compressor) : base(db, "Db.Vers")
-    {
-        _compressor = compressor;
-    }
-
     #region Change-Log ID
+
     private int _mainTransactionId;
+
     /// <summary>
     /// Creates a TransactionId immediately
     /// </summary>
     /// <remarks>Also opens the SQL Connection to ensure this TransactionId is used for Auditing on this SQL Connection</remarks>
     internal int GetTransactionId()
     {
-        var userName = DbContext.UserIdentityToken;
+        var userName = DbStore.UserIdentityToken;
         if (_mainTransactionId != 0)
             return _mainTransactionId;
 
-        var con = DbContext.SqlDb.Database.GetDbConnection();
+        var con = DbStore.SqlDb.Database.GetDbConnection();
         if (con.State != ConnectionState.Open)
             con.Open(); // make sure same connection is used later
 
@@ -44,7 +41,7 @@ internal  partial class DbVersioning: DbPartBase
         cmd.Parameters.Add(new SqlParameter("@userName", userName));
 
         // enlist in any transaction EF is already using
-        var curTx = DbContext.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
+        var curTx = DbStore.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
         if (curTx != null)
             cmd.Transaction = curTx;
 
@@ -54,41 +51,33 @@ internal  partial class DbVersioning: DbPartBase
 
     #endregion
 
-
-    public void DoAndSaveHistoryQueue(Action action)
-    {
-        var l = LogSummary.Fn(timer: true);
-        action.Invoke();
-        Save();
-        l.Done();
-    }
-
     /// <summary>
     /// Save an entity to versioning, which is already serialized
     /// </summary>
-    internal void AddToHistoryQueue(int entityId, Guid entityGuid, string serialized)
-        => _queue.Add(new()
+    internal void AddAndSave(int entityId, Guid entityGuid, string serialized)
+        => Save([PrepareHistoryEntry(entityId, entityGuid, serialized)]);
+
+    internal TsDynDataHistory PrepareHistoryEntry(int entityId, Guid entityGuid, string serialized)
+        => new()
         {
             SourceTable = EntitiesTableName,
             Operation = EavConstants.HistoryEntityJson,
-            Json = _compressor.Value.IsEnabled ? null : serialized,
-            CJson = _compressor.Value.Compress(serialized),
+            Json = compressor.Value.IsEnabled ? null : serialized,
+            CJson = compressor.Value.Compress(serialized),
             SourceGuid = entityGuid,
             SourceId = entityId,
             TransactionId = GetTransactionId(),
             Timestamp = DateTime.Now
-        });
+        };
 
     /// <summary>
     /// Persist items is queue
     /// </summary>
-    private void Save()
+    /// <param name="queue"></param>
+    internal void Save(ICollection<TsDynDataHistory> queue)
     {
         var l = LogDetails.Fn(timer: true);
-        DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.TsDynDataHistories.AddRange(_queue));
-        _queue.Clear();
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.TsDynDataHistories.AddRange(queue));
         l.Done();
     }
-
-    private readonly List<TsDynDataHistory> _queue = [];
 }

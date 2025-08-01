@@ -25,7 +25,7 @@ public class ServiceSwitcherSingleton<T>(
         if (_preferredService != null)
             return _preferredService;
 
-        logStore.Add(LogNames.LogStoreStartUp, Log);
+        logStore.Add(LogNames.LogStoreServiceSwitcher, Log);
         var call = Log.Fn<T>(message: "re-check singleton service");
         _preferredService = serviceSwitcher.Value.Value;
         return call.Return(_preferredService, $"found {_preferredService.NameId}");
