@@ -285,11 +285,12 @@ public sealed class RelationshipFilter : DataSourceBase
                         "contains all");
                 return l.Return(new(true, entity =>
                     {
-                        // If we're looking for "contains" and the value to find is not specified, then
-                        // we treat is as "always true"
+                        // 2025-06-24 If we're looking for "contains" and the value to find is not specified, then we treat is as "always true"
+                        // 2025-08-04 Realized this is wrong. Eg. Blog - optional author-filter; if empty, it should still filter
+                        // and return empty, so that other filters will still be tried (otherwise it skips all other filters).
                         var valToFind = valuesToFind.FirstOrDefault() ?? "";
-                        if (valToFind == "")
-                            return true;
+                        //if (valToFind == "")
+                        //    return true;
                         var children = GetNonNullChildren(entity);
                         return children
                             .Any(r => internalCompare(r, valToFind));
