@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.Dimensions;
+using ToSic.Eav.Data.Sys.EntityPair;
 
 namespace ToSic.Eav.Data.Sys.Save;
 
@@ -27,16 +28,35 @@ public record SaveOptions
     public bool DraftShouldBranch { get; init; } = true;
 
     /// <summary>
+    /// Internal message to attach to save operations, so it's easier to debug what's happening; optional; not much used yet.
+    /// </summary>
+    public string? Message { get; init; }
+
+    /// <summary>
     /// 
     /// </summary>
     public bool DiscardAttributesNotInType { get; init; } = false;
 
     public override string ToString() =>
-        $"save opts PUntouchedAt:{PreserveUntouchedAttributes}, " +
+        $"save opts '{Message}' PUntouchedAt:{PreserveUntouchedAttributes}, " +
         $"PUnknownAt:{PreserveUnknownAttributes}, " +
         $"SkipExistingAt:{SkipExistingAttributes}" +
         $"ExistLangs:{PreserveExistingLanguages}, " +
         $"UnknownLangs:{PreserveUnknownLanguages}, " +
         $"draft-branch:{DraftShouldBranch}, Lang1:{PrimaryLanguage}, langs⋮{Languages?.Count}, " +
         $"DiscardAttrsNotInType:{DiscardAttributesNotInType}";
+
+    /// <summary>
+    /// Add a specific save options to a list of entities.
+    /// Probably WIP, as it will probably not be needed once all code works with entity-pairs
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <returns></returns>
+    public ICollection<IEntityPair<SaveOptions>> AddToAll(List<IEntity> entities)
+    {
+        var pairs = entities
+            .Select(IEntityPair<SaveOptions> (e) => new EntityPair<SaveOptions>(e, this))
+            .ToListOpt();
+        return pairs;
+    }
 }

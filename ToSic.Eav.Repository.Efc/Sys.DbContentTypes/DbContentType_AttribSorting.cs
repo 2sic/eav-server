@@ -10,19 +10,21 @@ partial class DbContentType
     /// <param name="contentTypeId"></param>
     /// <param name="contentType"></param>
     private void SortAttributes(int contentTypeId, IContentType contentType)
-    {
-        var attributeList = DbContext.SqlDb.TsDynDataAttributes
-            .Where(a => a.ContentTypeId == contentTypeId)
-            .ToList();
+        => DbStore.DoAndSaveTracked(() =>
+        {
+            var attributeList = DbStore.SqlDb.TsDynDataAttributes
+                .Where(a => a.ContentTypeId == contentTypeId)
+                .ToList();
 
-        var ctAttribList = contentType.Attributes.ToList();
-        attributeList = attributeList
-            .OrderBy(a => ctAttribList
-                .IndexOf(contentType.Attributes
-                    .First(ia => ia.Name == a.StaticName)))
-            .ToList();
-        PersistAttributeOrder(attributeList);
-    }
+            var ctAttribList = contentType.Attributes.ToList();
+            attributeList = attributeList
+                .OrderBy(a => ctAttribList
+                    .IndexOf(contentType.Attributes
+                        .First(ia => ia.Name == a.StaticName)))
+                .ToList();
+
+            ApplyAttributeOrder(attributeList);
+        });
 
 
     /// <summary>
@@ -31,21 +33,24 @@ partial class DbContentType
     /// <param name="contentTypeId"></param>
     /// <param name="newOrder">Array of attribute ids which defines the new sort order</param>
     public void SortAttributes(int contentTypeId, List<int> newOrder)
-    {
-        var attributeList = DbContext.SqlDb.TsDynDataAttributes
-            .Where(a => a.ContentTypeId == contentTypeId)
-            .ToList();
-        attributeList = attributeList
-            .OrderBy(a => newOrder.IndexOf(a.AttributeId))
-            .ToList();
+        => DbStore.DoAndSaveTracked(() =>
+        {
+            var attributeList = DbStore.SqlDb.TsDynDataAttributes
+                .Where(a => a.ContentTypeId == contentTypeId)
+                .ToList();
 
-        PersistAttributeOrder(attributeList);
-    }
+            attributeList = attributeList
+                .OrderBy(a => newOrder.IndexOf(a.AttributeId))
+                .ToList();
 
-    private void PersistAttributeOrder(List<TsDynDataAttribute> attributeList)
+            ApplyAttributeOrder(attributeList);
+        });
+
+    private static void ApplyAttributeOrder(List<TsDynDataAttribute> attributeList)
     {
         var index = 0;
-        DbContext.DoAndSave(() => attributeList.ForEach(a => a.SortOrder = index++));
+        foreach (var a in attributeList)
+            a.SortOrder = index++;
     }
 
 }

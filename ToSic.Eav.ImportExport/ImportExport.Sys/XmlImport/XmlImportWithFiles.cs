@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Xml;
@@ -12,15 +13,17 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
 {
     public class Dependencies(
         LazySvc<ImportService> importerLazy,
-        IStorageFactory storageFactory,
+        Generator<IStorage, StorageOptions> storageFactory,
         IImportExportEnvironment importExportEnvironment,
         AppCachePurger appCachePurger,
         IAppsCatalog appsCatalog,
         LazySvc<XmlToEntity> xmlToEntity,
-        LazySvc<DataBuilder> multiBuilder)
-        : DependenciesBase(connect: [importerLazy, storageFactory, importExportEnvironment, appsCatalog, xmlToEntity, appCachePurger, multiBuilder])
+        LazySvc<DataBuilder> multiBuilder,
+        DataImportLogSettings logSettings)
+        : DependenciesBase(connect: [importerLazy, storageFactory, importExportEnvironment, appsCatalog, xmlToEntity, appCachePurger, multiBuilder, logSettings])
     {
-        public IStorageFactory StorageFactory { get; } = storageFactory;
+        public Generator<IStorage, StorageOptions> StorageFactory { get; } = storageFactory;
+        public DataImportLogSettings LogSettings { get; } = logSettings;
         public readonly LazySvc<DataBuilder> MultiBuilder = multiBuilder;
         internal readonly LazySvc<ImportService> ImporterLazy = importerLazy;
         internal readonly IImportExportEnvironment Environment = importExportEnvironment;
@@ -45,6 +48,21 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
     private string DefaultLanguage { get; set; } = null!;
 
     private bool AllowUpdateOnSharedTypes { get; set; }
+
+    #region Detailed Logging
+
+    [field: AllowNull, MaybeNull]
+    private LogSettings LogSettings => field ??= Services.LogSettings.GetLogSettings();
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
+
+    internal ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
+
+    #endregion
 
     #region Constructor / DI
 

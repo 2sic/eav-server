@@ -1,14 +1,15 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.Build;
-
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
@@ -64,6 +65,7 @@ public class EfcAppLoaderService(
     /// <summary>
     /// The current primary language - mainly for ordering values with primary language first
     /// </summary>
+    [field: AllowNull, MaybeNull]
     public string PrimaryLanguage
     {
         get
@@ -81,7 +83,9 @@ public class EfcAppLoaderService(
 
     #region LogSettings
 
+    public ISysFeaturesService FeaturesService => sysFeaturesSvc;
 
+    [field: AllowNull, MaybeNull]
     public LogSettings LogSettings => field
         ??= new AppLoaderLogSettings(sysFeaturesSvc).GetLogSettings();
     
@@ -216,14 +220,13 @@ public class EfcAppLoaderService(
         {
             var l = Log.Fn();
             codeRefTrail.WithHere();
-            string? folderOrNull = null;
+            string? optionalOverrideAppFolder = null;
             // prepare metadata lists & relationships etc.
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
                 AddSqlTime(InitMetadataLists(builder));
-                var (name, folder) = PreLoadAppPath(state.AppId);
-                folderOrNull = folder;
-                //builder.SetNameAndFolder(name, folder);
+                var (_, folder) = PreLoadAppPath(state.AppId);
+                optionalOverrideAppFolder = folder;
             }
             else
                 l.A("skipping metadata load");
@@ -234,7 +237,7 @@ public class EfcAppLoaderService(
                 var typeTimer = Stopwatch.StartNew();
                 var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
-                var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge, folderOrNull);
+                var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge, optionalOverrideAppFolder);
                 builder.InitContentTypes(dbTypes.ToListOpt());
                 typeTimer.Stop();
                 l.A($"timers types:{typeTimer.Elapsed}");
@@ -269,7 +272,7 @@ public class EfcAppLoaderService(
         if (appInDb == null || string.IsNullOrWhiteSpace(appSysSettings))
             return l.Return(0, "none found");
 
-        var sysSettings = JsonSerializer.Deserialize<AppSysSettingsJsonInDb>(appInDb.SysSettings, JsonOptions.SafeJsonForHtmlAttributes)!;
+        var sysSettings = JsonSerializer.Deserialize<AppSysSettingsJsonInDb>(appInDb.SysSettings!, JsonOptions.SafeJsonForHtmlAttributes)!;
         if (!sysSettings.Inherit || sysSettings.AncestorAppId == 0)
             return l.Return(0, "data found but inherit not active");
 
@@ -290,26 +293,25 @@ public class EfcAppLoaderService(
     private (string? Name, string? Path) PreLoadAppPath(int appId)
     {
         var l = Log.Fn<(string? Name, string? Path)>($"{nameof(appId)}: {appId}");
-        var nullTuple = (null as string, null as string);
         try
         {
             // Get all Entities in the 2SexyContent-App scope
             var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, sysFeaturesSvc);
             var dbEntity = entityLoader.LoadEntitiesFromDb(appId, [], AppLoadConstants.TypeAppConfig);
             if (dbEntity.Count == 0)
-                return l.Return(nullTuple, "not in db");
+                return l.Return((null, null), "not in db");
 
             // Get the first one as it should be the one containing the App-Configuration
             // WARNING: This looks a bit fishy, I think it shouldn't just assume the first one is the right one
             var json = dbEntity.FirstOrDefault()?.Json;
             if (string.IsNullOrEmpty(json))
-                return l.Return(nullTuple, "no json");
+                return l.Return((null, null), "no json");
 
             l.A("app Entity found - this json: " + json);
             var serializer = dataDeserializer.New();
             serializer.Initialize(appId, [], null);
             if (serializer.Deserialize(json!, true, true) is not Entity appEntity)
-                return l.Return(nullTuple, "can't deserialize");
+                return l.Return((null, null), "can't deserialize");
             var path = appEntity.Get<string>(AppLoadConstants.FieldFolder);
             var name = appEntity.Get<string>(AppLoadConstants.FieldName);
 
@@ -321,7 +323,7 @@ public class EfcAppLoaderService(
             l.Ex(ex);
         }
 
-        return l.Return(nullTuple, "error");
+        return l.Return((null, null), "error");
     }
 
 
@@ -344,7 +346,7 @@ public class EfcAppLoaderService(
     {
         var l = Log.Fn<TimeSpan>($"{builder.AppState.Show()}", timer: true);
         builder.InitMetadata();
-        return l.Return(l?.Timer?.Elapsed ?? new TimeSpan(0));
+        return l.Return(l?.Timer.Elapsed ?? new TimeSpan(0));
     }
 
     #endregion

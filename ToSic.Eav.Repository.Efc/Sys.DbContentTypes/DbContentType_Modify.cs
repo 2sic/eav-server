@@ -2,68 +2,82 @@
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Metadata.Targets;
-using ToSic.Eav.Persistence.Sys.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 
 partial class DbContentType
 {
     public void AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
-    {
-        var ct = GetTypeByStaticName(staticName) 
-                 ?? Create(scope, usesConfigurationOfOtherSet, alwaysShareConfig);
-
-        ct.Name = name;
-        ct.Scope = scope;
-        ct.TransCreatedId = DbContext.Versioning.GetTransactionId();
-
-        // save first, to ensure it has an Id
-        DbContext.SqlDb.SaveChanges();
-    }
-
-    private TsDynDataContentType Create(string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
-    {
-        var ct = new TsDynDataContentType
+        => DbStore.DoAndSaveTracked(() =>
         {
-            AppId = DbContext.AppId,
+            var ct = TryGetTypeByStaticTracked(staticName);
+
+            // If exists, do update
+            if (ct != null)
+            {
+                ct.Name = name;
+                ct.Scope = scope;
+                ct.TransCreatedId = DbStore.Versioning.GetTransactionId();
+                return;
+            }
+
+            // If not exists, create new
+            DbStore.SqlDb.Add(PrepareNew(name, scope, usesConfigurationOfOtherSet, alwaysShareConfig));
+        });
+
+    private TsDynDataContentType PrepareNew(string name, string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
+        => new()
+        {
+            AppId = DbStore.AppId,
+            Name = name,
             StaticName = Guid.NewGuid().ToString(),
             Scope = scope == "" ? null : scope,
             InheritContentTypeId = usesConfigurationOfOtherSet,
-            IsGlobal = alwaysShareConfig
+            IsGlobal = alwaysShareConfig,
+            TransCreatedId = DbStore.Versioning.GetTransactionId(),
         };
-        DbContext.SqlDb.Add(ct);
-        return ct;
-    }
 
 
     public void Delete(string nameId)
-    {
-        var setToDelete = GetTypeByStaticName(nameId)
-            ?? throw new ArgumentException($@"Tried to delete but can't find {nameId}", nameof(nameId));
-        setToDelete.TransDeletedId = DbContext.Versioning.GetTransactionId();
-        DbContext.SqlDb.SaveChanges();
-    }
+        => DbStore.DoAndSaveTracked(() =>
+        {
+            var setToDelete = TryGetTypeByStaticTracked(nameId)
+                              ?? throw new ArgumentException($@"Tried to delete but can't find {nameId}",
+                                  nameof(nameId));
+            setToDelete.TransDeletedId = DbStore.Versioning.GetTransactionId();
+        });
 
 
     private int? GetOrCreateContentType(ContentType contentType)
     {
-        var newType = DbContext.AttribSet.GetDbContentType(DbContext.AppId, contentType.NameId, alsoCheckNiceName: false);
+        var newType = DbStore.ContentTypes
+            .GetDbContentTypeWithAttributesUntracked(DbStore.AppId)
+            .SingleOrDefault(a => a.StaticName == contentType.NameId);
+
+        //var isUpdate = newType != null;
+        
+        // to use existing Content-Type, do some minimal conflict-checking
+        if (newType != null)
+        {
+            // TODO: VERY UNCLEAR why we are adding special messages on a Get-situation...
+            // 2025-07-30 disable all these messages and null-return, I believe this is very old stuff which doesn't make sense anymore
+            //DbContext.ImportLogToBeRefactored.Add(new($"Content-Type already exists{contentType.NameId}|{contentType.Name}", Message.MessageTypes.Information));
+            //if (newType.InheritContentTypeId.HasValue)
+            //{
+            //    DbContext.ImportLogToBeRefactored.Add(new("Not allowed to import/extend an Content-Type which uses Configuration of another Content-Type: " +
+            //                                              contentType.NameId, Message.MessageTypes.Error));
+            //    return null;
+            //}
+
+            return newType.ContentTypeId;
+        }
 
         // add new Content-Type, do basic configuration if possible, then save
-        if (newType == null)
-            newType = DbContext.AttribSet.PrepareDbAttribSet(contentType.Name, contentType.NameId, contentType.Scope, false, null)
-                ?? throw new($"Can't create content type {contentType.Name}/{contentType.NameId}");
+        newType = DbStore.ContentTypes.PrepareDbContentType(contentType.Name, contentType.NameId,
+                      contentType.Scope, false, null)
+                  ?? throw new($"Can't create content type {contentType.Name}/{contentType.NameId}");
 
-        // to use existing Content-Type, do some minimal conflict-checking
-        else
-        {
-            DbContext.ImportLogToBeRefactored.Add(new($"Content-Type already exists{contentType.NameId}|{contentType.Name}", Message.MessageTypes.Information));
-            if (newType.InheritContentTypeId.HasValue)
-            {
-                DbContext.ImportLogToBeRefactored.Add(new("Not allowed to import/extend an Content-Type which uses Configuration of another Content-Type: " + contentType.NameId, Message.MessageTypes.Error));
-                return null;
-            }
-        }
+        #region Moved Here 2025-07-30 as it changes something to a ghost / global type, which I believe can only be done on creation; previously it could have also been an edit...
 
         // If a "Ghost"-content type is specified, try to assign that
         if (!string.IsNullOrEmpty(contentType.OnSaveUseParentStaticName))
@@ -75,7 +89,10 @@ partial class DbContentType
         }
 
         newType.IsGlobal = contentType.AlwaysShareConfiguration;
-        DbContext.SqlDb.SaveChanges();
+
+        #endregion
+
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Add(newType));
 
         return newType.ContentTypeId;
     }
@@ -83,11 +100,11 @@ partial class DbContentType
 
 
     internal void ExtendSaveContentTypes(List<IContentType> contentTypes, SaveOptions saveOptions)
-        => DbContext.Relationships.DoWhileQueueingRelationships(()
-            => contentTypes.Cast<ContentType>()
-                .ToList()
-                .ForEach(ct => ExtendSaveContentTypes(ct, saveOptions))
-        );
+    {
+        var typed = contentTypes.Cast<ContentType>().ToList();
+        foreach (var ct in typed)
+            ExtendSaveContentTypes(ct, saveOptions);
+    }
 
     /// <summary>
     /// Import a Content-Type with all Attributes and AttributeMetaData
@@ -107,7 +124,7 @@ partial class DbContentType
         // append all Attributes
         foreach (var newAtt in contentType.Attributes.Cast<ContentTypeAttribute>())
         {
-            var destAttribId = DbContext.Attributes.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
+            var destAttribId = DbStore.Attributes.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 
             // save additional entities containing AttributeMetaData for this attribute
             if (newAtt.Metadata != null!)
@@ -149,7 +166,9 @@ partial class DbContentType
             md.KeyNumber = attributeId;
             entities.Add(entity);
         }
-        DbContext.Save(entities, saveOptions); // don't use the standard save options, as this is attributes only
+
+        var withOptions = saveOptions.AddToAll(entities);
+        DbStore.Save(withOptions); // don't use the standard save options, as this is attributes only
     }
         
     /// <summary>
@@ -166,7 +185,8 @@ partial class DbContentType
             
         var entities = new List<IEntity>();
         // if possible, try to get the complete list which is usually hidden in IMetadataOfItem
-        var sourceList = (metadata as IMetadataInternals)?.AllWithHidden as IEnumerable<IEntity> 
+        var sourceList = (metadata as IMetadataInternals)
+                         ?.AllWithHidden as IEnumerable<IEntity> 
                          ?? metadata;
         foreach (var entity in sourceList)
         {
@@ -180,7 +200,8 @@ partial class DbContentType
             md.KeyString = nameId;
             entities.Add(entity);
         }
-        DbContext.Save(entities, saveOptions); // don't use the standard save options, as this is attributes only
+        var withOptions = saveOptions.AddToAll(entities);
+        DbStore.Save(withOptions); // don't use the standard save options, as this is attributes only
     }
 
 }

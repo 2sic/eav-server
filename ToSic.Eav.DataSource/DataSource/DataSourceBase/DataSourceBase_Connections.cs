@@ -59,7 +59,7 @@ partial class DataSourceBase
             : In[name]?.List?.ToImmutableOpt();
 
     /// <summary>
-    /// Try get an out-stream.
+    /// Try to get an out-stream.
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>

@@ -57,7 +57,7 @@ public partial class BuiltInFeatures
         Description = "Configure server logging - usually to take less memory.",
         Security = new(1, "In some cases you won't see what happened previously."),
         LicenseRules = BuiltInLicenseRules.ForAllEnabled,
-        ConfigurationContentType = "5d70d9f6-3c03-4c09-8413-1a0c2e8dbf8f",
+        ConfigurationContentType = "5d70d9f6-3c03-4c09-8413-1a0c2e8dbf8f", // "🥷🏽InsightsLoggingCustomized"
     };
 
     /// <summary>
@@ -75,5 +75,7 @@ public partial class BuiltInFeatures
 
         // Future idea: limit which apps we want to log in detail
         //public string LoadAppIdCsv;
+
+        public bool ImportDataDetails;
     }
 }

@@ -1,23 +1,24 @@
 ﻿using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
+using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
-    public const int RepoIdForJsonEntities = 1;
-    private const int MaxToLogDetails = 10;
-
-    private int SaveEntity(IEntityPair<SaveOptions> entityOptionPair, bool logDetails)
+    private EntityIdentity SaveEntity(IEntityPair<SaveOptions> entityOptionPair, SaveEntityProcess saveProcess, bool logDetails)
     {
         var newEnt = entityOptionPair.Entity;
-        var so = entityOptionPair.Partner;
-        var l = Log.Fn<int>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{logDetails}");
 
-        #region Step 1: Do some initial error checking and preparations
-
+        // Paranoid pre-check
         if (newEnt == null)
             throw new ArgumentNullException(nameof(newEnt));
+
+        var so = entityOptionPair.Partner;
+        var l = LogDetails.Fn<EntityIdentity>($"id:{newEnt.EntityId}/{newEnt.EntityGuid}, logDetails:{logDetails}");
+
+        #region Step 1: Do some initial error checking and preparations
 
         if (newEnt.Type == null)
             throw new("trying to save entity without known content-type, cannot continue");
@@ -47,13 +48,11 @@ partial class DbEntity
         #endregion Test languages exist
 
         // check if saving should be with db-type or with the plain json
-        var saveJson = UseJson(newEnt);
-        string? jsonExport = null;
+        var saveJson = newEnt.UseJson();
         if (logDetails)
             l.A($"save json:{saveJson}");
 
         #endregion Step 1
-
 
 
         #region Step 2: check header record - does it already exist, what ID should we use, etc.
@@ -61,24 +60,26 @@ partial class DbEntity
         // If we think we'll update an existing entity...
         // ...we have to check if we'll actually update the draft of the entity
         // ...or create a new draft (branch)
-        var (existingDraftId, hasAdditionalDraft, entity) = GetDraftAndCorrectIdAndBranching(newEnt, so, logDetails);
+        var (existingDraftId, hasAdditionalDraft, entity) = saveProcess.Services.PublishingAnalyzer.GetDraftAndCorrectIdAndBranching(newEnt, so, logDetails);
         newEnt = entity; // may have been replaced with an updated IEntity during corrections
 
         var isNew = newEnt.EntityId <= 0; // remember how we want to work...
         if (logDetails)
             l.A($"entity id:{newEnt.EntityId} - will treat as new:{isNew}");
 
-        var (contentTypeId, attributeDefs) = GetContentTypeAndAttribIds(saveJson, newEnt, logDetails);
+        var (contentTypeId, attributeDefs) = saveProcess.Services.StructureAnalyzer.GetContentTypeAndAttribIds(saveJson, newEnt, logDetails);
 
         #endregion Step 2
 
 
         var entityId = 0;
-        TsDynDataEntity? dbEnt = null;
+        TsDynDataEntity? dbEnt;
+        string? jsonExport = null;
+        var tempLastSaveGuid = Guid.Empty;
 
-        var transactionId = DbContext.Versioning.GetTransactionId();
+        var transactionId = DbStore.Versioning.GetTransactionId();
 
-        DbContext.DoInTransaction(() =>
+        DbStore.DoInTransaction(() =>
         {
             #region Step 3: either create a new entity, or if it's an update, do draft/published checks to ensure correct data
 
@@ -94,6 +95,7 @@ partial class DbEntity
                 }
 
                 dbEnt = CreateDbRecord(newEnt, transactionId, contentTypeId);
+                SaveCreatedNoChangeDetection([dbEnt]);
                 // update the ID - for versioning and/or json persistence
                 newEnt = builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
 
@@ -105,7 +107,7 @@ partial class DbEntity
                     var l3 = l2.Fn($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
                     dbEnt.Json = jsonExport;
                     dbEnt.ContentType = newEnt.Type.NameId;
-                    DbContext.DoAndSaveWithoutChangeDetection(() => DbContext.SqlDb.Update(dbEnt),
+                    DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Update(dbEnt),
                         "update json");
                     l3.Done();
                 }
@@ -117,10 +119,12 @@ partial class DbEntity
                 #region Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
 
                 // new: always change the draft if there is one! - it will then either get published, or not...
-                dbEnt = DbContext.Entities
+                dbEnt = DbStore.Entities
                     .GetDbEntityFull(newEnt.EntityId); // get the published one (entityId is always the published id)
 
                 var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
+
+
                 var paramsMsg =
                     $"used existing i:{dbEnt.EntityId}, guid:{dbEnt.EntityGuid}, newState:{newEnt.IsPublished}, state-changed:{stateChanged}, has-additional-draft:{hasAdditionalDraft}";
                 l.Do(paramsMsg, () =>
@@ -135,13 +139,10 @@ partial class DbEntity
                     if (stateChanged || hasAdditionalDraft)
                     {
                         // now reset the branch/entity-state to properly set the state / purge the draft
-                        dbEnt = DbContext.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt,
-                            existingDraftId,
-                            newEnt.IsPublished);
+                        dbEnt = DbStore.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId, newEnt.IsPublished);
 
                         // update ID of the save-entity, as it's used again later on...
                         resetId = dbEnt.EntityId;
-                        //newEnt.ResetEntityId(dbEnt.EntityId);
                     }
 
                     #endregion
@@ -169,7 +170,7 @@ partial class DbEntity
                     // In this case we must reset this, otherwise the next load will still prefer the json
                     else
                     {
-                        if (dbEnt.ContentTypeId == RepoIdForJsonEntities)
+                        if (dbEnt.ContentTypeId == DbConstant.RepoIdForJsonEntities)
                             dbEnt.ContentTypeId = contentTypeId;
                         if (dbEnt.Json != null)
                             dbEnt.Json = null;
@@ -179,7 +180,7 @@ partial class DbEntity
 
                     // first, clean up all existing attributes / values (flush)
                     // this is necessary after remove, because otherwise EF state tracking gets messed up
-                    DbContext.DoAndSave(
+                    DbStore.DoAndSaveTracked(
                         () => dbEnt.TsDynDataValues.Clear(),
                         "Flush values"
                     );
@@ -195,14 +196,14 @@ partial class DbEntity
             if (!saveJson)
             {
                 // save all the values we just added
-                SaveAttributesAsEav(newEnt, so, attributeDefs, dbEnt, zoneLangs, transactionId, logDetails);
-                DbContext.Relationships.ChangeRelationships(newEnt, dbEnt, attributeDefs, so);
+                SaveAttributesAsEavUntracked(newEnt, so, attributeDefs, dbEnt.EntityId, zoneLangs, logDetails);
+                DbStore.Relationships.ChangeRelationships(newEnt, dbEnt.EntityId, attributeDefs, so);
             }
             else if (isNew)
                 if (logDetails)
                     l.A("won't save properties / relationships in db model as it's json");
                 else
-                    DropEavAttributesForJsonItem(newEnt);
+                    DropAttributesAndRelationshipsForJsonItem(newEnt.EntityId);
 
             #endregion
 
@@ -211,7 +212,7 @@ partial class DbEntity
 
             if (jsonExport == null)
                 throw new("trying to save version history entry, but jsonExport isn't ready");
-            DbContext.Versioning.AddToHistoryQueue(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
+            DbStore.Versioning.AddAndSave(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
 
             #endregion
 
@@ -220,93 +221,13 @@ partial class DbEntity
             #region Workaround for preserving the last guid (temp - improve some day...)
 
             entityId = dbEnt.EntityId; // remember the ID for later
-            TempLastSaveGuid = dbEnt.EntityGuid;
+            tempLastSaveGuid = dbEnt.EntityGuid;
 
             #endregion
 
         }); // end of transaction
 
-        return l.Return(entityId, $"done id:{entityId}");
+        return l.Return(new(entityId, tempLastSaveGuid), $"done id:{entityId}");
     }
-
-
-    /// <summary>
-    /// Get the draft-id and branching info, 
-    /// then correct branching-infos on the entity depending on the scenario
-    /// </summary>
-    /// <param name="newEnt">the entity to be saved, with IDs and Guids</param>
-    /// <param name="so"></param>
-    /// <param name="logDetails"></param>
-    /// <returns></returns>
-    private (int? ExistingDraftId, bool HasDraft, IEntity Entity) GetDraftAndCorrectIdAndBranching(IEntity newEnt,
-        SaveOptions so, bool logDetails) 
-    {
-        var l = Log.Fn<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true);
-
-        // If ID == 0, it's new, so only continue, if we were given an EntityId
-        if (newEnt.EntityId <= 0)
-            return l.Return((null, false, newEnt), "entity id <= 0 means new, so skip draft lookup");
-
-        if (logDetails)
-            l.A("entity id > 0 - will check draft/branching");
-
-        // find a draft of this - note that it won't find anything, if the item itself is the draft
-        if (_entityDraftMapCache == null)
-            throw new("Needs cached list of draft-branches, but list is null");
-        if (!_entityDraftMapCache.TryGetValue(newEnt.EntityId, out var existingDraftId))
-            throw new("Expected item to be preloaded in draft-branching map, but not found");
-
-        // only true, if there is an "attached" draft; false if the item itself is draft
-        var hasDraft = existingDraftId != null && newEnt.EntityId != existingDraftId; 
-
-        if (logDetails)
-            l.A($"draft check: id:{newEnt.EntityId} {nameof(existingDraftId)}:{existingDraftId}, {nameof(hasDraft)}:{hasDraft}");
-
-        var placeDraftInBranch = so.DraftShouldBranch;
-
-        // if it's being saved as published, or the draft will be without an old original, then exit 
-        if (newEnt.IsPublished || !placeDraftInBranch)
-        {
-            if (logDetails)
-                l.A($"new is published or branching is not wanted, so we won't branch - returning draft-id:{existingDraftId}");
-            return l.Return((existingDraftId, hasDraft, newEnt), existingDraftId?.ToString() ?? "null");
-        }
-
-        if (logDetails)
-            l.A($"will save as draft, and setting is PlaceDraftInBranch:true");
-
-        if (logDetails)
-            l.A($"Will look for original {newEnt.EntityId} to check if it's not published.");
-        // check if the original is also not published, with must prevent a second branch!
-        var entityInDb = DbContext.Entities.GetDbEntityStub(newEnt.EntityId);
-        if (!entityInDb.IsPublished)
-        {
-            if (logDetails)
-                l.A("original in DB is not published, will overwrite and not branch again");
-            return l.Return((existingDraftId, hasDraft, newEnt), existingDraftId?.ToString() ?? "null");
-        }
-
-        if (logDetails)
-            l.A("original is published, so we'll draft in a branch");
-        var clone = builder.Entity.CreateFrom(newEnt,
-            publishedId: newEnt.EntityId, // set this, in case we'll create a new one
-            id: existingDraftId ?? 0  // set to the draft OR 0 = new
-        );
-
-        return l.Return((existingDraftId,
-                false, // not additional anymore, as we're now pointing this as primary
-                clone),
-            existingDraftId?.ToString() ?? "null");
-    }
-
-    private Dictionary<int, int?>? _entityDraftMapCache;
-
-
-    /// <summary>
-    /// Temp helper to provide the last guid to the caller
-    /// this is a messy workaround, must find a better way someday...
-    /// </summary>
-    public Guid TempLastSaveGuid;
-
 
 }

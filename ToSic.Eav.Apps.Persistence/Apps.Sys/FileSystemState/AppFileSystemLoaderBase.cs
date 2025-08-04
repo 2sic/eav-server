@@ -20,11 +20,11 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
     public string PathShared { get; set; } = null!;
 
     protected IAppIdentity AppIdentity { get; private set; } = null!;
-    protected LogSettings LogSettings { get; private set; } = new();
+    protected ToSic.Sys.Logging.LogSettings LogSettings { get; private set; } = new();
 
     #region Inits
 
-    public void Init(IAppReader appReader, LogSettings logSettings, string? optionalOverrideAppFolder = default)
+    public void Init(IAppReader appReader, ToSic.Sys.Logging.LogSettings logSettings, string? appFolderBeforeReaderIsReady = default)
     {
         LogSettings = logSettings;
         var l = Log.Fn($"{appReader.AppId}, {appReader.Specs.Folder}, ...");
@@ -39,8 +39,8 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
         // Get the app paths helper
         var appPaths = appPathsLazy.Value.Get(appReader, site);
         // If an override is provided, use that instead of the default / automatic app folder
-        if (optionalOverrideAppFolder != null)
-            ((AppPaths)appPaths).SetupForUseBeforeAppIsReady(optionalOverrideAppFolder);
+        if (appFolderBeforeReaderIsReady != null)
+            ((AppPaths)appPaths).SetupForUseBeforeAppIsReady(appFolderBeforeReaderIsReady);
         var ok = InitPathAfterAppId(appPaths);
         l.Done(ok ? "ok" : "error");
     }

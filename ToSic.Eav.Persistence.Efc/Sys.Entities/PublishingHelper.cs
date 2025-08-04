@@ -3,14 +3,14 @@ using ToSic.Eav.Persistence.Efc.Sys.Services;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
-internal class PublishingHelper(EfcAppLoaderService parent): HelperBase(parent.Log, "Efc.PubHlp")
+internal class PublishingHelper(EfcAppLoaderService appLoader): HelperBase(appLoader.Log, "Efc.PubHlp")
 {
     [field: AllowNull, MaybeNull]
-    internal EntityQueries EntityQueries => field ??= new(parent.Context, Log);
+    internal EntityQueries EntityQueries => field ??= new(appLoader.Context, appLoader.FeaturesService, Log);
 
     public int[] AddEntityIdOfPartnerEntities(int[] publishedIds)
     {
-        var l = Log.Fn<int[]>(timer: true);
+        var l = Log.IfDetails(appLoader.LogSettings).Fn<int[]>(timer: true);
 
         var relatedIds = EntityQueries
             .EntitiesOfAdditionalDrafts(publishedIds)

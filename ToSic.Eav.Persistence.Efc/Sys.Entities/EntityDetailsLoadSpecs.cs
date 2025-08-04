@@ -1,16 +1,22 @@
-﻿using ToSic.Eav.Persistence.Efc.Sys.TempModels;
+﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
-internal class EntityDetailsLoadSpecs(int appId, bool loadAll, List<TempEntity> entities, ISysFeaturesService features, ILog parentLog)
+internal class EntityDetailsLoadSpecs(int appId, bool loadAll, List<TempEntity> entities, ISysFeaturesService features, bool optimized, int chunkSize, ILog? parentLog)
     : HelperBase(parentLog, "Sql.DetLSp")
 {
+    public bool Optimized { get; } = optimized;
+
+    public int ChunkSize { get; } = chunkSize;
+
     public int AppId => appId;
 
     public bool LoadAll => loadAll;
 
+    [field: AllowNull, MaybeNull]
     private List<int> IdsToLoad
     {
         get
@@ -34,6 +40,7 @@ internal class EntityDetailsLoadSpecs(int appId, bool loadAll, List<TempEntity> 
         }
     }
 
+    [field: AllowNull, MaybeNull]
     public List<List<int>> IdsToLoadChunks
     {
         get
@@ -42,7 +49,7 @@ internal class EntityDetailsLoadSpecs(int appId, bool loadAll, List<TempEntity> 
                 return field;
 
             var l = Log.Fn<List<List<int>>>(timer: true);
-            field = IdsToLoad.ChunkBy(EntityLoader.IdChunkSize);
+            field = IdsToLoad.ChunkBy(ChunkSize);
             return l.Return(field, $"Chunked into {field.Count} chunks");
         }
     }

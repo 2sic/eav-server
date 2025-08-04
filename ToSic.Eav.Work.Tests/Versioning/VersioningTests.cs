@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.Persistence.Versions;
+using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.Abstractions;
@@ -9,7 +10,7 @@ using Xunit.DependencyInjection;
 namespace ToSic.Eav.Versioning;
 
 [Startup(typeof(StartupTestWork))]
-public class VersioningTests(Generator<DbStorage> dbDataGenerator, GenWorkDb<WorkEntityVersioning> workEntityVersioning, ITestOutputHelper output)
+public class VersioningTests(Generator<DbStorage, StorageOptions> dbDataGenerator, GenWorkDb<WorkEntityVersioning> workEntityVersioning, ITestOutputHelper output)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     #region Test Data
@@ -38,7 +39,7 @@ public class VersioningTests(Generator<DbStorage> dbDataGenerator, GenWorkDb<Wor
 
         //var appManager = GetService<AppManager>().Init(Specs);
         var versionSvc = workEntityVersioning.New(appId: Specs.AppId);
-        var dc = dbDataGenerator.New().Init(Specs.ZoneId, Specs.AppId);
+        var dc = dbDataGenerator.New(new(Specs.ZoneId, Specs.AppId));
         //var all = appManager.Entities.VersionHistory(id);
         dc.Versioning.GetHistoryList(id, false);
         var all = versionSvc.VersionHistory(id);
@@ -55,7 +56,7 @@ public class VersioningTests(Generator<DbStorage> dbDataGenerator, GenWorkDb<Wor
     {
         var id = TestItemWithCa20Changes;
         var version = 6;
-        var _dbData = dbDataGenerator.New().Init(Specs.ZoneId, null);
+        var _dbData = dbDataGenerator.New(new(Specs.ZoneId, null));
         var all = _dbData.Versioning.GetHistoryList(id, false);
         var vId = all.First(x => x.VersionNumber == version).ChangeSetId;
         var vItem = _dbData.Versioning.GetItem(id, vId);
@@ -67,7 +68,7 @@ public class VersioningTests(Generator<DbStorage> dbDataGenerator, GenWorkDb<Wor
 
     private List<ItemHistory> GetHistoryTest(int entityId, int expectedCount)
     {
-        var dbData = dbDataGenerator.New().Init(Specs.ZoneId, null);
+        var dbData = dbDataGenerator.New(new(Specs.ZoneId, null));
         var history = dbData.Versioning.GetHistoryList(entityId, true);
         Equal(expectedCount, history.Count);//, $"should have {expectedCount} items in history for this one");
         return history;

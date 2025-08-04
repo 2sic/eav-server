@@ -30,10 +30,11 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     [ContentTypeAttributeSpecs(IsTitle = true)]
     public required string Name { get; init; }
 
-    /// <inheritdoc />
-    [Obsolete("Deprecated in v13, please use NameId instead")]
-    [ContentTypeAttributeIgnore]
-    public string StaticName => NameId;
+    // #DropContentTypeStaticName
+    ///// <inheritdoc />
+    //[Obsolete("Deprecated in v13, please use NameId instead")]
+    //[ContentTypeAttributeIgnore]
+    //public string StaticName => NameId;
 
     /// <inheritdoc />
     public required string NameId { get; init; }
@@ -44,10 +45,11 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     /// <inheritdoc />
     public required int Id { get; init; }
 
-    /// <inheritdoc />
-    [Obsolete("Deprecated in V13, please use Id instead.")]
-    [ContentTypeAttributeIgnore]
-    public int ContentTypeId => Id;
+    // #DropContentTypeId
+    ///// <inheritdoc />
+    //[Obsolete("Deprecated in V13, please use Id instead.")]
+    //[ContentTypeAttributeIgnore]
+    //public int ContentTypeId => Id;
 
     /// <inheritdoc />
     [ContentTypeAttributeIgnore]
@@ -82,7 +84,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     /// </summary>
     [PrivateApi]
     [ContentTypeAttributeIgnore]
-    public ContentTypeSysSettings? SysSettings => null;
+    public ContentTypeSysSettings? SysSettings { get; init; }
 
     /// <inheritdoc />
     public IContentTypeAttribute? this[string fieldName]

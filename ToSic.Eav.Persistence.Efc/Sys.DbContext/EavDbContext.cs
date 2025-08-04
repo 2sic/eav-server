@@ -64,6 +64,10 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
             )
             .ConfigureWarnings(w => w.Log(RelationalEventId.MultipleCollectionIncludeWarning));
 #endif
+
+#if DEBUG
+        optionsBuilder.EnableSensitiveDataLogging();
+#endif
         l.Done();
     }
 

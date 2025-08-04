@@ -31,14 +31,6 @@ public class AppStackConstants
     public static string RootNameSettings = "Settings";
     public static string RootNameResources = "Resources";
 
-
-    //public const string SysSettingsFieldScope = "SettingsEntityScope";
-
-    //public static string FieldSettingsIdentifier = "SettingsIdentifier";
-    //public static string FieldItemIdentifier = "ItemIdentifier";
-
-    //internal static string[] BlacklistKeys = [FieldSettingsIdentifier, FieldItemIdentifier, SysSettingsFieldScope];
-
     public static AppThingsIdentifiers Resources = new()
     {
         AppType = AppLoadConstants.TypeAppResources,

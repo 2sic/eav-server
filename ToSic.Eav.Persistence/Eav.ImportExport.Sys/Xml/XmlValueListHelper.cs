@@ -1,9 +1,24 @@
-﻿using System.Xml.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Xml.Linq;
 using ToSic.Eav.Data.Sys.Dimensions;
 
 namespace ToSic.Eav.ImportExport.Sys.Xml;
-internal class XmlValueListHelper(string envDefLang, ICollection<TargetLanguageToSourceLanguage> langMap, ILog parentLog) : HelperBase(parentLog, "Xml.ValHlp")
+internal class XmlValueListHelper(
+    string envDefLang,
+    ICollection<TargetLanguageToSourceLanguage> langMap,
+    ILog parentLog,
+    LogSettings logSettings) : HelperBase(parentLog, "Xml.ValHlp")
 {
+    #region Detailed Logging
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    private ILog? LogDetails => field ??= Log.IfDetails(logSettings);
+
+    #endregion
+
     private readonly IList<TargetLanguageToSourceLanguage> _envLangsSortedByPriority = langMap
         .OrderByDescending(p => p.Matches(envDefLang))
         .ThenBy(p => p.EnvironmentKey)
@@ -49,7 +64,7 @@ internal class XmlValueListHelper(string envDefLang, ICollection<TargetLanguageT
     /// <param name="readOnly"></param>
     private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, TargetLanguageToSourceLanguage envLang, bool readOnly)
     {
-        var l = Log.Fn();
+        var l = LogDetails.Fn();
         var logText = "";
         var dimensionsToAdd = new List<ILanguage>();
         if (langMap.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
@@ -80,7 +95,7 @@ internal class XmlValueListHelper(string envDefLang, ICollection<TargetLanguageT
 
     private (XElement? Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, ICollection<XElement> xmlValuesOfAttrib)
     {
-        var l = Log.Fn<(XElement? Element, bool ReadOnly)>(envLang.EnvironmentKey);
+        var l = LogDetails.Fn<(XElement? Element, bool ReadOnly)>(envLang.EnvironmentKey);
         XElement? sourceValueNode = null;
         var readOnly = false;
 
@@ -114,7 +129,7 @@ internal class XmlValueListHelper(string envDefLang, ICollection<TargetLanguageT
 
     private XElement GetFallbackAttributeInXml(ICollection<XElement> xmlValuesOfAttrib)
     {
-        var l = Log.Fn<XElement>();
+        var l = LogDetails.Fn<XElement>();
         // First, try to take a fallback node without language assignments
         var sourceValueNode = xmlValuesOfAttrib
             .FirstOrDefault(xv =>

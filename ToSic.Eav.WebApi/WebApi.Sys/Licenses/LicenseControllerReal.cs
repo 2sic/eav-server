@@ -58,12 +58,20 @@ public class LicenseControllerReal(
             .Where(l => !l.FeatureLicense)
             .OrderBy(l => l.Priority);
 
-        var features = featuresLazy.Value.All;
+        var allFeatures = featuresLazy.Value.All.ToListOpt();
 
-        return licenses
+        var dto = licenses
             .Select(l =>
             {
                 var state = licSvc.State(l);
+                var isEnabled = licSvc.IsEnabled(l);
+
+                var features = allFeatures
+                    .Where(f => f.Aspect.LicenseRules.Any(lr => lr.FeatureSet.Name == l.Name))
+                    .OrderBy(f => f.NameId)
+                    .Select(f => new FeatureStateDto(f))
+                    .ToList();
+
                 return new LicenseDto
                 {
                     Name = l.Name,
@@ -71,15 +79,13 @@ public class LicenseControllerReal(
                     Guid = l.Guid,
                     Description = l.Description,
                     AutoEnable = l.AutoEnable,
-                    IsEnabled = licSvc.IsEnabled(l),
+                    IsEnabled = isEnabled,
                     Expires = state?.Expiration,
-                    Features = features
-                        .Where(f => f.License?.Name == l.Name)
-                        .OrderBy(f => f.NameId)
-                        .Select(f => new FeatureStateDto(f))
-                        .ToList()
+                    Features = features,
                 };
             });
+
+        return dto;
     }
 
 

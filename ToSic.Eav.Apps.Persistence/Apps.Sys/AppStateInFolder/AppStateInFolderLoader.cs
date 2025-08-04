@@ -74,9 +74,9 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
     [field: AllowNull, MaybeNull]
     public ICollection<FileSystemLoader> Loaders => field ??= BuildLoaders(null, LogSettings);
 
-    private LogSettings LogSettings { get; set; } = new();
+    private ToSic.Sys.Logging.LogSettings LogSettings { get; set; } = new();
 
-    private ICollection<FileSystemLoader> BuildLoaders(IEntitiesSource? entitiesSource, LogSettings logSettings)
+    private ICollection<FileSystemLoader> BuildLoaders(IEntitiesSource? entitiesSource, ToSic.Sys.Logging.LogSettings logSettings)
         => Paths
             .Select(path => _fslGenerator
                 .New(new()
@@ -92,7 +92,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
             .ToListOpt();
 
 
-    public IAppStateBuilder LoadFullAppState(LogSettings logSettings)
+    public IAppStateBuilder LoadFullAppState(ToSic.Sys.Logging.LogSettings logSettings)
     {
         LogSettings = logSettings;
 
@@ -148,7 +148,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
                 
                 // Note: all must be Entity, but this setup just ensures the compiler sees it that way
                 foreach (var entity in entities.Where(e => e is Entity).Cast<Entity>()) 
-                    builder.Add(entity as Entity, null, logDetails);
+                    builder.Add(entity, null, logDetails);
             }
             catch (Exception ex)
             {

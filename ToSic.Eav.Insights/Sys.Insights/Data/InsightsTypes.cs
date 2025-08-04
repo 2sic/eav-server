@@ -1,11 +1,12 @@
-﻿using ToSic.Eav.Data.Sys;
+﻿using System.Text;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsTypes(IAppReaderFactory appReadFac, string name, string? title = default) // TODO: [aPPiD]
+internal class InsightsTypes(IAppReaderFactory appReadFac, string name, string? title = default) // TODO: [AppId]
     : InsightsProvider(new() { Name = name, Title = title ?? "Content Types for App: [AppId]" })
 {
     public static string Link = "Types";
@@ -32,7 +33,7 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name, string? 
     {
         var l = Log.Fn<string>($"appId:{appId}");
 
-        var msg = "";
+        var html = new StringBuilder();
         try
         {
             l.A("getting content-type stats");
@@ -41,33 +42,36 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name, string? 
                 .ThenBy(t => t.Scope)
                 .ThenBy(t => t.NameId)
                 .ToList();
-            msg += P($"types: {types.Count}\n");
-            msg += "<table id='table'>"
+            html.AppendLine(P($"types: {types.Count}\n") + "");
+            html.AppendLine("<table id='table'>"
                    + InsightsHtmlTable.HeadFields([
                        "#", "Scope", "StaticName", "Name", "Attribs", "Metadata", "Permissions", "IsDyn",
                        "Repo", "Items"
                    ])
                    + "<tbody>"
-                   + "\n";
+                   + "\n");
             var totalItems = 0;
             var count = 0;
+
+            var listOfItemsFound = new List<IEntity>();
             foreach (var type in types)
             {
                 var itemCount = 0;
                 try
                 {
-                    var itms = items
+                    var ofType = items
                         .Where(e => Equals(e.Type, type))
                         .ToListOpt();
-                    itemCount = itms.Count;
+                    itemCount = ofType.Count;
                     totalItems += itemCount;
+                    listOfItemsFound.AddRange(ofType);
                 }
                 catch
                 {
                     /*ignore*/
                 }
 
-                msg += InsightsHtmlTable.RowFields([
+                html.AppendLine(InsightsHtmlTable.RowFields([
                     ++count,
                     type.Scope,
                     type.NameId,
@@ -79,22 +83,57 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name, string? 
                     type.IsDynamic.ToString(),
                     type.RepositoryType.ToString(),
                     Linker.LinkTo($"{itemCount}", "Entities", appId, type: type.NameId)
-                ]) + "\n";
+                ]) + "");
             }
-            msg += "</tbody>" + "\n";
-            msg += InsightsHtmlTable.RowFields(["", "", "", "", "", "", "", "", "",
-                Linker.LinkTo($"{totalItems}", "Entities", appId, type: "all")]);
-            msg += "</table>";
-            msg += "\n\n";
-            msg += P(
-                $"Total item in system: {items.Count} - in types: {totalItems} - numbers {Em("should")} match!");
-            msg += InsightsHtmlParts.JsTableSort();
+
+            // Find items which are not properly found by type
+            var unhandled = items
+                .Where(i => !listOfItemsFound.Contains(i))
+                .ToListOpt();
+
+            var unhandledGrouped = unhandled
+                .GroupBy(e => e.Type.NameId)
+                .ToListOpt();
+
+            foreach (var entityGroup in unhandledGrouped)
+            {
+                var type = entityGroup.First().Type;
+                html.AppendLine(InsightsHtmlTable.RowFields([
+                    ++count,
+                    type.Scope,
+                    type.NameId + HtmlEncode(" ⚠️ not found"),
+                    HtmlEncode(type.Name),
+                    //type.Name,
+                    Linker.LinkTo($"{type.Attributes.Count()}", nameof(AttributeNames), appId, type: type.NameId),
+                    Linker.LinkTo($"{type.Metadata.Count()}", InsightsTypeMetadata.Link, appId, type: type.NameId),
+                    Linker.LinkTo($"{type.Metadata.Permissions.Count()}", InsightsTypePermissions.Link, appId, type: type.NameId),
+                    type.IsDynamic.ToString(),
+                    type.RepositoryType.ToString(),
+                    Linker.LinkTo($"{entityGroup.Count()}", "Entities", appId, type: type.NameId)
+                ]) + "");
+
+            }
+
+            html.AppendLine("</tbody>" + "\n");
+            html.AppendLine(InsightsHtmlTable.RowFields([
+                    "", "", "", "", "", "", "", "", "",
+                    Linker.LinkTo($"{totalItems}", "Entities", appId, type: "all")
+                ]) + ""
+            );
+            html.AppendLine("</table>");
+            html.AppendLine("\n\n");
+            html.AppendLine(P($"Total item in system: {items.Count} - " +
+                                   $"in types: {totalItems} - " +
+                                   $"numbers {Em("should")} match! - " +
+                                   $"delta is {unhandled.Count} {HtmlEncode(unhandled.Count == 0 ? "✅" : "⚠️")}") + ""
+            );
+            html.AppendLine(InsightsHtmlParts.JsTableSort() + "");
         }
         catch (Exception ex)
         {
             l.Ex(ex);
         }
 
-        return l.ReturnAsOk(msg);
+        return l.ReturnAsOk(html.ToString());
     }
 }

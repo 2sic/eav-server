@@ -14,17 +14,12 @@ partial class AppState:
         => new Metadata<T>((int)targetType, key, title, appSource: MetadataManager);
 
     [field: AllowNull, MaybeNull]
-    private AppMetadataManager MetadataManager => field ??= CreateMetadataManager();
-
-    private AppMetadataManager CreateMetadataManager()
-    {
-        if (!Loading)
-            throw new("Trying to init metadata, but App is not in loading state.");
-        if (AppContentTypesFromRepository != null)
-            throw new("Can't init metadata if content-types are already set");
-
-        return new(this, this);
-    }
+    private AppMetadataManager MetadataManager => field
+        ??= !_loading
+            ? throw new("Trying to init metadata, but App is not in loading state.")
+            : AppContentTypesFromRepository != null
+                ? throw new("Can't init metadata if content-types are already set")
+                : new(this, this);
 
     /// <summary>
     /// Metadata describing this App

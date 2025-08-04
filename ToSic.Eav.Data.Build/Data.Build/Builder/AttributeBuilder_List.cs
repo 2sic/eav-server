@@ -6,13 +6,6 @@ namespace ToSic.Eav.Data.Build;
 
 partial class AttributeBuilder
 {
-    private bool _allowUnknownValueTypes;
-
-    public AttributeBuilder Setup(bool allowUnknownValueTypes = false)
-    {
-        _allowUnknownValueTypes = allowUnknownValueTypes;
-        return this;
-    }
 
     public IImmutableDictionary<string, IAttribute> Empty() => EmptyList;
     public static readonly IImmutableDictionary<string, IAttribute> EmptyList = new Dictionary<string, IAttribute>().ToImmutableDictionary();
@@ -60,11 +53,11 @@ partial class AttributeBuilder
                     return typedValue;
 
                 // Not yet a proper IAttribute, construct from value
-                var attributeType = DataTypes.GetAttributeTypeName(pair.Value, _allowUnknownValueTypes);
+                var attributeType = DataTypes.GetAttributeTypeName(pair.Value, Options.AllowUnknownValueTypes);
                 var valuesModelList = new List<IValue>();
                 if (pair.Value != null)
                 {
-                    var valueModel = ValueBuilder.Build(attributeType, pair.Value, languages);
+                    var valueModel = valueBuilder.Build(attributeType, pair.Value, languages);
                     valuesModelList.Add(valueModel);
                 }
 

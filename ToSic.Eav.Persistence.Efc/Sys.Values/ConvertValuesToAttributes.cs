@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 
-internal class ConvertValuesToAttributes(string primaryLanguage, ILog parentLog): HelperBase(parentLog, "Sql.CnvV2A")
+internal class ConvertValuesToAttributes(string primaryLanguage, ILog? parentLog): HelperBase(parentLog, "Sql.CnvV2A")
 {
     // 2025-04-28: this is the old version, which was slower - remove ca. 2025-Q3 #EfcSpeedUpValueLoading
     //public Dictionary<int, IEnumerable<TempAttributeWithValues>> EavValuesToTempAttributes(List<ToSicEavValues> values)

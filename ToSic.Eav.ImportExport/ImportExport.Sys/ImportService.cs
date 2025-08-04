@@ -1,11 +1,12 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Apps.Sys.LogSettings;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Repositories.Sys;
-using Entity = ToSic.Eav.Data.Sys.Entities.Entity;
 using IMetadataSource = ToSic.Eav.Metadata.Sys.IMetadataSource;
 
 
@@ -16,16 +17,32 @@ namespace ToSic.Eav.ImportExport.Sys;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportService(
-    IStorageFactory storageFactory,
+    Generator<IStorage, StorageOptions> storageFactory,
     IImportExportEnvironment importExportEnvironment,
     LazySvc<EntitySaver> entitySaverLazy,
-    DataBuilder dataBuilder)
-    : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataBuilder])
+    DataBuilder dataBuilder,
+    DataImportLogSettings logSettings)
+    : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataBuilder, logSettings])
 {
+    #region Detailed Logging
+
+    [field: AllowNull, MaybeNull]
+    private LogSettings LogSettings { get; set; } = null!;
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    private ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
+
+    private ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
+
+    #endregion
+
     #region Constructor / DI
 
-    private const int ChunkLimitToStartChunking = 2500;
-    private const int ChunkSizeAboveLimit = 500;
+    private const int ChunkLimitToStartChunking = 25000;
+    private const int ChunkSizeAboveLimit = 25000;
 
 
     public ImportService Init(int zoneId, int appId, bool skipExistingAttributes, bool preserveUntouchedAttributes, int? parentAppId = default)
@@ -33,8 +50,8 @@ public class ImportService(
         // Get the DB controller - it can handle zoneId being null
         // It's important to not use AppWorkContext or similar, because that would
         // try to load the App into cache, and initialize the App before it's fully imported
-        //var dbController = genDbDataController.New().Init(zoneId, appId, parentAppId);
-        var storage = storageFactory.New(new(zoneId, appId, parentAppId));
+        LogSettings = logSettings.GetLogSettings();
+        var storage = storageFactory.New(new(zoneId, appId, parentAppId, LogSettings, SaveProcessOptions.Import));
         Storage = storage;
         _appId = appId;
         _zoneId = zoneId;
@@ -65,7 +82,7 @@ public class ImportService(
     /// </summary>
     public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities) 
     {
-        var l = Log.Fn($"types: {newTypes.Count}; entities: {newEntities.Count}", timer: true);
+        var l = LogSummary.Fn($"types: {newTypes.Count}; entities: {newEntities.Count}", timer: true);
         Storage.DoWithDelayedCacheInvalidation(() =>
         {
             #region import Content-Types if any were included but rollback transaction if necessary
@@ -77,39 +94,36 @@ public class ImportService(
                 {
                     // get initial data state for further processing, content-typed definitions etc.
                     // important: must always create a new loader, because it will cache content-types which hurts the import
-                    Storage.DoWhileQueuingVersioning(() =>
+                    var nonSysTypes = LogSummary.Quick(message: "Import Types in Sys-Scope", timer: true, func: () =>
                     {
-                        var nonSysTypes = Log.Quick(message: "Import Types in Sys-Scope", timer: true, func: () =>
-                        {
-                            // load everything, as content-type metadata is normal entities
-                            // but disable initialized, as this could cause initialize stuff we're about to import
-                            var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
-                            var newTypeList = newTypes.ToList();
-                            // first: import the attribute sets in the system scope, as they may be needed by others...
-                            // ...and would need a cache-refresh before 
-                            var newSysTypes = newTypeList
-                                .Where(a => a.Scope?.StartsWith(ScopeConstants.System) ?? false)
-                                .ToList();
-                            if (newSysTypes.Any())
-                                MergeAndSaveContentTypes(appReaderRaw, newSysTypes);
+                        // load everything, as content-type metadata is normal entities
+                        // but disable initialized, as this could cause initialize stuff we're about to import
+                        var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
+                        var newTypeList = newTypes.ToList();
+                        // first: import the attribute sets in the system scope, as they may be needed by others...
+                        // ...and would need a cache-refresh before 
+                        var newSysTypes = newTypeList
+                            .Where(a => a.Scope?.StartsWith(ScopeConstants.System) ?? false)
+                            .ToList();
+                        if (newSysTypes.Any())
+                            MergeAndSaveContentTypes(appReaderRaw, newSysTypes);
 
-                            return newTypeList
-                                .Where(a => !newSysTypes.Contains(a))
-                                .ToList();
-                        });
-
-                        var lInner = l.Fn(message: "Import Types in non-Sys scopes", timer: true);
-                        if (nonSysTypes.Any())
-                        {
-                            // now reload the app state as it has new content-types
-                            // and it may need these to load the remaining attributes of the content-types
-                            var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
-
-                            // now the remaining Content-Types
-                            MergeAndSaveContentTypes(appReaderRaw, nonSysTypes);
-                        }
-                        lInner.Done();
+                        return newTypeList
+                            .Where(a => !newSysTypes.Contains(a))
+                            .ToList();
                     });
+
+                    var lInner = l.Fn(message: "Import Types in non-Sys scopes", timer: true);
+                    if (nonSysTypes.Any())
+                    {
+                        // now reload the app state as it has new content-types
+                        // and it may need these to load the remaining attributes of the content-types
+                        var appReaderRaw = Storage.Loader.AppReaderRaw(_appId, new());
+
+                        // now the remaining Content-Types
+                        MergeAndSaveContentTypes(appReaderRaw, nonSysTypes);
+                    }
+                    lInner.Done();
                 });
 
             #endregion
@@ -121,7 +135,7 @@ public class ImportService(
             else
             {
                 var appStateTemp = Storage.Loader.AppReaderRaw(_appId, new()); // load all entities
-                var newIEntitiesRaw = Log.Quick(message: "Pre-Import Entities merge", timer: true,
+                var newIEntitiesRaw = LogSummary.Quick(message: "Pre-Import Entities merge", timer: true,
                     func: () => newEntities
                         .Select(entity => CreateMergedForSaving(entity, appStateTemp, SaveOptions))
                         .Select(pair => pair?.Entity)
@@ -143,7 +157,6 @@ public class ImportService(
 
                 var newIEntities = newIEntitiesRaw.ChunkBy(chunkSize);
 
-
                 // Import in chunks
                 var cNum = 0;
                 // HACK 2022-05-05 2dm experimental, but not activated
@@ -157,7 +170,8 @@ public class ImportService(
                     {
                         cNum++;
                         l.A($"Importing Chunk {cNum} #{(cNum - 1) * chunkSize + 1} - #{cNum * chunkSize}");
-                        Storage.DoInTransaction(() => Storage.Save(chunk, SaveOptions));
+                        var withOptions = SaveOptions.AddToAll(chunk);
+                        Storage.DoInTransaction(() => Storage.Save(withOptions));
                     })
                     //))
                     ;
@@ -170,7 +184,7 @@ public class ImportService(
 
     private void MergeAndSaveContentTypes(IAppReader appReader, List<IContentType> contentTypes)
     {
-        var l = Log.Fn(timer: true);
+        var l = LogSummary.Fn(timer: true);
         // Here's the problem! #badmergeofmetadata
         var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appReader, type));
         var so = importExportEnvironment.SaveOptions(_zoneId) with
@@ -191,7 +205,7 @@ public class ImportService(
 
     private IContentType MergeContentTypeUpdateWithExisting(IAppReader appReader, IContentType contentType)
     {
-        var l = Log.Fn<IContentType>();
+        var l = LogDetails.Fn<IContentType>();
 
         l.A("New CT, must reset attributes");
 
@@ -260,7 +274,7 @@ public class ImportService(
             // Must Reset guid, reset, otherwise the save process assumes it already exists in the DB; NOTE: clone would be ok
             return new EntityPair<SaveOptions>(dataBuilder.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0), SaveOptions);
 
-        return entitySaverLazy.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions);
+        return entitySaverLazy.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions, logSettings: LogSettings);
     }
 
 
@@ -270,9 +284,9 @@ public class ImportService(
     private IEntityPair<SaveOptions>? CreateMergedForSaving<T>(IEntity update, T appState, SaveOptions saveOptions)
         where T : IAppReadEntities, IAppReadContentTypes
     {
-        var l = Log.Fn<IEntityPair<SaveOptions>>();
+        var l = LogDetails.Fn<IEntityPair<SaveOptions>>();
         _mergeCountToStopLogging++;
-        var logDetails = _mergeCountToStopLogging <= LogMaxMerges;
+        var logDetails = LogSettings.Details && _mergeCountToStopLogging <= LogMaxMerges;
         if (_mergeCountToStopLogging == LogMaxMerges)
             l.A($"Hit {LogMaxMerges} merges, will stop logging details");
 
@@ -309,7 +323,7 @@ public class ImportService(
 
         // now update (main) entity id from existing - since it already exists
         var original = existingEntities.First();
-        var result = entitySaverLazy.Value.CreateMergedForSaving(original, update, saveOptions, newId: original.EntityId, newType: typeReset, logDetails: logDetails);
+        var result = entitySaverLazy.Value.CreateMergedForSaving(original, update, saveOptions, newId: original.EntityId, newType: typeReset, logSettings: LogSettings);
         return l.Return(result, "ok");
     }
 

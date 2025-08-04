@@ -268,7 +268,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                 {
                     // Go down one level
                     if (!e.WrapOpenWasClosed)
-                        lg.AppendLine("🪵⚠️ LOGGER WARNING: This logger was never closed");
+                        lg.AppendLine(HtmlEncode("🪵⚠️ LOGGER WARNING: This logger was never closed"));
                     breadcrumb.Push(e.ShortSource);
                     times.Push(e.Elapsed);
                     lg.AppendLine("<ol>");

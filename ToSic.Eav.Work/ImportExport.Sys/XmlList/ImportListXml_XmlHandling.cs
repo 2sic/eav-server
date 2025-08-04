@@ -9,7 +9,7 @@ partial class ImportListXml
 
     private bool RunDocumentValidityChecks(List<XElement> xmlEntities)
     {
-        var l = Log.Fn<bool>();
+        var l = LogSummary.Fn<bool>();
         // #1 Assure that each element has a GUID and language child element
         foreach (var element in xmlEntities)
         {
@@ -44,7 +44,7 @@ partial class ImportListXml
     private bool LoadStreamIntoDocumentElement(IContentType contentType, Stream dataStream,
         [NotNullWhen(true)] out List<XElement>? xmlEntityNodes)
     {
-        var l = Log.Fn<bool>(timer: true);
+        var l = LogSummary.Fn<bool>(timer: true);
         var document = XDocument.Load(dataStream);
         dataStream.Position = 0;
         if (document == null)
@@ -61,7 +61,7 @@ partial class ImportListXml
         if (documentRoot == null)
         {
             const string msg = "can't import - document doesn't have a root element";
-            l.A(msg);
+            LogDetails.A(msg);
             throw l.Ex(new Exception(msg));
         }
 

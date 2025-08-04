@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Entities;
@@ -9,6 +10,7 @@ using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Integration;
+using ToSic.Eav.Repositories.Sys;
 using ToSic.Sys.Utils;
 using static System.StringComparer;
 
@@ -20,7 +22,8 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntitySave(
     LazySvc<DataBuilder> multiBuilder,
     AppsCacheSwitch appsCache,
-    LazySvc<IImportExportEnvironment> environmentLazy
+    LazySvc<IImportExportEnvironment> environmentLazy,
+    DataImportLogSettings importLogSettings
     )
     : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntSav", connect: [multiBuilder, appsCache, environmentLazy])
 {
@@ -47,13 +50,13 @@ public class WorkEntitySave(
     public SaveOptions SaveOptions()
         => environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId);
 
-    public int Save(IEntity entity, SaveOptions saveOptions)
-        => Save([new(entity, saveOptions)]).FirstOrDefault();
+    public EntityIdentity Save(IEntity entity, SaveOptions saveOptions)
+        => Save([new(entity, saveOptions)]).FirstOrDefault() ?? new(0, Guid.Empty);
 
 
-    public ICollection<int> Save(ICollection<EntityPair<SaveOptions>> entities)
+    public ICollection<EntityIdentity> Save(ICollection<EntityPair<SaveOptions>> entities)
     {
-        var l = Log.Fn<ICollection<int>>($"save count:{entities.Count}");
+        var l = Log.Fn<ICollection<EntityIdentity>>($"save count:{entities.Count}");
 
         // Run the change in a lock/transaction
         // This is to avoid parallel creation of new entities
@@ -61,12 +64,12 @@ public class WorkEntitySave(
         // in which case it would add it twice
 
         var appReader = AppWorkCtx.AppReader;
-        List<int> ids = null!;
+        List<EntityIdentity> ids = null!;
         appReader.GetCache().DoInLock(Log, () => ids = InnerSaveInLock());
         return l.Return(ids, $"ids:{ids.Count}");
 
         // Inner call which will be executed with the Lock of the AppState
-        List<int> InnerSaveInLock()
+        List<EntityIdentity> InnerSaveInLock()
         {
             // Try to reset the content-type if not specified
             entities = entities
@@ -101,13 +104,15 @@ public class WorkEntitySave(
                 .ToListOpt();
             //entities = AttachRelationshipResolver(entities, appReader.GetCache());
 
-            List<int> intIds = null!;
+            List<EntityIdentity> idList = null!;
             var dc = AppWorkCtx.DbStorage;
-            dc.DoButSkipAppCachePurge(() => intIds = dc.Save(pairsToSave));
+            dc.ConfigureLogging(importLogSettings.GetLogSettings());
+            dc.DoButSkipAppCachePurge(() => idList = dc.Save(pairsToSave));
 
             // Tell the cache to do a partial update
+            var intIds = idList.Select(i => i.Id).ToListOpt();
             appsCache.Update(appReader.PureIdentity(), intIds);
-            return intIds;
+            return idList;
         }
     }
 

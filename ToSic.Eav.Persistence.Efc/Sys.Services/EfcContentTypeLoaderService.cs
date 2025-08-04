@@ -4,9 +4,11 @@ using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Values;
+using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 
@@ -19,17 +21,17 @@ internal class EfcContentTypeLoaderService(
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
-    internal IImmutableList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes, string? folderOrNull)
+    internal IImmutableList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes, string? appFolderBeforeReaderIsReady)
     {
-        var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
+        var l = Log.Fn<IImmutableList<IContentType>>($"{nameof(appFolderBeforeReaderIsReady)}: '{appFolderBeforeReaderIsReady}'", timer: true);
         try
         {
             if (string.IsNullOrEmpty(appReader.Specs.Folder))
                 return l.Return(dbTypes, "no path");
 
             l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
-            var fileTypes = LoadContentTypesFromFileSystem(appReader, folderOrNull);
-            if (fileTypes == null || fileTypes.Count == 0)
+            var fileTypes = LoadContentTypesFromFileSystem(appReader, appFolderBeforeReaderIsReady);
+            if (fileTypes.SafeNone())
                 return l.Return(dbTypes, "no app file types");
 
             l.A($"Will check {fileTypes.Count} items");
@@ -57,12 +59,12 @@ internal class EfcContentTypeLoaderService(
     /// Will load file based app content-types.
     /// </summary>
     /// <returns></returns>
-    private IList<IContentType> LoadContentTypesFromFileSystem(IAppReader appReader, string? folderOrNull)
+    private IList<IContentType> LoadContentTypesFromFileSystem(IAppReader appReader, string? appFolderBeforeReaderIsReady)
     {
         var l = Log.Fn<IList<IContentType>>(timer: true);
         // must create a new loader for each app
         var loader = appFileContentTypesLoader.New();
-        loader.Init(appReader, efcAppLoader.LogSettings, folderOrNull);
+        loader.Init(appReader, efcAppLoader.LogSettings, appFolderBeforeReaderIsReady);
         var types = loader.ContentTypes(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }
@@ -73,6 +75,7 @@ internal class EfcContentTypeLoaderService(
     internal IImmutableList<IContentType> LoadContentTypesFromDb(int appId, IHasMetadataSourceAndExpiring source)
     {
         // WARNING: 2022-01-18 2dm
+        // AMENDMENT: 2025-07-30 2dm - this has been quite since 2022, but I think I recently observed it after many list imports (suddenly the list of content-types had an error because of DI having been destroyed)
         // I believe there is an issue which can pop up from time to time, but I'm not sure if it's only in dev setup
         // The problem is that content-types and attributes get metadata from another app
         // That app is retrieved once needed - but the object retrieving it is given here (the AppState)
@@ -88,7 +91,9 @@ internal class EfcContentTypeLoaderService(
         var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
+
         var query = efcAppLoader.Context.TsDynDataContentTypes
+            .AsNoTrackingOptional(featuresSvc)
             .Where(set => set.AppId == appId && set.TransDeletedId == null);
 
         var contentTypesSql = query
@@ -123,7 +128,9 @@ internal class EfcContentTypeLoaderService(
                         // metadata: attrMetadata,
                         metaSourceFinder: () => source,
                         guid: a.Guid,
-                        sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
+                        sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
+                        // before v20
+                        //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
                     )),
                 IsGhost = set.InheritContentTypeId,
                 SharedDefinitionId = set.InheritContentTypeId,
@@ -168,7 +175,10 @@ internal class EfcContentTypeLoaderService(
                         metaSourceFinder: () => appStates.Get(s.AppId),
                         // #SharedFieldDefinition
                         //guid: a.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
-                        sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings))
+                        sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
+                        // Before v20
+                        //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
+                        )
                     )
                 );
 
@@ -192,7 +202,7 @@ internal class EfcContentTypeLoaderService(
                 name: set.Name,
                 nameId: set.StaticName,
                 id: set.ContentTypeId,
-                scope: set.Scope,
+                scope: set.Scope!,
                 parentTypeId: set.IsGhost,
                 configZoneId: set.ZoneId,
                 configAppId: set.AppId,
@@ -209,7 +219,7 @@ internal class EfcContentTypeLoaderService(
         efcAppLoader.AddSqlTime(sqlTime.Elapsed);
         var final = newTypes.ToImmutableOpt();
 
-        return l.Return(final, $"{final.Count}");
+        return l.Return(final, $"{final.Count}; {efcAppLoader.Context.TrackingInfo()}");
     }
 
 }

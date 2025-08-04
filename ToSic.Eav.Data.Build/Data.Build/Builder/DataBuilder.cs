@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -7,12 +6,12 @@ namespace ToSic.Eav.Data.Build;
 [method: PrivateApi]
 public class DataBuilder(
     LazySvc<EntityBuilder> entityBuilder,
-    LazySvc<AttributeBuilder> attributeBuilder,
-    LazySvc<ValueBuilder> valueBuilder,
+    Generator<AttributeBuilder, DataBuilderOptions> attributeBuilder,
+    Generator<ValueBuilder, DataBuilderOptions> valueBuilder,
     LazySvc<ContentTypeBuilder> contentTypeBuilder,
     LazySvc<ContentTypeAttributeBuilder> typeAttributeBuilder,
     LazySvc<DimensionBuilder> languageBuilder)
-    : ServiceWithSetup<DataBuilderOptions>($"{EavLogs.Eav}MltBld", connect:
+    : ServiceWithSetup<DataBuilderOptions>("DaB.MltBld", connect:
         [
             entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder
         ])
@@ -22,11 +21,11 @@ public class DataBuilder(
 
     [field: AllowNull, MaybeNull]
     public AttributeBuilder Attribute => field
-        ??= attributeBuilder.Value.Setup(Options.AllowUnknownValueTypes);
+        ??= attributeBuilder.New(Options);
 
     [field: AllowNull, MaybeNull]
     public ValueBuilder Value => field
-        ??= valueBuilder.Value.Setup(Options.AllowUnknownValueTypes);
+        ??= valueBuilder.New(Options);
 
     public ContentTypeAttributeBuilder TypeAttributeBuilder => typeAttributeBuilder.Value;
 

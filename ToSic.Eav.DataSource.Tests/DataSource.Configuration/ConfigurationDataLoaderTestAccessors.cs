@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSource.Configuration;
+﻿using ToSic.Eav.DataSource.Sys.Configuration;
+
+namespace ToSic.Eav.DataSource.Configuration;
 
 internal static class ConfigurationDataLoaderTestAccessors
 {

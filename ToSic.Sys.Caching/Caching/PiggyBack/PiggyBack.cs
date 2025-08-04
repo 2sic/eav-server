@@ -35,7 +35,8 @@ public class PiggyBack
         if (_cache.TryGetValue(key, out var result)
             && result is Timestamped<TData> typed
             && typed.CacheTimestamp == parent.CacheTimestamp
-           ) return (typed.Value, true);
+           )
+            return (typed.Value, true);
 
         // else create it, add timestamp, and store
         try

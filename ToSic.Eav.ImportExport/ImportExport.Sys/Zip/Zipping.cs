@@ -64,6 +64,17 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     private void ExtractZipArchiveToFile(ZipArchive zipArchive, string outFolder, bool allowCodeImport)
     {
         var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+
+        // 2025-08-01 2dm: I spent more than an hour trying to import a zip which turned out not to be an app export.
+        // so I'm adding a check for what caused the error and throwing.
+        var realEntries = zipArchive.Entries
+            .Where(e => e.Name != "")
+            .ToListOpt();
+
+        // If count is off, there are entries for empty folders - which is an indication that it's not a proper app export.
+        if (realEntries.Count != zipArchive.Entries.Count)
+            throw new("Zip contained entries for folders, which never happens in normal App exports. This is probably not a 2sxc app.");
+
         foreach (var entry in zipArchive.Entries)
         {
             // check for illegal file paths in zip

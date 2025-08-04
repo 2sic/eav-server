@@ -25,9 +25,9 @@ partial class AppState: IAppStateCache, ICacheExpiring, IHasPiggyBack, ICanBeCac
         if (prevTimeStamp == CacheTimestampPrivate.CacheTimestamp)
             CacheTimestampPrivate.CacheTimestamp++;
 
-        (this as IAppStateCache).CacheStatistics.Update(CacheTimestamp, Index.Count, message);
+        (this as IAppStateCache).CacheStatistics.Update(CacheTimestamp, Entities.Count, message);
         Log.A($"cache reset to stamp {CacheTimestamp} = {CacheTimestamp.ToReadable()}");
-        Log.A($"Stats: ItemCount: {Index.Count}; ResetCount: {(this as IAppStateCache).CacheStatistics.ResetCount}  Message: '{message}'");
+        Log.A($"Stats: ItemCount: {Entities.Count}; ResetCount: {(this as IAppStateCache).CacheStatistics.ResetCount}  Message: '{message}'");
 
         // publish event so lightspeed can flush cache
         MemoryCacheService.Notify(this);

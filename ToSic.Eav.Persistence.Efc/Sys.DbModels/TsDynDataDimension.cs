@@ -1,6 +1,7 @@
 ﻿// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable EntityFramework.ModelValidation.UnlimitedStringLength
-#nullable disable // This is EFC code; values will be auto-generated on compile
+
+// https://learn.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
 
 namespace ToSic.Eav.Persistence.Efc.Sys.DbModels;
 
@@ -11,11 +12,11 @@ public partial class TsDynDataDimension
 
     public int? Parent { get; set; }
 
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    public string Key { get; set; }
+    public string? Key { get; set; }
 
-    public string EnvironmentKey { get; set; }
+    public string? EnvironmentKey { get; set; }
 
     public bool Active { get; set; }
 
@@ -23,8 +24,8 @@ public partial class TsDynDataDimension
 
     public virtual ICollection<TsDynDataDimension> InverseParentNavigation { get; set; } = new HashSet<TsDynDataDimension>();
 
-    public virtual TsDynDataDimension ParentNavigation { get; set; }
+    public virtual TsDynDataDimension? ParentNavigation { get; set; }
 
     public virtual ICollection<TsDynDataValueDimension> TsDynDataValueDimensions { get; set; } = new HashSet<TsDynDataValueDimension>();
-    public virtual TsDynDataZone Zone { get; set; }
+    public virtual TsDynDataZone Zone { get; set; } = null!;
 }

@@ -139,6 +139,7 @@ partial class JsonSerializer
         return lMain.ReturnAsOk(contentTypeSet);
     }
 
-    public ContentTypeAttributeSysSettings? DeserializeAttributeSysSettings(string name, string json)
-        => JsonDeserializeAttribute.SysSettings(name, json, LogDsDetails);
+    // Removed v20-00-03
+    //public ContentTypeAttributeSysSettings? DeserializeAttributeSysSettings(string name, string json)
+    //    => JsonDeserializeAttribute.SysSettings(name, json, LogDsDetails);
 }

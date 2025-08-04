@@ -8,8 +8,6 @@ using ToSic.Eav.ImportExport.Sys.ImportHelpers;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.Sys.Logging;
-using Entity = ToSic.Eav.Data.Sys.Entities.Entity;
-
 
 namespace ToSic.Eav.ImportExport.Sys.XmlList;
 
@@ -19,17 +17,30 @@ namespace ToSic.Eav.ImportExport.Sys.XmlList;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class ImportListXml(
     LazySvc<ImportService> importerLazy,
-    DataBuilder builder,
+    Generator<DataBuilder, DataBuilderOptions> builderGenerator,
     GenWorkDb<WorkEntityDelete> entDelete)
-    : ServiceBase("App.ImpVtT", connect: [builder, importerLazy, entDelete])
+    : ServiceBase("App.ImpVtT", connect: [builderGenerator, importerLazy, entDelete])
 {
+    private DataBuilder DataBuilder { get; set; } = null!;
 
     #region Init
 
-    //private IContentType ContentType { get; set; } = null!;
-    //private List<IEntity> ExistingEntities { get; set; } = null!;
-
     private IAppReader AppReader { get; set; } = null!;
+
+    #region Detailed Logging
+
+    [field: AllowNull, MaybeNull]
+    private LogSettings LogSettings { get; set; } = null!;
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
+
+    internal ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
+
+    #endregion
 
     /// <summary>
     /// Create a xml import. The data stream passed will be imported to memory, and checked 
@@ -42,19 +53,22 @@ public partial class ImportListXml(
     /// <param name="documentLanguageFallback">Fallback document language</param>
     /// <param name="deleteSetting">How to handle entities already in the repository</param>
     /// <param name="resolveLinkMode">How value references to files and pages are handled</param>
-    public ImportListXml Init(
-        IAppReader appReader,
+    /// <param name="logSettings"></param>
+    public ImportListXml Init(IAppReader appReader,
         string typeName,
-        Stream dataStream, 
-        IEnumerable<string> languages, 
-        string documentLanguageFallback, 
-        ImportDeleteUnmentionedItems deleteSetting, 
-        ImportResolveReferenceMode resolveLinkMode)
+        Stream dataStream,
+        IEnumerable<string> languages,
+        string documentLanguageFallback,
+        ImportDeleteUnmentionedItems deleteSetting,
+        ImportResolveReferenceMode resolveLinkMode,
+        LogSettings logSettings)
     {
         var langs = languages.ToList();
-        var l = Log.Fn<ImportListXml>($"type: {typeName}, langs: {langs.Count}, delete: {deleteSetting}, resolve: {resolveLinkMode}", timer: true);
+        var l = LogSummary.Fn<ImportListXml>($"type: {typeName}, langs: {langs.Count}, delete: {deleteSetting}, resolve: {resolveLinkMode}", timer: true);
         ErrorLog = new(Log);
 
+        LogSettings = logSettings;
+        DataBuilder = builderGenerator.New(new() { LogSettings = logSettings });
         AppReader = appReader;
         _deleteSetting = deleteSetting;
         ResolveLinks = resolveLinkMode == ImportResolveReferenceMode.Resolve;
@@ -81,7 +95,7 @@ public partial class ImportListXml(
         {
             DocLangPrimary = documentLanguageFallback.ToLowerInvariant(),
             Languages = langs
-                .Select(l => l.ToLowerInvariant())
+                .Select(lng => lng.ToLowerInvariant())
                 .ToList(),
         };
 
@@ -98,7 +112,7 @@ public partial class ImportListXml(
             // Since all is ok, we can now create the import stats
             ValidateAndImportToMemory(appReader.AppId, contentType, xmlEntities, existingEntities);
 
-            // Note: this is not very clean yet, it relies on side-effects from the ValidateAndImportToMemory method
+            // Note: this is not very clean yet, it relies on side effects from the ValidateAndImportToMemory method
             var existingGuids = GetExistingEntityGuids(existingEntities);
             var creatingGuids = GetCreatedEntityGuids(ImportEntities);
             Preparations = new(
@@ -129,7 +143,7 @@ public partial class ImportListXml(
     /// </summary>
     private bool ValidateAndImportToMemory(int appId, IContentType contentType, List<XElement> xmlEntities, List<IEntity> existingEntities)
     {
-        var l = Log.Fn<bool>(timer: true);
+        var l = LogSummary.Fn<bool>(timer: true);
         var nodesCount = 0;
         var entityGuidManager = new ImportItemGuidManager();
 
@@ -152,7 +166,7 @@ public partial class ImportListXml(
 
             var entityGuid = entityGuidManager.GetGuid(xEntity, ImportConfig.DocLangPrimary);
             var entityInImportQueue = GetImportEntity(entityGuid);
-            var entityAttributes = builder.Attribute.Mutable(entityInImportQueue?.Attributes);
+            var entityAttributes = DataBuilder.Attribute.Mutable(entityInImportQueue?.Attributes);
 
             foreach (var ctAttribute in contentType.Attributes)
             {
@@ -168,8 +182,8 @@ public partial class ImportListXml(
                 if (value == XmlConstants.EmptyMarker)
                 {
                     entityAttributes.TryGetValue(valName, out var existingAttr);
-                    var emptyAttribute = builder.Attribute.CreateOrUpdate(originalOrNull: existingAttr, name: valName, value: "", type: ctAttribute.Type, language: nodeLang);
-                    entityAttributes = builder.Attribute.Replace(entityAttributes, emptyAttribute);
+                    var emptyAttribute = DataBuilder.Attribute.CreateOrUpdate(originalOrNull: existingAttr, name: valName, value: "", type: ctAttribute.Type, language: nodeLang);
+                    entityAttributes = DataBuilder.Attribute.Replace(entityAttributes, emptyAttribute);
                     continue;
                 }
 
@@ -183,9 +197,9 @@ public partial class ImportListXml(
                     try
                     {
                         entityAttributes.TryGetValue(valName, out var existingAttr2);
-                        var preConverted = builder.Value.PreConvertReferences(value, ctAttribute.Type, ResolveLinks);
-                        var valRefAttribute = builder.Attribute.CreateOrUpdate(originalOrNull: existingAttr2, name: valName, value: preConverted, type: valType, language: nodeLang);
-                        entityAttributes = builder.Attribute.Replace(entityAttributes, valRefAttribute);
+                        var preConverted = DataBuilder.Value.PreConvertReferences(value, ctAttribute.Type, ResolveLinks);
+                        var valRefAttribute = DataBuilder.Attribute.CreateOrUpdate(originalOrNull: existingAttr2, name: valName, value: preConverted, type: valType, language: nodeLang);
+                        entityAttributes = DataBuilder.Attribute.Replace(entityAttributes, valRefAttribute);
 
                     }
                     catch (FormatException)
@@ -221,10 +235,10 @@ public partial class ImportListXml(
                         entityValue.Value.Languages.ToImmutableOpt()
                             .Add(new Language(nodeLang, valueReadOnly))
                     );
-                    var newValues = builder.Value.Replace(entityValue.Attribute!.Values,
+                    var newValues = DataBuilder.Value.Replace(entityValue.Attribute!.Values,
                         entityValue.Value, updatedValue);
-                    var newAttribute = builder.Attribute.CreateFrom(entityValue.Attribute, newValues);
-                    entityAttributes = builder.Attribute.Replace(entityAttributes, newAttribute);
+                    var newAttribute = DataBuilder.Attribute.CreateFrom(entityValue.Attribute, newValues);
+                    entityAttributes = DataBuilder.Attribute.Replace(entityAttributes, newAttribute);
                     continue;
                 }
 
@@ -264,16 +278,16 @@ public partial class ImportListXml(
                 // Just add the value. Note 2023-02-28 2dm - not exactly sure how/why, assume it's the final-no-errors case
                 var langShouldBeReadOnly = valExisting.Languages
                     .FirstOrDefault(lang => lang.Key == valueReferenceLanguage)?.ReadOnly ?? false;
-                var valueLanguages = builder.Language.GetBestValueLanguages(valueReferenceLanguage, langShouldBeReadOnly)
+                var valueLanguages = DataBuilder.Language.GetBestValueLanguages(valueReferenceLanguage, langShouldBeReadOnly)
                                      ?? [];
                 valueLanguages.Add(new Language(nodeLang, valueReadOnly));
                 // update languages on valExisting
-                var updatedValue2 = builder.Value.CreateFrom(valExisting, languages: builder.Language.Merge(valExisting.Languages, valueLanguages));
+                var updatedValue2 = DataBuilder.Value.CreateFrom(valExisting, languages: DataBuilder.Language.Merge(valExisting.Languages, valueLanguages));
                 //var updatedValue2 = AttributeBuilder.Value.UpdateLanguages(valExisting, valueLanguages);
                 // TODO: update/replace value in existingEnt[attribute.Name]
-                var values2 = builder.Value.Replace(attrExisting.Values, valExisting, updatedValue2);
-                var attribute2 = builder.Attribute.CreateFrom(attrExisting, values2);
-                entityAttributes = builder.Attribute.Replace(entityAttributes, attribute2);
+                var values2 = DataBuilder.Value.Replace(attrExisting.Values, valExisting, updatedValue2);
+                var attribute2 = DataBuilder.Attribute.CreateFrom(attrExisting, values2);
+                entityAttributes = DataBuilder.Attribute.Replace(entityAttributes, attribute2);
 
 
                 #endregion
@@ -288,7 +302,7 @@ public partial class ImportListXml(
                 // note: I'm not sure if this should ever happen, if the same entity already exists
                 // in the ImportEntities list. But because there is a check if it's already in there
                 // which was from 2017 or before, I'll leave it in for now
-                var entityClone = builder.Entity.CreateFrom(entityInImportQueue, attributes: builder.Attribute.Create(entityAttributes));
+                var entityClone = DataBuilder.Entity.CreateFrom(entityInImportQueue, attributes: DataBuilder.Attribute.Create(entityAttributes));
                 ImportEntities.Remove(entityInImportQueue);
                 ImportEntities.Add((Entity)entityClone);
             }
@@ -306,7 +320,7 @@ public partial class ImportListXml(
     /// <returns>True if succeeded</returns>
     public void PersistImportToRepository()
     {
-        var l = Log.Fn(timer: true);
+        var l = LogSummary.Fn(timer: true);
 
         if (ErrorLog.HasErrors)
         {

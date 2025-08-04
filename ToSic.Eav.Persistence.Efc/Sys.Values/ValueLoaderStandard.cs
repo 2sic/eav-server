@@ -14,12 +14,12 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
     protected readonly EntityDetailsLoadSpecs Specs = specs;
 
     [field: AllowNull, MaybeNull]
-    private ValueQueries ValueQueries => field ??= new(AppLoader.Context, Log);
+    private ValueQueries ValueQueries => field ??= new(AppLoader, Log);
 
 
     public virtual Dictionary<int, ICollection<TempAttributeWithValues>> LoadValues()
     {
-        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>(timer: true);
+        var l = Log.IfSummary(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>(timer: true);
 
         var sqlTime = Stopwatch.StartNew();
         var result = Specs.IdsToLoadChunks
@@ -36,7 +36,7 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
 
     private Dictionary<int, ICollection<TempAttributeWithValues>> GetValuesOfEntityChunk(ICollection<int> entityIdsFound)
     {
-        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
+        var l = Log.IfDetails(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
 
         var attributesRaw = GetSqlValuesChunk(entityIdsFound);
 
@@ -49,7 +49,7 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
     /// </summary>
     internal Dictionary<int, ICollection<TempAttributeWithValues>> ConvertToTempAttributes(ICollection<LoadingValue> attributesRaw)
     {
-        var cnv = new ConvertValuesToAttributes(AppLoader.PrimaryLanguage, Log);
+        var cnv = new ConvertValuesToAttributes(AppLoader.PrimaryLanguage, Log.IfDetails(AppLoader.LogSettings));
         return cnv.EavValuesToTempAttributesBeta(attributesRaw);
     }
 
@@ -94,7 +94,7 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
                 v.Value,
                 v.TsDynDataValueDimensions
                     .Select(ILanguage (lng) =>
-                        new Language(lng.Dimension.EnvironmentKey, lng.ReadOnly, lng.DimensionId))
+                        new Language(lng.Dimension.EnvironmentKey! /* is never null on a non-root culture */, lng.ReadOnly, lng.DimensionId))
                     .ToListOpt()
             ))
             .ToListOpt();

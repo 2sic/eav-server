@@ -138,7 +138,7 @@ public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeatur
                 var inConfig = config?.Features.FirstOrDefault(cf => cf.Id == featDef.Guid);
                 if (inConfig != null)
                 {
-                    enabled = licenseEnabled && inConfig.EnabledRespectingExpiry();
+                    enabled = licenseEnabled && inConfig.GetEnabledRespectingDefaultAndExpiry(enabled); // enabled contains info if enable by default
                     if (expiry == DateTime.MinValue)
                         expiry = inConfig.Expires; // set expiry by configuration (when is not set by license)
                     msgShort = licenseEnabled ? "configuration" : "unlicensed";
@@ -165,7 +165,7 @@ public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeatur
             .Select(f => new FeatureState(
                     Feature.UnknownFeature(f.Id),
                     f.Expires,
-                    f.EnabledRespectingExpiry(),
+                    f.GetEnabledRespectingDefaultAndExpiry(false),
                     "configuration",
                     "Configured manually",
                     AllowedByLicense: false,

@@ -62,7 +62,8 @@ public class ImportAppTests(ZipImport zipImport, DbStorage dbData, ZoneManager z
 
     private void DeleteAnApp(string appGuid)
     {
-        var appList = dbData.Init(ZoneId, null).SqlDb.TsDynDataApps
+        dbData.Setup(new(ZoneId, null, null, new()));
+        var appList = dbData.SqlDb.TsDynDataApps
             .Where(a => a.ZoneId == ZoneId)
             .ToList();
         var appId = appList.FirstOrDefault(a => a.Name == appGuid)?.AppId ?? 0;

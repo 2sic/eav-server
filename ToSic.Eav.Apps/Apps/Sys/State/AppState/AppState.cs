@@ -45,6 +45,8 @@ internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConn
         Relationships = new(this);
         l.Done();
     }
+
+
     [PrivateApi]
     public IParentAppState ParentApp { get; }
 
@@ -86,7 +88,7 @@ internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConn
     }
 
     private string? ValueOrExceptionIfNotInLoadingState(string? value, string property)
-        => Loading ? value : throw new($"Can't set AppState.{property} when not in loading state");
+        => _loading ? value : throw new($"Can't set AppState.{property} when not in loading state");
 
     public bool IsHealthy { get; internal set; } = true;
 

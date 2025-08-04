@@ -16,9 +16,9 @@ internal class AppSpecs(AppState appState): IAppSpecs
 
     public string NameId => appState.NameId;
 
-    public string Name => appState.Name ?? "error";
+    public string Name => appState.Name ?? "error-app-name-not-loaded";
 
-    public string Folder => appState.Folder ?? "error";
+    public string Folder => appState.Folder ?? "error-app-folder-not-loaded";
 
     public PiggyBack PiggyBack => appState.PiggyBack;
     

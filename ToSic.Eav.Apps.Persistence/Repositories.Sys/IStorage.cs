@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Persistence.Sys.Logging;
 
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Repositories.Sys;
 /// This interface should ensure that storage layers can be swapped out as is necessary
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IStorage: IHasLog
+public interface IStorage: IServiceWithSetup<StorageOptions>, IHasLog
 {
     #region Transaction Support
 
@@ -33,19 +34,6 @@ public interface IStorage: IHasLog
 
     #endregion
 
-    #region Versioning QUeue
-
-    void DoWhileQueuingVersioning(Action action);
-
-    #endregion
-
-    #region RelationshipQueue
-
-    void DoWhileQueueingRelationships(Action action);
-
-    #endregion
-
-
     #region Loader
 
     /// <summary>
@@ -59,16 +47,14 @@ public interface IStorage: IHasLog
     List<Message> ImportLogToBeRefactored { get; }
     #endregion
 
-
-    #region Relationship Import / Queue
-
-    //void DoWhileQueueingRelationships(Action action);
-
-    #endregion
-
     #region Entities
 
-    List<int> Save(List<IEntity> entities, SaveOptions saveOptions);
+    /// <summary>
+    /// Save a list of entities together in a transaction.
+    /// </summary>
+    /// <param name="entityOptionPairs"></param>
+    /// <returns></returns>
+    List<EntityIdentity> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs);
 
     #endregion
 
@@ -83,4 +69,5 @@ public interface IStorage: IHasLog
     int GetParentAppId(string parentAppGuid, int parentAppId);
 
     int CreateApp(string guidName, int? inheritAppId = null);
+
 }

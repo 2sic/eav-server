@@ -9,6 +9,8 @@ partial class EavDbContext
 
     public HandleSaveChangesEvent? AlternateSaveHandler;
 
+    public string TrackingInfo() => "tracking:" + ChangeTracker.Entries().Count();
+
     #region Save and check if to kill cache
     /// <inheritdoc />
     /// <summary>

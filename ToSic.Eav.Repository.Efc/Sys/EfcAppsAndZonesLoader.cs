@@ -3,15 +3,16 @@ using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Sys.AppState;
+using ToSic.Eav.Repositories.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Sys;
 
 /// <summary>
 /// Wrapper for the EfcLoader, because we also need to do write operations on PrimaryApps, but the EFC loader cannot do that
 /// </summary>
-internal class EfcAppsAndZonesLoader(DbStorage.DbStorage dbStorage) : IAppsAndZonesLoaderWithRaw
+internal class EfcAppsAndZonesLoader(Generator<DbStorage.DbStorage, StorageOptions> dbStorage) : IAppsAndZonesLoaderWithRaw
 {
-    private readonly DbStorage.DbStorage _dbStorage = dbStorage.Init(null, null);
+    private readonly DbStorage.DbStorage _dbStorage = dbStorage.New(new(null, null));
 
     public ILog Log => _dbStorage.Loader.Log!;
 

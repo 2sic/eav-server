@@ -17,7 +17,7 @@ public partial class Log
         // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something
         if (newParent != null)
         {
-            var oldParentTyped = Parent as Log;
+            //var oldParentTyped = Parent as Log;
             var newParentTyped = newParent as Log;
 
             // Only allow switching if the target doesn't have a parent
@@ -33,11 +33,13 @@ public partial class Log
                 if (Entries.Any() && newParentTyped != null)
                     Entries.ForEach(newParentTyped.AddEntry);
             }
+
             // show info if the new parent is different from the old one
-            else if (oldParentTyped?.FullIdentifier != newParentTyped?.FullIdentifier)
-                this.A("🪵 LOGGER INFO - logger with parent trying to attach. " +
-                       $"Existing parent: {oldParentTyped?.FullIdentifier}. " +
-                       $"New Parent (ignored): {newParentTyped?.FullIdentifier}");
+            // 2025-07-30 2dm - commented out, because it was too noisy and no value in this message
+            //else if (oldParentTyped?.FullIdentifier != newParentTyped?.FullIdentifier)
+            //    this.A("🪵 LOGGER INFO - logger with parent trying to attach. " +
+            //           $"Existing parent: {oldParentTyped?.FullIdentifier}. " +
+            //           $"New Parent (ignored): {newParentTyped?.FullIdentifier}");
         }
 
         if (name != null)

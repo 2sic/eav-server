@@ -7,6 +7,8 @@ namespace ToSic.Eav.Data.Sys.Save;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", connect: [dataBuilder])
 {
+    private LogSettings LogSettings { get; set; } = null!;
+
     /// <summary>
     /// Goal: Pass changes into an existing entity so that it can then be saved as a whole, with correct
     /// modifications. 
@@ -19,11 +21,11 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         NoParamOrder noParamOrder = default,
         int? newId = default,
         IContentType? newType = default,
-        bool logDetails = true
+        LogSettings? logSettings = null
     )
     {
-        var l = (logDetails ? Log : null)
-            .Fn<EntityPair<SaveOptions>>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
+        LogSettings = logSettings ?? new();
+        var l = Log.IfDetails(LogSettings).Fn<EntityPair<SaveOptions>>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
         
         if (saveOptions == null)
             throw new ArgumentNullException(nameof(saveOptions));
@@ -134,7 +136,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                     : newAttrib.Value;
             }
 
-        var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs, logDetails);
+        var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs);
         var clone = dataBuilder.Entity.CreateFrom(
             idProvidingEntity,
             id: newId,
@@ -170,7 +172,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     /// </remarks>
     private IDictionary<string, IAttribute> StripUnknownLanguages(IDictionary<string, IAttribute> allFields, SaveOptions saveOptions)
     {
-        var l = Log.Fn<IDictionary<string, IAttribute>>();
+        var l = Log.IfDetails(LogSettings).Fn<IDictionary<string, IAttribute>>();
         var languages = saveOptions.Languages;
 
         var modified = allFields
@@ -239,7 +241,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     /// <returns></returns>
     private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions)
     {
-        var l = Log.Fn<IAttribute>();
+        var l = Log.IfDetails(LogSettings).Fn<IAttribute>();
         // everything in the update will be kept, and optionally some stuff in the original may be preserved
         var result = update.Values.ToList();
         foreach (var orgVal in ValuesOrderedForProcessing(original.Values, saveOptions))
@@ -273,7 +275,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     
     private IDictionary<string, IAttribute> KeepOnlyKnownKeys(IDictionary<string, IAttribute> orig, IEnumerable<string> keys)
     {
-        var l = Log.Fn<IDictionary<string, IAttribute>>();
+        var l = Log.IfDetails(LogSettings).Fn<IDictionary<string, IAttribute>>();
         var lowerKeys = keys
             .Select(k => k.ToLowerInvariant())
             .ToListOpt();
@@ -284,10 +286,9 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
     }
 
     private (IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
-        CorrectPublishedAndGuidImports(IDictionary<string, IAttribute> values, bool logDetails) 
+        CorrectPublishedAndGuidImports(IDictionary<string, IAttribute> values) 
     {
-        var l = (logDetails ? Log : null)
-            .Fn<(IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)>();
+        var l = Log.IfDetails(LogSettings).Fn<(IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)>();
         // check IsPublished
         values.TryGetValue(AttributeNames.EntityFieldIsPublished, out var isPublishedAttr);
         var isPublished = isPublishedAttr?.Values.FirstOrDefault()?.ObjectContents;

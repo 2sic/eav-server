@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Sys.State.Managers;
 
 [PrivateApi("don't publish this - too internal, special, complicated")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class AppRelationshipManager(AppState upstream): SynchronizedList<IEntityRelationship>(upstream, () => Rebuild(upstream))
+internal class AppRelationshipManager(AppState appState): SynchronizedList<IEntityRelationship>(appState, () => Rebuild(appState))
 {
     private static IImmutableList<IEntityRelationship> Rebuild(AppState appState)
     {
@@ -18,8 +18,8 @@ internal class AppRelationshipManager(AppState upstream): SynchronizedList<IEnti
         // will have multiple lookups - first to find the json, then to add to relationship index
 
         var cache = new List<IEntityRelationship>();
-        var index = appState.Index;
-        foreach (var entity in appState.List)
+        var index = appState.Entities.Index;
+        foreach (var entity in appState.Entities.ImmutableList)
         {
             // find all attributes which are relationships
             var relationshipAttributes = entity.Attributes
@@ -30,7 +30,8 @@ internal class AppRelationshipManager(AppState upstream): SynchronizedList<IEnti
             // Keep only the ones which use a LazyEntitiesSource
             var lazyEntityValues = relationshipAttributes
                 .Select(a => a.Typed.First().TypedContents as LazyEntitiesSource)
-                .Where(tc => tc != null);
+                .Where(tc => tc != null)
+                .ToListOpt();
 
             foreach (var value in lazyEntityValues)
             foreach (var childId in value?.ResolvedEntityIds.Where(id => id != null).Cast<int>() ?? [])

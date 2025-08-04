@@ -4,5 +4,5 @@ namespace ToSic.Eav.Apps.Sys.Loaders;
 
 public interface IAppStateLoader: IHasLog
 {
-    IAppStateBuilder LoadFullAppState(LogSettings logSettings);
+    IAppStateBuilder LoadFullAppState(ToSic.Sys.Logging.LogSettings logSettings);
 }

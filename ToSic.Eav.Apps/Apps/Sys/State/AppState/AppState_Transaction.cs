@@ -2,6 +2,7 @@
 
 partial class AppState
 {
+    // ReSharper disable once ChangeFieldTypeToSystemThreadingLock
     private readonly object _transactionLock = new();
 
     /// <summary>

@@ -5,8 +5,8 @@ public record CodeHelp
 {
     public const string ErrHelpPre = "Error in your code. ";
     private const string ErrHelpLink = "https://go.2sxc.org/{0}";
-    private const string ErrLinkMessage = "***** Probably {0} can help! ***** \n";
-    private const string ErrHasDetails = "***** You can see more help in the toolbar. ***** \n ";
+    private const string ErrLinkMessage = "***** This might help ❤️‍🩹: {0} 🔗 ***** \n"; // note: emoji is a heart with a gauze
+    private const string ErrHasDetails = "***** You can see more help in the ⋮ toolbar . ***** \n ";
     private const string ErrHelpSuf = "What follows is the internal error: -------------------------";
 
     /// <summary>

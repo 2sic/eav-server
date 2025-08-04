@@ -9,8 +9,8 @@ public class BuiltInLicenseRules
     // So always create the definition there first, then use the GUID of that definition here
 
 
-    public static List<FeatureLicenseRule> BuildRule(FeatureSet.FeatureSet licDef, bool featureEnabled) =>
-        [new(licDef, featureEnabled)];
+    public static List<FeatureLicenseRule> BuildRule(FeatureSet.FeatureSet licDef, bool featureEnabled)
+        => [new(licDef, featureEnabled)];
 
 
     public static List<FeatureLicenseRule> ForAllEnabled = BuildRule(BuiltInLicenses.CoreFree, true);

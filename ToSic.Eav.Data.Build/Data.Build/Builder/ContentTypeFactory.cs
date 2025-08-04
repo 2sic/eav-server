@@ -42,10 +42,9 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
 
         var (attributes, vAttributes) = GenerateAttributes(type);
 
-        var vAttributeDecorator = vAttributes == null || vAttributes.Count == 0
+        IDecorator<IContentType>? vAttributeDecorator = vAttributes == null || vAttributes.Count == 0
             ? null
-            : new ContentTypeVirtualAttributes(vAttributes.ToDictionary(va => va.Name, va => va))
-                as IDecorator<IContentType>;
+            : new ContentTypeVirtualAttributes(vAttributes.ToDictionary(va => va.Name, va => va));
 
         var contentType = ctBuilder.Create(
             appId,

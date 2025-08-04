@@ -41,9 +41,15 @@ public class WorkAttributesMod(
     public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder)
     {
         var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-        var attDef = attributeBuilder
-            .Create(appId: AppWorkCtx.AppId, name: staticName, type: ValueTypeHelpers.Get(type), isTitle: false, id: 0, sortOrder: sortOrder);
-        var id = AddField(contentTypeId, attDef, inputType);
+        var attDef = attributeBuilder.Create(
+            appId: AppWorkCtx.AppId,
+            name: staticName,
+            type: ValueTypeHelpers.Get(type),
+            isTitle: false,
+            id: 0,
+            sortOrder: sortOrder
+        );
+        var id = AddFieldToDbAndInitGeneralMetadata(contentTypeId, attDef, inputType);
         return l.Return(id);
     }
 
@@ -52,7 +58,7 @@ public class WorkAttributesMod(
     /// Append a new Attribute to an ContentType
     /// Simple overload returning int, so it can be used from outside
     /// </summary>
-    private int AddField(int contentTypeId, IContentTypeAttribute attDef, string inputType)
+    private int AddFieldToDbAndInitGeneralMetadata(int contentTypeId, IContentTypeAttribute attDef, string inputType)
     {
         var l = Log.Fn<int>($"type:{contentTypeId}, input:{inputType}");
         var newAttribute = AppWorkCtx.DbStorage.Attributes.AddAttributeAndSave(contentTypeId, attDef);
@@ -126,27 +132,25 @@ public class WorkAttributesMod(
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
             l.W("Setting up field share but feature is not enabled / licensed.");
 
-        // get field attributeId
-        var attribute = AppWorkCtx.DbStorage.Attributes.Get(attributeId)
-            ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
-
-        // update with the Share = share (hide we'll ignore for now, it's for future needs)
-        var newSysSettings = new ContentTypeAttributeSysSettings
-        {
-            Share = share,
-        };
-
         var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other attribute change
-        AppWorkCtx.DbStorage.DoAndSave(() =>
+        AppWorkCtx.DbStorage.DoAndSaveTracked(() =>
         {
+            // get field attributeId
+            var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
+                ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+
             // ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
             if (attribute.Guid.HasValue == false)
                 attribute.Guid = Guid.NewGuid();
 
-            attribute.SysSettings = serializer.Serialize(newSysSettings);
+            // update with the Share = share (hide we'll ignore for now, it's for future needs)
+            attribute.SysSettings = serializer.Serialize(new()
+            {
+                Share = share,
+            });
         });
 
         return l.ReturnTrue();
@@ -159,24 +163,26 @@ public class WorkAttributesMod(
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
             l.W("Setting up field share but feature is not enabled / licensed.");
 
-        // get field attributeId
-        var attribute = AppWorkCtx.DbStorage.Attributes.Get(attributeId)
-            ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
-
-        // set InheritMetadataOf to the guid above(as string)
-        var newSysSettings = new ContentTypeAttributeSysSettings
-        {
-            Inherit = null,
-            InheritNameOfPrimary = false,
-            InheritMetadataOfPrimary = false,
-            InheritMetadataOf = new() { [inheritMetadataOf] = "" },
-        };
-
+        // Prepare serializer
         var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other attribute change
-        AppWorkCtx.DbStorage.DoAndSave(() => attribute.SysSettings = serializer.Serialize(newSysSettings));
+        AppWorkCtx.DbStorage.DoAndSaveTracked(() =>
+        {
+            // get field attributeId
+            var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
+                ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+
+            // set InheritMetadataOf to the guid above(as string)
+            attribute.SysSettings = serializer.Serialize(new()
+            {
+                Inherit = null,
+                InheritNameOfPrimary = false,
+                InheritMetadataOfPrimary = false,
+                InheritMetadataOf = new() { [inheritMetadataOf] = "" },
+            });
+        });
 
         return l.ReturnTrue();
     }
