@@ -111,11 +111,12 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
         var prefixed = (keys ?? [])
             .Where(x => x != null)
-            .Select(ExpandDependencyId);
+            .Select(ExpandDependencyId)
+            .ToListOpt();
         return Cache.CreateCacheEntryChangeMonitor(prefixed);
     }
 
-    private static string ExpandDependencyId(ICanBeCacheDependency obj) =>
+    public static string ExpandDependencyId(ICanBeCacheDependency obj) =>
         $"{(obj.CacheIsNotifyOnly ? NotifyCachePrefix : "")}{obj.CacheDependencyId}";
 
     #endregion

@@ -90,8 +90,8 @@ public record CacheItemPolicyMaker : FunFactActionsBase<CacheItemPolicy>, IPolic
             );
     }
 
-    public IPolicyMaker WatchCallback(CacheEntryUpdateCallback updateCallback) =>
-        updateCallback == null
+    public IPolicyMaker WatchCallback(CacheEntryUpdateCallback updateCallback)
+        => updateCallback == null! /* paranoid */
             ? this
             : Next(
                 "Add UpdateCallback",
