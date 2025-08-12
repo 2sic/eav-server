@@ -19,7 +19,7 @@ public class ImportXmlReader: HelperBase
         XmlDoc = XDocument.Parse(FileContents);
 
         if (!importer.IsCompatible(XmlDoc))
-            throw new("The app / package is not compatible with this version of eav and the 2sxc-host.");
+            throw new("The app / package is not compatible with this version of eav and the 2sxc-host. See Insights for further details.");
 
 
         Root = XmlDoc.Element(XmlConstants.RootNode)
@@ -47,6 +47,7 @@ public class ImportXmlReader: HelperBase
 
     #region AppConfig
 
+    [field: AllowNull, MaybeNull]
     internal XElement AppConfig => field ??= GetAppConfig();
 
     private XElement GetAppConfig()
@@ -67,6 +68,7 @@ public class ImportXmlReader: HelperBase
 
     #region AppFolder
 
+    [field: AllowNull, MaybeNull]
     public string AppFolder => field ??= GetKeyValueOrThrowOnNull("Folder");
 
     #endregion
