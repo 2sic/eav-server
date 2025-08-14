@@ -187,7 +187,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             .Select(g => g.First())
             .ToListOpt();
 
-        l.A($"Types in Entities: {entityCtCount}; in Bundles {bundleCts.Count}; after remove duplicates {bundleCtsWithoutDuplicates.Count}; total {contentTypes.Count}");
+        l.A($"Types in Entities: {entityCtCount}; in Bundles {bundleCts.Count}; Bundles after remove duplicates {bundleCtsWithoutDuplicates.Count}; final: {contentTypes.Count}");
         return l.Return((contentTypes, entities), $"Content Types: {contentTypes.Count}; Entities: {entities.Count}");
     }
 

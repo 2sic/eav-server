@@ -21,7 +21,7 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
         try
         {
             var extPaths = GetAllExtensionDataPaths();
-            l.A($"Found {extPaths.Count} extensions with .data folder");
+            l.A($"Found {extPaths.Count} extensions with {FolderConstants.DataFolderProtected} folder");
             var allTypes = extPaths
                 .SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
                 .Distinct(new EqualityComparer_ContentType())

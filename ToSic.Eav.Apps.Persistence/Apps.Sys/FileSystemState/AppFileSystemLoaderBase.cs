@@ -27,7 +27,7 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
     public void Init(IAppReader appReader, ToSic.Sys.Logging.LogSettings logSettings, string? appFolderBeforeReaderIsReady = default)
     {
         LogSettings = logSettings;
-        var l = Log.Fn($"{appReader.AppId}, {appReader.Specs.Folder}, ...");
+        var l = Log.Fn($"{appReader.Show()}, {appReader.Specs.Folder}, ...");
         AppIdentity = appReader.PureIdentity();
 
         // Get the site - a bit special
