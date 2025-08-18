@@ -137,7 +137,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
                 v.Value,
                 v.TsDynDataValueDimensions
                     .Select(ILanguage (lng) =>
-                        new Language(lookup[lng.DimensionId], lng.ReadOnly, lng.DimensionId))
+                        new Language(lookup[lng.DimensionId]! /* would only be null on the root entry, never on lower ones */, lng.ReadOnly, lng.DimensionId))
                     .ToList()
             ))
             .ToList();

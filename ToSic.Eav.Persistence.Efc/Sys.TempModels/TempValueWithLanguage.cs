@@ -2,7 +2,7 @@
 
 internal class TempValueWithLanguage
 {
-    public required string Value;
+    public required string? Value;
     public required IImmutableList<ILanguage> Languages;
 
 }
