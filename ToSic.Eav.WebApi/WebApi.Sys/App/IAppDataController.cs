@@ -14,7 +14,7 @@ public interface IAppDataController
 
     IDictionary<string, object> GetOne(string contentType, string id, string? appPath = default, string? oDataSelect = default);
 
-    IDictionary<string, object> CreateOrUpdate(string contentType, Dictionary<string, object> newContentItem, int? id = null, string? appPath = null);
+    IDictionary<string, object> CreateOrUpdate(string contentType, Dictionary<string, object?> newContentItem, int? id = null, string? appPath = null);
 
     void Delete(string contentType, string id, string? appPath = null);
 }
