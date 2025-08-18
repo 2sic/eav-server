@@ -26,17 +26,3 @@ public class EncryptedData
     /// </summary>
     public required string Iv { get; init; }
 }
-
-/// <remarks>
-/// If the data is encrypted, it would need to be required. But because we're test-deserializing this to do duck-checking, it cannot be required.
-/// </remarks>
-public class EncryptedDataRaw
-{
-    public int Version { get; init; } = 1;
-
-    public string? Data { get; init; }
-
-    public string? Key { get; init; }
-
-    public string? Iv { get; init; }
-}
