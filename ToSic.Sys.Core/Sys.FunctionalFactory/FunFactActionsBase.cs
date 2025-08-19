@@ -13,6 +13,9 @@ namespace ToSic.Sys.FunctionalFactory;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract record FunFactActionsBase<T> : HelperRecordBase
 {
+    protected FunFactActionsBase(ILog? parentLog, string logName) : base(parentLog, logName)
+    { }
+
     /// <summary>
     /// List of actions to apply to the object
     /// </summary>
