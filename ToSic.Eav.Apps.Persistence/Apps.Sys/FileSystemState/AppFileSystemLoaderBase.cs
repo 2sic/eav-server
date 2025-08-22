@@ -34,7 +34,7 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
         // The site to use. This should be used instead of Services.Site,
         // since in some cases (e.g. DNN Search) the initial site is not available.
         // So in that case it overrides the implementation to get the real site just-in-time.
-        var site = zoneMapper.SiteOfAppIfSiteInvalid(siteDraft, AppIdentity.AppId);
+        var site = zoneMapper.SiteOfAppIfSiteInvalid(siteDraft, AppIdentity);
 
         // Get the app paths helper
         var appPaths = appPathsLazy.Value.Get(appReader, site);
