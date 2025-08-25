@@ -16,6 +16,9 @@ public record CacheItemPolicyMaker : FunFactActionsBase<CacheItemPolicy>, IPolic
 {
     internal static string LogName = "Eav.CacSpx";
 
+    public CacheItemPolicyMaker(ILog? parentLog): base(parentLog, LogName)
+    { }
+
     private IPolicyMaker Next(string name, Action<CacheItemPolicy> addition)
         => this with { Actions = CloneActions((name, addition)) };
 
@@ -90,8 +93,8 @@ public record CacheItemPolicyMaker : FunFactActionsBase<CacheItemPolicy>, IPolic
             );
     }
 
-    public IPolicyMaker WatchCallback(CacheEntryUpdateCallback updateCallback) =>
-        updateCallback == null
+    public IPolicyMaker WatchCallback(CacheEntryUpdateCallback updateCallback)
+        => updateCallback == null! /* paranoid */
             ? this
             : Next(
                 "Add UpdateCallback",

@@ -41,9 +41,8 @@ public static class StringExtensions
     /// Split a CSV string into an array of string. Empty entries are removed.
     /// Null-strings will return empty array;
     /// </summary>
-    /// <param name="original"></param>
+    /// <param name="original">string containing csv. If null/empty will return []</param>
     /// <returns></returns>
-    // TODO: @2dm - changed a lot of places to use this 2024-01-23. If no errors appear, remove commented code in each location ca. 2024-Q2
     public static string[] CsvToArrayWithoutEmpty(this string? original)
         => original?.Split(',').TrimmedAndWithoutEmpty() ?? [];
 

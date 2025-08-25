@@ -4,6 +4,6 @@ internal record LoadingValue(
     int EntityId,
     int AttributeId,
     string StaticName,
-    string Value,
+    string? Value,
     ICollection<ILanguage> Languages
 );

@@ -7,7 +7,7 @@ public class CachePolicyMakerTests
     /// <summary>
     /// Empty Test Constructor
     /// </summary>
-    private static CacheItemPolicyMaker EmptyTco() => new() { Log = new Log("Tst.CacSpx") };
+    private static CacheItemPolicyMaker EmptyTco() => new(null);
     
     [Fact]
     public void CpmWithoutAnything()

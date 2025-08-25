@@ -27,7 +27,7 @@ public static class SharedAssemblyInfo
     // This is because the version etc. may be compiled into Oqtane DLLs
     // which will run in the browser, and shouldn't have to include these DLLs to work
     // If it's a constant, the value will be added to the compiled code, so no real dependency will exist at runtime
-    public const string AssemblyVersion = "20.00.04";
+    public const string AssemblyVersion = "20.00.05";
     public const string Company = "2sic internet solutions GmbH, Switzerland";
     public const string Product = "2sic Sys/Lib Core Parts";
     public const string Copyright = "Copyright AGPL © 2sic 2025";

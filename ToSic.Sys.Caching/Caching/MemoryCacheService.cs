@@ -38,7 +38,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
 
     public object Remove(string key) => Cache.Remove(key);
 
-    public IPolicyMaker NewPolicyMaker() => new CacheItemPolicyMaker { Log = new Log(CacheItemPolicyMaker.LogName, Log) };
+    public IPolicyMaker NewPolicyMaker() => new CacheItemPolicyMaker(Log);
 
     /// <summary>
     /// WIP experimental - possible replacement with liquid API, to better see which methods are exactly being called.
@@ -111,11 +111,12 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
         // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
         var prefixed = (keys ?? [])
             .Where(x => x != null)
-            .Select(ExpandDependencyId);
+            .Select(ExpandDependencyId)
+            .ToListOpt();
         return Cache.CreateCacheEntryChangeMonitor(prefixed);
     }
 
-    private static string ExpandDependencyId(ICanBeCacheDependency obj) =>
+    public static string ExpandDependencyId(ICanBeCacheDependency obj) =>
         $"{(obj.CacheIsNotifyOnly ? NotifyCachePrefix : "")}{obj.CacheDependencyId}";
 
     #endregion

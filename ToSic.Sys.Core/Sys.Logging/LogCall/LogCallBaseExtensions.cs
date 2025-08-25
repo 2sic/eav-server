@@ -1,4 +1,6 @@
-﻿namespace ToSic.Sys.Logging;
+﻿using System.Diagnostics;
+
+namespace ToSic.Sys.Logging;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class LogCallBaseExtensions
@@ -9,11 +11,16 @@ public static class LogCallBaseExtensions
     public static void DoInTimer(this ILogCall? logCall, Action action)
     {
         var timerWasAlreadyRunning = logCall is { Timer.IsRunning: true };
+        var innerTime = Stopwatch.StartNew();
         if (!timerWasAlreadyRunning)
             logCall?.Timer.Start();
+
+        logCall.A($"{nameof(DoInTimer)}; will consolidate times; previous time was: {logCall?.Timer.ElapsedMilliseconds}ms");
+
         action();
         if (!timerWasAlreadyRunning)
             logCall?.Timer.Stop();
+        logCall.A($"{nameof(DoInTimer)}; partial-time: {innerTime.ElapsedMilliseconds}ms");
     }
 
     [ShowApiWhenReleased(ShowApiMode.Never)]

@@ -11,7 +11,7 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
     /// Construct an import-friendly, type-controlled value-dictionary to create or update an entity
     /// </summary>
     /// <returns></returns>
-    public Dictionary<string, object> CreateEntityDictionary<T>(string contentType, Dictionary<string, object> newContentItem, T appState)
+    public Dictionary<string, object> CreateEntityDictionary<T>(string contentType, Dictionary<string, object?> newContentItem, T appState)
         where T: IAppIdentity, IAppReadEntities, IAppReadContentTypes
     {
         Log.A($"create ent dic a#{appState.AppId}, type:{contentType}");
@@ -24,7 +24,7 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
         foreach (var attrDef in attribs)
         {
             var attrName = attrDef.Name;
-            if (!newContentItem.TryGetValue(attrName, out var foundValue))
+            if (!newContentItem.TryGetValue(attrName, out var foundValue) || foundValue == null)
                 continue;
             switch (attrDef.Type)
             {
@@ -81,9 +81,9 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
     }
 
     // add "PublishState" in "values" (before it can be removed when there is no "PublishState" attribute)
-    private void AddPublishState(IDictionary<string, object> values, IDictionary<string, object> cleaned)
+    private void AddPublishState(IDictionary<string, object?> values, IDictionary<string, object> cleaned)
     {
-        if (!values.TryGetValue(SaveApiAttributes.SavePublishingState, out var value))
+        if (!values.TryGetValue(SaveApiAttributes.SavePublishingState, out var value) || value == null)
             return;
         cleaned.Add(SaveApiAttributes.SavePublishingState, value);
     }

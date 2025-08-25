@@ -3,8 +3,12 @@ using System.Text;
 
 namespace ToSic.Sys.Security.Encryption;
 
+/// <summary>
+/// Helper to encrypt/decrypt data for the SecureEndpoint attribute.
+/// </summary>
 /// <remarks>
 /// In v19.03.03 we changed `new AesCryptoServiceProvider()` to be `Aes.Create()` because of obsolete warnings
+/// Since it's only used in the SecureEndpoint, it's maybe wrong in the Sys.Security namespace, but it was the only place where it was used.
 /// </remarks>
 public class AesHybridCryptographyService(RsaCryptographyService rsa)
 {

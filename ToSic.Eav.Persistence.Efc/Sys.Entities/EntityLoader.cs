@@ -21,7 +21,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
     /// <summary>
     /// Higher chunk size for Enterprise, where we assume that the database is more powerful and can handle larger chunks.
     /// </summary>
-    private const int RelationshipsIdChunkSizeEnterprise = 25000;   // todo: enhance once we know if there is a limit in SQL
+    private const int RelationshipsIdChunkSizeEnterprise = 10000;   // FYI: We tried 25k as default, but seems that certain SQL servers had issues
     public const int MaxLogDetailsCount = 250;
 
     internal int AddLogCount;

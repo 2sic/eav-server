@@ -12,17 +12,23 @@ namespace ToSic.Sys.Services;
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[method: PrivateApi]
-public abstract record HelperRecordBase() : IHasLog
+public abstract record HelperRecordBase : IHasLog
 {
+    /// <summary>
+    /// Constructor, implemented as non-primary because we don't want the parameters to become properties of the record.
+    /// </summary>
+    /// <param name="parentLog"></param>
+    /// <param name="logName"></param>
+    [PrivateApi]
+    protected HelperRecordBase(ILog? parentLog, string logName)
+    {
+        Log = new Log(logName, parentLog);
+    }
+
     /// <inheritdoc />
     [JsonIgnore] // Prevent System.Text.Json from serializing this property
     [IgnoreDataMember] // Prevent Newtonsoft Json from serializing this property, without depending on the Newtonsoft.Json package
     [field: AllowNull, MaybeNull]
     [PrivateApi]
-    public required ILog Log
-    {
-        get => field ??= new Log("unknown", null);
-        init;
-    }
+    public ILog Log { get; }
 }
