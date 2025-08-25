@@ -34,7 +34,7 @@ internal  partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor>
             con.Open(); // make sure same connection is used later
 
         // insert and get TransactionId in one trip – parameterised
-        const string sql = "INSERT INTO [dbo].[TsDynDataTransaction] ([Timestamp],[User]) OUTPUT inserted.TransactionId VALUES (GETDATE(), @userName);";
+        const string sql = "INSERT INTO [dbo].[TsDynDataTransaction] ([Timestamp],[User]) OUTPUT inserted.TransactionId VALUES (GETUTCDATE(), @userName);";
 
         using var cmd = con.CreateCommand();
         cmd.CommandText = sql;

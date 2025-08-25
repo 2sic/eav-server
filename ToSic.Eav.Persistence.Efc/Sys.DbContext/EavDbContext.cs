@@ -500,7 +500,7 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.Property(e => e.Timestamp)
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("getdate()");
+                .HasDefaultValueSql("getutcdate()");
 
             entity.Property(e => e.User).HasMaxLength(255);
         });
