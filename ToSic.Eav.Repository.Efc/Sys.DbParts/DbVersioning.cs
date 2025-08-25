@@ -67,7 +67,7 @@ internal  partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor>
             SourceGuid = entityGuid,
             SourceId = entityId,
             TransactionId = GetTransactionId(),
-            Timestamp = DateTime.Now
+            Timestamp = DateTime.UtcNow // always UTC (time zone independent)
         };
 
     /// <summary>
