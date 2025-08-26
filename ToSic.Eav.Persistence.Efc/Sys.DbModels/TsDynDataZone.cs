@@ -12,6 +12,12 @@ public partial class TsDynDataZone//: RepoZone
 
     public required string Name { get; set; }
 
+    public int TenantId { get; set; }
+
+    public string AppBasePath { get; set; }
+
+    public string AppBaseSharedPath { get; set; }
+
     public int? TransCreatedId { get; set; }
 
     public int? TransModifiedId { get; set; }
