@@ -33,8 +33,11 @@ public class EditInfoDto
                 : null;
     }
 
-    public EditInfoDto(IEntity entity)
+    public EditInfoDto(IEntity? entity)
     {
+        if (entity == null)
+            return;
+
         // If entity is null it's probably going to be new, so assume it doesn't have an ancestor
         var hasAncestor = entity.HasAncestor();
         var isFileBasedWithNegativeIndex = entity.EntityId < 0;
