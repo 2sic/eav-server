@@ -205,18 +205,19 @@ public class EfcAppLoaderService(
         }
 
         var builder = appStateBuilder.New().InitForNewApp(parent, appIdentity, appGuidName, Log);
-        Update(builder.AppState, AppStateLoadSequence.Start, codeRefTrail);
+        Update(builder.AppState, AppStateLoadSequence.Start, codeRefTrail, []);
 
         return l.ReturnAsOk(builder);
     }
 
     /// <inheritdoc />
-    public IAppStateCache Update(IAppStateCache appStateOriginal, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[]? entityIds = null)
+    public IAppStateCache Update(IAppStateCache appStateOriginal, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds)
     {
         var lMain = Log.Fn<IAppStateCache>(message: "What happens inside this is logged in the app-state loading log");
         codeRefTrail.WithHere().AddMessage($"App: {appStateOriginal.AppId}");
         var builder = appStateBuilder.New().Init(appStateOriginal);
-        builder.Load($"startAt: {startAt}, ids only:{entityIds != null}", state =>
+        var hasIdFilter = entityIds.Any();
+        builder.Load($"startAt: {startAt}, ids only: {!hasIdFilter}", state =>
         {
             var l = Log.Fn();
             codeRefTrail.WithHere();
@@ -231,14 +232,18 @@ public class EfcAppLoaderService(
             else
                 l.A("skipping metadata load");
 
+            // variable to hold future added entities
+            ICollection<IEntity> fileEntities = [];
+
             // prepare content-types
             if (startAt <= AppStateLoadSequence.ContentTypeLoad)
             {
                 var typeTimer = Stopwatch.StartNew();
                 var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
-                var dbTypes = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge, optionalOverrideAppFolder);
-                builder.InitContentTypes(dbTypes.ToListOpt());
+                var data = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge, optionalOverrideAppFolder);
+                builder.InitContentTypes(data.Types.ToListOpt());
+                fileEntities = data.Entities;
                 typeTimer.Stop();
                 l.A($"timers types:{typeTimer.Elapsed}");
             }
@@ -247,7 +252,17 @@ public class EfcAppLoaderService(
 
             // load data
             if (startAt <= AppStateLoadSequence.ItemLoad)
-                LoadEntities(builder, codeRefTrail, entityIds ?? []);
+            {
+                // if the app already exists and is being reloaded, remove all existing data
+                if (!hasIdFilter)
+                    builder.RemoveAllItems();
+
+                if (fileEntities.Any())
+                    AddExtensionEntities(fileEntities, builder);
+
+                // Load from DB
+                LoadEntities(builder, codeRefTrail, entityIds);
+            }
             else
             {
                 codeRefTrail.AddMessage("skipping items load");
@@ -258,6 +273,25 @@ public class EfcAppLoaderService(
         });
 
         return lMain.ReturnAsOk(builder.AppState);
+    }
+
+    /// <summary>
+    /// Add any entities which came from extensions in the file system /system/[extension-name]/App_Data
+    /// </summary>
+    /// <param name="fileEntities"></param>
+    /// <param name="builder"></param>
+    private void AddExtensionEntities(ICollection<IEntity> fileEntities, IAppStateBuilder builder)
+    {
+        var l = Log.Fn($"{fileEntities.Count}");
+        foreach (var fileEntity in fileEntities)
+        {
+            var tryToFindType = builder.Reader.TryGetContentType(fileEntity.Type.Name);
+            var updated = tryToFindType == null ? fileEntity : dataBuilder.Entity.CreateFrom(fileEntity, type: tryToFindType);
+            l.A($"Add file entity {updated.EntityId} / {updated.Type.Name}");
+            builder.Add(updated, updated.EntityId, false);
+        }
+
+        l.Done();
     }
 
     /// <summary>

@@ -28,7 +28,7 @@ public interface IAppsAndZonesLoader: IHasLog, IContentTypeLoader
     /// <param name="codeRefTrail"></param>
     /// <param name="entityIds"></param>
     /// <returns></returns>
-    IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[]? entityIds = null);
+    IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds);
 
 
     IDictionary<int, Zone> Zones();

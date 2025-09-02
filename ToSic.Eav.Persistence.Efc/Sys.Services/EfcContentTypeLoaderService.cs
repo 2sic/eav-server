@@ -21,38 +21,37 @@ internal class EfcContentTypeLoaderService(
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
-    internal IImmutableList<IContentType> LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes, string? appFolderBeforeReaderIsReady)
+    internal (IImmutableList<IContentType> Types, ICollection<IEntity> Entities) LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes, string? appFolderBeforeReaderIsReady)
     {
-        var l = Log.Fn<IImmutableList<IContentType>>($"{nameof(appFolderBeforeReaderIsReady)}: '{appFolderBeforeReaderIsReady}'", timer: true);
+        var l = Log.Fn<(IImmutableList<IContentType> Types, ICollection<IEntity> Entities)>($"{nameof(appFolderBeforeReaderIsReady)}: '{appFolderBeforeReaderIsReady}'", timer: true);
         try
         {
             if (string.IsNullOrEmpty(appReader.Specs.Folder))
-                return l.Return(dbTypes, "no path");
+                return l.Return((dbTypes, []), "no path");
 
             l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
-            var data = LoadContentTypesFromFileSystem(appReader, appFolderBeforeReaderIsReady);
-            var fileTypes = data.ContentTypes;
-            if (fileTypes.SafeNone())
-                return l.Return(dbTypes, "no app file types");
+            var (contentTypes, entities) = LoadContentTypesFromFileSystem(appReader, appFolderBeforeReaderIsReady);
+            if (contentTypes.SafeNone())
+                return l.Return((dbTypes, entities), "no app file types");
 
-            l.A($"Will check {fileTypes.Count} items");
+            l.A($"Will check {contentTypes.Count} items");
 
             // remove previous items with same name, as the "static files" have precedence
             var typeToMerge = dbTypes.ToImmutableOpt();
             var before = typeToMerge.Count;
             var comparer = new EqualityComparer_ContentType();
-            typeToMerge = typeToMerge.RemoveAll(t => fileTypes.Contains(t, comparer));
-            foreach (var fType in fileTypes)
+            typeToMerge = typeToMerge.RemoveAll(t => contentTypes.Contains(t, comparer));
+            foreach (var fType in contentTypes)
             {
                 l.A($"Will add {fType.Name}");
                 typeToMerge = typeToMerge.Add(fType);
             }
 
-            return l.Return(typeToMerge, $"before {before}, now {typeToMerge.Count} types");
+            return l.Return((typeToMerge, entities), $"before {before}, now {typeToMerge.Count} types");
         }
         catch (Exception e)
         {
-            return l.Return(dbTypes, "error:" + e.Message);
+            return l.Return((dbTypes, []), "error:" + e.Message);
         }
     }
 
@@ -60,13 +59,13 @@ internal class EfcContentTypeLoaderService(
     /// Will load file based app content-types.
     /// </summary>
     /// <returns></returns>
-    private (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) LoadContentTypesFromFileSystem(IAppReader appReader, string? appFolderBeforeReaderIsReady)
+    private PartialData LoadContentTypesFromFileSystem(IAppReader appReader, string? appFolderBeforeReaderIsReady)
     {
-        ILogCall<(ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities)>? l = Log.Fn<(ICollection<IContentType> ContentType, ICollection<IEntity> Entities)>(timer: true);
+        var l = Log.Fn<PartialData>(timer: true);
         // must create a new loader for each app
         var loader = appFileContentTypesLoader.New();
         loader.Init(appReader, efcAppLoader.LogSettings, appFolderBeforeReaderIsReady);
-        var types = loader.ContentTypesAndEntities(entitiesSource: appReader.GetCache());
+        var types = loader.TypesAndEntities(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }
 

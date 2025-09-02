@@ -16,5 +16,5 @@ public interface IAppContentTypesLoader
     /// Get all ContentTypes for specified AppId.
     /// </summary>
     /// <param name="entitiesSource"></param>
-    (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) ContentTypesAndEntities(IEntitiesSource entitiesSource);
+    PartialData TypesAndEntities(IEntitiesSource entitiesSource);
 }

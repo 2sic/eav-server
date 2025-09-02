@@ -15,9 +15,9 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
     : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppContentTypesLoader
 {
     /// <inheritdoc />
-    public (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) TypesAndEntities(IEntitiesSource entitiesSource)
+    public PartialData TypesAndEntities(IEntitiesSource entitiesSource)
     {
-        ILogCall<(ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities)>? l = Log.Fn<(ICollection<IContentType> ContentType, ICollection<IEntity> Entities)>();
+        var l = Log.Fn<PartialData>();
         try
         {
             var extPaths = GetAllExtensionDataPaths();
@@ -38,12 +38,12 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
                 //.Distinct()
                 .ToListOpt();
 
-            return l.Return((allTypes, allEntities), $"types: {allTypes.Count}; entities: {allEntities.Count}");
+            return l.Return(new(allTypes, allEntities), $"types: {allTypes.Count}; entities: {allEntities.Count}");
         }
         catch (Exception e)
         {
             l.A("error " + e.Message);
-            return l.ReturnAsError(([], []));
+            return l.ReturnAsError(new([], []));
         }
     }
 
@@ -60,6 +60,8 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
             EntitiesSource= entitiesSource,
             LogSettings= LogSettings,
         });
+        // Expect local entities to be very few...
+        fsLoader.EntityIdSeed = -1000;
         var types = fsLoader.ContentTypes();
         // WIP - ATM hard-wired to bundles, but should probably go through all instead...
         var entities = fsLoader.Entities(AppDataFoldersConstants.BundlesFolder, entitiesSource);

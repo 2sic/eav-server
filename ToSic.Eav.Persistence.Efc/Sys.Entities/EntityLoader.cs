@@ -30,24 +30,17 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
     internal EntityQueries EntityQueries => field ??= new(appLoader.Context, appLoader.FeaturesService, Log);
 
 
-    internal TimeSpan LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[]? entityIds = null)
+    internal TimeSpan LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[] entityIds)
     {
         codeRefTrail.WithHere();
         var l = Log.IfSummary(appLoader.LogSettings)
-            .Fn<TimeSpan>($"{builder.Reader.AppId}, {entityIds?.Length ?? 0}", timer: true);
+            .Fn<TimeSpan>($"{builder.Reader.AppId}, {entityIds.Length}", timer: true);
         AddLogCount = 0; // reset, so anything in this call will be logged again up to 1000 entries
         var appId = builder.Reader.AppId;
 
         #region Prepare & Extend EntityIds
 
-        // ensure not null
-        entityIds ??= [];
-
         var filterByEntityIds = entityIds.Any();
-
-        // if the app already exists and is being reloaded, remove all existing data
-        if (!filterByEntityIds)
-            builder.RemoveAllItems();
 
         // Ensure published Versions of Drafts are also loaded (if filtered by EntityId, otherwise all Entities from the app are loaded anyway)
         var sqlTime = Stopwatch.StartNew();
