@@ -30,7 +30,8 @@ internal class EfcContentTypeLoaderService(
                 return l.Return(dbTypes, "no path");
 
             l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
-            var fileTypes = LoadContentTypesFromFileSystem(appReader, appFolderBeforeReaderIsReady);
+            var data = LoadContentTypesFromFileSystem(appReader, appFolderBeforeReaderIsReady);
+            var fileTypes = data.ContentTypes;
             if (fileTypes.SafeNone())
                 return l.Return(dbTypes, "no app file types");
 
@@ -59,13 +60,13 @@ internal class EfcContentTypeLoaderService(
     /// Will load file based app content-types.
     /// </summary>
     /// <returns></returns>
-    private IList<IContentType> LoadContentTypesFromFileSystem(IAppReader appReader, string? appFolderBeforeReaderIsReady)
+    private (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) LoadContentTypesFromFileSystem(IAppReader appReader, string? appFolderBeforeReaderIsReady)
     {
-        var l = Log.Fn<IList<IContentType>>(timer: true);
+        ILogCall<(ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities)>? l = Log.Fn<(ICollection<IContentType> ContentType, ICollection<IEntity> Entities)>(timer: true);
         // must create a new loader for each app
         var loader = appFileContentTypesLoader.New();
         loader.Init(appReader, efcAppLoader.LogSettings, appFolderBeforeReaderIsReady);
-        var types = loader.ContentTypes(entitiesSource: appReader.GetCache());
+        var types = loader.ContentTypesAndEntities(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }
 

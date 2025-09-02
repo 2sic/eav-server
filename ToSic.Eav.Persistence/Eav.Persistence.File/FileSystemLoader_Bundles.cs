@@ -119,7 +119,7 @@ partial class FileSystemLoader
         var entities = JsonBundleBundles
             .SelectMany(json =>
                 BuildEntitiesInBundles(Serializer, json.Key, json.Value, relationshipSource))
-            .Where(entity => entity != null)
+            .Where(entity => entity != null!)
             .ToListOpt();
 
         return l.Return(entities, $"Entities in bundles: {entities.Count}");

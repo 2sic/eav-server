@@ -72,7 +72,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
     #region Queries & Configuration
 
-    public IList<IEntity> Entities(string folder, DirectEntitiesSource relationships)
+    public IList<IEntity> Entities(string folder, IEntitiesSource relationships)
     {
         var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{EntityIdSeed}", timer: true);
             

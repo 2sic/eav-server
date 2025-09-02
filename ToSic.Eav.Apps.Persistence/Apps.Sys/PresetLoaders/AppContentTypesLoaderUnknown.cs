@@ -11,5 +11,5 @@ internal class AppContentTypesLoaderUnknown: ServiceBase, IAppContentTypesLoader
         Log.A("Unknown App Repo loader - won't load anything");
     }
 
-    public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource) => [];
+    public (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) ContentTypesAndEntities(IEntitiesSource entitiesSource) => ([], []);
 }
