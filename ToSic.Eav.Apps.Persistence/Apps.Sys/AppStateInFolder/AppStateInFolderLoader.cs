@@ -48,23 +48,23 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 
         var all = new List<string>();
         // find all RepositoryInfoOfFolder and let them tell us what paths to use
-        var types = AssemblyHandling
+        var folderRepositoryTypes = AssemblyHandling
             .FindInherited(typeof(FolderBasedRepository), Log)
             .ToListOpt();
-        l.A($"found {types.Count} Path providers");
+        l.A($"found {folderRepositoryTypes.Count} Path providers");
 
-        foreach (var typ in types)
+        foreach (var fldRepoType in folderRepositoryTypes)
             try
             {
-                l.A($"adding {typ.FullName}");
-                var instance = (FolderBasedRepository)ActivatorUtilities.CreateInstance(_serviceProvider, typ, []);
+                l.A($"adding {fldRepoType.FullName}");
+                var instance = (FolderBasedRepository)ActivatorUtilities.CreateInstance(_serviceProvider, fldRepoType, []);
                 var paths = instance.RootPaths;
-                if (paths != null)
+                if (paths != null! /* paranoid, as external implementations may not be null-safe */)
                     all.AddRange(paths);
             }
             catch (Exception e)
             {
-                l.A($"ran into a problem with one of the path providers: {typ?.FullName} - will skip.");
+                l.A($"ran into a problem with one of the path providers: {fldRepoType?.FullName} - will skip.");
                 l.Ex(e);
             }
         l.A(l.Try(() => string.Join(",", all)));

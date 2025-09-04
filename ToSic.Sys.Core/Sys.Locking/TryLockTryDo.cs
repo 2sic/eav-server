@@ -19,7 +19,8 @@ public class TryLockTryDo(object? lockObject = null)
     // TODO: @STV SHOULD be applied to more places that use a lock, as I assume it's robust
     public void Do(Func<bool> condition, Action action)
     {
-        if (!condition()) return;
+        if (!condition())
+            return;
         PreLockCount++;
         lock (_loadLock)
         {
