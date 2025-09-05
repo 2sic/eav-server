@@ -204,7 +204,7 @@ internal class EfcContentTypeLoaderService(
                 ? () => source
                 : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId));
 
-            var metaSource = new MetadataSourceDeferred(metaSourceFinder);
+            var metaSource = new MetadataProviderDeferred(metaSourceFinder);
             var metaData = new ContentTypeMetadata(set.StaticName, title: set.Name, source: metaSource);
 
             return dataBuilder.ContentType.Create(

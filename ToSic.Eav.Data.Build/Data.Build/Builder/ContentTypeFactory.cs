@@ -41,9 +41,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         // Must be null if no metadata
         var ctMdItems = ContentTypeDetails(ctSpecs?.Description).ToListOfOneOrNull();
 
-        MetadataSourceWipOld ctMdSource = ctMdItems == null
-            ? new MetadataSourceEmpty()
-            : new MetadataSourceItems(ctMdItems);
+        var ctMdSource = MetadataProvider.Create(ctMdItems);
 
         var ctMetadata = new ContentTypeMetadata(typeId: ctNameId, title: ctName, source: ctMdSource);
 

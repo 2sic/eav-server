@@ -16,9 +16,9 @@ public class ContentTypeAttributeMetadata(
     int key,
     string name,
     ValueTypes type,
-    ContentTypeAttributeSysSettings? sysSettings = null,
+    IMetadataProvider source,
+    ContentTypeAttributeSysSettings? sysSettings = null
     //IEnumerable<IEntity>? items = null,
-    MetadataSourceWipOld? source = null
     //IHasMetadataSourceAndExpiring? appSource = null,
     //Func<IHasMetadataSourceAndExpiring>? deferredSource = null
     )
@@ -98,7 +98,7 @@ public class ContentTypeAttributeMetadata(
             return null;
 
         var md = (
-                sourceMd.Source.SourceDirect?.List
+                sourceMd.Source.List?.List
                 ?? GetMetadataSource()?.GetMetadata((int)TargetTypes.Attribute, source.AttributeId)
             )
             ?.ToListOpt();
@@ -115,7 +115,7 @@ public class ContentTypeAttributeMetadata(
         // Check all the basics to ensure we can work
         if (!SysSettings.InheritMetadata)
             return null;
-        if (Source.MainSource is not IAppStateCache appState)
+        if (Source.LookupSource is not IAppStateCache appState)
             return null;
 
         // Get all the keys in the source-list except Empty (self-reference)

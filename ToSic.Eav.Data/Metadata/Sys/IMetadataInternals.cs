@@ -32,5 +32,5 @@ public interface IMetadataInternals
 
     internal int TargetType { get; }
 
-    internal MetadataSourceWipOld Source { get; }
+    internal IMetadataProvider Source { get; }
 }

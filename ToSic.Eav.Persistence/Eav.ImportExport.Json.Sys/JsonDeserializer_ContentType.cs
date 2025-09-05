@@ -80,7 +80,8 @@ partial class JsonSerializer
 
                         var appSourceForMd = DeserializationSettings?.MetadataSource;
 
-                        var mdSource = new MetadataSourceWipOld(mdEntities == null ? null : new ImmutableEntitiesSource(mdEntities.ToImmutableOpt()), appSourceForMd);
+                        // new MetadataSourceWipOld(mdEntities == null ? null : new ImmutableEntitiesSource(mdEntities.ToImmutableOpt()), appSourceForMd);
+                        var mdSource = MetadataProvider.Create(mdEntities, appSourceForMd);
                         var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
                             name: jsonAttr.Name, sysSettings: attrSysSettings, source: mdSource);
 
@@ -124,7 +125,7 @@ partial class JsonSerializer
                     configAppId: jsonType.Sharing?.ParentAppId ?? 0,
                     isAlwaysShared: jsonType.Sharing?.AlwaysShare ?? false,
                     attributes: attribs,
-                    metadata: new ContentTypeMetadata(typeId: jsonType.Id, title: jsonType.Name, source: new MetadataSourceItems(ctMeta))
+                    metadata: new ContentTypeMetadata(typeId: jsonType.Id, title: jsonType.Name, source: new MetadataProviderDirect(ctMeta))
                     // metadataItems: ctMeta
                 );
 

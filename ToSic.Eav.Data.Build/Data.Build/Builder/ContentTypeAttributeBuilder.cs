@@ -45,7 +45,8 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
     {
         metadata ??= new ContentTypeAttributeMetadata(key: id, name: name, type: type,
             sysSettings: sysSettings,
-            source: new MetadataSourceWipOld(metadataItems == null ? null : new ImmutableEntitiesSource(metadataItems.ToImmutableOpt()), null, metaSourceFinder));
+            source: MetadataProvider.Create(metadataItems, sourceDeferred: metaSourceFinder));
+            //source: new MetadataSourceWipOld(metadataItems == null ? null : new ImmutableEntitiesSource(metadataItems.ToImmutableOpt()), null, metaSourceFinder));
             //items: metadataItems, deferredSource: metaSourceFinder);
 
         return new ContentTypeAttribute

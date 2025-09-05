@@ -57,7 +57,7 @@ public class ContentTypeBuilder
 
         // Prepare metadata retrieval
         //metadata ??= new ContentTypeMetadata(typeId: nameId, items: metadataItems, deferredSource: metaSourceFinder, title: name);
-        metadata ??= new ContentTypeMetadata(typeId: nameId, title: name, source: new MetadataSourceEmpty());
+        metadata ??= new ContentTypeMetadata(typeId: nameId, title: name, source: new MetadataProviderEmpty());
 
         attributes ??= new List<IContentTypeAttribute>();
 
@@ -134,7 +134,7 @@ public class ContentTypeBuilder
         }
 
         metadata ??= metadataItems != default
-            ? new ContentTypeMetadata(original.NameId, original.Name, source: new MetadataSourceItems(metadataItems))
+            ? new ContentTypeMetadata(original.NameId, original.Name, source: new MetadataProviderDirect(metadataItems))
             : original.Metadata as ContentTypeMetadata;
 
         return Create(

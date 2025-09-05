@@ -37,13 +37,13 @@ public class EntityPartsLazy
         );
 
     private static IMetadata EmptyGetMetadataOf(Guid guid, string title)
-        => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataSourceEmpty());
+        => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataProviderEmpty());
 
     private static Func<Guid, string, IMetadata> CreateMetadataOfAppSources(IHasMetadataSourceAndExpiring? appSource)
-        => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataSourceApp(appSource));
+        => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataProviderApp(appSource));
 
     private static Func<Guid, string, IMetadata> CreateMetadataOfItems(IEnumerable<IEntity> items)
-        => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataSourceItems(items));
+        => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataProviderDirect(items));
 
     public static Func<TKey, string, IMetadata> ReUseMetadataFunc<TKey>(IMetadata original) 
         => (_, _) => original;
@@ -63,7 +63,7 @@ public class EntityPartsLazy
             targetType: asInternal.TargetType,
             key: key,
             title: title,
-            source: new MetadataSourceItems(items));
+            source: new MetadataProviderDirect(items));
     }
 
     //public static Func<TKey, string, IMetadata> CloneMetadataFunc<TKey>(

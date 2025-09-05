@@ -18,7 +18,7 @@ public class ContentTypeMetadata : Metadata<string>
     /// <param name="typeId">type id / static-name</param>
     /// <param name="title"></param>
     /// <param name="source"></param>
-    public ContentTypeMetadata(string typeId, string title, MetadataSourceWipOld source)
+    public ContentTypeMetadata(string typeId, string title, IMetadataProvider source)
         : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, source: source)
     { }
 
