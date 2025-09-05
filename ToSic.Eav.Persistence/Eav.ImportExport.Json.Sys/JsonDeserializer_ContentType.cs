@@ -80,8 +80,9 @@ partial class JsonSerializer
 
                         var appSourceForMd = DeserializationSettings?.MetadataSource;
 
+                        var mdSource = new MetadataSourceWipOld(mdEntities == null ? null : new ImmutableEntitiesSource(mdEntities.ToImmutableOpt()), appSourceForMd);
                         var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
-                            name: jsonAttr.Name, sysSettings: attrSysSettings, items: mdEntities, appSource: appSourceForMd);
+                            name: jsonAttr.Name, sysSettings: attrSysSettings, source: mdSource);
 
                         var attDef = Services.DataBuilder.TypeAttributeBuilder
                             .Create(
@@ -123,7 +124,8 @@ partial class JsonSerializer
                     configAppId: jsonType.Sharing?.ParentAppId ?? 0,
                     isAlwaysShared: jsonType.Sharing?.AlwaysShare ?? false,
                     attributes: attribs,
-                    metadataItems: ctMeta
+                    metadata: new ContentTypeMetadata(typeId: jsonType.Id, title: jsonType.Name, source: new MetadataSourceItems(ctMeta))
+                    // metadataItems: ctMeta
                 );
 
                 // new in 1.2 2sxc v12 - build relation relationships manager

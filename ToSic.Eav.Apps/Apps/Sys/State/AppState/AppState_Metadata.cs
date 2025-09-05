@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.State.Managers;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 using IMetadataSource = ToSic.Eav.Metadata.Sys.IMetadataSource;
@@ -11,7 +12,7 @@ partial class AppState:
 {
     [PrivateApi]
     internal IMetadata GetMetadataOf<T>(TargetTypes targetType, T key, string title)
-        => new Metadata<T>((int)targetType, key, title, appSource: MetadataManager);
+        => new Metadata<T>((int)targetType, key, title, source: new MetadataSourceApp(MetadataManager));
 
     [field: AllowNull, MaybeNull]
     private AppMetadataManager MetadataManager => field

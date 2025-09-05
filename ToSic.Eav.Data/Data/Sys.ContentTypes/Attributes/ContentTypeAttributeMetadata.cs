@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
@@ -16,11 +17,13 @@ public class ContentTypeAttributeMetadata(
     string name,
     ValueTypes type,
     ContentTypeAttributeSysSettings? sysSettings = null,
-    IEnumerable<IEntity>? items = null,
-    IHasMetadataSourceAndExpiring? appSource = null,
-    Func<IHasMetadataSourceAndExpiring>? deferredSource = null)
-    : Metadata<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", items: items,
-        appSource: appSource, deferredSource: deferredSource)
+    //IEnumerable<IEntity>? items = null,
+    MetadataSourceWipOld? source = null
+    //IHasMetadataSourceAndExpiring? appSource = null,
+    //Func<IHasMetadataSourceAndExpiring>? deferredSource = null
+    )
+    : Metadata<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})"/*, items: items*/, source: source)
+        // appSource: appSource, deferredSource: deferredSource)
 {
     private ContentTypeAttributeSysSettings SysSettings { get; } = sysSettings ?? new ContentTypeAttributeSysSettings(); // make sure it's never null
 

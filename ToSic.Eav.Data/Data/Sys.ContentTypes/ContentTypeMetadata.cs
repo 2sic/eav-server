@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Data.Sys.Entities.Sources;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;
@@ -15,12 +16,23 @@ public class ContentTypeMetadata : Metadata<string>
     /// Used in cases where the metadata-provider is already known
     /// </summary>
     /// <param name="typeId">type id / static-name</param>
-    /// <param name="items"></param>
-    /// <param name="deferredSource">remote / deferred metadata provider</param>
     /// <param name="title"></param>
-    public ContentTypeMetadata(string typeId, IEnumerable<IEntity>? items, Func<IHasMetadataSourceAndExpiring>? deferredSource, string title)
-        : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, items: items, deferredSource: deferredSource)
+    /// <param name="source"></param>
+    public ContentTypeMetadata(string typeId, string title, MetadataSourceWipOld source)
+        : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, source: source)
     { }
+
+    // #CleanUpMetadataVarieties 2025-09-05 2dm
+    ///// <summary>
+    ///// Used in cases where the metadata-provider is already known
+    ///// </summary>
+    ///// <param name="typeId">type id / static-name</param>
+    ///// <param name="items"></param>
+    ///// <param name="deferredSource">remote / deferred metadata provider</param>
+    ///// <param name="title"></param>
+    //public ContentTypeMetadata(string typeId, IEnumerable<IEntity>? items, Func<IHasMetadataSourceAndExpiring>? deferredSource, string title)
+    //    : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, items: items, deferredSource: deferredSource)
+    //{ }
 
     // #BreakingChangeV20 - removed this completely; must communicate
     ///// <summary>

@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Sys;
@@ -197,6 +198,15 @@ internal class EfcContentTypeLoaderService(
                 .Cast<IContentTypeAttribute>()
                 .ToList();
 
+            // 2024-05-16 2dm changing to not use a Reader, as it's not needed and may cause #IServiceProviderDisposedException
+            //metaSourceFinder: () => notGhost ? source : appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
+            Func<IHasMetadataSourceAndExpiring> metaSourceFinder = notGhost
+                ? () => source
+                : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId));
+
+            var metaSource = new MetadataSourceDeferred(metaSourceFinder);
+            var metaData = new ContentTypeMetadata(set.StaticName, title: set.Name, source: metaSource);
+
             return dataBuilder.ContentType.Create(
                 appId: appId,
                 name: set.Name,
@@ -207,11 +217,10 @@ internal class EfcContentTypeLoaderService(
                 configZoneId: set.ZoneId,
                 configAppId: set.AppId,
                 isAlwaysShared: set.ConfigIsOmnipresent,
-                // 2024-05-16 2dm changing to not use a Reader, as it's not needed and may cause #IServiceProviderDisposedException
-                //metaSourceFinder: () => notGhost ? source : appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
-                metaSourceFinder: notGhost
-                    ? () => source
-                    : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId)),
+                metadata: metaData,
+                //metaSourceFinder: notGhost
+                //    ? () => source
+                //    : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId)),
                 attributes: ctAttributes
             );
         });
