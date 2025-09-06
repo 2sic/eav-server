@@ -81,18 +81,14 @@ partial class JsonSerializer
                         var appSourceForMd = DeserializationSettings?.MetadataSource;
 
                         // Experimental
-                        IMetadataProvider mdSource;
-                        var sysSettings = jsonAttr.SysSettings;
-                        var inheritsMetadata = sysSettings != null && !string.IsNullOrEmpty(sysSettings.InheritMetadataOf);
-                        if (sysSettings != null && !string.IsNullOrEmpty(sysSettings.InheritMetadataOf) && Guid.TryParse(sysSettings.InheritMetadataOf, out var inheritsGuid))
-                        {
-                            mdSource = new MetadataProviderInheritField(relationshipsSource, inheritsGuid);
-                        }
-                        else
-                        {
-                            // new MetadataSourceWipOld(mdEntities == null ? null : new ImmutableEntitiesSource(mdEntities.ToImmutableOpt()), appSourceForMd);
-                            mdSource = MetadataProvider.Create(mdEntities, appSourceForMd);
-                        }
+
+                        var mdSource = !string.IsNullOrEmpty(jsonAttr.SysSettings?.InheritMetadataOf)
+                            // #SharedFieldDefinition
+                            // If it's inheriting, don't add a list of metadata.
+                            // Instead, supply the App which will be able to give the metadata once it's all loaded
+                            ? MetadataProvider.Create(source: appSourceForMd)
+                            // Standard mode - either use metadata found, or allow lookup later on
+                            : MetadataProvider.Create(mdEntities, appSourceForMd);
 
                         var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
                             name: jsonAttr.Name, sysSettings: attrSysSettings, source: mdSource);
@@ -107,7 +103,6 @@ partial class JsonSerializer
                                 // #SharedFieldDefinition
                                 guid: jsonAttr.Guid,
                                 sysSettings: attrSysSettings,
-                                // metadataItems: mdEntities,
                                 metadata: attrMetadata
                             );
 

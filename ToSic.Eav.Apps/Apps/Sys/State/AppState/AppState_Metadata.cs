@@ -17,7 +17,7 @@ partial class AppState:
 
     [field: AllowNull, MaybeNull]
     private AppMetadataManager MetadataManager => field
-        ??= !Loading
+        ??= !_loading
             ? throw new("Trying to init metadata, but App is not in loading state.")
             : AppContentTypesFromRepository != null
                 ? throw new("Can't init metadata if content-types are already set")

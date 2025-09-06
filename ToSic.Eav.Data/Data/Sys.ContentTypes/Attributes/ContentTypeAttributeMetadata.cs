@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.Data.Sys.Entities.Sources;
+﻿using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
@@ -12,20 +10,12 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeAttributeMetadata(
-    int key,
-    string name,
-    ValueTypes type,
-    IMetadataProvider source,
-    ContentTypeAttributeSysSettings? sysSettings = null
-    //IEnumerable<IEntity>? items = null,
-    //IHasMetadataSourceAndExpiring? appSource = null,
-    //Func<IHasMetadataSourceAndExpiring>? deferredSource = null
-    )
-    : Metadata<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})"/*, items: items*/, source: source)
-        // appSource: appSource, deferredSource: deferredSource)
+public class ContentTypeAttributeMetadata(int key, string name, ValueTypes type, IMetadataProvider source, ContentTypeAttributeSysSettings? sysSettings = null)
+    : Metadata<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", source: source)
 {
-    private ContentTypeAttributeSysSettings SysSettings { get; } = sysSettings ?? new ContentTypeAttributeSysSettings(); // make sure it's never null
+    private ContentTypeAttributeSysSettings SysSettings { get; } = sysSettings ?? new ContentTypeAttributeSysSettings();
+
+    internal IMetadataProvider SourceForUseOfInheritingAttributes => Source;
 
     /// <summary>
     /// Check if this metadata belongs to this attribute directly.
@@ -52,89 +42,34 @@ public class ContentTypeAttributeMetadata(
         if (!SysSettings.InheritMetadata)
             return ownMd;
 
-        // WIP try to get to work - but needs more testing
-        if (source is MetadataProviderInheritField)
-            return ownMd;
-
         // Assemble all the pieces from the sources it inherits from
         var final = new List<IEntity>();
         try
         {
+            var helper = new ContentTypeAttributeMetadataLookup(SysSettings, Source, GetMetadataSource);
+            // First get all source attributes
+            // This should not be cached, since an early access can happen during App State Build
+            // Where it won't be able to find them yet.
             foreach (var sourceDef in SysSettings.InheritMetadataOf!)
             {
-                var fromCurrent = GetMdOfOneSource(sourceDef.Key, sourceDef.Value, ownMd);
-                if (fromCurrent.Count == 0)
+                var toAdd = helper.GetMdOfOneSource(sourceDef.Key, sourceDef.Value, ownMd);
+                if (toAdd.Count == 0)
                     continue;
-                var ofNewTypes = fromCurrent
+
+                // Prevent multiple additions of the same type, like multiple @All metadata
+                // If we have multiple places we inherit from, then only add types
+                // which previous iterations didn't add yet.
+                var addOnlyAdditionalTypes = toAdd
                     .Where(e => !final.Any(f => f.Type.Is(e.Type.NameId)))
                     .ToListOpt();
-                if (ofNewTypes.SafeAny())
-                    final.AddRange(ofNewTypes);
+
+                if (addOnlyAdditionalTypes.Any())
+                    final.AddRange(addOnlyAdditionalTypes);
             }
         }
         catch { /* ignore - in case something breaks here, just return empty list */ }
 
         return final;
     }
-
-    private ICollection<IEntity> GetMdOfOneSource(Guid source, string? filter, ICollection<IEntity> ownEntities)
-    {
-        var entities = source == Guid.Empty
-            ? ownEntities
-            : MetadataOfOneSource(source);
-        var list = !filter.HasValue()
-            ? entities
-            : entities?.OfType(filter).ToListOpt();
-        return list ?? [];
-    }
-
-    private ICollection<IEntity>? MetadataOfOneSource(Guid guid)
-    {
-        // Empty refers to the own MD, should never get to here
-        if (guid == Guid.Empty)
-            return null;
-
-        // Find source and its metadata
-        var source = SourceAttributes?.FirstOrDefault(a => a.Guid == guid);
-
-        // Null-Check & cast inner source to this type, so we can access it's private .Source later on
-        if (source?.Metadata is not ContentTypeAttributeMetadata sourceMd)
-            return null;
-
-        var md = (
-                sourceMd.Source.List?.List
-                ?? GetMetadataSource()?.GetMetadata((int)TargetTypes.Attribute, source.AttributeId)
-            )
-            ?.ToListOpt();
-
-        return md; // can be null
-    }
-
-
-    /// <summary>
-    /// The Source Attribute (if any) which would provide the real metadata
-    /// </summary>
-    private ICollection<IContentTypeAttribute>? SourceAttributes => _sourceAttributes.Get(() =>
-    {
-        // Check all the basics to ensure we can work
-        if (!SysSettings.InheritMetadata)
-            return null;
-        if (Source.LookupSource is not IAppStateCache appState)
-            return null;
-
-        // Get all the keys in the source-list except Empty (self-reference)
-        var sourceKeys = SysSettings.InheritMetadataOf!.Keys
-            .Where(guid => guid != Guid.Empty)
-            .Cast<Guid?>()
-            .ToArray();
-
-        // Get all attributes in all content-types of the App and keep the ones we need
-        var appAttribs = appState.ContentTypes
-            .SelectMany(ct => ct.Attributes);
-        return appAttribs
-            .Where(a => sourceKeys.Contains(a.Guid))
-            .ToListOpt();
-    });
-    private readonly GetOnce<ICollection<IContentTypeAttribute>?> _sourceAttributes = new();
 
 }

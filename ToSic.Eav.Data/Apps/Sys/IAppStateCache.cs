@@ -38,12 +38,6 @@ public interface IAppStateCache: ICacheExpiring,
     void DoInLock(ILog parentLog, Action transaction);
 
     /// <summary>
-    /// Shows that the initial load has completed
-    /// </summary>
-    public bool FirstLoadCompleted { get; }
-
-
-    /// <summary>
     /// Health-info, added in 19.03
     /// </summary>
     bool IsHealthy { get; }
