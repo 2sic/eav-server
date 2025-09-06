@@ -38,11 +38,9 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
                        ?? Guid.Empty.ToString();
         var ctScope = scope ?? ctSpecs?.Scope.NullIfNoValue() ?? ScopeConstants.Default;
 
-        // Must be null if no metadata
+        // Must be null if no metadata, so that it would then assume empty list...?
         var ctMdItems = ContentTypeDetails(ctSpecs?.Description).ToListOfOneOrNull();
-
         var ctMdSource = MetadataProvider.Create(ctMdItems);
-
         var ctMetadata = new ContentTypeMetadata(typeId: ctNameId, title: ctName, source: ctMdSource);
 
         var (attributes, vAttributes) = GenerateAttributes(type);

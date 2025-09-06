@@ -9,6 +9,7 @@ using ToSic.Sys.Caching.Statistics;
 
 namespace ToSic.Eav.Apps.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppStateCache: ICacheExpiring,
     IHasMetadata,
     IHasPiggyBack,
@@ -35,6 +36,12 @@ public interface IAppStateCache: ICacheExpiring,
     void PreRemove();
 
     void DoInLock(ILog parentLog, Action transaction);
+
+    /// <summary>
+    /// Shows that the initial load has completed
+    /// </summary>
+    public bool FirstLoadCompleted { get; }
+
 
     /// <summary>
     /// Health-info, added in 19.03

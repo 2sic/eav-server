@@ -7,12 +7,12 @@ partial class AppState
     /// <summary>
     /// Shows that the app is loading / building up the data.
     /// </summary>
-    private bool _loading;
+    public bool Loading { get; private set; }
 
     /// <summary>
     /// Shows that the initial load has completed
     /// </summary>
-    private bool _firstLoadCompleted;
+    public bool FirstLoadCompleted { get; private set; }
 
     /// <summary>
     /// Show how many times the app has been Dynamically updated - in case we run into cache rebuild problems.
