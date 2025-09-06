@@ -40,7 +40,7 @@ public class EntityPartsLazy
         => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataProviderEmpty());
 
     private static Func<Guid, string, IMetadata> CreateMetadataOfAppSources(IHasMetadataSourceAndExpiring? appSource)
-        => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataProviderApp(appSource));
+        => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: MetadataProvider.Create(source: appSource));
 
     private static Func<Guid, string, IMetadata> CreateMetadataOfItems(IEnumerable<IEntity> items)
         => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataProviderDirect(items));
