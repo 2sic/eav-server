@@ -52,6 +52,10 @@ public class ContentTypeAttributeMetadata(
         if (!SysSettings.InheritMetadata)
             return ownMd;
 
+        // WIP try to get to work - but needs more testing
+        if (source is MetadataProviderInheritField)
+            return ownMd;
+
         // Assemble all the pieces from the sources it inherits from
         var final = new List<IEntity>();
         try

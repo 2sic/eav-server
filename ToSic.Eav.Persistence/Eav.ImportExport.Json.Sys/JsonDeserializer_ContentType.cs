@@ -64,7 +64,7 @@ partial class JsonSerializer
 
                 // Prepare ContentType Attributes
                 l.A("deserialize attributes");
-                var attribs = (jsonType.AttributesSafe())
+                var attribs = jsonType.AttributesSafe()
                     .Select((jsonAttr, pos) =>
                     {
                         var valType = ValueTypeHelpers.Get(jsonAttr.Type);
@@ -80,8 +80,20 @@ partial class JsonSerializer
 
                         var appSourceForMd = DeserializationSettings?.MetadataSource;
 
-                        // new MetadataSourceWipOld(mdEntities == null ? null : new ImmutableEntitiesSource(mdEntities.ToImmutableOpt()), appSourceForMd);
-                        var mdSource = MetadataProvider.Create(mdEntities, appSourceForMd);
+                        // Experimental
+                        IMetadataProvider mdSource;
+                        var sysSettings = jsonAttr.SysSettings;
+                        var inheritsMetadata = sysSettings != null && !string.IsNullOrEmpty(sysSettings.InheritMetadataOf);
+                        if (sysSettings != null && !string.IsNullOrEmpty(sysSettings.InheritMetadataOf) && Guid.TryParse(sysSettings.InheritMetadataOf, out var inheritsGuid))
+                        {
+                            mdSource = new MetadataProviderInheritField(relationshipsSource, inheritsGuid);
+                        }
+                        else
+                        {
+                            // new MetadataSourceWipOld(mdEntities == null ? null : new ImmutableEntitiesSource(mdEntities.ToImmutableOpt()), appSourceForMd);
+                            mdSource = MetadataProvider.Create(mdEntities, appSourceForMd);
+                        }
+
                         var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
                             name: jsonAttr.Name, sysSettings: attrSysSettings, source: mdSource);
 
