@@ -4,6 +4,7 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Metadata.Sys;
 
 namespace ToSic.Eav.Data.Build;
@@ -38,8 +39,9 @@ public class ContentTypeBuilder
 
         // Metadata (2)
         ContentTypeMetadata? metadata = default,                 // for clone
-        IEnumerable<IEntity>? metadataItems = default,
-        Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = default,    // for find-it-yourself
+        // #CleanUpMetadataVarieties 2025-09-05 2dm
+        //IEnumerable<IEntity>? metadataItems = default,
+        //Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = default,    // for find-it-yourself
 
         // Save Specs (2) Older stuff, should be removed some day
         bool? onSaveSortAttributes = default,
@@ -54,7 +56,8 @@ public class ContentTypeBuilder
                 parentTypeId.Value));
 
         // Prepare metadata retrieval
-        metadata ??= new ContentTypeMetadata(typeId: nameId, items: metadataItems, deferredSource: metaSourceFinder, title: name);
+        //metadata ??= new ContentTypeMetadata(typeId: nameId, items: metadataItems, deferredSource: metaSourceFinder, title: name);
+        metadata ??= new ContentTypeMetadata(typeId: nameId, title: name, source: new MetadataProviderEmpty());
 
         attributes ??= new List<IContentTypeAttribute>();
 
@@ -131,7 +134,7 @@ public class ContentTypeBuilder
         }
 
         metadata ??= metadataItems != default
-            ? new ContentTypeMetadata(original.NameId, metadataItems, null, original.Name)
+            ? new(original.NameId, original.Name, source: MetadataProvider.Create(metadataItems))
             : original.Metadata as ContentTypeMetadata;
 
         return Create(

@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Values;
 
 namespace ToSic.Eav.Data.Build;
@@ -37,8 +38,10 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
                        ?? Guid.Empty.ToString();
         var ctScope = scope ?? ctSpecs?.Scope.NullIfNoValue() ?? ScopeConstants.Default;
 
-        // Must be null if no metadata
-        var ctMetadata = ContentTypeDetails(ctSpecs?.Description).ToListOfOneOrNull();
+        // Must be null if no metadata, so that it would then assume empty list...?
+        var ctMdItems = ContentTypeDetails(ctSpecs?.Description).ToListOfOneOrNull();
+        var ctMdSource = MetadataProvider.Create(ctMdItems);
+        var ctMetadata = new ContentTypeMetadata(typeId: ctNameId, title: ctName, source: ctMdSource);
 
         var (attributes, vAttributes) = GenerateAttributes(type);
 
@@ -52,7 +55,8 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             nameId: ctNameId,
             scope: ctScope,
             id: 0,
-            metadataItems: ctMetadata,
+            metadata: ctMetadata,
+            //metadataItems: ctMdItems,
             isDynamic: true,
             attributes: attributes,
             decorators: vAttributeDecorator.ToListOfOneOrNull()

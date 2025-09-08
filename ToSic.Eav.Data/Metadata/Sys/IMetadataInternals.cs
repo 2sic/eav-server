@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 
 
 namespace ToSic.Eav.Metadata.Sys;
@@ -25,6 +26,11 @@ public interface IMetadataInternals
     /// <returns></returns>
     IAppIdentity? Context(string type);
 
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    (int TargetType, ICollection<IEntity>? list, IHasMetadataSourceAndExpiring? appSource, Func<IHasMetadataSourceAndExpiring>? deferredSource) GetCloneSpecs();
+    // #CleanUpMetadataVarieties 2025-09-05 2dm
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
+    //(int TargetType, MetadataSourceWipOld source, ICollection<IEntity>? list, IHasMetadataSourceAndExpiring? appSource, Func<IHasMetadataSourceAndExpiring>? deferredSource) GetCloneSpecs();
+
+    internal int TargetType { get; }
+
+    internal IMetadataProvider Source { get; }
 }

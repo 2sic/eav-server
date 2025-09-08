@@ -15,30 +15,42 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
     : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppContentTypesLoader
 {
     /// <inheritdoc />
-    public IList<IContentType> ContentTypes(IEntitiesSource entitiesSource)
+    public PartialData TypesAndEntities(IEntitiesSource entitiesSource)
     {
-        var l = Log.Fn<IList<IContentType>>();
+        var l = Log.Fn<PartialData>();
         try
         {
             var extPaths = GetAllExtensionDataPaths();
             l.A($"Found {extPaths.Count} extensions with {FolderConstants.DataFolderProtected} folder");
-            var allTypes = extPaths
-                .SelectMany(p => LoadTypesFromOneExtensionPath(p, entitiesSource))
+            
+            var allData = extPaths
+                .Select(p => LoadDataFromOneExtensionPath(p, entitiesSource))
+                .ToListOpt();
+
+            var allTypes = allData
+                .SelectMany(pair => pair.ContentTypes)
+                // Not sure why this is necessary, best document when we ever find out
                 .Distinct(new EqualityComparer_ContentType())
                 .ToListOpt();
-            return l.Return(allTypes, "ok");
+
+            var allEntities = allData
+                .SelectMany(pair => pair.Entities)
+                //.Distinct()
+                .ToListOpt();
+
+            return l.Return(new(allTypes, allEntities), $"types: {allTypes.Count}; entities: {allEntities.Count}");
         }
         catch (Exception e)
         {
             l.A("error " + e.Message);
-            return l.Return([], "error");
+            return l.ReturnAsError(new([], []));
         }
     }
 
 
-    private IEnumerable<IContentType> LoadTypesFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
+    private (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) LoadDataFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
     {
-        var l = Log.IfSummary(LogSettings).Fn<IEnumerable<IContentType>>(extensionPath);
+        var l = Log.IfSummary(LogSettings).Fn<(ICollection<IContentType>, ICollection<IEntity>)>(extensionPath);
         var fsLoader = fslGenerator.New(options: new()
         {
             AppId = AppIdentity.AppId,
@@ -48,8 +60,12 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
             EntitiesSource= entitiesSource,
             LogSettings= LogSettings,
         });
+        // Expect local entities to be very few...
+        fsLoader.EntityIdSeed = -1000;
         var types = fsLoader.ContentTypes();
-        return l.Return(types, $"found: {types.Count}");
+        // WIP - ATM hard-wired to bundles, but should probably go through all instead...
+        var entities = fsLoader.Entities(AppDataFoldersConstants.BundlesFolder, entitiesSource);
+        return l.Return((types, entities), $"types: {types.Count}; entities: {entities.Count}");
     }
 
 

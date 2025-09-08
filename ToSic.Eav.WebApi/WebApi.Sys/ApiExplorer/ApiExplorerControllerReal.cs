@@ -159,17 +159,20 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
 
         var localFiles =
             AppFileController.All(appId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
-                .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) }).ToArray();
+                .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) })
+                .ToArray();
         l.A($"local files:{localFiles.Length}");
 
         var globalFiles = user.IsSystemAdmin
             ? AppFileController.All(appId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
-                .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) }).ToArray()
+                .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) })
+                .ToArray()
             : [];
         l.A($"global files:{globalFiles.Length}");
 
         // only for api controller files
-        var allInAppCode = AppFileController.AllApiFilesInAppCodeForAllEditions(appId).ToArray();
+        var allInAppCode = AppFileController.AllApiFilesInAppCodeForAllEditions(appId)
+            .ToArray();
         l.A($"all in AppCode:{allInAppCode.Length}");
 
         return l.ReturnAsOk(new() { Files = localFiles.Union(globalFiles).Union(allInAppCode) });

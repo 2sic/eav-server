@@ -27,18 +27,36 @@ public partial class Metadata<T> : IMetadata, IMetadataInternals, ITimestamped
     /// <param name="targetType"></param>
     /// <param name="key"></param>
     /// <param name="title">Title of the target we're describing - for further automating when using or creating more Metadata</param>
-    /// <param name="items">A direct list of items to use as metadata - instead of lazy-loading from a source. If specified, auto-sync will be disabled.</param>
-    /// <param name="appSource"></param>
-    /// <param name="deferredSource"></param>
-    public Metadata(int targetType, T key, string title, IEnumerable<IEntity>? items = default, IHasMetadataSourceAndExpiring? appSource = default, Func<IHasMetadataSourceAndExpiring>? deferredSource = default)
+    /// <param name="source">Source of the metadata - either a direct entity-list, or something which can later look up data</param>
+    public Metadata(int targetType, T key, string title, IMetadataProvider source)
     {
         _targetType = targetType;
         Key = key;
         _metadataTitle = title;
-        Source = new(items == null ? null : new ImmutableEntitiesSource(items.ToImmutableOpt()), appSource, deferredSource);
+        Source = source;
     }
 
-    protected VariableSource<IHasMetadataSourceAndExpiring> Source { get; }
+    ///// <summary>
+    ///// Constructor that can take both a direct App-Source and a deferred source.
+    ///// Note that both sources can be null!
+    ///// </summary>
+    ///// <param name="targetType"></param>
+    ///// <param name="key"></param>
+    ///// <param name="title">Title of the target we're describing - for further automating when using or creating more Metadata</param>
+    ///// <param name="items">A direct list of items to use as metadata - instead of lazy-loading from a source. If specified, auto-sync will be disabled.</param>
+    ///// <param name="appSource"></param>
+    ///// <param name="deferredSource"></param>
+    //public Metadata(int targetType, T key, string title, IEnumerable<IEntity>? items = default, IHasMetadataSourceAndExpiring? appSource = default, Func<IHasMetadataSourceAndExpiring>? deferredSource = default)
+    //{
+    //    _targetType = targetType;
+    //    Key = key;
+    //    _metadataTitle = title;
+    //    Source = new MetadataSourceWipOld(items == null ? null : new ImmutableEntitiesSource(items.ToImmutableOpt()), appSource, deferredSource);
+    //}
+
+    protected IMetadataProvider Source { get; }
+
+    IMetadataProvider IMetadataInternals.Source => Source;
 
     #endregion
 
@@ -73,6 +91,8 @@ public partial class Metadata<T> : IMetadata, IMetadataInternals, ITimestamped
     /// </summary>
     private readonly int _targetType;
 
+    int IMetadataInternals.TargetType => _targetType;
+
     /// <summary>
     /// The key which identifies the item we're enriching with metadata
     /// </summary>
@@ -90,8 +110,9 @@ public partial class Metadata<T> : IMetadata, IMetadataInternals, ITimestamped
 
     public IAppIdentity? Context(string type) => GetMetadataSource();
 
-    public (int TargetType, ICollection<IEntity>? list, IHasMetadataSourceAndExpiring? appSource, Func<IHasMetadataSourceAndExpiring>? deferredSource) GetCloneSpecs() 
-        => (_targetType, Source.SourceDirect?.List?.ToListOpt(), Source.SourceApp, Source.SourceDeferred);
+    // #CleanUpMetadataVarieties 2025-09-05 2dm
+    //public (int TargetType, MetadataSourceWipOld source, ICollection<IEntity>? list, IHasMetadataSourceAndExpiring? appSource, Func<IHasMetadataSourceAndExpiring>? deferredSource) GetCloneSpecs() 
+    //    => (_targetType, Source, Source.SourceDirect?.List?.ToListOpt(), Source.SourceApp, Source.SourceDeferred);
 
     #endregion
 }

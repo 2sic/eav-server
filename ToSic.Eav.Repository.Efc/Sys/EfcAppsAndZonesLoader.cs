@@ -28,7 +28,7 @@ internal class EfcAppsAndZonesLoader(Generator<DbStorage.DbStorage, StorageOptio
     public IAppStateCache AppState(int appId, CodeRefTrail codeRefTrail)
         => _dbStorage.Loader.AppState(appId, codeRefTrail);
 
-    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[]? entityIds = null)
+    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds)
         => _dbStorage.Loader.Update(app, startAt, codeRefTrail, entityIds);
 
     public IDictionary<int, Zone> Zones()

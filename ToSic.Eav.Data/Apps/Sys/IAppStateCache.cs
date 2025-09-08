@@ -9,6 +9,7 @@ using ToSic.Sys.Caching.Statistics;
 
 namespace ToSic.Eav.Apps.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppStateCache: ICacheExpiring,
     IHasMetadata,
     IHasPiggyBack,

@@ -11,7 +11,9 @@ partial class AppState:
 {
     [PrivateApi]
     internal IMetadata GetMetadataOf<T>(TargetTypes targetType, T key, string title)
-        => new Metadata<T>((int)targetType, key, title, appSource: MetadataManager);
+        => MetadataManager.GetMetadataOf(targetType, key, protector: default, title: title);
+    // till 2025-09-05 was duplicate code:
+    // new Metadata<T>((int)targetType, key, title, source: new MetadataProviderApp(MetadataManager));
 
     [field: AllowNull, MaybeNull]
     private AppMetadataManager MetadataManager => field

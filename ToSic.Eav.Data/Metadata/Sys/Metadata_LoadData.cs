@@ -84,7 +84,7 @@ partial class Metadata<T>
     {
         //_debugLoadFromProvider++;
         var mdProvider = GetMetadataSource();
-        var mdOfKey = Source.SourceDirect?.List
+        var mdOfKey = Source.List?.List
                       ?? mdProvider?.GetMetadata(_targetType, Key)
                       ?? [];
         //_debugUse++;
@@ -100,7 +100,7 @@ partial class Metadata<T>
     /// </summary>
     /// <returns></returns>
     [PrivateApi]
-    protected IMetadataSource? GetMetadataSource() => _mdsGetOnce.Get(() => Source.MainSource?.MetadataSource);
+    protected IMetadataSource? GetMetadataSource() => _mdsGetOnce.Get(() => Source.LookupSource?.MetadataSource);
     private readonly GetOnce<IMetadataSource?> _mdsGetOnce = new();
 
 }

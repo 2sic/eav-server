@@ -64,7 +64,7 @@ partial class JsonSerializer
 
                 // Prepare ContentType Attributes
                 l.A("deserialize attributes");
-                var attribs = (jsonType.AttributesSafe())
+                var attribs = jsonType.AttributesSafe()
                     .Select((jsonAttr, pos) =>
                     {
                         var valType = ValueTypeHelpers.Get(jsonAttr.Type);
@@ -80,8 +80,18 @@ partial class JsonSerializer
 
                         var appSourceForMd = DeserializationSettings?.MetadataSource;
 
+                        // Experimental
+
+                        var mdSource = !string.IsNullOrEmpty(jsonAttr.SysSettings?.InheritMetadataOf)
+                            // #SharedFieldDefinition
+                            // If it's inheriting, don't add a list of metadata.
+                            // Instead, supply the App which will be able to give the metadata once it's all loaded
+                            ? MetadataProvider.Create(source: appSourceForMd)
+                            // Standard mode - either use metadata found, or allow lookup later on
+                            : MetadataProvider.Create(mdEntities, appSourceForMd);
+
                         var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
-                            name: jsonAttr.Name, sysSettings: attrSysSettings, items: mdEntities, appSource: appSourceForMd);
+                            name: jsonAttr.Name, sysSettings: attrSysSettings, source: mdSource);
 
                         var attDef = Services.DataBuilder.TypeAttributeBuilder
                             .Create(
@@ -93,7 +103,6 @@ partial class JsonSerializer
                                 // #SharedFieldDefinition
                                 guid: jsonAttr.Guid,
                                 sysSettings: attrSysSettings,
-                                // metadataItems: mdEntities,
                                 metadata: attrMetadata
                             );
 
@@ -123,7 +132,8 @@ partial class JsonSerializer
                     configAppId: jsonType.Sharing?.ParentAppId ?? 0,
                     isAlwaysShared: jsonType.Sharing?.AlwaysShare ?? false,
                     attributes: attribs,
-                    metadataItems: ctMeta
+                    metadata: new ContentTypeMetadata(typeId: jsonType.Id, title: jsonType.Name, source: MetadataProvider.Create(ctMeta))
+                    // metadataItems: ctMeta
                 );
 
                 // new in 1.2 2sxc v12 - build relation relationships manager

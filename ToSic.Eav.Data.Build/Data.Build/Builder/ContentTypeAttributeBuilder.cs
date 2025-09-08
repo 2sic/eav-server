@@ -1,6 +1,7 @@
 ﻿
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
@@ -43,7 +44,10 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = null)
     {
         metadata ??= new ContentTypeAttributeMetadata(key: id, name: name, type: type,
-            sysSettings: sysSettings, items: metadataItems, deferredSource: metaSourceFinder);
+            sysSettings: sysSettings,
+            source: MetadataProvider.Create(metadataItems, sourceDeferred: metaSourceFinder));
+            //source: new MetadataSourceWipOld(metadataItems == null ? null : new ImmutableEntitiesSource(metadataItems.ToImmutableOpt()), null, metaSourceFinder));
+            //items: metadataItems, deferredSource: metaSourceFinder);
 
         return new ContentTypeAttribute
         {
@@ -70,16 +74,19 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         int? id = default,
         int? sortOrder = default,
         IMetadata? metadata = default,
-        List<IEntity>? metadataItems = default,
-        Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = null
+        List<IEntity>? metadataItems = default//,
+        // #CleanUpMetadataVarieties 2025-09-05 2dm
+        //Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = null
     )
     {
         // Prepare parts which we also need for new Metadata Creation
         name ??= original.Name;
         id ??= original.AttributeId;
         var realType = type ?? original.Type;
-        metadata ??= EntityPartsLazy.CloneMetadataFunc<int>(original.Metadata, items: metadataItems,
-            deferredSource: metaSourceFinder)(id.Value, $"{name} ({realType})");
+        metadata ??= EntityPartsLazy.CloneMetadataFunc<int>(
+            original.Metadata,
+            items: metadataItems
+            /*deferredSource: metaSourceFinder*/)(id.Value, $"{name} ({realType})");
 
         return Create(
             appId: appId ?? original.AppId,

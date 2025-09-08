@@ -94,7 +94,7 @@ public class EntityApi(
 
         // Add EditInfo for read-only data
         foreach (var bundle in list) 
-            bundle.Header!.EditInfo = new(bundle.Entity!);
+            bundle.Header!.EditInfo = new(bundle.Entity);
 
         return list;
     }
