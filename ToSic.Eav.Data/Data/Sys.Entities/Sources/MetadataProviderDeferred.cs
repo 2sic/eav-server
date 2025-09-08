@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Sys.Entities.Sources;
 
-public class MetadataProviderDeferred(Func<IHasMetadataSourceAndExpiring> sourceDeferred) : IMetadataProvider
+internal class MetadataProviderDeferred(Func<IHasMetadataSourceAndExpiring> sourceDeferred) : IMetadataProvider
 {
     public DirectEntitiesSource? List => null;
 

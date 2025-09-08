@@ -132,7 +132,7 @@ partial class JsonSerializer
                     configAppId: jsonType.Sharing?.ParentAppId ?? 0,
                     isAlwaysShared: jsonType.Sharing?.AlwaysShare ?? false,
                     attributes: attribs,
-                    metadata: new ContentTypeMetadata(typeId: jsonType.Id, title: jsonType.Name, source: new MetadataProviderDirect(ctMeta))
+                    metadata: new ContentTypeMetadata(typeId: jsonType.Id, title: jsonType.Name, source: MetadataProvider.Create(ctMeta))
                     // metadataItems: ctMeta
                 );
 

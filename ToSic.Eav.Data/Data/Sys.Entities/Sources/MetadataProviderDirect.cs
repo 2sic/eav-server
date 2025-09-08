@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Sys.Entities.Sources;
 
-public class MetadataProviderDirect(DirectEntitiesSource sourceDirect) : IMetadataProvider
+internal class MetadataProviderDirect(DirectEntitiesSource sourceDirect) : IMetadataProvider
 {
     public MetadataProviderDirect(IEnumerable<IEntity> items) : this(new ImmutableEntitiesSource(items.ToImmutableOpt()))
     { }

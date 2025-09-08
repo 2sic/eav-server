@@ -146,5 +146,5 @@ internal class AppMetadataManager(IAppIdentity appIdentity, ICacheExpiring cache
     public IMetadataSource MetadataSource => this;
 
     public IMetadata GetMetadataOf<T>(TargetTypes targetType, T key, NoParamOrder protector, string? title = null)
-        => new Metadata<T>((int)targetType, key, title ?? "title not known", source: new MetadataProviderApp(this));
+        => new Metadata<T>((int)targetType, key, title ?? "title not known", source: MetadataProvider.Create(this));
 }

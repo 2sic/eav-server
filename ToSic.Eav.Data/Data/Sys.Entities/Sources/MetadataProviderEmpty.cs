@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Sys.Entities.Sources;
 
-public class MetadataProviderEmpty : IMetadataProvider
+internal class MetadataProviderEmpty : IMetadataProvider
 {
     [field: AllowNull, MaybeNull]
     public DirectEntitiesSource List => field ??= new ImmutableEntitiesSource([]);

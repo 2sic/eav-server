@@ -16,6 +16,21 @@ public static class MetadataProvider
 
         return new MetadataProviderEmpty();
     }
+
+    public static IMetadataProvider Create(IEnumerable<IEntity> items) =>
+        items != null! /* paranoid */
+            ? new MetadataProviderDirect(items)
+            : new MetadataProviderEmpty();
+
+    public static IMetadataProvider Create(IHasMetadataSourceAndExpiring source) =>
+        source != null! /* paranoid */
+            ? new MetadataProviderApp(source)
+            : new MetadataProviderEmpty();
+
+    public static IMetadataProvider Create(Func<IHasMetadataSourceAndExpiring> sourceDeferred) =>
+        sourceDeferred != null! /* paranoid */
+            ? new MetadataProviderDeferred(sourceDeferred)
+            : new MetadataProviderEmpty();
 }
 
 //[PrivateApi("keep secret for now, only used in Metadata and it's not sure if we should re-use this")]

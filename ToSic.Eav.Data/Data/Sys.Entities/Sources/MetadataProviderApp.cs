@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Sys.Entities.Sources;
 
-public class MetadataProviderApp(IHasMetadataSourceAndExpiring sourceApp): IMetadataProvider
+internal class MetadataProviderApp(IHasMetadataSourceAndExpiring sourceApp): IMetadataProvider
 {
     public DirectEntitiesSource? List => null;
     public IHasMetadataSourceAndExpiring LookupSource => sourceApp;
