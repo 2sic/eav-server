@@ -8,9 +8,16 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
     /// <summary>
     /// Creates a new Zone with a default App and Culture-Root-Dimension
     /// </summary>
-    public int AddZone(string name)
+    public int AddZone(int tenantId, int siteId, string name, string appBasePath, string appBaseSharedPath)
     {
-        var newZone = new TsDynDataZone { Name = name };
+        var newZone = new TsDynDataZone
+        {
+            Name = name,
+            TenantId = tenantId,
+            SiteId = siteId,
+            AppBasePath = appBasePath,
+            AppBaseSharedPath = appBaseSharedPath
+        };
         DbStore.SqlDb.Add(newZone);
 
         DbStore.Dimensions.AddRootCultureNode(EavConstants.CultureSystemKey, "Culture Root", newZone);

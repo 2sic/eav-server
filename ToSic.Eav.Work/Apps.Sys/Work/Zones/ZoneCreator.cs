@@ -13,11 +13,11 @@ public class ZoneCreator(Generator<DbStorage, StorageOptions> db, AppCachePurger
     : ServiceBase("Eav.AppBld", connect: [db, appCachePurger])
 {
 
-    public int Create(string name) 
+    public int Create(int tenantId, int siteId, string name, string appBasePath, string appBaseSharedPath)
     {
         var l = Log.Fn<int>($"create zone:{name}");
         var zoneId = db.New(new(null, null))
-            .Zone.AddZone(name);
+            .Zone.AddZone(tenantId, siteId, name, appBasePath, appBaseSharedPath);
         appCachePurger.PurgeZoneList();
         return l.Return(zoneId, $"created zone {zoneId}");
     }

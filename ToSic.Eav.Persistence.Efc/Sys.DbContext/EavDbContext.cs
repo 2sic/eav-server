@@ -518,6 +518,12 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 .IsRequired()
                 .HasMaxLength(255);
 
+            entity.Property(e => e.AppBasePath)
+                .HasMaxLength(512);
+
+            entity.Property(e => e.AppBaseSharedPath)
+                .HasMaxLength(512);
+
             entity.HasOne(d => d.TransCreated)
                 .WithMany(p => p.TsDynDataZonesTransCreated)
                 .HasForeignKey(d => d.TransCreatedId)
