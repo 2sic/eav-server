@@ -4,10 +4,10 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.WebApi.Sys.Admin.Query;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Sys.Security.Permissions;
-
 
 namespace ToSic.Eav.WebApi.Sys.Entities;
 
@@ -44,12 +44,21 @@ public class EntityApi(
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
-    public IEnumerable<IDictionary<string, object>> GetEntities(IAppReader appReader, string contentType, bool showDrafts, string? oDataSelect)
+    public IEnumerable<IDictionary<string, object>> GetEntities(IAppReader appReader, string contentType, bool showDrafts, string? oDataSelect, Uri? fullRequest)
     {
         var list = workEntities.New(appReader, showDrafts).Get(contentType);
         var converter= entitiesToDicLazy.New();
-        if (oDataSelect.HasValue())
-            (converter as ConvertToEavLight).DoIfNotNull(c => c.AddSelectFields(oDataSelect.CsvToArrayWithoutEmpty().ToList()));
+
+        if (fullRequest is not null)
+        {
+            (converter as ConvertToEavLight).DoIfNotNull(c =>
+                c.AddSelectFields([.. QueryODataParams.GetSelectedProperties(QueryODataParams.ODataParse(fullRequest).SelectAndExpand)]));
+        }
+        else if (oDataSelect.HasValue())
+        {
+            (converter as ConvertToEavLight).DoIfNotNull(c =>
+                c.AddSelectFields(oDataSelect.CsvToArrayWithoutEmpty().ToList()));
+        }
         return converter.Convert(list)!;
     }
 

@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Core", "ToSic.Eav.Core\ToSic.Eav.Core.csproj", "{82F94588-269B-4CDD-98D1-D5CB14C39090}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.DataSources.Tests", "ToSic.Eav.DataSources.Tests\ToSic.Eav.DataSources.Tests.csproj", "{C212A78C-25BB-4A77-AFBB-B5939352CE36}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.Apps", "ToSic.Eav.Apps\ToSic.Eav.Apps.csproj", "{FA1B4495-6B85-400F-A5E3-0E292CCBFAE2}"
@@ -36,6 +34,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav", "ToSic.Eav\ToSic.Eav.csproj", "{892F9D3B-0578-46A1-A46A-B694A7E15669}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToSic.Eav.WebApi", "ToSic.Eav.WebApi\ToSic.Eav.WebApi.csproj", "{04F3A07C-2C6C-4D87-9E8D-E2DB611B0D52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToSic.Eav.WebApi.Tests", "ToSic.Eav.WebApi.Tests\ToSic.Eav.WebApi.Tests.csproj", "{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Eav", "Eav", "{2DBCC960-1C0B-494F-9E21-8707A1D344C3}"
 EndProject
@@ -1242,6 +1242,76 @@ Global
 		{04F3A07C-2C6C-4D87-9E8D-E2DB611B0D52}.Release|Windows-x64.Build.0 = Release|Any CPU
 		{04F3A07C-2C6C-4D87-9E8D-E2DB611B0D52}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{04F3A07C-2C6C-4D87-9E8D-E2DB611B0D52}.Release|Windows-x86.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Android.ActiveCfg = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Android.Build.0 = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Any CPU.ActiveCfg = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Any CPU.Build.0 = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|DNN.ActiveCfg = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|DNN.Build.0 = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|iOS.ActiveCfg = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|iOS.Build.0 = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Windows-ARM.ActiveCfg = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Windows-ARM.Build.0 = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Windows-x64.ActiveCfg = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Windows-x64.Build.0 = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Windows-x86.ActiveCfg = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Dbg Testing|Windows-x86.Build.0 = Dbg Testing|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Android.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Android.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Any CPU.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Any CPU.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|DNN.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|DNN.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|iOS.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|iOS.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Windows-ARM.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Windows-x64.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Windows-x64.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Windows-x86.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.debug eav only|Windows-x86.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Android.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Android.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|DNN.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|DNN.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|iOS.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|iOS.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Windows-ARM.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Windows-x64.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Windows-x64.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Windows-x86.ActiveCfg = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Debug|Windows-x86.Build.0 = Debug|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Android.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Android.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Any CPU.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Any CPU.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|DNN.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|DNN.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|iOS.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|iOS.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Windows-ARM.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Windows-ARM.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Windows-x64.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Windows-x64.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Windows-x86.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.efc and WebApi|Windows-x86.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Android.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Android.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|DNN.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|DNN.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|iOS.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|iOS.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Windows-ARM.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Windows-ARM.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Windows-x64.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Windows-x64.Build.0 = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Windows-x86.ActiveCfg = Release|Any CPU
+		{ceaf2fcd-bd18-488e-bcda-0cf4aafc59eb}.Release|Windows-x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
