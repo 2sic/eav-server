@@ -1,24 +1,16 @@
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using System.Globalization;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 using ToSic.Sys.OData.Ast;
-using ToSic.Sys.Performance;
 
-namespace ToSic.Sys.OData;
+namespace ToSic.Eav.DataSources;
 
 /// <summary>
 /// Translates OData system query options into an EAV data-source pipeline using the existing ValueFilter / ValueSort components.
 /// The result contains both the filtered <see cref="IEntity"/> list and a lightweight projection honouring the select option.
 /// </summary>
-public sealed class QueryEngine(IDataSourcesService dataSourcesService)
+public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
 {
-    private readonly IDataSourcesService _dataSources = dataSourcesService;
     private readonly DataSourceOptionConverter _optionConverter = new();
 
     /// <summary>
@@ -50,7 +42,7 @@ public sealed class QueryEngine(IDataSourcesService dataSourcesService)
         return new QueryExecutionResult(materialised, projection);
     }
 
-    private IDataSource BuildFilteredAndSorted(IDataSource root, Query query)
+    public IDataSource BuildFilteredAndSorted(IDataSource root, Query query)
     {
         var current = ApplyFilter(root, query.Filter?.Expression);
         current = ApplyOrderBy(current, query.OrderBy);
@@ -185,7 +177,7 @@ public sealed class QueryEngine(IDataSourcesService dataSourcesService)
         if (options?.Values == null)
             throw new InvalidOperationException("Failed to convert ValueFilter configuration to data-source options.");
 
-        return _dataSources.Create<ValueFilter>(upstream, options);
+        return dataSourcesService.Create<ValueFilter>(upstream, options);
     }
 
     private IDataSource ApplyOrderBy(IDataSource upstream, OrderByClause? clause)
@@ -213,7 +205,7 @@ public sealed class QueryEngine(IDataSourcesService dataSourcesService)
         if (options?.Values == null)
             throw new InvalidOperationException("Failed to convert ValueSort configuration to data-source options.");
 
-        return _dataSources.Create<ValueSort>(upstream, options);
+        return dataSourcesService.Create<ValueSort>(attach: upstream, options: options);
     }
 
     private IReadOnlyList<IDictionary<string, object?>> ApplySelect(IEnumerable<IEntity> entities, ICollection<string>? select)

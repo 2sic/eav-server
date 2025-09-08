@@ -6,8 +6,8 @@ using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
+using ToSic.Sys.OData;
 using ToSic.Sys.Security.Permissions;
-
 
 namespace ToSic.Eav.WebApi.Sys.Entities;
 
@@ -44,12 +44,16 @@ public class EntityApi(
     /// <summary>
     /// Get all Entities of specified Type
     /// </summary>
-    public IEnumerable<IDictionary<string, object>> GetEntities(IAppReader appReader, string contentType, bool showDrafts, string? oDataSelect)
+    public IEnumerable<IDictionary<string, object>> GetEntities(IAppReader appReader, string contentType, bool showDrafts, Uri? fullRequest)
     {
-        var list = workEntities.New(appReader, showDrafts).Get(contentType);
+        var list = workEntities.New(appReader, showDrafts).Get(contentType, fullRequest: fullRequest);
         var converter= entitiesToDicLazy.New();
-        if (oDataSelect.HasValue())
-            (converter as ConvertToEavLight).DoIfNotNull(c => c.AddSelectFields(oDataSelect.CsvToArrayWithoutEmpty().ToList()));
+
+        if (fullRequest is not null)
+        {
+            (converter as ConvertToEavLight).DoIfNotNull(c =>
+                c.AddSelectFields([.. SystemQueryOptionsParser.Parse(fullRequest).Select]));
+        }
         return converter.Convert(list)!;
     }
 

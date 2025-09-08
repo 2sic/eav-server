@@ -1,31 +1,25 @@
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSources;
 using ToSic.Eav;
 using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 using ToSic.Eav.TestData;
-using ToSic.Eav.Testing;
-using ToSic.Sys.OData.Ast;
 using Xunit.DependencyInjection;
-using Xunit;
 
 namespace ToSic.Sys.OData.Tests;
 
 [Startup(typeof(ODataValueFilterTestStartup))]
-public class QueryEngineTests
+public class ODataQueryEngineTests
 {
-    private readonly QueryEngine _engine;
+    private readonly ODataQueryEngine _engine;
     private readonly DataSourcesTstBuilder _dsBuilder;
     private readonly DataBuilder _dataBuilder;
 
-    public QueryEngineTests(IDataSourcesService dataSourcesService, DataSourcesTstBuilder dsBuilder, DataBuilder dataBuilder)
+    public ODataQueryEngineTests(IDataSourcesService dataSourcesService, DataSourcesTstBuilder dsBuilder, DataBuilder dataBuilder)
     {
-        _engine = new QueryEngine(dataSourcesService);
+        _engine = new ODataQueryEngine(dataSourcesService);
         _dsBuilder = dsBuilder;
         _dataBuilder = dataBuilder;
     }

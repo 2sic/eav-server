@@ -3,6 +3,7 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
+using ToSic.Sys.OData;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -44,11 +45,24 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     public IEntity? Get(Guid entityGuid) => AppWorkCtx.AppReader.List.One(entityGuid);
 
 
-    public IEnumerable<IEntity> Get(string contentTypeName, IAppWorkCtxPlus? overrideWorkCtx = default)
+    public IEnumerable<IEntity> Get(string contentTypeName, IAppWorkCtxPlus? overrideWorkCtx = default, Uri? fullRequest = null)
     {
-        var typeFilter = dataSourceFactory.Value.Create<EntityTypeFilter>(attach: (overrideWorkCtx ?? AppWorkCtx).Data); // need to go to cache, to include published & unpublished
+        var dataSourcesService = dataSourceFactory.Value;
+        var typeFilter = dataSourcesService.Create<EntityTypeFilter>(attach: (overrideWorkCtx ?? AppWorkCtx).Data); // need to go to cache, to include published & unpublished
         typeFilter.TypeName = contentTypeName;
-        return typeFilter.List;
+
+        if (fullRequest is null)
+            return typeFilter.List;
+
+        var systemQueryOptions = SystemQueryOptionsParser.Parse(fullRequest);
+        if (!systemQueryOptions.RawAllSystem.Any())
+            return typeFilter.List;
+
+        // v20 support OData filtering, sorting... if present in query string
+        var query = UriQueryParser.Parse(systemQueryOptions);
+        var engine = new ODataQueryEngine(dataSourcesService);
+        var result = engine.Execute(typeFilter, query);
+        return result.Items;
     }
 
 

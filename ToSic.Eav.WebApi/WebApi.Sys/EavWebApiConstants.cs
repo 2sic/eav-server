@@ -4,6 +4,4 @@
 public class EavWebApiConstants
 {
     public const string HistoryNameWebApi = "web-api";
-
-    public const string ODataSelectParamName = "$select";
 }

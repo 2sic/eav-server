@@ -212,7 +212,7 @@ public abstract class QueryControllerBase<TImplementation>(
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields
-        var extraParams = new QueryODataParams(outSource.Configuration);
+        var systemQueryOptions = new QueryODataParams(outSource.Configuration).SystemQueryOptions;
 
         var timer = new Stopwatch();
         timer.Start();
@@ -221,7 +221,7 @@ public abstract class QueryControllerBase<TImplementation>(
             var converter = Services.EntToDicLazy.Value;
             //converter.WithGuid = true;
             converter.MaxItems = top;
-            converter.AddSelectFields(extraParams.SelectFields);
+            converter.AddSelectFields(systemQueryOptions.Select.ToListOpt());
 
             // Use passed in function to select the part to serialize
             var part = partLookup(builtQuery);
