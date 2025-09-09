@@ -188,4 +188,132 @@ public class SystemQueryOptionsParserTests
         var r = SystemQueryOptionsParser.Parse(U("$count=maybe"));
         Null(r.Count);
     }
+
+    [Fact]
+    public void Select_EmptyValue_YieldsEmptyListButKeyPresent()
+    {
+        var r = SystemQueryOptionsParser.Parse(U("$select="));
+        Empty(r.Select);
+        Equal(string.Empty, r.RawAllSystem["$select"]);
+    }
+
+    [Fact]
+    public void Select_KeyWithLeadingSpaces_IsTrimmed()
+    {
+        var r = SystemQueryOptionsParser.Parse(U("   %24select=Id"));
+        Equal(new[] { "Id" }, r.Select);
+        True(r.RawAllSystem.ContainsKey("$select"));
+    }
+
+    [Fact]
+    public void Select_IgnoresEmptySegments()
+    {
+        var r = SystemQueryOptionsParser.Parse(U("$select=Id,,Title"));
+        Equal(new[] { "Id", "Title" }, r.Select);
+    }
+
+    [Fact]
+    public void ParameterCount_ExactlyAtLimitProcessed()
+    {
+        var sb = new System.Text.StringBuilder();
+        for (int i = 0; i < 500; i++)
+        {
+            if (i > 0) sb.Append('&');
+            sb.Append("p").Append(i).Append('=').Append(i);
+        }
+        var r = SystemQueryOptionsParser.Parse(U(sb.ToString()));
+        Equal(500, r.Custom.Count);
+        True(r.Custom.ContainsKey("p0"));
+        True(r.Custom.ContainsKey("p499"));
+    }
+
+    [Fact]
+    public void ValueLength_AtLimit_NotTruncated()
+    {
+        string atLimit = new string('b', 8192);
+        var r = SystemQueryOptionsParser.Parse(U("$filter=" + atLimit));
+        NotNull(r.Filter);
+        Equal(8192, r.Filter!.Length);
+    }
+
+    [Fact]
+    public void Count_UpperCaseTrue()
+    {
+        var r = SystemQueryOptionsParser.Parse(U("$count=TRUE"));
+        True(r.Count);
+    }
+
+    [Fact]
+    public void Select_DuplicateEncodedThenPlain_LastWins()
+    {
+        var r = SystemQueryOptionsParser.Parse(U("%24select=Id,Original&$select=Id,Final"));
+        Equal(new[] { "Id", "Final".Split(',')[1] }, new[] { r.Select[0], r.Select[1] });
+        Equal("Id,Final", r.RawAllSystem["$select"]);
+    }
+
+    [Fact]
+    public void InvalidPercentEncoding_DoesNotThrowAndFallsBackToRaw()
+    {
+        // "%ZZselect" is invalid percent encoding so key stays raw and becomes a custom param.
+        var r = SystemQueryOptionsParser.Parse(U("%ZZselect=Id&$filter=Title%2")); // value has dangling %2
+        // Custom should contain the invalid key literally
+        True(r.Custom.ContainsKey("%ZZselect"));
+        Equal("Id", r.Custom["%ZZselect"]);
+        // $filter should be captured; its value invalid escape remains raw "Title%2"
+        Equal("Title%2", r.Filter);
+    }
+
+    [Fact]
+    public void ParameterCount_IsCapped()
+    {
+        // Build 520 custom parameters; parser limit is 500 so only first 500 should be processed.
+        var sb = new System.Text.StringBuilder();
+        for (int i = 0; i < 520; i++)
+        {
+            if (i > 0) sb.Append('&');
+            sb.Append("p").Append(i).Append('=').Append(i);
+        }
+        var r = SystemQueryOptionsParser.Parse(U(sb.ToString()));
+        // All are custom (no $) so count should be capped at 500
+        Equal(500, r.Custom.Count);
+    }
+
+    [Fact]
+    public void ValueLength_TruncatedAtLimit()
+    {
+        // Limit is 8192 characters; create a longer value that should be truncated.
+        int over = 9000;
+        string longVal = new string('a', over);
+        var r = SystemQueryOptionsParser.Parse(U("$filter=" + longVal));
+        NotNull(r.Filter);
+        // Expect truncated length == 8192 (knowledge of current constant; adjust if constant changes)
+        Equal(8192, r.Filter!.Length);
+    }
+
+    [Fact]
+    public void Select_ItemLimit_CapsAtMax()
+    {
+        // Provide more than 200 select items; expect only first 200 retained.
+        var sb = new System.Text.StringBuilder();
+        sb.Append("$select=");
+        for (int i = 0; i < 205; i++)
+        {
+            if (i > 0) sb.Append(',');
+            sb.Append("F").Append(i);
+        }
+        var r = SystemQueryOptionsParser.Parse(U(sb.ToString()));
+        Equal(200, r.Select.Count);
+        Equal("F0", r.Select[0]);
+    }
+
+    [Fact]
+    public void Select_DeepParentheses_DoesNotThrow()
+    {
+        // Build a deeply nested parentheses segment exceeding depth cap (64) then another item
+        var nested = new string('(', 150) + "Deep" + new string(')', 150);
+        var r = SystemQueryOptionsParser.Parse(U("$select=" + nested + ",Title"));
+        Equal(2, r.Select.Count);
+        Equal(nested, r.Select[0]);
+        Equal("Title", r.Select[1]);
+    }
 }

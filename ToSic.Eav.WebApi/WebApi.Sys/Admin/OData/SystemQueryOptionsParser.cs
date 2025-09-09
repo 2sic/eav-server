@@ -1,16 +1,15 @@
-using System.Text.RegularExpressions;
-
 namespace ToSic.Eav.WebApi.Sys.Admin.OData
 {
+    /// <summary>
+    /// Lightweight, parser for a subset of OData system query options.
+    /// </summary>
     public static class SystemQueryOptionsParser
     {
-        ///// <summary>
-        ///// Detect only OData system options that start with $
-        ///// </summary>
-        //public static bool HasDollarSystemOptions(Uri uri) => Regex.IsMatch(
-        //    uri.Query ?? "",
-        //    @"(?:^|\?|&)(?:\$|%24)(select|filter|orderby|top|skip|count|expand|search|apply|compute|format|skiptoken|deltatoken)=",
-        //    RegexOptions.IgnoreCase);
+        // Defensive limits (intentionally generous; adjust if needed). They only affect extreme / abusive inputs.
+        private const int MaxParameterCount = 500;      // Prevent &x=... repeated abuse
+        private const int MaxValueLength    = 8192;     // Cap any single value size
+        private const int MaxSelectItems    = 200;      // Prevent huge $select lists
+        private const int MaxSelectDepth    = 64;       // Prevent pathological parenthesis nesting
 
         /// <summary>
         /// Parse common OData system options from a request URI without building an EDM.
@@ -22,44 +21,70 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
             var custom = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             var q = uri.Query ?? string.Empty;
-            if (q.StartsWith("?")) q = q.Length > 1 ? q.Substring(1) : string.Empty;
+            if (q.Length > 0 && q[0] == '?') q = q.Length > 1 ? q.Substring(1) : string.Empty;
+            if (string.IsNullOrEmpty(q))
+                return EmptyResult(sys, custom);
 
-            foreach (var pair in q.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries))
+            // Streaming parse instead of string.Split to avoid large temporary arrays under heavy input.
+            int index = 0;
+            int paramCount = 0;
+            while (index <= q.Length)
             {
-                var eq = pair.IndexOf('=');
-                string k, v;
-                if (eq >= 0)
+                if (paramCount >= MaxParameterCount) break; // stop processing more parameters
+                int nextAmp = q.IndexOf('&', index);
+                if (nextAmp < 0) nextAmp = q.Length;
+                int length = nextAmp - index;
+                if (length > 0)
                 {
-                    k = Uri.UnescapeDataString(pair.Substring(0, eq));
-                    v = Uri.UnescapeDataString(pair.Substring(eq + 1));
-                }
-                else
-                {
-                    k = Uri.UnescapeDataString(pair);
-                    v = string.Empty;
-                }
-                if (string.IsNullOrEmpty(k)) continue;
+                    var pairSpan = q.AsSpan(index, length);
+                    int eq = pairSpan.IndexOf('=');
+                    ReadOnlySpan<char> rawKeySpan, rawValueSpan;
+                    if (eq >= 0)
+                    {
+                        rawKeySpan = pairSpan.Slice(0, eq);
+                        rawValueSpan = pairSpan.Slice(eq + 1);
+                    }
+                    else
+                    {
+                        rawKeySpan = pairSpan;
+                        rawValueSpan = ReadOnlySpan<char>.Empty;
+                    }
 
-                if (k.StartsWith("$", StringComparison.OrdinalIgnoreCase) || k.StartsWith("%24", StringComparison.OrdinalIgnoreCase))
-                    sys[k] = v;
-                else
-                    custom[k] = v;
+                    if (!rawKeySpan.IsEmpty)
+                    {
+                        var rawKey = rawKeySpan.ToString();
+                        var rawValue = rawValueSpan.ToString();
+
+                        // Safe unescape: never throw on malformed % sequences; fall back to raw.
+                        var k = SafeUnescape(rawKey).Trim();
+                        if (k.Length > 0)
+                        {
+                            var v = SafeUnescape(rawValue);
+                            if (v.Length > MaxValueLength)
+                                v = v.Substring(0, MaxValueLength);
+
+                            if (k.StartsWith("$", StringComparison.OrdinalIgnoreCase))
+                                sys[k] = v; // last wins
+                            else
+                                custom[k] = v;
+                        }
+                    }
+                    paramCount++;
+                }
+                index = nextAmp + 1; // move past '&' (or q.Length to exit)
+                if (index > q.Length) break;
             }
 
             static string? Get(string name, Dictionary<string, string> sys)
-            {
-                if (sys.TryGetValue("$" + name, out var v1)) return v1;
-                if (sys.TryGetValue("%24" + name, out var v2)) return v2;
-                return null;
-            }
+                => sys.TryGetValue("$" + name, out var v1) ? v1 : null;
 
-            string? selectRaw = Get("select", sys);
+            var selectRaw = Get("select", sys);
             var selectList = ParseSelect(selectRaw);
 
             int? AsInt(string? s) => int.TryParse(s, out var i) ? i : null;
             bool? AsBool(string? s) => s == null ? null : (bool.TryParse(s, out var b) ? b : (s == "1" ? true : s == "0" ? false : (bool?)null));
 
-            var result = new SystemQueryOptions(
+            return new SystemQueryOptions(
                 Select: selectList,
                 Filter: Get("filter", sys),
                 OrderBy: Get("orderby", sys),
@@ -70,8 +95,27 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
                 RawAllSystem: sys,
                 Custom: custom
             );
+        }
 
-            return result;
+        private static SystemQueryOptions EmptyResult(
+            IReadOnlyDictionary<string, string> sys,
+            IReadOnlyDictionary<string, string> custom)
+            => new(
+                Select: Array.Empty<string>(),
+                Filter: null,
+                OrderBy: null,
+                Top: null,
+                Skip: null,
+                Count: null,
+                Expand: null,
+                RawAllSystem: sys,
+                Custom: custom);
+
+        private static string SafeUnescape(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+            try { return Uri.UnescapeDataString(input); }
+            catch (UriFormatException) { return input; } // Fallback: treat as already unescaped / raw
         }
 
         private static IReadOnlyList<string> ParseSelect(string? raw)
@@ -80,24 +124,34 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
             var list = new List<string>();
             int depth = 0;
             int start = 0;
+            int items = 0;
             for (int i = 0; i < raw.Length; i++)
             {
                 var c = raw[i];
-                if (c == '(') depth++;
-                else if (c == ')') depth = Math.Max(0, depth - 1);
+                if (c == '(')
+                {
+                    if (depth < MaxSelectDepth) depth++;
+                }
+                else if (c == ')')
+                {
+                    if (depth > 0) depth--; // clamp
+                }
                 else if (c == ',' && depth == 0)
                 {
-                    AddSegment(raw.AsSpan(start, i - start), list);
+                    if (!AddSegment(raw.AsSpan(start, i - start), list)) return list; // limit reached
+                    items++;
+                    if (items >= MaxSelectItems) return list; // stop early
                     start = i + 1;
                 }
             }
             if (start < raw.Length) AddSegment(raw.AsSpan(start), list);
             return list;
 
-            static void AddSegment(ReadOnlySpan<char> seg, List<string> list)
+            static bool AddSegment(ReadOnlySpan<char> seg, List<string> list)
             {
                 var trimmed = seg.ToString().Trim();
                 if (trimmed.Length > 0) list.Add(trimmed);
+                return true;
             }
         }
     }
