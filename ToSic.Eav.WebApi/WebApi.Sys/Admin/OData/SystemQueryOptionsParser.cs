@@ -91,28 +91,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
             );
         }
 
-        private static SystemQueryOptions EmptyResult(
-            IReadOnlyDictionary<string, string> sys,
-            IReadOnlyDictionary<string, string> custom)
-            => new(
-                Select: [],
-                Filter: null,
-                OrderBy: null,
-                Top: null,
-                Skip: null,
-                Count: null,
-                Expand: null,
-                RawAllSystem: sys,
-                Custom: custom);
-
-        private static string SafeUnescape(string input)
-        {
-            if (string.IsNullOrEmpty(input)) return string.Empty;
-            try { return Uri.UnescapeDataString(input); }
-            catch (UriFormatException) { return input; } // Fallback: treat as already unescaped / raw
-        }
-
-        private static IReadOnlyList<string> ParseSelect(string? raw)
+        public static IReadOnlyList<string> ParseSelect(string? raw)
         {
             if (string.IsNullOrWhiteSpace(raw)) return [];
             var list = new List<string>();
@@ -145,6 +124,27 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
             }
             if (start < raw.Length) AddSegment(raw.AsSpan(start), list);
             return [..list];
+        }
+
+        private static SystemQueryOptions EmptyResult(
+            IReadOnlyDictionary<string, string> sys,
+            IReadOnlyDictionary<string, string> custom)
+            => new(
+                Select: [],
+                Filter: null,
+                OrderBy: null,
+                Top: null,
+                Skip: null,
+                Count: null,
+                Expand: null,
+                RawAllSystem: sys,
+                Custom: custom);
+
+        private static string SafeUnescape(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+            try { return Uri.UnescapeDataString(input); }
+            catch (UriFormatException) { return input; } // Fallback: treat as already unescaped / raw
         }
 
         private static string? Get(string name, Dictionary<string, string> sys) => name.StartsWith("$") && sys.TryGetValue(name, out var v1) ? v1 : null;

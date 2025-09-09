@@ -1,9 +1,5 @@
-﻿using Microsoft.OData;
-using Microsoft.OData.Edm;
-using Microsoft.OData.UriParser;
-using System;
-using System.Text.RegularExpressions;
-using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.WebApi.Sys.Admin.OData;
 
 namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 
@@ -13,31 +9,12 @@ internal class QueryODataParams
     {
         if (config == null)
             return;
+
         var extraParams = config.Parse(ODataParams);
+        var selectRaw = extraParams[EavWebApiConstants.ODataSelectParamName];
+        var selectList = SystemQueryOptionsParser.ParseSelect(selectRaw);
 
-        // TODO: @stv ODataParse from uri
-
-        //// POC for OData parsing
-        //var uri = ODataParse(extraParams[EavWebApiConstants.ODataSelectParamName]);
-
-        //// --- What you get back ---
-        //var path = uri.Path; // EntitySet: BlogPost
-        //var select = GetSelectedProperties(uri.SelectAndExpand); // ["Title","Content"]
-        //var filter = uri.Filter;   // null for this sample
-        //var order = uri.OrderBy;  // null for this sample
-        //var top = uri.Top;      // null …
-        //var skip = uri.Skip;     // null …
-
-        //// Custom (non-OData) options like PageId/ModuleId are preserved here:
-        //foreach (var opt in uri.CustomQueryOptions)
-        //{
-        //    // opt.Name == "PageId"/"ModuleId", opt.Value == "3065"/"10401"
-        //}
-
-
-        SelectFields = (extraParams[EavWebApiConstants.ODataSelectParamName]?.CsvToArrayWithoutEmpty() ?? [])
-            .ToListOpt();
-
+        SelectFields = selectList.ToListOpt();
     }
 
     public ICollection<string> SelectFields { get; set; } = [];
@@ -45,6 +22,12 @@ internal class QueryODataParams
     public static Dictionary<string, string> ODataParams =
         new(StringComparer.InvariantCultureIgnoreCase)
         {
-            [EavWebApiConstants.ODataSelectParamName] = $"[QueryString:{EavWebApiConstants.ODataSelectParamName}]"
+            [EavWebApiConstants.ODataSelectParamName] = $"[QueryString:{EavWebApiConstants.ODataSelectParamName}]",
+            [EavWebApiConstants.ODataExpandParamName] = $"[QueryString:{EavWebApiConstants.ODataExpandParamName}]",
+            [EavWebApiConstants.ODataFilterParamName] = $"[QueryString:{EavWebApiConstants.ODataFilterParamName}]",
+            [EavWebApiConstants.ODataOrderByParamName] = $"[QueryString:{EavWebApiConstants.ODataOrderByParamName}]",
+            [EavWebApiConstants.ODataTopParamName] = $"[QueryString:{EavWebApiConstants.ODataTopParamName}]",
+            [EavWebApiConstants.ODataSkipParamName] = $"[QueryString:{EavWebApiConstants.ODataSkipParamName}]",
+            [EavWebApiConstants.ODataCountParamName] = $"[QueryString:{EavWebApiConstants.ODataCountParamName}]"
         };
 }
