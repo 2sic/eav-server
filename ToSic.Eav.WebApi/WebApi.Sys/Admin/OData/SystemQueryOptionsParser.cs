@@ -75,17 +75,17 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
                 if (index > q.Length) break;
             }
 
-            var selectRaw = Get("select", sys);
+            var selectRaw = Get(EavWebApiConstants.ODataSelectParamName, sys);
             var selectList = ParseSelect(selectRaw);
 
             return new SystemQueryOptions(
                 Select: selectList,
-                Filter: Get("filter", sys),
-                OrderBy: Get("orderby", sys),
-                Top: AsInt(Get("top", sys)),
-                Skip: AsInt(Get("skip", sys)),
-                Count: AsBool(Get("count", sys)),
-                Expand: Get("expand", sys),
+                Expand: Get(EavWebApiConstants.ODataExpandParamName, sys),
+                Filter: Get(EavWebApiConstants.ODataFilterParamName, sys),
+                OrderBy: Get(EavWebApiConstants.ODataOrderByParamName, sys),
+                Top: AsInt(Get(EavWebApiConstants.ODataTopParamName, sys)),
+                Skip: AsInt(Get(EavWebApiConstants.ODataSkipParamName, sys)),
+                Count: AsBool(Get(EavWebApiConstants.ODataCountParamName, sys)),
                 RawAllSystem: sys,
                 Custom: custom
             );
@@ -147,7 +147,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
             return [..list];
         }
 
-        private static string? Get(string name, Dictionary<string, string> sys) => sys.TryGetValue("$" + name, out var v1) ? v1 : null;
+        private static string? Get(string name, Dictionary<string, string> sys) => name.StartsWith('$') && sys.TryGetValue(name, out var v1) ? v1 : null;
 
         private static int? AsInt(string? s) => int.TryParse(s, out var i) ? i : null;
 
