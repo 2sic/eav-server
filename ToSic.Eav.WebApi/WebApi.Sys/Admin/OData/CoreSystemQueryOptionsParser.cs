@@ -26,7 +26,7 @@ internal class CoreSystemQueryOptionsParser
     //}
 
     // Example usage
-    public static ODataUri Parse(Uri? fullRequest)
+    public static ODataUri Parse(Uri fullRequest)
     {
         //var fullRequest = uri ?? new Uri($"https://dummy/app/auto/data/BlogPost/?$select={oData}");
         var serviceRoot = ExtractServiceRoot(fullRequest);   // => http://…/odata1/api/2sxc/app/auto/data/
@@ -108,8 +108,9 @@ internal class CoreSystemQueryOptionsParser
     }
 
     // Extract service root ending with ".../app/auto/data/"
-    static Uri ExtractServiceRoot(Uri full)
+    private static Uri ExtractServiceRoot(Uri? full)
     {
+        if (full is null) throw new NullReferenceException();
         const string marker = "/app/auto/data/";
         var s = full.AbsoluteUri;
         var i = s.IndexOf(marker, StringComparison.OrdinalIgnoreCase);

@@ -26,18 +26,18 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
                 return EmptyResult(sys, custom);
 
             // Streaming parse instead of string.Split to avoid large temporary arrays under heavy input.
-            int index = 0;
-            int paramCount = 0;
+            var index = 0;
+            var paramCount = 0;
             while (index <= q.Length)
             {
                 if (paramCount >= MaxParameterCount) break; // stop processing more parameters
-                int nextAmp = q.IndexOf('&', index);
+                var nextAmp = q.IndexOf('&', index);
                 if (nextAmp < 0) nextAmp = q.Length;
-                int length = nextAmp - index;
+                var length = nextAmp - index;
                 if (length > 0)
                 {
                     var pairSpan = q.AsSpan(index, length);
-                    int eq = pairSpan.IndexOf('=');
+                    var eq = pairSpan.IndexOf('=');
                     ReadOnlySpan<char> rawKeySpan, rawValueSpan;
                     if (eq >= 0)
                     {
@@ -75,14 +75,8 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
                 if (index > q.Length) break;
             }
 
-            static string? Get(string name, Dictionary<string, string> sys)
-                => sys.TryGetValue("$" + name, out var v1) ? v1 : null;
-
             var selectRaw = Get("select", sys);
             var selectList = ParseSelect(selectRaw);
-
-            int? AsInt(string? s) => int.TryParse(s, out var i) ? i : null;
-            bool? AsBool(string? s) => s == null ? null : (bool.TryParse(s, out var b) ? b : (s == "1" ? true : s == "0" ? false : (bool?)null));
 
             return new SystemQueryOptions(
                 Select: selectList,
@@ -101,7 +95,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
             IReadOnlyDictionary<string, string> sys,
             IReadOnlyDictionary<string, string> custom)
             => new(
-                Select: Array.Empty<string>(),
+                Select: [],
                 Filter: null,
                 OrderBy: null,
                 Top: null,
@@ -120,39 +114,50 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
 
         private static IReadOnlyList<string> ParseSelect(string? raw)
         {
-            if (string.IsNullOrWhiteSpace(raw)) return Array.Empty<string>();
+            if (string.IsNullOrWhiteSpace(raw)) return [];
             var list = new List<string>();
-            int depth = 0;
-            int start = 0;
-            int items = 0;
-            for (int i = 0; i < raw.Length; i++)
+            var depth = 0;
+            var start = 0;
+            var items = 0;
+            for (var i = 0; i < raw!.Length; i++)
             {
-                var c = raw[i];
-                if (c == '(')
+                switch (raw[i])
                 {
-                    if (depth < MaxSelectDepth) depth++;
-                }
-                else if (c == ')')
-                {
-                    if (depth > 0) depth--; // clamp
-                }
-                else if (c == ',' && depth == 0)
-                {
-                    if (!AddSegment(raw.AsSpan(start, i - start), list)) return list; // limit reached
-                    items++;
-                    if (items >= MaxSelectItems) return list; // stop early
-                    start = i + 1;
+                    case '(':
+                    {
+                        if (depth < MaxSelectDepth) depth++;
+                        break;
+                    }
+                    case ')':
+                    {
+                        if (depth > 0) depth--; // clamp
+                        break;
+                    }
+                    case ',' when depth == 0:
+                    {
+                        if (!AddSegment(raw.AsSpan(start, i - start), list)) return [.. list]; // limit reached
+                        items++;
+                        if (items >= MaxSelectItems) return [.. list]; // stop early
+                        start = i + 1;
+                        break;
+                    }
                 }
             }
             if (start < raw.Length) AddSegment(raw.AsSpan(start), list);
-            return list;
+            return [..list];
+        }
 
-            static bool AddSegment(ReadOnlySpan<char> seg, List<string> list)
-            {
-                var trimmed = seg.ToString().Trim();
-                if (trimmed.Length > 0) list.Add(trimmed);
-                return true;
-            }
+        private static string? Get(string name, Dictionary<string, string> sys) => sys.TryGetValue("$" + name, out var v1) ? v1 : null;
+
+        private static int? AsInt(string? s) => int.TryParse(s, out var i) ? i : null;
+
+        private static bool? AsBool(string? s) => s == null ? null : (bool.TryParse(s, out var b) ? b : (s == "1" ? true : s == "0" ? false : null));
+
+        private static bool AddSegment(ReadOnlySpan<char> seg, List<string> list)
+        {
+            var trimmed = seg.ToString().Trim();
+            if (trimmed.Length > 0) list.Add(trimmed);
+            return true;
         }
     }
 }
