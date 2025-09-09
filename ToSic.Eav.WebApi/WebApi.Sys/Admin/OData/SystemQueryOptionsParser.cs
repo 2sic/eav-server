@@ -147,7 +147,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
             return [..list];
         }
 
-        private static string? Get(string name, Dictionary<string, string> sys) => name.StartsWith('$') && sys.TryGetValue(name, out var v1) ? v1 : null;
+        private static string? Get(string name, Dictionary<string, string> sys) => name.StartsWith("$") && sys.TryGetValue(name, out var v1) ? v1 : null;
 
         private static int? AsInt(string? s) => int.TryParse(s, out var i) ? i : null;
 
