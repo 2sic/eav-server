@@ -247,7 +247,7 @@ public class SystemQueryOptionsParserTests
     public void Select_DuplicateEncodedThenPlain_LastWins()
     {
         var r = SystemQueryOptionsParser.Parse(U("%24select=Id,Original&$select=Id,Final"));
-        Equal(new[] { "Id", "Final".Split(',')[1] }, new[] { r.Select[0], r.Select[1] });
+        Equal(new[] { "Id", "Final" }, new[] { r.Select[0], r.Select[1] });
         Equal("Id,Final", r.RawAllSystem["$select"]);
     }
 
