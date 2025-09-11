@@ -3,7 +3,7 @@ using ToSic.Eav.WebApi.Sys.Admin.Odata;
 
 namespace ToSic.Eav.WebApi.Tests.Sys.Admin.OData;
 
-public class CoreSystemQueryOptionsParserTests
+public class CoreODataParserTests
 {
     [Fact]
     public void ODataParse_WithValidUri_ReturnsODataUri()
@@ -12,7 +12,7 @@ public class CoreSystemQueryOptionsParserTests
         var testUri = new Uri("https://example.com/app/auto/data/BlogPost/?$select=Title,Content");
 
         // Act
-        var result = CoreSystemQueryOptionsParser.Parse(testUri);
+        var result = CoreODataParser.Parse(testUri);
 
         // Assert
         Assert.NotNull(result);
@@ -27,7 +27,7 @@ public class CoreSystemQueryOptionsParserTests
         Uri? testUri = null;
 
         // Act & Assert
-        Assert.Throws<NullReferenceException>(() => CoreSystemQueryOptionsParser.Parse(testUri));
+        Assert.Throws<NullReferenceException>(() => CoreODataParser.Parse(testUri));
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class CoreSystemQueryOptionsParserTests
         var testUri = new Uri("https://example.com/invalid/path/");
 
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(() => CoreSystemQueryOptionsParser.Parse(testUri));
+        Assert.Throws<InvalidOperationException>(() => CoreODataParser.Parse(testUri));
     }
 
     [Fact]
@@ -47,11 +47,11 @@ public class CoreSystemQueryOptionsParserTests
         var testUri = new Uri("https://example.com/app/auto/data/BlogPost/?$select=Title,Content,UrlKey");
 
         // Act
-        var result = CoreSystemQueryOptionsParser.Parse(testUri);
+        var result = CoreODataParser.Parse(testUri);
 
         // Assert
         Assert.NotNull(result.SelectAndExpand);
-        var selectedProperties = CoreSystemQueryOptionsParser.GetSelectedProperties(result.SelectAndExpand);
+        var selectedProperties = CoreODataParser.GetSelectedProperties(result.SelectAndExpand);
         Assert.Contains("Title", selectedProperties);
         Assert.Contains("Content", selectedProperties);
         Assert.Contains("UrlKey", selectedProperties);
@@ -64,11 +64,11 @@ public class CoreSystemQueryOptionsParserTests
         var testUri = new Uri("https://example.com/app/auto/data/BlogPost/?$select=*");
 
         // Act
-        var result = CoreSystemQueryOptionsParser.Parse(testUri);
+        var result = CoreODataParser.Parse(testUri);
 
         // Assert
         Assert.NotNull(result.SelectAndExpand);
-        var selectedProperties = CoreSystemQueryOptionsParser.GetSelectedProperties(result.SelectAndExpand);
+        var selectedProperties = CoreODataParser.GetSelectedProperties(result.SelectAndExpand);
         Assert.Contains("*", selectedProperties);
     }
 
@@ -79,7 +79,7 @@ public class CoreSystemQueryOptionsParserTests
         var testUri = new Uri("https://example.com/app/auto/data/BlogPost/?$filter=Id eq 1");
 
         // Act
-        var result = CoreSystemQueryOptionsParser.Parse(testUri);
+        var result = CoreODataParser.Parse(testUri);
 
         // Assert
         Assert.NotNull(result.Filter);
@@ -92,7 +92,7 @@ public class CoreSystemQueryOptionsParserTests
         var testUri = new Uri("https://example.com/app/auto/data/BlogPost/?$orderby=Title asc");
 
         // Act
-        var result = CoreSystemQueryOptionsParser.Parse(testUri);
+        var result = CoreODataParser.Parse(testUri);
 
         // Assert
         Assert.NotNull(result.OrderBy);
@@ -105,7 +105,7 @@ public class CoreSystemQueryOptionsParserTests
         var testUri = new Uri("https://example.com/app/auto/data/BlogPost/?$top=10");
 
         // Act
-        var result = CoreSystemQueryOptionsParser.Parse(testUri);
+        var result = CoreODataParser.Parse(testUri);
 
         // Assert
         Assert.Equal(10, result.Top);
@@ -118,7 +118,7 @@ public class CoreSystemQueryOptionsParserTests
         var testUri = new Uri("https://example.com/app/auto/data/BlogPost/?$skip=5");
 
         // Act
-        var result = CoreSystemQueryOptionsParser.Parse(testUri);
+        var result = CoreODataParser.Parse(testUri);
 
         // Assert
         Assert.Equal(5, result.Skip);
@@ -132,7 +132,7 @@ public class CoreSystemQueryOptionsParserTests
 
         // Act
 #pragma warning disable CS8604 // Possible null reference argument
-        var result = CoreSystemQueryOptionsParser.GetSelectedProperties(sec);
+        var result = CoreODataParser.GetSelectedProperties(sec);
 #pragma warning restore CS8604
 
         // Assert
@@ -144,11 +144,11 @@ public class CoreSystemQueryOptionsParserTests
     {
         // Arrange
         var testUri = new Uri("https://example.com/app/auto/data/BlogPost/?$select=Title,Content");
-        var odataUri = CoreSystemQueryOptionsParser.Parse(testUri);
+        var odataUri = CoreODataParser.Parse(testUri);
 
         // Act
         Assert.NotNull(odataUri.SelectAndExpand);
-        var result = CoreSystemQueryOptionsParser.GetSelectedProperties(odataUri.SelectAndExpand);
+        var result = CoreODataParser.GetSelectedProperties(odataUri.SelectAndExpand);
 
         // Assert
         Assert.Contains("Title", result);

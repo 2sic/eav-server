@@ -4,7 +4,7 @@ using Microsoft.OData.UriParser;
 
 namespace ToSic.Eav.WebApi.Sys.Admin.Odata;
 
-internal class CoreSystemQueryOptionsParser
+internal class CoreODataParser // POC-01
 {
     ///// <summary>
     ///// Detect only OData system options that start with $
