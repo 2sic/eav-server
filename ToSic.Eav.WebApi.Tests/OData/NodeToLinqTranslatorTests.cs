@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.OData.UriParser;
@@ -44,5 +45,9 @@ namespace ToSic.Eav.WebApi.Tests.Sys.Admin.OData
         {
             Assert.Throws<ArgumentNullException>(() => new NodeToLinqTranslator(null!));
         }
+
+        // Note: More detailed tests for NodeToLinqTranslator are tested indirectly
+        // through FilterOrderByTranslator tests, as NodeToLinqTranslator is internal
+        // and constructing proper OData AST nodes requires complex EDM model setup.
     }
 }

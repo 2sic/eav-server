@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Tests.Sys.Admin.OData
 {
     public class FilterOrderByTranslatorTests
     {
-        private class TestEntity
+        public class TestEntity
         {
             public int Id { get; set; }
             public string Title { get; set; }
@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi.Tests.Sys.Admin.OData
             public InfoData Info { get; set; }
         }
 
-        private class InfoData
+        public class InfoData
         {
             public string Name { get; set; }
             public int Number { get; set; }
@@ -139,6 +139,31 @@ namespace ToSic.Eav.WebApi.Tests.Sys.Admin.OData
 
             var result = FilterOrderByTranslator.ApplyTo(items, filter, null).ToList();
             Assert.Equal(2, result.Count);
+        }
+
+        [Theory]
+        [InlineData("tolower(Title) eq 'apple'", "Apple", 1)]
+        [InlineData("toupper(Title) eq 'APPLE'", "Apple", 1)]
+        [InlineData("length(Title) eq 5", "Apple", 1)]
+        [InlineData("trim(Title) eq 'Apple'", "  Apple  ", 1)]
+        [InlineData("substring(Title,1) eq 'pple'", "Apple", 1)]
+        [InlineData("substring(Title,1,2) eq 'pp'", "Apple", 1)]
+        [InlineData("indexof(Title,'n') ge 0", "Banana", 1)]
+        [InlineData("concat(Title,'X') eq 'AppleX'", "Apple", 1)]
+        public void ApplyTo_Filter_StringFunctions_Works(string filterExpr, string title, int expectedCount)
+        {
+            var model = CreateSimpleEdmModel();
+            var uri = new Uri($"TestEntities?$filter={filterExpr}", UriKind.Relative);
+            var parser = new ODataUriParser(model, uri);
+            var filter = parser.ParseFilter();
+
+            var items = new List<TestEntity> { new TestEntity { Id = 1, Title = title } }.AsQueryable();
+            var result = FilterOrderByTranslator.ApplyTo(items, filter, null).ToList();
+            Assert.Equal(expectedCount, result.Count);
+            if (expectedCount > 0)
+            {
+                Assert.Equal(1, result[0].Id);
+            }
         }
 
         [Fact]

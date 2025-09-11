@@ -159,6 +159,92 @@ namespace ToSic.Eav.WebApi.Sys.Admin.OData
                 return Expression.Call(instance, method, value);
             }
 
+            // Case transforms: tolower, toupper
+            if (name is "tolower" or "toupper")
+            {
+                if (args.Length != 1)
+                    throw new NotSupportedException($"{name} requires 1 argument.");
+                var instance = args[0];
+                if (instance.Type != typeof(string)) instance = Expression.Convert(instance, typeof(string));
+                var clrName = name == "tolower" ? nameof(string.ToLower) : nameof(string.ToUpper);
+                var method = typeof(string).GetMethod(clrName, Type.EmptyTypes)
+                             ?? throw new InvalidOperationException($"Could not find string.{clrName}() method.");
+                return Expression.Call(instance, method);
+            }
+
+            // length(string) -> string.Length
+            if (name == "length")
+            {
+                if (args.Length != 1)
+                    throw new NotSupportedException("length requires 1 argument.");
+                var instance = args[0];
+                if (instance.Type != typeof(string)) instance = Expression.Convert(instance, typeof(string));
+                return Expression.Property(instance, nameof(string.Length));
+            }
+
+            // substring(string, start[, length])
+            if (name == "substring")
+            {
+                if (args.Length != 2 && args.Length != 3)
+                    throw new NotSupportedException("substring requires 2 or 3 arguments.");
+                var instance = args[0];
+                if (instance.Type != typeof(string)) instance = Expression.Convert(instance, typeof(string));
+                var start = args[1].Type == typeof(int) ? args[1] : Expression.Convert(args[1], typeof(int));
+                if (args.Length == 2)
+                {
+                    var m = typeof(string).GetMethod(nameof(string.Substring), new[] { typeof(int) })
+                            ?? throw new InvalidOperationException("string.Substring(int) not found.");
+                    return Expression.Call(instance, m, start);
+                }
+                else
+                {
+                    var lengthArg = args[2].Type == typeof(int) ? args[2] : Expression.Convert(args[2], typeof(int));
+                    var m = typeof(string).GetMethod(nameof(string.Substring), new[] { typeof(int), typeof(int) })
+                            ?? throw new InvalidOperationException("string.Substring(int,int) not found.");
+                    return Expression.Call(instance, m, start, lengthArg);
+                }
+            }
+
+            // trim(string) -> string.Trim()
+            if (name == "trim")
+            {
+                if (args.Length != 1)
+                    throw new NotSupportedException("trim requires 1 argument.");
+                var instance = args[0];
+                if (instance.Type != typeof(string)) instance = Expression.Convert(instance, typeof(string));
+                var m = typeof(string).GetMethod(nameof(string.Trim), Type.EmptyTypes)
+                        ?? throw new InvalidOperationException("string.Trim() not found.");
+                return Expression.Call(instance, m);
+            }
+
+            // indexof(string, value) -> string.IndexOf(string)
+            if (name == "indexof")
+            {
+                if (args.Length != 2)
+                    throw new NotSupportedException("indexof requires 2 arguments.");
+                var instance = args[0];
+                var value = args[1];
+                if (instance.Type != typeof(string)) instance = Expression.Convert(instance, typeof(string));
+                if (value.Type != typeof(string)) value = Expression.Convert(value, typeof(string));
+                var m = typeof(string).GetMethod(nameof(string.IndexOf), new[] { typeof(string) })
+                        ?? throw new InvalidOperationException("string.IndexOf(string) not found.");
+                return Expression.Call(instance, m, value);
+            }
+
+            // concat(string, string) -> string.Concat(string, string)
+            if (name == "concat")
+            {
+                if (args.Length != 2)
+                    throw new NotSupportedException("concat requires 2 arguments.");
+                var left = args[0];
+                var right = args[1];
+                if (left.Type != typeof(string)) left = Expression.Convert(left, typeof(string));
+                if (right.Type != typeof(string)) right = Expression.Convert(right, typeof(string));
+                var m = typeof(string).GetMethod(nameof(string.Concat), new[] { typeof(string), typeof(string) })
+                        ?? throw new InvalidOperationException("string.Concat(string,string) not found.");
+                return Expression.Call(null, m, left, right);
+            }
+
             throw new NotSupportedException($"Function {node.Name} not supported in this minimal translator.");
         }
 
