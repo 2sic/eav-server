@@ -42,11 +42,6 @@ public static class IZoneCultureResolverExtensions
                    ?.CultureCodesWithFallbacks
                    ?? UnsafeLanguagePriorityCodesWithoutPrioWIP(resolver);
 
-        // 2dm 2026-06-13 should be impossible as list is always initialized
-        //// if list is null, return current culture; safe, lower-case, with auto-null fallback
-        //if (list == null)
-        //    return [SafeCurrentCultureCode(null), null];
-
         // Finalize, with trailing null.
         return [.. list, null];
     }
