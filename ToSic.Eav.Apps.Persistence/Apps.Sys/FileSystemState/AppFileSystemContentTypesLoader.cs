@@ -75,14 +75,12 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
     private ICollection<string> GetAllExtensionDataPaths()
     {
         var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>(
-            $"Roots: {ExtensionsPath};{ExtensionsLegacyPath};{ExtensionsPathShared};{ExtensionsLegacyPathShared}");
+            $"Roots: {ExtensionsPath};{ExtensionsPathShared}");
 
         var roots = new[]
         {
-            ExtensionsPath,              // /extensions (local)
-            ExtensionsLegacyPath,        // /system (local)
-            ExtensionsPathShared,        // /extensions (shared)
-            ExtensionsLegacyPathShared,  // /system (shared)
+            ExtensionsPath,              // local
+            ExtensionsPathShared,        // shared
         };
 
         var paths = roots

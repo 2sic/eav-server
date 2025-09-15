@@ -16,12 +16,9 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
 
     #endregion
 
-    public string ExtensionsPath { get; set; } = null!; // "extensions"
+    public string ExtensionsPath { get; set; } = null!;
     public string ExtensionsPathShared { get; set; } = null!;
-
-    public string ExtensionsLegacyPath { get; set; } = null!; // "system"
-    public string ExtensionsLegacyPathShared { get; set; } = null!;
-
+    
     protected IAppIdentity AppIdentity { get; private set; } = null!;
     protected ToSic.Sys.Logging.LogSettings LogSettings { get; private set; } = new();
 
@@ -57,14 +54,26 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
         var l = Log.Fn<bool>();
 
         // Legacy system folder
-        ExtensionsLegacyPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsLegacyFolder);
-        ExtensionsLegacyPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsLegacyFolder);
+        var extensionsLegacyPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsLegacyFolder);
+        var extensionsLegacyPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsLegacyFolder);
 
         // New canonical extensions folder
-        ExtensionsPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsFolder);
-        ExtensionsPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsFolder);
+        var extensionsNewPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsFolder);
+        var extensionsNewPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsFolder);
 
-        return l.ReturnTrue($"p:{ExtensionsLegacyPath}, ps:{ExtensionsLegacyPathShared}; pe:{ExtensionsPath}, pse:{ExtensionsPathShared}");
+        // Local app paths
+        var notLegacy = Directory.Exists(extensionsNewPath) || !Directory.Exists(extensionsLegacyPath);
+        ExtensionsPath = notLegacy
+            ? extensionsNewPath
+            : extensionsLegacyPath;
+
+        // Shared app paths
+        var notLegacyShared = Directory.Exists(extensionsNewPathShared) || !Directory.Exists(extensionsLegacyPathShared);
+        ExtensionsPathShared = notLegacyShared
+            ? extensionsNewPathShared
+            : extensionsLegacyPathShared;
+
+        return l.ReturnTrue($"p:{ExtensionsPath}, ps:{ExtensionsPathShared}");
     }
 
     #endregion

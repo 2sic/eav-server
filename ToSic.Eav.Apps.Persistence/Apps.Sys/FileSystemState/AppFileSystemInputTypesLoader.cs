@@ -14,18 +14,15 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
     public ICollection<InputTypeInfo> InputTypes()
     {
         var l = Log.Fn<ICollection<InputTypeInfo>>();
-        // Collect from new canonical /extensions first (preferred), then legacy /system/ as fallback.
         var found = new List<InputTypeInfo>();
 
         // Local app paths
-        MergeInputTypes(found, GetInputTypes(ExtensionsPath, AppConstants.AppPathPlaceholder, FolderConstants.AppExtensionsFolder));
-        MergeInputTypes(found, GetInputTypes(ExtensionsLegacyPath, AppConstants.AppPathPlaceholder, FolderConstants.AppExtensionsLegacyFolder));
+        MergeInputTypes(found,GetInputTypes(ExtensionsPath, AppConstants.AppPathPlaceholder, FolderConstants.AppExtensionsFolder));
 
         // Shared app paths
         MergeInputTypes(found, GetInputTypes(ExtensionsPathShared, AppConstants.AppPathSharedPlaceholder, FolderConstants.AppExtensionsFolder));
-        MergeInputTypes(found, GetInputTypes(ExtensionsLegacyPathShared, AppConstants.AppPathSharedPlaceholder, FolderConstants.AppExtensionsLegacyFolder));
 
-        return l.Return(found, $"{found.Count}");
+        return l.Return(found, $"count:{found.Count}");
     }
 
 
