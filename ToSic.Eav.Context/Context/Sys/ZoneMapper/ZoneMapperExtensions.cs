@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Context.Sys.ZoneMapper;
@@ -27,13 +28,16 @@ public static class ZoneMapperExtensions
             //if (siteFromDi.Id != Eav.Constants.NullId)
             //    return l.Return(siteFromDi, $"All ok since siteId isn't {Eav.Constants.NullId}");
 
+            //if (appIdentity.AppId == KnownAppsConstants.GlobalIdentity.AppId && appIdentity.ZoneId == KnownAppsConstants.GlobalIdentity.ZoneId)
+            //    return l.Return(siteFromDi, $"app template is not selected, default app is not in site, SiteFromDi: {siteFromDi.Id}");
+
             if (siteFromDi.Id == EavConstants.NullId)
                 l.A($"SiteId = {siteFromDi.Id} - not found. Must be in search mode as DI failed, will try to find correct PortalSettings");
             else if(siteFromDi.ZoneId != appIdentity.ZoneId) 
                 l.A($"SiteId = {siteFromDi.Id} - has different di-site-ZoneId:{siteFromDi.ZoneId} from app-ZoneID:{appIdentity.ZoneId}. Must be app is first accessed from another site. Will try to find SiteOfApp");
 
             var correctedSite = zoneMapper.SiteOfApp(appIdentity.AppId);
-            return l.Return(correctedSite, $"SiteId: {correctedSite.Id}");
+            return l.Return(correctedSite, $"SiteId: {correctedSite?.Id}");
         }
         catch (Exception e)
         {
