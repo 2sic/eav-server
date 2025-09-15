@@ -16,8 +16,11 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
 
     #endregion
 
-    public string Path { get; set; } = null!;
-    public string PathShared { get; set; } = null!;
+    public string ExtensionsPath { get; set; } = null!; // "extensions"
+    public string ExtensionsPathShared { get; set; } = null!;
+
+    public string ExtensionsLegacyPath { get; set; } = null!; // "system"
+    public string ExtensionsLegacyPathShared { get; set; } = null!;
 
     protected IAppIdentity AppIdentity { get; private set; } = null!;
     protected ToSic.Sys.Logging.LogSettings LogSettings { get; private set; } = new();
@@ -52,9 +55,16 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
     private bool InitPathAfterAppId(IAppPaths appPaths)
     {
         var l = Log.Fn<bool>();
-        Path = System.IO.Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsFolder);
-        PathShared = System.IO.Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsFolder);
-        return l.ReturnTrue($"p:{Path}, ps:{PathShared}");
+
+        // Legacy system folder
+        ExtensionsLegacyPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsLegacyFolder);
+        ExtensionsLegacyPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsLegacyFolder);
+
+        // New canonical extensions folder
+        ExtensionsPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsFolder);
+        ExtensionsPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsFolder);
+
+        return l.ReturnTrue($"p:{ExtensionsLegacyPath}, ps:{ExtensionsLegacyPathShared}; pe:{ExtensionsPath}, pse:{ExtensionsPathShared}");
     }
 
     #endregion

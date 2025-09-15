@@ -7,7 +7,13 @@ public class FolderConstants
     /// <summary>
     /// Folder inside an App-folder, containing extensions and other system features
     /// </summary>
-    public const string AppExtensionsFolder = "system";
+    public const string AppExtensionsLegacyFolder = "system";
+
+    /// <summary>
+    /// New canonical folder inside an App-folder for installable extensions.
+    /// Keep legacy <see cref="AppExtensionsLegacyFolder"/> ("system") for backwards compatibility.
+    /// </summary>
+    public const string AppExtensionsFolder = "extensions";
 
     /// <summary>
     /// OLD Data folder - either in the global environment, in plugins or in app-extensions

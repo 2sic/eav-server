@@ -14,17 +14,24 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
     public ICollection<InputTypeInfo> InputTypes()
     {
         var l = Log.Fn<ICollection<InputTypeInfo>>();
-        var types = GetInputTypes(Path, AppConstants.AppPathPlaceholder);
-        types = types
-            .Union(GetInputTypes(PathShared, AppConstants.AppPathSharedPlaceholder))
-            .ToListOpt();
-        return l.Return(types, $"{types.Count}");
+        // Collect from new canonical /extensions first (preferred), then legacy /system/ as fallback.
+        var found = new List<InputTypeInfo>();
+
+        // Local app paths
+        MergeInputTypes(found, GetInputTypes(ExtensionsPath, AppConstants.AppPathPlaceholder, FolderConstants.AppExtensionsFolder));
+        MergeInputTypes(found, GetInputTypes(ExtensionsLegacyPath, AppConstants.AppPathPlaceholder, FolderConstants.AppExtensionsLegacyFolder));
+
+        // Shared app paths
+        MergeInputTypes(found, GetInputTypes(ExtensionsPathShared, AppConstants.AppPathSharedPlaceholder, FolderConstants.AppExtensionsFolder));
+        MergeInputTypes(found, GetInputTypes(ExtensionsLegacyPathShared, AppConstants.AppPathSharedPlaceholder, FolderConstants.AppExtensionsLegacyFolder));
+
+        return l.Return(found, $"{found.Count}");
     }
 
 
     #region Helpers
 
-    private ICollection<InputTypeInfo> GetInputTypes(string path, string placeholder)
+    private ICollection<InputTypeInfo> GetInputTypes(string path, string placeholder, string folderName)
     {
         var l = Log.Fn<ICollection<InputTypeInfo>>();
         var di = new DirectoryInfo(path);
@@ -51,7 +58,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
                     Label = niceName,
                     Description = "Extension Field",
                     Assets = "",
-                    AngularAssets = $"{placeholder}/{FolderConstants.AppExtensionsFolder}/{name}/{JsFile}",
+                    AngularAssets = $"{placeholder}/{folderName}/{name}/{JsFile}",
                     DisableI18n = false,
                     UseAdam = false,
                     Source = "file-system",
@@ -59,6 +66,16 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
             })
             .ToListOpt();
         return l.Return(types, $"{types.Count}");
+    }
+
+    /// <summary>
+    /// Merge input types into the accumulator, preferring already-present types (so earlier calls win).
+    /// </summary>
+    private static void MergeInputTypes(List<InputTypeInfo> acc, ICollection<InputTypeInfo> next)
+    {
+        if (next.Count == 0) return;
+        var existing = acc.Select(t => t.Type).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        acc.AddRange(next.Where(t => !existing.Contains(t.Type)));
     }
 
     private static string InputTypeNiceName(string name)

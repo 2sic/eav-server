@@ -56,9 +56,9 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
             AppId = AppIdentity.AppId,
             Path = extensionPath,
             RepoType = RepositoryTypes.Folder,
-            IgnoreMissing =true,
-            EntitiesSource= entitiesSource,
-            LogSettings= LogSettings,
+            IgnoreMissing = true,
+            EntitiesSource = entitiesSource,
+            LogSettings = LogSettings,
         });
         // Expect local entities to be very few...
         fsLoader.EntityIdSeed = -1000;
@@ -74,24 +74,40 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
 
     private ICollection<string> GetAllExtensionDataPaths()
     {
-        var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>($"Path: {Path}");
-        var dir = new DirectoryInfo(Path);
-        if (!dir.Exists)
-            return l.Return([], $"directory do not exist: {dir}");
-        var sub = dir.GetDirectories();
-        var subDirs = sub
-            .SelectMany(s => s
-                .GetDirectories(FolderConstants.DataFolderProtected)
-                .Where(d => d.Exists)
-                .SelectMany(a => a.GetDirectories(FolderConstants.DataSubFolderSystem))
-                // disabled in v20
-                //.Union(s.GetDirectories(FolderConstants.FolderOldDotData))
-            );
-        var paths = subDirs
-            .Where(d => d.Exists)
-            .Select(s => s.FullName)
+        var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>(
+            $"Roots: {ExtensionsPath};{ExtensionsLegacyPath};{ExtensionsPathShared};{ExtensionsLegacyPathShared}");
+
+        var roots = new[]
+        {
+            ExtensionsPath,              // /extensions (local)
+            ExtensionsLegacyPath,        // /system (local)
+            ExtensionsPathShared,        // /extensions (shared)
+            ExtensionsLegacyPathShared,  // /system (shared)
+        };
+
+        var paths = roots
+            .Where(r => !string.IsNullOrWhiteSpace(r))
+            .SelectMany(GetDataPathsFromRoot)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToListOpt();
+
         return l.Return(paths, $"OK, paths:{string.Join(";", paths)}");
+    }
+
+    private static IEnumerable<string> GetDataPathsFromRoot(string rootPath)
+    {
+        var root = new DirectoryInfo(rootPath);
+        if (!root.Exists) return [];
+
+        // For each extension in the root, find App_Data/system
+        return root
+            .GetDirectories()
+            .SelectMany(ext =>
+                ext.GetDirectories(FolderConstants.DataFolderProtected)
+                   .Where(d => d.Exists)
+                   .SelectMany(ad => ad.GetDirectories(FolderConstants.DataSubFolderSystem)))
+            .Where(d => d.Exists)
+            .Select(d => d.FullName);
     }
 
     #endregion
