@@ -15,6 +15,11 @@ public class FolderConstants
     public const string AppExtensionsLegacyFolder = "system";
 
     /// <summary>
+    /// File name for an extension configuration inside an Extension's App_Data folder
+    /// </summary>
+    public const string AppExtensionJsonFile = "extension.json";
+
+    /// <summary>
     /// OLD Data folder - either in the global environment, in plugins or in app-extensions
     /// </summary>
     [PrivateApi("deprecated, no value in showing")]

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSources.Sys;
+﻿using System.Text.Json;
+using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
@@ -57,4 +58,21 @@ public interface IAppController<out THttpResponse>
     /// <param name="pendingApps"></param>
     /// <returns></returns>
     ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppDto> pendingApps);
+
+    /// <summary>
+    /// Get all App Extensions and their configuration (if any)
+    /// </summary>
+    /// <param name="appId">App identifier</param>
+    /// <returns>Object with property "extensions" containing an array of extensions</returns>
+    ExtensionsResultDto Extensions(int appId);
+
+    /// <summary>
+    /// Create or replace the configuration of a specific App Extension.
+    /// </summary>
+    /// <param name="zoneId">Zone id (for permission/consistency)</param>
+    /// <param name="appId">App identifier</param>
+    /// <param name="name">Extension folder name under "/extensions"</param>
+    /// <param name="configuration">JSON to write as App_Data/extension.json</param>
+    /// <returns>true if saved</returns>
+    bool Extensions(int zoneId, int appId, string name, JsonElement configuration);
 }
