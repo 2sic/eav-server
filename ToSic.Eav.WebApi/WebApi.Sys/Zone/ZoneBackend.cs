@@ -28,6 +28,7 @@ public class ZoneBackend(
         var siteStats = new SiteStatsDto
         {
             SiteId = site.Id,
+            TenantId = site.TenantId,
             ZoneId = site.ZoneId,
             Apps = appsCatalog.Apps(zoneId).Count,
             Languages = zoneMapper.CulturesWithState(site).Count,

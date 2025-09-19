@@ -45,6 +45,8 @@ public class SiteStatsDto
 {
     public required int SiteId { get; init; }
 
+    public int? TenantId { get; init; }
+
     public required int ZoneId { get; init; }
 
     public required int Apps { get; init; }

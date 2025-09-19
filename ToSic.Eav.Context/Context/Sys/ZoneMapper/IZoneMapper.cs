@@ -9,8 +9,9 @@ public interface IZoneMapper: IHasLog
 {
     /// <summary>
     /// Get the primary zoneId which belongs to the site.
+    /// Optional tenantId is provided for multi-database or multi-tenant hosting where both tenant and site are distinct.
     /// </summary>
-    int GetZoneId(int siteId);
+    int GetZoneId(int siteId, int? tenantId = null);
 
     /// <summary>
     /// Find the site of a Zone

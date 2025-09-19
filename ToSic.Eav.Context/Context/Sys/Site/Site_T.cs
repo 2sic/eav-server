@@ -10,7 +10,7 @@ public abstract class Site<T>(string logPrefix) : ServiceBase($"{logPrefix}.Site
     where T : class
 {
     /// <inheritdoc />
-    public abstract ISite Init(int siteId, ILog? parentLogOrNull);
+    public abstract ISite Init(int siteId, ILog? parentLogOrNull, int? tenantId = null);
 
     public virtual T GetContents() => UnwrappedSite;
 
@@ -26,6 +26,9 @@ public abstract class Site<T>(string logPrefix) : ServiceBase($"{logPrefix}.Site
 
     /// <inheritdoc />
     public abstract int Id { get; }
+
+    /// <inheritdoc />
+    public abstract int? TenantId { get; }
 
     /// <inheritdoc />
     public abstract string Name { get; }

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Context.Sys.ZoneMapper;
 internal class ZoneMapperUnknown(IAppsCatalog appsCatalog, WarnUseOfUnknown<ZoneMapperUnknown> _, Generator<ISite> site)
     : ZoneMapperBase(appsCatalog, $"{LogScopes.NotImplemented}.ZonMap", connect: []), IIsUnknown
 {
-    public override int GetZoneId(int siteId) => siteId;
+    public override int GetZoneId(int siteId, int? tenantId = null) => siteId;
         
     public override ISite SiteOfZone(int zoneId) => site.New().Init(zoneId, null);
 

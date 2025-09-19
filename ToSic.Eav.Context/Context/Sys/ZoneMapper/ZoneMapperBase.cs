@@ -13,7 +13,7 @@ public abstract class ZoneMapperBase(IAppsCatalog appsCatalog, string logName, o
     protected readonly IAppsCatalog AppsCatalog = appsCatalog;
 
     /// <inheritdoc />
-    public abstract int GetZoneId(int siteId);
+    public abstract int GetZoneId(int siteId, int? tenantId = null);
 
     /// <inheritdoc />
     public abstract ISite SiteOfZone(int zoneId);

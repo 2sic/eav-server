@@ -21,14 +21,17 @@ internal class SiteUnknown(WarnUseOfUnknown<SiteUnknown> _) : ISite, IIsUnknown
 
     public int ZoneId { get; private set; } = UnknownZoneId;
 
+    public int? TenantId { get; private set; }
+
     public string CurrentCultureCode => "en-us";
 
     public string DefaultCultureCode => "en-us";
 
-    public ISite Init(int siteId, ILog? parentLogOrNull)
+    public ISite Init(int siteId, ILog? parentLogOrNull, int? tenantId = null)
     {
         Id = siteId;
         ZoneId = siteId;
+        TenantId = tenantId;
         return this;
     }
 

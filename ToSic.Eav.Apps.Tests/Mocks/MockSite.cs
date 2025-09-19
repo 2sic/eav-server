@@ -4,12 +4,14 @@ namespace ToSic.Eav.Apps.Tests.Mocks;
 
 public class MockSite : ISite
 {
-    public ISite Init(int siteId, ILog? parentLogOrNull)
+    public ISite Init(int siteId, ILog? parentLogOrNull, int? tenantId = null)
     {
         return this;
     }
 
     public int Id => -999;
+
+    public int? TenantId => -999;
 
     public string? DefaultLanguage => null;
 

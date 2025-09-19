@@ -17,7 +17,7 @@ public interface ISite: IZoneIdentity, IZoneCultureResolver, ILogShouldNeverConn
     /// This is a special constructor where the tenant object is re-initialized with a specific tenant id
     /// </summary>
     /// <returns></returns>
-    ISite Init(int siteId, ILog? parentLogOrNull);
+    ISite Init(int siteId, ILog? parentLogOrNull, int? tenantId = null);
 
     #endregion
 
@@ -26,6 +26,12 @@ public interface ISite: IZoneIdentity, IZoneCultureResolver, ILogShouldNeverConn
     /// In DNN this is the same as the `PortalId`, in Oqtane the `SiteId`
     /// </summary>
     int Id { get; }
+
+    /// <summary>
+    /// Optional tenant identifier coming from hosting systems which distinguish tenant and site.
+    /// This is nullable to keep compatibility with systems that don't provide a separate tenant id.
+    /// </summary>
+    int? TenantId { get; }
 
     /// <summary>
     /// The tenant name for human readability (UIs)
