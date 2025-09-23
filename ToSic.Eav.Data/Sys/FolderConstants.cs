@@ -5,9 +5,19 @@
 public class FolderConstants
 {
     /// <summary>
+    /// New canonical folder inside an App-folder for installable extensions.
+    /// </summary>
+    public const string AppExtensionsFolder = "extensions";
+    
+    /// <summary>
     /// Folder inside an App-folder, containing extensions and other system features
     /// </summary>
-    public const string AppExtensionsFolder = "system";
+    public const string AppExtensionsLegacyFolder = "system";
+
+    /// <summary>
+    /// File name for an extension configuration inside an Extension's App_Data folder
+    /// </summary>
+    public const string AppExtensionJsonFile = "extension.json";
 
     /// <summary>
     /// OLD Data folder - either in the global environment, in plugins or in app-extensions

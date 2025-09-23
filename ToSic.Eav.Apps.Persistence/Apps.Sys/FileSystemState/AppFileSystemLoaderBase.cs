@@ -16,9 +16,9 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
 
     #endregion
 
-    public string Path { get; set; } = null!;
-    public string PathShared { get; set; } = null!;
-
+    public string ExtensionsPath { get; set; } = null!;
+    public string ExtensionsPathShared { get; set; } = null!;
+    
     protected IAppIdentity AppIdentity { get; private set; } = null!;
     protected ToSic.Sys.Logging.LogSettings LogSettings { get; private set; } = new();
 
@@ -52,9 +52,28 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
     private bool InitPathAfterAppId(IAppPaths appPaths)
     {
         var l = Log.Fn<bool>();
-        Path = System.IO.Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsFolder);
-        PathShared = System.IO.Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsFolder);
-        return l.ReturnTrue($"p:{Path}, ps:{PathShared}");
+
+        // Legacy system folder
+        var extensionsLegacyPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsLegacyFolder);
+        var extensionsLegacyPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsLegacyFolder);
+
+        // New canonical extensions folder
+        var extensionsNewPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsFolder);
+        var extensionsNewPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsFolder);
+
+        // Local app paths
+        var notLegacy = Directory.Exists(extensionsNewPath) || !Directory.Exists(extensionsLegacyPath);
+        ExtensionsPath = notLegacy
+            ? extensionsNewPath
+            : extensionsLegacyPath;
+
+        // Shared app paths
+        var notLegacyShared = Directory.Exists(extensionsNewPathShared) || !Directory.Exists(extensionsLegacyPathShared);
+        ExtensionsPathShared = notLegacyShared
+            ? extensionsNewPathShared
+            : extensionsLegacyPathShared;
+
+        return l.ReturnTrue($"p:{ExtensionsPath}, ps:{ExtensionsPathShared}");
     }
 
     #endregion

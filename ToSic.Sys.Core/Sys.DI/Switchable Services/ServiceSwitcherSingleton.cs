@@ -27,8 +27,10 @@ public class ServiceSwitcherSingleton<T>(
 
         logStore.Add(LogNames.LogStoreServiceSwitcher, Log);
         var call = Log.Fn<T>(message: "re-check singleton service");
-        _preferredService = serviceSwitcher.Value.Value;
-        return call.Return(_preferredService, $"found {_preferredService.NameId}");
+        // Use a local variable to avoid races with Reset() changing the static field mid-call
+        var chosen = serviceSwitcher.Value.Value;
+        _preferredService = chosen;
+        return call.Return(chosen, $"found {chosen.NameId}");
     }
 
     /// <summary>
