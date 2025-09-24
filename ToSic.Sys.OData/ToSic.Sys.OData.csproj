@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-	<Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Sys.props" />
-
-	<!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
-
-	<PropertyGroup>
-		<AssemblyName>ToSic.Sys.OData</AssemblyName>
-		<RootNamespace>ToSic.Sys.OData</RootNamespace>
-		<Description>Minimal OData system query options parser without EDM. Produces AST for $filter, $orderby, $search, $compute, and parses $select/$expand/$top/$skip/$count.</Description>
-	</PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Sys.props" />
+  <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
+  <PropertyGroup>
+    <AssemblyName>ToSic.Sys.OData</AssemblyName>
+    <RootNamespace>ToSic.Sys.OData</RootNamespace>
+    <Description>Minimal OData system query options parser without EDM. Produces AST for $filter, $orderby, $search, $compute, and parses $select/$expand/$top/$skip/$count.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
+  </ItemGroup>
 </Project>

@@ -1,16 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
-
   <PropertyGroup>
     <RootNamespace>ToSic.Sys.OData.Tests</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="YamlDotNet" Version="15.1.2" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Sys.OData\ToSic.Sys.OData.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.DataSource.TestHelpers\ToSic.Eav.DataSource.TestHelpers.csproj" />
   </ItemGroup>
 </Project>
