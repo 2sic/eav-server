@@ -17,8 +17,10 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
     #endregion
 
     public string ExtensionsPath { get; set; } = null!;
+    public string ExtensionsFolder { get; set; } = null!;
     public string ExtensionsPathShared { get; set; } = null!;
-    
+    public string ExtensionsFolderShared { get; set; } = null!;
+
     protected IAppIdentity AppIdentity { get; private set; } = null!;
     protected ToSic.Sys.Logging.LogSettings LogSettings { get; private set; } = new();
 
@@ -53,27 +55,26 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
     {
         var l = Log.Fn<bool>();
 
-        // Legacy system folder
-        var extensionsLegacyPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsLegacyFolder);
-        var extensionsLegacyPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsLegacyFolder);
-
-        // New canonical extensions folder
-        var extensionsNewPath = Path.Combine(appPaths.PhysicalPath, FolderConstants.AppExtensionsFolder);
-        var extensionsNewPathShared = Path.Combine(appPaths.PhysicalPathShared, FolderConstants.AppExtensionsFolder);
-
         // Local app paths
-        var notLegacy = Directory.Exists(extensionsNewPath) || !Directory.Exists(extensionsLegacyPath);
-        ExtensionsPath = notLegacy
-            ? extensionsNewPath
-            : extensionsLegacyPath;
-
+        (ExtensionsPath, ExtensionsFolder) = GetBestPathAndFolder(appPaths.PhysicalPath);
         // Shared app paths
-        var notLegacyShared = Directory.Exists(extensionsNewPathShared) || !Directory.Exists(extensionsLegacyPathShared);
-        ExtensionsPathShared = notLegacyShared
-            ? extensionsNewPathShared
-            : extensionsLegacyPathShared;
+        (ExtensionsPathShared, ExtensionsFolderShared) = GetBestPathAndFolder(appPaths.PhysicalPathShared);
 
         return l.ReturnTrue($"p:{ExtensionsPath}, ps:{ExtensionsPathShared}");
+
+        (string path, string folder) GetBestPathAndFolder(string appPathToCheck)
+        {
+            // New /extensions folder
+            var extensionsNewPath = Path.Combine(appPathToCheck, FolderConstants.AppExtensionsFolder);
+
+            // Legacy /system folder
+            var extensionsLegacyPath = Path.Combine(appPathToCheck, FolderConstants.AppExtensionsLegacyFolder);
+
+            var preferNew = Directory.Exists(extensionsNewPath) || !Directory.Exists(extensionsLegacyPath);
+            return preferNew
+                ? (extensionsNewPath, FolderConstants.AppExtensionsFolder)
+                : (extensionsLegacyPath, FolderConstants.AppExtensionsLegacyFolder);
+        }
     }
 
     #endregion

@@ -2,7 +2,6 @@
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.Persistence.File;
-using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
@@ -14,15 +13,28 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
     public ICollection<InputTypeInfo> InputTypes()
     {
         var l = Log.Fn<ICollection<InputTypeInfo>>();
-        var found = new List<InputTypeInfo>();
 
         // Local app paths
-        MergeInputTypes(found,GetInputTypes(ExtensionsPath, AppConstants.AppPathPlaceholder, FolderConstants.AppExtensionsFolder));
+        var inputTypes = GetInputTypes(ExtensionsPath, AppConstants.AppPathPlaceholder, ExtensionsFolder);
 
-        // Shared app paths
-        MergeInputTypes(found, GetInputTypes(ExtensionsPathShared, AppConstants.AppPathSharedPlaceholder, FolderConstants.AppExtensionsFolder));
+        // Shared app paths, merge in, but don't override any existing ones
+        inputTypes = MergeInputTypes(inputTypes, GetInputTypes(ExtensionsPathShared, AppConstants.AppPathSharedPlaceholder, ExtensionsFolderShared));
 
-        return l.Return(found, $"count:{found.Count}");
+        return l.Return(inputTypes, $"count:{inputTypes.Count}");
+
+        // Merge input types into the accumulator, preferring already-present types (so earlier calls win).
+        ICollection<InputTypeInfo> MergeInputTypes(ICollection<InputTypeInfo> acc, ICollection<InputTypeInfo> next)
+        {
+            if (next.Count == 0) return acc;
+            if (acc.Count == 0) return next;
+            var existing = acc
+                .Select(t => t.Type)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var uniqueNew = next
+                .Where(t => !existing.Contains(t.Type))
+                .ToListOpt();
+            return acc.Concat(uniqueNew).ToListOpt();
+        }
     }
 
 
@@ -65,15 +77,6 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
         return l.Return(types, $"{types.Count}");
     }
 
-    /// <summary>
-    /// Merge input types into the accumulator, preferring already-present types (so earlier calls win).
-    /// </summary>
-    private static void MergeInputTypes(List<InputTypeInfo> acc, ICollection<InputTypeInfo> next)
-    {
-        if (next.Count == 0) return;
-        var existing = acc.Select(t => t.Type).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        acc.AddRange(next.Where(t => !existing.Contains(t.Type)));
-    }
 
     private static string InputTypeNiceName(string name)
     {
