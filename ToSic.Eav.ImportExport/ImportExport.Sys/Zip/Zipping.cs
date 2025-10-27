@@ -37,13 +37,13 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     /// <summary>
     /// Extracts a Zip (as Stream) to the given OutFolder directory.
     /// </summary>
-    public void ExtractZipStream(Stream zipStream, string outFolder, bool allowCodeImport)
+    public void ExtractZipStream(Stream zipStream, string outFolder, bool allowCodeImport, bool ignoreFolderEntries = false)
     {
 
-        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}, {nameof(ignoreFolderEntries)}:{ignoreFolderEntries}");
 
         using var zipArchive = new ZipArchive(zipStream);
-        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport);
+        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport, ignoreFolderEntries);
 
         l.Done("ok");
     }
@@ -51,17 +51,17 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     /// <summary>
     /// Extracts a Zip (as File) to the given OutFolder directory.
     /// </summary>
-    public void ExtractZipFile(string zipPath, string outFolder, bool allowCodeImport)
+    public void ExtractZipFile(string zipPath, string outFolder, bool allowCodeImport, bool ignoreFolderEntries = false)
     {
-        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}, {nameof(ignoreFolderEntries)}:{ignoreFolderEntries}");
 
         using var zipArchive = ZipFile.OpenRead(zipPath);
-        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport);
+        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport, ignoreFolderEntries);
 
         l.Done("ok");
     }
 
-    private void ExtractZipArchiveToFile(ZipArchive zipArchive, string outFolder, bool allowCodeImport)
+    private void ExtractZipArchiveToFile(ZipArchive zipArchive, string outFolder, bool allowCodeImport, bool ignoreFolderEntries = false)
     {
         var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
 
@@ -72,10 +72,10 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
             .ToListOpt();
 
         // If count is off, there are entries for empty folders - which is an indication that it's not a proper app export.
-        if (realEntries.Count != zipArchive.Entries.Count)
+        if (realEntries.Count != zipArchive.Entries.Count && !ignoreFolderEntries)
             throw new("Zip contained entries for folders, which never happens in normal App exports. This is probably not a 2sxc app.");
 
-        foreach (var entry in zipArchive.Entries)
+        foreach (var entry in ignoreFolderEntries ? realEntries : zipArchive.Entries)
         {
             // check for illegal file paths in zip
             CheckZipEntry(entry);
