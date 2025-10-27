@@ -85,7 +85,7 @@ public class ZipExport(
                 {
                     // Empty older version of app global templates state in App_Data
                     var globalTemplatesStatePath = Path.Combine(appDataPath, FolderConstants.ZipFolderForGlobalAppStuff);
-                    ZipImport.TryToDeleteDirectory(globalTemplatesStatePath, Log);
+                    Zipping.TryToDeleteDirectory(globalTemplatesStatePath, Log);
                     // Version control folder to preserve copy of app global templates
                     var globalTemplatesStateFolder = appDataDirectory.CreateSubdirectory(FolderConstants.ZipFolderForGlobalAppStuff);
 
@@ -104,7 +104,7 @@ public class ZipExport(
             {
                 // Empty older version of SiteFiles state in App_Data
                 var portalFilesPath = Path.Combine(appDataPath, FolderConstants.ZipFolderForSiteFiles);
-                ZipImport.TryToDeleteDirectory(portalFilesPath, Log);
+                Zipping.TryToDeleteDirectory(portalFilesPath, Log);
 
                 // Version control folder to preserve copy of SiteFiles
                 var portalFilesDirectory = appDataDirectory.CreateSubdirectory(FolderConstants.ZipFolderForSiteFiles);
@@ -178,7 +178,7 @@ public class ZipExport(
         // Zip directory and return as stream
         var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
 
-        ZipImport.TryToDeleteDirectory(temporaryDirectoryPath, Log);
+        Zipping.TryToDeleteDirectory(temporaryDirectoryPath, Log);
 
         return stream;
     }

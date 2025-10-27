@@ -115,7 +115,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         finally
         {
             // Finally delete the temporary directory
-            TryToDeleteDirectory(temporaryDirectory, Log);
+            Zipping.TryToDeleteDirectory(temporaryDirectory, Log);
         }
 
         if (finalException != null)
@@ -126,36 +126,6 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         }
 
         return l.ReturnTrue("ok");
-    }
-
-
-    /// <summary>
-    /// Try to delete folder
-    /// </summary>
-    /// <param name="directoryPath"></param>
-    /// <param name="log"></param>
-    public static void TryToDeleteDirectory(string directoryPath, ILog log)
-    {
-        var l = log.Fn($"{nameof(directoryPath)}:'{directoryPath}'");
-        var retryDelete = 0;
-        do
-        {
-            try
-            {
-                if (Directory.Exists(directoryPath))
-                    Directory.Delete(directoryPath, true);
-            }
-            catch (Exception e)
-            {
-                ++retryDelete;
-                l.Ex(e);
-                l.A("Delete ran into issues, will ignore. " +
-                      "Probably files/folders are used by another process like anti-virus. " +
-                      $"Retry: {retryDelete}.");
-            }
-        } while (Directory.Exists(directoryPath) && retryDelete <= 20);
-
-        l.Done(Directory.Exists(directoryPath) ? "error, can't delete" : "ok");
     }
 
 
@@ -304,7 +274,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         if (Directory.Exists(appTemplateRoot))
         {
             if (deleteGlobalTemplates)
-                TryToDeleteDirectory(globalTemplatesRoot, l);
+                Zipping.TryToDeleteDirectory(globalTemplatesRoot, l);
 
             l.A("copy all files to app global template folder");
             Services.FileManagerGenerator.New()

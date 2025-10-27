@@ -122,4 +122,33 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     }
 
     #endregion
+
+    /// <summary>
+    /// Try to delete folder
+    /// </summary>
+    /// <param name="directoryPath"></param>
+    /// <param name="log"></param>
+    public static void TryToDeleteDirectory(string directoryPath, ILog log)
+    {
+        var l = log.Fn($"{nameof(directoryPath)}:'{directoryPath}'");
+        var retryDelete = 0;
+        do
+        {
+            try
+            {
+                if (Directory.Exists(directoryPath))
+                    Directory.Delete(directoryPath, true);
+            }
+            catch (Exception e)
+            {
+                ++retryDelete;
+                l.Ex(e);
+                l.A("Delete ran into issues, will ignore. " +
+                    "Probably files/folders are used by another process like anti-virus. " +
+                    $"Retry: {retryDelete}.");
+            }
+        } while (Directory.Exists(directoryPath) && retryDelete <= 20);
+
+        l.Done(Directory.Exists(directoryPath) ? "error, can't delete" : "ok");
+    }
 }
