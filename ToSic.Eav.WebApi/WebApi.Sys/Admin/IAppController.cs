@@ -75,4 +75,15 @@ public interface IAppController<out THttpResponse>
     /// <param name="configuration">JSON to write as App_Data/extension.json</param>
     /// <returns>true if saved</returns>
     bool Extensions(int zoneId, int appId, string name, JsonElement configuration);
+
+    /// <summary>
+    /// Install app extension zip
+    /// </summary>
+    /// <param name="zoneId">Zone id (for permission/consistency)</param>
+    /// <param name="appId">App identifier</param>
+    /// <param name="name">Extension folder name under "/extensions"</param>
+    /// <param name="overwrite"></param>
+    /// <returns></returns>
+    bool InstallExtension(int zoneId, int appId, string? name = null, bool overwrite = false);
+
 }
