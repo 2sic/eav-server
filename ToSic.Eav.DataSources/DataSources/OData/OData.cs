@@ -77,7 +77,7 @@ public sealed class OData : DataSourceBase
             return l.Return(inList, "no odata");
 
         // Parse OData options (safe against malformed % etc.)
-        var options = SystemQueryOptionsParser.Parse(raw);
+        var options = SystemQueryOptionsParser.Parse(raw!);
         if (!options.RawAllSystem.Any())
             return l.Return(inList, "no system options");
 

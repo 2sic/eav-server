@@ -84,7 +84,7 @@ internal sealed class FilterExpressionParser
                                          name.EndsWith("/all", StringComparison.OrdinalIgnoreCase) ||
                                          string.Equals(name, "any", StringComparison.OrdinalIgnoreCase) ||
                                          string.Equals(name, "all", StringComparison.OrdinalIgnoreCase);
-                        if (isLambdaOp && Peek().Kind == TokKind.Identifier && _toks[_i + 1].Kind == TokKind.Colon)
+                        if (isLambdaOp && Peek().Kind == TokKind.Identifier && Peek(1).Kind == TokKind.Colon)
                         {
                             // consume var ':'
                             Next(); // var
@@ -158,8 +158,8 @@ internal sealed class FilterExpressionParser
         }
     }
 
-    private Token Peek() => _toks[_i];
-    private Token Next() => _toks[_i++];
+    private Token Peek(int offset = 0) => (_i + offset) < _toks.Count ? _toks[_i + offset] : new Token(TokKind.Eof, string.Empty);
+    private Token Next() => (_i < _toks.Count) ? _toks[_i++] : new Token(TokKind.Eof, string.Empty);
     private Token Expect(TokKind kind)
     {
         var t = Next();

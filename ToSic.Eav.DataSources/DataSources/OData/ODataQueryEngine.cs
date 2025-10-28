@@ -262,10 +262,11 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         return entity.Get(trimmed);
     }
 
-    private static string ResolveIdentifier(Expr expression)
+    private static string ResolveIdentifier(Expr? expression)
         => expression switch
         {
             IdentifierExpr identifier => identifier.Name,
+            null => throw new NotSupportedException("Cannot resolve identifier from null expression"),
             _ => throw new NotSupportedException($"Cannot resolve identifier from expression type {expression.GetType().Name}")
         };
 

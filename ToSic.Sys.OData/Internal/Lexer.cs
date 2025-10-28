@@ -26,7 +26,7 @@ internal sealed class Lexer(string? text, bool searchMode = false)
     {
         SkipWs();
         if (_position >= _text.Length)
-            return new Token(TokKind.Eof, null);
+            return new Token(TokKind.Eof, string.Empty);
 
         var c = _text[_position];
         switch (c)
@@ -133,7 +133,7 @@ internal sealed class Lexer(string? text, bool searchMode = false)
                 _position++;
 
                 if (_position >= _text.Length)
-                    return new Token(TokKind.Eof, null);
+                    return new Token(TokKind.Eof, string.Empty);
 
                 return NextToken();
         }

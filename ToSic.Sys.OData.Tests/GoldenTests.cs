@@ -22,7 +22,9 @@ namespace ToSic.Sys.OData.Tests
         {
             var parsed = Parse(new Dictionary<string,string> { ["$filter"] = filter });
             Assert.NotNull(parsed.Filter);
-            Assert.Equal(expected, parsed.Filter!.Expression.ToString());
+            var filterClause = parsed.Filter!;
+            Assert.NotNull(filterClause.Expression);
+            Assert.Equal(expected, filterClause.Expression!.ToString());
         }
 
         [Fact]
@@ -30,11 +32,14 @@ namespace ToSic.Sys.OData.Tests
         {
             var parsed = Parse(new Dictionary<string,string> { ["$orderby"] = "price desc, name asc" });
             Assert.NotNull(parsed.OrderBy);
-            Assert.Equal(2, parsed.OrderBy!.Items.Count);
-            Assert.Equal("price", parsed.OrderBy.Items[0].Expression.ToString());
-            Assert.True(parsed.OrderBy.Items[0].Descending);
-            Assert.Equal("name", parsed.OrderBy.Items[1].Expression.ToString());
-            Assert.False(parsed.OrderBy.Items[1].Descending);
+            var orderBy = parsed.OrderBy!;
+            Assert.Equal(2, orderBy.Items.Count);
+            Assert.NotNull(orderBy.Items[0].Expression);
+            Assert.Equal("price", orderBy.Items[0].Expression!.ToString());
+            Assert.True(orderBy.Items[0].Descending);
+            Assert.NotNull(orderBy.Items[1].Expression);
+            Assert.Equal("name", orderBy.Items[1].Expression!.ToString());
+            Assert.False(orderBy.Items[1].Descending);
         }
 
         [Fact]
@@ -42,9 +47,11 @@ namespace ToSic.Sys.OData.Tests
         {
             var parsed = Parse(new Dictionary<string,string> { ["$compute"] = "price mul 0.9 as discounted" });
             Assert.NotNull(parsed.Compute);
-            Assert.Equal(1, parsed.Compute!.Items.Count);
-            Assert.Equal("(price mul 0.9)", parsed.Compute.Items[0].Expression.ToString());
-            Assert.Equal("discounted", parsed.Compute.Items[0].Alias);
+            var compute = parsed.Compute!;
+            Assert.Single(compute.Items);
+            Assert.NotNull(compute.Items[0].Expression);
+            Assert.Equal("(price mul 0.9)", compute.Items[0].Expression!.ToString());
+            Assert.Equal("discounted", compute.Items[0].Alias);
         }
 
         [Fact]
@@ -52,8 +59,11 @@ namespace ToSic.Sys.OData.Tests
         {
             var parsed = Parse(new Dictionary<string,string> { ["$select"] = "id,name", ["$expand"] = "orders,category" });
             Assert.NotNull(parsed.SelectExpand);
-            Assert.Equal(new[] {"id","name"}, parsed.SelectExpand!.Select);
-            Assert.Equal(new[] {"orders","category"}, parsed.SelectExpand!.Expand);
+            var se = parsed.SelectExpand!;
+            Assert.NotNull(se.Select);
+            Assert.NotNull(se.Expand);
+            Assert.Equal(new[] {"id","name"}, se.Select);
+            Assert.Equal(new[] {"orders","category"}, se.Expand);
         }
 
         [Theory]
@@ -63,7 +73,8 @@ namespace ToSic.Sys.OData.Tests
         {
             var parsed = Parse(new Dictionary<string,string> { ["$search"] = search });
             Assert.NotNull(parsed.Search);
-            Assert.NotNull(parsed.Search!.Expression);
+            var searchClause = parsed.Search!;
+            Assert.NotNull(searchClause.Expression);
         }
 
         [Fact]
