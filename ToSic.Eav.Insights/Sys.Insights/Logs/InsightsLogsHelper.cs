@@ -150,7 +150,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         msg += Table().Id("table").Wrap(
             HeadFields([
                 "#",
-                "Timestamp",
+                "Timestamp UTC",
                 hasApp ? "App ↕" : null,
                 hasSite ? "Site ↕" : null,
                 hasPage ? "Page ↕" : null,

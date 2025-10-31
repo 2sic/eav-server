@@ -47,8 +47,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         var type = item.Type;
         var ancestorDecorator = type.GetDecorator<IAncestor>();
         var inputType = FindInputTypeOrUnknownOld(a);
-        var appInputTypes = AppInputTypes;
-        var inputConfigs = GetInputTypesAndMetadata(inputType, a, type, ancestorDecorator, appInputTypes);
+        var inputConfigs = GetInputTypesAndMetadata(inputType, a, type, ancestorDecorator, AppInputTypes);
 
         // note: "ImageDecorator" is hardwired here, because it's a constant in 2sxc, not eav
         const string imageDecorator = "ImageDecorator";
@@ -65,7 +64,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
             IsTitle = a.IsTitle,
             AttributeId = a.AttributeId,
             Metadata = inputConfigs.InputMetadata,
-            InputTypeConfig = appInputTypes.FirstOrDefault(it => it.Type == inputType),
+            InputTypeConfig = AppInputTypes.FirstOrDefault(it => it.Type == inputType),
             Permissions = new()
             {
                 Count = a.Metadata.Permissions.Count()
