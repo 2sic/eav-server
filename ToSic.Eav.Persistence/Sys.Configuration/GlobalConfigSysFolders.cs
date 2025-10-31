@@ -163,10 +163,22 @@ public static class GlobalConfigSysFolders
     /// </summary>
     public static string TempAssemblyFolder(this IGlobalConfiguration config)
         => config.GetThisErrorOnNull();
-
+    
     /// <summary>
     /// The absolute folder where the 2sxc app temp assemblies for AppCode, assembly dependencies... are stored.
     /// </summary>
     public static void TempAssemblyFolder(this IGlobalConfiguration config, string value)
+        => config.SetThis(value);
+
+    /// <summary>
+    /// The absolute folder where the 2sxc app temp assemblies for Cshtml are stored.
+    /// </summary>
+    public static string CshtmlAssemblyFolder(this IGlobalConfiguration config)
+        => config.GetThisErrorOnNull();
+
+    /// <summary>
+    /// The absolute folder where the 2sxc app temp assemblies for Cshtml are stored.
+    /// </summary>
+    public static void CshtmlAssemblyFolder(this IGlobalConfiguration config, string value)
         => config.SetThis(value);
 }
