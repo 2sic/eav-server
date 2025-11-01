@@ -1,5 +1,6 @@
 ﻿
 using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys.PropertyDump;
 

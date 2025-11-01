@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Metadata;
 using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Data.Sys.Entities;

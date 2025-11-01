@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Eav.Data.Sys.PropertyStack;
 
 namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack;

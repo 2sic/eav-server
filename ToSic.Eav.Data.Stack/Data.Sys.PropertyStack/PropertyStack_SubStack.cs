@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Sys.PropertyStack;
+﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+
+namespace ToSic.Eav.Data.Sys.PropertyStack;
 
 partial class PropertyStack
 {

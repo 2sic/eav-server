@@ -1,4 +1,5 @@
-﻿using static ToSic.Eav.Data.Sys.AttributeNames;
+﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using static ToSic.Eav.Data.Sys.AttributeNames;
 
 namespace ToSic.Eav.Data.Sys.Entities;
 

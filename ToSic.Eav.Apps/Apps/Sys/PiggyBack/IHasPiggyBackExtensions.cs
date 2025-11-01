@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Sys.Caching.PiggyBack;
 
 namespace ToSic.Eav.Apps.Sys;

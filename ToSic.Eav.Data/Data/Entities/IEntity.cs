@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Sys.Attributes;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Security.Permissions;
 
