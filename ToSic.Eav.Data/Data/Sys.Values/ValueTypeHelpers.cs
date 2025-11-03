@@ -16,8 +16,6 @@ public class ValueTypeHelpers
             ? code
             : ValueTypes.Undefined;
 
-    //public static Type GetType(ValueTypes type) => TypeMap[type];
-
     public static ValueTypes Get(Type type) =>
         // String occurs multiple times, so we can't just get first...
         type == typeof(string)

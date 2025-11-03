@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data;
 /// > We recommend you read about the [](xref:Basics.Data.Index)
 /// </remarks>
 [PublicApi]
-public interface IAttribute // : IAttributeBase
+public interface IAttribute
 {
     /// <summary>
     /// Name of the Attribute

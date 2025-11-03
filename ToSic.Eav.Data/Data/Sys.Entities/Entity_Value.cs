@@ -15,11 +15,11 @@ partial record Entity
     //        .ConvertOrDefault<TValue>();
 
     public object? Get(string name)
-        => GetPropertyInternal(new(name), null).Result;
+        => GetPropertyInternal(new(name), new()).Result;
 
     //// ReSharper disable once MethodOverloadWithOptionalParameter
     public object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string?[]? languages = default)
-        => GetPropertyInternal(new(name, HandleLanguageParams(language, languages), true), null).Result;
+        => GetPropertyInternal(new(name, HandleLanguageParams(language, languages), true), new()).Result;
 
     // 2025-06-13 #MoveIEntityTypedGetToExtension
     //public TValue? Get<TValue>(string name)
