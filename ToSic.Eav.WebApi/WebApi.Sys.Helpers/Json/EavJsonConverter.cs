@@ -3,53 +3,59 @@ using System.Text.Json;
 using System.Web;
 using ToSic.Eav.DataFormats.EavLight;
 
+#if NETCOREAPP
+using Microsoft.AspNetCore.Http;
+#endif
+
 namespace ToSic.Eav.WebApi.Sys.Helpers.Json;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class EavJsonConverter(IConvertToEavLight convertToEavLight) : JsonConverter<IEntity>
+public class EavJsonConverter(
+    IServiceProvider serviceProvider
+#if NETCOREAPP
+    , IHttpContextAccessor httpContextAccessor
+#endif
+        ) : JsonConverter<IEntity>
 {
     public override IEntity Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => throw new NotImplementedException();
 
     public override void Write(Utf8JsonWriter writer, IEntity entity, JsonSerializerOptions options)
     {
-        var eavLightEntity = convertToEavLight.Convert(entity);
+        // Get request-scoped converter to ensure correct culture resolution
+        var converter = GetCurrentRequestConverter();
+        var eavLightEntity = converter.Convert(entity);
         JsonSerializer.Serialize(writer, eavLightEntity, eavLightEntity.GetType(), options);
     }
-}
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class EavJsonConverterHttpEntry(IConvertToEavLight convertToEavLight) : JsonConverter<IEntity>
-{
-    public override IEntity Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => throw new NotImplementedException();
-
-    public override void Write(Utf8JsonWriter writer, IEntity entity, JsonSerializerOptions options)
+    /// <summary>
+    /// Get the IConvertToEavLight from the current HTTP request's service scope.
+    /// This ensures the converter uses the current request's culture information.
+    /// </summary>
+    private IConvertToEavLight GetCurrentRequestConverter()
     {
-        var eavLightEntity = GetCurrentConverter().Convert(entity);
-        JsonSerializer.Serialize(writer, eavLightEntity, eavLightEntity!.GetType(), options);
-    }
+        IServiceProvider? scopedProvider = null;
 
-    private IConvertToEavLight GetCurrentConverter()
-    {
-        return convertToEavLight;
-
-        // @STV need your help here
-#if !NETCOREAPP
-        if (_currentConverter != null)
-            return _currentConverter;
-        // 1. Access the current HttpContext
+#if NETCOREAPP
+        // For .NET Core, use the HttpContext to get the request-scoped service provider
+        var httpContext = httpContextAccessor.HttpContext;
+        if (httpContext != null)
+            scopedProvider = httpContext.RequestServices;
+#else
+        // For .NET Framework (DNN), get the scope from HttpContext.Current.Items
         var httpContext = HttpContext.Current;
-        if (httpContext == null)
-            return _currentConverter = convertToEavLight;
-
-        var scope = httpContext.Items[typeof(IServiceScope)] as IServiceScope;
-        var sp = scope?.ServiceProvider;
-        if (sp == null)
-            return _currentConverter = convertToEavLight;
-        return _currentConverter = sp.Build<IConvertToEavLight>();
+        if (httpContext != null)
+        {
+            var scope = httpContext.Items[typeof(IServiceScope)] as IServiceScope;
+            scopedProvider = scope?.ServiceProvider;
+        }
 #endif
-    }
 
-    private IConvertToEavLight? _currentConverter;
+        // Fall back to the injected service provider if no scoped provider is available
+        var provider = scopedProvider ?? serviceProvider;
+        
+        // Build a fresh converter instance from the request scope
+        // This ensures it gets the current request's culture from IZoneCultureResolver
+        return provider.Build<IConvertToEavLight>();
+    }
 }
