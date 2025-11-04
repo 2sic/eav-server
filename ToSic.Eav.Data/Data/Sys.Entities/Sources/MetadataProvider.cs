@@ -22,7 +22,7 @@ public static class MetadataProvider
             ? new MetadataProviderDirect(items)
             : new MetadataProviderEmpty();
 
-    public static IMetadataProvider Create(IHasMetadataSourceAndExpiring source) =>
+    public static IMetadataProvider Create(IHasMetadataSourceAndExpiring? source) =>
         source != null! /* paranoid */
             ? new MetadataProviderApp(source)
             : new MetadataProviderEmpty();
