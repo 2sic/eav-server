@@ -34,7 +34,6 @@ public static class JsonOptions
         ReadCommentHandling = JsonCommentHandling.Skip,
         WriteIndented = false,
         TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
-        ReferenceHandler = ReferenceHandler.Preserve
     };
 
     /// <summary>
