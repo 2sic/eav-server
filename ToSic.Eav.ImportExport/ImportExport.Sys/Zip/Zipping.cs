@@ -1,5 +1,7 @@
 ﻿using System.IO.Compression;
+using System.Text;
 using ToSic.Eav.Security.Files;
+using static ToSic.Eav.ImportExport.Sys.ImpExpConstants;
 
 namespace ToSic.Eav.ImportExport.Sys.Zip;
 
@@ -8,27 +10,70 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     public MemoryStream ZipDirectoryIntoStream(string zipDirectory)
     {
         using var stream = new MemoryStream();
-        using var zipStream = new ZipArchive(stream, ZipArchiveMode.Create, true);
-        ZipFolder(zipDirectory, zipDirectory, zipStream);
+        using var archive = new ZipArchive(stream, ZipArchiveMode.Create, true);
+        AddFolder(archive, zipDirectory, zipDirectory);
         return stream;
     }
 
-    public void ZipFolder(string rootFolder, string currentFolder, ZipArchive zStream)
+    public void AddFolder(ZipArchive archive, string rootFolder, string currentFolder)
     {
-
         var subFolders = Directory.GetDirectories(currentFolder);
         foreach (var folder in subFolders)
-            ZipFolder(rootFolder, folder, zStream);
+            AddFolder(archive, rootFolder, folder);
 
         var relativePath = currentFolder.Substring(rootFolder.Length) + "\\";
         foreach (var file in Directory.GetFiles(currentFolder))
-            AddFileToZip(zStream, relativePath, file);
+            AddFile(archive, file, relativePath);
     }
 
-    private void AddFileToZip(ZipArchive zStream, string relativePath, string file)
+    public void AddFile(ZipArchive archive, string sourcePath, string zipPath)
     {
-        var fileRelativePath = (relativePath.Length > 1 ? relativePath : string.Empty) + Path.GetFileName(file);
-        zStream.CreateEntryFromFile(file, fileRelativePath, CompressionLevel.Optimal);
+        var l = Log.Fn();
+        var fileRelativePath = (zipPath.Length > 1 ? zipPath : string.Empty) + Path.GetFileName(sourcePath);
+        archive.CreateEntryFromFile(sourcePath, fileRelativePath, CompressionLevel.Optimal);
+        l.Done();
+    }
+
+    /// <summary>
+    /// Add a list of files to the provided ZipArchive with explicit target paths.
+    /// This avoids duplicated code in callers and ensures consistent compression settings.
+    /// </summary>
+    /// <param name="archive">Target archive</param>
+    /// <param name="files">Tuple of sourcePath and zipPath inside archive</param>
+    public void AddFiles(ZipArchive archive, IEnumerable<(string sourcePath, string zipPath)> files)
+    {
+        var l = Log.Fn($"{nameof(files)}:{files?.Count()}");
+        foreach (var (sourcePath, zipPath) in files ?? Array.Empty<(string sourcePath, string zipPath)>())
+        {
+            var entry = archive.CreateEntry(zipPath, CompressionLevel.Optimal);
+            using var entryStream = entry.Open();
+            using var fileStream = File.OpenRead(sourcePath);
+            fileStream.CopyTo(entryStream);
+            l.A($"add: {zipPath}");
+        }
+        l.Done("ok");
+    }
+
+    /// <summary>
+    /// Add a text entry to the provided ZipArchive using UTF8 by default (no BOM).
+    /// </summary>
+    public void AddTextEntry(ZipArchive archive, string zipPath, string content, Encoding? encoding = null)
+    {
+        var enc = encoding ?? new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        var entry = archive.CreateEntry(zipPath, CompressionLevel.Optimal);
+        using var entryStream = entry.Open();
+        using var writer = new StreamWriter(entryStream, enc);
+        writer.Write(content);
+    }
+
+    /// <summary>
+    /// Add a byte[] entry to the provided ZipArchive.
+    /// </summary>
+    public void AddBytesEntry(ZipArchive archive, string zipPath, byte[] bytes)
+    {
+        var entry = archive.CreateEntry(zipPath, CompressionLevel.Optimal);
+        using var entryStream = entry.Open();
+        entryStream.Write(bytes, 0, bytes.Length);
     }
 
 
