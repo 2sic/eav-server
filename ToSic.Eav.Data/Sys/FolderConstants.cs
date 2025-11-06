@@ -20,6 +20,11 @@ public class FolderConstants
     public const string AppExtensionJsonFile = "extension.json";
 
     /// <summary>
+    /// File name for an extension lock file inside an Extension's App_Data folder
+    /// </summary>
+    public const string AppExtensionLockJsonFile = "extension.lock.json";
+
+    /// <summary>
     /// OLD Data folder - either in the global environment, in plugins or in app-extensions
     /// </summary>
     [PrivateApi("deprecated, no value in showing")]
