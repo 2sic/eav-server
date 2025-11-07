@@ -177,7 +177,7 @@ public class ContentExportApi(
         }
     }
 
-    private (ExportConfiguration export, string fileContent) CreateBundleExport(Guid exportConfiguration, int indentation)
+    internal (ExportConfiguration export, string fileContent) CreateBundleExport(Guid exportConfiguration, int indentation)
     {
         var l = Log.Fn<(ExportConfiguration export, string fileContent)>($"create bundle export for ExportConfiguration:{exportConfiguration}");
 
