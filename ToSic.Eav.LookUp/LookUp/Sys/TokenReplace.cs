@@ -36,17 +36,21 @@ public class TokenReplace(ILookUpEngine lookupEngine)
                     (?<format>[^\]\[]*)
                     # ...followed by "|" and an optional "ifEmpty" param, except that the if-empty can be very complex, containing more tokens
                     \|(?:
-                        # "ifEmpty" is any character, but not a token symbol [ or ]
-                        # note 2025-11-08 2dm, replaced \} with \] - I believe this was a typo from previous inheriting from DNN token engine
+                        # note 2025-11-08 2dm, this section was rewoked to support multiple separate tokens in the fallback
                         (?<ifEmpty>
-                            [^\[\]]+)
-                            # OR "ifEmpty" hits a token, in which case we look ahead and count open/close to make sure they are balanced
-                            |(?:
-                                (?<ifEmpty>\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\]))
+                            # the section "ifEmpty" consists of any characters except [ or ], or tokens which are balanced
+                            (
+                                # "ifEmpty" is any character, but not a token symbol [ or ] - this is optional "*", as it could also have nothing
+                                # note 2025-11-08 2dm, replaced \} with \] - I believe this was a typo from previous inheriting from DNN token engine
+                                [^\[\]]*
+                                # OR "ifEmpty" hits a token, in which case we look ahead and count open/close to make sure they are balanced
+                                |(\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\])
+                            )*
+                        )
                     )
                 )
                 # not sure where this starts - or what it's for, but it's an "or after a | you find a format..."
-                # this occurance of "format" is when there's no fallback
+                # this occurance of "format" is when there's no "ifEmpty" fallback
                 |\|(?:(?<format>[^\|\]\[]+))
             )?   # this packages is allowed 0 or 1 times so it ends with a ?
         # and of course such a token must end with a ]
