@@ -9,6 +9,7 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 {
     public MemoryStream ZipDirectoryIntoStream(string zipDirectory)
     {
+        // TODO: @STV this looks problematic, Resharper says that `stream` will be disposed before being returned
         using var stream = new MemoryStream();
         using var archive = new ZipArchive(stream, ZipArchiveMode.Create, true);
         AddFolder(archive, zipDirectory, zipDirectory);
@@ -43,7 +44,7 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     public void AddFiles(ZipArchive archive, IEnumerable<(string sourcePath, string zipPath)> files)
     {
         var l = Log.Fn($"{nameof(files)}:{files?.Count()}");
-        foreach (var (sourcePath, zipPath) in files ?? Array.Empty<(string sourcePath, string zipPath)>())
+        foreach (var (sourcePath, zipPath) in files ?? [])
         {
             var entry = archive.CreateEntry(zipPath, CompressionLevel.Optimal);
             using var entryStream = entry.Open();
@@ -173,7 +174,7 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     /// </summary>
     /// <param name="directoryPath"></param>
     /// <param name="log"></param>
-    public static void TryToDeleteDirectory(string directoryPath, ILog log)
+    public static void TryToDeleteDirectory(string directoryPath, ILog? log)
     {
         var l = log.Fn($"{nameof(directoryPath)}:'{directoryPath}'");
         var retryDelete = 0;
