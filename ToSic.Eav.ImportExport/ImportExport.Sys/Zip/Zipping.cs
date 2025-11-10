@@ -9,10 +9,14 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 {
     public MemoryStream ZipDirectoryIntoStream(string zipDirectory)
     {
-        // TODO: @STV this looks problematic, Resharper says that `stream` will be disposed before being returned
-        using var stream = new MemoryStream();
-        using var archive = new ZipArchive(stream, ZipArchiveMode.Create, true);
-        AddFolder(archive, zipDirectory, zipDirectory);
+        // Create the memory stream and keep it open until we return it to the caller
+        var stream = new MemoryStream();
+        using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            AddFolder(archive, zipDirectory, zipDirectory);
+        }
+        // Reset to beginning so callers can read from start
+        stream.Position = 0;
         return stream;
     }
 
