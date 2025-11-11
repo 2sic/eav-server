@@ -70,7 +70,8 @@ public static class DictionaryExtensions
         if (!source.TryGetValue(key, out var innerResult))
             return false;
         //if (innerResult == null) return false;
-        if (innerResult is not TResult typed) return false;
+        if (innerResult is not TResult typed)
+            return false;
         result = typed;
         return true;
     }
