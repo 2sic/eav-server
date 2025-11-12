@@ -1,11 +1,10 @@
 ﻿using System.IO.Compression;
 using System.Text;
 using ToSic.Eav.Security.Files;
-using static ToSic.Eav.ImportExport.Sys.ImpExpConstants;
 
 namespace ToSic.Eav.ImportExport.Sys.Zip;
 
-internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
+internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 {
     public MemoryStream ZipDirectoryIntoStream(string zipDirectory)
     {
