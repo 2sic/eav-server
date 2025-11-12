@@ -81,9 +81,8 @@ public interface IAppController<out THttpResponse>
     /// </summary>
     /// <param name="zoneId">Zone id (for permission/consistency)</param>
     /// <param name="appId">App identifier</param>
-    /// <param name="name">Extension folder name under "/extensions"</param>
     /// <param name="overwrite"></param>
     /// <returns></returns>
-    bool InstallExtension(int zoneId, int appId, string? name = null, bool overwrite = false);
+    bool InstallExtension(int zoneId, int appId, bool overwrite = false);
 
 }
