@@ -186,7 +186,10 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
             try
             {
                 if (Directory.Exists(directoryPath))
+                {
+                    RemoveReadOnlyRecursive(directoryPath, log);
                     Directory.Delete(directoryPath, true);
+                }
             }
             catch (Exception e)
             {
@@ -199,5 +202,35 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
         } while (Directory.Exists(directoryPath) && retryDelete <= 20);
 
         l.Done(Directory.Exists(directoryPath) ? "error, can't delete" : "ok");
+    }
+
+    private static void RemoveReadOnlyRecursive(string directoryPath, ILog? log)
+    {
+        if (!Directory.Exists(directoryPath))
+            return;
+
+        foreach (var file in Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories))
+        {
+            var attributes = File.GetAttributes(file);
+            if (!attributes.HasFlag(FileAttributes.ReadOnly))
+                continue;
+
+            File.SetAttributes(file, attributes & ~FileAttributes.ReadOnly);
+            log?.A($"clear ro file:{file}");
+        }
+
+        foreach (var folder in Directory.GetDirectories(directoryPath, "*", SearchOption.AllDirectories))
+        {
+            var dirInfo = new DirectoryInfo(folder);
+            if (!dirInfo.Attributes.HasFlag(FileAttributes.ReadOnly))
+                continue;
+
+            dirInfo.Attributes &= ~FileAttributes.ReadOnly;
+            log?.A($"clear ro dir:{folder}");
+        }
+
+        var rootDir = new DirectoryInfo(directoryPath);
+        if (rootDir.Attributes.HasFlag(FileAttributes.ReadOnly))
+            rootDir.Attributes &= ~FileAttributes.ReadOnly;
     }
 }
