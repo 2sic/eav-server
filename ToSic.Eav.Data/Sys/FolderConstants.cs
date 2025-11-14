@@ -20,7 +20,7 @@ public class FolderConstants
     public const string AppExtensionJsonFile = "extension.json";
 
     /// <summary>
-    /// File name for an extension lock file inside an Extension's App_Data folder
+    /// File name for an extension index/lock file inside an Extension's App_Data folder
     /// </summary>
     public const string AppExtensionLockJsonFile = "extension.lock.json";
 
