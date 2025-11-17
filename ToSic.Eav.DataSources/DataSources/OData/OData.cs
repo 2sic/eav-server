@@ -39,16 +39,7 @@ public sealed class OData : DataSourceBase
     #endregion
 
     #region Ctor / DI
-
-    //public new class Dependencies(
-    //    DataSourceBase.Dependencies parentServices,
-    //    LazySvc<IDataSourcesService> dataSourceFactory)
-    //    : DependenciesBase(connect: [dataSourceFactory])
-    //{
-    //    public DataSourceBase.Dependencies ParentServices { get; } = parentServices;
-    //    public LazySvc<IDataSourcesService> DataSourceFactory { get; } = dataSourceFactory;
-    //}
-
+    
     public OData(Dependencies parentServices, LazySvc<IDataSourcesService> dataSourceFactory)
         : base(parentServices, $"{DataSourceConstantsInternal.LogPrefix}.OData", connect: [parentServices, dataSourceFactory])
     {

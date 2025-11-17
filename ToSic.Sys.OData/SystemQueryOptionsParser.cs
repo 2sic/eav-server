@@ -1,3 +1,5 @@
+using ToSic.Sys.Utils;
+
 namespace ToSic.Sys.OData
 {
     /// <summary>
@@ -32,7 +34,10 @@ namespace ToSic.Sys.OData
             var custom = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             var q = queryString ?? string.Empty;
-            if (q.Length > 0 && q[0] == '?') q = q.Length > 1 ? q.Substring(1) : string.Empty;
+            if (q.Length > 0 && q[0] == '?')
+                q = q.Length > 1
+                    ? q.Substring(1)
+                    : string.Empty;
             if (string.IsNullOrEmpty(q))
                 return EmptyResult(sys, custom);
 
@@ -41,9 +46,11 @@ namespace ToSic.Sys.OData
             var paramCount = 0;
             while (index <= q.Length)
             {
-                if (paramCount >= MaxParameterCount) break; // stop processing more parameters
+                if (paramCount >= MaxParameterCount)
+                    break; // stop processing more parameters
                 var nextAmp = q.IndexOf('&', index);
-                if (nextAmp < 0) nextAmp = q.Length;
+                if (nextAmp < 0)
+                    nextAmp = q.Length;
                 var length = nextAmp - index;
                 if (length > 0)
                 {
@@ -114,7 +121,8 @@ namespace ToSic.Sys.OData
         /// name="raw"/> is null, empty, or contains no valid fields.</returns>
         public static IReadOnlyList<string> ParseSelect(string? raw)
         {
-            if (string.IsNullOrWhiteSpace(raw)) return [];
+            if (string.IsNullOrWhiteSpace(raw))
+                return [];
             var list = new List<string>();
             var depth = 0;
             var start = 0;
@@ -125,25 +133,30 @@ namespace ToSic.Sys.OData
                 {
                     case '(':
                     {
-                        if (depth < MaxSelectDepth) depth++;
+                        if (depth < MaxSelectDepth)
+                            depth++;
                         break;
                     }
                     case ')':
                     {
-                        if (depth > 0) depth--; // clamp
+                        if (depth > 0)
+                            depth--; // clamp
                         break;
                     }
                     case ',' when depth == 0:
                     {
-                        if (!AddSegment(raw.AsSpan(start, i - start), list)) return [.. list]; // limit reached
+                        if (!AddSegment(raw.AsSpan(start, i - start), list))
+                            return [.. list]; // limit reached
                         items++;
-                        if (items >= MaxSelectItems) return [.. list]; // stop early
+                        if (items >= MaxSelectItems)
+                            return [.. list]; // stop early
                         start = i + 1;
                         break;
                     }
                 }
             }
-            if (start < raw.Length) AddSegment(raw.AsSpan(start), list);
+            if (start < raw.Length)
+                AddSegment(raw.AsSpan(start), list);
             return [..list];
         }
 
@@ -163,21 +176,45 @@ namespace ToSic.Sys.OData
 
         private static string SafeUnescape(string input)
         {
-            if (string.IsNullOrEmpty(input)) return string.Empty;
-            try { return Uri.UnescapeDataString(input); }
-            catch (UriFormatException) { return input; } // Fallback: treat as already unescaped / raw
+            if (string.IsNullOrEmpty(input))
+                return string.Empty;
+            try
+            {
+                return Uri.UnescapeDataString(input);
+            }
+            catch (UriFormatException)
+            {
+                return input; // Fallback: treat as already unescaped / raw
+            } 
         }
 
-        private static string? Get(string name, Dictionary<string, string> sys) => name.StartsWith("$") && sys.TryGetValue(name, out var v1) ? v1 : null;
+        private static string? Get(string name, Dictionary<string, string> sys)
+            => name.StartsWith("$")
+               && sys.TryGetValue(name, out var v1)
+                ? (v1.HasValue() ? v1 : null)
+                : null;
 
-        private static int? AsInt(string? s) => int.TryParse(s, out var i) ? i : null;
+        private static int? AsInt(string? s)
+            => int.TryParse(s, out var i)
+                ? i
+                : null;
 
-        private static bool? AsBool(string? s) => s == null ? null : (bool.TryParse(s, out var b) ? b : (s == "1" ? true : s == "0" ? false : null));
+        private static bool? AsBool(string? s)
+            => s == null
+                ? null
+                : (bool.TryParse(s, out var b)
+                    ? b
+                    : (s == "1"
+                        ? true
+                        : s == "0"
+                            ? false
+                            : null));
 
         private static bool AddSegment(ReadOnlySpan<char> seg, List<string> list)
         {
             var trimmed = seg.ToString().Trim();
-            if (trimmed.Length > 0) list.Add(trimmed);
+            if (trimmed.Length > 0)
+                list.Add(trimmed);
             return true;
         }
     }

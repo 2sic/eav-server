@@ -51,11 +51,13 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
 
     private IDataSource ApplyFilter(IDataSource current, Expr? expression)
     {
-        if (expression == null) return current;
+        if (expression == null)
+            return current;
 
         var configs = new List<ValueFilterConfig>();
         CollectFilters(expression, configs);
-        if (configs.Count == 0) return current;
+        if (configs.Count == 0)
+            return current;
 
         foreach (var config in configs)
             current = CreateValueFilter(current, config);
@@ -208,7 +210,7 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         return dataSourcesService.Create<ValueSort>(attach: upstream, options: options);
     }
 
-    private IReadOnlyList<IDictionary<string, object?>> ApplySelect(IEnumerable<IEntity> entities, ICollection<string>? select)
+    public IReadOnlyList<IDictionary<string, object?>> ApplySelect(IEnumerable<IEntity> entities, ICollection<string>? select)
     {
         var fields = select?
             .Where(f => !string.IsNullOrWhiteSpace(f))

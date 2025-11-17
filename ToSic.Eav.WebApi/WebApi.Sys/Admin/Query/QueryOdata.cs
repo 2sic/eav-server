@@ -13,7 +13,14 @@ internal class QueryODataParams
 
         var extraParams = config.Parse(ODataParams);
 
+        // filter out keys with empty values
+        extraParams = extraParams
+            .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Value))
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
         SystemQueryOptions = new SystemQueryOptions(
+            RawAllSystem: new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(extraParams, StringComparer.InvariantCultureIgnoreCase)),
+            Custom: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Select: SystemQueryOptionsParser.ParseSelect(Get(extraParams, ODataConstants.SelectParamName)),
             Filter: Get(extraParams, ODataConstants.FilterParamName),
             OrderBy: Get(extraParams, ODataConstants.OrderByParamName),
@@ -21,8 +28,6 @@ internal class QueryODataParams
             Skip: AsInt(Get(extraParams, ODataConstants.SkipParamName)), // long in OData spec, but int should be enough for us
             Count: AsBool(Get(extraParams, ODataConstants.CountParamName)),
             Expand: Get(extraParams, ODataConstants.ExpandParamName),
-            RawAllSystem: new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(extraParams, StringComparer.InvariantCultureIgnoreCase)),
-            Custom: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Search: Get(extraParams, ODataConstants.SearchParamName),
             Compute: Get(extraParams, ODataConstants.ComputeParamName),
             Index: AsLong(Get(extraParams, ODataConstants.IndexParamName)),

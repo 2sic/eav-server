@@ -1,15 +1,17 @@
 namespace ToSic.Sys.OData;
 
 public record SystemQueryOptions(
-    IReadOnlyList<string> Select,
-    string? Filter,
-    string? OrderBy,
-    int? Top, // long in OData spec, but int should be enough for us
-    int? Skip, // long in OData spec, but int should be enough for us
-    bool? Count,
-    string? Expand,
     IReadOnlyDictionary<string, string> RawAllSystem,
     IReadOnlyDictionary<string, string> Custom,
+
+    // Implemented
+    IReadOnlyList<string> Select,
+    string? Filter = null,
+    string? OrderBy = null,
+    int? Top = null, // long in OData spec, but int should be enough for us
+    int? Skip = null, // long in OData spec, but int should be enough for us
+    bool? Count = null,
+    string? Expand = null,
 
     // TODO: $search, $compute, $index, $skiptoken, $deltatoken
     string? Search = null,
