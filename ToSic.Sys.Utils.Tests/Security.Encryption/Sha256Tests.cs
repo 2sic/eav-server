@@ -10,7 +10,7 @@ public class Sha256Tests
     public void Hash_WithNullInput_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Throws<ArgumentNullException>(() => Sha256.Hash(null!));
+        Throws<ArgumentNullException>(() => Sha256.Hash((string)null!));
     }
 
     [Fact]
