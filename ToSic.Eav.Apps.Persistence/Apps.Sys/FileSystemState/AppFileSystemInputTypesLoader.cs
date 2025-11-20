@@ -23,7 +23,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
         return l.Return(inputTypes, $"count:{inputTypes.Count}");
 
         // Merge input types into the accumulator, preferring already-present types (so earlier calls win).
-        ICollection<InputTypeInfo> MergeInputTypes(ICollection<InputTypeInfo> acc, ICollection<InputTypeInfo> next)
+        static ICollection<InputTypeInfo> MergeInputTypes(ICollection<InputTypeInfo> acc, ICollection<InputTypeInfo> next)
         {
             if (next.Count == 0) return acc;
             if (acc.Count == 0) return next;
@@ -46,7 +46,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
         var di = new DirectoryInfo(path);
         if (!di.Exists)
             return l.Return([], "directory not found");
-        var inputFolders = di.GetDirectories(FieldFolderPrefix + "*");
+        var inputFolders = di.GetDirectories($"{FieldFolderPrefix}*");
         l.A($"found {inputFolders.Length} field-directories");
 
         var withIndexJs = inputFolders
@@ -66,7 +66,6 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
                     Type = fullName,
                     Label = niceName,
                     Description = "Extension Field",
-                    Assets = "",
                     AngularAssets = $"{placeholder}/{folderName}/{name}/{JsFile}",
                     DisableI18n = false,
                     UseAdam = false,

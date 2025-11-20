@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Sys;
 /// This is so that input fields can self-describe.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InputTypeInfo
+public record InputTypeInfo
 {
     public InputTypeInfo(IMetadata? metadata = null)
     {
@@ -47,8 +47,6 @@ public class InputTypeInfo
     public string? Label { get; init; }
 
     public string? Description { get; init; }
-
-    public string? Assets { get; init; }
 
     public IMetadata? Metadata { get; }
 
