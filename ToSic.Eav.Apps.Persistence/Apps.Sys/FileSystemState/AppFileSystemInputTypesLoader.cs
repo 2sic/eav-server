@@ -43,9 +43,37 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
     private ICollection<InputTypeInfo> GetInputTypes(string path, string placeholder, string folderName)
     {
         var l = Log.Fn<ICollection<InputTypeInfo>>();
+        // Check if we have an /extensions/ folder - or the older /systems/ folder; exit early
         var di = new DirectoryInfo(path);
         if (!di.Exists)
             return l.Return([], "directory not found");
+
+        // TODO: @STV
+        // Goal is that we can have the extension.json tell us more about the fields, and possibly load additional editions.
+        // This way we could have this setup:
+        // - /extensions/something/ (v01.00)
+        // - /staging/extensions/something/ (v01.01)
+        //
+        // So we want to change the logic below as follows:
+        // 1. Look for all "root" /extension/* folders which either have an 'extension.json' or have the prefix as mentioned below
+        // 2. If it has an extension.json, this is the leading information
+        // 2.1. If this extension.json has a field `inputTypeInside` then use the value in the `inputTypeAssets` for the UiAssets
+        // 2.2. Otherwise, skip
+        // 3. If it does not have an extension.json, but has the folder-prefix as mentioned below, use the existing logic
+        //
+        // Now comes the new part
+        // 4. If it has the extension.json, check if it has `editionsSupported` == true
+        // 4.1. If yes, look for subfolders /live/extensions/[same-extension-name]/* and if found, load that `extension.json`
+        // 4.2. ...to create the dictionary with UiAssets per edition
+        //      So it would have 'default' = /extensions/something/index.js, and 'staging' = /staging/extensions/something/index.js
+        //
+        // Some notes
+        // - make sure you use constants for `extension.json` etc. - currently in 2sxc, must be moved to EAV
+        // - Use a prepared object to deserialize, which has these known properties, make sure you use a c# record to model it,
+        // - don't navigate the json object manually, as these fields will be very "stable" and the code should represent that
+        // - The UI doesn't know about these editions yet, so it won't have an effect yet. We'll do that once the backend works. 
+
+        // Get folders beginning with "field-"
         var inputFolders = di.GetDirectories($"{FieldFolderPrefix}*");
         l.A($"found {inputFolders.Length} field-directories");
 
@@ -67,7 +95,10 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
                     Type = fullName,
                     Label = niceName,
                     Description = "Extension Field",
-                    UiAssets = new Dictionary<string, string> { { InputTypeInfo.DefaultAssets, defaultAssets } },
+                    UiAssets = new Dictionary<string, string>
+                    {
+                        { InputTypeInfo.DefaultAssets, defaultAssets }
+                    },
                     DisableI18n = false,
                     UseAdam = false,
                     Source = "file-system",
