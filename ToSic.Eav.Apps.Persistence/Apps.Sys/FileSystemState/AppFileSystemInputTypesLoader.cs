@@ -60,13 +60,14 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft, Generator<FileSystem
             {
                 var fullName = name.Substring(FieldFolderPrefix.Length);
                 var niceName = InputTypeNiceName(name);
+                var defaultAssets = $"{placeholder}/{folderName}/{name}/{JsFile}";
                 // TODO: use metadata information if available
                 return new InputTypeInfo
                 {
                     Type = fullName,
                     Label = niceName,
                     Description = "Extension Field",
-                    AngularAssets = $"{placeholder}/{folderName}/{name}/{JsFile}",
+                    UiAssets = new Dictionary<string, string> { { InputTypeInfo.DefaultAssets, defaultAssets } },
                     DisableI18n = false,
                     UseAdam = false,
                     Source = "file-system",

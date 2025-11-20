@@ -77,14 +77,13 @@ public class WorkInputTypes(
     /// <param name="additional"></param>
     private static ICollection<InputTypeInfo> AddMissingTypes(ICollection<InputTypeInfo> target, ICollection<InputTypeInfo> additional)
     {
-        var toAdd = additional.Where(sit => target.FirstOrDefault(ait => ait.Type == sit.Type) == null);
+        var toAdd = additional
+            .Where(sit => target
+                .FirstOrDefault(ait => ait.Type == sit.Type) == null
+            );
         return target
             .Union(toAdd)
             .ToListOpt();
-        //foreach (var sit in toAdd)
-        //{
-        //    target.Add(sit);
-        //}
     }
 
     /// <summary>
@@ -123,7 +122,7 @@ public class WorkInputTypes(
                 Label = e.Label,
                 Description = e.Description,
                 DisableI18n = e.DisableI18n,
-                AngularAssets = e.AngularAssets,
+                UiAssets = new Dictionary<string, string> { { InputTypeInfo.DefaultAssets, e.AngularAssets ?? "" } },
                 UseAdam = e.UseAdam,
                 Source = "app-registered",
             })
@@ -193,6 +192,10 @@ public class WorkInputTypes(
             .Select(it =>
             {
                 var md = it.Metadata;
+
+                // 2025-11-20 2dm - preparing to have multiple editions in assets
+                var defaultAssets = md.Get<string>(nameof(InputTypeDefinition.AngularAssets), typeName: TypeForInputTypeDefinition);
+
                 // 2023-11-10 2dm - changed this to support new input-types based on guid-content-types
                 return new InputTypeInfo(metadata: md)
                 {
@@ -202,7 +205,10 @@ public class WorkInputTypes(
                     Label = md.Get<string>(nameof(InputTypeDefinition.Label), typeNames: typesToCheckInThisOrder),
                     Description = md.Get<string>(nameof(InputTypeDefinition.Description), typeNames: typesToCheckInThisOrder),
                     DisableI18n = md.Get<bool>(nameof(InputTypeDefinition.DisableI18n), typeName: TypeForInputTypeDefinition),
-                    AngularAssets = md.Get<string>(nameof(InputTypeDefinition.AngularAssets), typeName: TypeForInputTypeDefinition),
+                    UiAssets = new Dictionary<string, string>
+                    {
+                        { InputTypeInfo.DefaultAssets, defaultAssets ?? "" }
+                    },
                     UseAdam = md.Get<bool>(nameof(InputTypeDefinition.UseAdam), typeName: TypeForInputTypeDefinition),
                     Source = "preset",
                 };

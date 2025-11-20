@@ -16,6 +16,8 @@ namespace ToSic.Eav.Apps.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record InputTypeInfo
 {
+    public const string DefaultAssets = "default";
+
     public InputTypeInfo(IMetadata? metadata = null)
     {
         if (metadata == null)
@@ -56,9 +58,13 @@ public record InputTypeInfo
     public bool DisableI18n { get; init; }
 
     /// <summary>
-    /// Additional resources to load (js/css)
+    /// Additional resources to load (js/css).
     /// </summary>
-    public string? AngularAssets { get; init; }
+    /// <remarks>
+    /// Changed to be a dictionary in v20.09 so we can have multiple editions - such as "live" and "staging".
+    /// Default is "default".
+    /// </remarks>
+    public required IDictionary<string, string> UiAssets { get; init; }
 
     /// <summary>
     /// Activates ADAM in the UI for this input type
