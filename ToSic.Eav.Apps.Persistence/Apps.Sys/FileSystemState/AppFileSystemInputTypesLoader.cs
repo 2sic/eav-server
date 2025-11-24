@@ -1,10 +1,8 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.Persistence.File;
-using ToSic.Eav.Sys;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
@@ -13,8 +11,9 @@ namespace ToSic.Eav.Apps.Sys.FileSystemState;
 public class AppFileSystemInputTypesLoader(ISite siteDraft,
     Generator<FileSystemLoader> fslGenerator,
     LazySvc<IAppPathsMicroSvc> appPathsLazy,
-    LazySvc<IZoneMapper> zoneMapper)
-    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppInputTypesLoader
+    LazySvc<IZoneMapper> zoneMapper,
+    ExtensionManifestService manifestService)
+    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator, manifestService]), IAppInputTypesLoader
 {
     /// <inheritdoc />
     public ICollection<InputTypeInfo> InputTypes()
@@ -59,7 +58,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         var types = new List<InputTypeInfo>();
         foreach (var extensionFolder in di.GetDirectories())
         {
-            var manifestFile = new FileInfo(Path.Combine(extensionFolder.FullName, FolderConstants.DataFolderProtected, FolderConstants.AppExtensionJsonFile));
+            var manifestFile = manifestService.GetManifestFile(extensionFolder);
             if (manifestFile.Exists)
             {
                 var manifestType = InputTypeFromManifest(manifestFile, extensionFolder, placeholder, folderName);
@@ -108,7 +107,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     {
         var l = Log.Fn<InputTypeInfo?>($"manifest:'{manifestFile.Name}', extension:'{extensionFolder.Name}', placeholder:'{placeholder}', folder:'{folderName}'");
         
-        var manifest = LoadManifest(manifestFile);
+        var manifest = manifestService.LoadManifest(manifestFile);
         if (manifest?.InputTypeInside.IsEmpty() ?? true)
         {
             l.A("Manifest is null or InputTypeInside is empty");
@@ -167,7 +166,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     /// <param name="placeholder">Path placeholder token (e.g., [App:Path])</param>
     /// <param name="folderName">'extensions' folder</param>
     /// <returns>Dictionary mapping edition names to asset paths</returns>
-    private Dictionary<string, string> BuildUiAssets(InputTypeManifest manifest, DirectoryInfo extensionFolder, string placeholder, string folderName)
+    private Dictionary<string, string> BuildUiAssets(ExtensionManifest manifest, DirectoryInfo extensionFolder, string placeholder, string folderName)
     {
         var l = Log.Fn<Dictionary<string, string>>($"extension:{extensionFolder.Name}, editionsSupported:{manifest.EditionsSupported}");
         var assets = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -212,12 +211,12 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
                 continue;
 
             // Check if there's a manifest file in the edition extension folder
-            var editionManifestFile = new FileInfo(Path.Combine(editionExtensionFolder.FullName, FolderConstants.DataFolderProtected, FolderConstants.AppExtensionJsonFile));
+            var editionManifestFile = manifestService.GetManifestFile(editionExtensionFolder);
             if (!editionManifestFile.Exists)
                 continue;
 
             // Load and validate the edition manifest
-            var editionManifest = LoadManifest(editionManifestFile);
+            var editionManifest = manifestService.LoadManifest(editionManifestFile);
             if (editionManifest?.InputTypeInside.IsEmpty() ?? true)
                 continue;
             
@@ -248,7 +247,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     /// <param name="extensionName">Extension folder name</param>
     /// <param name="editionName">Optional edition name (e.g., "staging")</param>
     /// <returns>Normalized asset path or null</returns>
-    private string? AssetFromManifest(InputTypeManifest manifest, string placeholder, string extensionName, string? editionName = null)
+    private string? AssetFromManifest(ExtensionManifest manifest, string placeholder, string extensionName, string? editionName = null)
     {
         var l = Log.Fn<string?>($"extension:'{extensionName}', edition:'{editionName}', placeholder:'{placeholder}'");
         
@@ -289,65 +288,12 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         return l.Return(result, $"normalized: base='{basePath}', edition='{editionPrefix}', file='{normalized}'");
     }
 
-    private InputTypeManifest? LoadManifest(FileInfo manifestFile)
-    {
-        var l = Log.Fn<InputTypeManifest?>($"file:'{manifestFile.Name}'");
-        try
-        {
-            var json = File.ReadAllText(manifestFile.FullName);
-            if (json.IsEmpty())
-            {
-                l.A("JSON content is empty");
-                return l.ReturnNull("empty json");
-            }
-            
-            var result = JsonSerializer.Deserialize<InputTypeManifest>(json, ManifestSerializerOptions);
-            return l.Return(result, $"inputType:'{result?.InputTypeInside}', editionsSupported:{result?.EditionsSupported}");
-        }
-        catch (Exception ex)
-        {
-            l.Ex(ex);
-            return l.ReturnNull("exception during load");
-        }
-    }
-
     private static readonly JsonSerializerOptions ManifestSerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         AllowTrailingCommas = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
     };
-
-    /// <summary>
-    /// Manifest structure for extension.json files defining input types.
-    /// </summary>
-    /// <remarks>
-    /// This record represents the stable contract for extension.json files.
-    /// Properties are intentionally minimal and well-defined.
-    /// </remarks>
-    private sealed record InputTypeManifest
-    {
-        /// <summary>
-        /// The input type identifier (e.g., "string-font-icon").
-        /// If empty/null, the extension is not an input type.
-        /// </summary>
-        [JsonPropertyName("inputTypeInside")]
-        public string? InputTypeInside { get; init; }
-
-        /// <summary>
-        /// Asset paths for the input type UI.
-        /// Can be a string, object with "default" key, or array.
-        /// </summary>
-        [JsonPropertyName("inputTypeAssets")]
-        public JsonElement InputTypeAssets { get; init; }
-
-        /// <summary>
-        /// Indicates if this extension supports multiple editions (e.g., live, staging).
-        /// When true, the loader will search for edition-specific versions.
-        /// </summary>
-        [JsonPropertyName("editionsSupported")]
-        public bool EditionsSupported { get; init; }
-    }
 
     #endregion
 }
