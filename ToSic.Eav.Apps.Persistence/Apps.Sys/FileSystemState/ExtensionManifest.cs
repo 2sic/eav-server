@@ -1,7 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System; // Guid
-using System.Collections.Generic; // lists
 
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
@@ -19,46 +17,57 @@ public sealed record ExtensionManifest
 
     /// <summary>Unique guid of the extension.</summary>
     [JsonPropertyName("guid")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Guid { get; init; }
 
     /// <summary>Secondary name identifier (guid-like id).</summary>
     [JsonPropertyName("nameId")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? NameId { get; init; }
 
     /// <summary>Human readable name.</summary>
     [JsonPropertyName("name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Name { get; init; }
 
     /// <summary>Short teaser text.</summary>
     [JsonPropertyName("teaser")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Teaser { get; init; }
 
     /// <summary>Longer description text (can contain HTML).</summary>
     [JsonPropertyName("description")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Description { get; init; }
 
     /// <summary>Author / creator.</summary>
     [JsonPropertyName("createdBy")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? CreatedBy { get; init; }
 
     /// <summary>Copyright / license info.</summary>
     [JsonPropertyName("copyright")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Copyright { get; init; }
 
     /// <summary>Main documentation / landing link.</summary>
     [JsonPropertyName("linkMain")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? LinkMain { get; init; }
 
     /// <summary>Documentation link.</summary>
     [JsonPropertyName("linkDocs")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? LinkDocs { get; init; }
 
     /// <summary>Source code link.</summary>
     [JsonPropertyName("linkSource")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? LinkSource { get; init; }
 
     /// <summary>Demo / showcase link.</summary>
     [JsonPropertyName("linkDemo")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? LinkDemo { get; init; }
 
     #endregion
@@ -69,6 +78,7 @@ public sealed record ExtensionManifest
     /// The input type identifier (e.g., "string-font-icon"). If empty/null, the extension is not an input type.
     /// </summary>
     [JsonPropertyName("inputTypeInside")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? InputTypeInside { get; init; }
 
     /// <summary>
@@ -83,6 +93,7 @@ public sealed record ExtensionManifest
 
     /// <summary>Extension version string (e.g. "1.0.0").</summary>
     [JsonPropertyName("version")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Version { get; init; }
 
     /// <summary>Indicates if this extension supports multiple editions (e.g., live, staging).</summary>
@@ -91,6 +102,7 @@ public sealed record ExtensionManifest
 
     /// <summary>Set by runtime to indicate the extension is installed.</summary>
     [JsonPropertyName("isInstalled")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? IsInstalled { get; init; }
 
     #endregion
@@ -167,6 +179,7 @@ public sealed record ExtensionManifest
 
     /// <summary>Minimum 2sxc version.</summary>
     [JsonPropertyName("sxcVersionMin")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? SxcVersionMin { get; init; }
 
     /// <summary>Supports DNN platform.</summary>
@@ -175,6 +188,7 @@ public sealed record ExtensionManifest
 
     /// <summary>Minimum DNN version.</summary>
     [JsonPropertyName("dnnVersionMin")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? DnnVersionMin { get; init; }
 
     /// <summary>Supports Oqtane platform.</summary>
@@ -183,6 +197,7 @@ public sealed record ExtensionManifest
 
     /// <summary>Minimum Oqtane version.</summary>
     [JsonPropertyName("oqtVersionMin")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? OqtVersionMin { get; init; }
 
     #endregion
