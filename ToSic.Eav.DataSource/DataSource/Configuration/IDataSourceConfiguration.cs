@@ -84,11 +84,11 @@ public interface IDataSourceConfiguration
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     /// <param name="name">Name of the configuration</param>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="fallback">Fallback value if the configuration is missing or can't be parsed into the expected data format.</param>
     /// <returns></returns>
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default);
+    TValue? Get<TValue>(string name, NoParamOrder npo = default, TValue? fallback = default);
 
 
     #endregion

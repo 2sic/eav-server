@@ -11,5 +11,5 @@ public interface IMetadataOfSource
     /// <param name="protector"></param>
     /// <param name="title"></param>
     /// <returns></returns>
-    public IMetadata GetMetadataOf<T>(TargetTypes targetType, T key, NoParamOrder protector = default, string? title = default);
+    public IMetadata GetMetadataOf<T>(TargetTypes targetType, T key, NoParamOrder npo = default, string? title = default);
 }

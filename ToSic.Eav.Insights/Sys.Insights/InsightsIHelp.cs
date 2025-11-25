@@ -120,10 +120,10 @@ internal class InsightsHelp(LazySvc<IEnumerable<IInsightsProvider>> insightsProv
     internal A DemoLink(string labelAndLink) => HtmlTableBuilder.DemoLink(labelAndLink);
 
     internal A LinkTo(string label, string view,
-        int? appId = null, NoParamOrder noParamOrder = default,
+        int? appId = null, NoParamOrder npo = default,
         string? key = null, string? type = null, string? nameId = null, string? more = null)
     {
-        return HtmlTableBuilder.LinkTo(label, view, appId, noParamOrder, key, type, nameId, more);
+        return HtmlTableBuilder.LinkTo(label, view, appId, npo, key, type, nameId, more);
     }
 
 }

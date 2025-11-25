@@ -13,7 +13,7 @@ public static class BreachExtensions
 
     public static CustomDataSource CustomDataSourceLight(CustomDataSource.Dependencies services,
         IDataSource wrapper,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         string? logName = null)
     {
         var ds = new CustomDataSource(services, logName);
@@ -31,7 +31,7 @@ public static class BreachExtensions
     public static void BreachProvideOut(
         this CustomDataSource ds,
         Func<object> source,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         string name = StreamDefaultName,
         Func<DataFactoryOptions>? options = default) =>
         ds.ProvideOut(source, options: options, name: name);

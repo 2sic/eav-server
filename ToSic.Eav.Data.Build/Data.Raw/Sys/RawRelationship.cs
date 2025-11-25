@@ -15,11 +15,11 @@ public class RawRelationship : IRawRelationship
     /// <summary>
     /// Create a raw relationship.
     /// </summary>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="key">A single key - if it's just a simple `string`, `int`, etc.</param>
     /// <param name="keys">A list of keys, if you have many.</param>
     public RawRelationship(
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         object? key = default,
         IEnumerable<object>? keys = default)
     {

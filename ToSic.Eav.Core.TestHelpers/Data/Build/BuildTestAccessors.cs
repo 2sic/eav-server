@@ -11,7 +11,7 @@ public static class BuildTestAccessors
         this DataBuilder dataBuilder,
         int appId,
         IContentType contentType,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         Dictionary<string, object>? values = default,
         Dictionary<string, IAttribute>? typedValues = default,
         int entityId = default,

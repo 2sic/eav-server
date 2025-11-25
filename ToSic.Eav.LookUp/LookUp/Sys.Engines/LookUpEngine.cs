@@ -27,7 +27,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     private readonly TokenReplace _reusableTokenReplace;
 
     // ReSharper disable once UnusedParameter.Local
-    public LookUpEngine(ILog? parentLog, NoParamOrder protector = default, IEnumerable<ILookUp>? sources = default)
+    public LookUpEngine(ILog? parentLog, NoParamOrder npo = default, IEnumerable<ILookUp>? sources = default)
         : base(parentLog, "EAV.LookUp")
     {
         _reusableTokenReplace = new(this);
@@ -42,7 +42,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         ILookUpEngine? original,
         ILog parentLog,
         // ReSharper disable once UnusedParameter.Local
-        NoParamOrder protector = default,
+        NoParamOrder npo = default,
         List<ILookUp>? sources = default,
         List<ILookUp>? overrides = default,
         bool skipOriginalSource = false,
@@ -112,7 +112,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
 
     public DicString LookUp(
         DicString values,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         IEnumerable<ILookUp>? overrides = default,
         int depth = 4,
         Func<ITweakLookUp, ITweakLookUp>? tweak = default)

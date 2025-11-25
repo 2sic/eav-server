@@ -18,7 +18,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
     public Entity Create(
         int appId,
         IContentType contentType,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         IReadOnlyDictionary<string, IAttribute>? attributes = default,
         int entityId = default,
         int repositoryId = EavConstants.NullId,
@@ -78,7 +78,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
     /// </summary>
     public IEntity CreateFrom(
         IEntity original,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         int? appId = default,
         IReadOnlyDictionary<string, IAttribute>? attributes = default,
         int? id = default,

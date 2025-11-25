@@ -244,7 +244,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// Get a value typed as object from this entity.
     /// </summary>
     /// <param name="name">the field/attribute name</param>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="language">optional language like `en-us`</param>
     /// <param name="languages">optional list of language IDs which can be a list which is checked in the order provided</param>
     /// <returns></returns>
@@ -254,7 +254,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     /// </remarks>
     [PublicApi]
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string?[]? languages = default);
+    object? Get(string name, NoParamOrder npo = default, string? language = default, string?[]? languages = default);
 
     // 2025-06-13 #MoveIEntityTypedGetToExtension
     ///// <summary>
@@ -276,7 +276,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     ///// </summary>
     ///// <typeparam name="TValue">The type to try-convert the result to</typeparam>
     ///// <param name="name">the field/attribute name</param>
-    ///// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    ///// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     ///// <param name="fallback">value to be returned if finding or conversion it didn't succeed</param>
     ///// <param name="language">optional language like `en-us`</param>
     ///// <param name="languages">optional list of language IDs which can be a list which is checked in the order provided</param>
@@ -288,7 +288,7 @@ public interface IEntity: IAppIdentityLight, IPublish, IHasPermissions, IPropert
     //[PublicApi]
     //[return: NotNullIfNotNull(nameof(fallback))]
     //// ReSharper disable once MethodOverloadWithOptionalParameter
-    //TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string[]? languages = default);
+    //TValue? Get<TValue>(string name, NoParamOrder npo = default, TValue? fallback = default, string? language = default, string[]? languages = default);
 
     #endregion
 

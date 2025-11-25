@@ -14,7 +14,7 @@ partial class Metadata<T>
 
     /// <inheritdoc />
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public TVal? Get<TVal>(string name, NoParamOrder noParamOrder = default, string? typeName = null, IEnumerable<string?>? typeNames = default)
+    public TVal? Get<TVal>(string name, NoParamOrder npo = default, string? typeName = null, IEnumerable<string?>? typeNames = default)
     {
         // Check if multiple type names were specified
         var typeNameList = typeNames?.ToListOpt();

@@ -71,12 +71,12 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// If you know what data type you're creating, you should look at the other ProvideOut* methods.
     /// </summary>
     /// <param name="data"></param>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="name">_optional_ name of the out-stream.</param>
     /// <param name="options">Conversion options which are relevant for <see cref="IRawEntity"/> data</param>
     protected internal void ProvideOut(
         Func<object> data,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         string name = StreamDefaultName,
         Func<DataFactoryOptions>? options = default) =>
         base.ProvideOut(() => GetAny(data, options), name);
@@ -85,7 +85,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     //[PrivateApi]
     //protected internal void ProvideOutRaw<T>(
     //    Func<IEnumerable<IHasRawEntity<T>>> data,
-    //    NoParamOrder noParamOrder = default,
+    //    NoParamOrder npo = default,
     //    string name = StreamDefaultName,
     //    Func<DataFactoryOptions>? options = default) where T : IRawEntity =>
     //    base.ProvideOut(() => GetHasRaw(data, options), name);
@@ -93,7 +93,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     [PrivateApi]
     protected internal void ProvideOutRaw<T>(
         Func<IEnumerable<T>> data,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         string name = StreamDefaultName,
         Func<DataFactoryOptions>? options = default) where T : IRawEntity =>
         base.ProvideOut(() => GetRaw(data, options), name);
