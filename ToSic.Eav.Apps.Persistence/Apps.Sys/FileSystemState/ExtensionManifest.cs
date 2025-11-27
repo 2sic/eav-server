@@ -69,36 +69,19 @@ public sealed record ExtensionManifest
     [JsonPropertyName("linkDemo")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? LinkDemo { get; init; }
-
+    
     #endregion
 
-    #region Input Type Properties
-
-    /// <summary>
-    /// The input type identifier (e.g., "string-font-icon"). If empty/null, the extension is not an input type.
-    /// </summary>
-    [JsonPropertyName("inputTypeInside")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? InputTypeInside { get; init; }
-
-    /// <summary>
-    /// Asset paths for the input type UI. Can be a string, object with "default" key, or array.
-    /// </summary>
-    [JsonPropertyName("inputTypeAssets")]
-    public JsonElement InputTypeAssets { get; init; } = JsonNullElement;
-
-    #endregion
-
-    #region General Extension Properties
+    #region Release Information
 
     /// <summary>Extension version string (e.g. "1.0.0").</summary>
     [JsonPropertyName("version")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Version { get; init; }
 
-    /// <summary>Indicates if this extension supports multiple editions (e.g., live, staging).</summary>
-    [JsonPropertyName("editionsSupported")]
-    public bool EditionsSupported { get; init; }
+    /// <summary>Releases entry. Flexible shape.</summary>
+    [JsonPropertyName("releases")]
+    public JsonElement Releases { get; init; } = JsonNullElement;
 
     /// <summary>Set by runtime to indicate the extension is installed.</summary>
     [JsonPropertyName("isInstalled")]
@@ -107,71 +90,11 @@ public sealed record ExtensionManifest
 
     #endregion
 
-    #region Capability Flags
-
-    /// <summary>Indicates presence of field definitions.</summary>
-    [JsonPropertyName("hasFields")]
-    public bool HasFields { get; init; }
-
-    /// <summary>Indicates presence of AppCode files.</summary>
-    [JsonPropertyName("hasAppCode")]
-    public bool HasAppCode { get; init; }
-
-    /// <summary>Indicates presence of WebApi endpoints.</summary>
-    [JsonPropertyName("hasWebApi")]
-    public bool HasWebApi { get; init; }
-
-    /// <summary>Indicates presence of Razor files.</summary>
-    [JsonPropertyName("hasRazor")]
-    public bool HasRazor { get; init; }
-
-    /// <summary>Indicates presence of data bundles (simple flag).</summary>
-    [JsonPropertyName("hasDataBundles")]
-    public bool HasDataBundles { get; init; }
-
-    /// <summary>Indicates presence of content types.</summary>
-    [JsonPropertyName("hasContentTypes")]
-    public bool HasContentTypes { get; init; }
-
-    /// <summary>Indicates presence of queries.</summary>
-    [JsonPropertyName("hasQueries")]
-    public bool HasQueries { get; init; }
-
-    /// <summary>Indicates presence of views.</summary>
-    [JsonPropertyName("hasViews")]
-    public bool HasViews { get; init; }
-
-    #endregion
-
-    #region Data and Code Properties
-
-    /// <summary>Indicates whether the extension contains data that should be exported/imported.</summary>
-    [JsonPropertyName("dataInside")]
-    public bool DataInside { get; init; }
-
-    /// <summary>Data bundle references (expanded or raw). Flexible shape.</summary>
-    [JsonPropertyName("dataBundles")]
-    public JsonElement DataBundles { get; init; } = JsonNullElement;
-
-    /// <summary>Alternative bundles reference property (raw list / legacy usage).</summary>
-    [JsonPropertyName("bundles")]
-    public JsonElement Bundles { get; init; } = JsonNullElement;
-
-    /// <summary>Indicates whether the extension contains AppCode that should be included in export/import.</summary>
-    [JsonPropertyName("appCodeInside")]
-    public bool AppCodeInside { get; init; }
-
-    #endregion
-
-    #region Release Information
-
-    /// <summary>Releases entry. Flexible shape.</summary>
-    [JsonPropertyName("releases")]
-    public JsonElement Releases { get; init; } = JsonNullElement;
-
-    #endregion
-
     #region Platform Support
+
+    /// <summary>Indicates if this extension supports multiple editions (e.g., live, staging).</summary>
+    [JsonPropertyName("editionsSupported")]
+    public bool EditionsSupported { get; init; }
 
     /// <summary>Supports generic 2sxc platform.</summary>
     [JsonPropertyName("sxcSupported")]
@@ -202,37 +125,70 @@ public sealed record ExtensionManifest
 
     #endregion
 
-    #region Additional Inside Flags (new)
+    #region Capability Flags
 
-    /// <summary>Indicates whether the extension contains input fields defined inside.</summary>
-    [JsonPropertyName("inputFieldInside")]
-    public bool InputFieldInside { get; init; }
+    /// <summary>Indicates presence of field definitions.</summary>
+    [JsonPropertyName("hasFields")]
+    public bool HasFields { get; init; }
 
-    /// <summary>Indicates whether the extension contains WebApi endpoints defined inside.</summary>
-    [JsonPropertyName("webApiInside")]
-    public bool WebApiInside { get; init; }
+    /// <summary>Indicates presence of AppCode files.</summary>
+    [JsonPropertyName("hasAppCode")]
+    public bool HasAppCode { get; init; }
+    //[JsonPropertyName("appCodeInside")]
+    //public bool AppCodeInside { get; init; }
 
-    /// <summary>Indicates whether the extension contains Razor files defined inside.</summary>
-    [JsonPropertyName("razorInside")]
-    public bool RazorInside { get; init; }
+    /// <summary>Indicates presence of WebApi endpoints.</summary>
+    [JsonPropertyName("hasWebApi")]
+    public bool HasWebApi { get; init; }
 
-    /// <summary>
-    /// Asset paths for the input field UI. Can be a string, object with "default" key, or array.
-    /// </summary>
+    /// <summary>Indicates presence of Razor files.</summary>
+    [JsonPropertyName("hasRazor")]
+    public bool HasRazor { get; init; }
+
+    /// <summary>Indicates presence of data bundles (simple flag).</summary>
+    [JsonPropertyName("hasDataBundles")]
+    public bool HasDataBundles { get; init; }
+
+    /// <summary>Indicates presence of content types.</summary>
+    [JsonPropertyName("hasContentTypes")]
+    public bool HasContentTypes { get; init; }
+
+    /// <summary>Indicates presence of queries.</summary>
+    [JsonPropertyName("hasQueries")]
+    public bool HasQueries { get; init; }
+
+    /// <summary>Indicates presence of views.</summary>
+    [JsonPropertyName("hasViews")]
+    public bool HasViews { get; init; }
+
+    /// <summary>Indicates whether the extension contains data that should be exported/imported.</summary>
+    [JsonPropertyName("dataInside")]
+    public bool DataInside { get; init; }
+
+    #endregion
+
+    #region Assets
+
+    /// <summary>Asset paths for the input field UI. Can be a string, object with "default" key, or array.</summary>
     [JsonPropertyName("inputFieldAssets")]
     public JsonElement InputFieldAssets { get; init; } = JsonNullElement;
 
-    /// <summary>Indicates whether the extension contains content types defined inside.</summary>
-    [JsonPropertyName("contentTypesInside")]
-    public bool ContentTypesInside { get; init; }
+    /// <summary>The input type identifier (e.g., "string-font-icon"). If empty/null, the extension is not an input type.</summary>
+    [JsonPropertyName("inputTypeInside")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? InputTypeInside { get; init; }
 
-    /// <summary>Indicates whether the extension contains queries defined inside.</summary>
-    [JsonPropertyName("queriesInside")]
-    public bool QueriesInside { get; init; }
+    /// <summary>Asset paths for the input type UI. Can be a string, object with "default" key, or array.</summary>
+    [JsonPropertyName("inputTypeAssets")]
+    public JsonElement InputTypeAssets { get; init; } = JsonNullElement;
 
-    /// <summary>Indicates whether the extension contains views defined inside.</summary>
-    [JsonPropertyName("viewsInside")]
-    public bool ViewsInside { get; init; }
+    /// <summary>Data bundle references (expanded or raw). Flexible shape.</summary>
+    [JsonPropertyName("dataBundles")]
+    public JsonElement DataBundles { get; init; } = JsonNullElement;
+
+    /// <summary>Alternative bundles reference property (raw list / legacy usage).</summary>
+    [JsonPropertyName("bundles")]
+    public JsonElement Bundles { get; init; } = JsonNullElement;
 
     #endregion
 }
