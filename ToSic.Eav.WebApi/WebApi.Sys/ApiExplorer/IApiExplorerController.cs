@@ -1,10 +1,4 @@
-﻿#if NETFRAMEWORK
-using THttpResponseType = System.Net.Http.HttpResponseMessage;
-#else
-using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
-#endif
-
-namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
+﻿namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 public interface IApiExplorerController
 {

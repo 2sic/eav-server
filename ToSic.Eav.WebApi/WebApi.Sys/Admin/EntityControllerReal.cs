@@ -7,11 +7,6 @@ using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
-#if NETFRAMEWORK
-using THttpResponseType = System.Net.Http.HttpResponseMessage;
-#else
-using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
-#endif
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 

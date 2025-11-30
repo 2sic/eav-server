@@ -13,17 +13,12 @@ using ToSic.Eav.WebApi.Sys.Security;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Users;
+
 #if NETFRAMEWORK
 using System.Web.Http;
 #else
 using Microsoft.AspNetCore.Mvc;
 #endif
-#if NETFRAMEWORK
-using THttpResponseType = System.Net.Http.HttpResponseMessage;
-#else
-using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
-#endif
-
 
 namespace ToSic.Eav.WebApi.Sys.ImportExport;
 

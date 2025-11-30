@@ -1,11 +1,4 @@
 ﻿using System.Net;
-#if NETFRAMEWORK
-using THttpResponseType = System.Net.Http.HttpResponseMessage;
-using TController = System.Web.Http.ApiController;
-#else
-using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
-using TController = Microsoft.AspNetCore.Mvc.ControllerBase;
-#endif
 
 namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
@@ -13,7 +6,7 @@ internal class ResponseMakerUnknown : IResponseMaker
 {
     public ResponseMakerUnknown(WarnUseOfUnknown<ResponseMakerUnknown> _) { }
 
-    public void Init(TController controller)
+    public void Init(TDotNetController controller)
     {
         // do nothing
     }
