@@ -5,20 +5,64 @@ namespace ToSic.Eav.DataSources;
 /// <summary>
 /// Apply Select clause to a set of entities
 /// </summary>
-public sealed class ODataSelect
+/// <remarks>
+/// WARNING: This is called, but it appears that the result is never used!!!
+/// </remarks>
+public sealed class ODataSelectForQueryEngineProbablyNotUsed
 {
-
-    public static IReadOnlyList<IDictionary<string, object?>> ApplySelect(IEnumerable<IEntity> entities, ICollection<string>? select)
+    public ODataSelectForQueryEngineProbablyNotUsed(ICollection<string>? select)
     {
-        // Get a clean list of fields
-        var fields = select?
+        // Some fields may have paths, e.g. "Author/Name"
+        // So we first take them apart, to see if any have multiple paths
+        var fieldsPathArray = (select ?? [])
             .Where(f => !string.IsNullOrWhiteSpace(f))
-            .Select(f => f.Trim())
+            .Select(f => f.Trim().Split('/'))
+            // Make sure we only keep non-empty root paths, so nothing like "/Name"
+            .Where(f => !string.IsNullOrWhiteSpace(f[0]))
+            .ToArray();
+
+        // The fields we keep are only the first part, non-empty, distinct
+        Fields = fieldsPathArray
+            .Select(f => f[0])
+            // Distinct now, because there could be "Author/Name" and "Author/Email" both leading to "Author"
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
+        Subfields = fieldsPathArray
+            // Only keep those with more than one part
+            .Where(f => f.Length > 1)
+            // Group by first part
+            .GroupBy(f => f[0], StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                // Get the first part of the path
+                group => group.Key,
+                // Keep / join all the remaining parts
+                group => group
+                    .Select(field => string.Join("/", field.Skip(1)))
+                    .ToList(),
+                StringComparer.OrdinalIgnoreCase
+            );
+    }
+
+
+    /// <summary>
+    /// Get a clean list of fields
+    /// </summary>
+    private List<string> Fields { get; }
+
+    private Dictionary<string, List<string>> Subfields { get; }
+
+    private Dictionary<string, ODataSelectForQueryEngineProbablyNotUsed> SubSelects => field
+        ??= Subfields.ToDictionary(
+            kvp => kvp.Key,
+            kvp => new ODataSelectForQueryEngineProbablyNotUsed(kvp.Value),
+            StringComparer.OrdinalIgnoreCase
+        );
+
+    public IReadOnlyList<IDictionary<string, object?>> ApplySelect(IEnumerable<IEntity> entities)
+    {
         // Check if no fields specified so we only do this once
-        var noFields = fields == null || fields.Count == 0;
+        var noFields = Fields.Count == 0;
 
         // Now project each entity into a dictionary of the selected fields
         var result = entities
@@ -31,15 +75,27 @@ public sealed class ODataSelect
                         StringComparer.OrdinalIgnoreCase
                     )
                     // Otherwise return only the selected fields
-                    : fields!.ToDictionary(
+                    : Fields.ToDictionary(
                         field => field,
-                        field => GetProjectionValue(entity, field),
+                        field => GetValueAndProcessSubSelects(entity, field),
                         StringComparer.OrdinalIgnoreCase
                     )
             )
             .ToList();
 
         return result;
+    }
+
+    private object? GetValueAndProcessSubSelects(IEntity entity, string field)
+    {
+        var result = GetProjectionValue(entity, field);
+        return result switch
+        {
+            null => null,
+            IEnumerable<IEntity> asEntities when SubSelects.TryGetValue(field, out var subSelect)
+                => subSelect.ApplySelect(asEntities),
+            _ => result
+        };
     }
 
     #region Prepare comparison lists so we only do this once

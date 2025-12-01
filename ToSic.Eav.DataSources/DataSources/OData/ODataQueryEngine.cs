@@ -38,7 +38,10 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         }
 
         var materialised = sequence.ToImmutableOpt();
-        var projection = ODataSelect.ApplySelect(materialised, query.SelectExpand?.Select);
+
+        // WARNING: It appears that this projection-result is never used!
+        // Because at least from what I can tell, only the materialized result is used.
+        var projection = new ODataSelectForQueryEngineProbablyNotUsed(query.SelectExpand?.Select).ApplySelect(materialised);
         return new QueryExecutionResult(materialised, projection);
     }
 
