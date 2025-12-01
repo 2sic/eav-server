@@ -38,7 +38,7 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         }
 
         var materialised = sequence.ToImmutableOpt();
-        var projection = ApplySelect(materialised, query.SelectExpand?.Select);
+        var projection = ODataSelect.ApplySelect(materialised, query.SelectExpand?.Select);
         return new QueryExecutionResult(materialised, projection);
     }
 
@@ -208,60 +208,6 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
             throw new InvalidOperationException("Failed to convert ValueSort configuration to data-source options.");
 
         return dataSourcesService.Create<ValueSort>(attach: upstream, options: options);
-    }
-
-    public IReadOnlyList<IDictionary<string, object?>> ApplySelect(IEnumerable<IEntity> entities, ICollection<string>? select)
-    {
-        var fields = select?
-            .Where(f => !string.IsNullOrWhiteSpace(f))
-            .Select(f => f.Trim())
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        var result = new List<IDictionary<string, object?>>();
-        foreach (var entity in entities)
-        {
-            var projection = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
-            if (fields == null || fields.Count == 0)
-            {
-                foreach (var attribute in entity.Attributes.Keys)
-                    projection[attribute] = entity.Get(attribute);
-            }
-            else
-            {
-                foreach (var field in fields)
-                    projection[field] = GetProjectionValue(entity, field);
-            }
-            result.Add(projection);
-        }
-
-        return result;
-    }
-
-    private static object? GetProjectionValue(IEntity entity, string field)
-    {
-        if (string.IsNullOrWhiteSpace(field))
-            return null;
-
-        var trimmed = field.Trim();
-        var lowered = trimmed.ToLowerInvariant();
-
-        if (lowered == AttributeNames.EntityFieldId || lowered == AttributeNames.IdNiceName.ToLowerInvariant())
-            return entity.EntityId;
-
-        if (lowered == AttributeNames.EntityFieldGuid || lowered == AttributeNames.GuidNiceName.ToLowerInvariant())
-            return entity.EntityGuid;
-
-        if (lowered == AttributeNames.EntityFieldCreated || lowered == AttributeNames.CreatedNiceName.ToLowerInvariant())
-            return entity.Created;
-
-        if (lowered == AttributeNames.EntityFieldModified || lowered == AttributeNames.ModifiedNiceName.ToLowerInvariant())
-            return entity.Modified;
-
-        if (lowered == AttributeNames.EntityFieldTitle || lowered == AttributeNames.TitleNiceName.ToLowerInvariant())
-            return entity.GetBestTitle();
-
-        return entity.Get(trimmed);
     }
 
     private static string ResolveIdentifier(Expr? expression)
