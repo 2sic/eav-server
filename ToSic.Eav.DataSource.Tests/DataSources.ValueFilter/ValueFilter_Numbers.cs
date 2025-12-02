@@ -15,7 +15,7 @@ public class ValueFilterNumbers(ValueFilterMaker valueFilterMaker)
 
     [Fact]
     public void ValueFilter_FilterNumber()
-        =>NumberFilter("Height", (PersonSpecs.MinHeight + 7).ToString(), 181);
+        =>NumberFilter("Height", (new PersonSpecs().MinHeight + 7).ToString(), 181);
         
 
     [Fact]

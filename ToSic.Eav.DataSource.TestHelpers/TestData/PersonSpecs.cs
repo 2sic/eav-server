@@ -2,24 +2,29 @@
 
 namespace ToSic.Eav.TestData;
 
+/// <summary>
+/// Specs to generate persons.
+/// Part of it is constant, but some of it can be modified to generate different data, such as the cities.
+/// </summary>
 public class PersonSpecs
 {
-    public const int DefaultItemsToGenerate = 10;
-    public const int DefaultRootId = 1001;
-
     // Test Types
     public const bool UseDataTable = true;
     public const bool UseEntitiesL = false;
 
     // ReSharper disable StringLiteralTypo
 
+    /// <summary>
+    /// Special constant which is used in test definitions
+    /// </summary>
     public const string City1 = "Buchs";
-    public static string[] TestCities = [City1, "Grabs", "Sevelen", "Zürich"];
+
+    public string[] TestCities = [City1, "Grabs", "Sevelen", "Zürich"];
     // ReSharper restore StringLiteralTypo
 
-    public static int MinHeight = 150;
-    public static int HeightVar = 55;
-    public static int IsMaleForEveryX = 3;
+    public int MinHeight = 150;
+    public int HeightVar = 55;
+    public int IsMaleForEveryX = 3;
 
     public const string PersonTypeName = "Person";
 

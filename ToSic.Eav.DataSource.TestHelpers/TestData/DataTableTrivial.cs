@@ -39,12 +39,13 @@ public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataBuilder dataBuild
 
     private static void AddSemiRandomTrivial(System.Data.DataTable dataTable, int itemsToGenerate = 10, int firstId = 1000)
     {
+        var specs = new PersonSpecs();
         for (var i = firstId; i < firstId + itemsToGenerate; i++)
         {
             var firstName = "Daniel";
             var lastName = "Mettler";
             var fullName = firstName + " " + lastName;
-            var city = PersonSpecs.TestCities[i % PersonSpecs.TestCities.Length];
+            var city = specs.TestCities[i % specs.TestCities.Length];
             var sysModified = RandomData.RandomDate();
             dataTable.Rows.Add(i,
                 fullName,

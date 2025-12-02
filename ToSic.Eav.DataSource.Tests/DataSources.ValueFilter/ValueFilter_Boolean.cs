@@ -7,6 +7,7 @@ namespace ToSic.Eav.DataSourceTests;
 [Startup(typeof(StartupTestsValueFilter))]
 public class ValueFilterBoolean(ValueFilterMaker valueFilterMaker)
 {
+    private static readonly PersonSpecs Specs = new();
 
     [Theory]
     [InlineData("True", 82, 82, true, "True - Table")]
@@ -21,7 +22,7 @@ public class ValueFilterBoolean(ValueFilterMaker valueFilterMaker)
     [InlineData("false", 164, 82, false, "false - Entity")]
     public void FilterBool(string compareValue, int desiredFinds, int populationRoot, bool useTable, string name)
     {
-        var vf = valueFilterMaker.CreateValueFilterForTesting(populationRoot * PersonSpecs.IsMaleForEveryX, useTable); // only every 3rd is male in the demo data
+        var vf = valueFilterMaker.CreateValueFilterForTesting(populationRoot * Specs.IsMaleForEveryX, useTable); // only every 3rd is male in the demo data
         vf.Attribute = "IsMale";
         vf.Value = compareValue;
         var found = vf.ListTac().Count();

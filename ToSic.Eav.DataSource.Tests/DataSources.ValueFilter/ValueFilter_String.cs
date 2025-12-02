@@ -240,9 +240,10 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
     [Fact]
     public void ValueFilter_FilterFieldSometimesNull()
     {
+        var specs = new PersonSpecs();
         var vf = _testDataGeneratedOutsideTimer;
         vf.Attribute = "CityMaybeNull";
-        vf.Value = TestCities[1]; // test for the second value
+        vf.Value = specs.TestCities[1]; // test for the second value
         Equal(2500, vf.ListTac().Count());//, "Should find exactly 250 people with this city");
     }
 
