@@ -14,6 +14,8 @@ public class PiggyBack
 
     public bool Has(string key) => _cache.ContainsKey(key);
 
+    public void TryRemove(string key) => _ = _cache.TryRemove(key, out _);
+
     public TData GetOrGenerate<TData>(string key, Func<TData> create)
     {
         if (_cache.TryGetValue(key, out var result) && result is TData typed)

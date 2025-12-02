@@ -67,7 +67,20 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
         // 2024-02-01 2dm WIP trouble with App listing apps in other sites
         // it seems that the paths
         var key = $"AppPath-{name}" + Site.Id;
-        var final = _skipCache
+        var final = GetFromCacheOrBypass();
+
+        // 2025-12-02 2dm still have cases where the cached value is not as it should be
+        if (!_skipCache && final.Contains(AppSpecConstants.ErrorAppFolderNotLoaded))
+        {
+            appReader.GetCache().PiggyBack.TryRemove(key);
+            final = GetFromCacheOrBypass();
+        }
+
+        if (Debug)
+            Log.A($"{name}: {final}");
+        return final;
+
+        string GetFromCacheOrBypass() => _skipCache
             ? generator()
             : appReader
                 .GetCache()
@@ -76,11 +89,10 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
                     () =>
                     {
                         var result = generator();
-                        if (Debug) LogAppPathDetails(name, result);
+                        if (Debug)
+                            LogAppPathDetails(name, result);
                         return result;
                     });
-        if (Debug) Log.A($"{name}: {final}");
-        return final;
     }
 
     [field: AllowNull, MaybeNull]

@@ -61,7 +61,9 @@ public class ZipExport(
 
     public void ExportForSourceControl(AppExportSpecs specs)
     {
+        var l = Log.Fn(specs.Dump());
         var appDataPath = Path.Combine(_physicalAppPath, SourceControlDataFolder);
+        l.A($"Target Path: {appDataPath}");
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
@@ -75,6 +77,7 @@ public class ZipExport(
 
         if (specs.WithSiteFiles)
         {
+            l.A("Will include site files");
             var appDataDirectory = new DirectoryInfo(appDataPath);
 
             // 1. Copy app global templates folder for version control
@@ -123,7 +126,9 @@ public class ZipExport(
                 features.ThrowIfNotEnabled("To skip exporting site files, you must enable system features.", [BuiltInFeatures.AppExportAssetsAdvanced.Guid]);
 
         var xml = xmlExport.GenerateNiceXml();
+        l.A($"Generated XML for app #{specs.AppId}; Size: {xml.Length}");
         File.WriteAllText(Path.Combine(appDataPath, SourceControlDataFile), xml);
+        l.Done();
     }
 
     public MemoryStream ExportApp(AppExportSpecs specs)
