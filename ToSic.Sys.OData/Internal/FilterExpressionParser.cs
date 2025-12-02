@@ -133,7 +133,7 @@ internal sealed class FilterExpressionParser(string text)
                 return new UnaryExpr("-", ParsePrimary());
             case TokKind.Not:
                 Next();
-                return new UnaryExpr("not", ParsePrimary());
+                return new UnaryExpr(UnaryExpr.Not, ParsePrimary());
             case TokKind.LParen:
                 Next(); var expr = ParseExpression();
                 Expect(TokKind.RParen);

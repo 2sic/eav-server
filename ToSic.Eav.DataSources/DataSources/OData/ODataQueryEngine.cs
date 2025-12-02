@@ -92,11 +92,11 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         {
             BinaryExpr binary => TryCreateFromBinary(binary),
             CallExpr call => TryCreateFromCall(call),
-            UnaryExpr { Op: "not" or "Not", Operand: CallExpr call } => TryCreateNegatedCall(call),
+            UnaryExpr { Op: UnaryExpr.Not, Operand: CallExpr call } => TryCreateNegatedCall(call),
             _ => null
         };
 
-    private ValueFilterConfig? TryCreateFromBinary(BinaryExpr binary)
+    private static ValueFilterConfig? TryCreateFromBinary(BinaryExpr binary)
     {
         var op = binary.Op switch
         {

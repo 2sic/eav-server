@@ -1,9 +1,19 @@
 namespace ToSic.Sys.OData.Ast;
 
-public sealed class UnaryExpr : Expr
+public sealed class UnaryExpr(string op, Expr operand) : Expr
 {
-    public string Op { get; }
-    public Expr Operand { get; }
-    public UnaryExpr(string op, Expr operand) { Op = op; Operand = operand; }
+    public const string Not = "not";
+
+    /// <summary>
+    /// The operation, as of now only "not" are possible.
+    /// </summary>
+    /// <remarks>
+    /// Case sensitivity must be ensured when creating this object
+    /// as we always only check for "not" in lower case. 
+    /// </remarks>
+    public string Op { get; } = op;
+
+    public Expr Operand { get; } = operand;
+
     public override string ToString() => $"({Op} {Operand})";
 }
