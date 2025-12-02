@@ -81,8 +81,8 @@ public class ODataQueryEngineTests(
     }
 
     [Theory]
-    [InlineData("Z", 150, CitiesWithB)]
-    [InlineData("B", 150, CitiesWithZ)]
+    [InlineData("Z", 150, CitiesWithZ)]
+    [InlineData("B", 150, CitiesWithB)]
     public void FilterByCityNotStartsWithLetter(string start, int expected, string notExpectedCities)
     {
         var result = FilterPrepareAndRun(250, $"not startswith({PersonSpecs.FieldCity}, '{start}')");

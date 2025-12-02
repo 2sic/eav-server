@@ -155,6 +155,7 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         return function switch
         {
             "contains" => new(attribute.Name, CompareOperators.OpNotContains, value),
+            "startswith" => new(attribute.Name, CompareOperators.OpNotBegins, value),
             _ => null
         };
     }
