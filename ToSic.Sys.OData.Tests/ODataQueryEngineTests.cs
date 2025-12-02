@@ -44,7 +44,7 @@ public class ODataQueryEngineTests(
     }
 
     [Fact]
-    public void FilterByCityEqualBernKeepsExpectedCount()
+    public void FilterByCityEqualBern()
     {
         var result = FilterPrepareAndRun(250, $"{PersonSpecs.FieldCity} eq '{CityToFind}'");
 
@@ -56,7 +56,7 @@ public class ODataQueryEngineTests(
 
 
     [Fact]
-    public void FilterByCityStartsWithBernKeepsExpectedCount()
+    public void FilterByCityStartsWithBern()
     {
         var result = FilterPrepareAndRun(250, $"startswith({PersonSpecs.FieldCity}, '{CityToFind}')");
 
@@ -69,7 +69,7 @@ public class ODataQueryEngineTests(
     [Theory]
     [InlineData("Z", CitiesWithZ)]
     [InlineData("B", CitiesWithB)]
-    public void FilterByCityStartsWithBKeepsExpectedCount(string start, string expectedCities)
+    public void FilterByCityStartsWithLetter(string start, string expectedCities)
     {
         var result = FilterPrepareAndRun(250, $"startswith({PersonSpecs.FieldCity}, '{start}')");
 
@@ -77,6 +77,20 @@ public class ODataQueryEngineTests(
         var cities = expectedCities.Split(',');
         Assert.All(result.Items,
             e => Assert.Contains(e.Get<string>(PersonSpecs.FieldCity)!, cities)
+        );
+    }
+
+    [Theory]
+    [InlineData("Z", 150, CitiesWithB)]
+    [InlineData("B", 150, CitiesWithZ)]
+    public void FilterByCityNotStartsWithLetter(string start, int expected, string notExpectedCities)
+    {
+        var result = FilterPrepareAndRun(250, $"not startswith({PersonSpecs.FieldCity}, '{start}')");
+
+        Assert.Equal(expected, result.Items.Count);
+        var cities = notExpectedCities.Split(',');
+        Assert.All(result.Items,
+            e => Assert.DoesNotContain(e.Get<string>(PersonSpecs.FieldCity)!, cities)
         );
     }
 
