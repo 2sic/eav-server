@@ -1,5 +1,4 @@
 using System.Globalization;
-using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Services;
 using ToSic.Sys.OData.Ast;
 
@@ -19,11 +18,14 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
     /// </summary>
     public QueryExecutionResult Execute(IDataSource root, Query query)
     {
-        if (root == null) throw new ArgumentNullException(nameof(root));
-        if (query == null) throw new ArgumentNullException(nameof(query));
+        if (root == null)
+            throw new ArgumentNullException(nameof(root));
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
 
         var pipeline = BuildFilteredAndSorted(root, query);
-        var entities = pipeline.List?.ToImmutableOpt() ?? ImmutableList<IEntity>.Empty;
+        var entities = pipeline.List?.ToImmutableOpt()
+                       ?? ImmutableList<IEntity>.Empty;
 
         var sequence = entities.AsEnumerable();
         if (query.Skip.HasValue)
@@ -41,8 +43,9 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
 
         // WARNING: It appears that this projection-result is never used!
         // Because at least from what I can tell, only the materialized result is used.
-        var projection = new ODataSelectForQueryEngineProbablyNotUsed(query.SelectExpand?.Select).ApplySelect(materialised);
-        return new QueryExecutionResult(materialised, projection);
+        var projection = new ODataSelectForQueryEngineProbablyNotUsed(query.SelectExpand?.Select)
+            .ApplySelect(materialised);
+        return new(materialised, projection);
     }
 
     public IDataSource BuildFilteredAndSorted(IDataSource root, Query query)
@@ -62,27 +65,27 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         if (configs.Count == 0)
             return current;
 
-        foreach (var config in configs)
-            current = CreateValueFilter(current, config);
-
-        return current;
+        var filtered = configs.Aggregate(current, CreateValueFilter);
+        return filtered;
     }
 
-    private void CollectFilters(Expr expression, List<ValueFilterConfig> configs)
+    private List<ValueFilterConfig> CollectFilters(Expr expression, List<ValueFilterConfig> configs)
     {
         switch (expression)
         {
-            case BinaryExpr binary when binary.Op == BinaryOp.And:
-                CollectFilters(binary.Left, configs);
-                CollectFilters(binary.Right, configs);
-                break;
-            case BinaryExpr binary when binary.Op == BinaryOp.Or:
+            // Check and operation
+            case BinaryExpr { Op: BinaryOp.And } binary:
+                configs = CollectFilters(binary.Left, configs);
+                configs = CollectFilters(binary.Right, configs);
+                return configs;
+            // Check OR operation - currently throwing an exception since it's not supported
+            case BinaryExpr { Op: BinaryOp.Or }:
                 throw new NotSupportedException("Logical OR in filter expressions is not supported yet.");
             default:
                 var filter = TryCreateFilter(expression)
                              ?? throw new NotSupportedException($"Unsupported filter expression: {expression}");
                 configs.Add(filter);
-                break;
+                return configs;
         }
     }
 
@@ -107,54 +110,58 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
             BinaryOp.Le => CompareOperators.OpLtEquals,
             _ => null
         };
-        if (op == null) return null;
+        if (op == null)
+            return null;
 
         if (!TryResolveAttributeAndValue(binary.Left, binary.Right, out var attribute, out var value))
             if (!TryResolveAttributeAndValue(binary.Right, binary.Left, out attribute, out value))
                 return null;
 
-        return new ValueFilterConfig(attribute, op, value);
+        return new(attribute, op, value);
     }
 
-    private ValueFilterConfig? TryCreateFromCall(CallExpr call)
+    private static ValueFilterConfig? TryCreateFromCall(CallExpr call)
     {
-        if (call.Arguments.Count < 2) return null;
+        if (call.Arguments.Count < 2)
+            return null;
 
-        var function = call.Name?.Trim()?.ToLowerInvariant();
+        var function = call.Name?.Trim().ToLowerInvariant();
         var attributeExpr = call.Arguments[0];
         var valueExpr = call.Arguments[1];
 
         var attribute = attributeExpr is IdentifierExpr identifier
             ? identifier.Name
             : null;
-        if (attribute == null) return null;
+        if (attribute == null)
+            return null;
 
         var value = ConvertValue(valueExpr);
 
         return function switch
         {
-            "contains" => new ValueFilterConfig(attribute, CompareOperators.OpContains, value),
-            "startswith" => new ValueFilterConfig(attribute, CompareOperators.OpBegins, value),
+            "contains" => new(attribute, CompareOperators.OpContains, value),
+            "startswith" => new(attribute, CompareOperators.OpBegins, value),
             _ => null
         };
     }
 
-    private ValueFilterConfig? TryCreateNegatedCall(CallExpr call)
+    private static ValueFilterConfig? TryCreateNegatedCall(CallExpr call)
     {
-        if (call.Arguments.Count < 2) return null;
-        var function = call.Name?.Trim()?.ToLowerInvariant();
-        var attribute = call.Arguments[0] as IdentifierExpr;
-        if (attribute == null) return null;
+        if (call.Arguments.Count < 2)
+            return null;
+        var function = call.Name?.Trim().ToLowerInvariant();
+        if (call.Arguments[0] is not IdentifierExpr attribute)
+            return null;
 
         var value = ConvertValue(call.Arguments[1]);
         return function switch
         {
-            "contains" => new ValueFilterConfig(attribute.Name, CompareOperators.OpNotContains, value),
+            "contains" => new(attribute.Name, CompareOperators.OpNotContains, value),
             _ => null
         };
     }
 
-    private bool TryResolveAttributeAndValue(Expr attributeExpr, Expr valueExpr, out string attribute, out string? value)
+    private static bool TryResolveAttributeAndValue(Expr attributeExpr, Expr valueExpr, out string attribute, out string? value)
     {
         if (attributeExpr is IdentifierExpr identifier)
         {
@@ -172,10 +179,10 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
     {
         var optionObject = new
         {
-            Attribute = config.Attribute,
-            Operator = config.Operator,
+            config.Attribute,
+            config.Operator,
             Value = config.Value ?? string.Empty,
-            Languages = config.Languages,
+            config.Languages,
         };
 
         var options = _optionConverter.Convert(optionObject, throwIfNull: false, throwIfNoMatch: false);
@@ -239,15 +246,26 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         };
 
     private static int ClampToInt(long value)
-    {
-        if (value < 0) return 0;
-        if (value > int.MaxValue) return int.MaxValue;
-        return (int)value;
-    }
+        => value switch
+        {
+            < 0 => 0,
+            > int.MaxValue => int.MaxValue,
+            _ => (int)value
+        };
 
-    private sealed record ValueFilterConfig(string Attribute, string Operator, string? Value, string? Languages = default);
+    private sealed record ValueFilterConfig(
+        string Attribute,
+        string Operator,
+        string? Value,
+        string? Languages = default
+    );
 }
 
+/// <summary>
+/// TODO: THIS IS UNCLEAR - the "Projection" is never used except for in tests, which seems wrong
+/// </summary>
+/// <param name="Items"></param>
+/// <param name="Projection"></param>
 public sealed record QueryExecutionResult(IReadOnlyList<IEntity> Items, IReadOnlyList<IDictionary<string, object?>> Projection);
 
 

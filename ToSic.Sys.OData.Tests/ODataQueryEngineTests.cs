@@ -11,21 +11,15 @@ using Xunit.DependencyInjection;
 namespace ToSic.Sys.OData.Tests;
 
 [Startup(typeof(ODataValueFilterTestStartup))]
-public class ODataQueryEngineTests
+public class ODataQueryEngineTests(
+    IDataSourcesService dataSourcesService,
+    DataSourcesTstBuilder dsBuilder,
+    DataBuilder dataBuilder)
 {
-    private readonly ODataQueryEngine _engine;
-    private readonly DataSourcesTstBuilder _dsBuilder;
-    private readonly DataBuilder _dataBuilder;
-
-    public ODataQueryEngineTests(IDataSourcesService dataSourcesService, DataSourcesTstBuilder dsBuilder, DataBuilder dataBuilder)
-    {
-        _engine = new ODataQueryEngine(dataSourcesService);
-        _dsBuilder = dsBuilder;
-        _dataBuilder = dataBuilder;
-    }
+    private readonly ODataQueryEngine _engine = new(dataSourcesService);
 
     private DataTable PersonsTable(int count = 200)
-        => new DataTablePerson(_dsBuilder, _dataBuilder).Generate(count, useCacheForSpeed: false);
+        => new DataTablePerson(dsBuilder, dataBuilder).Generate(count, useCacheForSpeed: false);
 
     [Fact]
     public void FilterByCityKeepsExpectedCount()
