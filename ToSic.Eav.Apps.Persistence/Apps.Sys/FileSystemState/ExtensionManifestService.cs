@@ -58,14 +58,15 @@ public class ExtensionManifestService() : ServiceBase("Ext.ManSvc")
             // JsonElement holds a pointer to a JsonDocument which may be disposed after this method returns.
             var result = tempResult with
             {
-                InputTypeAssets = CloneJsonElement(tempResult.InputTypeAssets),
+                //InputTypeAssets = CloneJsonElement(tempResult.InputTypeAssets),
                 DataBundles = CloneJsonElement(tempResult.DataBundles),
-                Bundles = CloneJsonElement(tempResult.Bundles),
+                //Bundles = CloneJsonElement(tempResult.Bundles),
                 Releases = CloneJsonElement(tempResult.Releases),
                 InputFieldAssets = CloneJsonElement(tempResult.InputFieldAssets)
             };
             
-            return l.Return(result, $"inputType:'{result.InputTypeInside}', version:'{result.Version}', editionsSupported:{result.EditionsSupported}");
+            //return l.Return(result, $"inputType:'{result.InputTypeInside}', version:'{result.Version}', editionsSupported:{result.EditionsSupported}");
+            return l.Return(result, $"inputType:'{result.InputFieldInside}', version:'{result.Version}', editionsSupported:{result.EditionsSupported}");
         }
         catch (Exception ex)
         {
@@ -123,79 +124,79 @@ public class ExtensionManifestService() : ServiceBase("Ext.ManSvc")
         return list;
     }
 
-    /// <summary>
-    /// Extract bundle GUIDs from <see cref="ExtensionManifest.Bundles"/>.
-    /// Accepts single string (CSV supported) or array of strings.
-    /// </summary>
-    public IReadOnlyList<Guid> GetBundleGuids(ExtensionManifest manifest)
-    {
-        var list = new List<Guid>();
-        var bundles = manifest.Bundles;
-        switch (bundles.ValueKind)
-        {
-            case JsonValueKind.String:
-                {
-                    var str = bundles.GetString();
-                    if (!string.IsNullOrWhiteSpace(str))
-                    {
-                        foreach (var part in str!.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
-                            if (Guid.TryParse(part.Trim(), out var g))
-                                list.Add(g);
-                    }
-                    break;
-                }
-            case JsonValueKind.Array:
-                foreach (var item in bundles.EnumerateArray())
-                {
-                    if (item.ValueKind != JsonValueKind.String)
-                        continue;
-                    var s = item.GetString();
-                    if (s != null && Guid.TryParse(s, out var g))
-                        list.Add(g);
-                }
-                break;
-        }
-        return list;
-    }
+    ///// <summary>
+    ///// Extract bundle GUIDs from <see cref="ExtensionManifest.Bundles"/>.
+    ///// Accepts single string (CSV supported) or array of strings.
+    ///// </summary>
+    //public IReadOnlyList<Guid> GetBundleGuids(ExtensionManifest manifest)
+    //{
+    //    var list = new List<Guid>();
+    //    var bundles = manifest.Bundles;
+    //    switch (bundles.ValueKind)
+    //    {
+    //        case JsonValueKind.String:
+    //            {
+    //                var str = bundles.GetString();
+    //                if (!string.IsNullOrWhiteSpace(str))
+    //                {
+    //                    foreach (var part in str!.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
+    //                        if (Guid.TryParse(part.Trim(), out var g))
+    //                            list.Add(g);
+    //                }
+    //                break;
+    //            }
+    //        case JsonValueKind.Array:
+    //            foreach (var item in bundles.EnumerateArray())
+    //            {
+    //                if (item.ValueKind != JsonValueKind.String)
+    //                    continue;
+    //                var s = item.GetString();
+    //                if (s != null && Guid.TryParse(s, out var g))
+    //                    list.Add(g);
+    //            }
+    //            break;
+    //    }
+    //    return list;
+    //}
 
-    /// <summary>
-    /// Normalize <see cref="ExtensionManifest.InputTypeAssets"/> to a list of relative asset paths.
-    /// Supports string, object with a "default" string property, or array of strings.
-    /// </summary>
-    public IReadOnlyList<string> GetInputTypeAssetPaths(ExtensionManifest manifest)
-    {
-        var list = new List<string>();
-        var assets = manifest.InputTypeAssets;
-        switch (assets.ValueKind)
-        {
-            case JsonValueKind.String:
-                {
-                    var s = assets.GetString();
-                    if (!string.IsNullOrWhiteSpace(s))
-                        list.Add(s!);
-                    break;
-                }
-            case JsonValueKind.Object:
-                if (assets.TryGetProperty("default", out var def) && def.ValueKind == JsonValueKind.String)
-                {
-                    var defStr = def.GetString();
-                    if (!string.IsNullOrWhiteSpace(defStr))
-                        list.Add(defStr!);
-                }
-                break;
-            case JsonValueKind.Array:
-                foreach (var item in assets.EnumerateArray())
-                {
-                    if (item.ValueKind != JsonValueKind.String)
-                        continue;
-                    var v = item.GetString();
-                    if (!string.IsNullOrWhiteSpace(v))
-                        list.Add(v!);
-                }
-                break;
-        }
-        return list;
-    }
+    ///// <summary>
+    ///// Normalize <see cref="ExtensionManifest.InputTypeAssets"/> to a list of relative asset paths.
+    ///// Supports string, object with a "default" string property, or array of strings.
+    ///// </summary>
+    //public IReadOnlyList<string> GetInputTypeAssetPaths(ExtensionManifest manifest)
+    //{
+    //    var list = new List<string>();
+    //    var assets = manifest.InputTypeAssets;
+    //    switch (assets.ValueKind)
+    //    {
+    //        case JsonValueKind.String:
+    //            {
+    //                var s = assets.GetString();
+    //                if (!string.IsNullOrWhiteSpace(s))
+    //                    list.Add(s!);
+    //                break;
+    //            }
+    //        case JsonValueKind.Object:
+    //            if (assets.TryGetProperty("default", out var def) && def.ValueKind == JsonValueKind.String)
+    //            {
+    //                var defStr = def.GetString();
+    //                if (!string.IsNullOrWhiteSpace(defStr))
+    //                    list.Add(defStr!);
+    //            }
+    //            break;
+    //        case JsonValueKind.Array:
+    //            foreach (var item in assets.EnumerateArray())
+    //            {
+    //                if (item.ValueKind != JsonValueKind.String)
+    //                    continue;
+    //                var v = item.GetString();
+    //                if (!string.IsNullOrWhiteSpace(v))
+    //                    list.Add(v!);
+    //            }
+    //            break;
+    //    }
+    //    return list;
+    //}
 
     #endregion
 }

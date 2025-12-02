@@ -108,18 +108,21 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         var l = Log.Fn<InputTypeInfo?>($"manifest:'{manifestFile.Name}', extension:'{extensionFolder.Name}', placeholder:'{placeholder}', folder:'{folderName}'");
         
         var manifest = manifestService.LoadManifest(manifestFile);
-        if (manifest?.InputTypeInside.IsEmpty() ?? true)
+        if (manifest?.InputFieldInside ?? true)
+        //if (manifest?.InputTypeInside.IsEmpty() ?? true)
         {
             l.A("Manifest is null or InputTypeInside is empty");
             return l.ReturnNull("no valid manifest");
         }
 
-        l.A($"Building UI assets for inputType:'{manifest.InputTypeInside}'");
+        //l.A($"Building UI assets for inputType:'{manifest.InputTypeInside}'");
+        l.A($"Building UI assets for inputType:'{manifest.InputFieldInside}'");
         var assets = BuildUiAssets(manifest, extensionFolder, placeholder, folderName);
         
         var result = new InputTypeInfo
         {
-            Type = manifest.InputTypeInside!,
+            //Type = manifest.InputTypeInside!,
+            Type = extensionFolder.Name,
             Label = InputTypeNiceName(extensionFolder.Name),
             Description = "Extension Field",
             UiAssets = assets,
@@ -217,13 +220,16 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
 
             // Load and validate the edition manifest
             var editionManifest = manifestService.LoadManifest(editionManifestFile);
-            if (editionManifest?.InputTypeInside.IsEmpty() ?? true)
+            //if (editionManifest?.InputTypeInside.IsEmpty() ?? true)
+            if (editionManifest?.InputFieldInside ?? true)
                 continue;
             
             // Ensure the edition manifest references the same input type
-            if (!editionManifest.InputTypeInside.Equals(manifest.InputTypeInside, StringComparison.OrdinalIgnoreCase))
+            //if (!editionManifest.InputTypeInside.Equals(manifest.InputTypeInside, StringComparison.OrdinalIgnoreCase))
+            if (editionManifest.InputFieldInside != manifest.InputFieldInside)
             {
-                l.A($"Edition {editionFolder.Name} has mismatched inputTypeInside: {editionManifest.InputTypeInside} != {manifest.InputTypeInside}");
+                //l.A($"Edition {editionFolder.Name} has mismatched inputTypeInside: {editionManifest.InputTypeInside} != {manifest.InputTypeInside}");
+                l.A($"Edition {editionFolder.Name} has mismatched inputFieldInside: {editionManifest.InputFieldInside} != {manifest.InputFieldInside}");
                 continue;
             }
 
@@ -251,13 +257,22 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     {
         var l = Log.Fn<string?>($"extension:'{extensionName}', edition:'{editionName}', placeholder:'{placeholder}'");
         
-        var raw = manifest.InputTypeAssets.ValueKind switch
+        //var raw = manifest.InputTypeAssets.ValueKind switch
+        //{
+        //    JsonValueKind.String => manifest.InputTypeAssets.GetString(),
+        //    JsonValueKind.Object => manifest.InputTypeAssets.TryGetProperty(InputTypeInfo.DefaultAssets, out var def)
+        //        ? def.GetString()
+        //        : null,
+        //    JsonValueKind.Array => manifest.InputTypeAssets.EnumerateArray().FirstOrDefault().GetString(),
+        //    _ => null
+        //};
+        var raw = manifest.InputFieldAssets.ValueKind switch
         {
-            JsonValueKind.String => manifest.InputTypeAssets.GetString(),
-            JsonValueKind.Object => manifest.InputTypeAssets.TryGetProperty(InputTypeInfo.DefaultAssets, out var def)
+            JsonValueKind.String => manifest.InputFieldAssets.GetString(),
+            JsonValueKind.Object => manifest.InputFieldAssets.TryGetProperty(InputTypeInfo.DefaultAssets, out var def)
                 ? def.GetString()
                 : null,
-            JsonValueKind.Array => manifest.InputTypeAssets.EnumerateArray().FirstOrDefault().GetString(),
+            JsonValueKind.Array => manifest.InputFieldAssets.EnumerateArray().FirstOrDefault().GetString(),
             _ => null
         };
 

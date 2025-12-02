@@ -128,67 +128,77 @@ public sealed record ExtensionManifest
     #region Capability Flags
 
     /// <summary>Indicates presence of field definitions.</summary>
-    [JsonPropertyName("hasFields")]
-    public bool HasFields { get; init; }
+    [JsonPropertyName("inputFieldInside")]
+    public bool InputFieldInside { get; init; }
 
     /// <summary>Indicates presence of AppCode files.</summary>
-    [JsonPropertyName("hasAppCode")]
-    public bool HasAppCode { get; init; }
-    //[JsonPropertyName("appCodeInside")]
-    //public bool AppCodeInside { get; init; }
+    [JsonPropertyName("appCodeInside")]
+    public bool AppCodeInside { get; init; }
 
     /// <summary>Indicates presence of WebApi endpoints.</summary>
-    [JsonPropertyName("hasWebApi")]
-    public bool HasWebApi { get; init; }
+    [JsonPropertyName("webApiInside")]
+    public bool WebApiInside { get; init; }
 
     /// <summary>Indicates presence of Razor files.</summary>
-    [JsonPropertyName("hasRazor")]
-    public bool HasRazor { get; init; }
+    [JsonPropertyName("razorInside")]
+    public bool RazorInside { get; init; }
 
     /// <summary>Indicates presence of data bundles (simple flag).</summary>
     [JsonPropertyName("hasDataBundles")]
     public bool HasDataBundles { get; init; }
 
     /// <summary>Indicates presence of content types.</summary>
-    [JsonPropertyName("hasContentTypes")]
-    public bool HasContentTypes { get; init; }
+    [JsonPropertyName("contentTypesInside")]
+    public bool ContentTypesInside { get; init; }
 
     /// <summary>Indicates presence of queries.</summary>
-    [JsonPropertyName("hasQueries")]
-    public bool HasQueries { get; init; }
+    [JsonPropertyName("queriesInside")]
+    public bool QueriesInside { get; init; }
 
     /// <summary>Indicates presence of views.</summary>
-    [JsonPropertyName("hasViews")]
-    public bool HasViews { get; init; }
+    [JsonPropertyName("viewsInside")]
+    public bool ViewsInside { get; init; }
 
     /// <summary>Indicates whether the extension contains data that should be exported/imported.</summary>
     [JsonPropertyName("dataInside")]
     public bool DataInside { get; init; }
 
+    [JsonPropertyName("resourcesContentType")]
+    public string ResourcesContentType { get; init; }
+
+    [JsonPropertyName("settingsContentType")]
+    public string SettingsContentType { get; init; }
+
     #endregion
 
     #region Assets
 
-    /// <summary>Asset paths for the input field UI. Can be a string, object with "default" key, or array.</summary>
+    // TODO: @STV - this is always a string - why is it JsonElement here? and why are the docs saying it can be other things?
+    /// <summary>
+    /// Asset paths for the input field UI. Can be a string, object with "default" key, or array.
+    /// </summary>
     [JsonPropertyName("inputFieldAssets")]
     public JsonElement InputFieldAssets { get; init; } = JsonNullElement;
 
-    /// <summary>The input type identifier (e.g., "string-font-icon"). If empty/null, the extension is not an input type.</summary>
-    [JsonPropertyName("inputTypeInside")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? InputTypeInside { get; init; }
+    // 2025-12-02 2dm - this looks wrong and the field doesn't exist any more in extension.json files
+    ///// <summary>The input type identifier (e.g., "string-font-icon"). If empty/null, the extension is not an input type.</summary>
+    //[JsonPropertyName("inputTypeInside")]
+    //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    //public string? InputTypeInside { get; init; }
 
-    /// <summary>Asset paths for the input type UI. Can be a string, object with "default" key, or array.</summary>
-    [JsonPropertyName("inputTypeAssets")]
-    public JsonElement InputTypeAssets { get; init; } = JsonNullElement;
+    // 2025-12-02 2dm - this looks wrong and the field doesn't exist any more in extension.json files
+    ///// <summary>Asset paths for the input type UI. Can be a string, object with "default" key, or array.</summary>
+    //[JsonPropertyName("inputTypeAssets")]
+    //public JsonElement InputTypeAssets { get; init; } = JsonNullElement;
 
+    // TODO: @STV - this is always a string - why is it JsonElement here? and why are the docs saying it can be other things?
     /// <summary>Data bundle references (expanded or raw). Flexible shape.</summary>
     [JsonPropertyName("dataBundles")]
     public JsonElement DataBundles { get; init; } = JsonNullElement;
 
-    /// <summary>Alternative bundles reference property (raw list / legacy usage).</summary>
-    [JsonPropertyName("bundles")]
-    public JsonElement Bundles { get; init; } = JsonNullElement;
+    ///// <summary>Alternative bundles reference property (raw list / legacy usage).</summary>
+    //[JsonPropertyName("bundles")]
+    //public JsonElement Bundles { get; init; } = JsonNullElement;
 
     #endregion
 }

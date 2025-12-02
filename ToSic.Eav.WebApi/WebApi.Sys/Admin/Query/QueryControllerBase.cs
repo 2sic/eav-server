@@ -201,6 +201,15 @@ public abstract class QueryControllerBase<TImplementation>(
         return RunDevInternal(appId, id, lookUps, top, GetSubStream);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <param name="id"></param>
+    /// <param name="lookUps"></param>
+    /// <param name="top"></param>
+    /// <param name="partLookup">This retrieves which part of the query should be provided - for scenarios where only a single stream in the query is analyzed</param>
+    /// <returns></returns>
     protected QueryRunDto RunDevInternal(int appId, int id, ILookUpEngine lookUps, int top,
         Func<QueryResult, IDataSource> partLookup) 
     {
