@@ -18,22 +18,66 @@ public class ODataQueryEngineTests(
 {
     private readonly ODataQueryEngine _engine = new(dataSourcesService);
 
-    private DataTable PersonsTable(int count = 200)
-        => new DataTablePerson(dsBuilder, dataBuilder).Generate(count, useCacheForSpeed: false);
+    private DataTable PersonsTable(int count = 200, PersonSpecs? specs = null)
+        => new DataTablePerson(dsBuilder, dataBuilder)
+            .Generate(count, useCacheForSpeed: false, specs: specs);
 
-    [Fact]
-    public void FilterByCityKeepsExpectedCount()
+    private const string CityToFind = "Bern";
+    private const string CitiesWithB = "Buchs,Bern";
+    private const string CitiesWithZ = "Zurich,Zug";
+
+    private static readonly PersonSpecs PersonInCities = new()
     {
-        var table = PersonsTable();
+        TestCities = ["Buchs", "Zurich", "Geneva", "Zug", CityToFind],
+    };
+
+    private QueryExecutionResult FilterPrepareAndRun(int count, string filter)
+    {
+        var table = PersonsTable(count, specs: PersonInCities);
         var query = UriQueryParser.Parse(new Dictionary<string, string>
         {
-            ["$filter"] = $"{PersonSpecs.FieldCity} eq '{PersonSpecs.City1}'"
+            ["$filter"] = filter
         });
 
         var result = _engine.Execute(table, query);
+        return result;
+    }
+
+    [Fact]
+    public void FilterByCityEqualBernKeepsExpectedCount()
+    {
+        var result = FilterPrepareAndRun(250, $"{PersonSpecs.FieldCity} eq '{CityToFind}'");
 
         Assert.Equal(50, result.Items.Count);
-        Assert.All(result.Items, e => Assert.Equal(PersonSpecs.City1, e.Get<string>(PersonSpecs.FieldCity)));
+        Assert.All(result.Items,
+            e => Assert.Equal(CityToFind, e.Get<string>(PersonSpecs.FieldCity))
+        );
+    }
+
+
+    [Fact]
+    public void FilterByCityStartsWithBernKeepsExpectedCount()
+    {
+        var result = FilterPrepareAndRun(250, $"startswith({PersonSpecs.FieldCity}, '{CityToFind}')");
+
+        Assert.Equal(50, result.Items.Count);
+        Assert.All(result.Items,
+            e => Assert.Equal(CityToFind, e.Get<string>(PersonSpecs.FieldCity))
+        );
+    }
+
+    [Theory]
+    [InlineData("Z", CitiesWithZ)]
+    [InlineData("B", CitiesWithB)]
+    public void FilterByCityStartsWithBKeepsExpectedCount(string start, string expectedCities)
+    {
+        var result = FilterPrepareAndRun(250, $"startswith({PersonSpecs.FieldCity}, '{start}')");
+
+        Assert.Equal(100, result.Items.Count);
+        var cities = expectedCities.Split(',');
+        Assert.All(result.Items,
+            e => Assert.Contains(e.Get<string>(PersonSpecs.FieldCity)!, cities)
+        );
     }
 
     [Fact]
