@@ -60,8 +60,7 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         if (expression == null)
             return current;
 
-        var configs = new List<ValueFilterConfig>();
-        CollectFilters(expression, configs);
+        var configs = CollectFilters(expression);
         if (configs.Count == 0)
             return current;
 
@@ -69,23 +68,22 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         return filtered;
     }
 
-    private List<ValueFilterConfig> CollectFilters(Expr expression, List<ValueFilterConfig> configs)
+    private List<ValueFilterConfig> CollectFilters(Expr expression)
     {
         switch (expression)
         {
             // Check and operation
             case BinaryExpr { Op: BinaryOp.And } binary:
-                configs = CollectFilters(binary.Left, configs);
-                configs = CollectFilters(binary.Right, configs);
-                return configs;
+                var left = CollectFilters(binary.Left);
+                var right = CollectFilters(binary.Right);
+                return left.Concat(right).ToList();
             // Check OR operation - currently throwing an exception since it's not supported
             case BinaryExpr { Op: BinaryOp.Or }:
                 throw new NotSupportedException("Logical OR in filter expressions is not supported yet.");
             default:
                 var filter = TryCreateFilter(expression)
                              ?? throw new NotSupportedException($"Unsupported filter expression: {expression}");
-                configs.Add(filter);
-                return configs;
+                return [filter];
         }
     }
 
