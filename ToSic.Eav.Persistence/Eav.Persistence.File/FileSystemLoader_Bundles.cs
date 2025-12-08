@@ -86,9 +86,10 @@ partial class FileSystemLoader
             var newContentTypes = contentTypes
                 .Select(ct =>
                 {
+                    TypeIdSeed += TypeIdDirection;
                     var typeWithOrigin = dataBuilder.ContentType.CreateFrom(
                         ct.ContentType,
-                        id: ++TypeIdSeed,
+                        id: TypeIdSeed,
                         repoType: Options.RepoType,
                         repoAddress: path,
                         parentTypeId: EavConstants.PresetContentTypeFakeParent,
@@ -144,7 +145,8 @@ partial class FileSystemLoader
             entities = entities
                 .Select(e =>
                 {
-                    var newId = ++EntityIdSeed;
+                    EntityIdSeed += EntityIdDirection;
+                    var newId = EntityIdSeed;
                     return dataBuilder.Entity.CreateFrom(e, id: newId, repositoryId: newId);
                 })
                 .ToListOpt();

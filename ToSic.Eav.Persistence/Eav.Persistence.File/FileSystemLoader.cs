@@ -125,7 +125,9 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     #region ContentType
 
     public int EntityIdSeed = -1;
+    public int EntityIdDirection = 1;
     public int TypeIdSeed = -1;
+    public int TypeIdDirection = 1;
 
     public ICollection<IContentType> ContentTypes()
         => ContentTypes(Options.AppId, null! /* unused */);
@@ -209,14 +211,15 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             var ct = ser.DeserializeContentType(json);
 
             infoIfError = "couldn't set source/parent";
-            ct = dataBuilder.ContentType.CreateFrom(ct, id: ++TypeIdSeed, repoType: Options.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
+            TypeIdSeed += TypeIdDirection;
+            ct = dataBuilder.ContentType.CreateFrom(ct, id: TypeIdSeed, repoType: Options.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
             return l.Return(ct, $"file size was: {json.Length}");
         }
 #pragma warning disable CS0162 // Unreachable code detected
         // ReSharper disable HeuristicUnreachableCode
         catch (IOException e)
         {
-            l.Ex("Failed loading type - couldn't import type-file, IO exception", e);
+            l.Ex($"Failed loading type - couldn't import type-file, IO exception; '{infoIfError}'", e);
 #if DEBUG
             throw;
 #endif

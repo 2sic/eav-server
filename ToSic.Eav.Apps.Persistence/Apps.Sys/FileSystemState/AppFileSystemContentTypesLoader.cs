@@ -24,7 +24,7 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
             l.A($"Found {extPaths.Count} extensions with {FolderConstants.DataFolderProtected} folder");
             
             var allData = extPaths
-                .Select(p => LoadDataFromOneExtensionPath(p, entitiesSource))
+                .Select((p, index) => LoadDataFromOneExtensionPath(p, -(index + 1) * 1_000, entitiesSource))
                 .ToListOpt();
 
             var allTypes = allData
@@ -48,7 +48,8 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
     }
 
 
-    private (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) LoadDataFromOneExtensionPath(string extensionPath, IEntitiesSource entitiesSource)
+    private (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) LoadDataFromOneExtensionPath(
+        string extensionPath, int seed, IEntitiesSource entitiesSource)
     {
         var l = Log.IfSummary(LogSettings).Fn<(ICollection<IContentType>, ICollection<IEntity>)>(extensionPath);
         var fsLoader = fslGenerator.New(options: new()
@@ -61,7 +62,11 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
             LogSettings = LogSettings,
         });
         // Expect local entities to be very few...
-        fsLoader.EntityIdSeed = -1000;
+        fsLoader.EntityIdSeed = seed;
+        fsLoader.EntityIdDirection = -1;
+        fsLoader.TypeIdSeed = seed;
+        fsLoader.TypeIdDirection = -1;
+
         var types = fsLoader.ContentTypes();
         // WIP - ATM hard-wired to bundles, but should probably go through all instead...
         var entities = fsLoader.Entities(AppDataFoldersConstants.BundlesFolder, entitiesSource);
