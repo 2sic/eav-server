@@ -1,4 +1,5 @@
-﻿using static ToSic.Eav.Data.Sys.AttributeNames;
+﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using static ToSic.Eav.Data.Sys.AttributeNames;
 
 namespace ToSic.Eav.Data.Sys.Entities;
 
@@ -23,9 +24,9 @@ partial record Entity
         => GetPropertyInternal(specs, path);
 
     [PrivateApi("Internal")]
-    public PropReqResult GetPropertyInternal(PropReqSpecs specs, PropertyLookupPath? pathOrNull)
+    public PropReqResult GetPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
     {
-        var path = pathOrNull.KeepOrNew().Add("Entity", EntityId.ToString(), specs.Field);
+        path = path.Add("Entity", EntityId.ToString(), specs.Field);
 
         // the languages are "safe" - meaning they are already all lower-cased and have the optional null-fallback key
         var languages = specs.Dimensions;

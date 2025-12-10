@@ -13,8 +13,9 @@ public class EavJsonConverterFactory(
         typeof(IEntity).IsAssignableFrom(typeToConvert)
         || typeof(IEnumerable<IEntity>).IsAssignableFrom(typeToConvert);
 
-    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options) =>
-        typeof(IEnumerable).IsAssignableFrom(typeToConvert)
+    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        => typeof(IEnumerable).IsAssignableFrom(typeToConvert)
             ? eavCollectionJsonConverter
             : eavJsonConverter;
+
 }

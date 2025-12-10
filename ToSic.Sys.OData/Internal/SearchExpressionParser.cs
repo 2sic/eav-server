@@ -43,9 +43,9 @@ internal sealed class SearchExpressionParser
                 // Represent as NOT applied to a synthetic list via ANDs
                 var grouped = terms.FirstOrDefault() ?? new IdentifierExpr("?");
                 for (var i = 1; i < terms.Count; i++) grouped = new BinaryExpr(grouped, BinaryOp.And, terms[i]);
-                return new UnaryExpr("not", grouped);
+                return new UnaryExpr(UnaryExpr.Not, grouped);
             }
-            return new UnaryExpr("not", ParseUnary());
+            return new UnaryExpr(UnaryExpr.Not, ParseUnary());
         }
         return ParsePrimary();
     }

@@ -4,8 +4,8 @@ namespace ToSic.Eav.Apps;
 
 public static class AppReaderFactoryTestAccessors
 {
-    //public static IAppReader? GetSystemPresetTac(this IAppReaderFactory factory, NoParamOrder protector = default, bool nullIfNotLoaded = false)
-    //        => factory.GetSystemPreset(protector, nullIfNotLoaded);
+    //public static IAppReader? GetSystemPresetTac(this IAppReaderFactory factory, NoParamOrder npo = default, bool nullIfNotLoaded = false)
+    //        => factory.GetSystemPreset(npo, nullIfNotLoaded);
 
     public static IAppReader GetSystemPresetTac(this IAppReaderFactory factory)
             => factory.GetSystemPreset();

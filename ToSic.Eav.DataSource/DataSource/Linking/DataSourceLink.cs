@@ -5,7 +5,7 @@
 internal class DataSourceLink(
     IDataSourceLink? original,
 #pragma warning disable CS9113 // Parameter is unread.
-    NoParamOrder protect = default,
+    NoParamOrder npo = default,
 #pragma warning restore CS9113 // Parameter is unread.
     IDataSource? dataSource = default,
     IDataStream? stream = default,

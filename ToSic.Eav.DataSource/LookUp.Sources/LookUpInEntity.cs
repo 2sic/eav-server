@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp.Sources;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class LookUpInEntity : LookUpIn<IEntity>
+public class LookUpInEntity : LookUpIn<IEntity>, ICanBeEntity
 {
     private readonly string?[] _dimensions;
 
@@ -57,4 +57,6 @@ public class LookUpInEntity : LookUpIn<IEntity>
             ? string.Empty
             : new LookUpInEntity("no-name", first, _dimensions).Get(subTokens.Rest!, format);
     }
+
+    IEntity ICanBeEntity.Entity => Data;
 }

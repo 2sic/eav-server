@@ -7,11 +7,11 @@ namespace ToSic.Eav.TestData;
 
 internal class PersonGenerator(DataBuilder dataBuilder)
 {
-    private static Person SemiRandom(int i)
+    private static Person SemiRandom(PersonSpecs specs, int i)
     {
         var firstName = "First Name " + i;
         var lastName = "Last Name " + i;
-        var city = TestCities[i % TestCities.Length];
+        var city = specs.TestCities[i % specs.TestCities.Length];
         var year = 1900 + i % 110;
         var month = i % 12 + 1;
         var day = i % 28 + 1;
@@ -27,24 +27,29 @@ internal class PersonGenerator(DataBuilder dataBuilder)
             CityOrNull = i % 2 == 0 ? null : city,
             Birthday = birthday,
             BirthdayOrNull = i % 2 == 0 ? birthday : null as DateTime?,
-            IsMale = i % IsMaleForEveryX == 0,
-            Height = MinHeight + i % HeightVar,
+            IsMale = i % specs.IsMaleForEveryX == 0,
+            Height = specs.MinHeight + i % specs.HeightVar,
             Modified = RandomData.RandomDate(),
         };
     }
 
-    internal List<Person> GetSemiRandomList(
-        int itemsToGenerate = DefaultItemsToGenerate, 
-        int firstId = DefaultRootId)
+    internal List<Person> GetSemiRandomList(int itemsToGenerate, int firstId, PersonSpecs specs)
     {
-        var persons = new List<Person>();
-        for (var i = firstId; i < firstId + itemsToGenerate; i++)
-            persons.Add(SemiRandom(i));
+        //var persons = new List<Person>();
+        //for (var i = firstId; i < firstId + itemsToGenerate; i++)
+        //    persons.Add(SemiRandom(Specs, i));
+
+        // now as a functional way
+        var persons = Enumerable.Range(firstId, itemsToGenerate)
+            .Select(i => SemiRandom(specs, i))
+            .ToList();
         return persons;
     }
 
     internal List<IEntity> Person2Entity(List<Person> persons, bool multiLanguage)
-        => persons.Select(p => ToEntity(p, multiLanguage)).ToList();
+        => persons
+            .Select(p => ToEntity(p, multiLanguage))
+            .ToList();
 
     private IEntity ToEntity(Person person, bool multiLanguage)
     {
@@ -72,7 +77,8 @@ internal class PersonGenerator(DataBuilder dataBuilder)
 
     private object MaybeMakeMl(bool convert, string name, string original)
     {
-        if (!convert) return original;
+        if (!convert)
+            return original;
 
         var attribute = dataBuilder.Attribute.CreateTypedAttributeTac(name,  ValueTypes.String, new List<IValue>
         {
@@ -89,23 +95,40 @@ internal class PersonGenerator(DataBuilder dataBuilder)
     }
     private object MaybeMakeMlBio(bool convert, bool isMale)
     {
-        if (!convert) return isMale ? BioMaleNoLangLast : BioFemaleNoLangFirst;
+        if (!convert)
+            return isMale
+                ? BioMaleNoLangLast
+                : BioFemaleNoLangFirst;
 
-        var attribute = dataBuilder.Attribute.CreateTypedAttributeTac(FieldBioForMlSortTest,  ValueTypes.String, new List<IValue>
-        {
-            dataBuilder.Value.BuildTac(ValueTypes.String, isMale ? BioMaleEnLast : BioFemaleEnFirst, new List<ILanguage> { LangEn }),
-            dataBuilder.Value.BuildTac(ValueTypes.String, isMale ? BioMaleDeFirst : BioFemaleDeLast, new List<ILanguage>
+        var valueBioEn = dataBuilder.Value.BuildTac(
+            ValueTypes.String,
+            isMale ? BioMaleEnLast : BioFemaleEnFirst,
+            new List<ILanguage>
             {
-                LangDeDe, 
+                LangEn
+            }
+        );
+        var valueBioDe = dataBuilder.Value.BuildTac(
+            ValueTypes.String,
+            isMale ? BioMaleDeFirst : BioFemaleDeLast,
+            new List<ILanguage>
+            {
+                LangDeDe,
                 Clone(LangDeCh, true)
-            }),
-            //ValueBuilder.Build(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr.Copy()})
-        });
+            });
+        var attribute = dataBuilder.Attribute.CreateTypedAttributeTac(
+            FieldBioForMlSortTest,
+            ValueTypes.String, new List<IValue>
+            {
+                valueBioEn,
+                valueBioDe,
+                //ValueBuilder.Build(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr.Copy()})
+            });
         return attribute;
     }
     private object MaybeMakeMlNonString<T>(bool convert, string name, ValueTypes type, T original) =>
         !convert
-            ? (object) original
+            ? original
             : dataBuilder.Attribute.CreateTypedAttributeTac(name, type, new List<IValue>
             {
                 dataBuilder.Value.BuildTac(type, original, DataConstants.NoLanguages),

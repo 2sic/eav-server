@@ -17,35 +17,45 @@ public class TokenReplace(ILookUpEngine lookupEngine)
     #region RegEx - the core formula
     // Commented Regular Expression which doesn't capture non-tokens
     // language=regex
-    private const string RegExFindAllTokens = @"
-
-# start by defining a group, but don't give it an own capture-name
-(?:
-# Every token must start with a square bracket
-\[(?:
-    # then get the object name, at least 1 char before a :, then followed by a :
-    (?<object>[^\]\[:\s]+):
-    # next get property key - can actually be very complex and include sub-properties; but it ends with a [,| or ]
-    # note that after the first character it can contain : because sub-properties must be in this key
-    (?<property>[^\]\[\|\s\:]+[^\]\[\|\s]*))
-    # there may be more, but it's optional
-    (?:
-        # an optional format-parameter, it would be initiated by an |
-        \|(?:(?<format>[^\]\[]*)
-        # followed by another optional if-empty param, except that the if-empty can be very complex, containing more tokens
-        \|(?:
-            (?<ifEmpty>[^\[\}]+)
-            # if ifEmpty contains more tokens, count open/close to make sure they are balanced
-            |(?:
-                (?<ifEmpty>\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\])))
-            )
-        # not sure where this starts - or what it's for, but it's an 'or after a | you find a format...
-        |\|(?:(?<format>[^\|\]\[]+))
-    )?   # this packages is allowed 0 or 1 times so it ends with a ?
-# and of course such a token must end with a ]
-\])
-
-";
+    private const string RegExFindAllTokens =
+        """
+        # start by defining a group, but don't give it an own capture-name
+        (?:
+        # Every token must start with a square bracket
+        \[(?:
+            # then get the object/source name, at least 1 char before any ":", then followed by a ":"
+            (?<object>[^\]\[:\s]+):
+            # next get property key - can actually be very complex and include sub-properties; but it ends with a [,| or ]
+            # note that after the first character it can contain further occurances of ":" because sub-properties must be in this key
+            (?<property>[^\]\[\|\s\:]+[^\]\[\|\s]*))
+            # there may be more after this, but it's optional
+            (?:
+                # an optional format-parameter, it would be initiated by an | and cannot have [ or ] inside
+                # this occurance of "format" is when followed by a fallback...
+                \|(?:
+                    (?<format>[^\]\[]*)
+                    # ...followed by "|" and an optional "ifEmpty" param, except that the if-empty can be very complex, containing more tokens
+                    \|(?:
+                        # note 2025-11-08 2dm, this section was rewoked to support multiple separate tokens in the fallback
+                        (?<ifEmpty>
+                            # the section "ifEmpty" consists of any characters except [ or ], or tokens which are balanced
+                            (
+                                # "ifEmpty" is any character, but not a token symbol [ or ] - this is optional "*", as it could also have nothing
+                                # note 2025-11-08 2dm, replaced \} with \] - I believe this was a typo from previous inheriting from DNN token engine
+                                [^\[\]]*
+                                # OR "ifEmpty" hits a token, in which case we look ahead and count open/close to make sure they are balanced
+                                |(\[(?>[^\[\]]+|\[(?<number>)|\](?<-number>))*(?(number)(?!))\])
+                            )*
+                        )
+                    )
+                )
+                # not sure where this starts - or what it's for, but it's an "or after a | you find a format..."
+                # this occurance of "format" is when there's no "ifEmpty" fallback
+                |\|(?:(?<format>[^\|\]\[]+))
+            )?   # this packages is allowed 0 or 1 times so it ends with a ?
+        # and of course such a token must end with a ]
+        \])
+        """;
 
     /// <summary>
     /// Gets the Regular expression for the token to be replaced

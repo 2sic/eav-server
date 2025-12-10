@@ -201,6 +201,15 @@ public abstract class QueryControllerBase<TImplementation>(
         return RunDevInternal(appId, id, lookUps, top, GetSubStream);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <param name="id"></param>
+    /// <param name="lookUps"></param>
+    /// <param name="top"></param>
+    /// <param name="partLookup">This retrieves which part of the query should be provided - for scenarios where only a single stream in the query is analyzed</param>
+    /// <returns></returns>
     protected QueryRunDto RunDevInternal(int appId, int id, ILookUpEngine lookUps, int top,
         Func<QueryResult, IDataSource> partLookup) 
     {
@@ -212,7 +221,7 @@ public abstract class QueryControllerBase<TImplementation>(
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields
-        var extraParams = new QueryODataParams(outSource.Configuration);
+        var systemQueryOptions = new QueryODataParams(outSource.Configuration).SystemQueryOptions;
 
         var timer = new Stopwatch();
         timer.Start();
@@ -221,7 +230,7 @@ public abstract class QueryControllerBase<TImplementation>(
             var converter = Services.EntToDicLazy.Value;
             //converter.WithGuid = true;
             converter.MaxItems = top;
-            converter.AddSelectFields(extraParams.SelectFields);
+            converter.AddSelectFields(systemQueryOptions.Select.ToListOpt());
 
             // Use passed in function to select the part to serialize
             var part = partLookup(builtQuery);

@@ -15,7 +15,7 @@
 public abstract class DependenciesBase: ILazyInitLog
 {
     // ReSharper disable once UnusedParameter.Local
-    protected DependenciesBase(NoParamOrder protect = default, object[]? connect = default)
+    protected DependenciesBase(NoParamOrder npo = default, object[]? connect = default)
     {
         if (connect == null)
             return;

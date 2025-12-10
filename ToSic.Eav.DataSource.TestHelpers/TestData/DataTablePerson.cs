@@ -11,10 +11,12 @@ public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilde
 
     private static readonly Dictionary<int, DataTable> CachedDs = new();
 
-    public DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true)
+    public DataTable Generate(int itemsToGenerate = 10, int firstId = 1001, bool useCacheForSpeed = true, PersonSpecs? specs = null)
     {
         if (useCacheForSpeed && CachedDs.TryGetValue(itemsToGenerate, out var generate))
             return generate;
+
+        specs ??= new();
 
         var dataTable = new System.Data.DataTable();
         dataTable.Columns.AddRange([
@@ -31,25 +33,30 @@ public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilde
             new(PersonSpecs.FieldModifiedInternal, typeof(DateTime))
         ]);
 
-        new PersonGenerator(dataBuilder).GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId)
-            .ForEach(person => dataTable.Rows.Add(person.Id,
-                person.FullName,
-                person.First,
-                person.Last,
-                person.City,
-                person.IsMale,
-                person.Birthday,
-                person.BirthdayOrNull,
-                person.Height,
-                person.CityOrNull,
-                person.Modified));
+        new PersonGenerator(dataBuilder)
+            .GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId, specs)
+            .ForEach(person => dataTable.Rows.Add(
+                    person.Id,
+                    person.FullName,
+                    person.First,
+                    person.Last,
+                    person.City,
+                    person.IsMale,
+                    person.Birthday,
+                    person.BirthdayOrNull,
+                    person.Height,
+                    person.CityOrNull,
+                    person.Modified
+                )
+            );
 
-        var source = dsSvc.CreateDataSource<DataTable>(new LookUpTestData(dataBuilder).AppSetAndRes())
-                .Setup(dataTable, PersonSpecs.PersonTypeName, 
-                    titleField: PersonSpecs.FieldFullName, 
-                    modifiedField: PersonSpecs.FieldModifiedInternal)
-            //.Init(LookUpTestData.AppSetAndRes())
-            ;
+        var source = dsSvc
+            .CreateDataSource<DataTable>(new LookUpTestData(dataBuilder).AppSetAndRes())
+            .Setup(dataTable,
+                PersonSpecs.PersonTypeName,
+                titleField: PersonSpecs.FieldFullName,
+                modifiedField: PersonSpecs.FieldModifiedInternal
+            );
 
         // now enumerate all, to be sure that the time counted for DS creation isn't part of the tracked test-time
         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed

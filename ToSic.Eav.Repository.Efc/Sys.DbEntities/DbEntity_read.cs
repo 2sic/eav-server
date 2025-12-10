@@ -31,10 +31,12 @@ partial class DbEntity
     /// Get a single Entity by EntityId
     /// </summary>
     /// <returns>Entity or throws InvalidOperationException</returns>
-    internal TsDynDataEntity GetDbEntityStub(int entityId)
+    internal TsDynDataEntity GetDbEntityStub(int entityId, bool preferUntracked = false)
     {
         var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
-        var found = DbStore.SqlDb.TsDynDataEntities.Single(e => e.EntityId == entityId);
+        var found = DbStore.SqlDb.TsDynDataEntities
+            .AsNoTrackingOptional(DbStore.Features, preferUntracked)
+            .Single(e => e.EntityId == entityId);
         return l.ReturnAsOk(found);
     }
 
@@ -42,7 +44,7 @@ partial class DbEntity
     /// Get a single Entity by EntityId
     /// </summary>
     /// <returns>Entity or throws InvalidOperationException</returns>
-    internal TsDynDataEntity[] GetDbEntitiesWithChildren(int[] repositoryIds)
+    internal TsDynDataEntity[] GetDbEntitiesWithChildren(int[] repositoryIds, bool preferUntracked = false)
     {
         var l = LogDetails.Fn<TsDynDataEntity[]>($"Get {repositoryIds.Length}", timer: true);
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
@@ -53,6 +55,7 @@ partial class DbEntity
 
         // var found = DbContext.SqlDb.ToSicEavEntities.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
         var found = DbStore.SqlDb.TsDynDataEntities
+            .AsNoTrackingOptional(DbStore.Features, preferUntracked)
             .Include(e => e.RelationshipsWithThisAsParent)
             .Where(e => Enumerable.Contains(repositoryIds, e.EntityId))
             .ToArray();
@@ -76,10 +79,10 @@ partial class DbEntity
     /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
     /// </summary>
     /// <returns>Entity or throws InvalidOperationException</returns>
-    internal TsDynDataEntity GetStandaloneDbEntityStub(Guid entityGuid)
+    internal TsDynDataEntity GetStandaloneDbEntityStub(Guid entityGuid, bool preferUntracked = false)
         // GetEntity should never return a draft entity that has a published version
     {
-        var x = GetEntityStubsByGuid(entityGuid);
+        var x = GetEntityStubsByGuid(entityGuid, preferUntracked);
         return x.Single(e => !e.PublishedEntityId.HasValue);
     }
 
@@ -92,27 +95,28 @@ partial class DbEntity
     //                                // && DbContext.AppIds.Contains(e.AppId));
     //                                && Enumerable.Contains(DbContext.AppIds, e.AppId));
 
-    internal IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid entityGuid)
+    internal IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid entityGuid, bool preferUntracked = false)
         //=> EntityQuery
         => DbStore.SqlDb.TsDynDataEntities
+            .AsNoTrackingOptional(DbStore.Features, preferUntracked)
             .Where(e => e.EntityGuid == entityGuid
-                        && !e.TransDeletedId.HasValue
-                        && !e.ContentTypeNavigation.TransDeletedId.HasValue
-                        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-                        // && DbContext.AppIds.Contains(e.AppId));
-                        && Enumerable.Contains(DbStore.AppIds, e.AppId)
+                                       && !e.TransDeletedId.HasValue
+                                       && !e.ContentTypeNavigation.TransDeletedId.HasValue
+                                       // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+                                       // && DbContext.AppIds.Contains(e.AppId));
+                                       && Enumerable.Contains(DbStore.AppIds, e.AppId)
             );
 
     /// <summary>
     /// Get a single Entity by EntityGuid. Ensure it's not deleted and has context's AppId
     /// </summary>
     /// <returns>Entity or throws InvalidOperationException</returns>
-    internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuids)
+    internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuids, bool preferUntracked = false)
     {
         // GetEntity should never return a draft entity that has a published version
-        var l = LogDetails.Fn<Dictionary<Guid, int>>($"Guids: {entityGuids.Length}; [{string.Join(",", entityGuids)}]", timer: true);
+        var l = LogDetails.Fn<Dictionary<Guid, int>>($"Guids: {entityGuids.Length}; [{string.Join(",", entityGuids)}]; preferUntracked: {preferUntracked}", timer: true);
 
-        var getEntityQuery = GetEntityStubsByGuid(entityGuids);
+        var getEntityQuery = GetEntityStubsByGuid(entityGuids, preferUntracked);
         var dbEntityList = getEntityQuery.ToList(); // necessary for EF 3 - before GroupBy so it's then done in memory and not in SQL
         l.A($"SQL found {dbEntityList.Count} entities with IDs: [{string.Join(",", dbEntityList.Select(e => e.EntityId))}]");
 
@@ -136,9 +140,10 @@ partial class DbEntity
     }
 
     // 2020-10-07 2dm experiment with fewer requests
-    private IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid[] entityGuid)
+    private IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid[] entityGuid, bool preferUntracked = false)
         //=> EntityQuery
         => DbStore.SqlDb.TsDynDataEntities
+            .AsNoTrackingOptional(DbStore.Features, preferUntracked)
             .Where(e =>
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // entityGuid.Contains(e.EntityGuid)
@@ -154,6 +159,6 @@ partial class DbEntity
     /// <summary>
     /// Test whether Entity exists on current App and is not deleted
     /// </summary>
-    internal bool EntityExists(Guid entityGuid) => GetEntityStubsByGuid(entityGuid).Any();
+    internal bool EntityExists(Guid entityGuid, bool preferUntracked = false) => GetEntityStubsByGuid(entityGuid, preferUntracked).Any();
 
 }

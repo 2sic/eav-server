@@ -57,12 +57,29 @@ partial class DbEntity
             }
 
             // Also remove the entity itself
-            DbStore.SqlDb.Remove(entity);
+            RemoveEntityTrackedOrUntracked(entity);
         });
         if (autoSave)
             DbStore.DoAndSaveWithoutChangeDetection(() => {});
 
         return l.ReturnTrue("DeleteEntity(...) done"); ;
+    }
+
+    private void RemoveEntityTrackedOrUntracked(TsDynDataEntity entity)
+    {
+        // Guard against tracking conflicts: if the context already tracks another instance of this key,
+        // delete that tracked instance instead of attaching this untracked one.
+        var localTracked = DbStore.SqlDb.TsDynDataEntities.Local.FirstOrDefault(e => e.EntityId == entity.EntityId);
+        if (localTracked != null && !ReferenceEquals(localTracked, entity))
+        {
+            // ensure the deleted flag is copied if it was set on the untracked instance
+            if (entity.TransDeletedId != localTracked.TransDeletedId)
+                localTracked.TransDeletedId = entity.TransDeletedId;
+
+            DbStore.SqlDb.Entry(localTracked).State = EntityState.Deleted;
+        }
+        else
+            DbStore.SqlDb.Remove(entity);
     }
 
     //private void DeleteRelationshipsUntracked(ICollection<TsDynDataRelationship> relationships)

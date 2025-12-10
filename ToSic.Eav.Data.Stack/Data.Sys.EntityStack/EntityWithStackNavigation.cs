@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Eav.Data.Sys.PropertyStack;
 using ToSic.Eav.Sys;
 

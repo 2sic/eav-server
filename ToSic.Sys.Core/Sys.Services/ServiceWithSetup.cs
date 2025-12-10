@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Sys.Services;
 
-public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder protect = default, object[]? connect = default)
-    : ServiceBase(logName, protect, connect: connect),
+public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder npo = default, object[]? connect = default)
+    : ServiceBase(logName, npo, connect: connect),
         IHasOptions<TOptions>,
         IServiceWithSetup<TOptions>
         where TOptions : class, new()

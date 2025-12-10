@@ -1,10 +1,5 @@
 ﻿
 using ToSic.Eav.WebApi.Sys.Dto;
-#if NETFRAMEWORK
-using THttpResponseType = System.Net.Http.HttpResponseMessage;
-#else
-using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
-#endif
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 

@@ -28,7 +28,8 @@ public class PersonsDataSource: DataSourceBase
 
     private IImmutableList<IEntity> GetPersons()
     {
-        var persons = new PersonGenerator(_dataBuilder).GetSemiRandomList(_itemsToGenerate, _firstId);
+        var persons = new PersonGenerator(_dataBuilder)
+            .GetSemiRandomList(_itemsToGenerate, _firstId, new PersonSpecs());
         var list = new PersonGenerator(_dataBuilder).Person2Entity(persons, _multiLanguage);
         return list.ToImmutableOpt();
     }

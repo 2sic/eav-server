@@ -17,12 +17,12 @@ public static class MetadataProvider
         return new MetadataProviderEmpty();
     }
 
-    public static IMetadataProvider Create(IEnumerable<IEntity> items) =>
+    public static IMetadataProvider Create(IEnumerable<IEntity>? items) =>
         items != null! /* paranoid */
             ? new MetadataProviderDirect(items)
             : new MetadataProviderEmpty();
 
-    public static IMetadataProvider Create(IHasMetadataSourceAndExpiring source) =>
+    public static IMetadataProvider Create(IHasMetadataSourceAndExpiring? source) =>
         source != null! /* paranoid */
             ? new MetadataProviderApp(source)
             : new MetadataProviderEmpty();

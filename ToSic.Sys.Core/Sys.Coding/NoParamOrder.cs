@@ -9,7 +9,7 @@ namespace ToSic.Sys.Coding;
 ///
 /// Example: This signature:
 ///
-/// `Something.Save(string name, NoParamOrder noParamOrder = default, string title = title, string description = default)`
+/// `Something.Save(string name, NoParamOrder npo = default, string title = title, string description = default)`
 /// 
 /// allows:
 /// 

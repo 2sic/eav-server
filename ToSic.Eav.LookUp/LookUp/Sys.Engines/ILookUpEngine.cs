@@ -19,13 +19,13 @@ public interface ILookUpEngine: IHasLog
     /// with whatever the token-resolver delivers. It's usually needed to initialize a DataSource. 
     /// </summary>
     /// <param name="values">Dictionary of configuration strings.</param>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="overrides">Optional override LookUps which would be consulted first.</param>
     /// <param name="depth">Max recursion when looking up tokens which return other tokens.</param>
     /// <param name="tweak">BETA 18.03</param>
     IDictionary<string, string> LookUp(
         IDictionary<string, string> values,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         IEnumerable<ILookUp>? overrides = default,
         int depth = LookUpConstants.DefaultLookUpDepth,
         Func<ITweakLookUp, ITweakLookUp>? tweak = default);

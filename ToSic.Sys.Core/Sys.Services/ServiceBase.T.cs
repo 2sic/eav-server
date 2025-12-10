@@ -14,9 +14,9 @@ public abstract class ServiceBase<TDependencies>: ServiceBase where TDependencie
     /// </summary>
     /// <param name="services">Dependencies to auto-attach to property `Services`</param>
     /// <param name="logName">The new objects name in the logs</param>
-    /// <param name="protect">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="connect">Optional array of services to connect the logs to.</param>
-    protected ServiceBase(TDependencies services, string logName, NoParamOrder protect = default, object[]? connect = default)
+    protected ServiceBase(TDependencies services, string logName, NoParamOrder npo = default, object[]? connect = default)
         : base(logName, connect: connect)
     {
         Services = services.ConnectServices(Log);

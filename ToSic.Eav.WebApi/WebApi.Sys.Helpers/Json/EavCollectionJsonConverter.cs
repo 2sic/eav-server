@@ -9,9 +9,9 @@ public class EavCollectionJsonConverter(IConvertToEavLight convertToEavLight) : 
     public override IEnumerable<IEntity> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => throw new NotImplementedException();
 
-    public override void Write(Utf8JsonWriter writer, IEnumerable<IEntity> entity, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IEnumerable<IEntity> entities, JsonSerializerOptions options)
     {
-        var eavLightEntity = convertToEavLight.Convert(entity);
-        JsonSerializer.Serialize(writer, eavLightEntity, eavLightEntity.GetType(), options);
+        var eavLightEntities = convertToEavLight.Convert(entities);
+        JsonSerializer.Serialize(writer, eavLightEntities, eavLightEntities.GetType(), options);
     }
 }

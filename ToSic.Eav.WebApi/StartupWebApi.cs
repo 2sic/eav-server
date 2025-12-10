@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.Web.Sys;
 using ToSic.Eav.WebApi.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Admin.Features;
@@ -70,6 +71,9 @@ public static class StartupWebApi
 
         // Helper to decouple Insights from WebApi
         services.TryAddTransient<IHttpExceptionMaker, HttpExceptionMaker>();
+
+        // v20 centralize log creation / access for an http request
+        services.TryAddScoped<HttpRequestLoggingScoped>();
 
         services.AddNetInfrastructure();
 

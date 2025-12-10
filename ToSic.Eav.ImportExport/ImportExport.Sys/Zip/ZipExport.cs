@@ -61,7 +61,9 @@ public class ZipExport(
 
     public void ExportForSourceControl(AppExportSpecs specs)
     {
+        var l = Log.Fn(specs.Dump());
         var appDataPath = Path.Combine(_physicalAppPath, SourceControlDataFolder);
+        l.A($"Target Path: {appDataPath}");
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
@@ -75,6 +77,7 @@ public class ZipExport(
 
         if (specs.WithSiteFiles)
         {
+            l.A("Will include site files");
             var appDataDirectory = new DirectoryInfo(appDataPath);
 
             // 1. Copy app global templates folder for version control
@@ -85,7 +88,7 @@ public class ZipExport(
                 {
                     // Empty older version of app global templates state in App_Data
                     var globalTemplatesStatePath = Path.Combine(appDataPath, FolderConstants.ZipFolderForGlobalAppStuff);
-                    ZipImport.TryToDeleteDirectory(globalTemplatesStatePath, Log);
+                    Zipping.TryToDeleteDirectory(globalTemplatesStatePath, Log);
                     // Version control folder to preserve copy of app global templates
                     var globalTemplatesStateFolder = appDataDirectory.CreateSubdirectory(FolderConstants.ZipFolderForGlobalAppStuff);
 
@@ -104,7 +107,7 @@ public class ZipExport(
             {
                 // Empty older version of SiteFiles state in App_Data
                 var portalFilesPath = Path.Combine(appDataPath, FolderConstants.ZipFolderForSiteFiles);
-                ZipImport.TryToDeleteDirectory(portalFilesPath, Log);
+                Zipping.TryToDeleteDirectory(portalFilesPath, Log);
 
                 // Version control folder to preserve copy of SiteFiles
                 var portalFilesDirectory = appDataDirectory.CreateSubdirectory(FolderConstants.ZipFolderForSiteFiles);
@@ -123,7 +126,9 @@ public class ZipExport(
                 features.ThrowIfNotEnabled("To skip exporting site files, you must enable system features.", [BuiltInFeatures.AppExportAssetsAdvanced.Guid]);
 
         var xml = xmlExport.GenerateNiceXml();
+        l.A($"Generated XML for app #{specs.AppId}; Size: {xml.Length}");
         File.WriteAllText(Path.Combine(appDataPath, SourceControlDataFile), xml);
+        l.Done();
     }
 
     public MemoryStream ExportApp(AppExportSpecs specs)
@@ -178,7 +183,7 @@ public class ZipExport(
         // Zip directory and return as stream
         var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
 
-        ZipImport.TryToDeleteDirectory(temporaryDirectoryPath, Log);
+        Zipping.TryToDeleteDirectory(temporaryDirectoryPath, Log);
 
         return stream;
     }

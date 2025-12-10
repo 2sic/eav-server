@@ -3,11 +3,6 @@ using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Sys.Users;
-#if NETFRAMEWORK
-using THttpResponseType = System.Net.Http.HttpResponseMessage;
-#else
-using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
-#endif
 
 namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 

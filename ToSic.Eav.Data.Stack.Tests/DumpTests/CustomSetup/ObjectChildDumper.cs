@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.PropertyDump;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Stack.DumpTests.CustomSetup;
 internal class ObjectChildDumper : IPropertyDumper

@@ -20,7 +20,7 @@ public class ODataSelect(ICollection<string>? rawFields)
     {
         if (!FieldsByName.TryGetValue(name, out var myFields))
             return null;
-        if (myFields == null || !myFields.Any() || (myFields.Count == 1 && string.IsNullOrWhiteSpace(myFields.First())))
+        if (myFields.Count == 0 || (myFields.Count == 1 && string.IsNullOrWhiteSpace(myFields.First())))
             return null;
         return myFields;
     }
@@ -28,13 +28,12 @@ public class ODataSelect(ICollection<string>? rawFields)
     internal static Dictionary<string, ICollection<string>> GetFieldsByPrefix(ICollection<string>? fields)
     {
         var cleaned = fields?
-                          .Select(f => f?.ToLowerInvariant()) //.Trim(Exclusive, Add, Remove))
                           .Where(f => !string.IsNullOrWhiteSpace(f))
-                          .Cast<string>() // tell compiler it's not null
+                          .Select(f => f.ToLowerInvariant())
                           .ToListOpt()
                       ?? [];
 
-        return cleaned
+        var result = cleaned
             .Select(f =>
             {
                 // Odata convention https://learn.microsoft.com/en-us/aspnet/web-api/overview/odata-support-in-aspnet-web-api/using-select-expand-and-value#using-select
@@ -52,6 +51,8 @@ public class ODataSelect(ICollection<string>? rawFields)
                 ICollection<string> (g) => g.Select(p => p.Value).ToListOpt(),
                 StringComparer.OrdinalIgnoreCase
             );
+
+        return result;
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Metadata;
 using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Data.Sys.Entities;
@@ -145,8 +146,8 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
 
     /// <inheritdoc />
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string?[]? languages = default)
-        => Entity.Get(name, noParamOrder, language, languages);
+    public object? Get(string name, NoParamOrder npo = default, string? language = default, string?[]? languages = default)
+        => Entity.Get(name, npo, language, languages);
 
     // 2025-06-13 #MoveIEntityTypedGetToExtension
     ///// <inheritdoc />
@@ -155,8 +156,8 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     // 2025-06-13 #MoveIEntityTypedGetToExtension
     ///// <inheritdoc />
     //// ReSharper disable once MethodOverloadWithOptionalParameter
-    //public TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string[]? languages = default)
-    //    => Entity.GetExt(name, noParamOrder, fallback, language, languages);
+    //public TValue? Get<TValue>(string name, NoParamOrder npo = default, TValue? fallback = default, string? language = default, string[]? languages = default)
+    //    => Entity.GetExt(name, npo, fallback, language, languages);
 
 
     [PrivateApi("Internal")]

@@ -37,6 +37,9 @@ public static class StartupEavAppsPersistence
         // v17
         services.TryAddTransient<IAppJsonConfigurationService, AppJsonConfigurationService>();
 
+        // v20
+        services.AddTransient<ExtensionManifestService>();
+
         return services;
     }
 

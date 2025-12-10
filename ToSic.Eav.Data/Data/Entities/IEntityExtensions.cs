@@ -33,7 +33,7 @@ public static class IEntityExtensions
     /// <typeparam name="TValue">The type to try-convert the result to</typeparam>
     /// <param name="entity"></param>
     /// <param name="name">the field/attribute name</param>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="fallback">value to be returned if finding or conversion it didn't succeed</param>
     /// <param name="language">optional language like `en-us`</param>
     /// <param name="languages">optional list of language IDs which can be a list which is checked in the order provided</param>
@@ -45,7 +45,7 @@ public static class IEntityExtensions
     /// * Moved from IEntity to here in v20, as it is more of an extension than a core method of IEntity
     /// </remarks>
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public static TValue? Get<TValue>(this IEntity entity, string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string?[]? languages = default)
+    public static TValue? Get<TValue>(this IEntity entity, string name, NoParamOrder npo = default, TValue? fallback = default, string? language = default, string?[]? languages = default)
         => entity.Get(name: name, language: language, languages: languages)
             .ConvertOrFallback(fallback);
 

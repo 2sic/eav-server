@@ -33,7 +33,7 @@ public interface IMetadata: IEnumerable<IEntity>, IHasPermissions, ITimestamped
     /// </summary>
     /// <typeparam name="TVal">expected type, like string, int etc.</typeparam>
     /// <param name="name">attribute name we're looking for</param>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="typeName">Optional single type-name. If provided, will only look at metadata of that type; otherwise (or if null) will look at all metadata items and pick first match</param>
     /// <param name="typeNames">
     /// List of type-name in the order it will check.
@@ -49,7 +49,7 @@ public interface IMetadata: IEnumerable<IEntity>, IHasPermissions, ITimestamped
     /// </remarks>
     /// <returns>A typed value. </returns>
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    TVal? Get<TVal>(string name, NoParamOrder noParamOrder = default, string? typeName = null, IEnumerable<string?>? typeNames = default);
+    TVal? Get<TVal>(string name, NoParamOrder npo = default, string? typeName = null, IEnumerable<string?>? typeNames = default);
 
 
     /// <summary>

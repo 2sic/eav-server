@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Sys.Entities;
+﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+
+namespace ToSic.Eav.Data.Sys.Entities;
 partial record Entity
 {
     // #DropOldIEntityValue
@@ -13,11 +15,11 @@ partial record Entity
     //        .ConvertOrDefault<TValue>();
 
     public object? Get(string name)
-        => GetPropertyInternal(new(name), null).Result;
+        => GetPropertyInternal(new(name), new()).Result;
 
     //// ReSharper disable once MethodOverloadWithOptionalParameter
-    public object? Get(string name, NoParamOrder noParamOrder = default, string? language = default, string?[]? languages = default)
-        => GetPropertyInternal(new(name, HandleLanguageParams(language, languages), true), null).Result;
+    public object? Get(string name, NoParamOrder npo = default, string? language = default, string?[]? languages = default)
+        => GetPropertyInternal(new(name, HandleLanguageParams(language, languages), true), new()).Result;
 
     // 2025-06-13 #MoveIEntityTypedGetToExtension
     //public TValue? Get<TValue>(string name)
@@ -27,7 +29,7 @@ partial record Entity
 
     // 2025-06-13 #MoveIEntityTypedGetToExtension
     //// ReSharper disable once MethodOverloadWithOptionalParameter
-    //public TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default, string? language = default, string[]? languages = default)
+    //public TValue? Get<TValue>(string name, NoParamOrder npo = default, TValue? fallback = default, string? language = default, string[]? languages = default)
     //    => GetPropertyInternal(new(name, HandleLanguageParams(language, languages), true), null).Result
     //        .ConvertOrFallback(fallback);
 

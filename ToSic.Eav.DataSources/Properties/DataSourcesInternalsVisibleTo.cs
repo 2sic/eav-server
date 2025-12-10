@@ -19,3 +19,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("ToSic.Eav.DataSource.TestHelpers")]
 [assembly: InternalsVisibleTo("ToSic.Eav.DataSource.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Eav.DataSource.DbTests")]
+[assembly: InternalsVisibleTo("ToSic.Sys.OData")]

@@ -152,7 +152,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies serv
         => Parse(name).ConvertOrDefault<TValue>();
 
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public TValue? Get<TValue>(string name, NoParamOrder noParamOrder = default, TValue? fallback = default)
+    public TValue? Get<TValue>(string name, NoParamOrder npo = default, TValue? fallback = default)
         => Parse(name).ConvertOrFallback(fallback);
 
 

@@ -8,7 +8,7 @@ public static class DataSourcesServiceTestAccessors
 {
     public static TDataSource CreateTac<TDataSource>(
         this IDataSourcesService dsf,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         IDataSource? upstream = default,
         IAppIdentity? appIdentity = default,
         ILookUpEngine? configLookUp = default) where TDataSource : IDataSource
@@ -23,7 +23,7 @@ public static class DataSourcesServiceTestAccessors
 
     public static TDataSource CreateNewTac<TDataSource>(
         this IDataSourcesService dsf,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         IDataSource? upstream = default,
         IAppIdentity? appIdentity = default,
         object? options = default

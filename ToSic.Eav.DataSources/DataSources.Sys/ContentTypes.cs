@@ -29,7 +29,8 @@ namespace ToSic.Eav.DataSources.Sys;
         "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         // not sure if this was ever used...just added it for safety for now
         // can probably remove again, if we see that all system queries use the correct name
-        "ToSic.Eav.DataSources.ContentTypes, ToSic.Eav.Apps"
+        // 2025-12-02 removed v20.00-09
+        //"ToSic.Eav.DataSources.ContentTypes, ToSic.Eav.Apps"
     ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-ContentTypes")]
 // ReSharper disable once UnusedMember.Global
@@ -71,6 +72,7 @@ public sealed class ContentTypes: CustomDataSource
         var l = Log.Fn<IEnumerable<IRawEntity>>();
 
         var appId = OfAppId;
+        // Get the scope. Make sure that an empty string will be ignored and "Default" is used
         var scp = Scope.UseFallbackIfNoValue(ScopeConstants.Default);
 
         var types = _appReaders.Get(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);

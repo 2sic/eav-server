@@ -12,7 +12,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     {
         var l = Log.Fn<bool>($"delete guid:{guid}");
         // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
-        var idToDelete = AppWorkCtx.DbStorage.Entities.GetStandaloneDbEntityStub(guid).EntityId;
+        var idToDelete = AppWorkCtx.DbStorage.Entities.GetStandaloneDbEntityStub(guid, preferUntracked: true).EntityId;
         return l.Return(Delete(idToDelete, force: force));
     }
 

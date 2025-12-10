@@ -4,15 +4,10 @@ using ToSic.Sys.OData.Ast;
 namespace ToSic.Sys.OData.Internal;
 
 // Very small Pratt-style expression parser for $filter and compute/orderby expressions
-internal sealed class FilterExpressionParser
+internal sealed class FilterExpressionParser(string text)
 {
-    private readonly List<Token> _toks;
-    private int _i;
-
-    public FilterExpressionParser(string text)
-    {
-        _toks = new Lexer(text ?? string.Empty).Lex().ToList();
-    }
+    private readonly List<Token> _tokens = new Lexer(text ?? string.Empty).Lex().ToList();
+    private int _tokIndex;
 
     public Expr ParseExpression(int minPrec = 0)
     {
@@ -20,7 +15,8 @@ internal sealed class FilterExpressionParser
         while (true)
         {
             var (isOp, op, prec, rightAssoc) = PeekOp();
-            if (!isOp || prec < minPrec) break;
+            if (!isOp || prec < minPrec)
+                break;
             var opTok = Next();
             var nextMin = rightAssoc ? prec : prec + 1;
             Expr rhs;
@@ -36,7 +32,11 @@ internal sealed class FilterExpressionParser
                         while (true)
                         {
                             items.Add(ParseExpression());
-                            if (Peek().Kind == TokKind.Comma) { Next(); continue; }
+                            if (Peek().Kind == TokKind.Comma)
+                            {
+                                Next();
+                                continue;
+                            }
                             break;
                         }
                     }
@@ -84,7 +84,7 @@ internal sealed class FilterExpressionParser
                                          name.EndsWith("/all", StringComparison.OrdinalIgnoreCase) ||
                                          string.Equals(name, "any", StringComparison.OrdinalIgnoreCase) ||
                                          string.Equals(name, "all", StringComparison.OrdinalIgnoreCase);
-                        if (isLambdaOp && Peek().Kind == TokKind.Identifier && _toks[_i + 1].Kind == TokKind.Colon)
+                        if (isLambdaOp && Peek().Kind == TokKind.Identifier && Peek(1).Kind == TokKind.Colon)
                         {
                             // consume var ':'
                             Next(); // var
@@ -98,7 +98,11 @@ internal sealed class FilterExpressionParser
                             {
                                 var argExpr = ParseExpression();
                                 args.Add(argExpr);
-                                if (Peek().Kind == TokKind.Comma) { Next(); continue; }
+                                if (Peek().Kind == TokKind.Comma)
+                                {
+                                    Next();
+                                    continue;
+                                }
                                 break;
                             }
                         }
@@ -111,59 +115,71 @@ internal sealed class FilterExpressionParser
             case TokKind.String:
                 return new LiteralExpr(Next().Text);
             case TokKind.True:
-                Next(); return new LiteralExpr(true);
+                Next();
+                return new LiteralExpr(true);
             case TokKind.False:
-                Next(); return new LiteralExpr(false);
+                Next();
+                return new LiteralExpr(false);
             case TokKind.Null:
-                Next(); return new LiteralExpr(null);
+                Next();
+                return new LiteralExpr(null);
             case TokKind.Number:
                 var numTok = Next();
-                if (numTok.Text.Contains("."))
-                    return new LiteralExpr(double.Parse(numTok.Text, CultureInfo.InvariantCulture));
-                else
-                    return new LiteralExpr(long.Parse(numTok.Text, CultureInfo.InvariantCulture));
+                return numTok.Text.Contains(".")
+                    ? new LiteralExpr(double.Parse(numTok.Text, CultureInfo.InvariantCulture))
+                    : new LiteralExpr(long.Parse(numTok.Text, CultureInfo.InvariantCulture));
             case TokKind.Sub:
-                Next(); return new UnaryExpr("-", ParsePrimary());
+                Next();
+                return new UnaryExpr("-", ParsePrimary());
             case TokKind.Not:
-                Next(); return new UnaryExpr("not", ParsePrimary());
+                Next();
+                return new UnaryExpr(UnaryExpr.Not, ParsePrimary());
             case TokKind.LParen:
-                Next(); var expr = ParseExpression(); Expect(TokKind.RParen); return expr;
+                Next(); var expr = ParseExpression();
+                Expect(TokKind.RParen);
+                return expr;
             default:
                 // unknown -> produce empty identifier to keep permissive
-                Next(); return new IdentifierExpr("?");
+                Next();
+                return new IdentifierExpr("?");
         }
     }
 
     private (bool ok, BinaryOp op, int prec, bool rightAssoc) PeekOp()
-    {
-        switch (Peek().Kind)
+        => Peek().Kind switch
         {
-            case TokKind.Mul: return (true, BinaryOp.Mul, 40, false);
-            case TokKind.Div: return (true, BinaryOp.Div, 40, false);
-            case TokKind.DivBy: return (true, BinaryOp.DivBy, 40, false);
-            case TokKind.Mod: return (true, BinaryOp.Mod, 40, false);
-            case TokKind.Add: return (true, BinaryOp.Add, 30, false);
-            case TokKind.Sub: return (true, BinaryOp.Sub, 30, false);
-            case TokKind.Eq: return (true, BinaryOp.Eq, 20, false);
-            case TokKind.Ne: return (true, BinaryOp.Ne, 20, false);
-            case TokKind.Gt: return (true, BinaryOp.Gt, 20, false);
-            case TokKind.Ge: return (true, BinaryOp.Ge, 20, false);
-            case TokKind.Lt: return (true, BinaryOp.Lt, 20, false);
-            case TokKind.Le: return (true, BinaryOp.Le, 20, false);
-            case TokKind.In: return (true, BinaryOp.Eq, 20, false); // represent 'in' as Eq to a list in AST usage
-            case TokKind.Has: return (true, BinaryOp.Has, 20, false);
-            case TokKind.And: return (true, BinaryOp.And, 10, false);
-            case TokKind.Or: return (true, BinaryOp.Or, 5, false);
-            default: return (false, default, 0, false);
-        }
-    }
+            TokKind.Mul => (true, BinaryOp.Mul, 40, false),
+            TokKind.Div => (true, BinaryOp.Div, 40, false),
+            TokKind.DivBy => (true, BinaryOp.DivBy, 40, false),
+            TokKind.Mod => (true, BinaryOp.Mod, 40, false),
+            TokKind.Add => (true, BinaryOp.Add, 30, false),
+            TokKind.Sub => (true, BinaryOp.Sub, 30, false),
+            TokKind.Eq => (true, BinaryOp.Eq, 20, false),
+            TokKind.Ne => (true, BinaryOp.Ne, 20, false),
+            TokKind.Gt => (true, BinaryOp.Gt, 20, false),
+            TokKind.Ge => (true, BinaryOp.Ge, 20, false),
+            TokKind.Lt => (true, BinaryOp.Lt, 20, false),
+            TokKind.Le => (true, BinaryOp.Le, 20, false),
+            TokKind.In => (true, BinaryOp.Eq, 20, false), // represent 'in' as Eq to a list in AST usage
+            TokKind.Has => (true, BinaryOp.Has, 20, false),
+            TokKind.And => (true, BinaryOp.And, 10, false),
+            TokKind.Or => (true, BinaryOp.Or, 5, false),
+            _ => ((bool ok, BinaryOp op, int prec, bool rightAssoc))(false, default, 0, false)
+        };
 
-    private Token Peek() => _toks[_i];
-    private Token Next() => _toks[_i++];
+    private Token Peek(int offset = 0) => (_tokIndex + offset) < _tokens.Count
+        ? _tokens[_tokIndex + offset]
+        : new(TokKind.Eof, string.Empty);
+
+    private Token Next() => _tokIndex < _tokens.Count
+        ? _tokens[_tokIndex++]
+        : new(TokKind.Eof, string.Empty);
+
     private Token Expect(TokKind kind)
     {
         var t = Next();
-        if (t.Kind != kind) throw new FormatException($"Expected {kind}, got {t.Kind}");
+        if (t.Kind != kind)
+            throw new FormatException($"Expected {kind}, got {t.Kind}");
         return t;
     }
 }

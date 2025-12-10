@@ -1,18 +1,10 @@
-﻿#if NETFRAMEWORK
-using THttpResponseType = System.Net.Http.HttpResponseMessage;
-using TController = System.Web.Http.ApiController;
-#else
-using THttpResponseType = Microsoft.AspNetCore.Mvc.IActionResult;
-using TController = Microsoft.AspNetCore.Mvc.ControllerBase;
-#endif
-
-namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
+﻿namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IResponseMaker
 {
-    void Init(TController controller);
+    void Init(TDotNetController controller);
 
     THttpResponseType InternalServerError(string message);
     THttpResponseType InternalServerError(Exception exception);

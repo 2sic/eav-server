@@ -27,7 +27,7 @@ public class DataSourceErrorHelper(DataBuilder builder)
     /// <summary>
     /// Create a stream containing an error entity.
     /// </summary>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="title">Error title</param>
     /// <param name="message">Error message</param>
     /// <param name="exception">Exception (if there was an exception)</param>
@@ -35,7 +35,7 @@ public class DataSourceErrorHelper(DataBuilder builder)
     /// <param name="streamName">The stream name. If provided, will allow the message to contain more details.</param>
     /// <returns></returns>
     public IImmutableList<IEntity> Create(
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         string? title = default, 
         string? message = default,
         Exception? exception = default,
@@ -53,27 +53,27 @@ public class DataSourceErrorHelper(DataBuilder builder)
     /// <summary>
     /// Create a stream of items showing a detailed error why an In stream was not found.
     /// </summary>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="source"></param>
     /// <param name="name">Name of the stream.</param>
     /// <returns></returns>
     /// <remarks>
     /// Added v16.00
     /// </remarks>
-    public IImmutableList<IEntity> TryGetInFailed(NoParamOrder noParamOrder = default, IDataSource? source = default, string name = DataSourceConstants.StreamDefaultName) 
+    public IImmutableList<IEntity> TryGetInFailed(NoParamOrder npo = default, IDataSource? source = default, string name = DataSourceConstants.StreamDefaultName) 
         => TryGetFailed(source, true, name);
 
     /// <summary>
     /// Create a stream of items showing a detailed error why an Out stream was not found.
     /// </summary>
-    /// <param name="noParamOrder">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="source"></param>
     /// <param name="name">Name of the stream.</param>
     /// <returns></returns>
     /// <remarks>
     /// Added v16.01
     /// </remarks>
-    public IImmutableList<IEntity> TryGetOutFailed(NoParamOrder noParamOrder = default, IDataSource? source = default, string name = DataSourceConstants.StreamDefaultName) 
+    public IImmutableList<IEntity> TryGetOutFailed(NoParamOrder npo = default, IDataSource? source = default, string name = DataSourceConstants.StreamDefaultName) 
         => TryGetFailed(source, false, name);
 
     [PrivateApi]

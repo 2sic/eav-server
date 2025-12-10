@@ -9,11 +9,12 @@ namespace ToSic.Eav.DataSource.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class BreachExtensions
 {
-    public static IDataSourceLink CreateEmptyLink(IDataSource ds) => new DataSourceLink(null, dataSource: ds);
+    public static IDataSourceLink CreateEmptyLink(IDataSource ds)
+        => new DataSourceLink(null, dataSource: ds);
 
     public static CustomDataSource CustomDataSourceLight(CustomDataSource.Dependencies services,
         IDataSource wrapper,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         string? logName = null)
     {
         var ds = new CustomDataSource(services, logName);
@@ -22,17 +23,20 @@ public static class BreachExtensions
         return ds;
     }
 
-    public static IImmutableList<IEntity>? TryGetIn(this CustomDataSource ds, string name = StreamDefaultName)
-        => ds.TryGetIn(name);
+    extension(CustomDataSource ds)
+    {
+        /// <inheritdoc cref="DataSourceBase.TryGetIn"/>
+        public IImmutableList<IEntity>? TryGetIn(string name = StreamDefaultName)
+            => ds.TryGetIn(name);
 
-    public static IImmutableList<IEntity>? TryGetOut(this CustomDataSource ds, string name = StreamDefaultName)
-        => ds.TryGetOut(name);
+        /// <inheritdoc cref="DataSourceBase.TryGetOut"/>
+        public IImmutableList<IEntity>? TryGetOut(string name = StreamDefaultName)
+            => ds.TryGetOut(name);
 
-    public static void BreachProvideOut(
-        this CustomDataSource ds,
-        Func<object> source,
-        NoParamOrder noParamOrder = default,
-        string name = StreamDefaultName,
-        Func<DataFactoryOptions>? options = default) =>
-        ds.ProvideOut(source, options: options, name: name);
+        public void BreachProvideOut(Func<object> source,
+            NoParamOrder npo = default,
+            string name = StreamDefaultName,
+            Func<DataFactoryOptions>? options = default
+        ) => ds.ProvideOut(source, options: options, name: name);
+    }
 }

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data.Sys.PropertyLookup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PropertyLookupPathExtensions

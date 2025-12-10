@@ -18,4 +18,5 @@ internal class CompareOperators
     public const string OpGtEquals = ">=";
     public const string OpLtEquals = "<=";
     public const string OpBegins = "begins";
+    public const string OpNotBegins = "!begins";
 }

@@ -20,6 +20,9 @@ public class Sha256
     public static string Hash(string value) 
         => Hasher.Hash(SHA256.Create(), value);
 
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    public static string Hash(byte[] data) 
+        => Hasher.Hash(SHA256.Create(), data);
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public string SignBase64(string certificateBase64, byte[] data)

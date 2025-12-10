@@ -83,7 +83,7 @@ partial class DataSourceBase
 
     /// <inheritdoc />
     [PublicApi]
-    public IDataStream? GetStream(string? name = null, NoParamOrder noParamOrder = default, bool nullIfNotFound = false, bool emptyIfNotFound = false)
+    public IDataStream? GetStream(string? name = null, NoParamOrder npo = default, bool nullIfNotFound = false, bool emptyIfNotFound = false)
     {
         var l = Log.Fn<IDataStream>($"{nameof(name)}: {name}; {nameof(nullIfNotFound)}: {nullIfNotFound}; {nameof(emptyIfNotFound)}: {emptyIfNotFound}");
 

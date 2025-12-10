@@ -18,7 +18,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         IEntity original,
         IEntity update,
         SaveOptions saveOptions,
-        NoParamOrder noParamOrder = default,
+        NoParamOrder npo = default,
         int? newId = default,
         IContentType? newType = default,
         LogSettings? logSettings = null

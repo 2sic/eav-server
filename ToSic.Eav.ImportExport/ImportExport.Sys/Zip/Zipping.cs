@@ -1,34 +1,83 @@
 ﻿using System.IO.Compression;
+using System.Text;
 using ToSic.Eav.Security.Files;
 
 namespace ToSic.Eav.ImportExport.Sys.Zip;
 
-internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
+internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 {
     public MemoryStream ZipDirectoryIntoStream(string zipDirectory)
     {
-        using var stream = new MemoryStream();
-        using var zipStream = new ZipArchive(stream, ZipArchiveMode.Create, true);
-        ZipFolder(zipDirectory, zipDirectory, zipStream);
+        // Create the memory stream and keep it open until we return it to the caller
+        var stream = new MemoryStream();
+        using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            AddFolder(archive, zipDirectory, zipDirectory);
+        }
+        // Reset to beginning so callers can read from start
+        stream.Position = 0;
         return stream;
     }
 
-    public void ZipFolder(string rootFolder, string currentFolder, ZipArchive zStream)
+    public void AddFolder(ZipArchive archive, string rootFolder, string currentFolder)
     {
-
         var subFolders = Directory.GetDirectories(currentFolder);
         foreach (var folder in subFolders)
-            ZipFolder(rootFolder, folder, zStream);
+            AddFolder(archive, rootFolder, folder);
 
         var relativePath = currentFolder.Substring(rootFolder.Length) + "\\";
         foreach (var file in Directory.GetFiles(currentFolder))
-            AddFileToZip(zStream, relativePath, file);
+            AddFile(archive, file, relativePath);
     }
 
-    private void AddFileToZip(ZipArchive zStream, string relativePath, string file)
+    public void AddFile(ZipArchive archive, string sourcePath, string zipPath)
     {
-        var fileRelativePath = (relativePath.Length > 1 ? relativePath : string.Empty) + Path.GetFileName(file);
-        zStream.CreateEntryFromFile(file, fileRelativePath, CompressionLevel.Optimal);
+        var l = Log.Fn();
+        var fileRelativePath = (zipPath.Length > 1 ? zipPath : string.Empty) + Path.GetFileName(sourcePath);
+        archive.CreateEntryFromFile(sourcePath, fileRelativePath, CompressionLevel.Optimal);
+        l.Done();
+    }
+
+    /// <summary>
+    /// Add a list of files to the provided ZipArchive with explicit target paths.
+    /// This avoids duplicated code in callers and ensures consistent compression settings.
+    /// </summary>
+    /// <param name="archive">Target archive</param>
+    /// <param name="files">Tuple of sourcePath and zipPath inside archive</param>
+    public void AddFiles(ZipArchive archive, IEnumerable<(string sourcePath, string zipPath)> files)
+    {
+        var l = Log.Fn($"{nameof(files)}:{files?.Count()}");
+        foreach (var (sourcePath, zipPath) in files ?? [])
+        {
+            var entry = archive.CreateEntry(zipPath, CompressionLevel.Optimal);
+            using var entryStream = entry.Open();
+            using var fileStream = File.OpenRead(sourcePath);
+            fileStream.CopyTo(entryStream);
+            l.A($"add: {zipPath}");
+        }
+        l.Done("ok");
+    }
+
+    /// <summary>
+    /// Add a text entry to the provided ZipArchive using UTF8 by default (no BOM).
+    /// </summary>
+    public void AddTextEntry(ZipArchive archive, string zipPath, string content, Encoding? encoding = null)
+    {
+        var enc = encoding ?? new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        var entry = archive.CreateEntry(zipPath, CompressionLevel.Optimal);
+        using var entryStream = entry.Open();
+        using var writer = new StreamWriter(entryStream, enc);
+        writer.Write(content);
+    }
+
+    /// <summary>
+    /// Add a byte[] entry to the provided ZipArchive.
+    /// </summary>
+    public void AddBytesEntry(ZipArchive archive, string zipPath, byte[] bytes)
+    {
+        var entry = archive.CreateEntry(zipPath, CompressionLevel.Optimal);
+        using var entryStream = entry.Open();
+        entryStream.Write(bytes, 0, bytes.Length);
     }
 
 
@@ -37,13 +86,13 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     /// <summary>
     /// Extracts a Zip (as Stream) to the given OutFolder directory.
     /// </summary>
-    public void ExtractZipStream(Stream zipStream, string outFolder, bool allowCodeImport)
+    public void ExtractZipStream(Stream zipStream, string outFolder, bool allowCodeImport, bool ignoreFolderEntries = false)
     {
 
-        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}, {nameof(ignoreFolderEntries)}:{ignoreFolderEntries}");
 
         using var zipArchive = new ZipArchive(zipStream);
-        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport);
+        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport, ignoreFolderEntries);
 
         l.Done("ok");
     }
@@ -51,17 +100,17 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     /// <summary>
     /// Extracts a Zip (as File) to the given OutFolder directory.
     /// </summary>
-    public void ExtractZipFile(string zipPath, string outFolder, bool allowCodeImport)
+    public void ExtractZipFile(string zipPath, string outFolder, bool allowCodeImport, bool ignoreFolderEntries = false)
     {
-        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}, {nameof(ignoreFolderEntries)}:{ignoreFolderEntries}");
 
         using var zipArchive = ZipFile.OpenRead(zipPath);
-        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport);
+        ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport, ignoreFolderEntries);
 
         l.Done("ok");
     }
 
-    private void ExtractZipArchiveToFile(ZipArchive zipArchive, string outFolder, bool allowCodeImport)
+    private void ExtractZipArchiveToFile(ZipArchive zipArchive, string outFolder, bool allowCodeImport, bool ignoreFolderEntries = false)
     {
         var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
 
@@ -72,10 +121,10 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
             .ToListOpt();
 
         // If count is off, there are entries for empty folders - which is an indication that it's not a proper app export.
-        if (realEntries.Count != zipArchive.Entries.Count)
+        if (realEntries.Count != zipArchive.Entries.Count && !ignoreFolderEntries)
             throw new("Zip contained entries for folders, which never happens in normal App exports. This is probably not a 2sxc app.");
 
-        foreach (var entry in zipArchive.Entries)
+        foreach (var entry in ignoreFolderEntries ? realEntries : zipArchive.Entries)
         {
             // check for illegal file paths in zip
             CheckZipEntry(entry);
@@ -122,4 +171,66 @@ internal class Zipping(ILog parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     }
 
     #endregion
+
+    /// <summary>
+    /// Try to delete folder
+    /// </summary>
+    /// <param name="directoryPath"></param>
+    /// <param name="log"></param>
+    public static void TryToDeleteDirectory(string directoryPath, ILog? log)
+    {
+        var l = log.Fn($"{nameof(directoryPath)}:'{directoryPath}'");
+        var retryDelete = 0;
+        do
+        {
+            try
+            {
+                if (Directory.Exists(directoryPath))
+                {
+                    RemoveReadOnlyRecursive(directoryPath, log);
+                    Directory.Delete(directoryPath, true);
+                }
+            }
+            catch (Exception e)
+            {
+                ++retryDelete;
+                l.Ex(e);
+                l.A("Delete ran into issues, will ignore. " +
+                    "Probably files/folders are used by another process like anti-virus. " +
+                    $"Retry: {retryDelete}.");
+            }
+        } while (Directory.Exists(directoryPath) && retryDelete <= 20);
+
+        l.Done(Directory.Exists(directoryPath) ? "error, can't delete" : "ok");
+    }
+
+    private static void RemoveReadOnlyRecursive(string directoryPath, ILog? log)
+    {
+        if (!Directory.Exists(directoryPath))
+            return;
+
+        foreach (var file in Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories))
+        {
+            var attributes = File.GetAttributes(file);
+            if (!attributes.HasFlag(FileAttributes.ReadOnly))
+                continue;
+
+            File.SetAttributes(file, attributes & ~FileAttributes.ReadOnly);
+            log?.A($"clear ro file:{file}");
+        }
+
+        foreach (var folder in Directory.GetDirectories(directoryPath, "*", SearchOption.AllDirectories))
+        {
+            var dirInfo = new DirectoryInfo(folder);
+            if (!dirInfo.Attributes.HasFlag(FileAttributes.ReadOnly))
+                continue;
+
+            dirInfo.Attributes &= ~FileAttributes.ReadOnly;
+            log?.A($"clear ro dir:{folder}");
+        }
+
+        var rootDir = new DirectoryInfo(directoryPath);
+        if (rootDir.Attributes.HasFlag(FileAttributes.ReadOnly))
+            rootDir.Attributes &= ~FileAttributes.ReadOnly;
+    }
 }

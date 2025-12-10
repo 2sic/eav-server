@@ -4,7 +4,7 @@
 public abstract class InsightsProvider(
     InsightsProviderSpecs specs,
 #pragma warning disable CS9113 // Parameter is unread.
-    NoParamOrder protect = default,
+    NoParamOrder npo = default,
 #pragma warning restore CS9113 // Parameter is unread.
     object[]? connect = default
 ): ServiceBase($"Ins.{specs.Name}", connect: connect ?? []),

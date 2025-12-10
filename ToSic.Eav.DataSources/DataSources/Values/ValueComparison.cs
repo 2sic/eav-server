@@ -71,6 +71,7 @@ internal class ValueComparison: HelperBase
             OpContains => value => (value?.ToString() ?? "").IndexOf(expected, InvariantCultureIgnoreCase) > -1,
             OpNotContains => value => (value?.ToString() ?? "").IndexOf(expected, InvariantCultureIgnoreCase) == -1,
             OpBegins => value => (value?.ToString() ?? "").IndexOf(expected, InvariantCultureIgnoreCase) == 0,
+            OpNotBegins => value => (value?.ToString() ?? "").IndexOf(expected, InvariantCultureIgnoreCase) != 0,
             OpAll => value => true,
             _ => null
         };
