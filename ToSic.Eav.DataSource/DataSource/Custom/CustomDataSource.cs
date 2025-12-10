@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Configuration;
@@ -56,9 +55,6 @@ public class CustomDataSource: CustomDataSourceAdvanced
 
     protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 
-    // #DropIHasRawEntity v20
-    ///// * <see cref="IHasRawEntity{T}"/>
-
     /// <summary>
     /// Provide data on the `Out` of this DataSource.
     /// This is a very generic version which takes any function that generates a list of something.
@@ -78,25 +74,17 @@ public class CustomDataSource: CustomDataSourceAdvanced
         Func<object> data,
         NoParamOrder npo = default,
         string name = StreamDefaultName,
-        Func<DataFactoryOptions>? options = default) =>
-        base.ProvideOut(() => GetAny(data, options), name);
-
-    // #DropIHasRawEntity v20
-    //[PrivateApi]
-    //protected internal void ProvideOutRaw<T>(
-    //    Func<IEnumerable<IHasRawEntity<T>>> data,
-    //    NoParamOrder npo = default,
-    //    string name = StreamDefaultName,
-    //    Func<DataFactoryOptions>? options = default) where T : IRawEntity =>
-    //    base.ProvideOut(() => GetHasRaw(data, options), name);
+        Func<DataFactoryOptions>? options = default
+    ) => base.ProvideOut(() => GetAny(data, options), name);
 
     [PrivateApi]
     protected internal void ProvideOutRaw<T>(
         Func<IEnumerable<T>> data,
         NoParamOrder npo = default,
         string name = StreamDefaultName,
-        Func<DataFactoryOptions>? options = default) where T : IRawEntity =>
-        base.ProvideOut(() => GetRaw(data, options), name);
+        Func<DataFactoryOptions>? options = default
+    ) where T : IRawEntity
+        => base.ProvideOut(() => GetRaw(data, options), name);
 
     private IImmutableList<IEntity> GetAny(Func<object>? source, Func<DataFactoryOptions>? options)
     {
@@ -157,23 +145,12 @@ public class CustomDataSource: CustomDataSourceAdvanced
             var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
             return l.Return(result, "was IRawEntity");
         }
-
-        // #DropIHasRawEntity v20
-        // Do this first, to make all the data be IRawEntity
-        //if (data.All(i => i is IHasRawEntity))
-        //{
-        //    var raw = data.Cast<IHasRawEntity<IRawEntity>>().ToList();
-        //    var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
-        //    return l.Return(result, "was IHasRawEntity");
-        //}
-
+        
         // todo - maybe also process IHasEntity - but only after doing the raw entities
 
         var err = Error.Create(title: $"Error in {nameof(ProvideOutRaw)}",
             message: "The list received was tested against all possible data types but non matched. " +
-                     // #DropIHasRawEntity v20
-                     //$"Expected was a list of either {nameof(IEntity)}, {nameof(IRawEntity)}, {nameof(IHasRawEntity<IRawEntity>)}. " +
-                     $"Expected was a list of either {nameof(IEntity)}, {nameof(IRawEntity)}. " +
+                     $"Expected was a list of either {nameof(IEntity)}, {nameof(IRawEntity)} or anonymous objects. " +
                      "Note that all items must be of the same type. ");
         return l.ReturnAsError(err);
     }
@@ -198,25 +175,5 @@ public class CustomDataSource: CustomDataSourceAdvanced
         var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
         return l.Return(result, $"Got {result.Count} items");
     }
-
-    // #DropIHasRawEntity v20
-    //private IImmutableList<IEntity> GetHasRaw<T>(Func<IEnumerable<IHasRawEntity<T>>>? source, Func<DataFactoryOptions>? options)
-    //    where T: IRawEntity
-    //{
-    //    var l = Log.Fn<IImmutableList<IEntity>>();
-    //    Configuration.Parse();
-
-    //    // Get raw entities - from _source or from override method
-    //    var raw = source?.Invoke()?.ToList();
-
-    //    // If we didn't get anything, return empty
-    //    if (raw.SafeNone())
-    //        return l.Return([], "no items returned");
-
-    //    // Transform result to IEntity
-    //    var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
-    //    return l.Return(result, $"Got {result.Count} items");
-    //}
-
 
 }

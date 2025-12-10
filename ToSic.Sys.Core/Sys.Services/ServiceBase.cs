@@ -17,7 +17,7 @@ public abstract class ServiceBase(string logName) : IHasLog
     /// Experimental signature v17.02...
     /// </summary>
     /// <param name="logName"></param>
-    /// <param name="npo"></param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="connect"></param>
     // ReSharper disable once UnusedParameter.Local
     protected ServiceBase(string logName, NoParamOrder npo = default, object[]? connect = default) : this(logName)
