@@ -25,9 +25,11 @@ public static class BreachExtensions
 
     extension(CustomDataSource ds)
     {
+        /// <inheritdoc cref="DataSourceBase.TryGetIn"/>
         public IImmutableList<IEntity>? TryGetIn(string name = StreamDefaultName)
             => ds.TryGetIn(name);
 
+        /// <inheritdoc cref="DataSourceBase.TryGetOut"/>
         public IImmutableList<IEntity>? TryGetOut(string name = StreamDefaultName)
             => ds.TryGetOut(name);
 
