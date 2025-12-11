@@ -7,7 +7,7 @@ public class FolderConstants
     /// <summary>
     /// New canonical folder inside an App-folder for installable extensions.
     /// </summary>
-    public const string AppExtensionsFolder = "extensions";
+    public const string AppExtensionsFolder = "Extensions";
     
     /// <summary>
     /// Folder inside an App-folder, containing extensions and other system features

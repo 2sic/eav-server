@@ -165,9 +165,9 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     /// Build UI assets dictionary for an input type, including edition-specific assets if supported.
     /// </summary>
     /// <param name="manifest">The manifest of the primary extension</param>
-    /// <param name="extensionFolder">The directory of the primary extension (e.g., /extensions/field-string-font-icon)</param>
+    /// <param name="extensionFolder">The directory of the primary extension (e.g., /Extensions/field-string-font-icon)</param>
     /// <param name="placeholder">Path placeholder token (e.g., [App:Path])</param>
-    /// <param name="folderName">'extensions' folder</param>
+    /// <param name="folderName">'Extensions' folder</param>
     /// <returns>Dictionary mapping edition names to asset paths</returns>
     private Dictionary<string, string> BuildUiAssets(ExtensionManifest manifest, DirectoryInfo extensionFolder, string placeholder, string folderName)
     {
@@ -184,7 +184,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         if (!manifest.EditionsSupported)
             return l.Return(assets, $"editions not supported, count:{assets.Count}");
 
-        // Navigate to app root: from /extensions/field-xyz -> /extensions -> /app-root
+        // Navigate to app root: from /Extensions/field-xyz -> /Extensions -> /app-root
         var extensionsRoot = extensionFolder.Parent;
         var appRoot = extensionsRoot?.Parent;
         if (extensionsRoot == null || appRoot == null)
@@ -197,18 +197,18 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         var editionCount = 0;
         foreach (var editionFolder in appRoot.GetDirectories())
         {
-            // Skip the current extensions root folder (don't process /extensions as an edition)
-            if (editionFolder.Name.Equals(extensionsRoot.Name, StringComparison.OrdinalIgnoreCase))
+            // Skip the current extensions root folder (don't process /Extensions as an edition)
+            if (editionFolder.Name.EqualsInsensitive(extensionsRoot.Name))
                 continue;
 
             // Check if this edition folder has a matching extensions subfolder
-            // e.g., /staging/extensions/
+            // e.g., /staging/Extensions/
             var editionExtensionsPath = Path.Combine(editionFolder.FullName, folderName);
             if (!Directory.Exists(editionExtensionsPath))
                 continue;
 
             // Check if the specific extension exists in this edition
-            // e.g., /staging/extensions/field-string-font-icon/
+            // e.g., /staging/Extensions/field-string-font-icon/
             var editionExtensionFolder = new DirectoryInfo(Path.Combine(editionExtensionsPath, extensionFolder.Name));
             if (!editionExtensionFolder.Exists)
                 continue;
