@@ -6,10 +6,11 @@ using ToSic.Sys.Security.Permissions;
 namespace ToSic.Eav.Data;
 
 /// <summary>
-/// Represents an Attribute definition in a ContentType. This is the base for attributes in <see cref="IContentType"/>
+/// Represents an Attribute definition in a ContentType.
+/// This is the base for attributes in <see cref="IContentType"/>
 /// </summary>
 [PublicApi]
-public interface IContentTypeAttribute: /*IAttributeBase,*/ IHasPermissions, IAppIdentityLight, IHasMetadata
+public interface IContentTypeAttribute: IHasPermissions, IAppIdentityLight, IHasMetadata
 {
     /// <summary>
     /// Name of the Attribute

@@ -42,18 +42,21 @@ public static class AppStateMetadataTargetExtensions
         }
     }
 
-    public static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this IEnumerable<IContentType> contentTypes, string? idString) 
-        => !int.TryParse(idString, out var keyInt)
-            ? default
-            : contentTypes.FindAttribute(keyInt);
-
-    private static (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(this IEnumerable<IContentType> contentTypes, int id)
+    extension(IEnumerable<IContentType> contentTypes)
     {
-        var allLocalCts = contentTypes
-            .Where(ct => !ct.HasAncestor());
-        var attr = allLocalCts
-            .SelectMany(ct => ct.Attributes.Select(at => (ct, at)))
-            .FirstOrDefault(set => set.Item2.AttributeId == id);
-        return attr;
+        public (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(string? idString) 
+            => !int.TryParse(idString, out var keyInt)
+                ? default
+                : contentTypes.FindAttribute(keyInt);
+
+        private (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(int id)
+        {
+            var allLocalCts = contentTypes
+                .Where(ct => !ct.HasAncestor());
+            var attr = allLocalCts
+                .SelectMany(ct => ct.Attributes.Select(at => (ct, at)))
+                .FirstOrDefault(set => set.Item2.AttributeId == id);
+            return attr;
+        }
     }
 }

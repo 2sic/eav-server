@@ -7,15 +7,15 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataTypes
 {
-    public const string Boolean = "Boolean";
-    public const string Number = "Number";
-    public const string DateTime = "DateTime";
-    public const string Entity = "Entity"; // todo: update all references with this as a constant
-    public const string Hyperlink = "Hyperlink";
-    public const string String = "String";
+    public static readonly string Boolean = nameof(ValueTypes.Boolean);// "Boolean";
+    public static readonly string Number = nameof(ValueTypes.Number);
+    public static readonly string DateTime = nameof(ValueTypes.DateTime);
+    //public const string Entity = "Entity"; // todo: update all references with this as a constant
+    public static readonly string Hyperlink = nameof(ValueTypes.Hyperlink);
+    public static readonly string String = nameof(ValueTypes.String);
 
     // Don't call this "Empty" because it's too similar to "Entity" and could be overlooked when coding
-    public static string VoidEmpty = "Empty";
+    //public static string VoidEmpty = "Empty";
 
     // TODO: Also look for other code which does very similar stuff, and try to de-duplicate
     // helper to get text-name of the type
