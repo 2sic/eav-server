@@ -82,13 +82,15 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
 
         var logDetails = appLoader.LogSettings is { Enabled: true, Details: true };
 
+        var buildHelper = new EntityBuildHelper(dataBuilder, builder.Reader, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, Log);
+
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)
         {
             if (AddLogCount++ == MaxLogDetailsCount)
                 l.A($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-            var newEntity = EntityBuildHelper.BuildNewEntity(dataBuilder, builder.Reader, rawEntity, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, l);
+            var newEntity = buildHelper.BuildNewEntity(rawEntity, l);
 
             // If entity is a draft, also include references to Published Entity
             builder.Add(newEntity, rawEntity.PublishedEntityId, logDetails && AddLogCount <= MaxLogDetailsCount);
