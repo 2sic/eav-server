@@ -10,7 +10,6 @@ using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
@@ -221,15 +220,15 @@ public class EfcAppLoaderService(
         {
             var l = Log.Fn();
             codeRefTrail.WithHere();
-            string? optionalOverrideAppFolder = null;
-            // prepare metadata lists & relationships etc.
+
+            // prepare core metadata lists & name/path of app
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
                 AddSqlTime(InitMetadataLists(builder));
                 builder.EnsureNameAndFolderInitialized(() => PreLoadAppPath(state.AppId));
             }
             else
-                l.A("skipping metadata load");
+                l.A("skipping metadata and name/path load");
 
             // variable to hold future added entities
             ICollection<IEntity> fileEntities = [];
@@ -240,7 +239,7 @@ public class EfcAppLoaderService(
                 var typeTimer = Stopwatch.StartNew();
                 var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
-                var data = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge, optionalOverrideAppFolder);
+                var data = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge);
                 builder.InitContentTypes(data.Types.ToListOpt());
                 fileEntities = data.Entities;
                 typeTimer.Stop();

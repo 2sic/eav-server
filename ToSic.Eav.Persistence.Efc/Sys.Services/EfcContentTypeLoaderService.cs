@@ -22,16 +22,17 @@ internal class EfcContentTypeLoaderService(
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
-    internal (IImmutableList<IContentType> Types, ICollection<IEntity> Entities) LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes, string? appFolderBeforeReaderIsReady)
+    internal (IImmutableList<IContentType> Types, ICollection<IEntity> Entities)
+        LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes)
     {
-        var l = Log.Fn<(IImmutableList<IContentType> Types, ICollection<IEntity> Entities)>($"{nameof(appFolderBeforeReaderIsReady)}: '{appFolderBeforeReaderIsReady}'", timer: true);
+        var l = Log.Fn<(IImmutableList<IContentType> Types, ICollection<IEntity> Entities)>(timer: true);
         try
         {
             if (string.IsNullOrEmpty(appReader.Specs.Folder))
                 return l.Return((dbTypes, []), "no path");
 
             l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
-            var (contentTypes, entities) = LoadContentTypesFromFileSystem(appReader, appFolderBeforeReaderIsReady);
+            var (contentTypes, entities) = LoadContentTypesFromFileSystem(appReader);
             if (contentTypes.SafeNone())
                 return l.Return((dbTypes, entities), "no app file types");
 
@@ -60,12 +61,12 @@ internal class EfcContentTypeLoaderService(
     /// Will load file based app content-types.
     /// </summary>
     /// <returns></returns>
-    private PartialData LoadContentTypesFromFileSystem(IAppReader appReader, string? appFolderBeforeReaderIsReady)
+    private PartialData LoadContentTypesFromFileSystem(IAppReader appReader)
     {
         var l = Log.Fn<PartialData>(timer: true);
         // must create a new loader for each app
         var loader = appFileContentTypesLoader.New();
-        loader.Init(appReader, efcAppLoader.LogSettings, appFolderBeforeReaderIsReady);
+        loader.Init(appReader, efcAppLoader.LogSettings);
         var types = loader.TypesAndEntities(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }
