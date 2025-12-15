@@ -226,8 +226,7 @@ public class EfcAppLoaderService(
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
                 AddSqlTime(InitMetadataLists(builder));
-                var (_, folder) = PreLoadAppPath(state.AppId);
-                optionalOverrideAppFolder = folder;
+                builder.EnsureNameAndFolderInitialized(() => PreLoadAppPath(state.AppId));
             }
             else
                 l.A("skipping metadata load");
@@ -331,23 +330,26 @@ public class EfcAppLoaderService(
         {
             // Get all Entities in the 2SexyContent-App scope
             var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, sysFeaturesSvc);
-            var dbEntity = entityLoader.LoadEntitiesFromDb(appId, [], AppLoadConstants.TypeAppConfig);
-            if (dbEntity.Count == 0)
+            var appConfigs = entityLoader.LoadEntitiesFromDb(appId, [], AppLoadConstants.TypeAppConfig);
+            if (appConfigs.Count == 0)
                 return l.Return((null, null), "not in db");
 
             // Get the first one as it should be the one containing the App-Configuration
             // WARNING: This looks a bit fishy, I think it shouldn't just assume the first one is the right one
-            var json = dbEntity.FirstOrDefault()?.Json;
+            var json = appConfigs
+                .OrderBy(e => e.EntityId)
+                .FirstOrDefault()
+                ?.Json;
             if (string.IsNullOrEmpty(json))
                 return l.Return((null, null), "no json");
 
             l.A("app Entity found - this json: " + json);
             var serializer = dataDeserializer.New();
             serializer.Initialize(appId, [], null);
-            if (serializer.Deserialize(json!, true, true) is not Entity appEntity)
+            if (serializer.Deserialize(json!, true, true) is not { } appConfig)
                 return l.Return((null, null), "can't deserialize");
-            var path = appEntity.Get<string>(AppLoadConstants.FieldFolder);
-            var name = appEntity.Get<string>(AppLoadConstants.FieldName);
+            var path = appConfig.Get<string>(AppLoadConstants.FieldFolder);
+            var name = appConfig.Get<string>(AppLoadConstants.FieldName);
 
             return l.Return((name, path), path.NullIfNoValue() ?? "no folder");
         }
