@@ -218,7 +218,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                     return l.ReturnNull($"attribute '{attributeId}' not found");
 
                 // figure out what field input type it is
-                var inputType = attribute.InputType();
+                var inputType = attribute.InputType;
 
                 // Find the input type definition
                 var inputTypeDef = inputTypes.New(AppId).GetInputTypes()

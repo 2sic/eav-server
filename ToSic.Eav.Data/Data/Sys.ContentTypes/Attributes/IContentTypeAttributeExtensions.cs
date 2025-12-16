@@ -17,7 +17,7 @@ public static class IContentTypeAttributeExtensions
         /// <remarks>
         /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
         /// </remarks>
-        public string InputType()
+        internal string GetInputType()
         {
             // Preferred storage and available in all fields defined after 2sxc ca. 6 or 7
             var inputType = definition.Metadata.Get<string>(GeneralFieldInputType, typeName: TypeGeneral);

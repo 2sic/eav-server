@@ -31,7 +31,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             }
         });
 
-    internal int GetOrCreateAttributeDefinition(int contentTypeId, ContentTypeAttribute newAtt)
+    internal int GetOrCreateAttributeDefinition(int contentTypeId, IContentTypeAttribute newAtt)
     {
         // try to add new Attribute
         if (!AttributeExistsInSet(contentTypeId, newAtt.Name))

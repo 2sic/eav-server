@@ -57,4 +57,12 @@ public interface IContentTypeAttribute: IHasPermissions, IAppIdentityLight, IHas
     /// </remarks>
     [PrivateApi]
     ContentTypeAttributeSysSettings? SysSettings { get; }
+
+    /// <summary>
+    /// The input type as string, e.g. "string-text" or "number-default".
+    /// </summary>
+    /// <remarks>
+    /// New in v21.
+    /// </remarks>
+    string InputType { get; }
 }

@@ -227,7 +227,7 @@ public class WorkAttributesMod(
         // - of course increment the start-index for each field
         var newAttributeId = AddField(contentTypeId, name,
             type: pairTypeWithAttribute.Attribute.Type.ToString(),
-            inputType: pairTypeWithAttribute.Attribute.InputType(),
+            inputType: pairTypeWithAttribute.Attribute.InputType,
             sortOrder: contentType.Attributes.Count() + 1);
 
         // 3. Configure inherit
