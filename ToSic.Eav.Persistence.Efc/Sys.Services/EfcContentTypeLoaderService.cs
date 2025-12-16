@@ -132,8 +132,6 @@ internal class EfcContentTypeLoaderService(
                         metaSourceFinder: () => source,
                         guid: a.Guid,
                         sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
-                        // before v20
-                        //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
                     )),
                 IsGhost = set.InheritContentTypeId,
                 SharedDefinitionId = set.InheritContentTypeId,
@@ -161,28 +159,32 @@ internal class EfcContentTypeLoaderService(
         sqlTime.Start();
 
         var sharedAttribs = optimize && !sharedAttribIds.Any()
-            ? new()
+            ? []
             : efcAppLoader.Context.TsDynDataContentTypes
                 .Include(s => s.TsDynDataAttributes)
-                .Where(s => sharedAttribIds.Contains(s.ContentTypeId))
+                .Where(s => sharedAttribIds
+                    .Contains(s.ContentTypeId)
+                )
                 .ToDictionary(
                     s => s.ContentTypeId,
-                    s => s.TsDynDataAttributes.Select(a => dataBuilder.TypeAttributeBuilder.Create(
-                        appId: appId,
-                        name: a.StaticName,
-                        type: ValueTypeHelpers.Get(a.Type),
-                        isTitle: a.IsTitle,
-                        id: a.AttributeId,
-                        sortOrder: a.SortOrder,
-                        // Must get own MetaSourceFinder since they come from other apps
-                        metaSourceFinder: () => appStates.Get(s.AppId),
-                        // #SharedFieldDefinition
-                        //guid: a.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
-                        sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
-                        // Before v20
-                        //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
+                    s => s.TsDynDataAttributes
+                        .Select(a => dataBuilder
+                            .TypeAttributeBuilder.Create(
+                                appId: appId,
+                                name: a.StaticName,
+                                type: ValueTypeHelpers.Get(a.Type),
+                                isTitle: a.IsTitle,
+                                id: a.AttributeId,
+                                sortOrder: a.SortOrder,
+                                // Must get own MetaSourceFinder since they come from other apps
+                                metaSourceFinder: () => appStates.Get(s.AppId),
+                                // #SharedFieldDefinition
+                                //guid: a.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
+                                sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
+                                // Before v20
+                                //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
+                            )
                         )
-                    )
                 );
 
         sqlTime.Stop();
@@ -190,47 +192,43 @@ internal class EfcContentTypeLoaderService(
         // Convert to ContentType-Model
         var newTypes = contentTypes
             .Select(set =>
-        {
-            var notGhost = set.IsGhost == null;
+            {
+                var notGhost = set.IsGhost == null;
 
-            var ctAttributes = (set.SharedDefinitionId.HasValue
-                    ? sharedAttribs[set.SharedDefinitionId.Value]
-                    : set.Attributes)
-                // ReSharper disable once RedundantEnumerableCastCall
-                .Cast<IContentTypeAttribute>()
-                .ToList();
+                var ctAttributes = (set.SharedDefinitionId.HasValue
+                        ? sharedAttribs[set.SharedDefinitionId.Value]
+                        : set.Attributes
+                    )
+                    .ToList();
 
-            // 2024-05-16 2dm changing to not use a Reader, as it's not needed and may cause #IServiceProviderDisposedException
-            //metaSourceFinder: () => notGhost ? source : appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
-            Func<IHasMetadataSourceAndExpiring> metaSourceFinder = notGhost
-                ? () => source
-                : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId));
+                // 2024-05-16 2dm changing to not use a Reader, as it's not needed and may cause #IServiceProviderDisposedException
+                //metaSourceFinder: () => notGhost ? source : appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
+                Func<IHasMetadataSourceAndExpiring> metaSourceFinder = notGhost
+                    ? () => source
+                    : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId));
 
-            var metaSource = MetadataProvider.Create(metaSourceFinder);
-            var metaData = new ContentTypeMetadata(set.StaticName, title: set.Name, source: metaSource);
+                var metaSource = MetadataProvider.Create(metaSourceFinder);
+                var metaData = new ContentTypeMetadata(set.StaticName, title: set.Name, source: metaSource);
 
-            return dataBuilder.ContentType.Create(
-                appId: appId,
-                name: set.Name,
-                nameId: set.StaticName,
-                id: set.ContentTypeId,
-                scope: set.Scope!,
-                parentTypeId: set.IsGhost,
-                configZoneId: set.ZoneId,
-                configAppId: set.AppId,
-                isAlwaysShared: set.ConfigIsOmnipresent,
-                metadata: metaData,
-                //metaSourceFinder: notGhost
-                //    ? () => source
-                //    : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId)),
-                attributes: ctAttributes
-            );
-        });
+                return dataBuilder.ContentType.Create(
+                    appId: appId,
+                    name: set.Name,
+                    nameId: set.StaticName,
+                    id: set.ContentTypeId,
+                    scope: set.Scope!,
+                    parentTypeId: set.IsGhost,
+                    configZoneId: set.ZoneId,
+                    configAppId: set.AppId,
+                    isAlwaysShared: set.ConfigIsOmnipresent,
+                    metadata: metaData,
+                    attributes: ctAttributes
+                );
+            })
+            .ToImmutableOpt();
 
         efcAppLoader.AddSqlTime(sqlTime.Elapsed);
-        var final = newTypes.ToImmutableOpt();
 
-        return l.Return(final, $"{final.Count}; {efcAppLoader.Context.TrackingInfo()}");
+        return l.Return(newTypes, $"{newTypes.Count}; {efcAppLoader.Context.TrackingInfo()}");
     }
 
 }
