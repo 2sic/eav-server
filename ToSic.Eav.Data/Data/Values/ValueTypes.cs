@@ -40,8 +40,12 @@ public enum ValueTypes
     /// <remarks>
     /// Experimentally added in 12.05, but not fully useful yet, as the DB must also be updated
     /// </remarks>
+    [PrivateApi("commented off again in v21, I believe this was only in a few apps experimental, and then we changed to string")]
     Json,
 
-    /// <summary>Object Value Type, e.g. from an external DataSource</summary>
+    /// <summary>
+    /// Object Value Type, e.g. from an external DataSource
+    /// </summary>
+    [InternalApi_DoNotUse_MayChangeWithoutNotice("For internal use only.")]
     Object,
 }
