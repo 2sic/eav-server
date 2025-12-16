@@ -17,7 +17,7 @@ internal class EntityQueries(EavDbContext db, ISysFeaturesService featuresSvc, I
     internal IQueryable<TsDynDataEntity> EntitiesOfAppQuery(int appId, int[] entityIds, string? filterJsonType = null)
     {
         var filterIds = entityIds.Length > 0;
-        var filterByType = filterJsonType != null;
+        var filterByJsonType = filterJsonType != null;
         var l = Log.Fn<IQueryable<TsDynDataEntity>>(
             $"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterJsonType)}: '{filterJsonType}'",
             timer: true);
@@ -34,9 +34,10 @@ internal class EntityQueries(EavDbContext db, ISysFeaturesService featuresSvc, I
             query = query.Where(e => Enumerable.Contains(entityIds, e.EntityId));
         l.A($"entityId filter: {(filterIds ? "enabled" : "none")}");
 
-        if (filterByType)
+        if (filterByJsonType)
             query = query.Where(e => e.ContentType == filterJsonType);
-        l.A($"type filter: {(filterByType ? "enabled" : "none")}");
+
+        l.A($"type filter: {(filterByJsonType ? "enabled" : "none")}");
 
         return l.Return(query);
     }

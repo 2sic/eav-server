@@ -49,9 +49,10 @@ public interface IAppStateBuilder: IHasLog
     /// This will depend on some default NameIds, and otherwise it will use the ones provided by the function in the call.
     /// </summary>
     /// <param name="getNameAndPath"></param>
+    /// <param name="useErrorNameIfNoValue">If nothing found to set, add constants like 'error-not-found' to the values</param>
     /// <returns></returns>
     /// <remarks>
     /// Should be called very early, to ensure that paths work for anything following the initial load.
     /// </remarks>
-    bool EnsureNameAndFolderInitialized(Func<(string? Name, string? Path)> getNameAndPath);
+    bool EnsureNameAndFolderInitialized(Func<(string? Name, string? Path)> getNameAndPath, bool useErrorNameIfNoValue);
 }

@@ -225,7 +225,13 @@ public class EfcAppLoaderService(
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
                 AddSqlTime(InitMetadataLists(builder));
-                builder.EnsureNameAndFolderInitialized(() => PreLoadAppPath(state.AppId));
+                // Set name and folder early, so that other loaders have it
+                // Note that if no value was found in the DB, then the app-configuration was stored
+                // in an old format (using DB entities instead of JSON persistence).
+                // In that case, do NOT set the values, as later code can still extract it from the DB entities.
+                // The only downside will be, that such old apps cannot load data from the /extensions/ folder,
+                // which is a much newer feature anyhow.
+                builder.EnsureNameAndFolderInitialized(() => PreLoadAppPath(state.AppId), false);
             }
             else
                 l.A("skipping metadata and name/path load");
@@ -327,9 +333,13 @@ public class EfcAppLoaderService(
         var l = Log.Fn<(string? Name, string? Path)>($"{nameof(appId)}: {appId}");
         try
         {
-            // Get all Entities in the 2SexyContent-App scope
+            // Get all Entities of type "2SexyContent-App"
+            // Note that it will only load the headers, as the content-type should store to JSON
+            // But there are edge cases of 2sxc systems upgraded from old versions, where
+            // the content-type was DB-based. So there are cases where the data will not be in JSON,
+            // and it won't find anything - even though the configuration exists. 
             var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, sysFeaturesSvc);
-            var appConfigs = entityLoader.LoadEntitiesFromDb(appId, [], AppLoadConstants.TypeAppConfig);
+            var appConfigs = entityLoader.LoadEntityHeadersFromDb(appId, [], filterJsonType: AppLoadConstants.TypeAppConfig);
             if (appConfigs.Count == 0)
                 return l.Return((null, null), "not in db");
 

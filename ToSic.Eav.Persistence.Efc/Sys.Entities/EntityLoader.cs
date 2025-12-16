@@ -53,7 +53,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
         #region Get Entities with Attribute-Values from Database
 
         sqlTime.Start();
-        var rawEntities = LoadEntitiesFromDb(appId, entityIds);
+        var rawEntities = LoadEntityHeadersFromDb(appId, entityIds);
         sqlTime.Stop();
 
         // If optimized is enabled, then we tweak chunking size and skip unique checks if not necessary
@@ -116,7 +116,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
         return intChunkSize;
     }
 
-    public List<TempEntity> LoadEntitiesFromDb(int appId, int[] entityIds, string? filterJsonType = null)
+    public List<TempEntity> LoadEntityHeadersFromDb(int appId, int[] entityIds, string? filterJsonType = null)
     {
         var l = Log.IfSummary(appLoader.LogSettings).Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterJsonType)}: '{filterJsonType}'", timer: true);
 

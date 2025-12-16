@@ -72,7 +72,7 @@ partial class AppState
                         st._loading = true;
                         loader.Invoke(st);
                         st.CacheResetTimestamp("load complete");
-                        _ = EnsureNameAndFolderInitialized(LoadAppPathFromEntitiesList);
+                        _ = EnsureNameAndFolderInitialized(LoadAppPathFromEntitiesList, true);
                         if (!st._firstLoadCompleted) st._firstLoadCompleted = true;
                     lInLock.Done($"done - dynamic load count: {st.DynamicUpdatesCount}");
                 }
@@ -109,7 +109,7 @@ partial class AppState
         }
 
         /// <inheritdoc/>
-        public bool EnsureNameAndFolderInitialized(Func<(string? Name, string? Path)> getNameAndPath)
+        public bool EnsureNameAndFolderInitialized(Func<(string? Name, string? Path)> getNameAndPath, bool useErrorNameIfNoValue)
         {
             var st = AppStateTyped;
             var l = st.Log.Fn<bool>();
@@ -146,7 +146,7 @@ partial class AppState
                 if (st.Folder.IsEmptyOrWs())
                     st.Folder = KnownAppsConstants.ContentAppFolder;
             }
-            else
+            else if (useErrorNameIfNoValue)
                 SetNameAndFolderIfEmpty("error-app-name-no-config", "error-app-folder-no-config");
 
             return l.ReturnTrue($"Name: {st.Name}, Folder:{st.Folder}");
