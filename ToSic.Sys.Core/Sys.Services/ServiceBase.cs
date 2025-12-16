@@ -35,9 +35,11 @@ public abstract class ServiceBase(string logName) : IHasLog
     public ILog Log { get; } = new Log(logName);
 
     /// <summary>
-    /// Connect Log of all dependencies listed in <see cref="services"/>
+    /// Connect Log of all dependencies listed in the `services` array.
     /// </summary>
-    /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
+    /// <param name="services">
+    /// One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/>
+    /// </param>
     protected void ConnectLogs(object[] services)
         => (this as IHasLog).ConnectLogs(services);
 }
