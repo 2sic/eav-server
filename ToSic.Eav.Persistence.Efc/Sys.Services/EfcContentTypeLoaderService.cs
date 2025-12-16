@@ -119,6 +119,7 @@ internal class EfcContentTypeLoaderService(
                 set.Scope,
                 Attributes = set.TsDynDataAttributes
                     .Where(a => a.TransDeletedId == null) // only not-deleted attributes!
+                    .OrderBy(a => a.SortOrder)
                     .Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
                         name: a.StaticName,
