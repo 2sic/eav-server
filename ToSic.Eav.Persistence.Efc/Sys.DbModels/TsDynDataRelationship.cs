@@ -14,6 +14,10 @@ public partial class TsDynDataRelationship
 
     public int? ChildEntityId { get; set; }
 
+    public Guid? ChildExternalId { get; set; }
+
+    public int? TransDeletedId { get; set; }
+
     public int SortOrder { get; set; }
 
     public virtual TsDynDataAttribute Attribute { get; set; } = null!;
@@ -21,4 +25,6 @@ public partial class TsDynDataRelationship
     public virtual TsDynDataEntity? ChildEntity { get; set; }
 
     public virtual TsDynDataEntity ParentEntity { get; set; } = null!;
+
+    public virtual TsDynDataTransaction? TransDeleted { get; set; }
 }

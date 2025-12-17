@@ -45,4 +45,6 @@ public partial class TsDynDataTransaction
     public virtual ICollection<TsDynDataApp> TsDynDataAppsTransModified { get; set; } = new HashSet<TsDynDataApp>();
 
     public virtual ICollection<TsDynDataApp> TsDynDataAppsTransDeleted { get; set; } = new HashSet<TsDynDataApp>();
+    
+    public virtual ICollection<TsDynDataRelationship> TsDynDataRelationshipsTransDeleted { get; set; } = new HashSet<TsDynDataRelationship>();
 }

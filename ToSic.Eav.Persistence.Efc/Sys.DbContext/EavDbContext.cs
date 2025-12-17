@@ -122,6 +122,8 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.ToTable("TsDynDataEntity");
 
+            entity.HasQueryFilter(e => e.TransDeletedId == null);
+
 #pragma warning disable CS0618 // Type or member is obsolete
             entity.HasIndex(e => e.KeyNumber)
                 .HasName("IX_TsDynDataEntity_KeyNumber");
@@ -189,11 +191,23 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.ToTable("TsDynDataRelationship");
 
+            entity.HasQueryFilter(e => e.TransDeletedId == null);
+
             entity.Property(e => e.AttributeId);
 
             entity.Property(e => e.ParentEntityId);
 
             entity.Property(e => e.ChildEntityId);
+
+            entity.Property(e => e.ChildExternalId)
+                .HasColumnType("uniqueidentifier");
+
+            entity.Property(e => e.TransDeletedId);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            entity.HasIndex(e => e.TransDeletedId)
+                .HasName("IX_TsDynDataRelationship_TransDeletedId");
+#pragma warning restore CS0618 // Type or member is obsolete
 
             entity.HasOne(d => d.Attribute)
                 .WithMany(p => p.TsDynDataRelationships)
@@ -214,6 +228,11 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 // "Database operation expected to affect 1 row(s) but actually affected 0 row(s)."
                 //.OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataRelationship_TsDynDataEntityParent");
+
+            entity.HasOne(d => d.TransDeleted)
+                .WithMany(p => p.TsDynDataRelationshipsTransDeleted)
+                .HasForeignKey(d => d.TransDeletedId)
+                .HasConstraintName("FK_TsDynDataRelationship_TsDynDataTransactionDeleted");
         });
 
         modelBuilder.Entity<TsDynDataValue>(entity =>
@@ -279,6 +298,8 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.ToTable("TsDynDataApp");
 
+            entity.HasQueryFilter(e => e.TransDeletedId == null);
+
 #pragma warning disable CS0618 // Type or member is obsolete
             entity.HasIndex(e => new { e.Name, e.ZoneId })
                 .HasName("UQ_TsDynDataApp_Name_ZoneId")
@@ -321,6 +342,8 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 .HasName("PK_TsDynDataAttribute");
 
             entity.ToTable("TsDynDataAttribute");
+
+            entity.HasQueryFilter(e => e.TransDeletedId == null);
 
             entity.Property(e => e.AttributeId);
 
@@ -387,6 +410,8 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 .HasName("PK_TsDynDataContentType");
 
             entity.ToTable("TsDynDataContentType");
+
+            entity.HasQueryFilter(e => e.TransDeletedId == null);
 
             entity.Property(e => e.ContentTypeId);
 
@@ -523,6 +548,8 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 .HasName("PK_TsDynDataZone");
 
             entity.ToTable("TsDynDataZone");
+
+            entity.HasQueryFilter(e => e.TransDeletedId == null);
 
             entity.Property(e => e.ZoneId);
 
