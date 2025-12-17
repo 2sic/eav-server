@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -87,15 +88,21 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     {
         var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(ids, parentId, parentField);
 
-        foreach (var canDelete in canDeleteList)
-            if (canDelete.Value.HasMessages && !force && !skipIfCant)
-            {
-                var msg = $"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Messages}";
-                Log.A(msg);
-                throw new InvalidOperationException(msg);
-            }
+        // Construct error messages for those which can't be deleted
+        var relevantErrors = canDeleteList
+            .Where(cd => cd.Value.HasMessages && !force && !skipIfCant)
+            .Select(cd => $"Can't delete Item {cd.Key}. It is used by others. {cd.Value.Messages}")
+            .ToList();
+        
+        // Log each one
+        foreach (var msg in relevantErrors)
+            Log.A(msg);
 
-        return canDeleteList;
+        // If any errors, throw exception
+        var consolidated = string.Join(", ", relevantErrors);
+        return consolidated.HasValue()
+            ? throw new InvalidOperationException(consolidated)
+            : canDeleteList;
     }
 
     private void BatchCheckTypesMatch(int[] ids, string? contentType)
