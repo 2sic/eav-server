@@ -26,7 +26,7 @@ public class WorkQueryMod(
 
         var entDelete = delete.New(AppWorkCtx.AppReader);
 
-        var canDeleteResult = entDelete.CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(id);
+        var canDeleteResult = entDelete.CheckForDeletePreWarnings(id);
         if (canDeleteResult.HasMessages)
             throw l.Done(new Exception(canDeleteResult.Messages));
 
