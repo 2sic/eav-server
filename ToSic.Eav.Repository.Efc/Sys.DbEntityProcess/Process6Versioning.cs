@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+﻿using Microsoft.EntityFrameworkCore;
+using ToSic.Eav.Repository.Efc.Sys.DbParts;
+
+namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 /// <summary>
 /// Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
@@ -24,7 +27,7 @@ internal class Process6Versioning(): Process0Base("Db.EPr6Vr")
 
         var historyEntries = data
             .Where(d => d.JsonExport != null)
-            .Select(d => services.DbStorage.Versioning.PrepareHistoryEntry(d.DbEntity!.EntityId, d.DbEntity!.EntityGuid, d.JsonExport!))
+            .Select(d => services.DbStorage.Versioning.PrepareHistoryEntry(d.DbEntity!.EntityId, d.DbEntity!.EntityGuid, DbVersioning.ParentRefForApp(d.DbEntity!.AppId), d.JsonExport!))
             .ToListOpt();
 
         services.DbStorage.Versioning.Save(historyEntries);

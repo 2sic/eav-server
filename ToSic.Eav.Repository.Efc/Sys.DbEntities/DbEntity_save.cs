@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+using ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
@@ -212,7 +213,7 @@ partial class DbEntity
 
             if (jsonExport == null)
                 throw new("trying to save version history entry, but jsonExport isn't ready");
-            DbStore.Versioning.AddAndSave(dbEnt.EntityId, dbEnt.EntityGuid, jsonExport);
+            DbStore.Versioning.AddAndSave(dbEnt.EntityId, dbEnt.EntityGuid, DbVersioning.ParentRefForApp(dbEnt.AppId), jsonExport);
 
             #endregion
 
