@@ -8,13 +8,13 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
         => DbStore.SqlDb.TsDynDataContentTypes
             .AsNoTracking()
             .Include(a => a.TsDynDataAttributes)
-            .Where(a => a.AppId == appId && !a.TransDeletedId.HasValue);
+            .Where(a => a.AppId == appId/* && !a.TransDeletedId.HasValue*/);
 
 
     internal IQueryable<TsDynDataContentType> GetDbContentTypeWithAttributesTracked(int appId)
         => DbStore.SqlDb.TsDynDataContentTypes
             .Include(a => a.TsDynDataAttributes)
-            .Where(a => a.AppId == appId && !a.TransDeletedId.HasValue);
+            .Where(a => a.AppId == appId/* && !a.TransDeletedId.HasValue*/);
 
 
     private List<TsDynDataContentType> GetDbContentTypesUntracked(int appId, string name, bool alsoCheckNiceName = false)

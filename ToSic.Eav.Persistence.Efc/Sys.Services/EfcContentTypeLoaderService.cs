@@ -95,8 +95,8 @@ internal class EfcContentTypeLoaderService(
         var sqlTime = Stopwatch.StartNew();
 
         var query = efcAppLoader.Context.TsDynDataContentTypes
-            .AsNoTrackingOptional(featuresSvc)
-            .Where(set => set.AppId == appId && set.TransDeletedId == null);
+            .AsNoTrackingOptional(featuresSvc)  // No tracking because it should also get deleted, in case a bad setup happened where the original CT was deleted.
+            .Where(set => set.AppId == appId/* && set.TransDeletedId == null*/);
 
         var contentTypesSql = query
             .Include(set => set.TsDynDataAttributes)
@@ -161,6 +161,7 @@ internal class EfcContentTypeLoaderService(
         var sharedAttribs = optimize && !sharedAttribIds.Any()
             ? []
             : efcAppLoader.Context.TsDynDataContentTypes
+                .IgnoreQueryFilters()
                 .Include(s => s.TsDynDataAttributes)
                 .Where(s => sharedAttribIds
                     .Contains(s.ContentTypeId)
