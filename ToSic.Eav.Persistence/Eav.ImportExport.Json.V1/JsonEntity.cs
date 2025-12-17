@@ -35,4 +35,35 @@ public record JsonEntity: IJsonWithAssets
     /// <remarks>V 1.1</remarks>
     [JsonIgnore(Condition = WhenWritingNull)]
     public ICollection<JsonAsset>? Assets { get; init; }
+
+    /// <summary>
+    /// WIP to store inbound parent relationships and the position they use to reference this child
+    /// only used for JSON in history.
+    /// </summary>
+    /// <remarks>
+    /// WIP v21
+    /// </remarks>
+    [JsonIgnore(Condition = WhenWritingNull)]
+    public List<JsonRelationship>? Parents { get; init; }
+}
+
+/// <summary>
+/// WIP
+/// </summary>
+public record JsonRelationship
+{
+    /// <summary>
+    /// Guid of the parent
+    /// </summary>
+    public required Guid Parent { get; init; }
+
+    /// <summary>
+    /// Name of the field for this relationship, like "Author" or "Photographer" - since a *Person* entity could be used in both.
+    /// </summary>
+    public required string Field { get; init; }
+
+    /// <summary>
+    /// Position in the list of that field, so the Author #2, etc.
+    /// </summary>
+    public required int SortOrder { get; init; }
 }
