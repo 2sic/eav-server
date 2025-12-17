@@ -460,12 +460,18 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.Property(e => e.TransactionId);
 
+            entity.Property(e => e.ParentRef)
+                .HasMaxLength(250);
+
 #pragma warning disable CS0618 // Type or member is obsolete
             entity.HasIndex(e => e.SourceId)
                 .HasName("IX_TsDynDataHistory_SourceId");
 
             entity.HasIndex(e => e.SourceGuid)
                 .HasName("IX_TsDynDataHistory_SourceGuid");
+
+            entity.HasIndex(e => e.ParentRef)
+                .HasName("IX_TsDynDataHistory_ParentRef");
 #pragma warning restore CS0618 // Type or member is obsolete
 
             entity.HasOne(d => d.Transaction)

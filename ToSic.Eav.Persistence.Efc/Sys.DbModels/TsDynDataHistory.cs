@@ -22,6 +22,8 @@ public partial class TsDynDataHistory
 
     public int? TransactionId { get; set; }
 
+    public string? ParentRef { get; set; }
+
     public string? Json { get; set; }
 
     public byte[]? CJson { get; set; }

@@ -11,7 +11,7 @@ using Microsoft.Data.SqlClient;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal  partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> compressor) : DbPartBase(db, "Db.Version")
+internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> compressor) : DbPartBase(db, "Db.Version")
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
@@ -51,13 +51,17 @@ internal  partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor>
 
     #endregion
 
+    internal static string? ParentRefForApp(int appId)
+        => appId > 0 ? $"app-{appId}" : null;
+
     /// <summary>
     /// Save an entity to versioning, which is already serialized
     /// </summary>
-    internal void AddAndSave(int entityId, Guid entityGuid, string serialized)
-        => Save([PrepareHistoryEntry(entityId, entityGuid, serialized)]);
 
-    internal TsDynDataHistory PrepareHistoryEntry(int entityId, Guid entityGuid, string serialized)
+    internal void AddAndSave(int entityId, Guid entityGuid, string? parentRef, string serialized)
+        => Save([PrepareHistoryEntry(entityId, entityGuid, parentRef, serialized)]);
+
+    internal TsDynDataHistory PrepareHistoryEntry(int entityId, Guid entityGuid, string? parentRef, string serialized)
         => new()
         {
             SourceTable = EntitiesTableName,
@@ -66,6 +70,7 @@ internal  partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor>
             CJson = compressor.Value.Compress(serialized),
             SourceGuid = entityGuid,
             SourceId = entityId,
+            ParentRef = parentRef,
             TransactionId = GetTransactionId(),
             Timestamp = DateTime.UtcNow // always UTC (time zone independent)
         };
