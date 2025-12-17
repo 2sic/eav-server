@@ -112,7 +112,8 @@ partial class DbEntity
     {
         // Guard against tracking conflicts: if the context already tracks another instance of this key,
         // update that tracked instance instead of attaching this untracked one.
-        var localTracked = DbStore.SqlDb.TsDynDataEntities.Local.FirstOrDefault(e => e.EntityId == entity.EntityId);
+        var localTracked = DbStore.SqlDb.TsDynDataEntities.Local
+            .FirstOrDefault(e => e.EntityId == entity.EntityId);
         if (localTracked != null && !ReferenceEquals(localTracked, entity))
         {
             if (entity.TransDeletedId != localTracked.TransDeletedId)

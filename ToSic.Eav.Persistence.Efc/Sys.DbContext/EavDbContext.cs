@@ -122,7 +122,8 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.ToTable("TsDynDataEntity");
 
-            entity.HasQueryFilter(e => e.TransDeletedId == null);
+            // TODO: @STV see if we can start using this; requires detailed review of each use case
+            //entity.HasQueryFilter(e => e.TransDeletedId == null);
 
 #pragma warning disable CS0618 // Type or member is obsolete
             entity.HasIndex(e => e.KeyNumber)
@@ -191,6 +192,7 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.ToTable("TsDynDataRelationship");
 
+            // New 2025-12-17, just introduced this field, so we can always apply the filter for now
             entity.HasQueryFilter(e => e.TransDeletedId == null);
 
             entity.Property(e => e.AttributeId);
@@ -298,6 +300,8 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.ToTable("TsDynDataApp");
 
+            // New 2025-12-17, so far never been used yes, so no issues expected
+            // Note that it's actually not in use yet, we just introduced the fields but never used them
             entity.HasQueryFilter(e => e.TransDeletedId == null);
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -343,6 +347,8 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.ToTable("TsDynDataAttribute");
 
+            // TODO: @STV see if we can start using this; requires detailed review of each use case
+            // New 2025-12-17, we THINK that we recently introduced this field, and it's not used yet, so we can always apply the filter for now
             entity.HasQueryFilter(e => e.TransDeletedId == null);
 
             entity.Property(e => e.AttributeId);
@@ -411,6 +417,7 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.ToTable("TsDynDataContentType");
 
+            // New 2025-12-17, all 8 use cases reviewed by 2dm
             entity.HasQueryFilter(e => e.TransDeletedId == null);
 
             entity.Property(e => e.ContentTypeId);
@@ -549,6 +556,8 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             entity.ToTable("TsDynDataZone");
 
+            // TODO: @STV see if we can start using this; requires detailed review of each use case
+            // Note that it's actually not in use yet, we just introduced the fields but never used them
             entity.HasQueryFilter(e => e.TransDeletedId == null);
 
             entity.Property(e => e.ZoneId);
