@@ -88,7 +88,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(ids, parentId, parentField);
 
         foreach (var canDelete in canDeleteList)
-            if (!canDelete.Value.HasMessages && !force && !skipIfCant)
+            if (canDelete.Value.HasMessages && !force && !skipIfCant)
             {
                 var msg = $"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Messages}";
                 Log.A(msg);
@@ -164,7 +164,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
             //if (entity.MetadataFor?.IsMetadata ?? false)
             //    messages.Add($"Entity is metadata of other entity.");
 
-            canDeleteList.Add(entityId, (!messages.Any(), string.Join(" ", messages)));
+            canDeleteList.Add(entityId, (messages.Any(), string.Join(" ", messages)));
         }
 
         if (canDeleteList.Count != ids.Length)
