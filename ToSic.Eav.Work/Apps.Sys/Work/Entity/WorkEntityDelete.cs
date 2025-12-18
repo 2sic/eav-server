@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Sys.Utils;
+using ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -56,6 +57,10 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         // check if we can delete entities with metadata, or throw exception
         var oks = CheckForDeletePreWarningsBatch([.. deleteIds], force, skipIfCant, parentId, parentField);
 
+        // Before deleting, persist a history snapshot which also captures inbound parent relations.
+        // This is important because delete will remove inbound parent relationships.
+        SaveEntityHistoryWithInboundParents([.. deleteIds]);
+
         // then delete entities with metadata without app cache purge
         var repositoryIds = deleteIds.ToArray();
         var ok = false;
@@ -70,6 +75,38 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         builder.RemoveEntities(repositoryIds, true);
 
         return l.Return(ok);
+    }
+
+    private void SaveEntityHistoryWithInboundParents(IReadOnlyCollection<int> entityIds)
+    {
+        var l = Log.Fn(timer: true);
+        if (entityIds.Count == 0)
+            return;
+
+        // Reuse centralized versioning helper which enriches history JSON with inbound parents.
+        // Must happen BEFORE delete, as delete will remove inbound parent relationships.
+        var parentRef = DbVersioning.ParentRefForApp(AppWorkCtx.AppId);
+
+        var items = entityIds
+            .Select(id => (Id: id, Entity: AppWorkCtx.AppReader.List.FindRepoId(id)))
+            .Where(x => x.Entity != null)
+            .Select(x => (
+                Entity: x.Entity!,
+                EntityId: x.Id,
+                EntityGuid: x.Entity!.EntityGuid,
+                ParentRef: parentRef
+            ))
+            .ToList();
+
+        if (items.Count == 0)
+            return;
+
+        var historyEntries = AppWorkCtx.DbStorage.Versioning.PrepareHistoryEntriesWithInboundParents(items);
+        if (historyEntries.Count == 0)
+            return;
+
+        AppWorkCtx.DbStorage.Versioning.Save(historyEntries);
+        l.Done();
     }
 
 

@@ -25,11 +25,18 @@ internal class Process6Versioning(): Process0Base("Db.EPr6Vr")
     {
         var l = GetLogCall(services, logProcess);
 
-        var historyEntries = data
-            .Where(d => d.JsonExport != null)
-            .Select(d => services.DbStorage.Versioning.PrepareHistoryEntry(d.DbEntity!.EntityId, d.DbEntity!.EntityGuid, DbVersioning.ParentRefForApp(d.DbEntity!.AppId), d.JsonExport!))
-            .ToListOpt();
+        // History snapshots should additionally capture inbound parent relationships (Parents).
+        var itemsForHistory = data
+            .Where(d => d.DbEntity != null)
+            .Select(d => (
+                Entity: d.NewEntity,
+                EntityId: d.DbEntity!.EntityId,
+                EntityGuid: d.DbEntity!.EntityGuid,
+                ParentRef: DbVersioning.ParentRefForApp(d.DbEntity!.AppId)
+            ))
+            .ToList();
 
+        var historyEntries = services.DbStorage.Versioning.PrepareHistoryEntriesWithInboundParents(itemsForHistory);
         services.DbStorage.Versioning.Save(historyEntries);
 
         var result = data.Select(d => d.JsonExport == null

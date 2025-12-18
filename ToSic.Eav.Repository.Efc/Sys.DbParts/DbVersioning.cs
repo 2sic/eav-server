@@ -1,19 +1,91 @@
-﻿using System.Data;
-using Microsoft.EntityFrameworkCore.Storage;
-using ToSic.Eav.Sys;
-using ToSic.Sys.Utils.Compression;
-
-#if NETFRAMEWORK
+﻿#if NETFRAMEWORK
 using System.Data.SqlClient;
 #else
 using Microsoft.Data.SqlClient;
 #endif
+using System.Data;
+using Microsoft.EntityFrameworkCore.Storage;
+using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.Sys;
+using ToSic.Sys.Utils.Compression;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> compressor) : DbPartBase(db, "Db.Version")
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
+
+    internal List<TsDynDataHistory> PrepareHistoryEntriesWithInboundParents(
+        IReadOnlyCollection<(IEntity Entity, int EntityId, Guid EntityGuid, string? ParentRef)> items,
+        int metadataDepth = 0)
+    {
+        var l = LogDetails.Fn<List<TsDynDataHistory>>(timer: true);
+        if (items.Count == 0)
+            return l.Return([]);
+
+        var ids = items
+            .Select(i => i.EntityId)
+            .Distinct()
+            .ToList();
+
+        var parentsByChild = GetInboundParentsByChildIds(ids);
+        var serializer = DbStore.JsonSerializerGenerator.New();
+
+        var historyEntries = items
+            .Select(i =>
+            {
+                var parents = parentsByChild.TryGetValue(i.EntityId, out var foundParents) && foundParents.Count > 0
+                    ? foundParents
+                    : null;
+
+                var serialized = serializer.Serialize(i.Entity, parents, metadataDepth);
+                return PrepareHistoryEntry(i.EntityId, i.EntityGuid, i.ParentRef, serialized);
+            })
+            .Where(h => h != null)
+            .ToList();
+
+        return l.ReturnAsOk(historyEntries);
+    }
+
+    internal void AddAndSave(IEntity entity, int entityId, Guid entityGuid, string? parentRef)
+    {
+        var entries = PrepareHistoryEntriesWithInboundParents([(entity, entityId, entityGuid, parentRef)]);
+        Save(entries);
+    }
+
+    private Dictionary<int, List<JsonRelationship>> GetInboundParentsByChildIds(IReadOnlyCollection<int> entityIds)
+    {
+        if (entityIds.Count == 0)
+            return [];
+
+        // Note: Relationship has a global query filter for TransDeletedId == null.
+        // We want only active inbound relations at the time the history snapshot is created.
+        var inbound = DbStore.SqlDb.TsDynDataRelationships
+            .AsNoTracking()
+            .Where(r => r.ChildEntityId != null && entityIds.Contains(r.ChildEntityId.Value))
+            .Select(r => new
+            {
+                ChildId = r.ChildEntityId!.Value,
+                ParentGuid = r.ParentEntity.EntityGuid,
+                Field = r.Attribute.StaticName,
+                r.SortOrder,
+            })
+            .ToList();
+
+        return inbound
+            .GroupBy(r => r.ChildId)
+            .ToDictionary(
+                g => g.Key,
+                g => g
+                    .Select(r => new JsonRelationship
+                    {
+                        Parent = r.ParentGuid,
+                        Field = r.Field,
+                        SortOrder = r.SortOrder
+                    })
+                    .ToList()
+            );
+    }
 
     #region Change-Log ID
 
