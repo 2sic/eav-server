@@ -88,7 +88,7 @@ public class SaveHistoryInboundParentsTests(
         var saveChild = entitySaver.TestCreateMergedForSavingTac(null, childEntity, so);
         var childId = dbData.Save(so.AddToAll([saveChild])).First().Id;
 
-        // Relationship PK is (AttributeId, ParentEntityId, SortOrder) and ignores TransDeletedId.
+        // Relationship PK is (AttributeId, ParentEntityId, SortOrder)
         var nextSortOrder = dbData.SqlDb.TsDynDataRelationships
             .AsNoTracking()
             .IgnoreQueryFilters()
@@ -103,7 +103,6 @@ public class SaveHistoryInboundParentsTests(
             ParentEntityId = parentId,
             ChildEntityId = childId,
             SortOrder = nextSortOrder,
-            TransDeletedId = null,
         });
         dbData.SqlDb.SaveChanges();
 

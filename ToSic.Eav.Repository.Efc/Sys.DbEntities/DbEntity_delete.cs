@@ -46,7 +46,6 @@ partial class DbEntity
                     .First().EntityGuid;
                 relationship.ChildExternalId = childEntityGuid;
                 relationship.ChildEntityId = null;
-                relationship.TransDeletedId = DeleteTransactionId;
             }
         });
 
@@ -67,7 +66,6 @@ partial class DbEntity
                 {
                     relationship.ChildExternalId = entity.EntityGuid;
                     relationship.ChildEntityId = null;
-                    relationship.TransDeletedId = DeleteTransactionId;
                 }
             });
 
@@ -100,7 +98,7 @@ partial class DbEntity
             }
 
             // Also remove the entity itself
-            MarkEntityAsDeletedTrackedOrUntracked(entity);
+            RemoveEntityTrackedOrUntracked(entity);
         });
         if (autoSave)
             DbStore.DoAndSaveWithoutChangeDetection(() => {});
@@ -108,41 +106,41 @@ partial class DbEntity
         return l.ReturnTrue("DeleteEntity(...) done"); ;
     }
 
-    private void MarkEntityAsDeletedTrackedOrUntracked(TsDynDataEntity entity)
-    {
-        // Guard against tracking conflicts: if the context already tracks another instance of this key,
-        // update that tracked instance instead of attaching this untracked one.
-        var localTracked = DbStore.SqlDb.TsDynDataEntities.Local
-            .FirstOrDefault(e => e.EntityId == entity.EntityId);
-        if (localTracked != null && !ReferenceEquals(localTracked, entity))
-        {
-            if (entity.TransDeletedId != localTracked.TransDeletedId)
-                localTracked.TransDeletedId = entity.TransDeletedId;
-
-            DbStore.SqlDb.Entry(localTracked).Property(e => e.TransDeletedId).IsModified = true;
-            return;
-        }
-
-        DbStore.SqlDb.Attach(entity);
-        DbStore.SqlDb.Entry(entity).Property(e => e.TransDeletedId).IsModified = true;
-    }
-
-    //private void RemoveEntityTrackedOrUntracked(TsDynDataEntity entity)
+    //private void MarkEntityAsDeletedTrackedOrUntracked(TsDynDataEntity entity)
     //{
     //    // Guard against tracking conflicts: if the context already tracks another instance of this key,
-    //    // delete that tracked instance instead of attaching this untracked one.
-    //    var localTracked = DbStore.SqlDb.TsDynDataEntities.Local.FirstOrDefault(e => e.EntityId == entity.EntityId);
+    //    // update that tracked instance instead of attaching this untracked one.
+    //    var localTracked = DbStore.SqlDb.TsDynDataEntities.Local
+    //        .FirstOrDefault(e => e.EntityId == entity.EntityId);
     //    if (localTracked != null && !ReferenceEquals(localTracked, entity))
     //    {
-    //        // ensure the deleted flag is copied if it was set on the untracked instance
     //        if (entity.TransDeletedId != localTracked.TransDeletedId)
     //            localTracked.TransDeletedId = entity.TransDeletedId;
 
-    //        DbStore.SqlDb.Entry(localTracked).State = EntityState.Deleted;
+    //        DbStore.SqlDb.Entry(localTracked).Property(e => e.TransDeletedId).IsModified = true;
+    //        return;
     //    }
-    //    else
-    //        DbStore.SqlDb.Remove(entity);
+
+    //    DbStore.SqlDb.Attach(entity);
+    //    DbStore.SqlDb.Entry(entity).Property(e => e.TransDeletedId).IsModified = true;
     //}
+
+    private void RemoveEntityTrackedOrUntracked(TsDynDataEntity entity)
+    {
+        // Guard against tracking conflicts: if the context already tracks another instance of this key,
+        // delete that tracked instance instead of attaching this untracked one.
+        var localTracked = DbStore.SqlDb.TsDynDataEntities.Local.FirstOrDefault(e => e.EntityId == entity.EntityId);
+        if (localTracked != null && !ReferenceEquals(localTracked, entity))
+        {
+            // ensure the deleted flag is copied if it was set on the untracked instance
+            if (entity.TransDeletedId != localTracked.TransDeletedId)
+                localTracked.TransDeletedId = entity.TransDeletedId;
+
+            DbStore.SqlDb.Entry(localTracked).State = EntityState.Deleted;
+        }
+        else
+            DbStore.SqlDb.Remove(entity);
+    }
 
     //private void DeleteRelationshipsUntracked(ICollection<TsDynDataRelationship> relationships)
     //{
@@ -153,5 +151,5 @@ partial class DbEntity
     //        DbContext.SqlDb.RemoveRange(relationships.ToList());
     //    l.Done();
     //}
-        
+
 }

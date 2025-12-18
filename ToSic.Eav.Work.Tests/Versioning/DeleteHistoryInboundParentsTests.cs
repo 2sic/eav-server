@@ -36,7 +36,7 @@ public class DeleteHistoryInboundParentsTests(
         // Pick an existing relationship to get a valid parent + attribute/field.
         var templateRel = dc.SqlDb.TsDynDataRelationships
             .AsNoTracking()
-            .Where(r => r.TransDeletedId == null && r.ChildEntityId != null)
+            .Where(r => r.ChildEntityId != null)
             .Select(r => new
             {
                 r.ParentEntityId,
@@ -79,9 +79,7 @@ public class DeleteHistoryInboundParentsTests(
             .Select(e => e.EntityId)
             .Single();
 
-        // Important: PK on TsDynDataRelationship appears to include (ParentEntityId, AttributeId, SortOrder)
-        // and does NOT include TransDeletedId. Since the delete will soft-delete the relationship row,
-        // we must ensure we always pick a sort-order that was never used before, even if deleted.
+        // Important: PK on TsDynDataRelationship includes (ParentEntityId, AttributeId, SortOrder).
         var nextSortOrder = dc.SqlDb.TsDynDataRelationships
             .AsNoTracking()
             .IgnoreQueryFilters()
@@ -96,7 +94,6 @@ public class DeleteHistoryInboundParentsTests(
             ParentEntityId = templateRel.ParentEntityId,
             ChildEntityId = childId,
             SortOrder = nextSortOrder,
-            TransDeletedId = null,
         });
         dc.SqlDb.SaveChanges();
 

@@ -192,9 +192,6 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             relationship.ToTable("TsDynDataRelationship");
 
-            // New 2025-12-17, just introduced this field, so we can always apply the filter for now
-            relationship.HasQueryFilter(e => e.TransDeletedId == null);
-
             relationship.Property(e => e.AttributeId);
 
             relationship.Property(e => e.ParentEntityId);
@@ -203,13 +200,6 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
 
             relationship.Property(e => e.ChildExternalId)
                 .HasColumnType("uniqueidentifier");
-
-            relationship.Property(e => e.TransDeletedId);
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            relationship.HasIndex(e => e.TransDeletedId)
-                .HasName("IX_TsDynDataRelationship_TransDeletedId");
-#pragma warning restore CS0618 // Type or member is obsolete
 
             relationship.HasOne(d => d.Attribute)
                 .WithMany(p => p.TsDynDataRelationships)
@@ -230,11 +220,6 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 // "Database operation expected to affect 1 row(s) but actually affected 0 row(s)."
                 //.OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataRelationship_TsDynDataEntityParent");
-
-            relationship.HasOne(d => d.TransDeleted)
-                .WithMany(p => p.TsDynDataRelationshipsTransDeleted)
-                .HasForeignKey(d => d.TransDeletedId)
-                .HasConstraintName("FK_TsDynDataRelationship_TsDynDataTransactionDeleted");
         });
 
         modelBuilder.Entity<TsDynDataValue>(value =>
