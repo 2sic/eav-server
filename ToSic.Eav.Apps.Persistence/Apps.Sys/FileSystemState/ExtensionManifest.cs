@@ -200,5 +200,9 @@ public sealed record ExtensionManifest
     //[JsonPropertyName("bundles")]
     //public JsonElement Bundles { get; init; } = JsonNullElement;
 
+    /// <summary>bundling multiple extensions</summary>
+    [JsonPropertyName("extensionsBundled")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? ExtensionsBundled { get; init; }
     #endregion
 }
