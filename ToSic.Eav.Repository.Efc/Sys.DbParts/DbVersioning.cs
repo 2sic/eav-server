@@ -34,14 +34,21 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
         var historyEntries = items
             .Select(i =>
             {
+                // Prepare json package
+                var jsonPackage = serializer.ToJson(i.Entity, metadataDepth);
+
+                // Check if we must store any parents-references along with it
                 var parents = parentsByChild.TryGetValue(i.EntityId, out var foundParents) && foundParents.Count > 0
                     ? foundParents
                     : null;
 
-                var serialized = serializer.Serialize(i.Entity, parents, metadataDepth);
+                if (parents is { Count: > 0 })
+                    jsonPackage = jsonPackage with { Parents = parents };
+
+                // Serialize and save
+                var serialized = serializer.Serialize(jsonPackage);
                 return PrepareHistoryEntry(i.EntityId, i.EntityGuid, i.ParentRef, serialized);
             })
-            .Where(h => h != null)
             .ToList();
 
         return l.ReturnAsOk(historyEntries);
@@ -126,12 +133,12 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
     internal static string? ParentRefForApp(int appId)
         => appId > 0 ? $"app-{appId}" : null;
 
-    /// <summary>
-    /// Save an entity to versioning, which is already serialized
-    /// </summary>
+    ///// <summary>
+    ///// Save an entity to versioning, which is already serialized
+    ///// </summary>
 
-    internal void AddAndSave(int entityId, Guid entityGuid, string? parentRef, string serialized)
-        => Save([PrepareHistoryEntry(entityId, entityGuid, parentRef, serialized)]);
+    //internal void AddAndSave(int entityId, Guid entityGuid, string? parentRef, string serialized)
+    //    => Save([PrepareHistoryEntry(entityId, entityGuid, parentRef, serialized)]);
 
     internal TsDynDataHistory PrepareHistoryEntry(int entityId, Guid entityGuid, string? parentRef, string serialized)
         => new()
@@ -154,7 +161,9 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
     internal void Save(ICollection<TsDynDataHistory> queue)
     {
         var l = LogDetails.Fn(timer: true);
-        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.TsDynDataHistories.AddRange(queue));
+        DbStore.DoAndSaveWithoutChangeDetection(
+            () => DbStore.SqlDb.TsDynDataHistories.AddRange(queue)
+        );
         l.Done();
     }
 }

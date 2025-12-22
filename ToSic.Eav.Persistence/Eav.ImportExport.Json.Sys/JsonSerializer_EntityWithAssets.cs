@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.ImportExport.Sys.Xml;
-using ToSic.Eav.Serialization.Sys.Json;
+﻿using ToSic.Eav.ImportExport.Sys.Xml;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
@@ -13,6 +11,6 @@ partial class JsonSerializer
         var ent = ToJson(bundle.Entity, metadataDepth);
         if (bundle.Assets is { Count: > 0 })
             ent = ent with { Assets = bundle.Assets };
-        return l.ReturnAsOk(System.Text.Json.JsonSerializer.Serialize(new JsonFormat { Entity = ent }, JsonOptions.UnsafeJsonWithoutEncodingHtml));
+        return l.ReturnAsOk(Serialize(ent));
     }
 }

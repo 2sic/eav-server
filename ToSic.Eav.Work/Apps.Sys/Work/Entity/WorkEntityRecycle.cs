@@ -391,6 +391,7 @@ public class WorkEntityRecycle(
         Dictionary<Guid, ParentLookup> parentsByGuid,
         Dictionary<int, Dictionary<string, int>> attributesByType)
     {
+        // TODO: @minor rework to be functional
         var specs = new List<(int ParentId, int ChildId, int AttributeId, int SortOrder)>();
 
         foreach (var child in entitiesWithParents)
@@ -434,6 +435,7 @@ public class WorkEntityRecycle(
             .ToHashSet();
     }
 
+    // TODO: @minor rework to be functional
     private static void AddMissingRelationships(EavDbContext db, List<(int ParentId, int ChildId, int AttributeId, int SortOrder)> specs, HashSet<(int ParentId, int ChildId, int AttributeId, int SortOrder)> existingKeys)
     {
         foreach (var s in specs)
