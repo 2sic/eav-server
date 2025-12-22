@@ -109,7 +109,7 @@ public class WorkEntityRecycleBinTests(
 
         var appReader2 = dc2.Loader.AppReaderRaw(TestSpecs.AppId, new());
         var recycler = workEntityRecycleBin.New(appReader2);
-        var items = recycler.Get(appId: TestSpecs.AppId);
+        var items = recycler.Get();
 
         var found = items.FirstOrDefault(i => i.EntityId == childId);
         var sample = string.Join(", ", items.Take(10).Select(i => $"{i.EntityId}:{i.EntityGuid}"));
@@ -185,7 +185,7 @@ public class WorkEntityRecycleBinTests(
 
         // Act
         var recycler = workEntityRecycleBin.New(appId: TestSpecs.AppId);
-        var items = recycler.Get(appId: TestSpecs.AppId);
+        var items = recycler.Get();
 
         // Assert
         var found = items.FirstOrDefault(i => i.EntityId == sourceId);

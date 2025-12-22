@@ -23,15 +23,16 @@ public class WorkEntityRecycle(
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
-    public void Recycle(int appId, int transactionId)
+    public void Recycle(int transactionId)
     {
-        var l = Log.Fn($"appId:{appId}, tx:{transactionId}");
+        var l = Log.Fn($"tx:{transactionId}");
 
-        ValidateInputs(appId, transactionId);
+        ValidateInputs(transactionId);
 
         var db = AppWorkCtx.DbStorage.SqlDb;
         EnsureTransactionExists(db, transactionId);
 
+        var appId = AppWorkCtx.AppId;
         var softDeletedEntities = LoadSoftDeletedEntities(db, appId, transactionId);
         UndeleteSoftDeletedEntities(softDeletedEntities);
 
@@ -53,11 +54,8 @@ public class WorkEntityRecycle(
         l.Done();
     }
 
-    private static void ValidateInputs(int appId, int transactionId)
+    private static void ValidateInputs(int transactionId)
     {
-        if (appId <= 0)
-            throw new ArgumentOutOfRangeException(nameof(appId));
-
         if (transactionId <= 0)
             throw new ArgumentOutOfRangeException(nameof(transactionId));
     }

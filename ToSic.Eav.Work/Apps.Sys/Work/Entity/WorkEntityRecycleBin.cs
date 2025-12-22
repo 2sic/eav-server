@@ -36,13 +36,12 @@ public class WorkEntityRecycleBin(
 
     private sealed record ContentTypeInfo(string StaticName, string Name);
 
-    public IReadOnlyList<RecycleBinItem> Get(int appId)
+    public IReadOnlyList<RecycleBinItem> Get()
     {
-        var l = Log.Fn<IReadOnlyList<RecycleBinItem>>($"appId:{appId}");
+        var l = Log.Fn<IReadOnlyList<RecycleBinItem>>();
 
-        if (appId <= 0)
-            return l.Return([], "invalid appId");
 
+        var appId = AppWorkCtx.AppId;
         var parentRef = DbVersioning.ParentRefForApp(appId);
         var db = AppWorkCtx.DbStorage.SqlDb;
 
