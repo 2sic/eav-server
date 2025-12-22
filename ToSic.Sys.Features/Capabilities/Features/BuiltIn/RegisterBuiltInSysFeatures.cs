@@ -29,6 +29,7 @@ internal class RegisterBuiltInSysFeatures
             EditUiTranslateWithGoogle, // v15
             LanguagesAdvancedFallback, // v16.04
             CopyrightManagement, // v16.08 / v17
+            EntitiesUndelete, // v21
             ContentTypeFieldsReuseDefinitions, // v16.08
             SharedAppCode, // v18.03
 
