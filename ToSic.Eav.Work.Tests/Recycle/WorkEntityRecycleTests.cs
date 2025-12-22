@@ -245,7 +245,7 @@ public class WorkEntityRecycleTests(
             },
             JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
-        var cJson = new Compressor().Compress(json);
+        var cJson = new Compressor().CompressOrNullIfDisabled(json);
         NotNull(cJson);
 
         dc.SqlDb.TsDynDataHistories.Add(new TsDynDataHistory
@@ -442,7 +442,7 @@ public class WorkEntityRecycleTests(
             },
             JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
-        var cJson = new Compressor().Compress(json);
+        var cJson = new Compressor().CompressOrNullIfDisabled(json);
         NotNull(cJson);
 
         dc.SqlDb.TsDynDataHistories.Add(new TsDynDataHistory

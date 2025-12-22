@@ -27,12 +27,12 @@ public class Compressor(ISysFeaturesService? features = null)
     // ReSharper disable once ReplaceWithFieldKeyword
     private readonly bool _isEnabled = features?.IsEnabled(BuiltInFeatures.SqlCompressDataTimeline.NameId) ?? true;
 
-    public byte[]? Compress(string text)
-        => IsEnabled 
+    public byte[]? CompressOrNullIfDisabled(string text)
+        => IsEnabled
             ? _compressor!.CompressBytes(Encoding.UTF8.GetBytes(text))
             : null;
 
-    public string? Decompress(byte[] bytes)
+    public string? DecompressOrNullIfDisabled(byte[] bytes)
         => IsEnabled
             ? Encoding.UTF8.GetString(_compressor!.DecompressBytes(bytes))
             : null;

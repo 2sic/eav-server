@@ -219,6 +219,6 @@ public class WorkEntityRecycleBin(
     }
 
     private string? Decompress(byte[] bytes)
-        => compressor.Value.Decompress(bytes)
-           ?? new Compressor().Decompress(bytes);
+        => compressor.Value.DecompressOrNullIfDisabled(bytes)
+           ?? new Compressor().DecompressOrNullIfDisabled(bytes);
 }

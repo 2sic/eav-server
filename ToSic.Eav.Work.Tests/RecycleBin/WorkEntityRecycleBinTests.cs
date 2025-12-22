@@ -163,7 +163,7 @@ public class WorkEntityRecycleBinTests(
             },
             JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
-        var cJson = new Compressor().Compress(json);
+        var cJson = new Compressor().CompressOrNullIfDisabled(json);
         NotNull(cJson);
 
         var history = new TsDynDataHistory

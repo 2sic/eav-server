@@ -146,7 +146,7 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
             SourceTable = EntitiesTableName,
             Operation = EavConstants.HistoryEntityJson,
             Json = compressor.Value.IsEnabled ? null : serialized,
-            CJson = compressor.Value.Compress(serialized),
+            CJson = compressor.Value.CompressOrNullIfDisabled(serialized),
             SourceGuid = entityGuid,
             SourceId = entityId,
             ParentRef = parentRef,

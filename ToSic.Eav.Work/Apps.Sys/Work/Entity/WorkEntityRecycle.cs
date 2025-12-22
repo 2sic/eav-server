@@ -254,8 +254,8 @@ public class WorkEntityRecycle(
     }
 
     private string? DecompressRegardlessOfFeatureFlag(byte[] bytes)
-        => compressor.Value.Decompress(bytes)
-           ?? new Compressor().Decompress(bytes);
+        => compressor.Value.DecompressOrNullIfDisabled(bytes)
+           ?? new Compressor().DecompressOrNullIfDisabled(bytes);
 
     private sealed record HistoryEntitySnapshot(int EntityId, Guid? SourceGuid, string? Json, byte[]? CJson);
 
