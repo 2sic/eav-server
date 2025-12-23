@@ -6,10 +6,11 @@ using ToSic.Sys.Security.Permissions;
 namespace ToSic.Eav.Data;
 
 /// <summary>
-/// Represents an Attribute definition in a ContentType. This is the base for attributes in <see cref="IContentType"/>
+/// Represents an Attribute definition in a ContentType.
+/// This is the base for attributes in <see cref="IContentType"/>
 /// </summary>
 [PublicApi]
-public interface IContentTypeAttribute: /*IAttributeBase,*/ IHasPermissions, IAppIdentityLight, IHasMetadata
+public interface IContentTypeAttribute: IHasPermissions, IAppIdentityLight, IHasMetadata
 {
     /// <summary>
     /// Name of the Attribute
@@ -56,4 +57,12 @@ public interface IContentTypeAttribute: /*IAttributeBase,*/ IHasPermissions, IAp
     /// </remarks>
     [PrivateApi]
     ContentTypeAttributeSysSettings? SysSettings { get; }
+
+    /// <summary>
+    /// The input type as string, e.g. "string-text" or "number-default".
+    /// </summary>
+    /// <remarks>
+    /// New in v21.
+    /// </remarks>
+    string InputType { get; }
 }

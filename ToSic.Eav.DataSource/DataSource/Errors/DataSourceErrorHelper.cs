@@ -94,9 +94,14 @@ public class DataSourceErrorHelper(DataBuilder builder)
         return [];
     }
 
-
-    [PrivateApi("usually not needed externally")]
-    [ShowApiWhenReleased(ShowApiMode.Never)]
+    /// <summary>
+    /// Create an error entity.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="stream"></param>
+    /// <param name="title"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
     private IEntity CreateErrorEntity(IDataSource? source, string stream, string? title, string? message)
     {
         var values = new Dictionary<string, object?>
@@ -131,6 +136,7 @@ public class DataSourceErrorHelper(DataBuilder builder)
     /// This must be internal so it can be used/verified in testing
     /// </summary>
     [PrivateApi("only internal for testing")]
-    internal static string GenerateTitle(string? title) => "Error: " + title;
+    internal static string GenerateTitle(string? title)
+        => $"Error: {title}";
 
 }

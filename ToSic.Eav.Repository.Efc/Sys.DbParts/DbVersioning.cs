@@ -1,19 +1,98 @@
-﻿using System.Data;
+﻿#if NETFRAMEWORK
+using SqlParameter = System.Data.SqlClient.SqlParameter;
+#else
+using SqlParameter = Microsoft.Data.SqlClient.SqlParameter;
+#endif
+using System.Data;
 using Microsoft.EntityFrameworkCore.Storage;
+using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Utils.Compression;
 
-#if NETFRAMEWORK
-using System.Data.SqlClient;
-#else
-using Microsoft.Data.SqlClient;
-#endif
-
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal  partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> compressor) : DbPartBase(db, "Db.Version")
+internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> compressor) : DbPartBase(db, "Db.Version")
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
+
+    internal List<TsDynDataHistory> PrepareHistoryEntriesWithInboundParents(
+        IReadOnlyCollection<(IEntity Entity, int EntityId, Guid EntityGuid, string? ParentRef)> items,
+        int metadataDepth = 0)
+    {
+        var l = LogDetails.Fn<List<TsDynDataHistory>>(timer: true);
+        if (items.Count == 0)
+            return l.Return([]);
+
+        var ids = items
+            .Select(i => i.EntityId)
+            .Distinct()
+            .ToList();
+
+        var parentsByChild = GetInboundParentsByChildIds(ids);
+        var serializer = DbStore.JsonSerializerGenerator.New();
+
+        var historyEntries = items
+            .Select(i =>
+            {
+                // Prepare json package
+                var jsonPackage = serializer.ToJson(i.Entity, metadataDepth);
+
+                // Check if we must store any parents-references along with it
+                var parents = parentsByChild.TryGetValue(i.EntityId, out var foundParents) && foundParents.Count > 0
+                    ? foundParents
+                    : null;
+
+                if (parents is { Count: > 0 })
+                    jsonPackage = jsonPackage with { Parents = parents };
+
+                // Serialize and save
+                var serialized = serializer.Serialize(jsonPackage);
+                return PrepareHistoryEntry(i.EntityId, i.EntityGuid, i.ParentRef, serialized);
+            })
+            .ToList();
+
+        return l.ReturnAsOk(historyEntries);
+    }
+
+    internal void AddAndSave(IEntity entity, int entityId, Guid entityGuid, string? parentRef)
+    {
+        var entries = PrepareHistoryEntriesWithInboundParents([(entity, entityId, entityGuid, parentRef)]);
+        Save(entries);
+    }
+
+    private Dictionary<int, List<JsonRelationship>> GetInboundParentsByChildIds(IReadOnlyCollection<int> entityIds)
+    {
+        if (entityIds.Count == 0)
+            return [];
+
+        // Note: Relationship has a global query filter for TransDeletedId == null.
+        // We want only active inbound relations at the time the history snapshot is created.
+        var inbound = DbStore.SqlDb.TsDynDataRelationships
+            .AsNoTracking()
+            .Where(r => r.ChildEntityId != null && entityIds.Contains(r.ChildEntityId.Value))
+            .Select(r => new
+            {
+                ChildId = r.ChildEntityId!.Value,
+                ParentGuid = r.ParentEntity.EntityGuid,
+                Field = r.Attribute.StaticName,
+                r.SortOrder,
+            })
+            .ToList();
+
+        return inbound
+            .GroupBy(r => r.ChildId)
+            .ToDictionary(
+                g => g.Key,
+                g => g
+                    .Select(r => new JsonRelationship
+                    {
+                        Parent = r.ParentGuid,
+                        Field = r.Field,
+                        SortOrder = r.SortOrder
+                    })
+                    .ToList()
+            );
+    }
 
     #region Change-Log ID
 
@@ -51,21 +130,26 @@ internal  partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor>
 
     #endregion
 
-    /// <summary>
-    /// Save an entity to versioning, which is already serialized
-    /// </summary>
-    internal void AddAndSave(int entityId, Guid entityGuid, string serialized)
-        => Save([PrepareHistoryEntry(entityId, entityGuid, serialized)]);
+    internal static string? ParentRefForApp(int appId)
+        => appId > 0 ? $"app-{appId}" : null;
 
-    internal TsDynDataHistory PrepareHistoryEntry(int entityId, Guid entityGuid, string serialized)
+    ///// <summary>
+    ///// Save an entity to versioning, which is already serialized
+    ///// </summary>
+
+    //internal void AddAndSave(int entityId, Guid entityGuid, string? parentRef, string serialized)
+    //    => Save([PrepareHistoryEntry(entityId, entityGuid, parentRef, serialized)]);
+
+    internal TsDynDataHistory PrepareHistoryEntry(int entityId, Guid entityGuid, string? parentRef, string serialized)
         => new()
         {
             SourceTable = EntitiesTableName,
             Operation = EavConstants.HistoryEntityJson,
             Json = compressor.Value.IsEnabled ? null : serialized,
-            CJson = compressor.Value.Compress(serialized),
+            CJson = compressor.Value.CompressOrNullIfDisabled(serialized),
             SourceGuid = entityGuid,
             SourceId = entityId,
+            ParentRef = parentRef,
             TransactionId = GetTransactionId(),
             Timestamp = DateTime.UtcNow // always UTC (time zone independent)
         };
@@ -77,7 +161,9 @@ internal  partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor>
     internal void Save(ICollection<TsDynDataHistory> queue)
     {
         var l = LogDetails.Fn(timer: true);
-        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.TsDynDataHistories.AddRange(queue));
+        DbStore.DoAndSaveWithoutChangeDetection(
+            () => DbStore.SqlDb.TsDynDataHistories.AddRange(queue)
+        );
         l.Done();
     }
 }

@@ -10,7 +10,6 @@ using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
@@ -221,16 +220,21 @@ public class EfcAppLoaderService(
         {
             var l = Log.Fn();
             codeRefTrail.WithHere();
-            string? optionalOverrideAppFolder = null;
-            // prepare metadata lists & relationships etc.
+
+            // prepare core metadata lists & name/path of app
             if (startAt <= AppStateLoadSequence.MetadataInit)
             {
                 AddSqlTime(InitMetadataLists(builder));
-                var (_, folder) = PreLoadAppPath(state.AppId);
-                optionalOverrideAppFolder = folder;
+                // Set name and folder early, so that other loaders have it
+                // Note that if no value was found in the DB, then the app-configuration was stored
+                // in an old format (using DB entities instead of JSON persistence).
+                // In that case, do NOT set the values, as later code can still extract it from the DB entities.
+                // The only downside will be, that such old apps cannot load data from the /extensions/ folder,
+                // which is a much newer feature anyhow.
+                builder.EnsureNameAndFolderInitialized(() => PreLoadAppPath(state.AppId), false);
             }
             else
-                l.A("skipping metadata load");
+                l.A("skipping metadata and name/path load");
 
             // variable to hold future added entities
             ICollection<IEntity> fileEntities = [];
@@ -241,7 +245,7 @@ public class EfcAppLoaderService(
                 var typeTimer = Stopwatch.StartNew();
                 var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
-                var data = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge, optionalOverrideAppFolder);
+                var data = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge);
                 builder.InitContentTypes(data.Types.ToListOpt());
                 fileEntities = data.Entities;
                 typeTimer.Stop();
@@ -329,25 +333,32 @@ public class EfcAppLoaderService(
         var l = Log.Fn<(string? Name, string? Path)>($"{nameof(appId)}: {appId}");
         try
         {
-            // Get all Entities in the 2SexyContent-App scope
+            // Get all Entities of type "2SexyContent-App"
+            // Note that it will only load the headers, as the content-type should store to JSON
+            // But there are edge cases of 2sxc systems upgraded from old versions, where
+            // the content-type was DB-based. So there are cases where the data will not be in JSON,
+            // and it won't find anything - even though the configuration exists. 
             var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, sysFeaturesSvc);
-            var dbEntity = entityLoader.LoadEntitiesFromDb(appId, [], AppLoadConstants.TypeAppConfig);
-            if (dbEntity.Count == 0)
+            var appConfigs = entityLoader.LoadEntityHeadersFromDb(appId, [], filterJsonType: AppLoadConstants.TypeAppConfig);
+            if (appConfigs.Count == 0)
                 return l.Return((null, null), "not in db");
 
             // Get the first one as it should be the one containing the App-Configuration
             // WARNING: This looks a bit fishy, I think it shouldn't just assume the first one is the right one
-            var json = dbEntity.FirstOrDefault()?.Json;
+            var json = appConfigs
+                .OrderBy(e => e.EntityId)
+                .FirstOrDefault()
+                ?.Json;
             if (string.IsNullOrEmpty(json))
                 return l.Return((null, null), "no json");
 
             l.A("app Entity found - this json: " + json);
             var serializer = dataDeserializer.New();
             serializer.Initialize(appId, [], null);
-            if (serializer.Deserialize(json!, true, true) is not Entity appEntity)
+            if (serializer.Deserialize(json!, true, true) is not { } appConfig)
                 return l.Return((null, null), "can't deserialize");
-            var path = appEntity.Get<string>(AppLoadConstants.FieldFolder);
-            var name = appEntity.Get<string>(AppLoadConstants.FieldName);
+            var path = appConfig.Get<string>(AppLoadConstants.FieldFolder);
+            var name = appConfig.Get<string>(AppLoadConstants.FieldName);
 
             return l.Return((name, path), path.NullIfNoValue() ?? "no folder");
         }

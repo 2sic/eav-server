@@ -64,7 +64,7 @@ public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPaths
 
         (string path, string folder) GetBestPathAndFolder(string appPathToCheck)
         {
-            // New /extensions folder
+            // New /Extensions folder
             var extensionsNewPath = Path.Combine(appPathToCheck, FolderConstants.AppExtensionsFolder);
 
             // Legacy /system folder

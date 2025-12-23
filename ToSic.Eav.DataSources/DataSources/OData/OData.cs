@@ -26,8 +26,8 @@ public sealed class OData : DataSourceBase
     #region Configuration
 
     /// <summary>
-    /// Raw OData query string to apply, for example: "$filter=Title eq 'Hello'&$orderby=Created desc&$top=10".
-    /// Can start with '?' and may contain any supported system options.
+    /// Raw OData query string to apply, for example: `"$filter=Title eq 'Hello'&amp;$orderby=Created desc&amp;$top=10"`.
+    /// Can start with `?` and may contain any supported system options.
     /// </summary>
     [Configuration(Field = "EntityIds")] // TODO: change
     public string? ODataQueryString

@@ -72,7 +72,7 @@ partial class AppState
                         st._loading = true;
                         loader.Invoke(st);
                         st.CacheResetTimestamp("load complete");
-                        _ = EnsureNameAndFolderInitialized();
+                        _ = EnsureNameAndFolderInitialized(LoadAppPathFromEntitiesList, true);
                         if (!st._firstLoadCompleted) st._firstLoadCompleted = true;
                     lInLock.Done($"done - dynamic load count: {st.DynamicUpdatesCount}");
                 }
@@ -108,13 +108,15 @@ partial class AppState
             st.Folder = folder;
         }
 
-        private bool EnsureNameAndFolderInitialized()
+        /// <inheritdoc/>
+        public bool EnsureNameAndFolderInitialized(Func<(string? Name, string? Path)> getNameAndPath, bool useErrorNameIfNoValue)
         {
             var st = AppStateTyped;
             var l = st.Log.Fn<bool>();
+
             // Before we do anything, check primary App
             // Otherwise other checks (like is name empty) will fail, because it's not empty
-            // This is necessary, because it does get loaded with real settings
+            // This is necessary, because it does get loaded with real settings which may vary from install to install.
             // But we must override them to always be the same.
             if (st.NameId == KnownAppsConstants.PrimaryAppGuid)
             {
@@ -123,23 +125,17 @@ partial class AppState
                 return l.ReturnTrue($"Primary App. Name: {st.Name}, Folder:{st.Folder}");
             }
 
-            // Only do something if Name or Folder are still invalid
-            if (!string.IsNullOrWhiteSpace(st.Name) && !string.IsNullOrWhiteSpace(st.Folder))
+            // If name and Folder are set, exit early
+            if (st.Name.HasValue() && st.Folder.HasValue())
                 return l.ReturnFalse($"No change. Name: {st.Name}, Folder:{st.Folder}");
+
 
             // If the loader wasn't able to fill name/folder, then the data was not a json
             // so we must try to fix this now
             l.A("Trying to load Name/Folder from App package entity");
-            // note: we sometimes have a (still unsolved) problem, that the AppConfig is generated multiple times
-            // so the OfType().OrderBy() should ensure that we really only take the first=oldest one.
-            var config = st.Entities.ImmutableList
-                .OfType(AppLoadConstants.TypeAppConfig)
-                .OrderBy(e => e.EntityId)
-                .FirstOrDefault();
-            if (st.Name.IsEmptyOrWs())
-                st.Name = config?.Get<string>(AppLoadConstants.FieldName) ?? "error-app-name-no-config";
-            if (st.Folder.IsEmptyOrWs())
-                st.Folder = config?.Get<string>(AppLoadConstants.FieldFolder) ?? "error-app-folder-no-config";
+
+            var (name, folder) = getNameAndPath();
+            SetNameAndFolderIfEmpty(name, folder);
 
             // Last corrections for the DefaultApp "Content"
             if (st.NameId == KnownAppsConstants.DefaultAppGuid)
@@ -150,8 +146,32 @@ partial class AppState
                 if (st.Folder.IsEmptyOrWs())
                     st.Folder = KnownAppsConstants.ContentAppFolder;
             }
+            else if (useErrorNameIfNoValue)
+                SetNameAndFolderIfEmpty("error-app-name-no-config", "error-app-folder-no-config");
 
             return l.ReturnTrue($"Name: {st.Name}, Folder:{st.Folder}");
+
+            void SetNameAndFolderIfEmpty(string? altName, string? altFolder)
+            {
+                if (st.Name.IsEmptyOrWs())
+                    st.Name = altName;
+                if (st.Folder.IsEmptyOrWs())
+                    st.Folder = altFolder;
+            }
+        }
+
+        internal (string? Name, string? Path) LoadAppPathFromEntitiesList()
+        {
+            var l = Log.Fn<(string?, string?)>("Trying to load Name/Folder from App package entity");
+            // note: we sometimes have a (still unsolved) problem, that the AppConfig is generated multiple times
+            // so the OfType().OrderBy() should ensure that we really only take the first=oldest one.
+            var config = AppStateTyped.Entities.ImmutableList
+                .OfType(AppLoadConstants.TypeAppConfig)
+                .OrderBy(e => e.EntityId)
+                .FirstOrDefault();
+            var name = config?.Get<string>(AppLoadConstants.FieldName);
+            var folder = config?.Get<string>(AppLoadConstants.FieldFolder);
+            return l.Return((name, folder));
         }
 
 

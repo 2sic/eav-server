@@ -38,6 +38,8 @@ public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> wor
             // check if it's deleted - if yes, resurrect
             // 2025-04-29 2dm code changed a bit for 2sxc v20.0, but couldn't see how to test it / when this scenario pops up
             // remove this comment if everything is ok by 2026-04
+            // 2025-12-17 2dm finding: ATM this could never hit, because GetEntityStub(...) will filter out deleted entities
+            // ...note that there is another GetStub which uses ID, which would not filter... might need revisiting some day
             var existingEnt = AppWorkCtx.DbStorage.Entities.GetEntityStubsByGuid(newGuid).First();
             if (existingEnt.TransDeletedId != null)
                 existingEnt.TransDeletedId = null;

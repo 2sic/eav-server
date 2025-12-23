@@ -1,25 +1,31 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Data.Build;
-
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 using ToSic.Eav.Persistence.Efc.Sys.Values;
 using ToSic.Eav.Serialization;
+using ToSic.Sys.Documentation;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
-internal class EntityBuildHelper
+internal class EntityBuildHelper(
+    DataBuilder dataBuilder,
+    IAppReader appReader,
+    IDataDeserializer serializer,
+    Dictionary<int, ICollection<TempRelationshipList>> relatedEntities,
+    Dictionary<int, ICollection<TempAttributeWithValues>> attributes,
+    string primaryLanguage,
+    ILog parentLog): HelperBase(parentLog, "Efc.EnBlHl")
 {
-    internal static IEntity BuildNewEntity(DataBuilder dataBuilder,
-        IAppReader appReader,
-        TempEntity rawEntity,
-        IDataDeserializer serializer,
-        Dictionary<int, ICollection<TempRelationshipList>> relatedEntities,
-        Dictionary<int, ICollection<TempAttributeWithValues>> attributes,
-        string primaryLanguage, ILogCall<TimeSpan>? logCall)
-    {
+    private int _errorId = int.MaxValue;
 
+    internal IEntity BuildNewEntity(
+        TempEntity rawEntity,
+        ILogCall? l)
+    {
+        // First check if JSON persisted entity
         if (rawEntity.Json != null)
         {
             var fromJson = serializer.Deserialize(rawEntity.Json, false, true);
@@ -34,7 +40,23 @@ internal class EntityBuildHelper
             return clonedExtended;
         }
 
-        var contentType = appReader.GetContentTypeRequired(rawEntity.ContentTypeId);
+        var contentType = appReader.GetContentTypeOptional(rawEntity.ContentTypeId);
+
+        // Add error entity if content type is missing.
+        // This is really rare, but it happens.
+        // Example: If an app had a content type and data for it
+        // But later an extension with the same content-type was added from the file system
+        // Then the original content-type from the DB is gone, but the data remains.
+        // Before v21, this would completely break the app, as all entities of the app would fail to load.
+        if (contentType == null)
+        {
+            l.A($"ContentTypeId {rawEntity.ContentTypeId} not found for EntityId {rawEntity.EntityId}");
+            return CreateErrorEntity(
+                title: "Content Type Missing",
+                message: $"Content Type '{rawEntity.ContentTypeId}' not found in App {appReader.AppId}. " +
+                         $"Entity {rawEntity.EntityId} could not be loaded."
+            );
+        }
 
         // Prepare relationships to add to AttributeGenerator
         var emptyValueList = new List<(string StaticName, IValue)>();
@@ -73,7 +95,7 @@ internal class EntityBuildHelper
         var entityId = rawEntity.EntityId;
         if (rawEntity is { IsPublished: false, PublishedEntityId: not null } && rawEntity.PublishedEntityId != 0)
         {
-            logCall.A($"map draft to published for new: {rawEntity.EntityId} on {entityId}");
+            l.A($"map draft to published for new: {rawEntity.EntityId} on {entityId}");
             entityId = rawEntity.PublishedEntityId.Value;
         }
 
@@ -98,4 +120,35 @@ internal class EntityBuildHelper
 
         return newEntity;
     }
+
+    [PrivateApi("usually not needed externally")]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    private IEntity CreateErrorEntity(string? title, string? message)
+    {
+        var values = new Dictionary<string, object?>
+        {
+            { DataConstants.ErrorFieldTitle, $"Error: {title}" },
+            { DataConstants.ErrorFieldMessage, message },
+            { DataConstants.ErrorFieldDebugNotes, DataConstants.ErrorDebugMessage }
+        };
+
+        // #DebugDataSource
+        // When debugging I usually want to see where this happens. Feel free to comment in/out as needed
+        // System.Diagnostics.Debugger.Break();
+
+        // Don't use the default data builder here, as it needs DI and this object
+        // will often be created late when DI is already destroyed
+        var id = _errorId--;
+        var errorEntity = dataBuilder.Entity.Create(
+            appId: appReader.AppId,
+            entityId: id,
+            repositoryId: id,
+            contentType: ErrorContentType,
+            attributes: dataBuilder.Attribute.Create(values),
+            titleField: DataConstants.ErrorFieldTitle
+        );
+        return errorEntity;
+    }
+
+    private IContentType ErrorContentType => field ??= dataBuilder.ContentType.Transient(DataConstants.ErrorTypeName);
 }

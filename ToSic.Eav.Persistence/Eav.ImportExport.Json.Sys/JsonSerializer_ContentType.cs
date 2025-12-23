@@ -17,7 +17,7 @@ partial class JsonSerializer
             CtAttributeIncludeInheritedMetadata = true
         });
 
-        var simple = System.Text.Json.JsonSerializer.Serialize(package, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+        var simple = Serialize(package);
         return simple;
     }
 
@@ -123,7 +123,7 @@ partial class JsonSerializer
                 {
                     Name = a.Name,
                     Type = a.Type.ToString(),
-                    InputType = a.InputType(),
+                    InputType = a.InputType,
                     IsTitle = a.IsTitle,
                     Metadata = metadata,
 

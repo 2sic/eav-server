@@ -82,33 +82,33 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
         logStore.Add("boot-log", Log);
         var l = Log.Fn(timer: true);
 
-        modelBuilder.Entity<TsDynDataDimension>(entity =>
+        modelBuilder.Entity<TsDynDataDimension>(dimension =>
         {
-            entity.HasKey(e => e.DimensionId)
+            dimension.HasKey(e => e.DimensionId)
                 .HasName("PK_TsDynDataDimension");
 
-            entity.ToTable("TsDynDataDimension");
+            dimension.ToTable("TsDynDataDimension");
 
-            entity.Property(e => e.DimensionId);
+            dimension.Property(e => e.DimensionId);
 
-            entity.Property(e => e.Active)/*.HasDefaultValueSql("1")*/.ValueGeneratedNever();
+            dimension.Property(e => e.Active)/*.HasDefaultValueSql("1")*/.ValueGeneratedNever();
 
-            entity.Property(e => e.EnvironmentKey).HasColumnName("ExternalKey").HasMaxLength(100);
+            dimension.Property(e => e.EnvironmentKey).HasColumnName("ExternalKey").HasMaxLength(100);
 
-            entity.Property(e => e.Name)
+            dimension.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            entity.Property(e => e.Key).HasColumnName("SystemKey").HasMaxLength(100);
+            dimension.Property(e => e.Key).HasColumnName("SystemKey").HasMaxLength(100);
 
-            entity.Property(e => e.ZoneId);
+            dimension.Property(e => e.ZoneId);
 
-            entity.HasOne(d => d.ParentNavigation)
+            dimension.HasOne(d => d.ParentNavigation)
                 .WithMany(p => p.InverseParentNavigation)
                 .HasForeignKey(d => d.Parent)
                 .HasConstraintName("FK_TsDynDataDimension_TsDynDataDimension");
 
-            entity.HasOne(d => d.Zone)
+            dimension.HasOne(d => d.Zone)
                 .WithMany(p => p.TsDynDataDimensions)
                 .HasForeignKey(d => d.ZoneId)
                 .OnDelete(DeleteBehavior.Restrict)
@@ -121,6 +121,9 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 .HasName("PK_TsDynDataEntity");
 
             entity.ToTable("TsDynDataEntity");
+
+            // TODO: @STV see if we can start using this; requires detailed review of each use case
+            //entity.HasQueryFilter(e => e.TransDeletedId == null);
 
 #pragma warning disable CS0618 // Type or member is obsolete
             entity.HasIndex(e => e.KeyNumber)
@@ -182,32 +185,35 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 .HasConstraintName("FK_TsDynDataEntity_TsDynDataTransactionDeleted");
         });
 
-        modelBuilder.Entity<TsDynDataRelationship>(entity =>
+        modelBuilder.Entity<TsDynDataRelationship>(relationship =>
         {
-            entity.HasKey(e => new { e.AttributeId, e.ParentEntityId, e.SortOrder })
+            relationship.HasKey(e => new { e.AttributeId, e.ParentEntityId, e.SortOrder })
                 .HasName("PK_TsDynDataRelationship");
 
-            entity.ToTable("TsDynDataRelationship");
+            relationship.ToTable("TsDynDataRelationship");
 
-            entity.Property(e => e.AttributeId);
+            relationship.Property(e => e.AttributeId);
 
-            entity.Property(e => e.ParentEntityId);
+            relationship.Property(e => e.ParentEntityId);
 
-            entity.Property(e => e.ChildEntityId);
+            relationship.Property(e => e.ChildEntityId);
 
-            entity.HasOne(d => d.Attribute)
+            relationship.Property(e => e.ChildExternalId)
+                .HasColumnType("uniqueidentifier");
+
+            relationship.HasOne(d => d.Attribute)
                 .WithMany(p => p.TsDynDataRelationships)
                 .HasForeignKey(d => d.AttributeId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_TsDynDataRelationship_TsDynDataAttribute");
 
-            entity.HasOne(d => d.ChildEntity)
+            relationship.HasOne(d => d.ChildEntity)
                 .WithMany(p => p.RelationshipsWithThisAsChild)
                 .HasForeignKey(d => d.ChildEntityId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataRelationship_TsDynDataEntityChild");
 
-            entity.HasOne(d => d.ParentEntity)
+            relationship.HasOne(d => d.ParentEntity)
                 .WithMany(p => p.RelationshipsWithThisAsParent)
                 .HasForeignKey(d => d.ParentEntityId)
                 // Commented for efcore 2.1.1 to fix DbUpdateConcurrencyException
@@ -216,29 +222,29 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 .HasConstraintName("FK_TsDynDataRelationship_TsDynDataEntityParent");
         });
 
-        modelBuilder.Entity<TsDynDataValue>(entity =>
+        modelBuilder.Entity<TsDynDataValue>(value =>
         {
-            entity.HasKey(e => e.ValueId)
+            value.HasKey(e => e.ValueId)
                 .HasName("PK_TsDynDataValue");
 
-            entity.ToTable("TsDynDataValue");
+            value.ToTable("TsDynDataValue");
 
-            entity.Property(e => e.ValueId);
+            value.Property(e => e.ValueId);
 
-            entity.Property(e => e.AttributeId);
+            value.Property(e => e.AttributeId);
 
-            entity.Property(e => e.EntityId);
+            value.Property(e => e.EntityId);
 
-            entity.Property(e => e.Value)
+            value.Property(e => e.Value)
                 .IsRequired()
                 .HasColumnType("nvarchar(max)");
 
-            entity.HasOne(d => d.Attribute)
+            value.HasOne(d => d.Attribute)
                 .WithMany(p => p.TsDynDataValues)
                 .HasForeignKey(d => d.AttributeId)
                 .HasConstraintName("FK_TsDynDataValue_TsDynDataAttribute");
 
-            entity.HasOne(d => d.Entity)
+            value.HasOne(d => d.Entity)
                 .WithMany(p => p.TsDynDataValues)
                 .HasForeignKey(d => d.EntityId)
                 //.OnDelete(DeleteBehavior.Restrict)
@@ -246,186 +252,198 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
                 .HasConstraintName("FK_TsDynDataValue_TsDynDataEntity");
         });
 
-        modelBuilder.Entity<TsDynDataValueDimension>(entity =>
+        modelBuilder.Entity<TsDynDataValueDimension>(valDim =>
         {
-            entity.HasKey(e => new { e.ValueId, e.DimensionId })
+            valDim.HasKey(e => new { e.ValueId, e.DimensionId })
                 .HasName("PK_TsDynDataValueDimension");
 
-            entity.ToTable("TsDynDataValueDimension");
+            valDim.ToTable("TsDynDataValueDimension");
 
-            entity.Property(e => e.ValueId);
+            valDim.Property(e => e.ValueId);
 
-            entity.Property(e => e.DimensionId);
+            valDim.Property(e => e.DimensionId);
 
-            entity.Property(e => e.ReadOnly)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
+            valDim.Property(e => e.ReadOnly)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
-            entity.HasOne(d => d.Dimension)
+            valDim.HasOne(d => d.Dimension)
                 .WithMany(p => p.TsDynDataValueDimensions)
                 .HasForeignKey(d => d.DimensionId)
                 .OnDelete(DeleteBehavior.Cascade)// DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataValueDimension_TsDynDataDimension");
 
-            entity.HasOne(d => d.Value)
+            valDim.HasOne(d => d.Value)
                 .WithMany(p => p.TsDynDataValueDimensions)
                 .HasForeignKey(d => d.ValueId)
                 .OnDelete(DeleteBehavior.Cascade)// DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataValueDimension_TsDynDataValue");
         });
 
-        modelBuilder.Entity<TsDynDataApp>(entity =>
+        modelBuilder.Entity<TsDynDataApp>(app =>
         {
-            entity.HasKey(e => e.AppId)
+            app.HasKey(e => e.AppId)
                 .HasName("PK_TsDynDataApp");
 
-            entity.ToTable("TsDynDataApp");
+            app.ToTable("TsDynDataApp");
+
+            // New 2025-12-17, so far never been used yes, so no issues expected
+            // Note that it's actually not in use yet, we just introduced the fields but never used them
+            app.HasQueryFilter(e => e.TransDeletedId == null);
 
 #pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => new { e.Name, e.ZoneId })
+            app.HasIndex(e => new { e.Name, e.ZoneId })
                 .HasName("UQ_TsDynDataApp_Name_ZoneId")
                 .IsUnique();
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            entity.Property(e => e.AppId);
+            app.Property(e => e.AppId);
 
-            entity.Property(e => e.Name)
+            app.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(255);
 
-            entity.Property(e => e.ZoneId);
+            app.Property(e => e.ZoneId);
 
-            entity.HasOne(d => d.Zone)
+            app.HasOne(d => d.Zone)
                 .WithMany(p => p.TsDynDataApps)
                 .HasForeignKey(d => d.ZoneId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataApp_TsDynDataZone");
 
-            entity.HasOne(d => d.TransCreated)
+            app.HasOne(d => d.TransCreated)
                 .WithMany(p => p.TsDynDataAppsTransCreated)
                 .HasForeignKey(d => d.TransCreatedId)
                 .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.TransModified)
+            app.HasOne(d => d.TransModified)
                 .WithMany(p => p.TsDynDataAppsTransModified)
                 .HasForeignKey(d => d.TransModifiedId)
                 .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionModified");
 
-            entity.HasOne(d => d.TransDeleted)
+            app.HasOne(d => d.TransDeleted)
                 .WithMany(p => p.TsDynDataAppsTransDeleted)
                 .HasForeignKey(d => d.TransDeletedId)
                 .HasConstraintName("FK_TsDynDataApp_TsDynDataTransactionDeleted");
         });
 
-        modelBuilder.Entity<TsDynDataAttribute>(entity =>
+        modelBuilder.Entity<TsDynDataAttribute>(attribute =>
         {
-            entity.HasKey(e => e.AttributeId)
+            attribute.HasKey(e => e.AttributeId)
                 .HasName("PK_TsDynDataAttribute");
 
-            entity.ToTable("TsDynDataAttribute");
+            attribute.ToTable("TsDynDataAttribute");
 
-            entity.Property(e => e.AttributeId);
+            // TODO: @STV see if we can start using this; requires detailed review of each use case
+            // New 2025-12-17, we THINK that we recently introduced this field, and it's not used yet, so we can always apply the filter for now
+            attribute.HasQueryFilter(e => e.TransDeletedId == null);
 
-            entity.Property(e => e.StaticName)
+            attribute.Property(e => e.AttributeId);
+
+            attribute.Property(e => e.StaticName)
                 .IsRequired()
                 .HasMaxLength(50);
 
-            entity.Property(e => e.Type)
+            attribute.Property(e => e.Type)
                 .IsRequired()
                 .HasMaxLength(50);
 
-            entity.Property(e => e.Guid)
+            attribute.Property(e => e.Guid)
                 .HasColumnType("uniqueidentifier");
 
-            entity.Property(e => e.SysSettings)
+            attribute.Property(e => e.SysSettings)
                 .HasColumnType("nvarchar(MAX)");
 
-            entity.Property(e => e.ContentTypeId);
+            attribute.Property(e => e.ContentTypeId);
 
-            entity.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
+            attribute.Property(e => e.IsTitle)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
-            entity.HasOne(d => d.TransCreated)
+            attribute.HasOne(d => d.TransCreated)
                 .WithMany(p => p.TsDynDataAttributesTransCreated)
                 .HasForeignKey(d => d.TransCreatedId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.TransModified)
+            attribute.HasOne(d => d.TransModified)
                 .WithMany(p => p.TsDynDataAttributesTransModified)
                 .HasForeignKey(d => d.TransModifiedId)
                 .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionModified");
 
-            entity.HasOne(d => d.TransDeleted)
+            attribute.HasOne(d => d.TransDeleted)
                 .WithMany(p => p.TsDynDataAttributesTransDeleted)
                 .HasForeignKey(d => d.TransDeletedId)
                 .HasConstraintName("FK_TsDynDataAttribute_TsDynDataTransactionDeleted");
 
-            entity.HasOne(d => d.TypeNavigation)
+            attribute.HasOne(d => d.TypeNavigation)
                 .WithMany(p => p.TsDynDataAttributes)
                 .HasForeignKey(d => d.Type)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataAttribute_TsDynDataAttributeType");
 
-            entity.HasOne(d => d.ContentType)
+            attribute.HasOne(d => d.ContentType)
                 .WithMany(p => p.TsDynDataAttributes)
                 .HasForeignKey(d => d.ContentTypeId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataAttribute_TsDynDataContentType");
         });
 
-        modelBuilder.Entity<TsDynDataAttributeType>(entity =>
+        modelBuilder.Entity<TsDynDataAttributeType>(attributeType =>
         {
-            entity.HasKey(e => e.Type)
+            attributeType.HasKey(e => e.Type)
                 .HasName("PK_TsDynDataAttributeType");
 
-            entity.ToTable("TsDynDataAttributeType");
+            attributeType.ToTable("TsDynDataAttributeType");
 
-            entity.Property(e => e.Type).HasMaxLength(50);
+            attributeType.Property(e => e.Type)
+                .HasMaxLength(50);
         });
 
-        modelBuilder.Entity<TsDynDataContentType>(entity =>
+        modelBuilder.Entity<TsDynDataContentType>(contentType =>
         {
-            entity.HasKey(e => e.ContentTypeId)
+            contentType.HasKey(e => e.ContentTypeId)
                 .HasName("PK_TsDynDataContentType");
 
-            entity.ToTable("TsDynDataContentType");
+            contentType.ToTable("TsDynDataContentType");
 
-            entity.Property(e => e.ContentTypeId);
+            // New 2025-12-17, all 8 use cases reviewed by 2dm
+            contentType.HasQueryFilter(e => e.TransDeletedId == null);
 
-            entity.Property(e => e.IsGlobal)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
+            contentType.Property(e => e.ContentTypeId);
 
-            entity.Property(e => e.AppId);
+            contentType.Property(e => e.IsGlobal)/*.HasDefaultValueSql("0")*/.ValueGeneratedNever();
 
-            entity.Property(e => e.Name).HasMaxLength(150);
+            contentType.Property(e => e.AppId);
 
-            entity.Property(e => e.Scope).HasMaxLength(50);
+            contentType.Property(e => e.Name).HasMaxLength(150);
 
-            entity.Property(e => e.StaticName)
+            contentType.Property(e => e.Scope).HasMaxLength(50);
+
+            contentType.Property(e => e.StaticName)
                 .HasMaxLength(150)
                 .HasDefaultValueSql("newid()");
 
-            entity.HasOne(d => d.App)
+            contentType.HasOne(d => d.App)
                 .WithMany(p => p.TsDynDataContentTypes)
                 .HasForeignKey(d => d.AppId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataContentType_TsDynDataApp");
 
-            entity.HasOne(d => d.TransCreated)
+            contentType.HasOne(d => d.TransCreated)
                 .WithMany(p => p.TsDynDataContentTypesTransCreated)
                 .HasForeignKey(d => d.TransCreatedId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.TransModified)
+            contentType.HasOne(d => d.TransModified)
                 .WithMany(p => p.TsDynDataContentTypesTransModified)
                 .HasForeignKey(d => d.TransModifiedId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionModified");
 
-            entity.HasOne(d => d.TransDeleted)
+            contentType.HasOne(d => d.TransDeleted)
                 .WithMany(p => p.TsDynDataContentTypesTransDeleted)
                 .HasForeignKey(d => d.TransDeletedId)
                 .HasConstraintName("FK_TsDynDataContentType_TsDynDataTransactionDeleted");
 
-            entity.HasOne(d => d.InheritContentTypeNavigation)
+            contentType.HasOne(d => d.InheritContentTypeNavigation)
                 .WithMany(p => p.InverseInheritContentTypesNavigation)
                 .HasForeignKey(d => d.InheritContentTypeId)
                 .HasConstraintName("FK_TsDynDataContentType_TsDynDataContentType");
@@ -435,106 +453,116 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
             //    .HasColumnType("nvarchar(MAX)");
         });
 
-        modelBuilder.Entity<TsDynDataHistory>(entity =>
+        modelBuilder.Entity<TsDynDataHistory>(history =>
         {
-            entity.HasKey(e => e.HistoryId)
+            history.HasKey(e => e.HistoryId)
                 .HasName("PK_TsDynDataHistory");
 
-            entity.ToTable("TsDynDataHistory");
+            history.ToTable("TsDynDataHistory");
 
-            entity.Property(e => e.HistoryId);
+            history.Property(e => e.HistoryId);
 
-            entity.Property(e => e.Operation)
+            history.Property(e => e.Operation)
                 .IsRequired()
                 .HasMaxLength(1)
                 .IsFixedLength()
                 .HasDefaultValueSql("N'I'");
 
-            entity.Property(e => e.SourceId);
+            history.Property(e => e.SourceId);
 
-            entity.Property(e => e.SourceTable)
+            history.Property(e => e.SourceTable)
                 .IsRequired()
                 .HasMaxLength(250);
 
-            entity.Property(e => e.Timestamp).HasColumnType("datetime");
+            history.Property(e => e.Timestamp).HasColumnType("datetime");
 
-            entity.Property(e => e.TransactionId);
+            history.Property(e => e.TransactionId);
+
+            history.Property(e => e.ParentRef)
+                .HasMaxLength(250);
 
 #pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => e.SourceId)
+            history.HasIndex(e => e.SourceId)
                 .HasName("IX_TsDynDataHistory_SourceId");
 
-            entity.HasIndex(e => e.SourceGuid)
+            history.HasIndex(e => e.SourceGuid)
                 .HasName("IX_TsDynDataHistory_SourceGuid");
+
+            history.HasIndex(e => e.ParentRef)
+                .HasName("IX_TsDynDataHistory_ParentRef");
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            entity.HasOne(d => d.Transaction)
+            history.HasOne(d => d.Transaction)
                 .WithMany(p => p.TsDynDataHistories)
                 .HasForeignKey(d => d.TransactionId)
                 .HasConstraintName("FK_TsDynDataHistory_TsDynDataTransaction");
         });
 
-        modelBuilder.Entity<TsDynDataTargetType>(entity =>
+        modelBuilder.Entity<TsDynDataTargetType>(targetType =>
         {
-            entity.HasKey(e => e.TargetTypeId)
+            targetType.HasKey(e => e.TargetTypeId)
                 .HasName("PK_TsDynDataTargetType");
 
-            entity.ToTable("TsDynDataTargetType");
+            targetType.ToTable("TsDynDataTargetType");
 
 #pragma warning disable CS0618 // Type or member is obsolete
-            entity.HasIndex(e => e.Name)
+            targetType.HasIndex(e => e.Name)
                 .HasName("IX_TsDynDataTargetType_Name");
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            entity.Property(e => e.TargetTypeId);
+            targetType.Property(e => e.TargetTypeId);
 
-            entity.Property(e => e.Description).IsRequired();
+            targetType.Property(e => e.Description).IsRequired();
 
-            entity.Property(e => e.Name)
+            targetType.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(50);
         });
 
-        modelBuilder.Entity<TsDynDataTransaction>(entity =>
+        modelBuilder.Entity<TsDynDataTransaction>(transaction =>
         {
-            entity.HasKey(e => e.TransactionId)
+            transaction.HasKey(e => e.TransactionId)
                 .HasName("PK_TsDynDataTransaction");
 
-            entity.ToTable("TsDynDataTransaction");
+            transaction.ToTable("TsDynDataTransaction");
 
-            entity.Property(e => e.TransactionId);
+            transaction.Property(e => e.TransactionId);
 
-            entity.Property(e => e.Timestamp)
+            transaction.Property(e => e.Timestamp)
                 .HasColumnType("datetime")
                 .HasDefaultValueSql("getutcdate()");
 
-            entity.Property(e => e.User).HasMaxLength(255);
+            transaction.Property(e => e.User).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<TsDynDataZone>(entity =>
+        modelBuilder.Entity<TsDynDataZone>(zone =>
         {
-            entity.HasKey(e => e.ZoneId)
+            zone.HasKey(e => e.ZoneId)
                 .HasName("PK_TsDynDataZone");
 
-            entity.ToTable("TsDynDataZone");
+            zone.ToTable("TsDynDataZone");
 
-            entity.Property(e => e.ZoneId);
+            // TODO: @STV see if we can start using this; requires detailed review of each use case
+            // Note that it's actually not in use yet, we just introduced the fields but never used them
+            zone.HasQueryFilter(e => e.TransDeletedId == null);
 
-            entity.Property(e => e.Name)
+            zone.Property(e => e.ZoneId);
+
+            zone.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(255);
 
-            entity.HasOne(d => d.TransCreated)
+            zone.HasOne(d => d.TransCreated)
                 .WithMany(p => p.TsDynDataZonesTransCreated)
                 .HasForeignKey(d => d.TransCreatedId)
                 .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionCreated");
 
-            entity.HasOne(d => d.TransModified)
+            zone.HasOne(d => d.TransModified)
                 .WithMany(p => p.TsDynDataZonesTransModified)
                 .HasForeignKey(d => d.TransModifiedId)
                 .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionModified");
 
-            entity.HasOne(d => d.TransDeleted)
+            zone.HasOne(d => d.TransDeleted)
                 .WithMany(p => p.TsDynDataZonesTransDeleted)
                 .HasForeignKey(d => d.TransDeletedId)
                 .HasConstraintName("FK_TsDynDataZone_TsDynDataTransactionDeleted");

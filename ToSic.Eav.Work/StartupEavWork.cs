@@ -37,6 +37,8 @@ public static class StartupEavWork
         services.TryAddTransient<WorkMetadata>();
         services.TryAddTransient<WorkFieldList>();
         services.TryAddTransient<WorkEntityDelete>();
+        services.TryAddTransient<WorkEntityRecycleBin>();
+        services.TryAddTransient<WorkEntityRecycle>();
         services.TryAddTransient<WorkEntityPublish>();
         services.TryAddTransient<WorkEntityVersioning>();
         services.TryAddTransient<WorkContentTypesMod>();

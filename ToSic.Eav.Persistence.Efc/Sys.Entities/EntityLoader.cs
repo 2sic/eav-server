@@ -53,7 +53,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
         #region Get Entities with Attribute-Values from Database
 
         sqlTime.Start();
-        var rawEntities = LoadEntitiesFromDb(appId, entityIds);
+        var rawEntities = LoadEntityHeadersFromDb(appId, entityIds);
         sqlTime.Stop();
 
         // If optimized is enabled, then we tweak chunking size and skip unique checks if not necessary
@@ -82,13 +82,15 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
 
         var logDetails = appLoader.LogSettings is { Enabled: true, Details: true };
 
+        var buildHelper = new EntityBuildHelper(dataBuilder, builder.Reader, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, Log);
+
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)
         {
             if (AddLogCount++ == MaxLogDetailsCount)
                 l.A($"Will stop logging each item now, as we've already logged {AddLogCount} items");
 
-            var newEntity = EntityBuildHelper.BuildNewEntity(dataBuilder, builder.Reader, rawEntity, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, l);
+            var newEntity = buildHelper.BuildNewEntity(rawEntity, l);
 
             // If entity is a draft, also include references to Published Entity
             builder.Add(newEntity, rawEntity.PublishedEntityId, logDetails && AddLogCount <= MaxLogDetailsCount);
@@ -114,7 +116,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
         return intChunkSize;
     }
 
-    public List<TempEntity> LoadEntitiesFromDb(int appId, int[] entityIds, string? filterJsonType = null)
+    public List<TempEntity> LoadEntityHeadersFromDb(int appId, int[] entityIds, string? filterJsonType = null)
     {
         var l = Log.IfSummary(appLoader.LogSettings).Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterJsonType)}: '{filterJsonType}'", timer: true);
 

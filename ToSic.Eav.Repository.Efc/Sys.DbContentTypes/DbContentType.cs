@@ -8,6 +8,6 @@ internal partial class DbContentType(DbStorage.DbStorage db) : DbPartBase(db, "D
         => DbStore.SqlDb.TsDynDataContentTypes
             .FirstOrDefault(a =>
                 a.AppId == DbStore.AppId
-                && a.StaticName == staticName && a.TransDeletedId == null
+                && a.StaticName == staticName/* && a.TransDeletedId == null*/
             );
 }

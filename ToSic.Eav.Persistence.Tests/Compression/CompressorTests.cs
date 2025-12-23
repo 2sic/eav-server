@@ -19,7 +19,7 @@ public class CompressorTests(ITestOutputHelper output)
 
     private static void Compress(CompressorType compressorType, int expectedSize)
     {
-        var compress = new Compressor().InitCompressor(compressorType).Compress(JsonTest);
+        var compress = new Compressor().InitCompressor(compressorType).CompressOrNullIfDisabled(JsonTest);
         Equal(expectedSize, compress.Length);
     }
 
@@ -32,7 +32,7 @@ public class CompressorTests(ITestOutputHelper output)
         for (var i = 0; i < cyclesForPerformance; i++)
         {
             var compressor2 = new Compressor().InitCompressor(compressorType);
-            compressor2.Compress(JsonTest);
+            compressor2.CompressOrNullIfDisabled(JsonTest);
         }
         stopwatch.Stop();
 

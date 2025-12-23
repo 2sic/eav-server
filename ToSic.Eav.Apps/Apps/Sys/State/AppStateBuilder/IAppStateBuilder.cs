@@ -22,7 +22,7 @@ public interface IAppStateBuilder: IHasLog
     /// </summary>
     /// <remarks>
     /// Introduced in v15.05 to reduce work on entity delete.
-    /// In past we PurgeApp in whole on each entity delete.
+    /// In the past we PurgeApp in whole on each entity delete.
     /// This should be much faster, but side effects are possible.
     /// </remarks>
     void RemoveEntities(int[] repositoryIds, bool log);
@@ -43,4 +43,16 @@ public interface IAppStateBuilder: IHasLog
     /// Load content-types
     /// </summary>
     void InitContentTypes(ICollection<IContentType> contentTypes);
+
+    /// <summary>
+    /// Make sure the app name and path have a value.
+    /// This will depend on some default NameIds, and otherwise it will use the ones provided by the function in the call.
+    /// </summary>
+    /// <param name="getNameAndPath"></param>
+    /// <param name="useErrorNameIfNoValue">If nothing found to set, add constants like 'error-not-found' to the values</param>
+    /// <returns></returns>
+    /// <remarks>
+    /// Should be called very early, to ensure that paths work for anything following the initial load.
+    /// </remarks>
+    bool EnsureNameAndFolderInitialized(Func<(string? Name, string? Path)> getNameAndPath, bool useErrorNameIfNoValue);
 }

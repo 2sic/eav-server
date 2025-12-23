@@ -122,7 +122,7 @@ partial class DbContentType
             SaveTypeMetadata(contentType.NameId, contentType.Metadata, saveOptions);
 
         // append all Attributes
-        foreach (var newAtt in contentType.Attributes.Cast<ContentTypeAttribute>())
+        foreach (var newAtt in contentType.Attributes)
         {
             var destAttribId = DbStore.Attributes.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 

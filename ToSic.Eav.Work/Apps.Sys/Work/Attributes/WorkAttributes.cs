@@ -12,9 +12,13 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
         if (AppWorkCtx.AppReader.TryGetContentType(staticName) is not { } type)
             return l.Return([], $"error, type:{staticName} is null. Missing or not a ContentType.");
 
-        var fields = type.Attributes.OrderBy(a => a.SortOrder);
+        var fields = type.Attributes
+            .OrderBy(a => a.SortOrder);
 
-        return l.Return(fields.Select(a => new PairTypeWithAttribute { Type = type, Attribute = a }).ToList());
+        var result = fields
+            .Select(a => new PairTypeWithAttribute { Type = type, Attribute = a })
+            .ToList();
+        return l.Return(result, $"{result.Count}");
     }
 
     /// <summary>
@@ -110,6 +114,6 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
 
     private IContentTypeAttribute? GetAttribute(int attributeId) =>
         AppWorkCtx.AppReader.ContentTypes
-            .SelectMany(ct => ct.Attributes.Where(a => a.AttributeId == attributeId))
+            .Select(ct => ct.Attributes.FirstOrDefault(a => a.AttributeId == attributeId))
             .FirstOrDefault();
 }

@@ -8,7 +8,7 @@ public interface IMetadataOfSource
     /// <typeparam name="T"></typeparam>
     /// <param name="targetType"></param>
     /// <param name="key"></param>
-    /// <param name="protector"></param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="title"></param>
     /// <returns></returns>
     public IMetadata GetMetadataOf<T>(TargetTypes targetType, T key, NoParamOrder npo = default, string? title = default);

@@ -14,6 +14,8 @@ public partial class TsDynDataRelationship
 
     public int? ChildEntityId { get; set; }
 
+    public Guid? ChildExternalId { get; set; }
+
     public int SortOrder { get; set; }
 
     public virtual TsDynDataAttribute Attribute { get; set; } = null!;

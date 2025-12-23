@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
-using ToSic.Eav.Sys.Insights.HtmlHelpers;
+﻿using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
@@ -34,7 +33,7 @@ internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders)
                     att.AttributeId.ToString(),
                     att.Name,
                     att.Type.ToString(),
-                    att.InputType(),
+                    att.InputType,
                     InsightsHtmlBase.EmojiTrueFalse(att.IsTitle),
                     Linker.LinkTo($"{att.Metadata.Count()}", InsightsAttributeMetadata.Link, AppId, type: Type, nameId: att.Name),
                     Linker.LinkTo($"{att.Metadata.Permissions.Count()}", InsightsAttributePermissions.Link, AppId, type: Type, nameId: att.Name)

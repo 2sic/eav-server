@@ -100,7 +100,7 @@ partial class DbEntity
         => DbStore.SqlDb.TsDynDataEntities
             .AsNoTrackingOptional(DbStore.Features, preferUntracked)
             .Where(e => e.EntityGuid == entityGuid
-                                       && !e.TransDeletedId.HasValue
+                                       && e.TransDeletedId == null
                                        && !e.ContentTypeNavigation.TransDeletedId.HasValue
                                        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                                        // && DbContext.AppIds.Contains(e.AppId));

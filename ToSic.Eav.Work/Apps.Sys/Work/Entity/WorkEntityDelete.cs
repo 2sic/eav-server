@@ -1,6 +1,8 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Sys.Utils;
+using ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -45,13 +47,19 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
 
         // get related metadata ids
         var metaDataIds = new List<int>();
-        foreach (var id in ids) CollectMetaDataIdsRecursively(id, ref metaDataIds);
+        foreach (var id in ids)
+            CollectMetaDataIdsRecursively(id, ref metaDataIds);
 
         var deleteIds = ids.ToList();
-        if (metaDataIds.Count != 0) deleteIds.AddRange(metaDataIds);
+        if (metaDataIds.Count != 0)
+            deleteIds.AddRange(metaDataIds);
 
         // check if we can delete entities with metadata, or throw exception
-        var oks = BatchCheckCanDelete([.. deleteIds], force, skipIfCant, parentId, parentField);
+        var oks = CheckForDeletePreWarningsBatch([.. deleteIds], force, skipIfCant, parentId, parentField);
+
+        // Before deleting, persist a history snapshot which also captures inbound parent relations.
+        // This is important because delete will remove inbound parent relationships.
+        SaveEntityHistoryWithInboundParents([.. deleteIds]);
 
         // then delete entities with metadata without app cache purge
         var repositoryIds = deleteIds.ToArray();
@@ -69,6 +77,38 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         return l.Return(ok);
     }
 
+    private void SaveEntityHistoryWithInboundParents(IReadOnlyCollection<int> entityIds)
+    {
+        var l = Log.Fn(timer: true);
+        if (entityIds.Count == 0)
+            return;
+
+        // Reuse centralized versioning helper which enriches history JSON with inbound parents.
+        // Must happen BEFORE delete, as delete will remove inbound parent relationships.
+        var parentRef = DbVersioning.ParentRefForApp(AppWorkCtx.AppId);
+
+        var items = entityIds
+            .Select(id => (Id: id, Entity: AppWorkCtx.AppReader.List.FindRepoId(id)))
+            .Where(x => x.Entity != null)
+            .Select(x => (
+                Entity: x.Entity!,
+                EntityId: x.Id,
+                EntityGuid: x.Entity!.EntityGuid,
+                ParentRef: parentRef
+            ))
+            .ToList();
+
+        if (items.Count == 0)
+            return;
+
+        var historyEntries = AppWorkCtx.DbStorage.Versioning.PrepareHistoryEntriesWithInboundParents(items);
+        if (historyEntries.Count == 0)
+            return;
+
+        AppWorkCtx.DbStorage.Versioning.Save(historyEntries);
+        l.Done();
+    }
+
 
     private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
     {
@@ -83,19 +123,25 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         metaDataIds.AddRange(childrenMetaDataIds);
     }
 
-    private Dictionary<int, (bool, string)> BatchCheckCanDelete(int[] ids, bool force, bool skipIfCant, int? parentId = null, string? parentField = null)
+    private Dictionary<int, (bool, string)> CheckForDeletePreWarningsBatch(int[] ids, bool force, bool skipIfCant, int? parentId = null, string? parentField = null)
     {
-        var canDeleteList = CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(ids, parentId, parentField);
+        var canDeleteList = CheckForDeletePreWarnings(ids, parentId, parentField);
 
-        foreach (var canDelete in canDeleteList)
-            if (!canDelete.Value.HasMessages && !force && !skipIfCant)
-            {
-                var msg = $"Can't delete Item {canDelete.Key}. It is used by others. {canDelete.Value.Messages}";
-                Log.A(msg);
-                throw new InvalidOperationException(msg);
-            }
+        // Construct error messages for those which can't be deleted
+        var relevantErrors = canDeleteList
+            .Where(cd => cd.Value.HasMessages && !force && !skipIfCant)
+            .Select(cd => $"Can't delete Item {cd.Key}. It is used by others. {cd.Value.Messages}")
+            .ToList();
+        
+        // Log each one
+        foreach (var msg in relevantErrors)
+            Log.A(msg);
 
-        return canDeleteList;
+        // If any errors, throw exception
+        var consolidated = string.Join(", ", relevantErrors);
+        return consolidated.HasValue()
+            ? throw new InvalidOperationException(consolidated)
+            : canDeleteList;
     }
 
     private void BatchCheckTypesMatch(int[] ids, string? contentType)
@@ -104,15 +150,28 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         {
             var found = AppWorkCtx.AppReader.List.FindRepoId(id)!;
             if (contentType != null && found.Type.Name != contentType && found.Type.NameId != contentType)
-                throw new KeyNotFoundException("Can't find " + id + "of type '" + contentType + "', will not delete.");
+                throw new KeyNotFoundException($"Can't find {id}of type '{contentType}', will not delete.");
         }
     }
 
-    internal (bool HasMessages, string Messages) CanDeleteEntityBasedOnAppStateRelationshipsOrMetadata(int entityId, int? parentId = null, string? parentField = null)
-        => CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata([entityId], parentId, parentField).First().Value;
+    /// <summary>
+    /// Find out if deleting is possible - based on use of the entity by other relationships and metadata.
+    /// </summary>
+    /// <param name="entityId"></param>
+    /// <param name="parentId"></param>
+    /// <param name="parentField"></param>
+    /// <returns></returns>
+    internal (bool HasMessages, string Messages) CheckForDeletePreWarnings(int entityId, int? parentId = null, string? parentField = null)
+        => CheckForDeletePreWarnings([entityId], parentId, parentField).First().Value;
 
-
-    private Dictionary<int, (bool HasMessages, string Messages)> CanDeleteEntitiesBasedOnAppStateRelationshipsOrMetadata(int[] ids, int? parentId = null, string? parentField = null)
+    /// <summary>
+    /// Find out if deleting is possible - based on use of the entity by other relationships and metadata.
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <param name="parentId"></param>
+    /// <param name="parentField"></param>
+    /// <returns></returns>
+    private Dictionary<int, (bool HasMessages, string Messages)> CheckForDeletePreWarnings(int[] ids, int? parentId = null, string? parentField = null)
     {
         var canDeleteList = new Dictionary<int, (bool HasMessages, string Messages)>();
 
@@ -164,7 +223,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
             //if (entity.MetadataFor?.IsMetadata ?? false)
             //    messages.Add($"Entity is metadata of other entity.");
 
-            canDeleteList.Add(entityId, (!messages.Any(), string.Join(" ", messages)));
+            canDeleteList.Add(entityId, (messages.Any(), string.Join(" ", messages)));
         }
 
         if (canDeleteList.Count != ids.Length)

@@ -12,6 +12,7 @@ partial class DbContentType
     internal int ResolvePotentialGhostContentTypeId(int contentTypeId)
     {
         var usesConfigurationOfContentType = DbStore.SqlDb.TsDynDataContentTypes
+            .IgnoreQueryFilters() // WIP 2025-12-17, because previously it also picked up soft-deleted ones
             .Where(a => a.ContentTypeId == contentTypeId)
             .Select(a => a.InheritContentTypeId)
             .Single();
@@ -22,7 +23,7 @@ partial class DbContentType
     {
         var ghostType = DbStore.SqlDb.TsDynDataContentTypes.Where(
                 a => a.StaticName == contentTypeParentName
-                     && a.TransDeletedId == null
+                     //&& a.TransDeletedId == null
                      && a.InheritContentTypeId == null).
             OrderBy(a => a.ContentTypeId)
             .ToList();
@@ -40,7 +41,7 @@ partial class DbContentType
         var attSets = DbStore.SqlDb.TsDynDataContentTypes
             .Where(ats => ats.StaticName == staticName
                           && !ats.InheritContentTypeId.HasValue    // never duplicate a clone/ghost
-                          && ats.TransDeletedId == null                 // never duplicate a deleted
+                          // && ats.TransDeletedId == null                 // never duplicate a deleted
                           && ats.IsGlobal == false)           // never duplicate an always-share
             .OrderBy(ats => ats.ContentTypeId)
             .ToList();

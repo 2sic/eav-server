@@ -22,16 +22,17 @@ internal class EfcContentTypeLoaderService(
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
 {
-    internal (IImmutableList<IContentType> Types, ICollection<IEntity> Entities) LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes, string? appFolderBeforeReaderIsReady)
+    internal (IImmutableList<IContentType> Types, ICollection<IEntity> Entities)
+        LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes)
     {
-        var l = Log.Fn<(IImmutableList<IContentType> Types, ICollection<IEntity> Entities)>($"{nameof(appFolderBeforeReaderIsReady)}: '{appFolderBeforeReaderIsReady}'", timer: true);
+        var l = Log.Fn<(IImmutableList<IContentType> Types, ICollection<IEntity> Entities)>(timer: true);
         try
         {
             if (string.IsNullOrEmpty(appReader.Specs.Folder))
                 return l.Return((dbTypes, []), "no path");
 
             l.A($"🪵 Using LogSettings: {efcAppLoader.LogSettings}");
-            var (contentTypes, entities) = LoadContentTypesFromFileSystem(appReader, appFolderBeforeReaderIsReady);
+            var (contentTypes, entities) = LoadContentTypesFromFileSystem(appReader);
             if (contentTypes.SafeNone())
                 return l.Return((dbTypes, entities), "no app file types");
 
@@ -60,12 +61,12 @@ internal class EfcContentTypeLoaderService(
     /// Will load file based app content-types.
     /// </summary>
     /// <returns></returns>
-    private PartialData LoadContentTypesFromFileSystem(IAppReader appReader, string? appFolderBeforeReaderIsReady)
+    private PartialData LoadContentTypesFromFileSystem(IAppReader appReader)
     {
         var l = Log.Fn<PartialData>(timer: true);
         // must create a new loader for each app
         var loader = appFileContentTypesLoader.New();
-        loader.Init(appReader, efcAppLoader.LogSettings, appFolderBeforeReaderIsReady);
+        loader.Init(appReader, efcAppLoader.LogSettings);
         var types = loader.TypesAndEntities(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }
@@ -94,8 +95,8 @@ internal class EfcContentTypeLoaderService(
         var sqlTime = Stopwatch.StartNew();
 
         var query = efcAppLoader.Context.TsDynDataContentTypes
-            .AsNoTrackingOptional(featuresSvc)
-            .Where(set => set.AppId == appId && set.TransDeletedId == null);
+            .AsNoTrackingOptional(featuresSvc)  // No tracking because it should also get deleted, in case a bad setup happened where the original CT was deleted.
+            .Where(set => set.AppId == appId/* && set.TransDeletedId == null*/);
 
         var contentTypesSql = query
             .Include(set => set.TsDynDataAttributes)
@@ -118,6 +119,7 @@ internal class EfcContentTypeLoaderService(
                 set.Scope,
                 Attributes = set.TsDynDataAttributes
                     .Where(a => a.TransDeletedId == null) // only not-deleted attributes!
+                    .OrderBy(a => a.SortOrder)
                     .Select(a => dataBuilder.TypeAttributeBuilder.Create(
                         appId: appId,
                         name: a.StaticName,
@@ -130,8 +132,6 @@ internal class EfcContentTypeLoaderService(
                         metaSourceFinder: () => source,
                         guid: a.Guid,
                         sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
-                        // before v20
-                        //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
                     )),
                 IsGhost = set.InheritContentTypeId,
                 SharedDefinitionId = set.InheritContentTypeId,
@@ -159,28 +159,33 @@ internal class EfcContentTypeLoaderService(
         sqlTime.Start();
 
         var sharedAttribs = optimize && !sharedAttribIds.Any()
-            ? new()
+            ? []
             : efcAppLoader.Context.TsDynDataContentTypes
+                .IgnoreQueryFilters()
                 .Include(s => s.TsDynDataAttributes)
-                .Where(s => sharedAttribIds.Contains(s.ContentTypeId))
+                .Where(s => sharedAttribIds
+                    .Contains(s.ContentTypeId)
+                )
                 .ToDictionary(
                     s => s.ContentTypeId,
-                    s => s.TsDynDataAttributes.Select(a => dataBuilder.TypeAttributeBuilder.Create(
-                        appId: appId,
-                        name: a.StaticName,
-                        type: ValueTypeHelpers.Get(a.Type),
-                        isTitle: a.IsTitle,
-                        id: a.AttributeId,
-                        sortOrder: a.SortOrder,
-                        // Must get own MetaSourceFinder since they come from other apps
-                        metaSourceFinder: () => appStates.Get(s.AppId),
-                        // #SharedFieldDefinition
-                        //guid: a.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
-                        sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
-                        // Before v20
-                        //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
+                    s => s.TsDynDataAttributes
+                        .Select(a => dataBuilder
+                            .TypeAttributeBuilder.Create(
+                                appId: appId,
+                                name: a.StaticName,
+                                type: ValueTypeHelpers.Get(a.Type),
+                                isTitle: a.IsTitle,
+                                id: a.AttributeId,
+                                sortOrder: a.SortOrder,
+                                // Must get own MetaSourceFinder since they come from other apps
+                                metaSourceFinder: () => appStates.Get(s.AppId),
+                                // #SharedFieldDefinition
+                                //guid: a.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
+                                sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
+                                // Before v20
+                                //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
+                            )
                         )
-                    )
                 );
 
         sqlTime.Stop();
@@ -188,47 +193,43 @@ internal class EfcContentTypeLoaderService(
         // Convert to ContentType-Model
         var newTypes = contentTypes
             .Select(set =>
-        {
-            var notGhost = set.IsGhost == null;
+            {
+                var notGhost = set.IsGhost == null;
 
-            var ctAttributes = (set.SharedDefinitionId.HasValue
-                    ? sharedAttribs[set.SharedDefinitionId.Value]
-                    : set.Attributes)
-                // ReSharper disable once RedundantEnumerableCastCall
-                .Cast<IContentTypeAttribute>()
-                .ToList();
+                var ctAttributes = (set.SharedDefinitionId.HasValue
+                        ? sharedAttribs[set.SharedDefinitionId.Value]
+                        : set.Attributes
+                    )
+                    .ToList();
 
-            // 2024-05-16 2dm changing to not use a Reader, as it's not needed and may cause #IServiceProviderDisposedException
-            //metaSourceFinder: () => notGhost ? source : appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
-            Func<IHasMetadataSourceAndExpiring> metaSourceFinder = notGhost
-                ? () => source
-                : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId));
+                // 2024-05-16 2dm changing to not use a Reader, as it's not needed and may cause #IServiceProviderDisposedException
+                //metaSourceFinder: () => notGhost ? source : appStates.GetReader(new AppIdentity(set.ZoneId, set.AppId)).StateCache,
+                Func<IHasMetadataSourceAndExpiring> metaSourceFinder = notGhost
+                    ? () => source
+                    : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId));
 
-            var metaSource = MetadataProvider.Create(metaSourceFinder);
-            var metaData = new ContentTypeMetadata(set.StaticName, title: set.Name, source: metaSource);
+                var metaSource = MetadataProvider.Create(metaSourceFinder);
+                var metaData = new ContentTypeMetadata(set.StaticName, title: set.Name, source: metaSource);
 
-            return dataBuilder.ContentType.Create(
-                appId: appId,
-                name: set.Name,
-                nameId: set.StaticName,
-                id: set.ContentTypeId,
-                scope: set.Scope!,
-                parentTypeId: set.IsGhost,
-                configZoneId: set.ZoneId,
-                configAppId: set.AppId,
-                isAlwaysShared: set.ConfigIsOmnipresent,
-                metadata: metaData,
-                //metaSourceFinder: notGhost
-                //    ? () => source
-                //    : () => appStates.Get(new AppIdentity(set.ZoneId, set.AppId)),
-                attributes: ctAttributes
-            );
-        });
+                return dataBuilder.ContentType.Create(
+                    appId: appId,
+                    name: set.Name,
+                    nameId: set.StaticName,
+                    id: set.ContentTypeId,
+                    scope: set.Scope!,
+                    parentTypeId: set.IsGhost,
+                    configZoneId: set.ZoneId,
+                    configAppId: set.AppId,
+                    isAlwaysShared: set.ConfigIsOmnipresent,
+                    metadata: metaData,
+                    attributes: ctAttributes
+                );
+            })
+            .ToImmutableOpt();
 
         efcAppLoader.AddSqlTime(sqlTime.Elapsed);
-        var final = newTypes.ToImmutableOpt();
 
-        return l.Return(final, $"{final.Count}; {efcAppLoader.Context.TrackingInfo()}");
+        return l.Return(newTypes, $"{newTypes.Count}; {efcAppLoader.Context.TrackingInfo()}");
     }
 
 }

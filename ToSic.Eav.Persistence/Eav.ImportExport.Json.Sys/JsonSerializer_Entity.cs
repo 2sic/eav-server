@@ -9,13 +9,17 @@ namespace ToSic.Eav.ImportExport.Json.Sys;
 
 partial class JsonSerializer
 {
-    public override string Serialize(IEntity entity) => Serialize(entity, 0);
+    public override string Serialize(IEntity entity)
+        => Serialize(entity, 0);
 
     public string Serialize(IEntity entity, int metadataDepth)
-        => System.Text.Json.JsonSerializer.Serialize(
-            new JsonFormat { Entity = ToJson(entity, metadataDepth) },
-            JsonOptions.UnsafeJsonWithoutEncodingHtml
-        );
+        => Serialize(ToJson(entity, metadataDepth));
+
+    public string Serialize(JsonEntity jsonEntity)
+        => Serialize(new JsonFormat { Entity = jsonEntity });
+
+    public string Serialize(JsonFormat jsonFormat)
+        => System.Text.Json.JsonSerializer.Serialize(jsonFormat, JsonOptions.UnsafeJsonWithoutEncodingHtml);
 
     private IList<JsonEntity> ToJsonListWithoutNulls(IList<IEntity> entities, int metadataDepth = 0)
         => entities

@@ -3,7 +3,7 @@ using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
-public interface IAppController<out THttpResponse>
+public interface IAppController
 {
     ICollection<AppDto> List(int zoneId);
 
@@ -19,7 +19,7 @@ public interface IAppController<out THttpResponse>
 
     bool FlushCache(int zoneId, int appId);
 
-    THttpResponse Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite, bool assetAdamDeleted);
+    THttpResponseType Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite, bool assetAdamDeleted);
 
     bool SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool withPortalFiles);
 

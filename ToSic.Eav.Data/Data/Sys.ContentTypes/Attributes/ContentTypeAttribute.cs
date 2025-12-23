@@ -11,9 +11,8 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 /// * completely #immutable since v15.04
 /// * Changed to be a record in v19.01
 /// </remarks>
-[PrivateApi("2021-09-30 changed to private, before was internal-this is just fyi, always use the interface")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record ContentTypeAttribute : IContentTypeAttribute
+internal record ContentTypeAttribute : IContentTypeAttribute
 {
     /// <inheritdoc />
     public required string Name { get; init; }
@@ -54,5 +53,8 @@ public record ContentTypeAttribute : IContentTypeAttribute
     public IEnumerable<IPermission> Permissions => Metadata.Permissions;
 
     #endregion
+
+    /// <inheritdoc />
+    public string InputType => this.GetInputType(); // Note: never cache this, as the underlying metadata can change
 
 }

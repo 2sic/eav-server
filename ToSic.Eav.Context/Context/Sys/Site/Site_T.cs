@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Context.Sys.Site;
+﻿using ToSic.Sys.Coding;
+
+namespace ToSic.Eav.Context.Sys.Site;
 
 /// <summary>
 /// A tenant in the environment with a reference to the original thing.
@@ -6,7 +8,9 @@
 /// <typeparam name="T"></typeparam>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class Site<T>(string logPrefix) : ServiceBase($"{logPrefix}.Site"), ISite, IWrapper<T>
+public abstract class Site<T>(string logPrefix,
+    NoParamOrder npo = default,
+    object[]? connect = default) : ServiceBase($"{logPrefix}.Site", npo, connect), ISite, IWrapper<T>
     where T : class
 {
     /// <inheritdoc />
