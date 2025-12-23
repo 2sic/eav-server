@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.WebApi.Sys.Install;
 
-public interface IInstallController<out THttpResponseType>
+public interface IInstallController
 {
     /// <summary>
     /// Finish system installation which had somehow been interrupted

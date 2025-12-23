@@ -1,7 +1,7 @@
 ﻿#if NETFRAMEWORK
-using System.Data.SqlClient;
+using SqlParameter = System.Data.SqlClient.SqlParameter;
 #else
-using Microsoft.Data.SqlClient;
+using SqlParameter = Microsoft.Data.SqlClient.SqlParameter;
 #endif
 using System.Data;
 using Microsoft.EntityFrameworkCore.Storage;

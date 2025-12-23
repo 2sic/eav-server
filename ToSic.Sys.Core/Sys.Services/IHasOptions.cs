@@ -11,7 +11,7 @@ public interface IHasOptions<out TOptions>
     /// The options for this service, read-only.
     /// </summary>
     /// <remarks>
-    /// Will usually default to new/standard options of type <see cref="TOptions"/>,
+    /// Will usually default to new/standard options of type <typeparamref name="TOptions"/>.
     /// </remarks>
     TOptions Options { get; }
 
