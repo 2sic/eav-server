@@ -66,6 +66,9 @@ internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConn
     [PrivateApi]
     public string NameId { get; }
 
+    /// <inheritdoc />
+    public string RuntimeKey => $"{ZoneId}/{AppId}";
+
     /// <summary>
     /// The app-folder, which is pre-initialized very early on.
     /// Needed to preload file based content-types
