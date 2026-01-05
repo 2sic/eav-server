@@ -30,12 +30,6 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     [ContentTypeAttributeSpecs(IsTitle = true)]
     public required string Name { get; init; }
 
-    // #DropContentTypeStaticName
-    ///// <inheritdoc />
-    //[Obsolete("Deprecated in v13, please use NameId instead")]
-    //[ContentTypeAttributeIgnore]
-    //public string StaticName => NameId;
-
     /// <inheritdoc />
     public required string NameId { get; init; }
 
@@ -44,12 +38,6 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
 
     /// <inheritdoc />
     public required int Id { get; init; }
-
-    // #DropContentTypeId
-    ///// <inheritdoc />
-    //[Obsolete("Deprecated in V13, please use Id instead.")]
-    //[ContentTypeAttributeIgnore]
-    //public int ContentTypeId => Id;
 
     /// <inheritdoc />
     [ContentTypeAttributeIgnore]

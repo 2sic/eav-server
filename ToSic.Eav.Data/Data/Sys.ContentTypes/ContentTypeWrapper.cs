@@ -46,19 +46,11 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
 
     public string Name => GetContents()!.Name;
 
-    // #DropContentTypeStaticName
-    //[Obsolete("Deprecated in v13, please use NameId instead")]
-    //public string StaticName => GetContents()!.NameId;
-
     public string NameId => GetContents()!.NameId;
 
     public string Scope => GetContents()!.Scope;
 
     public int Id => GetContents()!.Id;
-
-    // #DropContentTypeId
-    //[Obsolete("Deprecated in V13, please use Id instead.")]
-    //public int ContentTypeId => GetContents()!.Id;
 
     public IEnumerable<IContentTypeAttribute> Attributes => GetContents()!.Attributes;
 
