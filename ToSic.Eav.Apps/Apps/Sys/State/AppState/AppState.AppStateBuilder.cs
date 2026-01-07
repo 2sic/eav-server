@@ -11,7 +11,7 @@ partial class AppState
     /// <summary>
     /// The builder must be a subclass of AppState, so it can access its private properties.
     /// </summary>
-    internal class AppStateBuilder(IAppReaderFactory appReaderFactory) : ServiceBase("App.SttBld"), IAppStateBuilder
+    internal class AppStateBuilder(IAppReaderFactory appReaderFactory, IRuntimeKeyService runtimeKeys) : ServiceBase("App.SttBld"), IAppStateBuilder
     {
         #region Constructor / DI / Init (2 variants)
 
@@ -23,14 +23,16 @@ partial class AppState
 
         public IAppStateBuilder InitForPreset()
         {
-            AppStateTyped = new(new(null, false, false), KnownAppsConstants.PresetIdentity, KnownAppsConstants.PresetName, Log);
+            var runtimeKey = runtimeKeys.AppRuntimeKey(KnownAppsConstants.PresetIdentity);
+            AppStateTyped = new(new(null, false, false), KnownAppsConstants.PresetIdentity, KnownAppsConstants.PresetName, runtimeKey, Log);
             MemoryCacheService.Notify(AppStateTyped);
             return this;
         }
 
         public IAppStateBuilder InitForNewApp(IParentAppState parentApp, IAppIdentity identity, string nameId, ILog parentLog)
         {
-            AppStateTyped = new((ParentAppState)parentApp, identity, nameId, parentLog);
+            var runtimeKey = runtimeKeys.AppRuntimeKey(identity.PureIdentity());
+            AppStateTyped = new((ParentAppState)parentApp, identity, nameId, runtimeKey, parentLog);
             MemoryCacheService.Notify(AppStateTyped);
             return this;
         }

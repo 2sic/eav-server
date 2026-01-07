@@ -16,7 +16,7 @@ internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConn
     private static bool _loggedToBootLog;
 
     [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, ILog parentLog): base(new(), $"App.St-{id.AppId}", connect: [])
+    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, string runtimeKey, ILog parentLog): base(new(), $"App.St-{id.AppId}", connect: [])
     {
         // Track first time an app was built...
         if (!_loggedToBootLog)
@@ -36,6 +36,7 @@ internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConn
         CacheTimestampDelegate = CreateExpiryDelegate(parentApp, CacheTimestampPrivate);
 
         NameId = nameId;
+        RuntimeKey = runtimeKey;
             
         // Init the cache when it starts, because this number is needed in other places
         // Important: we must offset the first time stamp by 1 tick (1/100th nanosecond)
@@ -67,7 +68,7 @@ internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConn
     public string NameId { get; }
 
     /// <inheritdoc />
-    public string RuntimeKey => $"{ZoneId}/{AppId}";
+    public string RuntimeKey { get; }
 
     /// <summary>
     /// The app-folder, which is pre-initialized very early on.
