@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Persistence.Sys.AppState;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Locking;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys.Caching;
 
@@ -13,7 +14,7 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class AppsCacheBase : IAppsCacheSwitchable
+public abstract class AppsCacheBase(IRuntimeKeyService runtimeKeyService) : IAppsCacheSwitchable
 {
     #region Switchable
 
@@ -67,8 +68,16 @@ public abstract class AppsCacheBase : IAppsCacheSwitchable
     public virtual string CacheKeySchema { get; protected set; } = "Z{0}A{1}";
 
     [PrivateApi]
-    protected string CacheKey(IAppIdentity appIdentity) => string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
+    protected string CacheKey(IAppIdentity appIdentity)
+    {
+        var runtimeKey = appIdentity is IAppStateCache appState
+            ? appState.RuntimeKey
+            : runtimeKeyService.AppRuntimeKey(appIdentity);
 
+        return runtimeKey.HasValue()
+            ? runtimeKey
+            : string.Format(CacheKeySchema, appIdentity.ZoneId, appIdentity.AppId);
+    }
     #endregion
 
 
