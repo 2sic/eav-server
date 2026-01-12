@@ -61,7 +61,11 @@ public class AppJsonConfigurationService(
 
     /// <inheritdoc />
     public string AppJsonCacheKey(int appId, bool useShared)
-        => $"Eav-{nameof(AppJsonConfigurationService)}:{nameof(appId)}:{appId}:{nameof(useShared)}:{useShared}";
+    {
+        var runtimeKey = appReaders.Get(appId).Specs.RuntimeKey;
+        var appKey = runtimeKey.HasValue() ? runtimeKey : appId.ToString();
+        return $"Eav-{nameof(AppJsonConfigurationService)}:{nameof(appKey)}:{appKey}:{nameof(useShared)}:{useShared}";
+    }
 
     /// <summary>
     /// Find parent path that exist to use it as cache dependency (folder cache monitor) 

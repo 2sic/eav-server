@@ -20,6 +20,8 @@ internal class AppSpecs(AppState appState): IAppSpecs
 
     public string Folder => appState.Folder ?? AppSpecConstants.ErrorAppFolderNotLoaded;
 
+    public string RuntimeKey => appState.RuntimeKey;
+
     public PiggyBack PiggyBack => appState.PiggyBack;
     
 

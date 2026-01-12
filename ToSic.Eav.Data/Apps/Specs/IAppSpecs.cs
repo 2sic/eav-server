@@ -14,6 +14,11 @@ public interface IAppSpecs : IAppIdentity, IHasIdentityNameId
 
     string Folder { get; }
 
+    /// <summary>
+    /// Runtime key to uniquely identify this app across tenants/platforms.
+    /// </summary>
+    string RuntimeKey { get; }
+
     IAppConfiguration Configuration { get; }
 
     /// <summary>

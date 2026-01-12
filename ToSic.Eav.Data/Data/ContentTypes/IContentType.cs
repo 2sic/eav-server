@@ -18,14 +18,6 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     /// </summary>
     string Name { get; }
 
-    // #DropContentTypeStaticName
-    ///// <summary>
-    ///// Static name - can be a GUID or a system-term for special types
-    ///// </summary>
-    ///// <remarks>being deprecated in V13, to be replaced with NameId</remarks>
-    //[Obsolete("Deprecated in v13, please use NameId instead")]
-    //string StaticName { get; }
-
     /// <summary>
     /// A unique id/name of the content-type. Previously called StaticName.
     /// </summary>
@@ -39,23 +31,20 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     string Scope { get; }
 
     /// <summary>
-    /// Get the id of the Content Type - you usually don't need this!
+    /// Get the id of the Content Type as stored in the DB.
+    /// You usually don't need this!
     /// </summary>
     int Id { get; }
-
-    // #DropContentTypeId
-    ///// <summary>
-    ///// Old name for Id, please use Id instead
-    ///// </summary>
-    ///// <remarks>Deprecated in v13</remarks>
-    //[Obsolete("Deprecated in V13, please use Id instead.")]
-    //int ContentTypeId { get; }
 
 
     /// <summary>
     /// All Attribute Definitions
     /// </summary>
-    IEnumerable<IContentTypeAttribute> Attributes { get; /*set;*/ } // removed set 2022-02-26 2dm #immutable
+    /// <remarks>
+    /// As of v21, the order of attributes is preserved as defined in the content-type definition.
+    /// Previously you had to manually sort using the .SortOrder property of the attribute.
+    /// </remarks>
+    IEnumerable<IContentTypeAttribute> Attributes { get; }
 
     /// <summary>
     /// A simple indexer to get an attribute
@@ -97,7 +86,7 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     bool Is(string? name);
 
 
-    #region WIP 12.03 / 13.02
+    #region Internal/Private: DynamicChildrenField and AlwaysShareConfiguration
 
     /// <summary>
     /// This internal property says which of the content-type properties
@@ -106,10 +95,9 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     [PrivateApi("WIP 12.03")] 
     string? DynamicChildrenField { get; }
 
-    #endregion
-
-    #region WIP v13 Shared Content Types should be passed around in IContentType defs
-
+    /// <summary>
+    /// WIP v13 Shared Content Types should be passed around in IContentType defs
+    /// </summary>
     [PrivateApi("very internal functionality")]
     bool AlwaysShareConfiguration { get; }
 
@@ -124,7 +112,9 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     [PrivateApi("new 15.04")]
     string? TitleFieldName { get; }
 
-
+    /// <summary>
+    /// Content Type System Settings - for internal use only.
+    /// </summary>
     [PrivateApi] // #SharedFieldDefinition
     ContentTypeSysSettings? SysSettings { get; }
 }

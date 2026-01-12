@@ -164,10 +164,10 @@ public sealed record ExtensionManifest
     public bool DataInside { get; init; }
 
     [JsonPropertyName("resourcesContentType")]
-    public string ResourcesContentType { get; init; }
+    public string? ResourcesContentType { get; init; }
 
     [JsonPropertyName("settingsContentType")]
-    public string SettingsContentType { get; init; }
+    public string? SettingsContentType { get; init; }
 
     #endregion
 

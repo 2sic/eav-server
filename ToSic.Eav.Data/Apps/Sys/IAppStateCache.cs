@@ -22,6 +22,10 @@ public interface IAppStateCache: ICacheExpiring,
     // IHas<IAppSpecs>,
     IRelationshipSource
 {
+    /// <summary>
+    /// Runtime-specific key for cache/dictionary identity across platforms and tenants.
+    /// </summary>
+    string RuntimeKey { get; }
 
     string? Folder { get; }
 
