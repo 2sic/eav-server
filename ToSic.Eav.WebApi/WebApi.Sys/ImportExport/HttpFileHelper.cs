@@ -6,6 +6,7 @@ namespace ToSic.Eav.WebApi.Sys.ImportExport;
 
 internal static class HttpFileHelper
 {
+#if NETFRAMEWORK
     public static HttpResponseMessage GetAttachmentHttpResponseMessage(string fileName, string fileType, Stream fileContent)
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK) {Content = new StreamContent(fileContent)};
@@ -17,11 +18,30 @@ internal static class HttpFileHelper
         };
         return response;
     }
+    public static THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType, byte[] fileBytes)
+    {
+        var fileContent = new MemoryStream(fileBytes);
+        var response = new HttpResponseMessage(HttpStatusCode.OK) {Content = new StreamContent(fileContent)};
+        response.Content.Headers.ContentType = new(fileType);
+        response.Content.Headers.ContentLength = fileContent.Length;
+        response.Content.Headers.ContentDisposition = new("attachment")
+        {
+            FileName = fileName
+        };
+        return response;
+    }
+#else
+    public static THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType, byte[] fileContent) =>
+        new Microsoft.AspNetCore.Mvc.FileContentResult(fileContent, MimeTypeConstants.FallbackType)
+        {
+            FileDownloadName = fileName
+        };
+#endif
 
-    public static HttpResponseMessage GetAttachmentHttpResponseMessage(string fileName, string fileType, string fileContent)
+    public static THttpResponseType GetAttachmentHttpResponseMessage(string fileName, string fileType, string fileContent)
     {
         var fileBytes = Encoding.UTF8.GetBytes(fileContent);
-        return GetAttachmentHttpResponseMessage(fileName, fileType, new MemoryStream(fileBytes));
+        return GetAttachmentHttpResponseMessage(fileName, fileType, fileBytes);
     }
 
 }
