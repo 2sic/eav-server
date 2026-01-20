@@ -207,6 +207,15 @@ public class DbStorage(
         // todo: maybe later also try to detect it, if we see the need for it
         ParentAppId = parentAppId;
 
+        // Special-case preset app (-42), which is virtual and not stored in DB
+        if (appId == KnownAppsConstants.PresetAppId)
+        {
+            _appId = appId.Value;
+            // Preset app is virtual and always belongs to PresetZoneId.
+            _zoneId = KnownAppsConstants.PresetZoneId;
+            return;
+        }
+
         // If we don't have a zoneId, ensure we set everything from defaults or lookup
         if (!zoneId.HasValue)
             // If nothing is supplied, use defaults
@@ -247,7 +256,7 @@ public class DbStorage(
     #endregion
 
     #region Save and check if to kill cache
-
+        
     /// <summary>
     /// Persists all updates to the data source and optionally resets change tracking in the object context.
     /// Also Creates an initial TransactionId (used by SQL Server for Auditing).
@@ -255,6 +264,9 @@ public class DbStorage(
     /// </summary>
     public int SaveChanges(bool acceptAllChangesOnSuccess, EavDbContext.SaveChangesEvent baseEvent)
     {
+        if (_appId == KnownAppsConstants.PresetAppId)
+            return 0; // preset is virtual/read-only; never write
+
         if (_appId == KnownAppsConstants.AppIdEmpty)
             throw new("SaveChanges with AppId 0 not allowed.");
 
@@ -310,7 +322,7 @@ public class DbStorage(
         foreach (var change in changes)
         {
             // ReSharper disable once PossibleNullReferenceException
-            change.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            change.State = EntityState.Detached;
             l.A($"Detached: {change.Entity.GetType().Name} {change.State}");
         }
         l.Done($"Flushed {changes.Count} changes");
