@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.Configuration.Features;
+namespace ToSic.Sys.Features.Tests.Configuration.Features;
 
 public class FeatureStateConfiguration
 {

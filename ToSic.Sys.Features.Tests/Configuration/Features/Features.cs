@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
-using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Sys.Capabilities.Features;
 using Xunit.Abstractions;
+//using ToSic.Eav.Serialization.Sys.Json;
 
-namespace ToSic.Eav.Configuration.Features;
+namespace ToSic.Sys.Features.Tests.Configuration.Features;
 
 public class Features(ITestOutputHelper output)
 {
@@ -32,7 +32,7 @@ public class Features(ITestOutputHelper output)
             Expires = DateTime.Today.AddDays(-1)
         });
 
-        var ser = JsonSerializer.Serialize(x, JsonOptions.UnsafeJsonWithoutEncodingHtml);
+        var ser = JsonSerializer.Serialize(x/*, JsonOptions.UnsafeJsonWithoutEncodingHtml*/);
         output.WriteLine(ser);
     }
 }
