@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
+  <Import Project="../SharedImports/CsProj.Props/Nullable.props" />
+
+  <PropertyGroup>
+    <RootNamespace>ToSic.Sys.Caching.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Sys.Caching\ToSic.Sys.Caching.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+
+</Project>
