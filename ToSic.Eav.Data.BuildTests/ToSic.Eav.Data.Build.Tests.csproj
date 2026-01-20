@@ -6,7 +6,7 @@
     <ProjectReference Include="..\ToSic.Eav.Data.Build.TestHelpers\ToSic.Eav.Data.Build.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Data.Build\ToSic.Eav.Data.Build.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Data.TestHelpers\ToSic.Eav.Data.TestHelpers.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.DataSource.TestHelpers\ToSic.Eav.DataSource.TestHelpers.csproj" />
+    <!--<ProjectReference Include="..\ToSic.Eav.DataSource.TestHelpers\ToSic.Eav.DataSource.TestHelpers.csproj" />-->
   </ItemGroup>
 
 </Project>

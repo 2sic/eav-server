@@ -2,9 +2,7 @@
 
 namespace ToSic.Eav.Data.BuildTests.DataFactories;
 
-// TODO: CHANGE STARTUP TO NOT USE THE OTHER PROJECT WHICH IT PROBABLY DOESN'T NEED
-
-[Startup(typeof(StartupCoreDataSourcesAndTestData))]
+[Startup(typeof(StartupTestsEavDataBuild))]
 public class DataFactoryOptionTests(IDataFactory dataFactory)
 {
     [Fact]
