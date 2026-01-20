@@ -1,6 +1,4 @@
-﻿using ToSic.Sys.Utils;
-
-namespace ToSic.Eav.Plumbing.ObjectExtension;
+﻿namespace ToSic.Sys.Utils.Tests.ObjectExtension;
 
 public class ConvertTestBase 
 {

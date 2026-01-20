@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Requirements;
 
-namespace ToSic.Lib.Features.Tests.RequirementChecks.Mocks;
+namespace ToSic.Sys.Features.Tests.RequirementChecks.Mocks;
 
 internal class MockHasRequirements(List<Requirement> requirements): IHasRequirements
 {

@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace ToSic.Eav.Plumbing.ObjectExtension;
+namespace ToSic.Sys.Utils.Tests.ObjectExtension;
 
 
 public class ConvertToString: ConvertTestBase

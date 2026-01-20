@@ -1,7 +1,7 @@
 ﻿
 
 
-namespace ToSic.Eav.Plumbing.ObjectExtension;
+namespace ToSic.Sys.Utils.Tests.ObjectExtension;
 
 
 public class ConvertToBool: ConvertTestBase

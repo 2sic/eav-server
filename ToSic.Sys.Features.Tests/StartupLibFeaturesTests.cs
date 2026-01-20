@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Sys.Startup;
 
-namespace ToSic.Lib.Features.Tests;
+namespace ToSic.Sys.Features.Tests;
 
 /// <summary>
 /// Class to inherit from, in test folders which should just do the auto-startup

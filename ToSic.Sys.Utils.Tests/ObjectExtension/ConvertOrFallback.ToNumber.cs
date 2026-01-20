@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using static System.Threading.Thread;
 
-namespace ToSic.Eav.Plumbing.ObjectExtension;
+namespace ToSic.Sys.Utils.Tests.ObjectExtension;
 
 public partial class ConvertOrFallback
 {

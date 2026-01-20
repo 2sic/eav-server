@@ -1,3 +1,3 @@
-﻿namespace ToSic.Lib.Features.Tests.SysFeaturesTests;
+﻿namespace ToSic.Sys.Features.Tests.SysFeaturesTests;
 
 public class Startup: AutoStartupLibFeaturesTests;
