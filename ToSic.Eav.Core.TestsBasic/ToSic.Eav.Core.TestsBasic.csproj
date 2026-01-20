@@ -10,5 +10,9 @@
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Plumbing\" />
+  </ItemGroup>
+
 
 </Project>
