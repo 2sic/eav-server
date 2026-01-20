@@ -19,10 +19,7 @@ public class StartupTestsEavDataBuild
     /// </summary>
     public virtual void ConfigureServices(IServiceCollection services) =>
         services
-            //.AddEavDataPersistence()
             .AddEavDataBuild()
-            // 2026-01-20 2dm WIP
-            //.AddEavDataStack()
             .AddEavData()
             .AddEavCoreLibAndSys()
 

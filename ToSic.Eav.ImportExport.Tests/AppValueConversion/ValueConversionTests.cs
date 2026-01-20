@@ -22,7 +22,7 @@ public class ValueConversionTests(ExportImportValueConversion exportListXml)
                 // EAV Core
                 //.AddEavDataPersistence()
                 .AddEavDataBuild()
-                .AddEavDataStack()
+                .AddEavDataStackDumping()
                 .AddEavData()
                 .AddEavCoreLibAndSys()
 

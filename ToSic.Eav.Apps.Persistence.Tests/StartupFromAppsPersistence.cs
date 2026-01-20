@@ -21,7 +21,7 @@ public static class StartupFromAppsPersistence
             .AddEavApps()
             .AddEavPersistence()
             .AddEavDataBuild()
-            .AddEavDataStack()
+            .AddEavDataStackDumping()
             .AddEavData()
             .AddEavCoreLibAndSys();
 

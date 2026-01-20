@@ -40,7 +40,7 @@ public static class StartupEav
             .AddDataSourceSystem()
             // EAV Core
             .AddEavDataBuild()
-            .AddEavDataStack()
+            .AddEavDataStackDumping()
             .AddEavData()
             .AddEavCoreLibAndSys();
 
