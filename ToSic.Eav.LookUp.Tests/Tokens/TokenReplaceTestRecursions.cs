@@ -2,7 +2,7 @@
 using ToSic.Eav.LookUp.Sys;
 using ToSic.Eav.LookUp.Sys.Engines;
 
-namespace ToSic.Sys.LookUp.Tokens;
+namespace ToSic.Eav.LookUp.Tests.Tokens;
 
 /// <summary>
 /// Test different behaviors of TokenReplace with and without recursions

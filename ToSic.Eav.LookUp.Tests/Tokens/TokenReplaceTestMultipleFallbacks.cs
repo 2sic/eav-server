@@ -1,9 +1,10 @@
 ﻿using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sys;
 using ToSic.Eav.LookUp.Sys.Engines;
+
 #pragma warning disable xUnit1045
 
-namespace ToSic.Sys.LookUp.Tokens;
+namespace ToSic.Eav.LookUp.Tests.Tokens;
 
 /// <summary>
 /// Test what happens if the fallback has multiple separate tokens - doesn't seem to work till v20.09

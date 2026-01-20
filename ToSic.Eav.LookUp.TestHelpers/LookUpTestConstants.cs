@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.LookUp;
+﻿namespace ToSic.Eav.LookUp.TestHelpers;
 
 public class LookUpTestConstants
 {

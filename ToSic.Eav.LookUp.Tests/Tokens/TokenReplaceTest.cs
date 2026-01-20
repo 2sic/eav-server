@@ -1,8 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.LookUp.Sys;
+
 #pragma warning disable xUnit1045
 
-namespace ToSic.Sys.LookUp.Tokens;
+namespace ToSic.Eav.LookUp.Tests.Tokens;
 
 public class TokenReplaceTest
 {

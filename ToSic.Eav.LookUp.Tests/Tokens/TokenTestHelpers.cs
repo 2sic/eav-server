@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ToSic.Sys.LookUp.Tokens;
+namespace ToSic.Eav.LookUp.Tests.Tokens;
 internal static class TokenTestHelpers
 {
     /// <summary>
