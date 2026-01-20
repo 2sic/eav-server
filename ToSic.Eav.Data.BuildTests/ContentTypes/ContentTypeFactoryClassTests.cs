@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Builder;
 
-[Startup(typeof(StartupTestsEavCore))]
+[Startup(typeof(StartupTestsEavDataBuild))]
 public class ContentTypeFactoryClassTests(ContentTypeFactory factory)
 {
     //private static string? GetDescription(IContentType type)

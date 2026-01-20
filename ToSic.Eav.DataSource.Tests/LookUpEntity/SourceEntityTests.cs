@@ -10,7 +10,7 @@ using Xunit.DependencyInjection;
 
 namespace ToSic.Sys.LookUp;
 
-[Startup(typeof(StartupTestsEavCore))]
+[Startup(typeof(StartupTestsEavDataBuild))]
 public class SourceEntityTests(DataBuilder dataBuilder)
 {
     private readonly LookUpInEntity _person = new("no-name", dataBuilder.TestEntityDaniel(), null);

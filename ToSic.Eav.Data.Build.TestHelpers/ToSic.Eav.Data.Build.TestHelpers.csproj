@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
+
+  <PropertyGroup>
+    <RootNamespace>ToSic.Eav</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Data.Build\ToSic.Eav.Data.Build.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.LookUp.TestHelpers\ToSic.Eav.LookUp.TestHelpers.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.LookUp\ToSic.Eav.LookUp.csproj" />
+  </ItemGroup>
+
+</Project>

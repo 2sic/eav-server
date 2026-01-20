@@ -6,7 +6,7 @@ using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.Data.Builder;
 
-[Startup(typeof(StartupTestsEavCore))]
+[Startup(typeof(StartupTestsEavDataBuild))]
 public class ContentTypeFactoryAttributesTests(ContentTypeFactory factory)
 {
     private void AssertAttribute(IContentType ct, string name, ValueTypes type, bool isTitle = false, string description = default)

@@ -8,7 +8,7 @@ namespace ToSic.Eav.LookUp;
 
 public class LookUpTestData(DataBuilder builder)
 {
-    public static LookUpEngine EmptyLookupEngine(List<ILookUp> sources = null)
+    private static LookUpEngine EmptyLookupEngine(List<ILookUp> sources = null)
         => new(null, sources: sources);
 
     public LookUpEngine AppSetAndRes(int appId = LookUpTestConstants.AppIdUnknown, List<ILookUp> sources = null)

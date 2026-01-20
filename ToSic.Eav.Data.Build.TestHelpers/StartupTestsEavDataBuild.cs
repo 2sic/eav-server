@@ -12,7 +12,7 @@ namespace ToSic.Eav;
 /// Use by adding this kind of attribute to your test class:
 /// `[Startup(typeof(TestStartupEavCore))]`
 /// </remarks>
-public class StartupTestsEavCore
+public class StartupTestsEavDataBuild
 {
     /// <summary>
     /// Startup helper
@@ -21,7 +21,8 @@ public class StartupTestsEavCore
         services
             //.AddEavDataPersistence()
             .AddEavDataBuild()
-            .AddEavDataStack()
+            // 2026-01-20 2dm WIP
+            //.AddEavDataStack()
             .AddEavData()
             .AddEavCoreLibAndSys()
 

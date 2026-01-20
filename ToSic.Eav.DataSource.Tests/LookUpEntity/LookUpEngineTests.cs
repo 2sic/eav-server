@@ -10,7 +10,7 @@ using Xunit.DependencyInjection;
 
 namespace ToSic.Sys.LookUp;
 
-[Startup(typeof(StartupTestsEavCore))]
+[Startup(typeof(StartupTestsEavDataBuild))]
 public class LookUpEngineTests(DataBuilder dataBuilder)
 {
     #region Constants

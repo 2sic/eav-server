@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
+
+  <PropertyGroup>
+    <RootNamespace>ToSic.Eav</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.LookUp\ToSic.Eav.LookUp.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Features\ToSic.Sys.Features.csproj" />
+  </ItemGroup>
+
+</Project>

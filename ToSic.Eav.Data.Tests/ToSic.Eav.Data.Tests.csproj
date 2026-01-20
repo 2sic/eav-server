@@ -10,4 +10,8 @@
     <ProjectReference Include="..\ToSic.Eav.Core.TestHelpers\ToSic.Eav.Core.TestHelpers.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Builder\ContentTypeFactoryTests\" />
+  </ItemGroup>
+
 </Project>
