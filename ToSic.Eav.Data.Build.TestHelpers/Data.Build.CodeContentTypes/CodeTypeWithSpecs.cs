@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Data.Sys.ContentTypes;
 
-namespace ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
+namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
-internal class TestTypeWithSpecs: TestTypeWithSpecsEmpty
+public class CodeTypeWithSpecs: CodeTypeWithSpecsEmpty
 {
     [ContentTypeAttributeSpecs(Description = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
     public int Id { get; set; }
@@ -26,7 +26,10 @@ internal class TestTypeWithSpecs: TestTypeWithSpecsEmpty
 
     public DateTime BirthDate { get; set; }
 
-    internal const string IsAliveDescription = "This is to ensure the user is alive";
+    /// <summary>
+    /// The description is usually not public, but public here since the tests is elsewhere
+    /// </summary>
+    public const string IsAliveDescription = "This is to ensure the user is alive";
     [ContentTypeAttributeSpecs(Description = IsAliveDescription)]
     public bool IsAlive { get; set; }
 

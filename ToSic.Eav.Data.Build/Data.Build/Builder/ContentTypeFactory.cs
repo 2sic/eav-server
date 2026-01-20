@@ -16,6 +16,9 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
 
+    public IContentType Create<T>()
+        => Create(typeof(T));
+
     public IContentType Create(Type type)
     {
         if (Cache.TryGetValue(type, out var contentType))

@@ -1,9 +1,9 @@
-﻿namespace ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
+﻿namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
 /// <summary>
 /// Properties such as ID and Guid should not be used for attributes.
 /// </summary>
-internal class TestTypeInternalFields
+public class CodeTypeInternalFields
 {
     public int Id { get; set; }
 

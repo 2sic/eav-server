@@ -1,10 +1,10 @@
-﻿namespace ToSic.Eav.Data.Builder.ClassesWithTypeDecoration;
+﻿namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
-internal class TestTypeNoSpecs
+public class CodeTypeNoSpecs
 {
     public int Id { get; set; }
 
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     public int Age { get; set; }
 
