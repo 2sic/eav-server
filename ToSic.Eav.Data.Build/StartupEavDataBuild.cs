@@ -23,6 +23,7 @@ public static class StartupEavDataBuild
         services.TryAddTransient<DimensionBuilder>();
         services.TryAddTransient<AttributeBuilder>();
         services.TryAddTransient<EntityBuilder>();
+        services.TryAddTransient<EntityConnectionBuilder>();
         services.TryAddTransient<ValueBuilder>();
 
         return services;

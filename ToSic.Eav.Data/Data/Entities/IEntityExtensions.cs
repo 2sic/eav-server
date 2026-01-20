@@ -45,6 +45,7 @@ public static class IEntityExtensions
     /// * Moved from IEntity to here in v20, as it is more of an extension than a core method of IEntity
     /// </remarks>
     // ReSharper disable once MethodOverloadWithOptionalParameter
+    [return: NotNullIfNotNull(nameof(fallback))]
     public static TValue? Get<TValue>(this IEntity entity, string name, NoParamOrder npo = default, TValue? fallback = default, string? language = default, string?[]? languages = default)
         => entity.Get(name: name, language: language, languages: languages)
             .ConvertOrFallback(fallback);

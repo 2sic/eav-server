@@ -93,11 +93,12 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
         ITarget? target = default,
 
         // publishing Instructions - should go elsewhere
-        int? publishedId = default
+        int? publishedId = default,
+        EntityPartsLazy? partsBuilder = default
     )
     {
         // Fresh parts builder for relationships & metadata
-        var entityPartsBuilder = EntityPartsBuilder(original, id, guid);
+        partsBuilder ??= EntityPartsBuilder(original, id, guid);
 
         var asRealEntity = original as Entity;
         var e = Create(
@@ -117,7 +118,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             isPublished: isPublished ?? original.IsPublished,
             publishedId: publishedId ?? asRealEntity?.PublishedEntityId ?? default,
                 
-            partsBuilder: entityPartsBuilder
+            partsBuilder: partsBuilder
         );
 
         return e;
