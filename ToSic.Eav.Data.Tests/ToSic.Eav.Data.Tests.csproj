@@ -3,7 +3,7 @@
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Eav.props" />
 
   <PropertyGroup>
-    <RootNamespace>ToSic.Eav.Data</RootNamespace>
+    <RootNamespace>ToSic.Eav.Data.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

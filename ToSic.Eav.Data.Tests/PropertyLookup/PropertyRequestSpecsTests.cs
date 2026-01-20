@@ -39,6 +39,6 @@ public class PropertyRequestSpecsTests
     public void DimensionsWithNullUntouched()
     {
         var specs = new PropReqSpecs("TestField", ["a", null], true);
-        Equal(new[] { "a", null }, specs.Dimensions);
+        Equal(["a", null], specs.Dimensions);
     }
 }
