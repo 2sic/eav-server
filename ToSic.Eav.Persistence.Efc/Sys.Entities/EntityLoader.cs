@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Persistence.Efc.Sys.Relationships;
@@ -119,6 +120,9 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
     public List<TempEntity> LoadEntityHeadersFromDb(int appId, int[] entityIds, string? filterJsonType = null)
     {
         var l = Log.IfSummary(appLoader.LogSettings).Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterJsonType)}: '{filterJsonType}'", timer: true);
+
+        if (appId == KnownAppsConstants.PresetAppId)
+            return l.Return(new List<TempEntity>(), "preset app, skip DB query");
 
         var entitiesQuery = EntityQueries.EntitiesOfAppQuery(appId, entityIds, filterJsonType);
 

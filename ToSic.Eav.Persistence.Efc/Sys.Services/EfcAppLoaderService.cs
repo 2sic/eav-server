@@ -198,9 +198,17 @@ public class EfcAppLoaderService(
         }
         else
         {
+            // Avoid self-recursion when loading the preset app itself (-42)
+            if (appId == KnownAppsConstants.PresetAppId)
+            {
+                parent = new(null, false, false);
+            }
+            else
+            {
             // New v13 - use global app by default to share content-types
             var globalApp = appStates.Get(KnownAppsConstants.PresetIdentity);
             parent = new(globalApp, true, false);
+        }
         }
 
         var builder = appStateBuilder.New().InitForNewApp(parent, appIdentity, appGuidName, Log);
@@ -304,6 +312,11 @@ public class EfcAppLoaderService(
     private int GetAncestorAppIdOrZero(int appId)
     {
         var l = Log.Fn<int>($"{nameof(appId)}:{appId}");
+
+        // Preset app (-42) is not stored in DB; avoid DB lookup to prevent needless connections
+        if (appId == KnownAppsConstants.PresetAppId)
+            return l.Return(0, "preset app");
+
         // Prefetch this App (new in v13 for ancestor apps)
         var appInDb = Context.TsDynDataApps.FirstOrDefault(a => a.AppId == appId);
         var appSysSettings = appInDb?.SysSettings;
