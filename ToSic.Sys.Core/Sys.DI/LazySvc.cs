@@ -1,25 +1,24 @@
 ﻿namespace ToSic.Sys.DI;
 
 /// <summary>
-/// Helps us create lazy **Service** objects. It has some special features:
+/// Helps us create lazy **Service** objects.
+/// </summary>
+/// <typeparam name="TService">Service type, ideally based on <see cref="ServiceBase"/></typeparam>
+/// <param name="sp">Service provider, in case we need to debug something</param>
+/// <remarks>
+/// It has some special features to reduce the amount of plumbing in code:
 /// 
 /// * It will automatically lazy-attach a logger when used correctly
 /// * It can also be configured with a lazy init function to keep code clean.
-/// 
-/// This reduces the amount of plumbing in many code files.
 ///
-/// It will detect if the provided object/service supports these features.
+/// LazySvc will detect if the provided object/service supports these features.
 /// So if it's used for anything that doesn't support logging it will just behave like `Lazy`.
-/// </summary>
-/// <typeparam name="TService">Service type, ideally based on <see cref="ServiceBase"/></typeparam>
-/// <remarks>
-/// Constructor, should never be called as it's only meant to be used with Dependency Injection.
+///
+/// Notes
+/// 
+/// * Constructor should never be called as it's only meant to be used with Dependency Injection.
 /// </remarks>
-/// <param name="sp">
-/// Service provider, in case we need to debug something
-/// </param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazySvc<TService>(IServiceProvider sp)
     : ILazyLike<TService>, IHasLog, ILazyInitLog
     where TService : class

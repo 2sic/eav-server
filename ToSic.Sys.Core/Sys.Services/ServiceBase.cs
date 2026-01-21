@@ -4,21 +4,28 @@ using System.Text.Json.Serialization;
 namespace ToSic.Sys.Services;
 
 /// <summary>
-/// Main base class for most services and helpers which have Logs.
-/// Also has an API to auto-connect the logs of child-services.
+/// Main base class for most services which have Logs.
 /// </summary>
+/// <remarks>
+/// This is quite internal but used heavily.
+/// If you are creating DLLs using 2sxc, this may be a good choice, just remember to check if this changes in future versions.
+///
+/// Notes
+/// 
+/// * Also has an API to auto-connect the logs of child-services.
+/// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-// #NoEditorBrowsableBecauseOfInheritance - would cause side-effects on inheriting classes
+// #NoEditorBrowsableBecauseOfInheritance - would cause side-effects on inheriting classes, and would never show up when you need it to inherit from it
 //[ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public abstract class ServiceBase(string logName) : IHasLog
 {
     /// <summary>
-    /// Experimental signature v17.02...
+    /// Main constructor.
     /// </summary>
-    /// <param name="logName"></param>
+    /// <param name="logName">The name to use in the log, like "My.Purpose"</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="connect"></param>
+    /// <param name="connect">List of services to auto-connect to the logging.</param>
     // ReSharper disable once UnusedParameter.Local
     protected ServiceBase(string logName, NoParamOrder npo = default, object[]? connect = default) : this(logName)
     {

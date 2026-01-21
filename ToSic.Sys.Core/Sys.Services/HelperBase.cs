@@ -11,7 +11,8 @@ namespace ToSic.Sys.Services;
 /// They are not meant for DI, so the parent logger should be included in the initial call.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[ShowApiWhenReleased(ShowApiMode.Never)]
+// #NoEditorBrowsableBecauseOfInheritance - would never show up when you need it to inherit from it
+//[ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public abstract class HelperBase(ILog? parentLog, string logName) : IHasLog
 {
