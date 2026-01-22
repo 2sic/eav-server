@@ -10,12 +10,30 @@ namespace ToSic.Eav.Data.Sys.Entities;
 /// </summary>
 [PrivateApi("was public till 16.09")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract record EntityBasedBase : IWrapperSetup<IEntity>, IWrapper<IEntity>
+public abstract record RecordOfEntityBase
+    : IWrapperSetup<IEntity>,   // Allow setting up the wrapper with an entity
+        IWrapper<IEntity>,      // Make sure it can be seen as an entity wrapper
+        ICanBeEntity            // Allow retrieving the entity directly if needed
 {
     #region Constructors & Setup
 
+    /// <summary>
+    /// Empty constructor, mainly for factories which will call the setup (otherwise risky to use)
+    /// </summary>
+    protected RecordOfEntityBase() { }
+
+    /// <summary>
+    /// Standard constructor providing the entity.
+    /// </summary>
+    /// <param name="entity">Entity to wrap</param>
+    protected RecordOfEntityBase(IEntity entity)
+        => Entity = entity;
+
     /// <inheritdoc cref="IEntityWrapper.Entity" />
     protected IEntity Entity { get; private set; } = null!;
+
+    IEntity ICanBeEntity.Entity => Entity;
+
 
     void IWrapperSetup<IEntity>.SetupContents(IEntity source)
         => Entity = source;
@@ -24,8 +42,12 @@ public abstract record EntityBasedBase : IWrapperSetup<IEntity>, IWrapper<IEntit
 
     #endregion
 
+    /// <summary>
+    /// Language codes for value lookups.
+    /// If an inheriting class needs to support it, it must set it in its constructor.
+    /// </summary>
     [PrivateApi]
-    protected string?[] LookupLanguages { get; } = [];
+    protected string?[] LookupLanguages { get; init; } = [];
 
 
     /// <summary>

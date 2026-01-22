@@ -4,7 +4,7 @@ using ToSic.Eav.LookUp.Sources;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 
-partial class QueryDefinition
+partial record QueryDefinition
 {
     /// <summary>
     /// The raw Params used in this query, as stored in the IEntity

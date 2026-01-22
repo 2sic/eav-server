@@ -10,8 +10,10 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 /// IMPORTANT: Don't cache this object, as some info inside it can change during runtime
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeDetails(IEntity entity) : EntityBasedType(entity)
+public record ContentTypeDetails : RecordOfEntityWithIds
 {
+    public ContentTypeDetails(IEntity entity) : base(entity) { }
+
     public const string ContentTypeTypeName = "ContentType";
 
     /// <summary>

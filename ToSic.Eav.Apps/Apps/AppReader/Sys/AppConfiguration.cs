@@ -12,8 +12,10 @@ namespace ToSic.Eav.Apps.AppReader.Sys;
 /// </summary>
 [PrivateApi("Note: was public till 16.08")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class AppConfiguration(IEntity entity) : EntityBasedType(entity), IAppConfiguration
+internal record AppConfiguration : RecordOfEntityWithIds, IAppConfiguration
 {
+    public AppConfiguration(IEntity entity) : base(entity) { }
+
     // todo: probably move most to Eav.Apps.AppConstants
     [PrivateApi] public const string FieldAllowRazor = "AllowRazorTemplates";
     [PrivateApi] public const string FieldAllowToken = "AllowTokenTemplates";

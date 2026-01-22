@@ -45,12 +45,14 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
         // Prepare new Parts - copy and set target to the newQueryGuid
         // The dictionary must remember what the original guid was for mapping later on
-        var newParts = query.Parts.ToDictionary(o => o.Guid,
-            o => CopyAndResetIds(o.Entity, Guid.NewGuid(), newMetadataTarget: newQueryGuid));
+        var newParts = query.Parts.ToDictionary(
+            o => o.Guid,
+            o => CopyAndResetIds((o as ICanBeEntity).Entity, Guid.NewGuid(), newMetadataTarget: newQueryGuid)
+        );
 
         // Get Parts metadata (which points to the old parts) and point it to the new parts
         var newMetadata = query.Parts
-            .Select(o => new { o.Guid, Value = o.Entity.Metadata.FirstOrDefault() })
+            .Select(o => new { o.Guid, Value = (o as ICanBeEntity).Entity.Metadata.FirstOrDefault() })
             .Where(m => m.Value != null)
             .Select(o => CopyAndResetIds(o.Value!, Guid.NewGuid(), newMetadataTarget: newParts[o.Guid].EntityGuid));
 
@@ -63,7 +65,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
         var newWiringValue = _builder.Value.Value.String(newWiring, []);
         var newWiringValues = new List<IValue> { newWiringValue };
-        var queryAttributes = query.Entity.Attributes.ToEditableInIgnoreCase();
+        var queryAttributes = (query as ICanBeEntity).Entity.Attributes.ToEditableInIgnoreCase();
         queryAttributes[nameof(QueryDefinition.StreamWiring)] = _builder.Value.Attribute.CreateFrom(
             queryAttributes[nameof(QueryDefinition.StreamWiring)],
             newWiringValues.ToImmutableOpt()
@@ -75,7 +77,12 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
             [_builder.Value.Value.String(query.Title + " Copy", [])]
         );
 
-        var newQuery = _builder.Value.Entity.CreateFrom(query.Entity, id: 0, guid: newQueryGuid, attributes: _builder.Value.Attribute.Create(queryAttributes));
+        var newQuery = _builder.Value.Entity.CreateFrom(
+            (query as ICanBeEntity).Entity,
+            id: 0,
+            guid: newQueryGuid,
+            attributes: _builder.Value.Attribute.Create(queryAttributes)
+        );
 
         var entityList = newParts
             .Select(p => p.Value)

@@ -3,13 +3,13 @@
 namespace ToSic.Eav.Data.Sys.Entities;
 
 /// <summary>
-/// Foundation for interfaces which will enhance <see cref="EntityBasedType"/> which gets its data from an Entity. <br/>
+/// Foundation for interfaces which will enhance <see cref="RecordOfEntityWithIds"/> which gets its data from an Entity. <br/>
 /// This is used for more type safety - so you base your interfaces - like IPerson on this,
 /// otherwise you're IPerson would be missing the Title, Id, Guid
 /// </summary>
 [PrivateApi("was public till 16.09")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IEntityBasedType: IEntityWrapper
+public interface IModelOfEntity: ICanBeEntity
 {
     /// <summary>
     /// The title as string.
@@ -30,11 +30,11 @@ public interface IEntityBasedType: IEntityWrapper
     /// <returns>The guid, or an empty-guid of no entity available</returns>
     Guid Guid { get; }
 
-    /// <summary>
-    /// Get the Metadata of the underlying Entity
-    /// </summary>
-    /// <remarks>
-    /// Added in v12.10
-    /// </remarks>
-    IMetadata Metadata { get; }
+    ///// <summary>
+    ///// Get the Metadata of the underlying Entity
+    ///// </summary>
+    ///// <remarks>
+    ///// Added in v12.10
+    ///// </remarks>
+    //IMetadata Metadata { get; }
 }

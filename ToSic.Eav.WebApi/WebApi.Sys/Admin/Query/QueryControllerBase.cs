@@ -87,7 +87,7 @@ public abstract class QueryControllerBase<TImplementation>(
 
         #region Deserialize some Entity-Values
 
-        var pipeline = qDef.Entity.AsDictionary();
+        var pipeline = (qDef as ICanBeEntity).Entity.AsDictionary();
         pipeline[nameof(QueryDefinition.StreamWiring)] = qDef.Connections;
 
         var converter = Services.EntToDicLazy.Value;

@@ -9,8 +9,10 @@ namespace ToSic.Eav.Metadata.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class Permission(IEntity entity) : EntityBasedType(entity), IPermission
+public record Permission : RecordOfEntityBase, IPermission
 {
+    public Permission(IEntity entity) : base(entity) { }
+
     public const string TypeName = "PermissionConfiguration";
     public const string FieldOwner = "Owner";
     /// <inheritdoc />

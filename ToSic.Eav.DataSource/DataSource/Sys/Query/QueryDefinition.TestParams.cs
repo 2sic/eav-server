@@ -4,7 +4,7 @@ using ToSic.Eav.LookUp.Sources;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 
-partial class QueryDefinition
+partial record QueryDefinition
 {
     internal const string KeyToken = "Token",
         KeyProperty = "Property",

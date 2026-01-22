@@ -7,8 +7,13 @@ namespace ToSic.Eav.Data.Sys.InputTypes;
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(state: ShowApiMode.Never)]
-public class InputTypeDefinition(IEntity entity) : EntityBasedType(entity: entity)
+public record InputTypeDefinition : RecordOfEntityWithIds
 {
+    /// <summary>
+    /// Constants related to Input Types
+    /// </summary>
+    public InputTypeDefinition(IEntity entity) : base(entity: entity) { }
+
     /// <summary>
     /// Name of the content-type which describes Input-Types
     /// </summary>

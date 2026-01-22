@@ -116,7 +116,7 @@ public class WorkInputTypes(
 
         return list
             .Select(e => new InputTypeDefinition(e))
-            .Select(e => new InputTypeInfo(metadata: e.Metadata)
+            .Select(e => new InputTypeInfo(metadata: (e as ICanBeEntity)?.Entity.Metadata)
             {
                 Type = e.Type,
                 Label = e.Label,

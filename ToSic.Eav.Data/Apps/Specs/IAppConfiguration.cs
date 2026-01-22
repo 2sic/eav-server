@@ -1,10 +1,10 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
-
-namespace ToSic.Eav.Apps;
+﻿namespace ToSic.Eav.Apps;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IAppConfiguration: IEntityBasedType
+public interface IAppConfiguration
 {
+    public int Id { get; }
+
     /// <summary>
     /// Version of the App.
     /// </summary>

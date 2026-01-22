@@ -22,9 +22,10 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
     public void LookForQuery_DeepApi()
     {
         var qdef = LoadQueryDef(AppForQueryTests, BasicId);
-        NotNull(qdef.Entity);
+        var entity = (qdef as ICanBeEntity).Entity;
+        NotNull(entity);
 
-        var metadata = qdef.Entity.Metadata.ToList();
+        var metadata = entity.Metadata.ToList();
         True(metadata.Count > 0);
 
     }
@@ -44,8 +45,9 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
     {
         var qdef = LoadQueryDef(AppForQueryTests, BasicId);
         var ser = jsonSerializer;
-        var justHeader = ser.Serialize(qdef.Entity, 0);
-        var full = ser.Serialize(qdef.Entity, 10);
+        var entity = (qdef as ICanBeEntity).Entity;
+        var justHeader = ser.Serialize(entity, 0);
+        var full = ser.Serialize(entity, 10);
         True(full.Length > justHeader.Length *2, "full serialized should be much longer");
         Trace.WriteLine("basic");
         Trace.WriteLine(justHeader);
@@ -58,8 +60,9 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
     {
         var qdef = LoadQueryDef(AppForQueryTests, BasicId);
         var ser = Serializer();
-        var strHead = ser.Serialize(qdef.Entity, 0);
-        var full = ser.Serialize(qdef.Entity, 10);
+        var entity = (qdef as ICanBeEntity).Entity;
+        var strHead = ser.Serialize(entity, 0);
+        var full = ser.Serialize(entity, 10);
 
         var eHead2 = ser.Deserialize(strHead, true);
         True(eHead2.Metadata.Count() == 0, "header without metadata should also have non after restoring");
@@ -68,7 +71,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
         Equal(strHead2, strHead2); //, "header without metadata serialized and back should be the same");
 
         var fullBack = ser.Deserialize(full, true);
-        Equal(fullBack.Metadata.Count(), qdef.Entity.Metadata.Count()); //, "full with metadata should also have after restoring");
+        Equal(fullBack.Metadata.Count(), entity.Metadata.Count()); //, "full with metadata should also have after restoring");
 
         var full2 = ser.Serialize(fullBack, 10);
         Equal(full, full2); //, "serialize, deserialize and serialize should get same thing");
@@ -93,7 +96,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
         Equal(BasicCount, countDef);
 
         var ser = Serializer();
-        var strQuery = ser.Serialize(qdef.Entity, 10);
+        var strQuery = ser.Serialize((qdef as ICanBeEntity).Entity, 10);
         var eDef2 = ser.Deserialize(strQuery, true);
         // TODO: #42
         var qdef2 = queryDefinitionBuilder.Create(eDef2, 0);
