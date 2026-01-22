@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Metadata.Sys;
+﻿namespace ToSic.Eav.Metadata;
 
 public static class IMetadataExtensions
 {

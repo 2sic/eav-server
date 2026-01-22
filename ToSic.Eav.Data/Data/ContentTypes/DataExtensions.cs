@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Extension methods for data-related operations.

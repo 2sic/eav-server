@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.Model;
+﻿using ToSic.Eav.Model;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;
 
