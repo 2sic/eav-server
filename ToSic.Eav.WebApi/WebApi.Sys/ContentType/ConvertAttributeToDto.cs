@@ -52,7 +52,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         // note: "ImageDecorator" is hardwired here, because it's a constant in 2sxc, not eav
         const string imageDecorator = "ImageDecorator";
         var isRecommended = IsRecommended(a.AttributeId.ToString(), imageDecorator);
-        var imgDecorator = a.Metadata.FirstOrDefaultOfType(imageDecorator);
+        var imgDecorator = a.Metadata.OneOfType(imageDecorator);
 
         var dto= new ContentTypeFieldDto
         {

@@ -68,7 +68,7 @@ public class BenchmarkLazyFastAccessOfType
         foreach (var contentType in Types)
         {
             runTimer.Start();
-            var found = List.OfType(contentType.Name);
+            var found = List.AllOfType(contentType.Name);
             runTimer.Stop();
         }
 

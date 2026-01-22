@@ -51,7 +51,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAp
             relationships = relationships.Distinct();
 
         if (typeName.HasValue())
-            relationships = relationships.OfType(typeName);
+            relationships = relationships.AllOfType(typeName);
 
         return relationships;
     }

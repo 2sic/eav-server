@@ -46,7 +46,7 @@ internal class ContentTypeAttributeMetadataLookup(ContentTypeAttributeSysSetting
         // This is for scenarios where the metadata would come from multiple attributes; like one providing description, another dropdown options, etc.
         var list = !filter.HasValue()
             ? entities
-            : entities?.OfType(filter).ToListOpt();
+            : entities?.AllOfType(filter).ToListOpt();
 
         return list ?? [];
     }

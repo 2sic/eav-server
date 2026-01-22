@@ -82,7 +82,7 @@ public class QueryManager<TQuery>(
         var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
         var appReader = appReaders.Value.GetOrKeep(appIdOrReader)!;
         var queries = appReader.List
-            .OfType(QueryDefinition.TypeName)
+            .AllOfType(QueryDefinition.TypeName)
             .ToImmutableOpt();
 
         if (recurseParents <= 0)

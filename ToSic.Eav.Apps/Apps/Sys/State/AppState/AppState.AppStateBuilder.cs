@@ -168,7 +168,7 @@ partial class AppState
             // note: we sometimes have a (still unsolved) problem, that the AppConfig is generated multiple times
             // so the OfType().OrderBy() should ensure that we really only take the first=oldest one.
             var config = AppStateTyped.Entities.ImmutableList
-                .OfType(AppLoadConstants.TypeAppConfig)
+                .AllOfType(AppLoadConstants.TypeAppConfig)
                 .OrderBy(e => e.EntityId)
                 .FirstOrDefault();
             var name = config?.Get<string>(AppLoadConstants.FieldName);

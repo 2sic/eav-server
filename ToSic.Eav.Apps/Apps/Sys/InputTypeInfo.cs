@@ -36,7 +36,7 @@ public record InputTypeInfo
         if (metadata.HasType(IsDefaultDecorator))
             IsDefault = true;
 
-        var typeInputTypeDef = metadata.FirstOrDefaultOfType(InputTypeDefinition.TypeForInputTypeDefinition);
+        var typeInputTypeDef = metadata.OneOfType(InputTypeDefinition.TypeForInputTypeDefinition);
         if (typeInputTypeDef != null)
             ConfigTypes = new InputTypeDefinition(typeInputTypeDef).ConfigTypes;
     }

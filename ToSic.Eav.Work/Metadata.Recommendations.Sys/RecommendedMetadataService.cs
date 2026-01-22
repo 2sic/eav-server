@@ -2,9 +2,7 @@
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.Work;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata.Requirements.Sys;
-using ToSic.Eav.Metadata.Sys;
 using ToSic.Sys.Utils;
 using static System.String;
 using static ToSic.Eav.Metadata.Recommendations.Sys.MetadataRecommendation;
@@ -127,7 +125,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 // and it's ServiceProvider is dead at that time, trying to debug
                 try
                 {
-                    var allForDecors = ct.GetMetadataList<MetadataForDecorator>()
+                    var allForDecors = ct.Metadata.AllOfType<MetadataForDecorator>()
                         .ToListOpt();
                     var allForThisTargetType = allForDecors
                         .Where(dec => dec.TargetType == targetType)
@@ -280,7 +278,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
             return l.Return([], "null metadata");
 
         var all = md
-            .GetMetadataList<MetadataExpectedDecorator>(MetadataExpectedDecorator.ContentTypeNameId)
+            .AllOfType<MetadataExpectedDecorator>(MetadataExpectedDecorator.ContentTypeNameId)
             .ToListOpt();
 
         if (targetTypeFor > 0)

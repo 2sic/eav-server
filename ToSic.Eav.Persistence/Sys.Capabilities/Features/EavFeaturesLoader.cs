@@ -32,7 +32,7 @@ public class EavFeaturesLoader(
             l.A($"list:{list.Count}");
 
             var licEntities = list
-                .OfType(LicenseEntity.TypeNameId)
+                .AllOfType(LicenseEntity.TypeNameId)
                 .Select(e => new LicenseEntity(e))
                 .ToListOpt();
             l.A($"licEnt:{licEntities.Count}");

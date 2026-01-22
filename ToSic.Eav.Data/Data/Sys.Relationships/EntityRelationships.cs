@@ -174,7 +174,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource? app, IEn
 
         // Optionally filter by type
         if (!string.IsNullOrEmpty(type) && rels.Any())
-            rels = rels.OfType(type!).ToListOpt();
+            rels = rels.AllOfType(type!).ToListOpt();
 
         return l.Return(rels, $"{rels.Count}");
     }

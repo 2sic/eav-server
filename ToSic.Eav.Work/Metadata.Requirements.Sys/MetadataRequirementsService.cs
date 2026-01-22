@@ -81,7 +81,7 @@ public class MetadataRequirementsService(
             return l.Return((true, []), "no metadata");
 
         // Preflight - ensure that they are of type RequirementDecorator
-        var reqList = entities.OfType(TypeName).ToListOpt();
+        var reqList = entities.AllOfType(TypeName).ToListOpt();
         if (!reqList.Any())
             return l.Return((true, []), "no requirements");
 
