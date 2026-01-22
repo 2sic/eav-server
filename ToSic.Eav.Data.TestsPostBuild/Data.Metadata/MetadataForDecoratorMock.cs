@@ -1,16 +1,17 @@
-﻿using ToSic.Eav.Data.Wrap;
-using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Metadata;
+using ToSic.Sys.Wrappers;
 
-namespace ToSic.Eav.Data.ContentTypes;
+namespace ToSic.Eav.Data.Metadata;
 
 /// <summary>
 /// WIP v21: Decorator to provide Metadata access to decorated IEntity
 /// </summary>
-[PrivateApi("still WIP / internal")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class MetadataForDecorator: ICanWrapEavBeta<IEntity>
+public class MetadataForDecoratorMock: IWrapperSetup<IEntity>
 {
-    void ICanWrapEavBeta<IEntity>.Setup(IEntity source) => _entity = source;
+    //public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
+    //public static string ContentTypeName = "MetadataForDecorator";
+
+    void IWrapperSetup<IEntity>.SetupContents(IEntity source) => _entity = source;
 
     private IEntity _entity = null!;
 

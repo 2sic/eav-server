@@ -1,6 +1,4 @@
-﻿using ToSic.Sxc.Data;
-
-namespace ToSic.Eav.Data.Wrap;
+﻿namespace ToSic.Sys.Wrappers;
 
 // BETA: EXPERIMENTAL WRAPPING OF IEntity for EAV USE CASES
 // not for public use ATM, should later be merged with ICanWrap<TSource> in SXC
@@ -27,16 +25,14 @@ namespace ToSic.Eav.Data.Wrap;
 /// </typeparam>
 [PrivateApi("may change or rename at any time")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface ICanWrapEavBeta<in TSource>: ICanWrapData
+public interface IWrapperSetup<in TSource>
 {
-    // TODO: MAKE PRIVATE AGAIN AFTER MOVING TO ToSic.Sxc.Custom
-
     /// <summary>
-    /// Add the data to use for the wrapper.
+    /// Add the contents to use for the wrapper.
     /// We are not doing this in the constructor,
     /// because the object needs to have an empty or DI-compatible constructor. 
     /// </summary>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public void Setup(TSource source);
+    public void SetupContents(TSource source);
 }
