@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Metadata.Recommendations.Sys;
 
-internal abstract class ForExpectedBase(IEntity entity) : EntityBasedType(entity)
+internal abstract record ForExpectedBase : EntityBasedBase
 {
     /// <summary>
     /// How may of this decorator should be applied to the target, default is 1

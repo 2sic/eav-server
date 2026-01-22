@@ -2,9 +2,9 @@
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.Work;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata.Requirements.Sys;
+using ToSic.Eav.Metadata.Sys;
 using ToSic.Sys.Utils;
 using static System.String;
 using static ToSic.Eav.Metadata.Recommendations.Sys.MetadataRecommendation;
@@ -109,7 +109,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     private class RecommendationInfos
     {
         public required IContentType Type;
-        public required MetadataForDecoratorOld Decorator;
+        public required MetadataForDecorator Decorator;
     }
 
     private ICollection<RecommendationInfos> TypesWhichDeclareTheyAreForTheTarget(int targetType, string targetKey)
@@ -127,20 +127,19 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 // and it's ServiceProvider is dead at that time, trying to debug
                 try
                 {
-                    var allForDecors = ct.Metadata
-                        .OfType(MetadataForDecoratorOld.ContentTypeNameId)
-                        .Select(e => new MetadataForDecoratorOld(e))
+                    var allForDecors = ct.GetMetadataList<MetadataForDecorator>()
                         .ToListOpt();
                     var allForThisTargetType = allForDecors
                         .Where(dec => dec.TargetType == targetType)
                         .ToListOpt();
-                    l.A($"Found {allForDecors.Count} {nameof(MetadataForDecoratorOld)}s " +
+                    l.A($"Found {allForDecors.Count} {nameof(MetadataForDecorator)}s " +
                         $"of which {allForThisTargetType.Count} for targetType {targetType} on {ct.Name}");
-                    return allForThisTargetType.Select(decorator => new RecommendationInfos
-                    {
-                        Type = ct,
-                        Decorator = decorator
-                    });
+                    return allForThisTargetType
+                        .Select(decorator => new RecommendationInfos
+                        {
+                            Type = ct,
+                            Decorator = decorator
+                        });
                 }
                 catch (Exception e)
                 {
@@ -281,21 +280,20 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
             return l.Return([], "null metadata");
 
         var all = md
-            .OfType(MetadataExpectedDecorator.ContentTypeNameId)
+            .GetMetadataList<MetadataExpectedDecorator>(MetadataExpectedDecorator.ContentTypeNameId)
             .ToListOpt();
 
-        // var meantFor = (int)targetTypeFor;
         if (targetTypeFor > 0)
             all = all
-                .Where(r => (int)targetTypeFor == new MetadataForDecoratorOld(r).TargetType)
+                .Where(mdExpected => mdExpected.TargetType == (int)targetTypeFor)
                 .ToListOpt();
+
         if (!all.Any())
             return l.Return([], "no recommendations");
 
         var resultAll = all
-            .SelectMany(rEntity =>
+            .SelectMany(rec =>
             {
-                var rec = new MetadataExpectedDecorator(rEntity);
                 var config = rec.Types;
                 var delWarning = rec.DeleteWarning;
                 return IsNullOrWhiteSpace(config)
