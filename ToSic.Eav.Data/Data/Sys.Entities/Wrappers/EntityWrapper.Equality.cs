@@ -2,7 +2,7 @@
 
 partial class EntityWrapper: IEquatable<IEntityWrapper>, IEquatable<IMultiWrapper<IEntity>>
 {
-    public IEntity? RootContentsForEqualityCheck { get; }
+    public IEntity? RootContentsForEqualityCheck { get; private set; }
 
     public static bool operator ==(EntityWrapper d1, IEntityWrapper d2) => MultiWrapperEquality.IsEqual(d1, d2);
 

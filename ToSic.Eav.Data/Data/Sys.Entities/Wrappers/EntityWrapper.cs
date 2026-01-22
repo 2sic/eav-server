@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.Sys.Entities;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class EntityWrapper : IEntity, IEntityWrapper
 {
-    public IEntity Entity { get; }
+    public IEntity Entity { get; private set; }
 
     /// <summary>
     /// Initialize the object and store the underlying IEntity.
@@ -41,6 +41,20 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     {
         if (decorator != null)
             Decorators = [..Decorators, decorator];
+    }
+
+    public void SetupContents(IEntity source)
+    {
+        Entity = source;
+        RootContentsForEqualityCheck = Entity;
+
+        // If it's not itself a wrapper, then we're done
+        if (Entity is not IEntityWrapper wrapper)
+            return;
+
+        // If it's a wrapper, then we must track the root entity for equality checks
+        RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? Entity;
+        Decorators = [..wrapper.Decorators];
     }
 
 
@@ -169,5 +183,6 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     //public List<PropertyDumpItem> _DumpNameWipDroppingMostCases(PropReqSpecs specs, string path) 
     //    => Entity._DumpNameWipDroppingMostCases(specs, path);
 
-    public IEnumerable<IDecorator<IEntity>> Decorators { get; } = [];
+    public IEnumerable<IDecorator<IEntity>> Decorators { get; private set; } = [];
+
 }

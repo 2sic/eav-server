@@ -8,4 +8,5 @@
 public interface IEntityWrapper
     : IHasDecorators<IEntity>,
         IMultiWrapper<IEntity>,
+        IWrapperSetup<IEntity>,
         ICanBeEntity;

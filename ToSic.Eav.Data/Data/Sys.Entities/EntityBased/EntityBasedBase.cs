@@ -17,7 +17,7 @@ public abstract record EntityBasedBase : IWrapperSetup<IEntity>, IWrapper<IEntit
     /// <inheritdoc cref="IEntityWrapper.Entity" />
     protected IEntity Entity { get; private set; } = null!;
 
-    public void SetupContents(IEntity source)
+    void IWrapperSetup<IEntity>.SetupContents(IEntity source)
         => Entity = source;
 
     IEntity IWrapper<IEntity>.GetContents() => Entity;
@@ -37,7 +37,7 @@ public abstract record EntityBasedBase : IWrapperSetup<IEntity>, IWrapper<IEntit
     /// <returns>The value. If the Entity is missing, will return the fallback result. </returns>
     [return: NotNullIfNotNull(nameof(fallback))]
     protected T? Get<T>(string fieldName, T? fallback)
-        => Entity == null
+        => Entity == null!
             ? fallback
             : Entity.Get(fieldName, fallback: fallback, languages: LookupLanguages);
 

@@ -16,7 +16,7 @@ namespace ToSic.Eav.Data.Sys.Entities;
 public abstract class EntityBasedType : IEntityBasedType
 {
     /// <inheritdoc cref="IEntityWrapper.Entity" />
-    public IEntity Entity { get; protected set; }
+    public IEntity Entity { get; private set; } = null!;
 
     [PrivateApi] public IEntity? RootContentsForEqualityCheck
         => (Entity as IEntityWrapper)?.RootContentsForEqualityCheck ?? Entity;
@@ -25,6 +25,13 @@ public abstract class EntityBasedType : IEntityBasedType
     public IEnumerable<IDecorator<IEntity>> Decorators
         => field ??= (Entity as IEntityWrapper)?.Decorators ?? [];
 
+    #region Constructors & Setup
+
+    protected EntityBasedType() { }
+
+    void IWrapperSetup<IEntity>.SetupContents(IEntity source)
+        => Entity = source;
+
     /// <summary>
     /// Create a EntityBasedType and wrap the entity provided
     /// </summary>
@@ -32,13 +39,12 @@ public abstract class EntityBasedType : IEntityBasedType
     protected EntityBasedType(IEntity entity)
         => Entity = entity;
 
+
     protected EntityBasedType(IEntity entity, string?[] languageCodes) : this(entity)
         => LookupLanguages = languageCodes ?? [];
 
-    //protected EntityBasedType(IEntity entity, string? languageCode) : this(entity)
-    //    => LookupLanguages = languageCode != null
-    //        ? [languageCode]
-    //        : [];
+    #endregion
+
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
@@ -82,10 +88,10 @@ public abstract class EntityBasedType : IEntityBasedType
     /// <param name="propertyName">The property name - will be auto-filled by the compiler</param>
     /// <returns>The typed value</returns>
     [return: NotNullIfNotNull(nameof(fallback))]
-    protected T? GetThis<T>(T? fallback, [CallerMemberName] string? propertyName = default)
-        => Get(propertyName!, fallback);
+    protected T? GetThis<T>(T? fallback, [CallerMemberName] string propertyName = default!)
+        => Get(propertyName, fallback);
 
     [return: NotNullIfNotNull(nameof(fallback))]
-    protected T? GetThisIfEntity<T>(T fallback, [CallerMemberName] string? propertyName = default)
+    protected T? GetThisIfEntity<T>(T fallback, [CallerMemberName] string propertyName = default!)
         => Entity == null ? fallback : GetThis(fallback, propertyName);
 }
