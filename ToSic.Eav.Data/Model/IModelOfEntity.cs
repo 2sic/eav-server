@@ -1,13 +1,15 @@
-﻿using ToSic.Eav.Metadata;
-
-namespace ToSic.Eav.Data.Sys.Entities;
+﻿namespace ToSic.Eav.Model;
 
 /// <summary>
-/// Foundation for interfaces which will enhance <see cref="RecordOfEntityWithIds"/> which gets its data from an Entity. <br/>
+/// Foundation for interfaces which will enhance <see cref="ModelOfEntity"/> which gets its data from an Entity. <br/>
+/// </summary>
+/// <remarks>
 /// This is used for more type safety - so you base your interfaces - like IPerson on this,
 /// otherwise you're IPerson would be missing the Title, Id, Guid
-/// </summary>
-[PrivateApi("was public till 16.09")]
+/// 
+/// * Introduced in v21.01
+/// </remarks>
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IModelOfEntity: ICanBeEntity
 {

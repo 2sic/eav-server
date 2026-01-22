@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Model;
 
 namespace ToSic.Eav.Data.Sys.InputTypes;
 
@@ -7,7 +8,7 @@ namespace ToSic.Eav.Data.Sys.InputTypes;
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(state: ShowApiMode.Never)]
-public record InputTypeDefinition : RecordOfEntityWithIds
+public record InputTypeDefinition : ModelOfEntity
 {
     /// <summary>
     /// Constants related to Input Types

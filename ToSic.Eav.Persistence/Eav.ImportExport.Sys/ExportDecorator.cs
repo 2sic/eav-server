@@ -1,9 +1,10 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Model;
 
 namespace ToSic.Eav.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record ExportDecorator : RecordOfEntityBase
+public record ExportDecorator : ModelOfEntityCore
 {
     public static string TypeNameId = "32698880-1c2e-41ab-bcfc-420091d3263f";
     public static string ContentTypeName = "SystemExportDecorator";

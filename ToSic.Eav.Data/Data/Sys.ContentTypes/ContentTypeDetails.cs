@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Model;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;
 
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 /// IMPORTANT: Don't cache this object, as some info inside it can change during runtime
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record ContentTypeDetails : RecordOfEntityWithIds
+public record ContentTypeDetails : ModelOfEntity
 {
     public ContentTypeDetails(IEntity entity) : base(entity) { }
 

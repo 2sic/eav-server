@@ -1,8 +1,9 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Model;
 
 namespace ToSic.Eav.Metadata.Recommendations.Sys;
 
-internal abstract record ForExpectedBase : RecordOfEntityBase
+internal abstract record ForExpectedBase : ModelOfEntityCore
 {
     /// <summary>
     /// How may of this decorator should be applied to the target, default is 1

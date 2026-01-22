@@ -1,8 +1,9 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Model;
 
 namespace ToSic.Eav.Metadata.Requirements.Sys;
 
-internal record RequirementDecorator : RecordOfEntityBase
+internal record RequirementDecorator : ModelOfEntityCore
 {
     public RequirementDecorator(IEntity entity) : base(entity) { }
 

@@ -1,16 +1,15 @@
 ﻿using System.Runtime.CompilerServices;
 
-
-namespace ToSic.Eav.Data.Sys.Entities;
+namespace ToSic.Eav.Model;
 
 /// <summary>
 /// Foundation for a class which gets its data from an Entity. <br/>
 /// This is used for more type safety - because some internal objects need entities for data-storage,
 /// but when programming they should use typed objects to not accidentally access invalid properties. 
 /// </summary>
-[PrivateApi("was public till 16.09")]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract record RecordOfEntityBase
+public abstract record ModelOfEntityCore
     : IWrapperSetup<IEntity>,   // Allow setting up the wrapper with an entity
         IWrapper<IEntity>,      // Make sure it can be seen as an entity wrapper
         ICanBeEntity            // Allow retrieving the entity directly if needed
@@ -18,18 +17,18 @@ public abstract record RecordOfEntityBase
     #region Constructors & Setup
 
     /// <summary>
-    /// Empty constructor, mainly for factories which will call the setup (otherwise risky to use)
+    /// Empty constructor, mainly for factories which must call the setup (otherwise risky to use)
     /// </summary>
-    protected RecordOfEntityBase() { }
+    protected ModelOfEntityCore() { }
 
     /// <summary>
     /// Standard constructor providing the entity.
     /// </summary>
     /// <param name="entity">Entity to wrap</param>
-    protected RecordOfEntityBase(IEntity entity)
+    protected ModelOfEntityCore(IEntity entity)
         => Entity = entity;
 
-    /// <inheritdoc cref="IEntityWrapper.Entity" />
+    /// <inheritdoc cref="ICanBeEntity.Entity" />
     protected IEntity Entity { get; private set; } = null!;
 
     IEntity ICanBeEntity.Entity => Entity;

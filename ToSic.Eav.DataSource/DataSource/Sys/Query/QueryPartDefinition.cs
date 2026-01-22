@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.DataSource.VisualQuery.Sys;
+﻿using ToSic.Eav.DataSource.VisualQuery.Sys;
+using ToSic.Eav.Model;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 
@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource.Sys.Query;
 /// </summary>
 [PrivateApi("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record QueryPartDefinition : RecordOfEntityWithLog
+public record QueryPartDefinition : ModelOfEntityWithLog
 {
     public QueryPartDefinition(IEntity? entity,
         string typeIdentifier,

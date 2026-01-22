@@ -1,6 +1,8 @@
-﻿namespace ToSic.Eav.Data.Sys.Entities;
+﻿namespace ToSic.Eav.Model;
 
-public abstract record RecordOfEntityWithLog: RecordOfEntityWithIds, IHasLog
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public abstract record ModelOfEntityWithLog: ModelOfEntity, IHasLog
 {
     /// <summary>
     /// Primary constructor
@@ -8,7 +10,7 @@ public abstract record RecordOfEntityWithLog: RecordOfEntityWithIds, IHasLog
     /// <param name="entity"></param>
     /// <param name="parentLog"></param>
     /// <param name="logName"></param>
-    protected RecordOfEntityWithLog(IEntity entity, ILog? parentLog, string logName) : base(entity)
+    protected ModelOfEntityWithLog(IEntity entity, ILog? parentLog, string logName) : base(entity)
         => Log = new Log(logName, parentLog);
 
     protected readonly ILog Log = null!;

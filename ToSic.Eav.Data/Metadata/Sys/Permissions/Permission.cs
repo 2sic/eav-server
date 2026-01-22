@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Model;
 using ToSic.Sys.Security.Permissions;
 
 
@@ -9,7 +10,7 @@ namespace ToSic.Eav.Metadata.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record Permission : RecordOfEntityBase, IPermission
+public record Permission : ModelOfEntityCore, IPermission
 {
     public Permission(IEntity entity) : base(entity) { }
 

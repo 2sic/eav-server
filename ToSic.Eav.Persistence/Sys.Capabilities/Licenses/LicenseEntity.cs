@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Model;
 using ToSic.Sys.Capabilities.Fingerprints;
 
 namespace ToSic.Sys.Capabilities.Licenses;
@@ -8,7 +9,7 @@ namespace ToSic.Sys.Capabilities.Licenses;
 /// Used by the FeaturesLoader to load the license information from inside JSON entities.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal record LicenseEntity : RecordOfEntityWithIds
+internal record LicenseEntity : ModelOfEntity
 {
     public static string TypeNameId = "57248ccb-24f1-44c6-9c6c-085e44ebb0cb";
     public static string ContentTypeName = "⚙️License";

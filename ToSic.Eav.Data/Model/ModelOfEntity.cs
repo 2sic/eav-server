@@ -1,9 +1,9 @@
-﻿namespace ToSic.Eav.Data.Sys.Entities;
+﻿namespace ToSic.Eav.Model;
 
-public abstract record RecordOfEntityWithIds: RecordOfEntityBase, IModelOfEntity
+public abstract record ModelOfEntity: ModelOfEntityCore, IModelOfEntity
 {
-    protected RecordOfEntityWithIds() { }
-    protected RecordOfEntityWithIds(IEntity entity) : base(entity) { }
+    protected ModelOfEntity() { }
+    protected ModelOfEntity(IEntity entity) : base(entity) { }
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]

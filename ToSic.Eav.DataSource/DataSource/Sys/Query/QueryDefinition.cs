@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Model;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 
@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource.Sys.Query;
 /// </summary>
 [PrivateApi("Till v17 was InternalApi_DoNotUse_MayChangeWithoutNotice - this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial record QueryDefinition : RecordOfEntityWithLog
+public partial record QueryDefinition : ModelOfEntityWithLog
 {
     public QueryDefinition(IEntity headerEntity, int appId, List<QueryPartDefinition> parts, ILog parentLog)
         : base(headerEntity, parentLog, "DS.QDef")
