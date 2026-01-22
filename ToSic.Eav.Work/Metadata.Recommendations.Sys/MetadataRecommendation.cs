@@ -50,14 +50,14 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
     public bool Enabled { get; set; }
     public string? MissingFeature { get; set; }
 
-    internal MetadataRecommendation(IContentType type, MetadataForDecorator? recommendation, int? count, string debugMessage, int priority)
+    internal MetadataRecommendation(IContentType type, MetadataForDecoratorOld? recommendation, int? count, string debugMessage, int priority)
     {
         Type = type;
         Priority = priority;
         var typeDetails = type.DetailsOrNull();
         Title = (typeDetails?.Title).UseFallbackIfNoValue(type.Name);
         Icon = typeDetails?.Icon;
-        var recDec = recommendation ?? new MetadataForDecorator(null);
+        var recDec = recommendation ?? new MetadataForDecoratorOld(null);
         Count = count ?? recDec.Amount;
         Debug = debugMessage;
         DeleteWarning = recDec.DeleteWarning;
