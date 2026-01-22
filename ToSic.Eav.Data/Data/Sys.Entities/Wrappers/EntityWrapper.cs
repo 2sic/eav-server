@@ -103,17 +103,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
 
     /// <inheritdoc />
     public int OwnerId => Entity.OwnerId;
-
-    // #RemoveV20 #GetBestValue
-    ///// <inheritdoc />
-    //[Obsolete("Should not be used anymore, use Get instead. planned to keep till ca. v20")]
-    //public object? GetBestValue(string attributeName, string[] languages)
-    //    => Entity.GetBestValue(attributeName, languages);
-
-    //[Obsolete("Should not be used anymore, use Get<T> instead. planned to keep till ca. v20")]
-    //public T? GetBestValue<T>(string attributeName, string[] languages)
-    //    => Entity.GetBestValue<T>(attributeName, languages);
-
+    
     /// <inheritdoc />
     public string? GetBestTitle()
         => Entity.GetBestTitle();
@@ -145,16 +135,6 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
 
     #endregion
 
-    // #DropOldIEntityValue
-    ///// <inheritdoc />
-    //[Obsolete]
-    //public object? Value(string field) => Entity.Value(field);
-
-    // #DropOldIEntityValue
-    ///// <inheritdoc />
-    //[Obsolete]
-    //public T? Value<T>(string field) => Entity.Value<T>(field);
-
     /// <inheritdoc />
     public object? Get(string name) => Entity.Get(name);
 
@@ -163,25 +143,9 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
     public object? Get(string name, NoParamOrder npo = default, string? language = default, string?[]? languages = default)
         => Entity.Get(name, npo, language, languages);
 
-    // 2025-06-13 #MoveIEntityTypedGetToExtension
-    ///// <inheritdoc />
-    //public TValue? Get<TValue>(string name) => Entity.GetExt<TValue>(name);
-
-    // 2025-06-13 #MoveIEntityTypedGetToExtension
-    ///// <inheritdoc />
-    //// ReSharper disable once MethodOverloadWithOptionalParameter
-    //public TValue? Get<TValue>(string name, NoParamOrder npo = default, TValue? fallback = default, string? language = default, string[]? languages = default)
-    //    => Entity.GetExt(name, npo, fallback, language, languages);
-
-
     [PrivateApi("Internal")]
     public virtual PropReqResult FindPropertyInternal(PropReqSpecs specs, PropertyLookupPath path)
         => Entity.FindPropertyInternal(specs, path.Add("Wrap", specs.Field));
-
-    // #DropUseOfDumpProperties
-    //[PrivateApi("Internal")]
-    //public List<PropertyDumpItem> _DumpNameWipDroppingMostCases(PropReqSpecs specs, string path) 
-    //    => Entity._DumpNameWipDroppingMostCases(specs, path);
 
     public IEnumerable<IDecorator<IEntity>> Decorators { get; private set; } = [];
 
