@@ -1,6 +1,8 @@
-﻿namespace ToSic.Eav.Data.Metadata;
+﻿using ToSic.Eav.Data.ExtensionsTests.TestData;
 
-public class EntityWithMetadata(EntityWithMetadataGenerator generator)
+namespace ToSic.Eav.Data.ExtensionsTests;
+
+public class VerifyTestDataGenerator(TestDataGenerator generator)
 {
     [Theory]
     [InlineData(0)]

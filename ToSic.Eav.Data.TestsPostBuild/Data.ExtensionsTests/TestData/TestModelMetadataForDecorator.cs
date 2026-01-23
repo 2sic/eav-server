@@ -1,12 +1,12 @@
 ﻿using ToSic.Eav.Metadata;
 using ToSic.Sys.Wrappers;
 
-namespace ToSic.Eav.Data.Metadata;
+namespace ToSic.Eav.Data.ExtensionsTests.TestData;
 
 /// <summary>
-/// WIP v21: Decorator to provide Metadata access to decorated IEntity
+/// Test Sample Model
 /// </summary>
-public class MetadataForDecoratorMock: IWrapperSetup<IEntity>
+public class TestModelMetadataForDecorator: IWrapperSetup<IEntity>
 {
     //public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
     //public static string ContentTypeName = "MetadataForDecorator";
