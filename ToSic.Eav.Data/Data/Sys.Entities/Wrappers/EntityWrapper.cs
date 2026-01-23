@@ -43,18 +43,19 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
             Decorators = [..Decorators, decorator];
     }
 
-    public void SetupContents(IEntity source)
+    public bool SetupContents(IEntity? source)
     {
         Entity = source;
         RootContentsForEqualityCheck = Entity;
 
         // If it's not itself a wrapper, then we're done
         if (Entity is not IEntityWrapper wrapper)
-            return;
+            return true;
 
         // If it's a wrapper, then we must track the root entity for equality checks
         RootContentsForEqualityCheck = wrapper.RootContentsForEqualityCheck ?? Entity;
         Decorators = [..wrapper.Decorators];
+        return true;
     }
 
 

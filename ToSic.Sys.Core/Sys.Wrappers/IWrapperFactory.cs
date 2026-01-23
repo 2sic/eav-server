@@ -18,5 +18,5 @@ public interface IWrapperFactory
     /// <typeparam name="TModel">The type of the wrapper model to create. Must implement <see cref="IWrapperSetup{TSource}"/>.</typeparam>
     /// <param name="source">The source object containing data used to set up the wrapper model. Cannot be null.</param>
     /// <returns>An instance of <typeparamref name="TModel"/> initialized with the specified source object.</returns>
-    public TModel Create<TSource, TModel>(TSource source) where TModel : IWrapperSetup<TSource>;
+    public TModel? Create<TSource, TModel>(TSource? source) where TModel : IWrapperSetup<TSource>;
 }

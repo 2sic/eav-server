@@ -11,7 +11,11 @@ public class TestModelMetadataForDecorator: IWrapperSetup<IEntity>
     //public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
     //public static string ContentTypeName = "MetadataForDecorator";
 
-    void IWrapperSetup<IEntity>.SetupContents(IEntity source) => _entity = source;
+    bool IWrapperSetup<IEntity>.SetupContents(IEntity? source)
+    {
+        _entity = source;
+        return true;
+    }
 
     private IEntity _entity = null!;
 

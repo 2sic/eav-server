@@ -97,6 +97,7 @@ public static partial class EntityListExtensions
     /// <returns>An enumerable collection of TModel instances wrapping the matching entities. Returns an empty collection if the
     /// source is null or no matching entities are found.</returns>
     /// <param name="factory">The factory to use for creating wrapper instances.</param>
+    // ReSharper disable once MethodOverloadWithOptionalParameter
     public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? list, NoParamOrder npo = default, string? typeName = default, IWrapperFactory? factory = null)
         where TModel : IWrapperSetup<IEntity>, new()
     {

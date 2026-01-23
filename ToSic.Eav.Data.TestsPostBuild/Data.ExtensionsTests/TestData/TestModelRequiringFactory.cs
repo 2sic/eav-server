@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.ExtensionsTests.TestData;
 /// </summary>
 public class TestModelRequiringFactoryEmptyConstructor() : IWrapperSetup<IEntity>, INeedsFactory
 {
-    public void SetupContents(IEntity source) { }
+    public bool SetupContents(IEntity? source) => true;
 }
 
 /// <summary>
@@ -19,7 +19,11 @@ public class TestModelRequiringFactory(TestModelDependency dependency) : IWrappe
     //public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
     //public static string ContentTypeName = "MetadataForDecorator";
 
-    void IWrapperSetup<IEntity>.SetupContents(IEntity source) => _entity = source;
+    bool IWrapperSetup<IEntity>.SetupContents(IEntity? source)
+    {
+        _entity = source;
+        return true;
+    }
 
     private IEntity _entity = null!;
 

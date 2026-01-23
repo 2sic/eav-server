@@ -5,11 +5,12 @@
 /// </summary>
 internal class WrapperFactory(IServiceProvider sp): IWrapperFactory
 {
-    public TModel Create<TSource, TModel>(TSource source)
+    [return: NotNullIfNotNull(nameof(source))]
+    public TModel? Create<TSource, TModel>(TSource? source)
         where TModel : IWrapperSetup<TSource>
     {
         var wrapper = sp.Build<TModel>();
-        wrapper.SetupContents(source);
-        return wrapper;
+        var ok = wrapper.SetupContents(source);
+        return ok ? wrapper : default;
     }
 }

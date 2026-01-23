@@ -43,7 +43,11 @@ public static partial class EntityListExtensions
             return default;
 
         var first = list.GetOne(typeName: typeName);
-        return first.As<TModel>();
+
+        // Must explicitly return null if first not found
+        // because the As will often return an empty wrapper,
+        // which is not expected in this case
+        return first == null ? default : first.As<TModel>();
     }
 
     /// <summary>
@@ -55,6 +59,7 @@ public static partial class EntityListExtensions
     /// <param name="typeName">The name of the type to match.</param>
     /// <param name="factory">A factory to create the target model.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
+    // ReSharper disable once MethodOverloadWithOptionalParameter
     public static TModel? GetOne<TModel>(this IEnumerable<IEntity>? list, NoParamOrder npo = default, string? typeName = default, IWrapperFactory? factory = null)
         where TModel : IWrapperSetup<IEntity>, new()
     {

@@ -3,6 +3,11 @@
 public interface IPermission
 {
     /// <summary>
+    /// Title describing the permissions.
+    /// </summary>
+    string Title { get; }
+
+    /// <summary>
     /// The condition in this permission - like "this rule applies to admins"
     /// The condition is usually a text-code by the hosting CMS
     /// </summary>

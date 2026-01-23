@@ -34,8 +34,11 @@ public abstract record ModelOfEntityCore
     IEntity ICanBeEntity.Entity => Entity;
 
 
-    void IWrapperSetup<IEntity>.SetupContents(IEntity source)
-        => Entity = source;
+    bool IWrapperSetup<IEntity>.SetupContents(IEntity? source)
+    {
+        Entity = source;
+        return true;
+    }
 
     IEntity IWrapper<IEntity>.GetContents() => Entity;
 

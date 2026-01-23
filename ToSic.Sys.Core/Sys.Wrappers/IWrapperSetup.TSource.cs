@@ -32,7 +32,12 @@ public interface IWrapperSetup<in TSource>
     /// We are not doing this in the constructor,
     /// because the object needs to have an empty or DI-compatible constructor. 
     /// </summary>
+    /// <returns>
+    /// `true` if all is ok, `false` if not.
+    /// A typical example would be a wrapper which is setup with `null` and it cannot work that way.
+    /// On the other hand, if a wrapper is ok with a null source, it would return `true`.
+    /// </returns>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public void SetupContents(TSource source);
+    public bool SetupContents(TSource? source);
 }
