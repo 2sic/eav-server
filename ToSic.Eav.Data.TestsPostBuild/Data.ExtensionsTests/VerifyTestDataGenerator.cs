@@ -10,7 +10,7 @@ public class VerifyTestDataGenerator(TestDataGenerator generator)
     [InlineData(5)]
     public void WithSameMetadataManyTimes(int amount)
     {
-        var entity = generator.EntityWithMdForMetadata(amount);
+        var entity = generator.EntityWithMetadataForDecorator(amount);
         Equal(amount, entity.Metadata.Count());
     }
 

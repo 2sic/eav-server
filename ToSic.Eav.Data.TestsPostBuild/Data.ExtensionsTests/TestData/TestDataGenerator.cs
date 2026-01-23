@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data.ExtensionsTests.TestData;
 
 public class TestDataGenerator(DataBuilder builder, ContentTypeFactory ctFactory)
 {
-    public IEntity EntityWithMdForMetadata(int amount)
+    public IEntity EntityWithMetadataForDecorator(int amount)
     {
         var original = builder.TestEntityDaniel();
 

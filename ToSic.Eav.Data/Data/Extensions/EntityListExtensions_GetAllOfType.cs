@@ -22,7 +22,7 @@ public static partial class EntityListExtensions
     public static IEnumerable<IEntity> GetAll(this IEnumerable<IEntity> list, IContentType type)
     {
         return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
-            ? fastList.GetAll(type.NameId)  // reuse existing functionality & index but using the most reliable nameId
+            ? fastList.GetAll(typeName: type.NameId)  // reuse existing functionality & index but using the most reliable nameId
             : list.Where(e => type.Equals(e.Type)).ToListOpt();
     }
 
@@ -52,12 +52,12 @@ public static partial class EntityListExtensions
     /// The model type to wrap each entity.
     /// Must implement `IWrapperSetup{IEntity}` and have a parameterless constructor.
     /// </typeparam>
-    /// <param name="md">The collection of entities to filter and wrap.</param>
+    /// <param name="list">The collection of entities to filter and wrap.</param>
     /// <returns>An enumerable collection of wrapped entities of the specified model type. Returns an empty collection if the
     /// input is null or contains no matching entities.</returns>
-    public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? md)
+    public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? list)
         where TModel : IWrapperSetup<IEntity>, new()
-        => md.GetAll<TModel>(typeof(TModel).Name);
+        => list.GetAll<TModel>(typeName: typeof(TModel).Name);
 
     /// <summary>
     /// Returns a collection of wrapper objects of type `TModel` for all entities of the specified type name.
@@ -66,69 +66,51 @@ public static partial class EntityListExtensions
     /// The model type to wrap each entity.
     /// Must implement `IWrapperSetup{IEntity}` and have a parameterless constructor.
     /// </typeparam>
-    /// <param name="md">The source collection of entities to search. Can be null.</param>
+    /// <param name="list">The source collection of entities to search. Can be null.</param>
     /// <param name="typeName">The name identifier of the entity type to filter by. This value is used to select entities of a specific type.</param>
     /// <returns>An enumerable collection of TModel instances wrapping the matching entities. Returns an empty collection if the
     /// source is null or no matching entities are found.</returns>
-    public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? md, string typeName)
+    public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? list, string typeName)
         where TModel : IWrapperSetup<IEntity>, new()
     {
-        if (md == null)
+        if (list == null)
             return [];
 
-        var list = md
-            .GetAll(typeName)
-            .Where(x => x != null)
-            .ToList();
-
         var result = list
-            .Where(r => r != null)
+            .GetAll(typeName: typeName)
             .Select(raw => raw.As<TModel>()!)
             .ToList();
 
         return result;
     }
 
-
     /// <summary>
-    /// Returns the first entity that matches the specified type name, or null if not found.
+    /// Returns a collection of wrapper objects of type `TModel` for all entities of the specified type name.
     /// </summary>
-    /// <param name="list">The collection of entities to search.</param>
-    /// <param name="typeName">The name of the type to match. This comparison is case-sensitive.</param>
-    /// <returns>The first entity whose type matches the specified type name, or null if no matching entity is found.</returns>
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity? GetOne(this IEnumerable<IEntity> list, string typeName)
-    {
-        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
-            ? fastList.Fast.OfType(typeName).FirstOrDefault()
-            : list.FirstOrDefault(e => e.Type.Is(typeName));
-    }
-
-    /// <summary>
-    /// Returns the first entity that matches the specified type name, or null if not found.
-    /// </summary>
-    /// <typeparam name="TModel">The target model to convert to.</typeparam>
-    /// <param name="list">The collection of entities to search.</param>
-    /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? GetOne<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : IWrapperSetup<IEntity>, new()
-        => list.GetOne<TModel>(typeof(TModel).Name);
-
-
-    /// <summary>
-    /// Returns the first entity that matches the specified type name, or null if not found.
-    /// </summary>
-    /// <typeparam name="TModel">The target model to convert to.</typeparam>
-    /// <param name="list">The collection of entities to search.</param>
-    /// <param name="typeName">The name of the type to match.</param>
-    /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? GetOne<TModel>(this IEnumerable<IEntity>? list, string typeName)
+    /// <typeparam name="TModel">
+    /// The model type to wrap each entity.
+    /// Must implement `IWrapperSetup{IEntity}` and have a parameterless constructor.
+    /// </typeparam>
+    /// <param name="list">The source collection of entities to search. Can be null.</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="typeName">The name identifier of the entity type to filter by. This value is used to select entities of a specific type.</param>
+    /// <returns>An enumerable collection of TModel instances wrapping the matching entities. Returns an empty collection if the
+    /// source is null or no matching entities are found.</returns>
+    /// <param name="factory">The factory to use for creating wrapper instances.</param>
+    public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? list, NoParamOrder npo = default, string? typeName = default, IWrapperFactory? factory = null)
         where TModel : IWrapperSetup<IEntity>, new()
     {
         if (list == null)
-            return default;
+            return [];
 
-        var first = list.GetOne(typeName);
-        return first.As<TModel>();
+        var selection = list
+            .GetAll(typeName: typeName ?? typeof(TModel).Name);
+
+        return factory == null
+            ? selection.Select(entity => entity.As<TModel>()!).ToList()
+            : selection.Select(factory.Create<IEntity, TModel>)
+                .ToList();
     }
+
+
 }

@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Data.ExtensionsTests.TestData;
+using ToSic.Sys.Wrappers;
 
 namespace ToSic.Eav.Data.ExtensionsTests;
 
-public class GetAll(TestDataGenerator generator)
+public class GetAll(TestDataGenerator generator, IWrapperFactory factory)
 {
-
-
     [Theory]
     [InlineData(0, 0)]
     [InlineData(1, 0)]
@@ -26,7 +25,7 @@ public class GetAll(TestDataGenerator generator)
     [InlineData(5, 0)]
     [InlineData(0, 3)]
     [InlineData(2, 4)]
-    public void WithMixedMetadataManyTimesNamed(int amountMdFor, int amountOther)
+    public void GetAllWithNameMixed(int amountMdFor, int amountOther)
     {
         var entity = generator.CreateWithMixedMetadata(amountMdFor, amountOther);
         var mdList = entity.Metadata.GetAll<TestModelMetadataForDecorator>(nameof(TestModelMetadataForDecorator));
@@ -35,16 +34,38 @@ public class GetAll(TestDataGenerator generator)
     }
 
     [Theory]
-    [InlineData(1, 0)]
-    [InlineData(5, 0)]
-    [InlineData(0, 3)]
-    [InlineData(2, 4)]
-    public void WithMixedMetadataManyTimesNamedWrong(int amountMdFor, int amountOther)
+    [InlineData(1)]
+    [InlineData(0)]
+    [InlineData(2)]
+    public void GetAllWithNameIncorrect(int amountMdFor)
     {
-        var entity = generator.CreateWithMixedMetadata(amountMdFor, amountOther);
+        var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
         var mdList = entity.Metadata.GetAll<TestModelMetadataForDecorator>("some-wrong-name");
         NotNull(mdList);
         Empty(mdList);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void GetAllRequiringFactoryMissingFails(int amountMdFor) =>
+        Throws<InvalidCastException>(() =>
+        {
+            var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
+            entity.Metadata.GetAll<TestModelRequiringFactoryEmptyConstructor>(
+                nameof(TestModelMetadataForDecorator));
+        });
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void GetAllRequiringFactory(int amountMdFor)
+    {
+        var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
+        entity.Metadata.GetAll<TestModelRequiringFactoryEmptyConstructor>(
+            typeName: nameof(TestModelMetadataForDecorator),
+            factory: factory
+        );
     }
 
 }
