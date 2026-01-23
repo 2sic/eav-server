@@ -17,20 +17,13 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
 
     public bool AllowCodeImport;
 
-    public class Dependencies(
-        Generator<AppFileManager> fileManagerGenerator,
-        IImportExportEnvironment environment,
-        Generator<XmlImportWithFiles> xmlImpExpFiles,
-        AppCachePurger appCachePurger,
-        IAppsCatalog appsCatalog)
-        : DependenciesBase(connect: [fileManagerGenerator, environment, xmlImpExpFiles, appCachePurger, appsCatalog])
-    {
-        public Generator<AppFileManager> FileManagerGenerator { get; } = fileManagerGenerator;
-        public IImportExportEnvironment Environment { get; } = environment;
-        public Generator<XmlImportWithFiles> XmlImpExpFiles { get; } = xmlImpExpFiles;
-        public AppCachePurger AppCachePurger { get; } = appCachePurger;
-        public IAppsCatalog AppsCatalog { get; } = appsCatalog;
-    }
+    public record Dependencies(
+        Generator<AppFileManager> FileManagerGenerator,
+        IImportExportEnvironment Environment,
+        Generator<XmlImportWithFiles> XmlImpExpFiles,
+        AppCachePurger AppCachePurger,
+        IAppsCatalog AppsCatalog)
+        : DependenciesRecord(connect: [FileManagerGenerator, Environment, XmlImpExpFiles, AppCachePurger, AppsCatalog]);
 
 
     public ZipImport Init(int zoneId, int? appId, bool allowCode)

@@ -20,16 +20,11 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
 {
     #region Constructor / DI
 
-    public class Dependencies(
-        LazySvc<IAppReaderFactory> appReaders,
-        IValueConverter valueConverter,
-        IZoneCultureResolver zoneCultureResolver)
-        : DependenciesBase(connect: [appReaders, valueConverter, zoneCultureResolver])
-    {
-        public LazySvc<IAppReaderFactory> AppReaders { get; } = appReaders;
-        public IValueConverter ValueConverter { get; } = valueConverter;
-        public IZoneCultureResolver ZoneCultureResolver { get; } = zoneCultureResolver;
-    }
+    public record Dependencies(
+        LazySvc<IAppReaderFactory> AppReaders,
+        IValueConverter ValueConverter,
+        IZoneCultureResolver ZoneCultureResolver)
+        : DependenciesRecord(connect: [AppReaders, ValueConverter, ZoneCultureResolver]);
 
     /// <summary>
     /// Important: this constructor is used both in inherited,

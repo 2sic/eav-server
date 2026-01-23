@@ -22,22 +22,14 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// These dependencies are a bit special, because they can be re-used for child context-of...
     /// This is why we gave them a much clearer name, not just the normal "Dependencies"
     /// </summary>
-    public new class Dependencies(
-        ContextOfSite.Dependencies siteServices,
-        IAppReaderFactory appReaders,
-        LazySvc<ISysFeaturesService> features,
-        LazySvc<AppUserLanguageCheck> langChecks,
-        Generator<IEnvironmentPermission> environmentPermissions,
-        LazySvc<AppDataStackService> settingsStack)
-        : DependenciesBase(connect: [environmentPermissions, appReaders, features, langChecks, settingsStack])
-    {
-        public ContextOfSite.Dependencies SiteServices { get; } = siteServices;
-        public IAppReaderFactory AppReaders { get; } = appReaders;
-        public LazySvc<ISysFeaturesService> Features { get; } = features;
-        public LazySvc<AppUserLanguageCheck> LangChecks { get; } = langChecks;
-        public LazySvc<AppDataStackService> SettingsStack { get; } = settingsStack;
-        internal readonly Generator<IEnvironmentPermission> EnvironmentPermissions = environmentPermissions;
-    }
+    public new record Dependencies(
+        ContextOfSite.Dependencies SiteServices,
+        IAppReaderFactory AppReaders,
+        LazySvc<ISysFeaturesService> Features,
+        LazySvc<AppUserLanguageCheck> LangChecks,
+        Generator<IEnvironmentPermission> EnvironmentPermissions,
+        LazySvc<AppDataStackService> SettingsStack)
+        : DependenciesRecord(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, SettingsStack]);
 
     /// <summary>
     /// Constructor for DI

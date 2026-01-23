@@ -7,7 +7,7 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class AppBase<TServices>(TServices services, string logName, object[]? connect)
     : ServiceBase<TServices>(services, logName ?? "App.Base", connect: connect), IAppIdentity
-    where TServices : DependenciesBase
+    where TServices : IDependencies
 {
     /// <inheritdoc />
     public int ZoneId { get; private set; }

@@ -12,10 +12,10 @@
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class DependenciesBase: IDependencies
+public abstract record DependenciesRecord : IDependencies
 {
     // ReSharper disable once UnusedParameter.Local
-    protected DependenciesBase(NoParamOrder npo = default, object[]? connect = default)
+    protected DependenciesRecord(NoParamOrder npo = default, object[]? connect = default)
     {
         if (connect == null)
             return;
@@ -46,17 +46,17 @@ public abstract class DependenciesBase: IDependencies
     }
 }
 
-[PrivateApi]
-public static class ServiceDependenciesExtensions
-{
-    /// <summary>
-    /// Auto-initialize the log on all dependencies.
-    /// Special format to allow command chaining, so it returns itself.
-    /// </summary>
-    public static TMyServices ConnectServices<TMyServices>(this TMyServices parent, ILog log)
-        where TMyServices : IDependencies
-    {
-        parent.SetLog(log);
-        return parent;
-    }
-}
+//[PrivateApi]
+//public static partial class ServiceDependenciesExtensions
+//{
+//    /// <summary>
+//    /// Auto-initialize the log on all dependencies.
+//    /// Special format to allow command chaining, so it returns itself.
+//    /// </summary>
+//    public static TMyServices ConnectServices<TMyServices>(this TMyServices parent, ILog log)
+//        where TMyServices : IDependencies, ILazyInitLog
+//    {
+//        (parent as ILazyInitLog).SetLog(log);
+//        return parent;
+//    }
+//}

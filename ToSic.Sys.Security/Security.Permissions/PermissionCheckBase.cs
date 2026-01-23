@@ -16,11 +16,11 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
 
     #region MyServices
 
-    public class Dependencies(ISysFeaturesService features, IEnvironmentPermission environmentPermission)
-        : DependenciesBase(connect: [features, environmentPermission])
+    public record Dependencies(ISysFeaturesService Features, IEnvironmentPermission EnvironmentPermission)
+        : DependenciesRecord(connect: [Features, EnvironmentPermission])
     {
-        public ISysFeaturesService Features { get; } = features;
-        public IEnvironmentPermission EnvironmentPermission { get; } = environmentPermission;
+        //public ISysFeaturesService Features { get; } = Features;
+        //public IEnvironmentPermission EnvironmentPermission { get; } = EnvironmentPermission;
     }
 
     #endregion

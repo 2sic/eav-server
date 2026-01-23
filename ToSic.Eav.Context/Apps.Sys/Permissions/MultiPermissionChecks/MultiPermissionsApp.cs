@@ -14,16 +14,11 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
 {
     #region Constructors and DI
 
-    public class Dependencies(
-        LazySvc<IZoneMapper> zoneMapper,
-        Generator<AppPermissionCheck> appPermCheckGenerator,
-        Generator<ISysFeaturesService> featIntGen)
-        : DependenciesBase(connect: [zoneMapper, appPermCheckGenerator, featIntGen])
-    {
-        internal LazySvc<IZoneMapper> ZoneMapper { get; } = zoneMapper;
-        internal Generator<AppPermissionCheck> AppPermCheckGenerator { get; } = appPermCheckGenerator;
-        internal Generator<ISysFeaturesService> FeatIntGen { get; } = featIntGen;
-    }
+    public record Dependencies(
+        LazySvc<IZoneMapper> ZoneMapper,
+        Generator<AppPermissionCheck> AppPermCheckGenerator,
+        Generator<ISysFeaturesService> FeatIntGen)
+        : DependenciesRecord(connect: [ZoneMapper, AppPermCheckGenerator, FeatIntGen]);
 
     /// <summary>
     /// Constructor for DI
