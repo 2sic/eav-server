@@ -7,7 +7,9 @@ public class Startup : StartupTestsEavDataBuild
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<TestDataGenerator>();
+        services
+            .AddTransient<TestDataGenerator>()
+            .AddTransient<TestModelDependency>();
         base.ConfigureServices(services);
     }
 }
