@@ -6,8 +6,8 @@
 /// <remarks>
 /// Constructor should only be used in DI context and never be called directly.
 /// </remarks>
+/// <typeparam name="TService">The service to generate. It must implement <see cref="IServiceWithSetup{TOptions}"/></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
 {
     /// <summary>
