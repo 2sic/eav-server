@@ -3,7 +3,7 @@
 /// <summary>
 /// WIP v21
 /// </summary>
-[PublicApi]
+[WorkInProgressApi("WIP v21")]
 public static class EntityExtensions
 {
     public static TModel? As<TModel>(this IEntity? entity)

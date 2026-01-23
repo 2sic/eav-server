@@ -31,6 +31,6 @@ public static class AppStateExtensions
         => appReader.GetDraft(entity) ?? entity;
 
     public static IEntity? GetDraftOrPublished(this IAppReader appReader, Guid guid)
-        => appReader.GetDraftOrKeep(appReader.List.One(guid));
+        => appReader.GetDraftOrKeep(appReader.List.GetOne(guid));
 
 }

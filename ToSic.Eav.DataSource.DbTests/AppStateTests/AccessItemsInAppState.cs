@@ -19,7 +19,7 @@ public class AccessItemsInAppState(IAppReaderFactory appReaderFactory, ITestOutp
         var timer = new Stopwatch();
         timer.Start();
 
-        var found = app.List.One(ItemToAccess);
+        var found = app.List.GetOne(ItemToAccess);
         if (found == null) throw new("should never get null, IDs are probably wrong");
 
         timer.Stop();
@@ -43,7 +43,7 @@ public class AccessItemsInAppState(IAppReaderFactory appReaderFactory, ITestOutp
 
         for (var i = 0; i < Repeats; i++)
         {
-            var found = app.List.One(ItemToAccess + i * multNext);
+            var found = app.List.GetOne(ItemToAccess + i * multNext);
             if (found == null) throw new("should never get null, IDs are probably wrong");
         }
 
@@ -65,7 +65,7 @@ public class AccessItemsInAppState(IAppReaderFactory appReaderFactory, ITestOutp
 
         for (var i = 0; i < Repeats; i++)
         {
-            var found = app.List.One(ItemToAccess + i * multiplyCounter);
+            var found = app.List.GetOne(ItemToAccess + i * multiplyCounter);
             if (found == null) throw new Exception("should never get null, IDs are probably wrong");
         }
 

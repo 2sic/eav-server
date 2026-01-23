@@ -34,7 +34,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
     {
         var entities = new LoaderHelper(PersistenceTestConstants.ScenarioMiniDeep, Log)
             .LoadAllQueryEntities(loaderGenerator, output);
-        var systemExportConfiguration = entities.One(new System.Guid("22db39d7-8a59-43be-be68-ea0f28880c10"));
+        var systemExportConfiguration = entities.GetOne(new System.Guid("22db39d7-8a59-43be-be68-ea0f28880c10"));
         NotNull(systemExportConfiguration);//, "should find the system export configuration");
 
         var export = new ExportConfiguration(systemExportConfiguration);

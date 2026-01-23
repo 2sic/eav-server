@@ -125,7 +125,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 // and it's ServiceProvider is dead at that time, trying to debug
                 try
                 {
-                    var allForDecors = ct.Metadata.AllOfType<MetadataForDecorator>()
+                    var allForDecors = ct.Metadata.GetAll<MetadataForDecorator>()
                         .ToListOpt();
                     var allForThisTargetType = allForDecors
                         .Where(dec => dec.TargetType == targetType)
@@ -177,7 +177,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                         if (targetName == "*") return true;
                         // Test if the current item (targetKey) is the expected type
                         if (!Guid.TryParse(targetKey, out var guidKey)) return false;
-                        var currentEntity = AppReader.List.One(guidKey);
+                        var currentEntity = AppReader.List.GetOne(guidKey);
                         return currentEntity?.Type?.Is(targetName) ?? false;
                     // App and ContentType don't need extra conditions / specifiers
                     case (int)TargetTypes.ContentType:
@@ -234,7 +234,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
             case TargetTypes.Entity:
                 if (!Guid.TryParse(key, out var guidKey))
                     return l.ReturnNull("entity not guid");
-                var entity = AppReader.List.One(guidKey);
+                var entity = AppReader.List.GetOne(guidKey);
                 if (entity == null)
                     return l.ReturnNull("entity not found");
                 var onEntity = GetMetadataExpectedDecorators(entity.Metadata, TargetTypes.Entity, "attached to Entity", PrioMax)
@@ -278,7 +278,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
             return l.Return([], "null metadata");
 
         var all = md
-            .AllOfType<MetadataExpectedDecorator>(MetadataExpectedDecorator.ContentTypeNameId)
+            .GetAll<MetadataExpectedDecorator>(MetadataExpectedDecorator.ContentTypeNameId)
             .ToListOpt();
 
         if (targetTypeFor > 0)

@@ -199,7 +199,7 @@ public class ContentExportApi(
     private ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfigGuid)
     {
         var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfigGuid}");
-        var systemExportConfiguration = _appCtx.AppReader.List.One(exportConfigGuid);
+        var systemExportConfiguration = _appCtx.AppReader.List.GetOne(exportConfigGuid);
         if (systemExportConfiguration == null)
         {
             var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfigGuid} is missing");

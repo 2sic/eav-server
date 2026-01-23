@@ -30,7 +30,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         // load an entity
         var loader1 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb);
         var app1 = loader1.AppStateReaderRawTac(test.AppId);
-        var itm1 = app1.List.One(test.ExistingItem)!;
+        var itm1 = app1.List.GetOne(test.ExistingItem)!;
 
         // save it
         dbData.Save(so.AddToAll([itm1]));
@@ -38,7 +38,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         // re-load it
         var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
-        var itm2 = app2.List.One(test.ExistingItem);
+        var itm2 = app2.List.GetOne(test.ExistingItem);
 
 
         // validate that they are still the same!
@@ -63,7 +63,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         // todo: load a simple, 1 language entity
         var loader1 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb);
         var app1 = loader1.AppStateReaderRawTac(test.AppId);
-        var itm1 = app1.List.One(test.ExistingItem);
+        var itm1 = app1.List.GetOne(test.ExistingItem);
 
         // todo: make some minor changes
         var itmNewTitle = dataBuilder.CreateEntityTac(appId: test.AppId, entityId: 0, contentType: itm1.Type,
@@ -79,7 +79,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         // reload it
         var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
-        var itm2 = app2.List.One(test.ExistingItem);
+        var itm2 = app2.List.GetOne(test.ExistingItem);
 
 
         // todo: validate that they are almost the same, but clearly different
@@ -122,7 +122,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         // reload it
         var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb); // use existing db context because the transaction is still open
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
-        var itm2 = app2.List.One(newId.First().Id);
+        var itm2 = app2.List.GetOne(newId.First().Id);
 
         Equal(ctTitle, itm2.GetBestTitle());//, "title should be loaded as saved" );
 

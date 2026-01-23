@@ -42,7 +42,7 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     /// Get this item or return null if not found
     /// </summary>
     /// <returns></returns>
-    public IEntity? Get(Guid entityGuid) => AppWorkCtx.AppReader.List.One(entityGuid);
+    public IEntity? Get(Guid entityGuid) => AppWorkCtx.AppReader.List.GetOne(entityGuid);
 
 
     public IEnumerable<IEntity> Get(string contentTypeName, IAppWorkCtxPlus? overrideWorkCtx = default, Uri? fullRequest = null)

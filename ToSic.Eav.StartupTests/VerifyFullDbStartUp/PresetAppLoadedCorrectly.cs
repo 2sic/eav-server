@@ -34,7 +34,7 @@ public class PresetAppLoadedCorrectly(IAppReaderFactory appReaders) : IClassFixt
 
     [Fact]
     public void PresetAppStateHasNotes() => 
-        NotEmpty(appReaders.GetSystemPresetTac().List.AllOfType(KnownDecorators.NoteDecoratorName));
+        NotEmpty(appReaders.GetSystemPresetTac().List.GetAll(KnownDecorators.NoteDecoratorName));
 
     [Fact]
     public void PresetAppStateHasPickerDataSourceContentTypeById() => 

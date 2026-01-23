@@ -25,7 +25,7 @@ public static partial class EntityListExtensions
     /// <param name="list"></param>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static IEntity? One(this IEnumerable<IEntity> list, int id)
+    public static IEntity? GetOne(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
         _countOneId++;
@@ -41,7 +41,7 @@ public static partial class EntityListExtensions
     /// <param name="list"></param>
     /// <param name="guid"></param>
     /// <returns></returns>
-    public static IEntity? One(this IEnumerable<IEntity> list, Guid guid)
+    public static IEntity? GetOne(this IEnumerable<IEntity> list, Guid guid)
     {
 #if DEBUG
         _countOneGuid++;
@@ -59,7 +59,7 @@ public static partial class EntityListExtensions
     /// <param name="list"></param>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static bool Has(this IEnumerable<IEntity> list, int id)
+    public static bool Contains(this IEnumerable<IEntity> list, int id)
     {
 #if DEBUG
         _countOneHas++;

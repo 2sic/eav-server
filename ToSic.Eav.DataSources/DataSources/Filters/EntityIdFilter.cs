@@ -67,7 +67,7 @@ public class EntityIdFilter : DataSourceBase
             return l.ReturnAsError(Error.TryGetInFailed());
 
         var result = entityIds
-            .Select(eid => source.One(eid)!)
+            .Select(eid => source.GetOne(eid)!)
             .Where(e => e != null!)
             .ToImmutableOpt();
 

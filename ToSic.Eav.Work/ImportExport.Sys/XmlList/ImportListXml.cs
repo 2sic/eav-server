@@ -243,7 +243,7 @@ public partial class ImportListXml(
                 }
 
                 // so search for the value in the cache 
-                var existingEnt = existingEntities.One(entityGuid);
+                var existingEnt = existingEntities.GetOne(entityGuid);
                 if (existingEnt == null)
                 {
                     ErrorLog.Add(ImportErrorCode.InvalidValueReference, value, nodesCount);
@@ -333,7 +333,7 @@ public partial class ImportListXml(
         if (_deleteSetting == ImportDeleteUnmentionedItems.All)
         {
             var idsToDelete = Preparations.EntityDeleteGuids
-                .Select(g => Preparations.ExistingEntities.One(g)!.EntityId)
+                .Select(g => Preparations.ExistingEntities.GetOne(g)!.EntityId)
                 .ToList();
             entDelete.New(appReader).Delete(idsToDelete);
         }

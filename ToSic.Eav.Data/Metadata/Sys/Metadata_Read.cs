@@ -53,7 +53,7 @@ partial class Metadata<T>
         => this.Any(e => e.Type.Is(typeName));
 
     public IEnumerable<IEntity> OfType(string typeName)
-        => MetadataWithoutPermissions.AllOfType(typeName);
+        => MetadataWithoutPermissions.GetAll(typeName);
 
     #endregion
 

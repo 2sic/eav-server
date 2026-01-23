@@ -109,7 +109,7 @@ public class SaveHistoryInboundParentsTests(
         // Save again to generate a new history snapshot which should now include Parents.
         var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb);
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
-        var existing = app2.List.One(childId)!;
+        var existing = app2.List.GetOne(childId)!;
 
         var update = dataBuilder.CreateEntityTac(appId: test.AppId, entityId: 0, contentType: existing.Type, values: new()
         {

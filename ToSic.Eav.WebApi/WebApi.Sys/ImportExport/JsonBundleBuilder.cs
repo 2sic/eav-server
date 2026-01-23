@@ -40,7 +40,7 @@ internal class JsonBundleBuilder(IAppReader appReader, ILog parentLog) : HelperB
             ? FileSystemLoaderConstants.QueryMetadataDepth
             : 0;
         IList<JsonEntity> bundleEntitiesRaw = export.Entities
-                .Select(e => appReader.List.One(e))
+                .Select(e => appReader.List.GetOne(e))
                 .Select(e => serializer.ToJson(e, mdDepth)!)
                 .ToList(); // must be mutable ToList!
 

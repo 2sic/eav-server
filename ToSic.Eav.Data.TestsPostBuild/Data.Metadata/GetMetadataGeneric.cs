@@ -11,7 +11,7 @@ public class GetMetadataGeneric(EntityWithMetadataGenerator generator)
     public void WithSameMetadataManyTimes(int amount)
     {
         var entity = generator.EntityWithMdForMetadata(amount);
-        var md = entity.Metadata.OneOfType<MetadataForDecoratorMock>();
+        var md = entity.Metadata.GetOne<MetadataForDecoratorMock>();
         NotNull(md);
         Equal((int)TargetTypes.Entity, md.TargetType);
     }
@@ -22,7 +22,7 @@ public class GetMetadataGeneric(EntityWithMetadataGenerator generator)
     public void WithSameMetadataManyTimesNamed(int amount)
     {
         var entity = generator.EntityWithMdForMetadata(amount);
-        var md = entity.Metadata.OneOfType<MetadataForDecoratorMock>(nameof(MetadataForDecoratorMock));
+        var md = entity.Metadata.GetOne<MetadataForDecoratorMock>(nameof(MetadataForDecoratorMock));
         NotNull(md);
         Equal((int)TargetTypes.Entity, md.TargetType);
     }
@@ -32,7 +32,7 @@ public class GetMetadataGeneric(EntityWithMetadataGenerator generator)
     public void WithSameMetadataManyTimesNamedWrong(int amount)
     {
         var entity = generator.EntityWithMdForMetadata(amount);
-        var md = entity.Metadata.OneOfType<MetadataForDecoratorMock>("some other name");
+        var md = entity.Metadata.GetOne<MetadataForDecoratorMock>("some other name");
         Null(md);
     }
 
@@ -47,7 +47,7 @@ public class GetMetadataGeneric(EntityWithMetadataGenerator generator)
     public void WithMixedMetadataManyTimes(int amountMdFor, int amountOther)
     {
         var entity = generator.CreateWithMixedMetadata(amountMdFor, amountOther);
-        var mdList = entity.Metadata.AllOfType<MetadataForDecoratorMock>();
+        var mdList = entity.Metadata.GetAll<MetadataForDecoratorMock>();
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -60,7 +60,7 @@ public class GetMetadataGeneric(EntityWithMetadataGenerator generator)
     public void WithMixedMetadataManyTimesNamed(int amountMdFor, int amountOther)
     {
         var entity = generator.CreateWithMixedMetadata(amountMdFor, amountOther);
-        var mdList = entity.Metadata.AllOfType<MetadataForDecoratorMock>(nameof(MetadataForDecoratorMock));
+        var mdList = entity.Metadata.GetAll<MetadataForDecoratorMock>(nameof(MetadataForDecoratorMock));
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -73,7 +73,7 @@ public class GetMetadataGeneric(EntityWithMetadataGenerator generator)
     public void WithMixedMetadataManyTimesNamedWrong(int amountMdFor, int amountOther)
     {
         var entity = generator.CreateWithMixedMetadata(amountMdFor, amountOther);
-        var mdList = entity.Metadata.AllOfType<MetadataForDecoratorMock>("some-wrong-name");
+        var mdList = entity.Metadata.GetAll<MetadataForDecoratorMock>("some-wrong-name");
         NotNull(mdList);
         Empty(mdList);
     }

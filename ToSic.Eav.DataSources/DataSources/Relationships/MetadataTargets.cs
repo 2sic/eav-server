@@ -51,7 +51,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAp
             relationships = relationships.Distinct();
 
         if (typeName.HasValue())
-            relationships = relationships.AllOfType(typeName);
+            relationships = relationships.GetAll(typeName);
 
         return relationships;
     }
@@ -77,9 +77,9 @@ public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAp
             if (mdFor.TargetType == (int)TargetTypes.Entity)
             {
                 var foundEntity = (mdFor.KeyGuid != null)
-                    ? appState.List.One(mdFor.KeyGuid.Value)
+                    ? appState.List.GetOne(mdFor.KeyGuid.Value)
                     : mdFor.KeyNumber != null
-                        ? appState.List.One(mdFor.KeyNumber.Value)
+                        ? appState.List.GetOne(mdFor.KeyNumber.Value)
                         : null;
                 return foundEntity != null
                     ? [foundEntity]

@@ -96,7 +96,7 @@ internal class AppMetadataManager(IAppIdentity appIdentity, ICacheExpiring cache
             : indexOfType[mdValue] = [];
 
         // in case it was already in this index, remove first
-        var found = list.One(entity.EntityId);
+        var found = list.GetOne(entity.EntityId);
         if (found != null)
             list.Remove(found);
 

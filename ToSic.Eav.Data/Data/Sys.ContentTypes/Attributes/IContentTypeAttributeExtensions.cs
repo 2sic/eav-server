@@ -53,7 +53,7 @@ public static class IContentTypeAttributeExtensions
         public bool HasFormulas(ILog log)
         {
             var l = log.Fn<bool>(definition.Name);
-            var allMd = definition.Metadata.OneOfType(TypeGeneral);
+            var allMd = definition.Metadata.GetOne(TypeGeneral);
             if (allMd == null)
                 return l.ReturnFalse("no @All");
 
