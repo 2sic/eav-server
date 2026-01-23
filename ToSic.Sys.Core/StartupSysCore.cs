@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.Boot;
 using ToSic.Sys.Configuration;
+using ToSic.Sys.Wrappers;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Sys.Startup;
@@ -27,6 +28,9 @@ public static class StartupSysCore
 
         // Empty MyServices
         services.TryAddTransient<DependenciesEmpty>();
+
+        // Wrapper Factory - new it v21
+        services.TryAddTransient<IWrapperFactory, WrapperFactory>();
 
         return services
             .AddSysLogging()
