@@ -9,7 +9,7 @@ namespace ToSic.Eav.Metadata.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record Permission : ModelOfEntityCore, IPermission
+public record Permission : ModelOfEntity, IPermission
 {
     public Permission(IEntity entity) : base(entity) { }
 
