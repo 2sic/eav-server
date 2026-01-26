@@ -17,10 +17,12 @@ namespace ToSic.Eav.Apps.Sys.AppJson;
 public class AppJsonConfigurationService(
     LazySvc<IGlobalConfiguration> globalConfiguration,
     IAppReaderFactory appReaders,
+    IRuntimeKeyService runtimeKeyService,
+    LazySvc<IAppsCatalog> appsCatalog,
     IAppPathsMicroSvc appPathsFactory,
     MemoryCacheService memoryCacheService
 )
-    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, appReaders, appPathsFactory, memoryCacheService]),
+    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, appReaders, runtimeKeyService, appsCatalog, appPathsFactory, memoryCacheService]),
         IAppJsonConfigurationService
 {
 
@@ -62,9 +64,28 @@ public class AppJsonConfigurationService(
     /// <inheritdoc />
     public string AppJsonCacheKey(int appId, bool useShared)
     {
-        var runtimeKey = appReaders.Get(appId).Specs.RuntimeKey;
-        var appKey = runtimeKey.HasValue() ? runtimeKey : appId.ToString();
+        var appKey = AppKeyForCache(appId);
         return $"Eav-{nameof(AppJsonConfigurationService)}:{nameof(appKey)}:{appKey}:{nameof(useShared)}:{useShared}";
+    }
+
+    private string AppKeyForCache(int appId)
+    {
+        var runtimeKey = TryBuildRuntimeKey(appId);
+        return runtimeKey.HasValue() ? runtimeKey : appId.ToString();
+    }
+
+    private string? TryBuildRuntimeKey(int appId)
+    {
+        try
+        {
+            // Avoid DB-backed app readers when just building a cache key.
+            var identity = appsCatalog.Value.AppIdentity(appId);
+            return runtimeKeyService.AppRuntimeKey(identity);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     /// <summary>
