@@ -5,9 +5,9 @@ using ToSic.Sys.Run.Startup;
 namespace ToSic.Eav.Run.Startup;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public static class StartupLibAndSys
+public static class StartupEavCore
 {
-    public static IServiceCollection AddEavCoreLibAndSys(this IServiceCollection services)
+    public static IServiceCollection AddAllLibAndSys(this IServiceCollection services)
     {
         services
             .AddSysCapabilities()

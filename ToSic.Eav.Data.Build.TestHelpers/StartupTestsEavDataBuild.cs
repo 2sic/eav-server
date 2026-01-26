@@ -21,7 +21,7 @@ public class StartupTestsEavDataBuild
         services
             .AddEavDataBuild()
             .AddEavData()
-            .AddEavCoreLibAndSys()
+            .AddAllLibAndSys()
 
             .AddEavDataBuildFallbacks()
             .AddEavDataFallbacks()

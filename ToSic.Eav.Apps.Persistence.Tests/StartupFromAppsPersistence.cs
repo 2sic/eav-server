@@ -21,7 +21,7 @@ public static class StartupEavTestBundle
             .AddEavDataBuild()
             .AddEavDataStack()
             .AddEavData()
-            .AddEavCoreLibAndSys();
+            .AddAllLibAndSys();
 
         // Register Fallback Services
         services

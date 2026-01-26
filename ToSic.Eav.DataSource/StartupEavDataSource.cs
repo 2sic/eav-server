@@ -12,7 +12,7 @@ using ToSic.Eav.Services;
 namespace ToSic.Eav.Run.Startup;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public static class StartupDataSource
+public static class StartupEavDataSource
 {
     public static IServiceCollection AddDataSourceSystem(this IServiceCollection services)
     {

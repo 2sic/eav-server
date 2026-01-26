@@ -42,7 +42,7 @@ public static class StartupEav
             .AddEavDataBuild()
             .AddEavDataStack()
             .AddEavData()
-            .AddEavCoreLibAndSys();
+            .AddAllLibAndSys();
 
         return services;
     }

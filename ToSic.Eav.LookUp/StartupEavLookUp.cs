@@ -6,7 +6,7 @@ using ToSic.Eav.LookUp.Sys.Engines;
 namespace ToSic.Eav.Run.Startup;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public static class StartupLibLookUp
+public static class StartupEavLookUp
 {
     public static IServiceCollection AddLibLookUpFallbacks(this IServiceCollection services)
     {

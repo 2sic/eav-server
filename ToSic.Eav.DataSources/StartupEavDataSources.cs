@@ -8,7 +8,7 @@ using ToSic.Eav.Services;
 namespace ToSic.Eav.Run.Startup;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public static class StartupDataSources
+public static class StartupEavDataSources
 {
     public static IServiceCollection AddDataSources(this IServiceCollection services)
     {
@@ -32,7 +32,7 @@ public static class StartupDataSources
     }
 
     //[ShowApiWhenReleased(ShowApiMode.Never)]
-    //public static IServiceCollection AddDataSourcesFallback(this IServiceCollection services)
+    //public static IServiceCollection AddDataSourcesFallbacks(this IServiceCollection services)
     //{
     //    //services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
 
