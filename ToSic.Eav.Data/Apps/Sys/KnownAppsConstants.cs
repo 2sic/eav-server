@@ -23,7 +23,7 @@ public class KnownAppsConstants
     public const int AppIdEmpty = 0;
     public const string AppNameIdEmpty = "none";
 
-
+    [PrivateApi] public static readonly int PresetTenantId = -42;
     [PrivateApi] public static readonly int PresetZoneId = -42;
     [PrivateApi] public static readonly int PresetAppId = -42;
     [PrivateApi] public static readonly string PresetName = "Preset";
