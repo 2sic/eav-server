@@ -10,7 +10,10 @@ namespace ToSic.Eav.LookUp.Sources.Sys;
 /// </summary>
 /// <param name="dataSource">the data-target, of which it will use the In-Stream</param>
 /// <param name="cultureResolver">culture resolver for multi-language scenarios</param>
-[PrivateApi("Was PublicApi till v17, previously called LookUpInDataTarget / renamed to LookUpInDataSource")]
+/// <remarks>
+/// * Called LookUpInDataTarget until v17
+/// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LookUpInDataSource(IDataSource dataSource, IZoneCultureResolver cultureResolver) : LookUpBase(InStreamName, $"LookUp in DataSource on stream {InStreamName}")
 {

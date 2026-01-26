@@ -21,7 +21,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Depend
     /// Default Constructor, _protected_.
     /// To inherit this, make sure your new class also gets the `MyServices` in its constructor and passes it to here.
     /// </summary>
-    /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.MyServices)</param>
+    /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.Dependencies)</param>
     /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
     /// <param name="connect"></param>
     [PrivateApi]

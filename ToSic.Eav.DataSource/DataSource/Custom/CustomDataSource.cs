@@ -33,7 +33,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// <summary>
     /// Constructor for creating a Custom DataSource.
     /// </summary>
-    /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.MyServices)</param>
+    /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.Dependencies)</param>
     /// <param name="logName">Optional name for logging such as `My.JsonDS`</param>
     protected internal CustomDataSource(Dependencies services, string? logName = null) : base(services, logName ?? "Ds.CustLt")
     {
