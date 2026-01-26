@@ -165,7 +165,7 @@ public class AppInitializer(
         return l.Return(newEnt);
     }
 
-    private IContentType? FindContentType(IAppReadContentTypes appStateRaw, string setName, bool inAppType)
+    private IContentType? FindContentType(IAppReader appReader, string setName, bool inAppType)
     {
         // if it's an in-app type, it should check the app, otherwise it should check the global type
         // we're NOT asking the app for all types (which would be the normal way)
@@ -174,8 +174,14 @@ public class AppInitializer(
         // Basically after this update has run for a while - probably till end of 2018-04
         // this is probably not so important anymore, but I would leave it forever for now
         // discuss w/2dm if you think you want to change this
+
+        // Avoid recursive loading of the preset app (-42) which causes repeated DbContext creations and connection exhaustion
+        if (appReader.AppId == KnownAppsConstants.PresetAppId
+            || appReader.AppId == KnownAppsConstants.GlobalPresetAppId)
+            return appReader.TryGetContentType(setName);
+
         var ct = inAppType
-            ? appStateRaw.TryGetContentType(setName)
+            ? appReader.TryGetContentType(setName)
             : appReaders.GetSystemPreset().TryGetContentType(setName);
         return ct;
     }

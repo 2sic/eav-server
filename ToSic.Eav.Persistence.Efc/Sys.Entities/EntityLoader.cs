@@ -121,7 +121,8 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
     {
         var l = Log.IfSummary(appLoader.LogSettings).Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterJsonType)}: '{filterJsonType}'", timer: true);
 
-        if (appId == KnownAppsConstants.PresetAppId)
+        if (appId == KnownAppsConstants.PresetAppId
+            || appId == KnownAppsConstants.GlobalPresetAppId)
             return l.Return(new List<TempEntity>(), "preset app, skip DB query");
 
         var entitiesQuery = EntityQueries.EntitiesOfAppQuery(appId, entityIds, filterJsonType);
