@@ -43,20 +43,23 @@ public class AppJsonConfigurationService(
     {
         var l = Log.Fn<AppJsonConfiguration?>($"{nameof(appId)}: '{appId}'");
 
-        var cacheKey = AppJsonCacheKey(appId, useShared);
+        var hasCacheKey = TryGetCacheKey(appId, useShared, out var cacheKey);
         l.A($"cache key: {cacheKey}");
 
-        if (memoryCacheService.TryGet<AppJsonConfiguration>(cacheKey, out var appJson))
+        if (hasCacheKey && memoryCacheService.TryGet<AppJsonConfiguration>(cacheKey, out var appJson))
             return l.Return(appJson, "ok, cache hit");
 
         var pathToAppJson = GetPathToAppJson(appId, useShared);
         l.A($"path to '{FolderConstants.AppJsonFile}':'{pathToAppJson}'");
 
         appJson = GetAppJsonInternal(pathToAppJson);
-        if (appJson != null)
-            memoryCacheService.Set(cacheKey, appJson, p => p.WatchFiles([pathToAppJson])); // cache appJson
-        else
-            memoryCacheService.Set(cacheKey, new AppJsonConfiguration(), p => p.WatchFolders(GetExistingParent(pathToAppJson).ToDictionary(p => p, _ => true))); // cache null
+        if (hasCacheKey)
+        {
+            if (appJson != null)
+                memoryCacheService.Set(cacheKey, appJson, p => p.WatchFiles([pathToAppJson])); // cache appJson
+            else
+                memoryCacheService.Set(cacheKey, new AppJsonConfiguration(), p => p.WatchFolders(GetExistingParent(pathToAppJson).ToDictionary(p => p, _ => true))); // cache null
+        }
 
         return l.ReturnAsOk(appJson);
     }
@@ -64,14 +67,23 @@ public class AppJsonConfigurationService(
     /// <inheritdoc />
     public string AppJsonCacheKey(int appId, bool useShared)
     {
-        var appKey = AppKeyForCache(appId);
-        return $"Eav-{nameof(AppJsonConfigurationService)}:{nameof(appKey)}:{appKey}:{nameof(useShared)}:{useShared}";
+        TryGetCacheKey(appId, useShared, out var cacheKey);
+        return cacheKey;
     }
 
-    private string AppKeyForCache(int appId)
+    // Build a tenant-safe cache key when possible; otherwise disable caching to avoid cross-tenant bleed.
+    private bool TryGetCacheKey(int appId, bool useShared, out string cacheKey)
     {
         var runtimeKey = TryBuildRuntimeKey(appId);
-        return runtimeKey.HasValue() ? runtimeKey : appId.ToString();
+        if (runtimeKey.HasValue())
+        {
+            cacheKey = $"Eav-{nameof(AppJsonConfigurationService)}:app:{runtimeKey}:{nameof(useShared)}:{useShared}";
+            return true;
+        }
+
+        // No runtime key -> don't cache; still return a unique key for logging/debugging without cross-tenant collisions.
+        cacheKey = $"Eav-{nameof(AppJsonConfigurationService)}:nocache:{_noCacheKey}:{nameof(appId)}:{appId}:{nameof(useShared)}:{useShared}";
+        return false;
     }
 
     private string? TryBuildRuntimeKey(int appId)
@@ -87,6 +99,10 @@ public class AppJsonConfigurationService(
             return null;
         }
     }
+
+    // Per-instance marker used when runtime keys can't be built; avoids accidental cross-tenant cache collisions
+    // and still provides a stable-looking key for logging/debugging without enabling caching.
+    private readonly string _noCacheKey = Guid.NewGuid().ToString("N");
 
     /// <summary>
     /// Find parent path that exist to use it as cache dependency (folder cache monitor) 

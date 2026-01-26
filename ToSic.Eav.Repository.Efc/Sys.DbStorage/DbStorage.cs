@@ -208,7 +208,8 @@ public class DbStorage(
         ParentAppId = parentAppId;
 
         // Special-case preset app (-42), which is virtual and not stored in DB
-        if (appId == KnownAppsConstants.PresetAppId)
+        if (appId == KnownAppsConstants.PresetAppId
+            || appId == KnownAppsConstants.GlobalPresetAppId)
         {
             _appId = appId.Value;
             // Preset app is virtual and always belongs to PresetZoneId.
@@ -264,7 +265,8 @@ public class DbStorage(
     /// </summary>
     public int SaveChanges(bool acceptAllChangesOnSuccess, EavDbContext.SaveChangesEvent baseEvent)
     {
-        if (_appId == KnownAppsConstants.PresetAppId)
+        if (_appId == KnownAppsConstants.PresetAppId
+            || _appId == KnownAppsConstants.GlobalPresetAppId)
             return 0; // preset is virtual/read-only; never write
 
         if (_appId == KnownAppsConstants.AppIdEmpty)
