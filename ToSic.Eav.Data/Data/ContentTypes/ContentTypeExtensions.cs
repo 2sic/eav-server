@@ -8,7 +8,7 @@
 /// To use this, make sure you have `using ToSic.Eav.Data;` in your file.
 /// </remarks>
 [PublicApi]
-public static partial class DataExtensions
+public static partial class ContentTypeExtensions
 {
     /// <summary>
     /// Detect if the attribute is of Boolean type.
