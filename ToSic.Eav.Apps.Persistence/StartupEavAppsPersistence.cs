@@ -14,6 +14,7 @@ using ToSic.Sys.Utils.Assemblies;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run.Startup;
 
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEavAppsPersistence
 {
     public static IServiceCollection AddEavAppsPersistence(this IServiceCollection services)

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-
 namespace ToSic.Eav.Run.Startup;
 
 /// <summary>
@@ -9,7 +8,7 @@ namespace ToSic.Eav.Run.Startup;
 /// IMPORTANT: This file is also included as an imports in the TestFixtures project.
 /// It's done that way, so that project can be decoupled from this project because sometimes we need to run tests in production builds.
 /// </summary>
-public static class StartupEavBundle
+public static class StartupEavTestBundle
 {
     public static IServiceCollection StartupTestsAppsPersistenceAndBelow(this IServiceCollection services)
     {

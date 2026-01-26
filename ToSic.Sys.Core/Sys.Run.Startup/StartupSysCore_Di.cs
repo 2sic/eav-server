@@ -3,10 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ToSic.Sys.Run.Startup;
 
-/// <summary>
-/// Startup for Dependency Injection.
-/// </summary>
-// ReSharper disable once InconsistentNaming
 public static partial class StartupSysCore
 {
     /// <summary>

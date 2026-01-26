@@ -12,8 +12,8 @@ using ToSic.Sys.Boot;
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public static class StartupRepositoryEfc
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+public static class StartupEavRepositoryEfc
 {
     public static IServiceCollection AddRepositoryAndEfc(this IServiceCollection services)
     {

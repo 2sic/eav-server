@@ -20,7 +20,7 @@ using ToSic.Eav.WebApi.Sys.Zone;
 
 namespace ToSic.Eav;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupWebApi
 {
     public static IServiceCollection AddEavWebApi(this IServiceCollection services)
@@ -98,7 +98,7 @@ public static class StartupWebApi
         return services;
     }
 
-    public static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
+    private static IServiceCollection AddNetInfrastructure(this IServiceCollection services)
     {
 #if NETCOREAPP
         // Helper to get header, query string and route information from current request

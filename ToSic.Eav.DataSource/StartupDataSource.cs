@@ -14,7 +14,6 @@ namespace ToSic.Eav.Run.Startup;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupDataSource
 {
-    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IServiceCollection AddDataSourceSystem(this IServiceCollection services)
     {
         // Dependencies, new in v15
