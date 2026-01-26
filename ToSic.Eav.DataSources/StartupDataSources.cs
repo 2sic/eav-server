@@ -5,9 +5,9 @@ using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.Services;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupDataSources
 {
     [ShowApiWhenReleased(ShowApiMode.Never)]

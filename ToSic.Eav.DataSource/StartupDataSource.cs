@@ -9,9 +9,9 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupDataSource
 {
     [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -40,13 +40,12 @@ public static class StartupDataSource
         services.TryAddTransient<IDataSourceCacheService, DataSourceCacheService>();
         services.TryAddTransient<IListCacheSvc, ListCacheSvc>();
 
-        services.AddDataSourceFallback();
+        services.AddDataSourceFallbacks();
 
         return services;
     }
 
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IServiceCollection AddDataSourceFallback(this IServiceCollection services)
+    public static IServiceCollection AddDataSourceFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<IAppDataSourcesLoader, AppDataSourcesLoaderUnknown>();
 

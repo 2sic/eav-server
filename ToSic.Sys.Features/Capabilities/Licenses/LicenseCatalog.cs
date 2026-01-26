@@ -15,7 +15,7 @@
  *
  */
 
-using ToSic.Sys.Startup;
+using ToSic.Sys.Run.GlobalState;
 
 namespace ToSic.Sys.Capabilities.Licenses;
 

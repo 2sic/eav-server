@@ -10,7 +10,7 @@ using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Sys.Boot;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupRepositoryEfc

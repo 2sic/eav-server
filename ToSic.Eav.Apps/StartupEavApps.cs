@@ -11,9 +11,9 @@ using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Data.Sys.Global;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEavApps
 {
     public static IServiceCollection AddEavApps(this IServiceCollection services)

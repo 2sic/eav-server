@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Sys.Startup;
+using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Lib.DI.GeneratorTests.WithOptions;
 

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
 /// <summary>
 /// Global Eav Configuration
@@ -40,7 +40,7 @@ public static class StartupEav
             .AddDataSourceSystem()
             // EAV Core
             .AddEavDataBuild()
-            .AddEavDataStackDumping()
+            .AddEavDataStack()
             .AddEavData()
             .AddEavCoreLibAndSys();
 
@@ -55,10 +55,10 @@ public static class StartupEav
     public static IServiceCollection AddEavEverythingFallbacks(this IServiceCollection services)
     {
         services
-            .AddContextFallbackServices()
+            .AddContextFallbacks()
             .AddAppPersistenceFallbackServices()
             .AddAppFallbackServices()
-            .AddEavImportExportFallback()
+            .AddEavImportExportFallbacks()
             .AddEavDataBuildFallbacks()
             .AddEavDataFallbacks()
             .AddAllLibAndSysFallbacks();

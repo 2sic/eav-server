@@ -3,12 +3,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.LookUp.Sys.Engines;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupLibLookUp
 {
-    public static IServiceCollection AddLibLookUpFallback(this IServiceCollection services)
+    public static IServiceCollection AddLibLookUpFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<ILookUpEngineResolver, LookUpEngineResolverUnknown>();
 

@@ -9,9 +9,10 @@ using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Sys.Startup;
+namespace ToSic.Sys.Run.Startup;
 
-public static class SetupSysCapabilities
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+public static class StartupSysCapabilities
 {
     public static IServiceCollection AddSysCapabilities(this IServiceCollection services)
     {
@@ -47,7 +48,7 @@ public static class SetupSysCapabilities
         return services;
     }
 
-    public static IServiceCollection AddSysCapabilitiesFallback(this IServiceCollection services)
+    public static IServiceCollection AddSysCapabilitiesFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<IPlatformInfo, PlatformUnknown>();
 

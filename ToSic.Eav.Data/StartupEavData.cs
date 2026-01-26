@@ -4,10 +4,9 @@ using ToSic.Eav.Data.Sys.Global;
 using ToSic.Eav.Metadata.Targets;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavData
 {
     public static IServiceCollection AddEavData(this IServiceCollection services)

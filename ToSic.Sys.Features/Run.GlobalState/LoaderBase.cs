@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.Startup;
+﻿namespace ToSic.Sys.Run.GlobalState;
 
 public class LoaderBase: ServiceBase
 {

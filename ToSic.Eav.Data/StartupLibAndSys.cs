@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Sys.Startup;
+using ToSic.Sys.Run.Startup;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupLibAndSys
 {
     public static IServiceCollection AddEavCoreLibAndSys(this IServiceCollection services)
@@ -30,9 +29,9 @@ public static class StartupLibAndSys
     public static IServiceCollection AddAllLibAndSysFallbacks(this IServiceCollection services)
     {
         services
-            .AddLibLookUpFallback()
-            .AddSysSecurityFallback()
-            .AddSysCapabilitiesFallback();
+            .AddLibLookUpFallbacks()
+            .AddSysSecurityFallbacks()
+            .AddSysCapabilitiesFallbacks();
 
         return services;
     }

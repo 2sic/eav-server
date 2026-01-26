@@ -5,11 +5,12 @@ using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys.XmlExport;
 using ToSic.Eav.ImportExport.Sys.XmlImport;
 using ToSic.Eav.ImportExport.Sys.Zip;
+using ToSic.Sys.Documentation;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEavImportExport
 {
     public static IServiceCollection AddEavImportExport(this IServiceCollection services)
@@ -42,7 +43,7 @@ public static class StartupEavImportExport
     /// <remarks>
     /// All calls in here MUST use TryAddTransient, and never without the Try
     /// </remarks>
-    public static IServiceCollection AddEavImportExportFallback(this IServiceCollection services)
+    public static IServiceCollection AddEavImportExportFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
         services.TryAddTransient<XmlExporter, XmlExporterUnknown>();

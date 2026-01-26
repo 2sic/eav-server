@@ -1,8 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using ToSic.Sys.Data;
 
-namespace ToSic.Sys.Startup;
+namespace ToSic.Sys.Run.GlobalState;
 
 /// <summary>
 /// A template object to build a global catalog of features or something.

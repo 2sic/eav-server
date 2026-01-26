@@ -1,15 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Sys.Startup;
+namespace ToSic.Sys.Run.Startup;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public static class StartupLogging
+public static partial class StartupSysCore
 {
     
-    public static IServiceCollection AddSysLogging(this IServiceCollection services)
+    public static IServiceCollection AddSysCoreLogging(this IServiceCollection services)
     {
         // History (very core service)
         services.TryAddTransient<ILogStore, LogStoreLive>();

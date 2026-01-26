@@ -5,12 +5,11 @@ using ToSic.Sys.Users;
 using ToSic.Sys.Users.Permissions;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Sys.Startup;
+namespace ToSic.Sys.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupSysSecurity
 {
-    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IServiceCollection AddSysSecurity(this IServiceCollection services)
     {
         services.TryAddTransient<ICurrentContextUserPermissions, CurrentContextUserPermissionsBasic>();
@@ -23,7 +22,7 @@ public static class StartupSysSecurity
     }
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IServiceCollection AddSysSecurityFallback(this IServiceCollection services)
+    public static IServiceCollection AddSysSecurityFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<IUser, UserUnknown>();
         return services;
