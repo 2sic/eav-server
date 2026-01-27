@@ -22,7 +22,6 @@ using ToSic.Sys.Capabilities.FeatureSet;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Configuration;
 using ToSic.Sys.Run.GlobalState;
-using ToSic.Sys.Run.Startup;
 using ToSic.Sys.Security.Encryption;
 
 namespace ToSic.Sys.Capabilities.Licenses;
