@@ -1,0 +1,70 @@
+﻿using System.Diagnostics;
+using ToSic.Eav.Model;
+using ToSic.Eav.Model.Sys;
+using Xunit.Abstractions;
+
+namespace ToSic.Eav.Data.ModelTests;
+
+public class ClassAttributeLookupTest(ITestOutputHelper output)
+{
+    [Fact]
+    public void CheckWithoutAttribute()
+    {
+        var cache = new ClassAttributeLookup<string?>();
+
+        var value = cache.Get<ModelWithoutDecorator, ModelSourceAttribute>(a => a?.ContentType);
+
+        Null(value);
+    }
+
+    [Fact]
+    public void CheckWithAttribute()
+    {
+        var cache = new ClassAttributeLookup<string?>();
+
+        var value = cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+
+        Equal(ModelWithDecorator.ExpectedName, value);
+    }
+
+    [Fact]
+    public void CachingIsUsed()
+    {
+        var cache = new ClassAttributeLookup<string?>();
+
+        cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+
+        False(cache.UsedCache);
+        cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+        True(cache.UsedCache);
+    }
+
+    [Fact]
+    public void CachingSpeedsUpBy25X()
+    {
+        // Create 100
+        var caches = Enumerable.Range(0, 100)
+            .Select(_ => new ClassAttributeLookup<string?>())
+            .ToList();
+
+        // Warm-up
+        foreach (var cache in caches)
+            cache.Get<ModelWithoutDecorator, ModelSourceAttribute>(a => a?.ContentType);
+
+        // Real usage - first should not be cached
+        var first = Stopwatch.StartNew();
+        foreach (var cache in caches)
+            cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+        first.Stop();
+
+        var repeat = Stopwatch.StartNew();
+        foreach (var cache in caches)
+            cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+        repeat.Stop();
+
+        output.WriteLine($"First: {first.ElapsedTicks}");
+        output.WriteLine($"Repeat: {repeat.ElapsedTicks}");
+        True(repeat.ElapsedTicks * 25 < first.ElapsedTicks);
+    }
+
+}

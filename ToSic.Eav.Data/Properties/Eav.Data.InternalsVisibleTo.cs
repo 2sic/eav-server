@@ -4,6 +4,9 @@
 [assembly: InternalsVisibleTo("ToSic.Eav.Persistence")]
 //[assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc")]
 
+[assembly: InternalsVisibleTo("ToSic.Eav.Data.Tests")]
+
+
 //[assembly: InternalsVisibleTo("ToSic.Eav.Core.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Eav.DataSource.Tests")]
 //[assembly: InternalsVisibleTo("ToSic.Testing.Shared")]
