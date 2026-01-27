@@ -3,7 +3,7 @@ using ToSic.Sys.Wrappers;
 
 namespace ToSic.Eav.Data.ModelTests;
 
-public class DataModelAnalyzerTypeTests
+public class ModelAnalyseUseTests
 {
     private void AssertType<TInspect, TExpected>()
         where TInspect : class, IWrapperWip =>

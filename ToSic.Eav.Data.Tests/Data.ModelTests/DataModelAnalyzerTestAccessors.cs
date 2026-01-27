@@ -14,5 +14,5 @@ internal static class DataModelAnalyzerTestAccessors
 
     public static Type GetTargetTypeTac<T>()
         where T : class //, ICanWrapData
-        => DataModelAnalyzer.GetTargetType<T>();
+        => ModelAnalyseUse.GetTargetType<T>();
 }

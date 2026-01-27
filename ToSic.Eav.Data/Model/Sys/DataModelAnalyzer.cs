@@ -38,8 +38,14 @@ public class DataModelAnalyzer
     /// use the type name.
     /// </remarks>
     public static List<string> GetContentTypeNamesList<TCustom>() where TCustom : class // ICanWrapData
-        => ContentTypeNamesList.Get<TCustom, ModelSourceAttribute>(a => UseSpecifiedNameOrDeriveFromType<TCustom>(a?.ContentType));
+    {
+        return ContentTypeNamesList.Get<TCustom, ModelSourceAttribute>(attribute =>
+            UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.ContentType));
+    }
+
     private static readonly ClassAttributeLookup<List<string>> ContentTypeNamesList = new();
+
+    #region Stream Names WIP
 
     /// <summary>
     /// Get the stream names of the current type.
@@ -47,7 +53,14 @@ public class DataModelAnalyzer
     /// <typeparam name="TCustom"></typeparam>
     /// <returns></returns>
     public static List<string> GetStreamNameList<TCustom>() where TCustom : class // ICanWrapData
-        => StreamNames.Get<TCustom, ModelSourceAttribute>(attribute => UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
+    {
+        return StreamNames.Get<TCustom, ModelSourceAttribute>(attribute =>
+            UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
+    }
+
+    private static readonly ClassAttributeLookup<List<string>> StreamNames = new();
+
+    #endregion
 
     private static List<string> UseSpecifiedNameOrDeriveFromType<TCustom>(string? names)
         where TCustom : class // ICanWrapData
@@ -58,7 +71,6 @@ public class DataModelAnalyzer
         return list;
     }
 
-    private static readonly ClassAttributeLookup<List<string>> StreamNames = new();
 
     /// <summary>
     /// Take a class/interface name and create a list
@@ -84,36 +96,4 @@ public class DataModelAnalyzer
 
         return result;
     }
-
-
-    public static Type GetTargetType<TCustom>()
-    {
-        var type = typeof(TCustom);
-
-        if (TargetTypes.TryGetValue(type, out var cachedType))
-            return cachedType;
-
-        // Find attributes which describe conversion
-        var attributes = type
-            .GetCustomAttributes(typeof(ModelCreationAttribute), false)
-            .Cast<ModelCreationAttribute>()
-            .ToList();
-
-        // 2025-01-21 temp
-        var implementation = attributes.FirstOrDefault()?.Use;
-        if (implementation != null)
-        {
-            TargetTypes[type] = implementation;
-            return implementation;
-        }
-
-
-        if (type.IsInterface)
-            throw new TypeInitializationException(type.FullName,
-                new($"Can't determine type to create of {type.Name} as it's an interface and doesn't have the proper Attributes"));
-        TargetTypes[type] = type;
-        return type;
-    }
-
-    private static readonly Dictionary<Type, Type> TargetTypes = new();
 }
