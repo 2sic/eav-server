@@ -76,7 +76,7 @@ public class DataModelAnalyzer
     /// Take a class/interface name and create a list
     /// which also checks for the same name without leading "I" or without trailing "Model".
     /// </summary>
-    private static List<string> CreateListOfNameVariants(string name, bool isInterface)
+    internal static List<string> CreateListOfNameVariants(string name, bool isInterface)
     {
         // Start list with initial name
         List<string> result = [name];
