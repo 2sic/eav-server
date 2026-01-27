@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.Model;
+﻿using ToSic.Eav.Model;
 using ToSic.Sys.Capabilities.Fingerprints;
 
 namespace ToSic.Sys.Capabilities.Licenses;
@@ -14,15 +13,16 @@ internal record LicenseEntity : ModelOfEntity
     public static string TypeNameId = "57248ccb-24f1-44c6-9c6c-085e44ebb0cb";
     public static string ContentTypeName = "⚙️License";
 
-    public LicenseEntity(IEntity entity) : base(entity) { }
-
     public string Fingerprint => GetThis("");
+}
 
-    public EnterpriseFingerprint AsEnterprise() => new()
+internal static class LicenseEntityExtensions
+{
+    public static EnterpriseFingerprint AsEnterprise(this LicenseEntity entity) => new()
     {
-        Id = Id,
-        Guid = Guid,
-        Title = Title,
-        Fingerprint = Fingerprint
+        Id = entity.Id,
+        Guid = entity.Guid,
+        Title = entity.Title,
+        Fingerprint = entity.Fingerprint
     };
 }

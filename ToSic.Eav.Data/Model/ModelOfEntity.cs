@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Eav.Model;
 
+// Note: this used to be called EntityBasedType
+
 public abstract record ModelOfEntity: ModelOfEntityCore, IModelOfEntity
 {
     protected ModelOfEntity() { }
