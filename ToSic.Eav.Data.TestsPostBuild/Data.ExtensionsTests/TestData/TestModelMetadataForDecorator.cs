@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Metadata;
+using ToSic.Eav.Model;
 using ToSic.Sys.Wrappers;
 
 namespace ToSic.Eav.Data.ExtensionsTests.TestData;
@@ -28,7 +29,9 @@ public class TestModelMetadataForDecorator: IWrapperSetup<IEntity>
     public string? DeleteWarning => _entity.Get<string>(nameof(DeleteWarning), fallback: null);
 }
 
-public class TestModelMetadataForDecoratorWrongName : TestModelMetadataForDecorator
-{
-    public bool SetupContents(IEntity? source) => true;
-}
+public class TestModelMetadataForDecoratorWrongName
+    : TestModelMetadataForDecorator;
+
+[ModelSource(ContentType = nameof(TestModelMetadataForDecorator))]
+public class TestModelMetadataForDecoratorWithAttribute
+    : TestModelMetadataForDecorator;

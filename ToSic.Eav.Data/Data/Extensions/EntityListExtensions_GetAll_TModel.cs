@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data;
+﻿using ToSic.Eav.Model.Sys;
+
+namespace ToSic.Eav.Data;
 
 public static partial class EntityListExtensions
 {
@@ -14,7 +16,7 @@ public static partial class EntityListExtensions
     /// input is null or contains no matching entities.</returns>
     public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? list)
         where TModel : class, IWrapperSetup<IEntity>, new()
-        => list.GetAll<TModel>(typeName: typeof(TModel).Name);
+        => list.GetAll<TModel>(typeName: null);
 
     /// <summary>
     /// Returns a collection of wrapper objects of type `TModel` for all entities of the specified type name.
@@ -24,21 +26,39 @@ public static partial class EntityListExtensions
     /// Must implement `IWrapperSetup{IEntity}` and have a parameterless constructor.
     /// </typeparam>
     /// <param name="list">The source collection of entities to search. Can be null.</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="typeName">The name identifier of the entity type to filter by. This value is used to select entities of a specific type.</param>
     /// <returns>An enumerable collection of TModel instances wrapping the matching entities. Returns an empty collection if the
     /// source is null or no matching entities are found.</returns>
-    public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? list, string typeName)
+    public static IEnumerable<TModel> GetAll<TModel>(
+        this IEnumerable<IEntity>? list,
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        NoParamOrder npo = default,
+        string? typeName = default
+    )
         where TModel : class, IWrapperSetup<IEntity>, new()
     {
         if (list == null)
             return [];
 
-        var result = list
-            .GetAll(typeName: typeName)
-            .Select(raw => raw.AsInternal<TModel>(skipTypeCheck: true)!)
-            .ToList();
+        var nameList = typeName != null
+            ? [typeName]
+            : DataModelAnalyzer.GetValidTypeNames<TModel>();
 
-        return result;
+        foreach (var name in nameList)
+        {
+            // ReSharper disable once PossibleMultipleEnumeration - should not ToList or anything, because it could lose optimizations of the FastLookup etc.
+            var found = list
+                .GetAll(typeName: name)
+                .ToListOpt();
+
+            if (found.Any())
+                return found
+                    .Select(raw => raw.AsInternal<TModel>(skipTypeCheck: true)!)
+                    .ToList();
+        }
+
+        return [];
     }
 
 
