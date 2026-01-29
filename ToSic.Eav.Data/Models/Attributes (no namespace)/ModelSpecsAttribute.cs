@@ -39,12 +39,28 @@ public sealed class ModelSpecsAttribute: Attribute
     /// 
     /// History: WIP 19.01 / v21.01
     /// </remarks>
-    public string? ContentType { get; init; }
+    public string? ContentType
+    {
+        get;
+#if NETCOREAPP
+        init;
+#else
+        set;
+#endif
+    }
 
     /// <summary>
     /// WIP, not officially supported yet.
     /// </summary>
-    public string? Stream { get; init; }
+    public string? Stream
+    {
+        get;
+#if NETCOREAPP
+        init;
+#else
+        set;
+#endif
+    }
 
     // TODO: MAKE INTERNAL AGAIN AFTER MOVING TO ToSic.Sxc.Custom
     [PrivateApi]
@@ -57,6 +73,14 @@ public sealed class ModelSpecsAttribute: Attribute
     /// It **must** match (implement or inherit) the type which is being decorated.
     /// Otherwise, it will throw an exception.
     /// </remarks>
-    public Type? Use { get; init; }
+    public Type? Use
+    {
+        get;
+#if NETCOREAPP
+        init;
+#else
+        set;
+#endif
+    }
 
 }

@@ -12,7 +12,7 @@ namespace ToSic.Eav.Models;
 /// The **Core** implementation has zero public properties, so when serialized etc. will not include anything
 /// which was not added explicitly.
 /// </remarks>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract record ModelOfEntityCore
     : IModelSetup<IEntity>,     // Allow setting up the wrapper with an entity

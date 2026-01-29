@@ -2,6 +2,7 @@
 
 // Note: this used to be called EntityBasedType
 
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public abstract record ModelOfEntity: ModelOfEntityCore, IModelOfEntity
 {
     protected ModelOfEntity() { }
