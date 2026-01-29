@@ -3,10 +3,15 @@
 namespace ToSic.Eav.Model;
 
 /// <summary>
-/// Foundation for a class which gets its data from an Entity. <br/>
-/// This is used for more type safety - because some internal objects need entities for data-storage,
-/// but when programming they should use typed objects to not accidentally access invalid properties. 
+/// Foundation for a class which gets its data from an Entity.
 /// </summary>
+/// <remarks>
+/// This is used for more type safety - because some internal objects need entities for data-storage,
+/// but when programming they should use typed objects to not accidentally access invalid properties.
+///
+/// The **Core** implementation has zero public properties, so when serialized etc. will not include anything
+/// which was not added explicitly.
+/// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract record ModelOfEntityCore

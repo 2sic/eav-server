@@ -9,9 +9,9 @@
 /// <remarks>
 /// * Introduced 2022-06 (2sxc 15)
 /// * Used extensively in 2sxc 18/19 for APIs which can accept a wide variety of data types
-/// * Made public in docs v21
+/// * Made visible in docs v21
 /// </remarks>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public interface ICanBeEntity
 {
     /// <summary>
