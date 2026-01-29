@@ -5,13 +5,17 @@ namespace ToSic.Eav.Data.Models.Sys;
 
 public class ModelAnalyseUseTests
 {
-    private void AssertType<TInspect, TExpected>()
-        where TInspect : class, IWrapperWip =>
-        Equal(typeof(TExpected), DataModelAnalyzerTestAccessors.GetTargetTypeTac<TInspect>());
+    private static void AssertType<TInspect, TExpected>()
+        where TInspect : class, IWrapperWip
+    {
+        var data = DataModelAnalyzerTestAccessors.GetTargetTypeTac<TInspect>();
+        Equal(typeof(TExpected), data);
+    }
 
     #region NotDecorated - should return itself as the type
 
-    private class NotDecorated : IWrapperWip; // ICanWrapData;
+    // ReSharper disable once ClassNeverInstantiated.Local
+    private class NotDecorated : IWrapperWip;
 
     [Fact]
     public void NotDecoratedDataModelType() =>
@@ -21,7 +25,7 @@ public class ModelAnalyseUseTests
 
     #region Interface not Decorated - should return itself as the type
 
-    private interface INotDecorated : IWrapperWip; // ICanWrapData;
+    private interface INotDecorated : IWrapperWip;
 
     [Fact]
     //[ExpectedException(typeof(TypeInitializationException))]
@@ -70,7 +74,7 @@ public class ModelAnalyseUseTests
     #region Interface decorated - should return the decorated type
 
     [ModelSpecs(Use = typeof(EntityOfIDecorated))]
-    private interface IDecorated : IWrapperWip; // ICanWrapData;
+    private interface IDecorated : IWrapperWip;
 
     private record EntityOfIDecorated : InheritReDecorated, IDecorated;
 

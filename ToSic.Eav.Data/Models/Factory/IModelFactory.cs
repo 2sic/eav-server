@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Models.Factory;
+﻿using ToSic.Eav.Data.Sys;
+
+namespace ToSic.Eav.Models.Factory;
 
 /// <summary>
 /// WIP - nothing done yet, just as a reminder.
@@ -19,5 +21,11 @@ public interface IModelFactory
     /// <typeparam name="TModel">The type of the wrapper model to create. Must implement <see cref="IModelSetup{TSource}"/>.</typeparam>
     /// <param name="source">The source object containing data used to set up the wrapper model. Cannot be null.</param>
     /// <returns>An instance of <typeparamref name="TModel"/> initialized with the specified source object.</returns>
-    public TModel? Create<TSource, TModel>(TSource? source) where TModel : IModelSetup<TSource>;
+    public TModel? Create<TSource, TModel>(TSource? source)
+        where TModel : IModelSetup<TSource>;
+
+    [return: NotNullIfNotNull(nameof(item))]
+    TCustom? AsCustomFrom<TCustom, TSource>(TSource? item, WrapDataSettings? settings = default)
+        where TCustom : class, IDataWrapper;
+
 }
