@@ -24,7 +24,7 @@ namespace ToSic.Eav.Data;
 /// </typeparam>
 [PrivateApi("may change or rename at any time")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IDataWrapperNeedingFactoryWip<in TSource>: IDataWrapper
+public interface IDataWrapperNeedingFactory<in TSource>: IDataWrapper
 {
     /// <summary>
     /// Add the data to use for the wrapper.
