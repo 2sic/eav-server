@@ -1,9 +1,10 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Build.CodeContentTypes;
 using ToSic.Eav.Data.TestData;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Data.ExtensionsTests.TestData;
+namespace ToSic.Eav.Models.TestData;
 
 public class TestDataGenerator(DataBuilder builder, ContentTypeFactory ctFactory)
 {

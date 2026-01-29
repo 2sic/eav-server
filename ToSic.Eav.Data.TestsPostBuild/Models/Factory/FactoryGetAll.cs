@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.Data.ExtensionsTests.TestData;
-using ToSic.Eav.Models.Factory;
-using ToSic.Sys.Wrappers;
+﻿using ToSic.Eav.Data;
+using ToSic.Eav.Models.TestData;
 
-namespace ToSic.Eav.Data.ExtensionsTests;
+namespace ToSic.Eav.Models.Factory;
 
 public class FactoryGetAll(TestDataGenerator generator, IModelFactory factory)
 {

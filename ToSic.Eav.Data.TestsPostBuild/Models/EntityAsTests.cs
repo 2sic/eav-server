@@ -1,7 +1,8 @@
-﻿using ToSic.Eav.Data.ExtensionsTests.TestData;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Models.TestData;
 
-namespace ToSic.Eav.Data.ExtensionsTests;
+namespace ToSic.Eav.Models;
 
 public class EntityAsTests(TestDataGenerator generator)
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Data.ExtensionsTests.TestData;
+using ToSic.Eav.Models.TestData;
 
-namespace ToSic.Eav.Data.ExtensionsTests;
+namespace ToSic.Eav.Models;
 
 public class Startup : StartupTestsEavDataBuild
 {

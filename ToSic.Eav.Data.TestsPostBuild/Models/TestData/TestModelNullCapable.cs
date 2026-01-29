@@ -1,6 +1,6 @@
-﻿using ToSic.Sys.Wrappers;
+﻿using ToSic.Eav.Data;
 
-namespace ToSic.Eav.Data.ExtensionsTests.TestData;
+namespace ToSic.Eav.Models.TestData;
 
 public class TestModelNullCapable : IModelSetup<IEntity>
 {

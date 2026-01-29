@@ -1,7 +1,7 @@
-﻿using ToSic.Sys.Coding;
-using ToSic.Sys.Wrappers;
+﻿using ToSic.Eav.Data;
+using ToSic.Sys.Coding;
 
-namespace ToSic.Eav.Data.ExtensionsTests;
+namespace ToSic.Eav.Models;
 
 public static class TestAccessors
 {

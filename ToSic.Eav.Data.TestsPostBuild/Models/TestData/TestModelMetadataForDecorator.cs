@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Metadata;
-using ToSic.Sys.Wrappers;
+﻿using ToSic.Eav.Data;
+using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Data.ExtensionsTests.TestData;
+namespace ToSic.Eav.Models.TestData;
 
 /// <summary>
 /// Test Sample Model
