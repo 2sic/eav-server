@@ -31,7 +31,7 @@ public class EavFeaturesLoader(
             l.A($"list:{list.Count}");
 
             var licEntities = list
-                .GetAll<LicenseEntity>(LicenseEntity.TypeNameId)
+                .GetAll<LicenseEntity>(typeName: LicenseEntity.TypeNameId)
                 .ToListOpt();
             l.A($"licEnt:{licEntities.Count}");
 
