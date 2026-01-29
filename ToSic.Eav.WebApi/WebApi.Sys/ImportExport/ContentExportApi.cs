@@ -199,23 +199,10 @@ public class ContentExportApi(
     private ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfigGuid)
     {
         var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfigGuid}");
-        var systemExportConfiguration = _appCtx.AppReader.List.GetOne(exportConfigGuid);
-        if (systemExportConfiguration == null)
-        {
-            var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfigGuid} is missing");
-            l.Ex(exception);
-            throw exception;
-        }
-
-        // check that have correct contentType
-        if (!systemExportConfiguration.Type.Is(ExportConfiguration.ContentTypeName))
-        {
-            var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfigGuid} is not of type '{ExportConfiguration.ContentTypeName}'");
-            l.Ex(exception);
-            throw exception;
-        }
-        
-        return l.ReturnAsOk(new(systemExportConfiguration));
+        var systemExportConfiguration = _appCtx.AppReader.List.GetOne<ExportConfiguration>(exportConfigGuid, nullIfNull: true);
+        return systemExportConfiguration is not null
+            ? l.ReturnAsOk(systemExportConfiguration)
+            : throw l.Ex(new KeyNotFoundException($"ExportConfiguration:{exportConfigGuid} is missing"));
     }
 
 }

@@ -34,9 +34,10 @@ public static partial class EntityListExtensions
         this IEnumerable<IEntity>? list,
         Guid guid,
         NoParamOrder npo = default,
-        bool skipTypeCheck = false
+        bool skipTypeCheck = false,
+        bool nullIfNull = false
     ) where TModel : class, IWrapperSetup<IEntity>, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(guid)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck);
+        (list?.GetOne(guid)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull);
 
 }
