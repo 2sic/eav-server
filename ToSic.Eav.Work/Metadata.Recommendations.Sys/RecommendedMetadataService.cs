@@ -278,8 +278,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
             return l.Return([], "null metadata");
 
         var all = md
-                // todo: remove TypeName
-            .GetAll<MetadataExpectedDecorator>(typeName: MetadataExpectedDecorator.ContentTypeNameId)
+            .GetAll<MetadataExpectedDecorator>()
             .ToListOpt();
 
         if (targetTypeFor > 0)
