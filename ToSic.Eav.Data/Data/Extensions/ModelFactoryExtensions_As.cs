@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.Data;
+﻿using ToSic.Eav.Models;
+using ToSic.Eav.Models.Factory;
+
+namespace ToSic.Eav.Data;
 
 /// <summary>
 /// WIP v21
@@ -15,8 +18,8 @@ public static partial class ModelFactoryExtensions
     /// <param name="factory"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static TModel? As<TModel>(this IWrapperFactory factory, IEntity? entity)
-        where TModel : class, IWrapperSetup<IEntity>
+    public static TModel? As<TModel>(this IModelFactory factory, IEntity? entity)
+        where TModel : class, IModelSetup<IEntity>
     {
         if (factory == null)
             throw new ArgumentNullException(nameof(factory));

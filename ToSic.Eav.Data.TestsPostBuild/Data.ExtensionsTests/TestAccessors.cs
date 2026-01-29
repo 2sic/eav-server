@@ -11,7 +11,7 @@ public static class TestAccessors
         bool skipTypeCheck = false,
         bool nullIfNull = false
     )
-        where TModel : class, IWrapperSetup<IEntity>, new()
+        where TModel : class, IModelSetup<IEntity>, new()
         => entity.As<TModel>(npo, skipTypeCheck, nullIfNull);
 
 
@@ -20,11 +20,11 @@ public static class TestAccessors
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
         string? typeName = default)
-        where TModel : class, IWrapperSetup<IEntity>, new()
+        where TModel : class, IModelSetup<IEntity>, new()
         => list.First<TModel>(npo, typeName);
 
     public static TModel? FirstTac<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : class, IWrapperSetup<IEntity>, new()
+        where TModel : class, IModelSetup<IEntity>, new()
         => list.First<TModel>();
 
 }

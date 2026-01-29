@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Models.Sys;
+﻿using ToSic.Eav.Models;
+using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Data;
 
@@ -15,7 +16,7 @@ public static partial class EntityListExtensions
     /// <returns>An enumerable collection of wrapped entities of the specified model type. Returns an empty collection if the
     /// input is null or contains no matching entities.</returns>
     public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : class, IWrapperSetup<IEntity>, new()
+        where TModel : class, IModelSetup<IEntity>, new()
         => list.GetAll<TModel>(typeName: null);
 
     /// <summary>
@@ -36,7 +37,7 @@ public static partial class EntityListExtensions
         NoParamOrder npo = default,
         string? typeName = default
     )
-        where TModel : class, IWrapperSetup<IEntity>, new()
+        where TModel : class, IModelSetup<IEntity>, new()
     {
         if (list == null)
             return [];

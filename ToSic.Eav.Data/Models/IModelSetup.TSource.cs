@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.Wrappers;
+﻿namespace ToSic.Eav.Models;
 
 // BETA: EXPERIMENTAL WRAPPING OF IEntity for EAV USE CASES
 // not for public use ATM, should later be merged with ICanWrap<TSource> in SXC
@@ -23,9 +23,8 @@
 /// The data type which can be accepted.
 /// Must be <see cref="IEntity"/> or <see cref="ITypedItem"/> (other types not supported for now).
 /// </typeparam>
-[PrivateApi("may change or rename at any time")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IWrapperSetup<in TSource>
+[InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
+public interface IModelSetup<in TSource>
 {
     /// <summary>
     /// Add the contents to use for the wrapper.
@@ -37,7 +36,5 @@ public interface IWrapperSetup<in TSource>
     /// A typical example would be a wrapper which is setup with `null` and it cannot work that way.
     /// On the other hand, if a wrapper is ok with a null source, it would return `true`.
     /// </returns>
-    [PrivateApi]
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public bool SetupContents(TSource? source);
+    public bool SetupModel(TSource? source);
 }

@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Models.Sys;
+﻿using ToSic.Eav.Models;
+using ToSic.Eav.Models.Factory;
+using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Data;
 
@@ -17,12 +19,12 @@ public static partial class ModelFactoryExtensions
     /// <param name="factory">A factory to create the target model.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? First<TModel>(
-        this IWrapperFactory factory,
+        this IModelFactory factory,
         IEnumerable<IEntity>? list,
         NoParamOrder npo = default,
         string? typeName = default
     )
-        where TModel : class, IWrapperSetup<IEntity>
+        where TModel : class, IModelSetup<IEntity>
     {
         if (list == null)
             return default;

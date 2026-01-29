@@ -43,7 +43,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
             Decorators = [..Decorators, decorator];
     }
 
-    public bool SetupContents(IEntity? source)
+    public bool SetupModel(IEntity? source)
     {
         Entity = source;
         RootContentsForEqualityCheck = Entity;

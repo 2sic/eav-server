@@ -2,20 +2,20 @@
 
 namespace ToSic.Eav.Data.ExtensionsTests.TestData;
 
-public class TestModelNullCapable : IWrapperSetup<IEntity>
+public class TestModelNullCapable : IModelSetup<IEntity>
 {
 
-    bool IWrapperSetup<IEntity>.SetupContents(IEntity? source)
+    bool IModelSetup<IEntity>.SetupModel(IEntity? source)
     {
         return true;
     }
 
 }
 
-public class TestModelNullUnCapable : IWrapperSetup<IEntity>
+public class TestModelNullUnCapable : IModelSetup<IEntity>
 {
 
-    bool IWrapperSetup<IEntity>.SetupContents(IEntity? source)
+    bool IModelSetup<IEntity>.SetupModel(IEntity? source)
     {
         return false;
     }

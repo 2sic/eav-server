@@ -20,6 +20,7 @@ public class StartupTestsEavDataBuild
     public virtual void ConfigureServices(IServiceCollection services) =>
         services
             .AddEavDataBuild()
+            .AddEavModels()
             .AddEavData()
             .AddAllLibAndSys()
 

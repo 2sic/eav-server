@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.Data;
+﻿using ToSic.Eav.Models;
+using ToSic.Eav.Models.Factory;
+
+namespace ToSic.Eav.Data;
 
 public static partial class ModelFactoryExtensions
 {
@@ -17,11 +20,11 @@ public static partial class ModelFactoryExtensions
     /// <param name="factory">The factory to use for creating wrapper instances.</param>
     // ReSharper disable once MethodOverloadWithOptionalParameter
     public static IEnumerable<TModel?> GetAll<TModel>(
-        this IWrapperFactory factory,
+        this IModelFactory factory,
         IEnumerable<IEntity>? list,
         NoParamOrder npo = default,
         string? typeName = default
-    ) where TModel : class, IWrapperSetup<IEntity>
+    ) where TModel : class, IModelSetup<IEntity>
     {
         if (list == null)
             return [];

@@ -141,7 +141,7 @@ public class QueryRun : DataSourceBase
         // ...HasSource() also checked sub-sources, even if it didn't remove them.
         // ...So I think we're safe. If all is ok, remove this comment 2024-Q3
         var sources = Configuration.LookUpEngine.Sources.ToList();
-        var toRemove = LookUpExtensions.GetSource(sources, DataSourceConstants.ParamsSourceName);
+        var toRemove = sources.GetSource(DataSourceConstants.ParamsSourceName);
         if (toRemove != null)
             sources.Remove(toRemove);
 

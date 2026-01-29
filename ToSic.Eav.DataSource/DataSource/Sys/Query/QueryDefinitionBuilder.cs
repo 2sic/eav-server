@@ -9,7 +9,7 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
     public QueryDefinition Create(IEntity entity, int appId)
     {
         var parts = GenerateParts(entity);
-        return new(entity, appId, parts, Log);
+        return new(entity, appId, parts);
     }
 
     private List<QueryPartDefinition> GenerateParts(IEntity entity)
@@ -38,7 +38,7 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
                      ?? DataSourceInfo.CreateError(dsTypeIdentifier, false, DataSourceType.System,
                          new("Error finding data source", $"Tried to find {assemblyAndType} ({correctedName}) but can't find it."));
 
-        return new(entity, dsTypeIdentifier, dsInfo.Type, dsInfo, Log);
+        return new(entity, dsTypeIdentifier, dsInfo.Type, dsInfo);
     }
 
 

@@ -1,9 +1,10 @@
 ﻿using ToSic.Eav.Data.ExtensionsTests.TestData;
+using ToSic.Eav.Models.Factory;
 using ToSic.Sys.Wrappers;
 
 namespace ToSic.Eav.Data.ExtensionsTests;
 
-public class FactoryGetAll(TestDataGenerator generator, IWrapperFactory factory)
+public class FactoryGetAll(TestDataGenerator generator, IModelFactory factory)
 {
     [Theory]
     [InlineData(1)]

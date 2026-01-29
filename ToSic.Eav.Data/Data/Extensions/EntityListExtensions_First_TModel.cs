@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Models.Sys;
+﻿using ToSic.Eav.Models;
+using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Data;
 
@@ -14,7 +15,7 @@ public static partial class EntityListExtensions
     /// <param name="list">The collection of entities to search.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? First<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : class, IWrapperSetup<IEntity>, new()
+        where TModel : class, IModelSetup<IEntity>, new()
         => list.First<TModel>(typeName: null);
 
     /// <summary>
@@ -31,7 +32,7 @@ public static partial class EntityListExtensions
         NoParamOrder npo = default,
         string? typeName = default
     )
-        where TModel : class, IWrapperSetup<IEntity>, new()
+        where TModel : class, IModelSetup<IEntity>, new()
     {
         if (list == null)
             return default;

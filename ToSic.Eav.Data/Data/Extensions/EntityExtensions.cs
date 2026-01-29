@@ -1,4 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using ToSic.Eav.Models;
+using ToSic.Eav.Models.Factory;
 using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Data;
@@ -27,7 +29,7 @@ public static partial class EntityExtensions
         bool skipTypeCheck = false,
         bool nullIfNull = false
     )
-        where TModel : class, IWrapperSetup<IEntity>, new() =>
+        where TModel : class, IModelSetup<IEntity>, new() =>
         entity.AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull);
 
     /// <summary>
@@ -48,7 +50,7 @@ public static partial class EntityExtensions
         bool skipTypeCheck = false,
         bool nullIfNull = false
     )
-        where TModel : class, IWrapperSetup<IEntity>, new() =>
+        where TModel : class, IModelSetup<IEntity>, new() =>
         (canBeEntity?.Entity).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull);
 
     /// <summary>
@@ -68,7 +70,7 @@ public static partial class EntityExtensions
         bool skipTypeCheck = false,
         bool nullIfNull = false
     )
-        where TModel : class, IWrapperSetup<IEntity>, new()
+        where TModel : class, IModelSetup<IEntity>, new()
     {
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
@@ -84,12 +86,12 @@ public static partial class EntityExtensions
         var wrapper = new TModel();
 
         // Throw if TModel inherits from INeedsFactory
-        if (wrapper is INeedsFactory)
+        if (wrapper is IModelFactoryRequired)
             throw new InvalidCastException($"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead");
 
         // Do Setup and check if it's ok.
         // Wrapper will return false if the entity is null or invalid for the model.
-        var ok = wrapper.SetupContents(entity);
+        var ok = wrapper.SetupModel(entity);
         return ok ? wrapper : default;
     }
 

@@ -31,12 +31,4 @@ public interface IModelOfEntity: ICanBeEntity
     /// </summary>
     /// <returns>The guid, or an empty-guid of no entity available</returns>
     Guid Guid { get; }
-
-    ///// <summary>
-    ///// Get the Metadata of the underlying Entity
-    ///// </summary>
-    ///// <remarks>
-    ///// Added in v12.10
-    ///// </remarks>
-    //IMetadata Metadata { get; }
 }

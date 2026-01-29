@@ -31,9 +31,9 @@ partial record QueryDefinition
     /// They are in the format [source:key]=value
     /// </summary>
     /// <returns></returns>
-    private List<ILookUp> GenerateTestValueLookUps()
+    private List<ILookUp> GenerateTestValueLookUps(ILog? log = default)
     {
-        var l = Log.Fn<List<ILookUp>>();
+        var l = log.Fn<List<ILookUp>>();
         // Parse Test-Parameters in Format [Token:Property]=Value
         var testParameters = TestParameters;
         if (testParameters == null)

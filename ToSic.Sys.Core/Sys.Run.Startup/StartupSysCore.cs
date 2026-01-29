@@ -25,7 +25,6 @@ public static partial class StartupSysCore
     {
         return services
             .AddSysCoreBoot()
-            .AddSysCoreWrappers()
             .AddSysCoreLogging()
             .AddSysCoreDiServiceSwitchers()
             .AddSysCoreDi();
@@ -47,16 +46,6 @@ public static partial class StartupSysCore
         return services;
     }
 
-    /// <summary>
-    /// Registers the default system core wrapper services with the dependency injection container.
-    /// </summary>
-    /// <inheritdoc cref="AddSysCore"/>
-    public static IServiceCollection AddSysCoreWrappers(this IServiceCollection services)
-    {
-        // Wrapper Factory - new it v21
-        services.TryAddTransient<IWrapperFactory, WrapperFactory>();
 
-        return services;
-    }
 
 }

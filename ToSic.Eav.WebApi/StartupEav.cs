@@ -41,6 +41,7 @@ public static class StartupEav
             // EAV Core
             .AddEavDataBuild()
             .AddEavDataStack()
+            .AddEavModels()
             .AddEavData()
             .AddAllLibAndSys();
 

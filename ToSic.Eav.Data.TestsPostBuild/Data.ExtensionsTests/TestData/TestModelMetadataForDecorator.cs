@@ -6,12 +6,12 @@ namespace ToSic.Eav.Data.ExtensionsTests.TestData;
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelMetadataForDecorator: IWrapperSetup<IEntity>
+public class TestModelMetadataForDecorator: IModelSetup<IEntity>
 {
     //public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
     //public static string ContentTypeName = "MetadataForDecorator";
 
-    bool IWrapperSetup<IEntity>.SetupContents(IEntity? source)
+    bool IModelSetup<IEntity>.SetupModel(IEntity? source)
     {
         _entity = source!;
         return true;

@@ -1,10 +1,11 @@
 ﻿using ToSic.Eav.Data.ExtensionsTests.TestData;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Models.Factory;
 using ToSic.Sys.Wrappers;
 
 namespace ToSic.Eav.Data.ExtensionsTests;
 
-public class AssembleTests(TestDataGenerator generator, IWrapperFactory factory)
+public class AssembleTests(TestDataGenerator generator, IModelFactory factory)
 {
 
     [Fact]
@@ -20,6 +21,6 @@ public class AssembleTests(TestDataGenerator generator, IWrapperFactory factory)
     [Fact]
     public void AssembleWithFactoryNullThrows() =>
         Throws<ArgumentNullException>(() =>
-            ((IWrapperFactory)null).As<TestModelRequiringFactory>(generator.CreateMetadataForDecorator())
+            ((IModelFactory)null).As<TestModelRequiringFactory>(generator.CreateMetadataForDecorator())
         );
 }

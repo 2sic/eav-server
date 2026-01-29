@@ -139,6 +139,7 @@ public class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     /// <inheritdoc />
     public IDictionary<string, string> Params() => Definition.ParamsDic;
 
+    // # RemoveDataSourceReset v21
     /// <inheritdoc />
     public void Reset()
     {

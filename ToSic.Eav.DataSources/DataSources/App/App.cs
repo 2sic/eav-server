@@ -39,6 +39,7 @@ public partial class App : DataSourceBase
         {
             Configuration.SetThisObsolete(value);
             AppId = value;
+            // #RemoveDataSourceReset v21
             Reset();
         }
     }
@@ -55,6 +56,7 @@ public partial class App : DataSourceBase
         {
             Configuration.SetThisObsolete(value);
             ZoneId = value;
+            // #RemoveDataSourceReset v21
             Reset();
         }
     }

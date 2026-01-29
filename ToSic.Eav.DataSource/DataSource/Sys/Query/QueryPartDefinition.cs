@@ -8,13 +8,12 @@ namespace ToSic.Eav.DataSource.Sys.Query;
 /// </summary>
 [PrivateApi("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record QueryPartDefinition : ModelOfEntityWithLog
+public record QueryPartDefinition : ModelOfEntity
 {
     public QueryPartDefinition(IEntity? entity,
         string typeIdentifier,
         Type type,
-        DataSourceInfo dataSourceInfo,
-        ILog parentLog) : base(entity!, parentLog, "DS.QrPart")
+        DataSourceInfo dataSourceInfo) : base(entity!)
     {
         DataSourceTypeIdentifier = typeIdentifier;
         DataSourceType = type;

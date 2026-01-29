@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data;
+﻿using ToSic.Eav.Models;
+
+namespace ToSic.Eav.Data;
 
 public static partial class EntityListExtensions
 {
@@ -17,7 +19,7 @@ public static partial class EntityListExtensions
         int id,
         NoParamOrder npo = default,
         bool skipTypeCheck = false
-    ) where TModel : class, IWrapperSetup<IEntity>, new() =>
+    ) where TModel : class, IModelSetup<IEntity>, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         (list?.GetOne(id)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck);
 
@@ -36,7 +38,7 @@ public static partial class EntityListExtensions
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
         bool nullIfNull = false
-    ) where TModel : class, IWrapperSetup<IEntity>, new() =>
+    ) where TModel : class, IModelSetup<IEntity>, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         (list?.GetOne(guid)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull);
 

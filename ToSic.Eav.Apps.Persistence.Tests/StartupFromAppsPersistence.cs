@@ -20,6 +20,7 @@ public static class StartupEavTestBundle
             .AddEavPersistence()
             .AddEavDataBuild()
             .AddEavDataStack()
+            .AddEavModels()
             .AddEavData()
             .AddAllLibAndSys();
 

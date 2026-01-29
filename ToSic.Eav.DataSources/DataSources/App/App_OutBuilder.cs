@@ -6,16 +6,19 @@ using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
 
-partial class App: IDataSourceReset
+partial class App : IDataSourceReset // #RemoveDataSourceReset v21
 {
     #region Dynamic Out
 
     private readonly StreamDictionary _out;
     private bool _requiresRebuildOfOut = true;
 
+    // #RemoveDataSourceReset v21
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
     void IDataSourceReset.Reset() => _requiresRebuildOfOut = true;
+
+    // #RemoveDataSourceReset v21
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
     protected void Reset() => _requiresRebuildOfOut = true;

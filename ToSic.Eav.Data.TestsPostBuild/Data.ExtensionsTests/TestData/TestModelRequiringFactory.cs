@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Metadata;
+using ToSic.Eav.Models.Factory;
 using ToSic.Sys.Wrappers;
 
 namespace ToSic.Eav.Data.ExtensionsTests.TestData;
@@ -6,20 +7,20 @@ namespace ToSic.Eav.Data.ExtensionsTests.TestData;
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelRequiringFactoryEmptyConstructor() : IWrapperSetup<IEntity>, INeedsFactory
+public class TestModelRequiringFactoryEmptyConstructor() : IModelSetup<IEntity>, IModelFactoryRequired
 {
-    public bool SetupContents(IEntity? source) => true;
+    public bool SetupModel(IEntity? source) => true;
 }
 
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelRequiringFactory(TestModelDependency dependency) : IWrapperSetup<IEntity>, INeedsFactory
+public class TestModelRequiringFactory(TestModelDependency dependency) : IModelSetup<IEntity>, IModelFactoryRequired
 {
     //public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
     //public static string ContentTypeName = "MetadataForDecorator";
 
-    bool IWrapperSetup<IEntity>.SetupContents(IEntity? source)
+    bool IModelSetup<IEntity>.SetupModel(IEntity? source)
     {
         _entity = source;
         return true;
