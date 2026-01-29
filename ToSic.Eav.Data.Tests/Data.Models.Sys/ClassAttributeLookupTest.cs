@@ -3,17 +3,26 @@ using ToSic.Eav.Models;
 using ToSic.Eav.Models.Sys;
 using Xunit.Abstractions;
 
-namespace ToSic.Eav.Data.ModelTests;
+namespace ToSic.Eav.Data.Models.Sys;
 
+/// <summary>
+/// The basic model without decorators
+/// </summary>
 public class ModelWithoutDecorator;
 
-
+/// <summary>
+/// The decorated model
+/// </summary>
 [ModelSpecs(ContentType = ExpectedName)]
 public class ModelWithDecorator
 {
     public const string ExpectedName = "Something";
 }
 
+/// <summary>
+/// The tests
+/// </summary>
+/// <param name="output"></param>
 public class ClassAttributeLookupTest(ITestOutputHelper output)
 {
     [Fact]

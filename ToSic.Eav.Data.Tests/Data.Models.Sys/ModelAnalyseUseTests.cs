@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Models;
 using ToSic.Sys.Wrappers;
 
-namespace ToSic.Eav.Data.ModelTests;
+namespace ToSic.Eav.Data.Models.Sys;
 
 public class ModelAnalyseUseTests
 {

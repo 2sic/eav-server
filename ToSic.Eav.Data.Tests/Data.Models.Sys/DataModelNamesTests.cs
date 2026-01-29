@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Models.Sys;
 
-namespace ToSic.Eav.Data.Model.Sys;
+namespace ToSic.Eav.Data.Models.Sys;
 
-public class DataModelAnalyzerTests
+public class DataModelNamesTests
 {
     [Theory]
     // isInterface = false
@@ -22,19 +22,19 @@ public class DataModelAnalyzerTests
     [InlineData("IThingModel", true, new[] { "IThingModel", "IThing", "ThingModel", "Thing" })]
     public void CreateListOfNameVariants(string input, bool isInterface, string[] expected)
     {
-        var result = DataModelAnalyzer.CreateListOfNameVariants(input, isInterface);
+        var result = DataModelNames.CreateListOfNameVariants(input, isInterface);
         Equal(expected, result);
     }
 
 
     [Theory]
-    [InlineData(null, new[] { nameof(DataModelAnalyzerTests) })]
+    [InlineData(null, new[] { nameof(DataModelNamesTests) })]
     [InlineData("", new[] { "" })]
     [InlineData("CustomName", new[] { "CustomName" })]
     [InlineData("CustomName,Custom2", new[] { "CustomName", "Custom2" })]
     public void UseSpecifiedNameOrDeriveFromType(string input, string[] expected)
     {
-        var result = DataModelAnalyzer.UseSpecifiedNameOrDeriveFromType<DataModelAnalyzerTests>(input);
+        var result = DataModelNames.UseSpecifiedNameOrDeriveFromType<DataModelNamesTests>(input);
         Equal(expected, result);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Models;
 using ToSic.Sys.Wrappers;
 
-namespace ToSic.Eav.Data.ModelTests;
+namespace ToSic.Eav.Data.Models.Sys;
 
 public class DataModelAnalyzerTests
 {
@@ -15,7 +15,7 @@ public class DataModelAnalyzerTests
 
     // ReSharper disable once ClassNeverInstantiated.Local
     // ReSharper disable once ArrangeTypeMemberModifiers
-    class NotDecorated : IWrapperWip; // ICanWrapData;
+    class NotDecorated : IWrapperWip;
 
     [Fact]
     public void NotDecoratedDataModelType() =>
@@ -31,7 +31,7 @@ public class DataModelAnalyzerTests
 
     // ReSharper disable once ClassNeverInstantiated.Local
     // ReSharper disable once ArrangeTypeMemberModifiers
-    class NotDecoratedModel : IWrapperWip; // ICanWrapData;
+    class NotDecoratedModel : IWrapperWip;
 
     [Fact]
     public void NotDecoratedModelStreamList() =>
@@ -40,14 +40,14 @@ public class DataModelAnalyzerTests
     // Objects starting with an "I" won't have the "I" removed in the name checks
     // ReSharper disable once ClassNeverInstantiated.Local
     // ReSharper disable once ArrangeTypeMemberModifiers
-    class INotDecoratedModel : IWrapperWip; // ICanWrapData;
+    class INotDecoratedModel : IWrapperWip;
 
     [Fact]
     public void INotDecoratedModelStreamList() =>
         AssertStreamNames<INotDecoratedModel>(nameof(INotDecoratedModel) + ",INotDecorated");
 
     // ReSharper disable once ArrangeTypeMemberModifiers
-    interface INotDecorated : IWrapperWip; // ICanWrapData;
+    interface INotDecorated : IWrapperWip;
 
     [Fact]
     public void INotDecoratedType() =>
@@ -62,7 +62,7 @@ public class DataModelAnalyzerTests
     private const string StreamName1 = "AbcStream";
     [ModelSpecs(ContentType = ForContentType1, Stream = StreamName1)]
     // ReSharper disable once ArrangeTypeMemberModifiers
-    class Decorated : IWrapperWip; // ICanWrapData;
+    class Decorated : IWrapperWip;
 
     [Fact]
     public void DecoratedType() =>
@@ -104,7 +104,7 @@ public class DataModelAnalyzerTests
     private const string ForContentTypeIDecorated = "IDec";
     private const string StreamNameIDecorated= "IRedecStream";
     [ModelSpecs(ContentType = ForContentTypeIDecorated, Stream = StreamNameIDecorated)]
-    interface IDecorated : IWrapperWip; // ICanWrapData;
+    interface IDecorated : IWrapperWip;
 
     [Fact]
     public void IDecoratedType() =>

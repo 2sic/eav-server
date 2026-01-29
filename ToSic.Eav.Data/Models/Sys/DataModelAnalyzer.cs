@@ -16,7 +16,7 @@ public class DataModelAnalyzer
     {
         return ContentTypeNamesCache
             .Get<TCustom, ModelSpecsAttribute>(attribute =>
-                UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.ContentType)
+                DataModelNames.UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.ContentType)
             );
     }
 
@@ -62,54 +62,11 @@ public class DataModelAnalyzer
     public static List<string> GetStreamNameList<TCustom>() where TCustom : class
     {
         return StreamNames.Get<TCustom, ModelSpecsAttribute>(attribute =>
-            UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
+            DataModelNames.UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
     }
 
     private static readonly ClassAttributeLookup<List<string>> StreamNames = new();
 
     #endregion
 
-    internal static List<string> UseSpecifiedNameOrDeriveFromType<TCustom>(string? names)
-        where TCustom : class
-    {
-        var list = names != null
-            ? names.Split(',').Select(n => n.Trim()).ToList()
-            : CreateListOfNameVariants(typeof(TCustom).Name, typeof(TCustom).IsInterface);
-        return list;
-    }
-
-
-    /// <summary>
-    /// Take a class/interface name and create a list
-    /// which also checks for the same name without leading "I" or without trailing "Model".
-    /// </summary>
-    internal static List<string> CreateListOfNameVariants(string name, bool isInterface)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            return [];
-
-        // Start list with initial name
-        List<string> result = [name];
-
-        // Check if it ends with Model
-        var nameWithoutModelSuffix = name.EndsWith("Model")
-            ? name.Substring(0, name.Length - 5)
-            : null;
-        if (nameWithoutModelSuffix != null)
-            result.Add(nameWithoutModelSuffix);
-
-        // If it's not an interface beginning with "I", stop here
-        if (!isInterface
-            || !name.StartsWith("I", StringComparison.Ordinal)
-            || name.Length <= 1 // Skip if only 1 char long, else below the Substring would be empty
-           )
-            return result;
-
-        // Add names without leading I - since it has a leading I
-        result.Add(name.Substring(1));
-        if (nameWithoutModelSuffix != null)
-            result.Add(nameWithoutModelSuffix.Substring(1));
-
-        return result;
-    }
 }
