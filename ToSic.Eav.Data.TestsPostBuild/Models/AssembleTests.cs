@@ -15,7 +15,7 @@ public class AssembleTests(TestDataGenerator generator, IModelFactory factory)
         var model = factory.As<TestModelRequiringFactory>(entity);
         NotNull(model);
         Equal((int)TargetTypes.Entity, model.TargetType);
-        Equal(TestModelDependency.HelloMessage, model.SomethingFromDependency);
+        Equal(TestModelRequiringFactory.TestModelDependencyInjection.HelloMessage, model.SomethingFromDependency);
     }
 
     [Fact]

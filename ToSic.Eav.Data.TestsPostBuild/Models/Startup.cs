@@ -9,7 +9,7 @@ public class Startup : StartupTestsEavDataBuild
     {
         services
             .AddTransient<TestDataGenerator>()
-            .AddTransient<TestModelDependency>();
+            .AddTransient<TestModelRequiringFactory.TestModelDependencyInjection>();
         base.ConfigureServices(services);
     }
 }

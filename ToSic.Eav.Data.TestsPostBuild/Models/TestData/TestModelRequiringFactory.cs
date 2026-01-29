@@ -15,10 +15,13 @@ public class TestModelRequiringFactoryEmptyConstructor() : IModelSetup<IEntity>,
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelRequiringFactory(TestModelDependency dependency) : IModelSetup<IEntity>, IModelFactoryRequired
+public class TestModelRequiringFactory(TestModelRequiringFactory.TestModelDependencyInjection dependency) : IModelSetup<IEntity>, IModelFactoryRequired
 {
-    //public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
-    //public static string ContentTypeName = "MetadataForDecorator";
+    public class TestModelDependencyInjection
+    {
+        public const string HelloMessage = "Hello from TestModelDependency";
+        public string GetSomething() => HelloMessage;
+    }
 
     bool IModelSetup<IEntity>.SetupModel(IEntity? source)
     {
@@ -37,10 +40,6 @@ public class TestModelRequiringFactory(TestModelDependency dependency) : IModelS
     public string? DeleteWarning => _entity.Get<string>(nameof(DeleteWarning), fallback: null);
 
     public string SomethingFromDependency => dependency.GetSomething();
-}
 
-public class TestModelDependency
-{
-    public const string HelloMessage = "Hello from TestModelDependency";
-    public string GetSomething() => HelloMessage;
+
 }

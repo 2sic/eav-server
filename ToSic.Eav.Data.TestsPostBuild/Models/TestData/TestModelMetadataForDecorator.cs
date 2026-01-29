@@ -6,7 +6,7 @@ namespace ToSic.Eav.Models.TestData;
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelMetadataForDecorator: IModelSetup<IEntity>
+internal record TestModelMetadataForDecorator: IModelSetup<IEntity>, ICanBeEntity
 {
     //public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
     //public static string ContentTypeName = "MetadataForDecorator";
@@ -26,11 +26,12 @@ public class TestModelMetadataForDecorator: IModelSetup<IEntity>
     public int Amount => _entity.Get(nameof(Amount), fallback: 1);
 
     public string? DeleteWarning => _entity.Get<string>(nameof(DeleteWarning), fallback: null);
+    IEntity ICanBeEntity.Entity => _entity.Entity;
 }
 
-public class TestModelMetadataForDecoratorWrongName
+internal record TestModelMetadataForDecoratorWrongName
     : TestModelMetadataForDecorator;
 
 [ModelSpecs(ContentType = nameof(TestModelMetadataForDecorator))]
-public class TestModelMetadataForDecoratorWithAttribute
+internal record TestModelMetadataForDecoratorWithAttribute
     : TestModelMetadataForDecorator;
