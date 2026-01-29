@@ -31,6 +31,14 @@ public class PiggyBack
         return typed;
     }
 
+    /// <summary>
+    /// Get a value from the Piggyback or create it. Will expire if the parent is updated.
+    /// </summary>
+    /// <typeparam name="TData"></typeparam>
+    /// <param name="parent">Parent object with timestamp.</param>
+    /// <param name="key">Key to use in the caching dictionary, should be unique for the expected use case.</param>
+    /// <param name="create">Generator function</param>
+    /// <returns></returns>
     public (TData Value, bool IsCached) GetOrGenerate<TData>(ITimestamped parent, string key, Func<TData> create)
     {
         // Check if exists and timestamp still ok, return that

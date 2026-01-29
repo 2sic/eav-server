@@ -10,7 +10,7 @@ public partial class EntityListFirst
     public void FirstGenericWithSameMetadataNone()
     {
         var entity = generator.EntityWithMetadataForDecorator(0);
-        Null(entity.Metadata.First<TestModelMetadataForDecorator>());
+        Null(entity.Metadata.FirstTac<TestModelMetadataForDecorator>());
     }
 
     [Theory]
@@ -19,7 +19,7 @@ public partial class EntityListFirst
     public void FirstGenericWithSameMetadataMany(int amount)
     {
         var entity = generator.EntityWithMetadataForDecorator(amount);
-        var md = entity.Metadata.First<TestModelMetadataForDecorator>();
+        var md = entity.Metadata.FirstTac<TestModelMetadataForDecorator>();
         NotNull(md);
         Equal((int)TargetTypes.Entity, md.TargetType);
     }
@@ -30,7 +30,7 @@ public partial class EntityListFirst
     public void FirstGenericSameMetadataManyNamed(int amount)
     {
         var entity = generator.EntityWithMetadataForDecorator(amount);
-        var md = entity.Metadata.First<TestModelMetadataForDecorator>(typeName: nameof(TestModelMetadataForDecorator));
+        var md = entity.Metadata.FirstTac<TestModelMetadataForDecorator>(typeName: nameof(TestModelMetadataForDecorator));
         NotNull(md);
         Equal((int)TargetTypes.Entity, md.TargetType);
     }
@@ -41,7 +41,7 @@ public partial class EntityListFirst
     public void FirstGenericSameMetadataManyTimesNamedWrong(int amount)
     {
         var entity = generator.EntityWithMetadataForDecorator(amount);
-        Null(entity.Metadata.First<TestModelMetadataForDecorator>(typeName: "some other name"));
+        Null(entity.Metadata.FirstTac<TestModelMetadataForDecorator>(typeName: "some other name"));
     }
 
 }

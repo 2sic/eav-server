@@ -11,7 +11,10 @@ public abstract record ModelOfEntityWithLog: ModelOfEntity, IHasLog
     /// <param name="parentLog"></param>
     /// <param name="logName"></param>
     protected ModelOfEntityWithLog(IEntity entity, ILog? parentLog, string logName) : base(entity)
-        => Log = new Log(logName, parentLog);
+    {
+        
+        Log = new Log(logName, parentLog);
+    }
 
     protected readonly ILog Log = null!;
     ILog IHasLog.Log => Log;

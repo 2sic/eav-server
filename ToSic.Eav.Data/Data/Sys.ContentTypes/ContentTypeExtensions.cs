@@ -3,8 +3,8 @@ public static class ContentTypeExtensions
 {
     public static ContentTypeDetails? DetailsOrNull(this IContentType contentType) =>
         contentType.PiggyBack.GetOrGenerate(
-            contentType.Metadata,
-            nameof(DetailsOrNull),
-            () => contentType.Metadata.First<ContentTypeDetails>()
+            parent: contentType.Metadata,
+            key: nameof(DetailsOrNull),
+            create: () => contentType.Metadata.First<ContentTypeDetails>()
         ).Value;
 }
