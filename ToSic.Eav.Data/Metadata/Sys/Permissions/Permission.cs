@@ -9,14 +9,12 @@ namespace ToSic.Eav.Metadata.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
+[ModelSource(ContentType = ContentTypeName)]
 public record Permission : ModelOfEntity, IPermission
 {
-    public Permission(IEntity entity) : base(entity) { }
+    public const string ContentTypeName = "PermissionConfiguration";
 
-    public const string TypeName = "PermissionConfiguration";
-    public const string FieldOwner = "Owner";
     /// <inheritdoc />
-
     [field: AllowNull, MaybeNull]
     public string Condition => field ??= GetThis("");
 
@@ -32,5 +30,5 @@ public record Permission : ModelOfEntity, IPermission
     public string Owner => Entity.Owner;
 
     [PrivateApi]
-    public static bool IsPermission(IEntity entity) => entity.Type.Is(TypeName);
+    public static bool IsPermission(IEntity entity) => entity.Type.Is(ContentTypeName);
 }

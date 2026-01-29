@@ -3,12 +3,11 @@
 namespace ToSic.Eav.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
+[ModelSource(ContentType = ContentTypeNameId)]
 public record ExportDecorator : ModelOfEntityCore
 {
-    public static string TypeNameId = "32698880-1c2e-41ab-bcfc-420091d3263f";
-    public static string ContentTypeName = "SystemExportDecorator";
-
-    public ExportDecorator(IEntity entity) : base(entity) { }
+    public const string ContentTypeNameId = "32698880-1c2e-41ab-bcfc-420091d3263f";
+    public const string ContentTypeName = "SystemExportDecorator";
 
     public bool IsContentType => Entity.MetadataFor.TargetType == (int) TargetTypes.ContentType;
 

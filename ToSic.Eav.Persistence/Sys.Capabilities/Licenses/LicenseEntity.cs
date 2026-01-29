@@ -8,10 +8,11 @@ namespace ToSic.Sys.Capabilities.Licenses;
 /// Used by the FeaturesLoader to load the license information from inside JSON entities.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
+[ModelSource(ContentType = ContentTypeNameId)]
 internal record LicenseEntity : ModelOfEntity
 {
-    public static string TypeNameId = "57248ccb-24f1-44c6-9c6c-085e44ebb0cb";
-    public static string ContentTypeName = "⚙️License";
+    public const string ContentTypeNameId = "57248ccb-24f1-44c6-9c6c-085e44ebb0cb";
+    public const string ContentTypeName = "⚙️License";
 
     public string Fingerprint => GetThis("");
 }

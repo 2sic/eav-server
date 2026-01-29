@@ -1,9 +1,4 @@
-﻿
-
-// ReSharper disable UnusedMember.Global - we need these, as it's a public API
-
-using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.Model;
+﻿using ToSic.Eav.Model;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Apps.AppReader.Sys;
@@ -15,7 +10,7 @@ namespace ToSic.Eav.Apps.AppReader.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal record AppConfiguration : ModelOfEntity, IAppConfiguration
 {
-    public AppConfiguration(IEntity entity) : base(entity) { }
+    //public AppConfiguration(IEntity entity) : base(entity) { }
 
     // todo: probably move most to Eav.Apps.AppConstants
     [PrivateApi] public const string FieldAllowRazor = "AllowRazorTemplates";

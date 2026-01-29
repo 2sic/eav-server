@@ -28,9 +28,7 @@ partial class Metadata<T>
     public IEnumerable<IPermission> Permissions
     {
         get => field == null || UpStreamChanged()
-            ? field = AllWithHidden
-                .Where(Permission.IsPermission)
-                .Select(IPermission (e) => new Permission(e))
+            ? field = AllWithHidden.GetAll<Permission>()
                 .ToImmutableOpt()
             : field;
         set;

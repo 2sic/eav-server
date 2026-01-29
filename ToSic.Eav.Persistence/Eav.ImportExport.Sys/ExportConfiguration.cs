@@ -38,8 +38,8 @@ public record ExportConfiguration : ModelOfEntity
     /// Find all decorator metadata of type SystemExportDecorator
     /// </summary>
     public ICollection<ExportDecorator> ExportMarkers => _exportMarkers.Get(() => Entity
-        .Parents(ExportDecorator.TypeNameId)
-        .Select(e => new ExportDecorator(e))
+        .Parents(ExportDecorator.ContentTypeNameId)
+        .Select(e => e.As<ExportDecorator>())
         .ToListOpt()
     )!;
     private readonly GetOnce<ICollection<ExportDecorator>> _exportMarkers = new();
