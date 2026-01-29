@@ -15,7 +15,7 @@ namespace ToSic.Eav.Models;
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract record ModelOfEntityCore
-    : IModelSetup<IEntity>,   // Allow setting up the wrapper with an entity
+    : IModelSetup<IEntity>,     // Allow setting up the wrapper with an entity
         IWrapper<IEntity>,      // Make sure it can be seen as an entity wrapper
         ICanBeEntity            // Allow retrieving the entity directly if needed
 {

@@ -9,7 +9,7 @@
 /// 
 /// * Introduced in v21.01
 /// </remarks>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IModelOfEntity: ICanBeEntity
 {

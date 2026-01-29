@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Metadata.Recommendations.Sys;
 
-[ModelSource(ContentType = ContentTypeNameId)]
+[ModelSpecs(ContentType = ContentTypeNameId)]
 internal record MetadataExpectedDecorator : ForExpectedBase
 {
     // Informs what Metadata is expected / used on a specific item

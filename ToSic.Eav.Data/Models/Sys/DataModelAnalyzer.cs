@@ -8,14 +8,14 @@ public class DataModelAnalyzer
     /// <typeparam name="TCustom"></typeparam>
     /// <returns></returns>
     /// <remarks>
-    /// If it is decorated with <see cref="ModelSourceAttribute"/> then use the information it provides, otherwise
+    /// If it is decorated with <see cref="ModelSpecsAttribute"/> then use the information it provides, otherwise
     /// use the type name.
     /// </remarks>
     public static List<string> GetValidTypeNames<TCustom>()
         where TCustom : class
     {
         return ContentTypeNamesCache
-            .Get<TCustom, ModelSourceAttribute>(attribute =>
+            .Get<TCustom, ModelSpecsAttribute>(attribute =>
                 UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.ContentType)
             );
     }
@@ -41,13 +41,13 @@ public class DataModelAnalyzer
         var typeNames = GetValidTypeNames<TCustom>();
 
         // Check all type names if they are `*` or match the data ContentType
-        if (typeNames.Any(t => t == ModelSourceAttribute.ForAnyContentType || entity.Type.Is(t)))
+        if (typeNames.Any(t => t == ModelSpecsAttribute.ForAnyContentType || entity.Type.Is(t)))
             return true;
 
         throw new InvalidCastException(
             $"Item with ID {id} is a '{entity.Type.Name}'/'{entity.Type.NameId}' but not a '{string.Join(",", typeNames)}'. " +
             $"This is probably a mistake, otherwise use '{nameof(skipTypeCheck)}: true' " +
-            $"or apply an attribute [{nameof(ModelSourceAttribute)}({nameof(ModelSourceAttribute.ContentType)} = \"{entity.Type.Name}\")] to your model class. "
+            $"or apply an attribute [{nameof(ModelSpecsAttribute)}({nameof(ModelSpecsAttribute.ContentType)} = \"{entity.Type.Name}\")] to your model class. "
         );
 
     }
@@ -61,7 +61,7 @@ public class DataModelAnalyzer
     /// <returns></returns>
     public static List<string> GetStreamNameList<TCustom>() where TCustom : class
     {
-        return StreamNames.Get<TCustom, ModelSourceAttribute>(attribute =>
+        return StreamNames.Get<TCustom, ModelSpecsAttribute>(attribute =>
             UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
     }
 

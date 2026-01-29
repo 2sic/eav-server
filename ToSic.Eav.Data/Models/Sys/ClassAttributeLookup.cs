@@ -12,7 +12,7 @@ namespace ToSic.Eav.Models.Sys;
 internal class ClassAttributeLookup<TValue>
 {
     internal TValue Get<TCustom, TAttribute>(Func<TAttribute?, TValue> func)
-        where TCustom : class // ICanWrapData
+        where TCustom : class
         where TAttribute : Attribute
     {
         // Check cache if already done

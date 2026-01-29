@@ -60,7 +60,7 @@ public class DataModelAnalyzerTests
 
     private const string ForContentType1 = "Abc";
     private const string StreamName1 = "AbcStream";
-    [ModelSource(ContentType = ForContentType1, Stream = StreamName1)]
+    [ModelSpecs(ContentType = ForContentType1, Stream = StreamName1)]
     // ReSharper disable once ArrangeTypeMemberModifiers
     class Decorated : IWrapperWip; // ICanWrapData;
 
@@ -88,7 +88,7 @@ public class DataModelAnalyzerTests
 
     private const string ForContentTypeReDecorated = "ReDec";
     private const string StreamNameReDecorated = "ReDecStream";
-    [ModelSource(ContentType = ForContentTypeReDecorated, Stream = StreamNameReDecorated + ",Abc")]
+    [ModelSpecs(ContentType = ForContentTypeReDecorated, Stream = StreamNameReDecorated + ",Abc")]
     // ReSharper disable once ClassNeverInstantiated.Local
     // ReSharper disable once ArrangeTypeMemberModifiers
     class InheritReDecorated : InheritDecorated;
@@ -103,7 +103,7 @@ public class DataModelAnalyzerTests
 
     private const string ForContentTypeIDecorated = "IDec";
     private const string StreamNameIDecorated= "IRedecStream";
-    [ModelSource(ContentType = ForContentTypeIDecorated, Stream = StreamNameIDecorated)]
+    [ModelSpecs(ContentType = ForContentTypeIDecorated, Stream = StreamNameIDecorated)]
     interface IDecorated : IWrapperWip; // ICanWrapData;
 
     [Fact]

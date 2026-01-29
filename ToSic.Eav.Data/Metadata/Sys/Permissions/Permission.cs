@@ -9,7 +9,7 @@ namespace ToSic.Eav.Metadata.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[ModelSource(ContentType = ContentTypeName)]
+[ModelSpecs(ContentType = ContentTypeName)]
 public record Permission : ModelOfEntity, IPermission
 {
     public const string ContentTypeName = "PermissionConfiguration";

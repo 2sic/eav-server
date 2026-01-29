@@ -11,7 +11,7 @@ public static class ModelAnalyseUse
     /// <returns></returns>
     /// <exception cref="TypeInitializationException"></exception>
     /// <remarks>
-    /// Respects the <see cref="ModelCreationAttribute"/> if specified.
+    /// Respects the <see cref="ModelSpecsAttribute"/> if specified.
     /// Caches the information retrieved through reflection, so much faster on the second run.
     /// </remarks>
     public static Type GetTargetType<TCustom>()
@@ -23,8 +23,8 @@ public static class ModelAnalyseUse
 
         // Find attributes which describe conversion
         var attributes = type
-            .GetCustomAttributes(typeof(ModelCreationAttribute), false)
-            .Cast<ModelCreationAttribute>()
+            .GetCustomAttributes(typeof(ModelSpecsAttribute), false)
+            .Cast<ModelSpecsAttribute>()
             .ToList();
 
         // 2025-01-21 temp

@@ -7,7 +7,7 @@ namespace ToSic.Eav.ImportExport.Sys;
 /// Metadata decorator for entities / content-types to mark them for export in a bundle
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[ModelSource(ContentType = ContentTypeNameId)]
+[ModelSpecs(ContentType = ContentTypeNameId)]
 public record ExportConfiguration : ModelOfEntity
 {
     public const string ContentTypeNameId = "d7f2e4fa-5306-41bb-a3cd-d9529c838879";

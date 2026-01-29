@@ -7,7 +7,7 @@ namespace ToSic.Eav.Metadata.Recommendations.Sys;
 /// </summary>
 [PrivateApi("still WIP / internal")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[ModelSource(ContentType = ContentTypeNameId)]
+[ModelSpecs(ContentType = ContentTypeNameId)]
 internal record MetadataForDecorator: ForExpectedBase
 {
     public const string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";

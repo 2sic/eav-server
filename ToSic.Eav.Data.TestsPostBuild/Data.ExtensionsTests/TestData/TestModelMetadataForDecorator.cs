@@ -31,6 +31,6 @@ public class TestModelMetadataForDecorator: IModelSetup<IEntity>
 public class TestModelMetadataForDecoratorWrongName
     : TestModelMetadataForDecorator;
 
-[ModelSource(ContentType = nameof(TestModelMetadataForDecorator))]
+[ModelSpecs(ContentType = nameof(TestModelMetadataForDecorator))]
 public class TestModelMetadataForDecoratorWithAttribute
     : TestModelMetadataForDecorator;

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.ModelTests;
 public class ModelWithoutDecorator;
 
 
-[ModelSource(ContentType = ExpectedName)]
+[ModelSpecs(ContentType = ExpectedName)]
 public class ModelWithDecorator
 {
     public const string ExpectedName = "Something";
@@ -21,7 +21,7 @@ public class ClassAttributeLookupTest(ITestOutputHelper output)
     {
         var cache = new ClassAttributeLookup<string?>();
 
-        var value = cache.Get<ModelWithoutDecorator, ModelSourceAttribute>(a => a?.ContentType);
+        var value = cache.Get<ModelWithoutDecorator, ModelSpecsAttribute>(a => a?.ContentType);
 
         Null(value);
     }
@@ -31,7 +31,7 @@ public class ClassAttributeLookupTest(ITestOutputHelper output)
     {
         var cache = new ClassAttributeLookup<string?>();
 
-        var value = cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+        var value = cache.Get<ModelWithDecorator, ModelSpecsAttribute>(a => a?.ContentType);
 
         Equal(ModelWithDecorator.ExpectedName, value);
     }
@@ -41,10 +41,10 @@ public class ClassAttributeLookupTest(ITestOutputHelper output)
     {
         var cache = new ClassAttributeLookup<string?>();
 
-        cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+        cache.Get<ModelWithDecorator, ModelSpecsAttribute>(a => a?.ContentType);
 
         False(cache.UsedCache);
-        cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+        cache.Get<ModelWithDecorator, ModelSpecsAttribute>(a => a?.ContentType);
         True(cache.UsedCache);
     }
 
@@ -58,17 +58,17 @@ public class ClassAttributeLookupTest(ITestOutputHelper output)
 
         // Warm-up
         foreach (var cache in caches)
-            cache.Get<ModelWithoutDecorator, ModelSourceAttribute>(a => a?.ContentType);
+            cache.Get<ModelWithoutDecorator, ModelSpecsAttribute>(a => a?.ContentType);
 
         // Real usage - first should not be cached
         var first = Stopwatch.StartNew();
         foreach (var cache in caches)
-            cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+            cache.Get<ModelWithDecorator, ModelSpecsAttribute>(a => a?.ContentType);
         first.Stop();
 
         var repeat = Stopwatch.StartNew();
         foreach (var cache in caches)
-            cache.Get<ModelWithDecorator, ModelSourceAttribute>(a => a?.ContentType);
+            cache.Get<ModelWithDecorator, ModelSpecsAttribute>(a => a?.ContentType);
         repeat.Stop();
 
         output.WriteLine($"First: {first.ElapsedTicks}");

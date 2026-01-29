@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Metadata.Requirements.Sys;
 
-[ModelSource(ContentType = ContentTypeNameId)]
+[ModelSpecs(ContentType = ContentTypeNameId)]
 internal record RequirementDecorator : ModelOfEntityCore
 {
     // Marks Requirements Metadata 13.00
