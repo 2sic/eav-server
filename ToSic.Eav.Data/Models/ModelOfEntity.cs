@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Model;
+﻿namespace ToSic.Eav.Models;
 
 // Note: this used to be called EntityBasedType
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace ToSic.Eav.Model.Sys;
+namespace ToSic.Eav.Models.Sys;
 
 /// <summary>
 /// Helper to get attribute values of a class.

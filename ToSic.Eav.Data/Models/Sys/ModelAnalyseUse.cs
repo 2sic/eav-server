@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace ToSic.Eav.Model.Sys;
+namespace ToSic.Eav.Models.Sys;
 
 public static class ModelAnalyseUse
 {

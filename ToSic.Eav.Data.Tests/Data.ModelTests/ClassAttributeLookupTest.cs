@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
-using ToSic.Eav.Model;
-using ToSic.Eav.Model.Sys;
+using ToSic.Eav.Models;
+using ToSic.Eav.Models.Sys;
 using Xunit.Abstractions;
 
 namespace ToSic.Eav.Data.ModelTests;

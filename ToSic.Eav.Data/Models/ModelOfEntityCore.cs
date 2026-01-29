@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ToSic.Eav.Model;
+namespace ToSic.Eav.Models;
 
 /// <summary>
 /// Foundation for a class which gets its data from an Entity.

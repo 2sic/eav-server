@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Model;
+﻿using ToSic.Eav.Models;
 using ToSic.Sys.Capabilities.Fingerprints;
 
 namespace ToSic.Sys.Capabilities.Licenses;

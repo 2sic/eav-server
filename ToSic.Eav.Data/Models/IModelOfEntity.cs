@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Model;
+﻿namespace ToSic.Eav.Models;
 
 /// <summary>
 /// Foundation for interfaces which will enhance <see cref="ModelOfEntity"/> which gets its data from an Entity. <br/>

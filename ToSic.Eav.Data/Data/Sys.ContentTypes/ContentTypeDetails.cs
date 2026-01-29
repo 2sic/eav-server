@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Model;
+﻿using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;
 
@@ -13,8 +13,6 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 [ModelSource(ContentType = ContentTypeName)]
 public record ContentTypeDetails : ModelOfEntity
 {
-    //public ContentTypeDetails(IEntity entity) : base(entity) { }
-
     public const string ContentTypeName = "ContentType";
 
     /// <summary>

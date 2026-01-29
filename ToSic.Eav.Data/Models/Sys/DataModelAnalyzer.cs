@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Model.Sys;
+﻿namespace ToSic.Eav.Models.Sys;
 
 public class DataModelAnalyzer
 {

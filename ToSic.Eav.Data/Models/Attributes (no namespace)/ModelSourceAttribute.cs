@@ -1,5 +1,5 @@
 ﻿
-namespace ToSic.Eav.Model;
+namespace ToSic.Eav.Models;
 
 /// <summary>
 /// BETA / WIP: Mark custom models/interfaces to specify what data they expect.

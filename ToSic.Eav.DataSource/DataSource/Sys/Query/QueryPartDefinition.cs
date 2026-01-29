@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.DataSource.VisualQuery.Sys;
-using ToSic.Eav.Model;
+using ToSic.Eav.Models;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 

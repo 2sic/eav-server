@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Model;
+﻿namespace ToSic.Eav.Models;
 
 /// <summary>
 /// BETA / WIP: Attribute to decorate interfaces to specify a concrete type when creating the model.

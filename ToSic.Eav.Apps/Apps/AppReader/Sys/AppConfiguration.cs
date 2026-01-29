@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Model;
-using ToSic.Eav.Sys;
+﻿using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Apps.AppReader.Sys;
 

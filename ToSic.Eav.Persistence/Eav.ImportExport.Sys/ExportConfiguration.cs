@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.Model;
+using ToSic.Eav.Models;
 
 namespace ToSic.Eav.ImportExport.Sys;
 
