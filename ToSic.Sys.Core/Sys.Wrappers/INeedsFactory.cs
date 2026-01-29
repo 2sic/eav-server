@@ -6,3 +6,9 @@
 /// so that a simple wrapper helper can detect and warn about this.
 /// </summary>
 public interface INeedsFactory;
+
+/// <summary>
+/// WIP so an object can declare that it needs a specific factory.
+/// </summary>
+/// <typeparam name="TFactory"></typeparam>
+public interface INeedsFactory<TFactory>: INeedsFactory;

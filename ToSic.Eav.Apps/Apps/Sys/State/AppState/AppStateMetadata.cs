@@ -26,7 +26,7 @@ public class AppStateMetadata : IAppStateMetadata
 
     private static SynchronizedObject<IEntity?> BuildSyncedItem(IAppStateCache parent, string staticName, bool useMetadata)
         => new(parent, () => (useMetadata ? parent.Metadata : parent.List)
-            .GetOne(staticName)
+            .First(typeName: staticName)
         );
 
 

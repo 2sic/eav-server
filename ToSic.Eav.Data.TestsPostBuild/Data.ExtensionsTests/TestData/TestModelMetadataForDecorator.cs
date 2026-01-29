@@ -13,7 +13,7 @@ public class TestModelMetadataForDecorator: IWrapperSetup<IEntity>
 
     bool IWrapperSetup<IEntity>.SetupContents(IEntity? source)
     {
-        _entity = source;
+        _entity = source!;
         return true;
     }
 
@@ -26,4 +26,9 @@ public class TestModelMetadataForDecorator: IWrapperSetup<IEntity>
     public int Amount => _entity.Get(nameof(Amount), fallback: 1);
 
     public string? DeleteWarning => _entity.Get<string>(nameof(DeleteWarning), fallback: null);
+}
+
+public class TestModelMetadataForDecoratorWrongName : TestModelMetadataForDecorator
+{
+    public bool SetupContents(IEntity? source) => true;
 }

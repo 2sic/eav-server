@@ -6,7 +6,7 @@ internal static class DataModelAnalyzerTestAccessors
 {
     public static List<string> GetContentTypeNamesTac<T>()
         where T : class // , ICanWrapData
-        => DataModelAnalyzer.GetContentTypeNamesList<T>();
+        => DataModelAnalyzer.GetValidTypeNames<T>();
 
     public static List<string> GetStreamNameListTac<T>()
         where T : class //, ICanWrapData

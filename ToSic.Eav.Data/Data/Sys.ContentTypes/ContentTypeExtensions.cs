@@ -7,7 +7,7 @@ public static class ContentTypeExtensions
     {
         var (value, _) = contentType.PiggyBack.GetOrGenerate(contentType.Metadata,nameof(DetailsOrNull), () =>
         {
-            var descEntity = contentType.Metadata.GetOne(ContentTypeDetails.ContentTypeTypeName);
+            var descEntity = contentType.Metadata.First(typeName: ContentTypeDetails.ContentTypeTypeName);
             return descEntity == null
                 ? null
                 : new ContentTypeDetails(descEntity);

@@ -62,10 +62,11 @@ public class GetAll(TestDataGenerator generator, IWrapperFactory factory)
     public void GetAllRequiringFactory(int amountMdFor)
     {
         var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
-        entity.Metadata.GetAll<TestModelRequiringFactoryEmptyConstructor>(
-            typeName: nameof(TestModelMetadataForDecorator),
-            factory: factory
+        var list = factory.GetAll<TestModelRequiringFactoryEmptyConstructor>(
+            entity.Metadata,
+            typeName: nameof(TestModelMetadataForDecorator)
         );
+        Equal(amountMdFor, list.Count());
     }
 
 }

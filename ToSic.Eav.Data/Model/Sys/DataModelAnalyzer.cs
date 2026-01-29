@@ -11,13 +11,46 @@ public class DataModelAnalyzer
     /// If it is decorated with <see cref="ModelSourceAttribute"/> then use the information it provides, otherwise
     /// use the type name.
     /// </remarks>
-    public static List<string> GetContentTypeNamesList<TCustom>() where TCustom : class // ICanWrapData
+    public static List<string> GetValidTypeNames<TCustom>()
+        where TCustom : class
     {
-        return ContentTypeNamesList.Get<TCustom, ModelSourceAttribute>(attribute =>
-            UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.ContentType));
+        return ContentTypeNamesCache
+            .Get<TCustom, ModelSourceAttribute>(attribute =>
+                UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.ContentType)
+            );
     }
 
-    private static readonly ClassAttributeLookup<List<string>> ContentTypeNamesList = new();
+    private static readonly ClassAttributeLookup<List<string>> ContentTypeNamesCache = new();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TCustom"></typeparam>
+    /// <param name="entity"></param>
+    /// <param name="id"></param>
+    /// <param name="skipTypeCheck"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidCastException">Thrown if the names don't match and skipTypeCheck is `false` (default).</exception>
+    public static bool IsTypeNameAllowedOrThrow<TCustom>(IEntity entity, object id, bool skipTypeCheck)
+        where TCustom : class
+    {
+        if (skipTypeCheck)
+            return true;
+
+        // Do Type-Name check
+        var typeNames = GetValidTypeNames<TCustom>();
+
+        // Check all type names if they are `*` or match the data ContentType
+        if (typeNames.Any(t => t == ModelSourceAttribute.ForAnyContentType || entity.Type.Is(t)))
+            return true;
+
+        throw new InvalidCastException(
+            $"Item with ID {id} is a '{entity.Type.Name}'/'{entity.Type.NameId}' but not a '{string.Join(",", typeNames)}'. " +
+            $"This is probably a mistake, otherwise use '{nameof(skipTypeCheck)}: true' " +
+            $"or apply an attribute [{nameof(ModelSourceAttribute)}({nameof(ModelSourceAttribute.ContentType)} = \"{entity.Type.Name}\")] to your model class. "
+        );
+
+    }
 
     #region Stream Names WIP
 
