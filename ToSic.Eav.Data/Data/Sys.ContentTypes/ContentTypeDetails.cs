@@ -10,11 +10,12 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 /// IMPORTANT: Don't cache this object, as some info inside it can change during runtime
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
+[ModelSource(ContentType = ContentTypeName)]
 public record ContentTypeDetails : ModelOfEntity
 {
-    public ContentTypeDetails(IEntity entity) : base(entity) { }
+    //public ContentTypeDetails(IEntity entity) : base(entity) { }
 
-    public const string ContentTypeTypeName = "ContentType";
+    public const string ContentTypeName = "ContentType";
 
     /// <summary>
     /// The title of the content type.

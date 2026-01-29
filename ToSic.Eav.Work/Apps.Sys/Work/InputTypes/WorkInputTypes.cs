@@ -182,7 +182,7 @@ public class WorkInputTypes(
         l.A("2dm: found spectrum type based on metadata: " + typesWithMetadata.Count);
 
         // Define priority of metadata to check
-        var typesToCheckInThisOrder = new[] { ContentTypeNameId, ContentTypeDetails.ContentTypeTypeName, null };
+        var typesToCheckInThisOrder = new[] { ContentTypeNameId, ContentTypeDetails.ContentTypeName, null };
         var inputsWithAt = types
             .Select(it =>
             {
