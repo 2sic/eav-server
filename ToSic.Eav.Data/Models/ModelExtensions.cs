@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Eav.Models;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+// Must keep private for now, as it somehow ends up on every object in the docs
+[PrivateApi]
 public static class ModelExtensions
 {
     /// <summary>
