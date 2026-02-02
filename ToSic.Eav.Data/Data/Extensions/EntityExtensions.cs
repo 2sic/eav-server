@@ -36,7 +36,7 @@ public static partial class EntityExtensions
 
     /// <summary>
     /// WIP
-    /// Convert an IEntity to a model of type TModel.
+    /// Convert something which can be an entity to a model of type TModel.
     /// This is only meant for simple models that do not require a factory.
     /// </summary>
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
