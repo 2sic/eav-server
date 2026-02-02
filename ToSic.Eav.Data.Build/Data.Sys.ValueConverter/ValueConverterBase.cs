@@ -5,7 +5,7 @@
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class ValueConverterBase(string logName) : ServiceBase(logName), IValueConverter
+public abstract class ValueConverterBase(string logName, object[]? connect = null) : ServiceBase(logName, connect: connect), IValueConverter
 {
     public const string PrefixPage = "page";
     public const string PrefixFile = "file";

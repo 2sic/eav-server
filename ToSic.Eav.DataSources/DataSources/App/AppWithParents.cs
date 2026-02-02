@@ -21,27 +21,16 @@ internal class AppWithParents: DataSourceBase
         protected set;
     }
 
-    ///// <summary>
-    ///// Indicates whether to show drafts or only Published Entities. 
-    ///// </summary>
-    //[Configuration(Fallback = QueryConstants.ShowDraftsDefault)]
-    //public bool ShowDrafts
-    //{
-    //    get => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
-    //    set => Configuration.SetThis(value);
-    //}
-
 
     private readonly IAppReaderFactory _appReaders;
     private readonly IDataSourcesService _dataSourceFactory;
 
-    public AppWithParents(Dependencies services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar")
+    public AppWithParents(Dependencies services, IDataSourcesService dataSourceFactory, IAppReaderFactory appReaders, IDataSourceGenerator<StreamMerge> mergeGenerator)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ApWPar", connect: [dataSourceFactory, appReaders, mergeGenerator])
     {
-        ConnectLogs([
-            _dataSourceFactory = dataSourceFactory,
-            _appReaders = appReaders,
-            _mergeGenerator = mergeGenerator
-        ]);
+        _dataSourceFactory = dataSourceFactory;
+        _appReaders = appReaders;
+        _mergeGenerator = mergeGenerator;
         ProvideOut(GetList);
     }
 

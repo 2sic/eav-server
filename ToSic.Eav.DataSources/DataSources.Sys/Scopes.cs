@@ -29,9 +29,9 @@ public sealed class Scopes : CustomDataSource
     /// Constructs a new Scopes DS
     /// </summary>
     [PrivateApi]
-    public Scopes(Dependencies services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes")
+    public Scopes(Dependencies services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes", connect: [appReadFac])
     {
-        ConnectLogs([_appReadFac = appReadFac]);
+        _appReadFac = appReadFac;
         ProvideOutRaw(GetList, options: () => new()
         {
             AutoId = false,

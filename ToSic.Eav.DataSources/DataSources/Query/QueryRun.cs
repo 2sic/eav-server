@@ -22,42 +22,21 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "78d25ea6-66cc-44a2-b45d-77749cd9420a",
     HelpLink = "https://go.2sxc.org/QueryRun"
 )]
+[method: PrivateApi]
 
 // ReSharper disable once UnusedMember.Global
-public class QueryRun : DataSourceBase
+public class QueryRun(DataSourceBase.Dependencies services, Generator<Query> queryGenerator)
+    : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun", connect: [queryGenerator])
 {
-    private readonly Generator<Query> _queryGenerator;
-
     #region Configuration-properties
 
     private const string FieldQuery = "Query";
     private const string FieldParams = "Params";
 
-    ///// <summary>
-    ///// Indicates whether to show drafts or only Published Entities. 
-    ///// </summary>
-    //[PrivateApi("not sure if this should be public, probably not")]
-    //[Configuration(Fallback = false)]
-    //private bool ShowDrafts => Configuration.GetThis(QueryConstants.ShowDraftsDefault);
-
-    #endregion
-
-    #region Constructor
-        
-
-    /// <summary>
-    /// Constructs a new QueryRun
-    /// </summary>
-    [PrivateApi]
-    public QueryRun(Dependencies services, Generator<Query> queryGenerator) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun")
-    {
-        ConnectLogs([
-            _queryGenerator = queryGenerator
-        ]);
-    }
     #endregion
 
     #region Out
+
     /// <inheritdoc/>
     [field: AllowNull, MaybeNull]
     public override IReadOnlyDictionary<string, IDataStream> Out
@@ -122,7 +101,7 @@ public class QueryRun : DataSourceBase
         l.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
         // create the query & set params
-        var query = _queryGenerator.New();
+        var query = queryGenerator.New();
         query.Init(ZoneId, AppId, queryDef, LookUpWithoutParams());
         query.Params(ResolveParams(configEntity));
         return l.ReturnAsOk(query);
