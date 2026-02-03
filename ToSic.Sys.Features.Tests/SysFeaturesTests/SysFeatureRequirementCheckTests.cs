@@ -1,9 +1,9 @@
-﻿using ToSic.Lib.Features.Tests.RequirementsServiceTests;
-using ToSic.Sys.Capabilities;
+﻿using ToSic.Sys.Capabilities;
 using ToSic.Sys.Capabilities.SysFeatures;
+using ToSic.Sys.Features.Tests.RequirementsServiceTests;
 using ToSic.Sys.Requirements;
 
-namespace ToSic.Lib.Features.Tests.SysFeaturesTests;
+namespace ToSic.Sys.Features.Tests.SysFeaturesTests;
 
 public class SysFeatureRequirementChecks(RequirementsService requirementsService)
 {

@@ -10,8 +10,8 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkInputTypes(
     LazySvc<IAppReaderFactory> appReaders,
     LazySvc<IAppInputTypesLoader> appFileSystemLoaderLazy,
-    GenWorkPlus<WorkEntities> workEntities)
-    : WorkUnitBase<IAppWorkCtxPlus>("ApS.InpGet", connect: [appReaders, workEntities, appFileSystemLoaderLazy])
+    LazySvc<AppWorkContextService> ctxSvc)
+    : WorkUnitBase<IAppWorkCtxPlus>("ApS.InpGet", connect: [appReaders, appFileSystemLoaderLazy, ctxSvc])
 {
     /// <summary>
     /// Retrieve a list of all input types known to the current system
@@ -43,7 +43,7 @@ public class WorkInputTypes(
         LogListOfInputTypes("Combined", inputTypes);
 
         // Merge input types registered in global metadata-app
-        var systemAppCtx = workEntities.CtxSvc.ContextPlus(KnownAppsConstants.MetaDataAppId);
+        var systemAppCtx = ctxSvc.Value.ContextPlus(KnownAppsConstants.MetaDataAppId);
         var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx);
         systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
         LogListOfInputTypes("Input Types in System App", systemAppInputTypes);
@@ -108,26 +108,21 @@ public class WorkInputTypes(
     /// </summary>
     /// <param name="overrideCtx">App context to use. Often the current app, but can be a custom one.</param>
     /// <returns></returns>
-    private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus? overrideCtx = default)
-    {
-        var list = workEntities
-            .New(overrideCtx ?? AppWorkCtx)
-            .Get(TypeForInputTypeDefinition);
-
-        return list
-            .Select(e => new InputTypeDefinition(e))
-            .Select(e => new InputTypeInfo(metadata: e.Metadata)
-            {
-                Type = e.Type,
-                Label = e.Label,
-                Description = e.Description,
-                DisableI18n = e.DisableI18n,
-                UiAssets = new Dictionary<string, string> { { InputTypeInfo.DefaultAssets, e.AngularAssets ?? "" } },
-                UseAdam = e.UseAdam,
-                Source = "app-registered",
-            })
-            .ToListOpt();
-    }
+    private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus? overrideCtx = default) =>
+        (overrideCtx ?? AppWorkCtx)
+        .AppReader.List
+        .GetAll<InputTypeDefinition>()
+        .Select(e => new InputTypeInfo(metadata: (e as ICanBeEntity)?.Entity.Metadata)
+        {
+            Type = e.Type,
+            Label = e.Label,
+            Description = e.Description,
+            DisableI18n = e.DisableI18n,
+            UiAssets = new Dictionary<string, string> { { InputTypeInfo.DefaultAssets, e.AngularAssets ?? "" } },
+            UseAdam = e.UseAdam,
+            Source = "app-registered",
+        })
+        .ToListOpt();
 
 
     /// <summary>
@@ -171,7 +166,7 @@ public class WorkInputTypes(
                 p.NameId.StartsWith(FieldTypePrefix)
                 || p.Name.StartsWith(FieldTypePrefix)
                 // or they have specific metadata marking them as input-type-definitions
-                || p.Metadata.HasType(TypeForInputTypeDefinition)
+                || p.Metadata.HasType(ContentTypeNameId)
             )
             .Select(p => p)
             .ToListOpt();
@@ -182,34 +177,34 @@ public class WorkInputTypes(
         l.A("2dm: found spectrum type: " + (spectrumType != null));
 
         var typesWithMetadata = presetApp.ContentTypes
-            .Where(p => p.Metadata.HasType(TypeForInputTypeDefinition))
+            .Where(p => p.Metadata.HasType(ContentTypeNameId))
             .ToListOpt();
         l.A("2dm: found spectrum type based on metadata: " + typesWithMetadata.Count);
 
         // Define priority of metadata to check
-        var typesToCheckInThisOrder = new[] { TypeForInputTypeDefinition, ContentTypeDetails.ContentTypeTypeName, null };
+        var typesToCheckInThisOrder = new[] { ContentTypeNameId, ContentTypeDetails.ContentTypeName, null };
         var inputsWithAt = types
             .Select(it =>
             {
                 var md = it.Metadata;
 
                 // 2025-11-20 2dm - preparing to have multiple editions in assets
-                var defaultAssets = md.Get<string>(nameof(InputTypeDefinition.AngularAssets), typeName: TypeForInputTypeDefinition);
+                var defaultAssets = md.Get<string>(nameof(InputTypeDefinition.AngularAssets), typeName: ContentTypeNameId);
 
                 // 2023-11-10 2dm - changed this to support new input-types based on guid-content-types
                 return new InputTypeInfo(metadata: md)
                 {
-                    Type = md.Get<string>(nameof(InputTypeDefinition.Type), typeName: TypeForInputTypeDefinition)
+                    Type = md.Get<string>(nameof(InputTypeDefinition.Type), typeName: ContentTypeNameId)
                         .UseFallbackIfNoValue(GetTypeName(it))
                         .TrimStart(FieldTypePrefix[0]),
                     Label = md.Get<string>(nameof(InputTypeDefinition.Label), typeNames: typesToCheckInThisOrder),
                     Description = md.Get<string>(nameof(InputTypeDefinition.Description), typeNames: typesToCheckInThisOrder),
-                    DisableI18n = md.Get<bool>(nameof(InputTypeDefinition.DisableI18n), typeName: TypeForInputTypeDefinition),
+                    DisableI18n = md.Get<bool>(nameof(InputTypeDefinition.DisableI18n), typeName: ContentTypeNameId),
                     UiAssets = new Dictionary<string, string>
                     {
                         { InputTypeInfo.DefaultAssets, defaultAssets ?? "" }
                     },
-                    UseAdam = md.Get<bool>(nameof(InputTypeDefinition.UseAdam), typeName: TypeForInputTypeDefinition),
+                    UseAdam = md.Get<bool>(nameof(InputTypeDefinition.UseAdam), typeName: ContentTypeNameId),
                     Source = "preset",
                 };
             })

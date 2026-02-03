@@ -48,7 +48,7 @@ public class JsonCtSerialization(ITestOutputHelper output, JsonTestHelpers jsonT
 
     internal static string GetJsonOfContentTypeOfItem(int eId, JsonSerializer ser)
     {
-        var x = ser.AppReaderOrError.List.One(eId);
+        var x = ser.AppReaderOrError.List.GetOne(eId);
         var xmlEnt = ser.Serialize(x.Type);
         return xmlEnt;
     }

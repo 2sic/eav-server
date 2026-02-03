@@ -3,7 +3,6 @@
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Dimensions;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata.Targets;
@@ -105,7 +104,8 @@ partial class JsonSerializer
 
 
         l.A("build entity");
-        var partsBuilder = EntityPartsLazy.ForAppAndOptionalMetadata(source: AppReaderOrNull?.AppState, metadata: mdItems);
+        var builder = Services.DataBuilder;
+        var partsBuilder = builder.EntityConnection.UseOptional(source: AppReaderOrNull?.AppState, metadata: mdItems);
         var newEntity = Services.DataBuilder.Entity.Create(
             appId: AppId,
             guid: jEnt.Guid,

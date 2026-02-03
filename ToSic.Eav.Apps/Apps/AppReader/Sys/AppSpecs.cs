@@ -28,7 +28,8 @@ internal class AppSpecs(AppState appState): IAppSpecs
     /// <summary>
     /// Create the configuration reader on demand, since the underlying Entity could change.
     /// </summary>
-    public IAppConfiguration Configuration => new AppConfiguration(appState.SettingsInApp.AppConfiguration!);
+    // public IAppConfiguration Configuration => new AppConfiguration(appState.SettingsInApp.AppConfiguration!);
+    public IAppConfiguration Configuration => appState.SettingsInApp.AppConfiguration.As<AppConfiguration>(skipTypeCheck: true, /*nullIfNull: false,*/ nullHandling: NullToModel.PreferModelForce)!;
 
     public IMetadata Metadata => appState.Metadata;
 

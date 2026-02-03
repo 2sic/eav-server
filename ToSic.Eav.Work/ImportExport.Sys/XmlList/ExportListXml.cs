@@ -101,7 +101,7 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
         var documentRoot = _xBuilder.BuildDocumentWithRoot();
 
         // Query all entities, or just the ones with specified IDs
-        var entities = AppReader.GetListPublished().OfType(ContentType);
+        var entities = AppReader.GetListPublished().GetAll(ContentType);
         if (selectedIds is { Length: > 0 })
             entities = entities.Where(e => selectedIds.Contains(e.EntityId));
         var entList = entities.ToList();

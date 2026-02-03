@@ -42,6 +42,6 @@ public class AppConstants
     /// <summary>
     /// The type name used to store templates in the eav-system
     /// </summary>
-    public static string TemplateContentType = Settings.TemplateContentType;
+    public const string TemplateContentType = Settings.TemplateContentType;
 
 }

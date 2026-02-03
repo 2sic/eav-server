@@ -1,9 +1,11 @@
-﻿using ToSic.Eav.Apps.Sys.Loaders;
+﻿using System.Collections.Concurrent;
+using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys.Caching;
 
 /// <summary>
-/// The default Apps Cache system running on a normal environment. 
+/// The default Apps Cache system running on a normal environment.
 /// </summary>
 [PrivateApi]
 internal class AppsCache(IRuntimeKeyService runtimeKeyService)
@@ -23,25 +25,42 @@ internal class AppsCache(IRuntimeKeyService runtimeKeyService)
 
     public override IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools)
     {
-        if (ZoneAppCache != null)
-            return ZoneAppCache;
+        // Cache zones per-tenant runtime key; if unavailable, skip caching to avoid cross-tenant bleed.
+        if (!TryZoneCacheKey(out var cacheKey))
+            return LoadZones(tools);
 
-        // ensure it's only loaded once, even if multiple threads are trying this at the same time
-        lock (ZoneAppLoadLock)
-            // ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
-            if (ZoneAppCache == null)
-                ZoneAppCache = LoadZones(tools);
-        return ZoneAppCache;
+        var lazy = ZoneAppCaches.GetOrAdd(cacheKey,
+            // Lazy ensures only one LoadZones per tenant key, even under concurrency.
+            _ => new Lazy<IReadOnlyDictionary<int, Zone>>(() => LoadZones(tools)));
+        return lazy.Value;
     }
 
+    // Returns true only when we have a tenant-aware runtime key to safely partition zone caches.
+    private bool TryZoneCacheKey(out string cacheKey)
+    {
+        try
+        {
+            // Use a stable app identity with no DB lookup; tenant-aware runtimes will encode tenant here.
+            var identity = new AppIdentity(KnownAppsConstants.DefaultZoneId, KnownAppsConstants.AppIdEmpty);
+            // Use runtime key presence as the guard for safe, tenant-scoped caching.
+            cacheKey = runtimeKeyService.AppRuntimeKey(identity);
+            return cacheKey.HasValue();
+        }
+        catch
+        {
+            // Any failure means we cannot reliably scope cache entries to a tenant.
+            cacheKey = string.Empty;
+            return false;
+        }
+    }
 
-    // note: this object must be volatile!
-    [PrivateApi] protected static volatile IReadOnlyDictionary<int, Zone>? ZoneAppCache;
-    [PrivateApi] protected static readonly object ZoneAppLoadLock = new();
+    // Per-tenant zone cache keyed by runtime key.
+    private static readonly ConcurrentDictionary<string, Lazy<IReadOnlyDictionary<int, Zone>>> ZoneAppCaches = new();
 
 
     #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
 
+    // Global app-state cache shared by all instances; entries are runtime-key scoped.
     private static readonly IDictionary<string, IAppStateCache> Caches = new Dictionary<string, IAppStateCache>();
 
     /// <inheritdoc />
@@ -76,6 +95,6 @@ internal class AppsCache(IRuntimeKeyService runtimeKeyService)
     #endregion
 
     /// <inheritdoc />
-    public override void PurgeZones() => ZoneAppCache = null;
+    public override void PurgeZones() => ZoneAppCaches.Clear();
 
 }

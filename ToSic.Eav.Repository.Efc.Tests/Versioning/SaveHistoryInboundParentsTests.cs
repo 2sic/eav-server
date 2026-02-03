@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Integration;
@@ -109,7 +109,7 @@ public class SaveHistoryInboundParentsTests(
         // Save again to generate a new history snapshot which should now include Parents.
         var loader2 = appLoadGenerator.New().UseExistingDb(dbData.SqlDb);
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
-        var existing = app2.List.One(childId)!;
+        var existing = app2.List.GetOne(childId)!;
 
         var update = dataBuilder.CreateEntityTac(appId: test.AppId, entityId: 0, contentType: existing.Type, values: new()
         {

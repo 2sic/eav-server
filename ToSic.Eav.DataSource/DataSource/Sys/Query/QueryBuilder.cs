@@ -79,7 +79,7 @@ public class QueryBuilder(
         var passThroughLookUp = new LookUpEngine(baseLookUp, Log);
         IDataSource outTarget = passThrough.New().Init(passThroughLookUp);
         if (outTarget.Guid == Guid.Empty)
-            outTarget.AddDebugInfo(queryDef.Entity.EntityGuid, null);
+            outTarget.AddDebugInfo(queryDef.Guid, null);
 
         #endregion
 
@@ -92,19 +92,23 @@ public class QueryBuilder(
 
         #region init all DataQueryParts
 
-        l.A($"add parts to pipe#{queryDef.Entity.EntityId} ");
+        l.A($"add parts to pipe#{queryDef.Id} ");
         var dataSources = new Dictionary<string, IDataSource>();
         var parts = queryDef.Parts;
         l.A($"parts:{parts.Count}");
 			
         // More logging in unexpected case that we do not have parts.
-        if (parts.Count == 0) l.A($"qd.Entity.Metadata:{queryDef.Entity.Metadata.Count()}");
+        if (parts.Count == 0) l.A($"qd.Entity.Metadata:{(queryDef as ICanBeEntity)?.Entity.Metadata.Count()}");
 
         foreach (var dataQueryPart in parts)
         {
             #region Init Configuration Provider
 
-            var querySpecsLookUp = new LookUpInQueryPartMetadata(DataSourceConstants.MyConfigurationSourceName, dataQueryPart.Entity, dimensions);
+            var querySpecsLookUp = new LookUpInQueryPartMetadata(
+                DataSourceConstants.MyConfigurationSourceName,
+                (dataQueryPart as ICanBeEntity).Entity,
+                dimensions
+            );
             var partEngine = new LookUpEngine(baseLookUp, Log, sources: [querySpecsLookUp]);
             // add / set item part configuration
             //partLookUp.Add(querySpecsLookUp);
@@ -119,7 +123,7 @@ public class QueryBuilder(
             // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
             var dsType = dataQueryPart.DataSourceType;
             var dataSource = dataSourceFactory.Create(type: dsType, options: partConfig);
-            try { dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Entity.GetBestTitle()); }
+            try { dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Title); }
             catch { /* ignore */ }
 
             // new with errors
@@ -239,7 +243,7 @@ public class QueryBuilder(
 
     public QueryResult GetDataSourceForTesting(QueryDefinition queryDef, ILookUpEngine? lookUps = null)
     {
-        var l = Log.Fn<QueryResult>($"a#{queryDef.AppId}, pipe:{queryDef.Entity.EntityGuid} ({queryDef.Entity.EntityId})");
+        var l = Log.Fn<QueryResult>($"a#{queryDef.AppId}, pipe:{queryDef.Guid} ({queryDef.Id})");
         var testValueProviders = queryDef.TestParameterLookUps;
         return l.ReturnAsOk(BuildQuery(queryDef, lookUps, testValueProviders));
     }

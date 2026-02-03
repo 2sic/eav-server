@@ -71,7 +71,7 @@ public class EntityTypeFilter : DataSourceBase
             var foundType = appState?.TryGetContentType(TypeName);
             if (foundType != null) // maybe it doesn't find it!
             {
-                var result = source.OfType(foundType).ToListOpt();
+                var result = source.GetAll(foundType).ToListOpt();
                 return l.Return(result.ToImmutableOpt(), "fast");
             }
         }
@@ -87,7 +87,7 @@ public class EntityTypeFilter : DataSourceBase
         //if (!GetRequiredInList(out var originals2))
         //    return (originals2, "error");
 
-        return l.Return(source.OfType(TypeName).ToImmutableOpt(), "slower");
+        return l.Return(source.GetAll(TypeName).ToImmutableOpt(), "slower");
     }
 
 }

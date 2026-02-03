@@ -12,9 +12,9 @@ using ToSic.Sys.Utils.Assemblies;
 
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEavAppsPersistence
 {
     public static IServiceCollection AddEavAppsPersistence(this IServiceCollection services)

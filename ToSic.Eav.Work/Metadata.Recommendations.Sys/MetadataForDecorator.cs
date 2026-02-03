@@ -1,14 +1,17 @@
-﻿namespace ToSic.Eav.Metadata.Recommendations.Sys;
+﻿using ToSic.Eav.Models;
 
-internal class MetadataForDecorator(IEntity? entity) : ForExpectedBase(entity!)
+namespace ToSic.Eav.Metadata.Recommendations.Sys;
+
+/// <summary>
+/// WIP v21: Decorator to provide Metadata access to decorated IEntity
+/// </summary>
+[PrivateApi("still WIP / internal")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
+[ModelSpecs(ContentType = ContentTypeNameId)]
+internal record MetadataForDecorator: ForExpectedBase
 {
-    public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
-    public static string ContentTypeName = "MetadataForDecorator";
+    public const string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
+    public const string ContentTypeName = "MetadataForDecorator";
 
-    /// <summary>
-    /// An optional name to specify more exactly what it is.
-    /// For example if this targets Entities, this would specify what type
-    /// </summary>
     public string TargetName => GetThis("");
-
 }

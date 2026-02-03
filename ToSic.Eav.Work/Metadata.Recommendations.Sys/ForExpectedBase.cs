@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
+﻿using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Metadata.Recommendations.Sys;
 
-internal abstract class ForExpectedBase(IEntity entity) : EntityBasedType(entity)
+internal abstract record ForExpectedBase : ModelOfEntityCore
 {
     /// <summary>
     /// How may of this decorator should be applied to the target, default is 1

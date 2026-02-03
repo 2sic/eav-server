@@ -1,4 +1,4 @@
-﻿namespace ToSic.Lib.Features.Tests;
+﻿namespace ToSic.Sys.Features.Tests;
 
 class LibFeaturesTestsConstants
 {

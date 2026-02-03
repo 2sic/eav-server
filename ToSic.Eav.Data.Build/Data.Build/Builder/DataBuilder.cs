@@ -6,6 +6,7 @@ namespace ToSic.Eav.Data.Build;
 [method: PrivateApi]
 public class DataBuilder(
     LazySvc<EntityBuilder> entityBuilder,
+    LazySvc<EntityConnectionBuilder> entityRelationshipBuilder,
     Generator<AttributeBuilder, DataBuilderOptions> attributeBuilder,
     Generator<ValueBuilder, DataBuilderOptions> valueBuilder,
     LazySvc<ContentTypeBuilder> contentTypeBuilder,
@@ -13,11 +14,14 @@ public class DataBuilder(
     LazySvc<DimensionBuilder> languageBuilder)
     : ServiceWithSetup<DataBuilderOptions>("DaB.MltBld", connect:
         [
-            entityBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder
+            entityBuilder, entityRelationshipBuilder, contentTypeBuilder, attributeBuilder, valueBuilder, typeAttributeBuilder, languageBuilder
         ])
 {
     public ContentTypeBuilder ContentType => contentTypeBuilder.Value;
     public EntityBuilder Entity => entityBuilder.Value;
+
+
+    public EntityConnectionBuilder EntityConnection => entityRelationshipBuilder.Value;
 
     [field: AllowNull, MaybeNull]
     public AttributeBuilder Attribute => field

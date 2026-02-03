@@ -13,6 +13,7 @@ using ToSic.Eav.WebApi.Sys.Security;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Users;
+using ToSic.Sys.Wrappers;
 
 #if NETFRAMEWORK
 using System.Web.Http;
@@ -195,27 +196,13 @@ public class ContentExportApi(
         return l.ReturnAsOk((export, fileContent));
     }
 
-    private ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfiguration)
+    private ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfigGuid)
     {
-        var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfiguration}");
-        var systemExportConfiguration = _appCtx.AppReader.List.One(exportConfiguration);
-        if (systemExportConfiguration == null)
-        {
-            var exception = new KeyNotFoundException($"ExportConfiguration:{exportConfiguration} is missing");
-            l.Ex(exception);
-            throw exception;
-        }
-
-        // check that have correct contentType
-        if (systemExportConfiguration.Type.Is("ExportConfiguration"))
-        {
-            var exception =
-                new KeyNotFoundException($"ExportConfiguration:{exportConfiguration} is not of type ExportConfiguration");
-            l.Ex(exception);
-            throw exception;
-        }
-        
-        return l.ReturnAsOk(new(systemExportConfiguration));
+        var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfigGuid}");
+        var systemExportConfiguration = _appCtx.AppReader.List.GetOne<ExportConfiguration>(exportConfigGuid, /*nullIfNull: true,*/ nullHandling: NullToModel.PreferNull);
+        return systemExportConfiguration is not null
+            ? l.ReturnAsOk(systemExportConfiguration)
+            : throw l.Ex(new KeyNotFoundException($"ExportConfiguration:{exportConfigGuid} is missing"));
     }
 
 }

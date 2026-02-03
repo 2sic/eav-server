@@ -1,11 +1,12 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
+﻿using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Metadata.Requirements.Sys;
 
-internal class RequirementDecorator(IEntity entity) : EntityBasedType(entity)
+[ModelSpecs(ContentType = ContentTypeNameId)]
+internal record RequirementDecorator : ModelOfEntityCore
 {
     // Marks Requirements Metadata 13.00
-    public static string TypeName = "19655377-6626-4986-aea0-ec3c187186ad";
+    public const string ContentTypeNameId = "19655377-6626-4986-aea0-ec3c187186ad";
 
     public const string ReqFeature = "feature";
     public const string ReqLicense = "license";

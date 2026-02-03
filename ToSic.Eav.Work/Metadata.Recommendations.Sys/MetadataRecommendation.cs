@@ -57,7 +57,7 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
         var typeDetails = type.DetailsOrNull();
         Title = (typeDetails?.Title).UseFallbackIfNoValue(type.Name);
         Icon = typeDetails?.Icon;
-        var recDec = recommendation ?? new MetadataForDecorator(null);
+        var recDec = recommendation ?? new MetadataForDecorator();
         Count = count ?? recDec.Amount;
         Debug = debugMessage;
         DeleteWarning = recDec.DeleteWarning;

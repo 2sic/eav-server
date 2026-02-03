@@ -1,10 +1,13 @@
-﻿namespace ToSic.Eav.Metadata.Recommendations.Sys;
+﻿using ToSic.Eav.Models;
 
-internal class MetadataExpectedDecorator(IEntity entity) : ForExpectedBase(entity)
+namespace ToSic.Eav.Metadata.Recommendations.Sys;
+
+[ModelSpecs(ContentType = ContentTypeNameId)]
+internal record MetadataExpectedDecorator : ForExpectedBase
 {
     // Informs what Metadata is expected / used on a specific item
-    public static string ContentTypeNameId = "c490b369-9cd2-4298-af74-19c1e438cdfc";
-    public static string ContentTypeName = "MetadataExpectedDecorator";
+    public const string ContentTypeNameId = "c490b369-9cd2-4298-af74-19c1e438cdfc";
+    public const string ContentTypeName = "MetadataExpectedDecorator";
 
     public string Types => Get("MetadataTypes", "");
 

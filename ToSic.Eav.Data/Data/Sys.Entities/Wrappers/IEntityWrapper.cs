@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Sys.Entities;
+﻿using ToSic.Eav.Models;
+
+namespace ToSic.Eav.Data.Sys.Entities;
 
 /// <summary>
 /// An interface to ensure all things that carry an IEntity can be compared based on the Entity they carry.
@@ -8,4 +10,5 @@
 public interface IEntityWrapper
     : IHasDecorators<IEntity>,
         IMultiWrapper<IEntity>,
+        IModelSetup<IEntity>,
         ICanBeEntity;

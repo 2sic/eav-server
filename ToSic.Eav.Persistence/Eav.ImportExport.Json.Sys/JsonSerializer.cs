@@ -13,15 +13,12 @@ partial class JsonSerializer(JsonSerializer.Dependencies services, string logNam
 
     #region Serializer Dependencies / MyServices
 
-    public new class Dependencies(
-        ITargetTypeService metadataTargets,
-        IGlobalDataService globalData,
-        DataBuilder dataBuilder,
-        LazySvc<IValueConverter> valueConverter)
-        : SerializerBase.Dependencies(metadataTargets, dataBuilder, globalData, connect: [valueConverter])
-    {
-        public LazySvc<IValueConverter> ValueConverter { get; } = valueConverter;
-    }
+    public new record Dependencies(
+        ITargetTypeService MetadataTargets,
+        IGlobalDataService GlobalData,
+        DataBuilder DataBuilder,
+        LazySvc<IValueConverter> ValueConverter)
+        : SerializerBase.Dependencies(MetadataTargets, DataBuilder, GlobalData, Connect: [ValueConverter]);
 
     #endregion
 

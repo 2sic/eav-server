@@ -35,14 +35,16 @@ public abstract class AppsCacheBase(IRuntimeKeyService runtimeKeyService) : IApp
         var realZones = tools.RepositoryLoader(null).Zones();
 
         // Add the Preset-Zone to the list - important, otherwise everything fails
+        var presetApps = new Dictionary<int, string>
+        {
+            { KnownAppsConstants.PresetAppId, KnownAppsConstants.PresetName },
+            { KnownAppsConstants.GlobalPresetAppId, KnownAppsConstants.GlobalPresetName },
+        };
+
         var presetZone = new Zone(KnownAppsConstants.PresetZoneId,
             KnownAppsConstants.PresetAppId,
             KnownAppsConstants.PresetAppId,
-            new ReadOnlyDictionary<int, string>(
-                new Dictionary<int, string>
-                {
-                    { KnownAppsConstants.PresetAppId, KnownAppsConstants.PresetName }
-                }),
+            new ReadOnlyDictionary<int, string>(presetApps),
             [
                 new()
                 {

@@ -12,9 +12,9 @@ using ToSic.Eav.Environment.Sys.ServerPaths;
 using ToSic.Sys.Security.Permissions;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEavContext
 {
     public static IServiceCollection AddEavContext(this IServiceCollection services)
@@ -47,7 +47,7 @@ public static class StartupEavContext
     /// <remarks>
     /// All calls in here MUST use TryAddTransient, and never without the Try
     /// </remarks>
-    public static IServiceCollection AddContextFallbackServices(this IServiceCollection services)
+    public static IServiceCollection AddContextFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<ISite, SiteUnknown>();
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();

@@ -8,5 +8,5 @@ public static class IEntityExtensionsGetOrThrow
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IEntity GetOrThrow(this IEnumerable<IEntity> entities, string? contentType, Guid guid)
-        => entities.One(guid).KeepOrThrowIfInvalid(contentType, guid);
+        => entities.GetOne(guid).KeepOrThrowIfInvalid(contentType, guid);
 }

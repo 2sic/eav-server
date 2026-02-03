@@ -20,13 +20,7 @@ public class PropertyLookupWithStackNavigation(PropertyLookupDictionary current,
 
     public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path) 
         => Navigator.GetNextInStack(specs, startAtSource, path);
-
-    // #DropUseOfDumpProperties
-    //public List<PropertyDumpItem> _DumpNameWipDroppingMostCases(PropReqSpecs specs, string path)
-    //    => GetContents()._DumpNameWipDroppingMostCases(specs, path);
-
-
-
+    
     /// <summary>
     /// Shared method for other stack wrappers - will log and call the code
     /// </summary>

@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Models;
 
 namespace ToSic.Eav.ImportExport.Sys;
 
@@ -7,9 +7,10 @@ namespace ToSic.Eav.ImportExport.Sys;
 /// Metadata decorator for entities / content-types to mark them for export in a bundle
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ExportConfiguration(IEntity entity) : EntityBasedType(entity)
+[ModelSpecs(ContentType = ContentTypeNameId)]
+public record ExportConfiguration : ModelOfEntity
 {
-    public const string ContentTypeId = "d7f2e4fa-5306-41bb-a3cd-d9529c838879";
+    public const string ContentTypeNameId = "d7f2e4fa-5306-41bb-a3cd-d9529c838879";
     public const string ContentTypeName = "🧑‍💻SystemExportConfiguration";
 
     /// <summary>
@@ -37,8 +38,8 @@ public class ExportConfiguration(IEntity entity) : EntityBasedType(entity)
     /// Find all decorator metadata of type SystemExportDecorator
     /// </summary>
     public ICollection<ExportDecorator> ExportMarkers => _exportMarkers.Get(() => Entity
-        .Parents(ExportDecorator.TypeNameId)
-        .Select(e => new ExportDecorator(e))
+        .Parents(ExportDecorator.ContentTypeNameId)
+        .Select(e => e.As<ExportDecorator>()!)
         .ToListOpt()
     )!;
     private readonly GetOnce<ICollection<ExportDecorator>> _exportMarkers = new();

@@ -38,8 +38,6 @@ public class EntityDump : IPropertyDumper
             resultDynChildren = entity.Children(dynChildField)
                 .Where(child => child != null)
                 .SelectMany(inner => dumpService.Dump(inner!, specs, pathRoot + inner!.GetBestTitle(specs.Dimensions))
-                // #DropUseOfDumpProperties
-                // ?? inner._DumpNameWipDroppingMostCases(specs, pathRoot + inner.GetBestTitle(specs.Dimensions))
                 );
 
         // Get all properties which are not dynamic children
@@ -53,10 +51,7 @@ public class EntityDump : IPropertyDumper
             .SelectMany(att => entity
                 .Children(att.Key)
                 .Where(child => child != null) // apparently sometimes the entities inside seem to be non-existent on Resources
-                .SelectMany(inner => dumpService.Dump(inner!, specs, pathRoot + att.Key)
-                // #DropUseOfDumpProperties
-                // ?? inner._DumpNameWipDroppingMostCases(specs, pathRoot + att.Key)
-                )
+                .SelectMany(inner => dumpService.Dump(inner!, specs, pathRoot + att.Key))
             )
             .ToList();
 

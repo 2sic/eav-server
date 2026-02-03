@@ -135,6 +135,9 @@ public class EfcAppLoaderService(
 
         var builder = LoadAppStateRawFromDb(appId, codeRefTrail.WithHere().AddMessage("First Build"));
 
+        if (builder.Reader.AppId == KnownAppsConstants.PresetAppId
+            || builder.Reader.AppId == KnownAppsConstants.GlobalPresetAppId)
+            return l.Return(builder.AppState, $"preset app, no auto-init {MessageSuffix(builder.AppState)}");
 
         if (builder.Reader.Specs.IsContentApp())
             return l.Return(builder.AppState, $"default app, no auto-init {MessageSuffix(builder.AppState)}");
@@ -198,9 +201,17 @@ public class EfcAppLoaderService(
         }
         else
         {
-            // New v13 - use global app by default to share content-types
-            var globalApp = appStates.Get(KnownAppsConstants.PresetIdentity);
-            parent = new(globalApp, true, false);
+            // Avoid self-recursion when loading the preset app itself (-42)
+            if (appId == KnownAppsConstants.PresetAppId)
+            {
+                parent = new(null, false, false);
+            }
+            else
+            {
+                // New v13 - use global app by default to share content-types
+                var globalApp = appStates.Get(KnownAppsConstants.PresetIdentity);
+                parent = new(globalApp, true, false);
+            }
         }
 
         var builder = appStateBuilder.New().InitForNewApp(parent, appIdentity, appGuidName, Log);
@@ -304,6 +315,11 @@ public class EfcAppLoaderService(
     private int GetAncestorAppIdOrZero(int appId)
     {
         var l = Log.Fn<int>($"{nameof(appId)}:{appId}");
+
+        // Preset app (-42) is not stored in DB; avoid DB lookup to prevent needless connections
+        if (appId == KnownAppsConstants.PresetAppId)
+            return l.Return(0, "preset app");
+
         // Prefetch this App (new in v13 for ancestor apps)
         var appInDb = Context.TsDynDataApps.FirstOrDefault(a => a.AppId == appId);
         var appSysSettings = appInDb?.SysSettings;
@@ -331,6 +347,13 @@ public class EfcAppLoaderService(
     private (string? Name, string? Path) PreLoadAppPath(int appId)
     {
         var l = Log.Fn<(string? Name, string? Path)>($"{nameof(appId)}: {appId}");
+
+        if (appId == KnownAppsConstants.PresetAppId)
+            return l.Return((KnownAppsConstants.PresetName, KnownAppsConstants.PresetName), "preset app");
+
+        if (appId == KnownAppsConstants.GlobalPresetAppId)
+            return l.Return((KnownAppsConstants.GlobalPresetName, KnownAppsConstants.GlobalPresetName), "global preset app");
+
         try
         {
             // Get all Entities of type "2SexyContent-App"

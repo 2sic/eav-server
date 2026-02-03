@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Startup;
+using ToSic.Eav.Run.Startup;
 using ToSic.Eav.Testing;
 
 #pragma warning disable CA1822
@@ -30,7 +30,7 @@ public class StartupTestsApps
             .AddEavImportExport()
             .AddDataSources()
             .AddDataSourceSystem()
-            .AddEavImportExportFallback();
+            .AddEavImportExportFallbacks();
 
         services.StartupTestsAppsPersistenceAndBelow();
     }

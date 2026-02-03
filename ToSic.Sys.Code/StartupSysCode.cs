@@ -4,9 +4,9 @@ using ToSic.Sys.Code.InfoSystem;
 using CodeInfoService = ToSic.Sys.Code.InfoSystem.CodeInfoService;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Sys.Startup;
+namespace ToSic.Sys.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupSysCode
 {
     public static IServiceCollection AddSysCode(this IServiceCollection services)

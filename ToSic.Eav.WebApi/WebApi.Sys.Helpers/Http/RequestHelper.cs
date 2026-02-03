@@ -33,10 +33,16 @@ public class RequestHelper(IHttpContextAccessor httpContextAccessor)
     // TODO: REVIEW IF we should call ObjectExtensions.ChangeTypeOrFallback(...) instead; functionality may be a tiny bit different
     private static T ReturnTypedResultOrFallback<T>(StringValues valueString, T fallback)
     {
-        if (valueString == StringValues.Empty) return fallback;
+        if (valueString == StringValues.Empty)
+            return fallback;
+
+        var stringValue = valueString.ToString();
+        if (stringValue.IsEmpty())
+            return fallback;
+
         try
         {
-            return (T)Convert.ChangeType(valueString.ToString(), typeof(T));
+            return (T)Convert.ChangeType(stringValue, typeof(T));
         }
         catch
         {

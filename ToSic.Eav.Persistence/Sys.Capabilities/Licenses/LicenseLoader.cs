@@ -21,8 +21,8 @@ using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.FeatureSet;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Configuration;
+using ToSic.Sys.Run.GlobalState;
 using ToSic.Sys.Security.Encryption;
-using ToSic.Sys.Startup;
 
 namespace ToSic.Sys.Capabilities.Licenses;
 

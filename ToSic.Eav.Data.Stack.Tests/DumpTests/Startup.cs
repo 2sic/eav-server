@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Stack.DumpTests;
 
-public class Startup : StartupTestsEavCore
+public class Startup : StartupTestsEavDataBuild
 {
     public override void ConfigureServices(IServiceCollection services)
     {

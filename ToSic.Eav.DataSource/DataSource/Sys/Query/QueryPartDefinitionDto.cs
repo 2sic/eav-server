@@ -12,7 +12,7 @@ public static class QueryPartDefExtTemp
 {
     public static Dictionary<string, object?> AsDictionary(this QueryPartDefinition part)
     {
-        var attributes = part.Entity.AsDictionary();
+        var attributes = (part as ICanBeEntity).Entity.AsDictionary();
 
         attributes[nameof(QueryPartDefinition.VisualDesignerData)] = JsonNode
             .Parse(part.VisualDesignerData, JsonOptions.JsonNodeDefaultOptions, JsonOptions.JsonDocumentDefaultOptions)!

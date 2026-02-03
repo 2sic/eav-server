@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.Security.Encryption;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Sys.Startup;
+namespace ToSic.Sys.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupSysUtils
 {
     public static IServiceCollection AddSysUtils(this IServiceCollection services)

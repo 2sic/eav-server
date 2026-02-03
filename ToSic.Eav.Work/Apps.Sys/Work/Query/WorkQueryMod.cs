@@ -37,7 +37,7 @@ public class WorkQueryMod(
 
         var parts = qDef.Parts;
         var mdItems = parts
-            .Select(ds => ds.Entity.Metadata.FirstOrDefault())
+            .Select(ds => (ds as ICanBeEntity).Entity.Metadata.FirstOrDefault())
             .Where(md => md != null)
             .Select(md => md!.EntityId)
             .ToListOpt();
@@ -70,10 +70,11 @@ public class WorkQueryMod(
         var qdef = Get(queryId);
 
         const string allowEdit = "AllowEdit";
-        if (!qdef.Entity.Get<bool>(allowEdit))
+        var entity = (qdef as ICanBeEntity).Entity;
+        if (!entity.Get<bool>(allowEdit))
             throw new InvalidOperationException($"Query has {allowEdit} set to false");
 
-        var addedSources = SavePartsAndGenerateRenameMap(partDefs, qdef.Entity.EntityGuid);
+        var addedSources = SavePartsAndGenerateRenameMap(partDefs, entity.EntityGuid);
 
         DeletedRemovedParts(newDsGuids, addedSources.Values, qdef);
 
@@ -141,7 +142,7 @@ public class WorkQueryMod(
     /// </summary>
     private void DeletedRemovedParts(IEnumerable<Guid> newEntityGuids, IEnumerable<Guid> newDataSources, QueryDefinition qDef)
     {
-        var l = Log.Fn($"delete part a#{AppWorkCtx.AppId}, pipe:{qDef.Entity.EntityGuid}");
+        var l = Log.Fn($"delete part a#{AppWorkCtx.AppId}, pipe:{qDef.Guid}");
         // Get EntityGuids currently stored in EAV
         var existingEntityGuids = qDef.Parts.Select(e => e.Guid);
 

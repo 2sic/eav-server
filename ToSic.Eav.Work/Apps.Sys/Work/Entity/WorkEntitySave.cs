@@ -35,7 +35,7 @@ public class WorkEntitySave(
     public void Import(List<IEntity> newEntities)
     {
         var appStateList = AppWorkCtx.AppReader.List;
-        foreach (var e in newEntities.Where(e => appStateList.One(e.EntityGuid) != null))
+        foreach (var e in newEntities.Where(e => appStateList.GetOne(e.EntityGuid) != null))
             throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 
         var saveOptions = SaveOptions();

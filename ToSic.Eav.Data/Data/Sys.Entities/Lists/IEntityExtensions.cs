@@ -6,9 +6,6 @@ public static class IEntityExtensions
 {
 #if DEBUG
     // ReSharper disable NotAccessedField.Local
-    private static int _countOneId;
-    private static int _countOneGuid;
-    private static int _countOneHas;
     private static int _countOneRepo;
     private static int _countOneOfContentType;
     // ReSharper restore NotAccessedField.Local
@@ -19,39 +16,6 @@ public static class IEntityExtensions
     internal static int CountOneGuidOpt;
     internal static int CountOneOfContentTypeOpt;
 #endif
-    /// <summary>
-    /// Get an entity with an entity-id - or null if not found
-    /// </summary>
-    /// <param name="list"></param>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity? One(this IEnumerable<IEntity> list, int id)
-    {
-#if DEBUG
-        _countOneId++;
-#endif
-        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
-            ? fastList.Fast.Get(id)
-            : list.FirstOrDefault(e => e.EntityId == id);
-    }
-
-    /// <summary>
-    /// get an entity based on the guid - or null if not found
-    /// </summary>
-    /// <param name="list"></param>
-    /// <param name="guid"></param>
-    /// <returns></returns>
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity? One(this IEnumerable<IEntity> list, Guid guid)
-    {
-#if DEBUG
-        _countOneGuid++;
-#endif
-        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
-            ? fastList.Fast.Get(guid)
-            : list.FirstOrDefault(e => e.EntityGuid == guid);
-    }
 
 
     /// <summary>
@@ -70,57 +34,6 @@ public static class IEntityExtensions
             ? fastList.Fast.GetRepo(id)
             : list.FirstOrDefault(e => e.RepositoryId == id);
     }
-
-    /// <summary>
-    /// Check if an entity is available. 
-    /// Mainly used in special cases where published/unpublished are hidden/visible
-    /// </summary>
-    /// <param name="list"></param>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static bool Has(this IEnumerable<IEntity> list, int id)
-    {
-#if DEBUG
-        _countOneHas++;
-#endif
-        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
-            ? fastList.Fast.Has(id)
-            : list.Any(e => e.EntityId == id || e.RepositoryId == id);
-    }
-
-
-    // Todo #OptimizeOfType
-
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, IContentType type)
-    {
-        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
-            ? fastList.OfType(type.NameId)  // reuse existing functionality & index but using the most reliable nameId
-            : list.Where(e => type.Equals(e.Type)).ToListOpt();
-    }
-
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEnumerable<IEntity> OfType(this IEnumerable<IEntity> list, string typeName)
-    {
-#if DEBUG
-        _countOneOfContentType++;
-#endif            
-        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
-            ? fastList.Fast.OfType(typeName)
-            : list
-                .Where(e => e.Type.Is(typeName))
-                .ToListOpt();
-    }
-
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IEntity? FirstOrDefaultOfType(this IEnumerable<IEntity> list, string typeName)
-    {
-        return SysPerfSettings.CacheListAutoIndex && list is ImmutableSmartList fastList
-            ? fastList.Fast.OfType(typeName).FirstOrDefault()
-            : list.FirstOrDefault(e => e.Type.Is(typeName));
-    }
-
 
     // Experimental, only used in performance tests
     [ShowApiWhenReleased(ShowApiMode.Never)]

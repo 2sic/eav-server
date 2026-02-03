@@ -98,27 +98,28 @@ public class AppUserLanguageCheck(
         var defaultAllowed = ctx.User.IsSystemAdmin || !hasPermissions;
         l.A($"HasPermissions: {hasPermissions}, Initial Allowed: {defaultAllowed}");
 
-        var newSet = set.Select(s =>
-        {
-            var permissionEntities = s.Permissions.ToList();
-            var ok = defaultAllowed;
-            if (!ok)
+        var newSet = set
+            .Select(s =>
             {
-                var pChecker = checkGenerator.New();
-                var permissions = permissionEntities
-                    .Select(p => new Permission(p))
-                    .ToListOpt();
-                pChecker.For("user language", ctx, readerSafe, permissions);
-                ok = pChecker.PermissionsAllow(GrantSets.WriteSomething).Allowed;
-            }
+                var permissionEntities = s.Permissions.ToList();
+                var ok = defaultAllowed;
+                if (!ok)
+                {
+                    var pChecker = checkGenerator.New();
+                    var permissions = permissionEntities
+                        .Select(p => p.As<Permission>(skipTypeCheck: true)!)
+                        .ToListOpt();
+                    pChecker.For("user language", ctx, readerSafe, permissions);
+                    ok = pChecker.PermissionsAllow(GrantSets.WriteSomething).Allowed;
+                }
 
-            return new
-            {
-                s.Language,
-                Allowed = ok,
-                PermissionCount = permissionEntities.Count
-            };
-        });
+                return new
+                {
+                    s.Language,
+                    Allowed = ok,
+                    PermissionCount = permissionEntities.Count
+                };
+            });
 
         var result = newSet
             .Select(s => new AppUserLanguageState(s.Language, s.Allowed, s.PermissionCount))
@@ -137,7 +138,7 @@ public class AppUserLanguageCheck(
         var set = languages
             .Select(l => new LanguagePermission
             {
-                Permissions = mdSource?.GetMetadata(TargetTypes.Dimension, l.Code?.ToLowerInvariant(), Permission.TypeName)
+                Permissions = mdSource?.GetMetadata(TargetTypes.Dimension, l.Code?.ToLowerInvariant(), Permission.ContentTypeName)
                               ?? [],
                 Language = l
             })

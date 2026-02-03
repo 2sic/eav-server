@@ -11,26 +11,16 @@ namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services)
     : ServiceBase<XmlImportWithFiles.Dependencies>(services, "Xml.ImpFil")
 {
-    public class Dependencies(
-        LazySvc<ImportService> importerLazy,
-        Generator<IStorage, StorageOptions> storageFactory,
-        IImportExportEnvironment importExportEnvironment,
-        AppCachePurger appCachePurger,
-        IAppsCatalog appsCatalog,
-        LazySvc<XmlToEntity> xmlToEntity,
-        LazySvc<DataBuilder> multiBuilder,
-        DataImportLogSettings logSettings)
-        : DependenciesBase(connect: [importerLazy, storageFactory, importExportEnvironment, appsCatalog, xmlToEntity, appCachePurger, multiBuilder, logSettings])
-    {
-        public Generator<IStorage, StorageOptions> StorageFactory { get; } = storageFactory;
-        public DataImportLogSettings LogSettings { get; } = logSettings;
-        public readonly LazySvc<DataBuilder> MultiBuilder = multiBuilder;
-        internal readonly LazySvc<ImportService> ImporterLazy = importerLazy;
-        internal readonly IImportExportEnvironment Environment = importExportEnvironment;
-        internal readonly IAppsCatalog AppsCatalog = appsCatalog;
-        internal readonly LazySvc<XmlToEntity> XmlToEntity = xmlToEntity;
-        internal readonly AppCachePurger AppCachePurger = appCachePurger;
-    }
+    public record Dependencies(
+        LazySvc<ImportService> ImporterLazy,
+        Generator<IStorage, StorageOptions> StorageFactory,
+        IImportExportEnvironment Environment,
+        AppCachePurger AppCachePurger,
+        IAppsCatalog AppsCatalog,
+        LazySvc<XmlToEntity> XmlToEntity,
+        LazySvc<DataBuilder> MultiBuilder,
+        DataImportLogSettings LogSettings)
+        : DependenciesRecord(connect: [ImporterLazy, StorageFactory, Environment, AppsCatalog, XmlToEntity, AppCachePurger, MultiBuilder, LogSettings]);
 
     public int AppId { get; private set; }
     public int ZoneId { get; private set; }

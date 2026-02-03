@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.Sources.Sys;
+using ToSic.Eav.LookUp.TestHelpers;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
 
 namespace ToSic.Eav.Apps.Tests.PropertyLookupAndStack;

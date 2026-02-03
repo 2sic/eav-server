@@ -3,19 +3,19 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
 /// <summary>
 /// Global Eav Configuration
 /// </summary>
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEav
 {
     /// <summary>
     /// Use this to setup the new DI container
     /// </summary>
     /// <param name="services"></param>
-    public static IServiceCollection AddEavEverything(this IServiceCollection services)
+    public static IServiceCollection AddEavAll(this IServiceCollection services)
     {
         // standard IEntity conversion
         // not sure where to put it, interface is in Core but the implementation in Web, also used by DataSources for json errors
@@ -41,8 +41,9 @@ public static class StartupEav
             // EAV Core
             .AddEavDataBuild()
             .AddEavDataStack()
+            .AddEavModels()
             .AddEavData()
-            .AddEavCoreLibAndSys();
+            .AddAllLibAndSys();
 
         return services;
     }
@@ -52,13 +53,13 @@ public static class StartupEav
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddEavEverythingFallbacks(this IServiceCollection services)
+    public static IServiceCollection AddEavAllFallbacks(this IServiceCollection services)
     {
         services
-            .AddContextFallbackServices()
+            .AddContextFallbacks()
             .AddAppPersistenceFallbackServices()
             .AddAppFallbackServices()
-            .AddEavImportExportFallback()
+            .AddEavImportExportFallbacks()
             .AddEavDataBuildFallbacks()
             .AddEavDataFallbacks()
             .AddAllLibAndSysFallbacks();

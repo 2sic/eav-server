@@ -4,8 +4,6 @@ namespace ToSic.Eav.Apps.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal sealed class RuntimeKeyServiceDefault : IRuntimeKeyService
 {
-    private const string Prefix = "ari"; // app runtime identifier
-
     public string AppRuntimeKey(IAppIdentity appIdentity)
-        => $"{Prefix}{appIdentity.ZoneId}-{appIdentity.AppId}";
+        => $"z{appIdentity.ZoneId:D3}-a{appIdentity.AppId:D5}"; // app runtime identifier
 }

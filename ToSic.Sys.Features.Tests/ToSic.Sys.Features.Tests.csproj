@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <!--WIP decide if we rename or not-->
-    <RootNamespace>ToSic.Lib</RootNamespace>
+    <RootNamespace>ToSic.Sys.Features.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -34,41 +34,22 @@ public abstract class QueryControllerBase<TImplementation>(
 
     #region Constructor / DI / Services
 
-    public class Dependencies(
-        QueryBuilder queryBuilder,
-        LazySvc<ConvertToEavLight> entToDicLazy,
-        LazySvc<InspectQuery> queryInfoLazy,
-        LazySvc<DataSourceCatalog> dataSourceCatalogLazy,
-        Generator<JsonSerializer> jsonSerializer,
-        Generator<PassThrough> passThrough,
-        LazySvc<QueryManager> queryManager,
-        Generator<IAppReaderFactory> appStates,
-        GenWorkBasic<WorkQueryMod> workUnitQueryMod,
-        GenWorkBasic<WorkQueryCopy> workUnitQueryCopy)
-        : DependenciesBase(connect:
+    public record Dependencies(
+        QueryBuilder QueryBuilder,
+        LazySvc<ConvertToEavLight> EntToDicLazy,
+        LazySvc<InspectQuery> QueryInfoLazy,
+        LazySvc<DataSourceCatalog> DataSourceCatalogLazy,
+        Generator<JsonSerializer> JsonSerializer,
+        Generator<PassThrough> PassThrough,
+        LazySvc<QueryManager> QueryManager,
+        Generator<IAppReaderFactory> AppStates,
+        GenWorkBasic<WorkQueryMod> WorkUnitQueryMod,
+        GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy)
+        : DependenciesRecord(connect:
         [
-            queryBuilder, entToDicLazy, queryInfoLazy, dataSourceCatalogLazy, jsonSerializer, passThrough, queryManager,
-            appStates, workUnitQueryMod, workUnitQueryCopy
-        ])
-    {
-        public GenWorkBasic<WorkQueryMod> WorkUnitQueryMod { get; } = workUnitQueryMod;
-        public GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy { get; } = workUnitQueryCopy;
-        public LazySvc<QueryManager> QueryManager { get; } = queryManager;
-
-        /// <summary>
-        /// The AppStates Generator should only be used in the Definition.
-        /// It's important that it will always generate new objects.
-        /// This is to ensure it has the changes previously saved
-        /// </summary>
-        public Generator<IAppReaderFactory> AppStates { get; } = appStates;
-
-        public QueryBuilder QueryBuilder { get; } = queryBuilder;
-        public LazySvc<ConvertToEavLight> EntToDicLazy { get; } = entToDicLazy;
-        public LazySvc<InspectQuery> QueryInfoLazy { get; } = queryInfoLazy;
-        public LazySvc<DataSourceCatalog> DataSourceCatalogLazy { get; } = dataSourceCatalogLazy;
-        public Generator<JsonSerializer> JsonSerializer { get; } = jsonSerializer;
-        public Generator<PassThrough> PassThrough { get; } = passThrough;
-    }
+            QueryBuilder, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough, QueryManager,
+            AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
+        ]);
 
     #endregion
 
@@ -87,7 +68,7 @@ public abstract class QueryControllerBase<TImplementation>(
 
         #region Deserialize some Entity-Values
 
-        var pipeline = qDef.Entity.AsDictionary();
+        var pipeline = (qDef as ICanBeEntity).Entity.AsDictionary();
         pipeline[nameof(QueryDefinition.StreamWiring)] = qDef.Connections;
 
         var converter = Services.EntToDicLazy.Value;

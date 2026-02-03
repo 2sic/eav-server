@@ -31,7 +31,7 @@ public static class AppStateMetadataTargetExtensions
             case TargetTypes.Entity:
                 return !Guid.TryParse(key, out var guidKey)
                     ? null
-                    : appReader.List.One(guidKey)?.Metadata.Target.Title;
+                    : appReader.List.GetOne(guidKey)?.Metadata.Target.Title;
             case TargetTypes.ContentType:
                 return appReader.TryGetContentType(key ?? "#dummy$")?.Metadata.Target.Title;
             case TargetTypes.Zone:

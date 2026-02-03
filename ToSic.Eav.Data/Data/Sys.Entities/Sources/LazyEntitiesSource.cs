@@ -158,7 +158,7 @@ public class LazyEntitiesSource : IEnumerable<IEntity?>, ICacheDependent, IRelat
         var result = (PresetGuids != null
                 ? PresetGuids
                     .Select(l => l.HasValue
-                            ? _lookupList.List.One(l.Value)
+                            ? _lookupList.List.GetOne(l.Value)
                             : null // special: in some cases, the entity cannot be found because it has been deleted or something
                     )
                 : PresetIds!

@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
@@ -81,7 +80,7 @@ public class MetadataRequirementsService(
             return l.Return((true, []), "no metadata");
 
         // Preflight - ensure that they are of type RequirementDecorator
-        var reqList = entities.OfType(TypeName).ToListOpt();
+        var reqList = entities.GetAll<RequirementDecorator>().ToListOpt();
         if (!reqList.Any())
             return l.Return((true, []), "no requirements");
 
@@ -99,13 +98,13 @@ public class MetadataRequirementsService(
     private record ReqStatusPrivate(RequirementDecorator Decorator, string NameId, bool Approved, Aspect? Aspect = default)
         : RequirementStatus(Approved, Aspect ?? Aspect.None with { NameId = NameId }, "");
 
-    private ReqStatusPrivate? RequirementMet(IEntity? requirement)
+    private ReqStatusPrivate? RequirementMet(RequirementDecorator? requirement)
     {
         var l = Log.Fn<ReqStatusPrivate>();
         // No requirement, all is ok
         if (requirement == null)
             return l.ReturnNull();
-        var reqDec = new RequirementDecorator(requirement);
+        var reqDec = requirement;
 
         // Check requirement type
         return reqDec.RequirementType switch

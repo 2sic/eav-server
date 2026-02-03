@@ -3,6 +3,7 @@
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Eav.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Data.TestHelpers\ToSic.Eav.Data.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSource.TestHelpers\ToSic.Eav.DataSource.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
   </ItemGroup>

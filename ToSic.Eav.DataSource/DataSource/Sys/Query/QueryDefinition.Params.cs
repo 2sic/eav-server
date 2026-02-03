@@ -4,7 +4,7 @@ using ToSic.Eav.LookUp.Sources;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 
-partial class QueryDefinition
+partial record QueryDefinition
 {
     /// <summary>
     /// The raw Params used in this query, as stored in the IEntity
@@ -17,7 +17,7 @@ partial class QueryDefinition
     [field: AllowNull, MaybeNull]
     public IDictionary<string, string> ParamsDic
     {
-        get => field ??= GenerateParamsDic(Params, Log);
+        get => field ??= GenerateParamsDic(Params, null);
         set;
     }
 
@@ -47,7 +47,7 @@ partial class QueryDefinition
     /// They are in the format k=value or key=[some:token]
     /// </summary>
     [PrivateApi]
-    public static IDictionary<string, string> GenerateParamsDic(string? paramsText, ILog log)
+    public static IDictionary<string, string> GenerateParamsDic(string? paramsText, ILog? log)
     {
         var l = log.Fn<IDictionary<string,string>>();
 
@@ -58,28 +58,28 @@ partial class QueryDefinition
 
         // extract the lines which look like key=value
         var paramMatches = ParamRegex.Matches(paramsText);
-        log.A($"found {paramMatches.Count} params");
+        l.A($"found {paramMatches.Count} params");
 
         foreach (Match testParam in paramMatches)
         {
             var key = testParam.Groups[KeyProperty].Value.ToLowerInvariant();
             var value = testParam.Groups[KeyValue].Value;
-            log.A($"Params:{key}={value}");
+            l.A($"Params:{key}={value}");
             if (!paramsDic.ContainsKey(key))
                 paramsDic[key] = value; // add not-yet-added-value
             else
-                log.A($"Params:{key} already existed, will leave as is");
+                l.A($"Params:{key} already existed, will leave as is");
         }
 
         return l.Return(paramsDic, paramsDic.Count.ToString());
     }
 
+    // #RemoveDataSourceReset v21
     /// <summary>
     /// Will reset all the parameters so you can run the query again with different parameters. 
     /// </summary>
-    public void Reset()
+    internal void Reset()
     {
-        Log.A($"{nameof(Reset)}()");
         ParamsDic = null!;
         ParamsLookUp = null!;
     }

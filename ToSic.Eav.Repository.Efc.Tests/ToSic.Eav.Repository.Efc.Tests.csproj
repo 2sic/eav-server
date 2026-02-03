@@ -7,6 +7,8 @@
     <ProjectReference Include="..\ToSic.Eav.Apps.TestsHelpers\ToSic.Eav.Apps.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Apps\ToSic.Eav.Apps.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Core.TestHelpers\ToSic.Eav.Core.TestHelpers.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Data.Build.TestHelpers\ToSic.Eav.Data.Build.TestHelpers.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Data.TestHelpers\ToSic.Eav.Data.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence.Tests\ToSic.Eav.Persistence.Tests.csproj" />

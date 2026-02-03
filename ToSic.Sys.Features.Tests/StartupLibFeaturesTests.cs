@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Sys.Startup;
+using ToSic.Sys.Run.Startup;
 
-namespace ToSic.Lib.Features.Tests;
+namespace ToSic.Sys.Features.Tests;
 
 /// <summary>
 /// Class to inherit from, in test folders which should just do the auto-startup
@@ -26,6 +26,6 @@ public static class StartupLibFeatures
     public static IServiceCollection StartupLibFeaturesTests(this IServiceCollection services)
         => services
             .AddSysCapabilities()
-            .AddSysCapabilitiesFallback()
+            .AddSysCapabilitiesFallbacks()
             .AddSysCore();
 }

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
+﻿using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;
 
@@ -10,9 +10,10 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 /// IMPORTANT: Don't cache this object, as some info inside it can change during runtime
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeDetails(IEntity entity) : EntityBasedType(entity)
+[ModelSpecs(ContentType = ContentTypeName)]
+public record ContentTypeDetails : ModelOfEntity
 {
-    public const string ContentTypeTypeName = "ContentType";
+    public const string ContentTypeName = "ContentType";
 
     /// <summary>
     /// The title of the content type.

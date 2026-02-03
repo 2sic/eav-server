@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Requirements;
 
-namespace ToSic.Lib.Features.Tests.RequirementsServiceTests.NoMockCheckers;
+namespace ToSic.Sys.Features.Tests.RequirementsServiceTests.NoMockCheckers;
 
 public class RequirementsServiceTests(RequirementsService requirementsService)
 {

@@ -86,7 +86,7 @@ public class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     /// </summary>
     private (IDataSource Source, StreamDictionary Out) CreateOutWithAllStreams()
     {
-        var l = Log.Fn<(IDataSource Source, StreamDictionary Out)>(message: $"Query: '{Definition.Entity.GetBestTitle()}'", timer: true);
+        var l = Log.Fn<(IDataSource Source, StreamDictionary Out)>(message: $"Query: '{Definition.Title}'", timer: true);
         // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
         // and the current In
         var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.ParamsDic);
@@ -139,6 +139,7 @@ public class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     /// <inheritdoc />
     public IDictionary<string, string> Params() => Definition.ParamsDic;
 
+    // # RemoveDataSourceReset v21
     /// <inheritdoc />
     public void Reset()
     {

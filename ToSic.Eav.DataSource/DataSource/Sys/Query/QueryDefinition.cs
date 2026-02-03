@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Models;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 
@@ -8,26 +8,31 @@ namespace ToSic.Eav.DataSource.Sys.Query;
 /// </summary>
 [PrivateApi("Till v17 was InternalApi_DoNotUse_MayChangeWithoutNotice - this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[method: PrivateApi]
-public partial class QueryDefinition(IEntity headerEntity, int appId, List<QueryPartDefinition> parts, ILog parentLog)
-    : EntityBasedWithLog(headerEntity, parentLog, "DS.QDef")
+public partial record QueryDefinition : ModelOfEntity
 {
+    public QueryDefinition(IEntity headerEntity, int appId, List<QueryPartDefinition> parts)
+        : base(headerEntity)
+    {
+        AppId = appId;
+        Parts = parts;
+    }
+
     /// <summary>Content-Type name of the queryPart Content-Type</summary>
     [PrivateApi] internal static readonly string TypeName = "DataPipeline";
     /// <summary>
     /// The appid inside which the query will run, _not where it is stored!_ <br/>
     /// This can differ, because certain global queries (stored in the global app) will run in a specific app - for example to retrieve all ContentTypes of that app.
     /// </summary>
-    public int AppId => appId == KnownAppsConstants.AppIdEmpty
+    public int AppId => field == KnownAppsConstants.AppIdEmpty
         ? Entity.AppId
-        : appId;
+        : field;
 
     public string Name => GetThis("error no name");
 
     /// <summary>
     /// The parts of the query
     /// </summary>
-    public List<QueryPartDefinition> Parts { get; } = parts;
+    public List<QueryPartDefinition> Parts { get; }
 
 
     /// <summary>

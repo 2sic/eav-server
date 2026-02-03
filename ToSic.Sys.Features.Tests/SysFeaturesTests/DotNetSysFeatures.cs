@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Capabilities.SysFeatures;
 
-namespace ToSic.Lib.Features.Tests.SysFeaturesTests;
+namespace ToSic.Sys.Features.Tests.SysFeaturesTests;
 
 public class DotNetSysFeatures
 {

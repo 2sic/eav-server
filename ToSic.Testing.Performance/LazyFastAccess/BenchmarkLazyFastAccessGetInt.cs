@@ -49,7 +49,7 @@ public class BenchmarkLazyFastAccessGetInt
     {
         var runTimer = Stopwatch.StartNew();
         var foundCount = Ids
-            .Select(id => List.One(id))
+            .Select(id => List.GetOne(id))
             .Count(found => found != null);
 
         runTimer.Stop();

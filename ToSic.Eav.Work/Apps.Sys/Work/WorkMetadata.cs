@@ -20,7 +20,7 @@ public class WorkMetadata(
 
         // see if a metadata already exists which we would update
         var existingEntity = AppWorkCtx.AppReader.List
-            .OfType(typeName)
+            .GetAll(typeName)
             .FirstOrDefault(e => e.MetadataFor.TargetType == target.TargetType && e.MetadataFor.KeyNumber == target.KeyNumber);
 
         if (existingEntity != null)

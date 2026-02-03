@@ -2,12 +2,14 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Data.Sys.Global;
 using ToSic.Eav.Metadata.Targets;
+using ToSic.Eav.Models;
+using ToSic.Eav.Models.Factory;
+using ToSic.Sys.Run.Startup;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StartupEavData
 {
     public static IServiceCollection AddEavData(this IServiceCollection services)
@@ -34,4 +36,15 @@ public static class StartupEavData
         return services;
     }
 
+    /// <summary>
+    /// Registers the default system core wrapper services with the dependency injection container.
+    /// </summary>
+    /// <inheritdoc cref="StartupSysCore.AddSysCore"/>
+    public static IServiceCollection AddEavModels(this IServiceCollection services)
+    {
+        // Wrapper Factory - new it v21
+        services.TryAddTransient<IModelFactory, ModelFactory>();
+
+        return services;
+    }
 }

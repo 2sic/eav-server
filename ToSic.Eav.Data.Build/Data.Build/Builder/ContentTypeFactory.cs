@@ -16,6 +16,9 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
 
+    public IContentType Create<T>()
+        => Create(typeof(T));
+
     public IContentType Create(Type type)
     {
         if (Cache.TryGetValue(type, out var contentType))
@@ -39,7 +42,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         var ctScope = scope ?? ctSpecs?.Scope.NullIfNoValue() ?? ScopeConstants.Default;
 
         // Must be null if no metadata, so that it would then assume empty list...?
-        var ctMdItems = ContentTypeDetails(ctSpecs?.Description).ToListOfOneOrNull();
+        var ctMdItems = CreateContentTypeDetails(ctSpecs?.Description).ToListOfOneOrNull();
         var ctMdSource = MetadataProvider.Create(ctMdItems);
         var ctMetadata = new ContentTypeMetadata(typeId: ctNameId, title: ctName, source: ctMdSource);
 
@@ -69,18 +72,22 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     /// Most properties like icon etc. are not important, so ATM it only does:
     /// - Description
     /// </summary>
-    private IEntity? ContentTypeDetails(string? description)
+    private IEntity? CreateContentTypeDetails(string? description)
     {
         var l = Log.Fn<IEntity>();
         if (description == null)
             return l.ReturnNull("no description");
 
         // All props
-        var dic = new Dictionary<string, object?> { { nameof(Sys.ContentTypes.ContentTypeDetails.Description), description } };
+        var dic = new Dictionary<string, object?> { { nameof(ContentTypeDetails.Description), description } };
         var attributes = attributeBuilder.Create(dic);
 
         // Create a Description entity
-        var entity = entityBuilder.Create(NoAppId, ctBuilder.Transient(NoAppId, Sys.ContentTypes.ContentTypeDetails.ContentTypeTypeName, Sys.ContentTypes.ContentTypeDetails.ContentTypeTypeName), attributes: attributes);
+        var entity = entityBuilder.Create(
+            NoAppId,
+            ctBuilder.Transient(NoAppId, ContentTypeDetails.ContentTypeName, ContentTypeDetails.ContentTypeName),
+            attributes: attributes
+        );
         return l.Return(entity, "created");
     }
 

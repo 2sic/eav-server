@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Startup;
 
-
-namespace ToSic.Eav;
+namespace ToSic.Eav.Run.Startup;
 
 /// <summary>
 /// A Startup helper for tests which need Dependency-Injection setup for EAV Core.
@@ -10,7 +8,7 @@ namespace ToSic.Eav;
 /// IMPORTANT: This file is also included as an imports in the TestFixtures project.
 /// It's done that way, so that project can be decoupled from this project because sometimes we need to run tests in production builds.
 /// </summary>
-public static class StartupFromAppsPersistence
+public static class StartupEavTestBundle
 {
     public static IServiceCollection StartupTestsAppsPersistenceAndBelow(this IServiceCollection services)
     {
@@ -22,13 +20,14 @@ public static class StartupFromAppsPersistence
             .AddEavPersistence()
             .AddEavDataBuild()
             .AddEavDataStack()
+            .AddEavModels()
             .AddEavData()
-            .AddEavCoreLibAndSys();
+            .AddAllLibAndSys();
 
         // Register Fallback Services
         services
             .AddAppPersistenceFallbackServices()
-            .AddContextFallbackServices()
+            .AddContextFallbacks()
             .AddAppFallbackServices()
             .AddEavDataBuildFallbacks()
             .AddEavDataFallbacks()

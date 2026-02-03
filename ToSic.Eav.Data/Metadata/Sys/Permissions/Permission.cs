@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
+﻿using ToSic.Eav.Models;
 using ToSic.Sys.Security.Permissions;
 
 
@@ -9,12 +9,12 @@ namespace ToSic.Eav.Metadata.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class Permission(IEntity entity) : EntityBasedType(entity), IPermission
+[ModelSpecs(ContentType = ContentTypeName)]
+public record Permission : ModelOfEntity, IPermission
 {
-    public const string TypeName = "PermissionConfiguration";
-    public const string FieldOwner = "Owner";
-    /// <inheritdoc />
+    public const string ContentTypeName = "PermissionConfiguration";
 
+    /// <inheritdoc />
     [field: AllowNull, MaybeNull]
     public string Condition => field ??= GetThis("");
 
@@ -30,5 +30,5 @@ public class Permission(IEntity entity) : EntityBasedType(entity), IPermission
     public string Owner => Entity.Owner;
 
     [PrivateApi]
-    public static bool IsPermission(IEntity entity) => entity.Type.Is(TypeName);
+    public static bool IsPermission(IEntity entity) => entity.Type.Is(ContentTypeName);
 }

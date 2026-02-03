@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.DataSource.VisualQuery.Sys;
+﻿using ToSic.Eav.DataSource.VisualQuery.Sys;
+using ToSic.Eav.Models;
 
 namespace ToSic.Eav.DataSource.Sys.Query;
 
@@ -8,15 +8,18 @@ namespace ToSic.Eav.DataSource.Sys.Query;
 /// </summary>
 [PrivateApi("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[method: PrivateApi]
-public class QueryPartDefinition(
-    IEntity? entity,
-    string typeIdentifier,
-    Type type,
-    DataSourceInfo dataSourceInfo,
-    ILog parentLog)
-    : EntityBasedWithLog(entity!, parentLog, "DS.QrPart")
+public record QueryPartDefinition : ModelOfEntity
 {
+    public QueryPartDefinition(IEntity? entity,
+        string typeIdentifier,
+        Type type,
+        DataSourceInfo dataSourceInfo) : base(entity!)
+    {
+        DataSourceTypeIdentifier = typeIdentifier;
+        DataSourceType = type;
+        DataSourceInfo = dataSourceInfo;
+    }
+
     /// <summary>Content-Type name of the query Content-Type</summary>
     internal static readonly string TypeName = "DataPipelinePart";
 
@@ -32,9 +35,9 @@ public class QueryPartDefinition(
     /// The .net type which the data source has for this part. <br/>
     /// Will automatically resolve old names to new names as specified in the DataSources <see cref="VisualQueryAttribute"/>
     /// </summary>
-    public string DataSourceTypeIdentifier { get; } = typeIdentifier;
+    public string DataSourceTypeIdentifier { get; }
 
-    public Type DataSourceType { get; } = type;
+    public Type DataSourceType { get; }
 
-    public DataSourceInfo DataSourceInfo { get; } = dataSourceInfo;
+    public DataSourceInfo DataSourceInfo { get; }
 }

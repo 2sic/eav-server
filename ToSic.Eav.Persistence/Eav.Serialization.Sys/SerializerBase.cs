@@ -16,14 +16,8 @@ public abstract class SerializerBase(SerializerBase.Dependencies services, strin
 {
     #region MyServices
 
-    public class Dependencies(ITargetTypeService metadataTargets, DataBuilder dataBuilder, IGlobalDataService globalData, object[]? connect = default)
-        : DependenciesBase(connect: [metadataTargets, dataBuilder, globalData, ..connect ?? []])
-    {
-        public DataBuilder DataBuilder { get; } = dataBuilder;
-
-        public ITargetTypeService MetadataTargets { get; } = metadataTargets;
-        public IGlobalDataService GlobalData { get; } = globalData;
-    }
+    public record Dependencies(ITargetTypeService MetadataTargets, DataBuilder DataBuilder, IGlobalDataService GlobalData, object[]? Connect = default)
+        : DependenciesRecord(connect: [MetadataTargets, DataBuilder, GlobalData, ..Connect ?? []]);
 
     #endregion
 

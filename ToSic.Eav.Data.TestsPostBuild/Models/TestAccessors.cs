@@ -1,0 +1,31 @@
+﻿using ToSic.Eav.Data;
+using ToSic.Sys.Coding;
+
+namespace ToSic.Eav.Models;
+
+public static class TestAccessors
+{
+    internal static TModel? AsTac<TModel>(
+        this IEntity? entity,
+        NoParamOrder npo = default,
+        bool skipTypeCheck = false,
+        //bool nullIfNull = false
+        NullToModel nullHandling = NullToModel.Undefined
+    )
+        where TModel : class, IModelSetup<IEntity>, new()
+        => entity.As<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
+
+
+    internal static TModel? FirstTac<TModel>(
+        this IEnumerable<IEntity>? list,
+        // ReSharper disable once MethodOverloadWithOptionalParameter
+        NoParamOrder npo = default,
+        string? typeName = default)
+        where TModel : class, IModelSetup<IEntity>, new()
+        => list.First<TModel>(npo, typeName);
+
+    public static TModel? FirstTac<TModel>(this IEnumerable<IEntity>? list)
+        where TModel : class, IModelSetup<IEntity>, new()
+        => list.First<TModel>();
+
+}

@@ -5,7 +5,7 @@ using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
-using ToSic.Eav.Startup;
+using ToSic.Eav.Run.Startup;
 
 namespace ToSic.Eav.Apps.Tests.AppValueConversion;
 
@@ -23,8 +23,9 @@ public class ValueConversionTests(ExportImportValueConversion exportListXml)
                 //.AddEavDataPersistence()
                 .AddEavDataBuild()
                 .AddEavDataStack()
+                .AddEavModels()
                 .AddEavData()
-                .AddEavCoreLibAndSys()
+                .AddAllLibAndSys()
 
                 .AddEavDataBuildFallbacks()
                 .AddEavDataFallbacks()

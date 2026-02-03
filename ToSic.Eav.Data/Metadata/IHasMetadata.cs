@@ -10,8 +10,11 @@ namespace ToSic.Eav.Metadata;
 public interface IHasMetadata
 {
     /// <summary>
-    /// Additional information, specs etc. about this thing which has metadata
+    /// Get the Metadata of the underlying Entity
     /// </summary>
-    [JsonIgnore]    // 2024-07-02 experimental, usually explicitly implemented and not meant for serialization
+    /// <remarks>
+    /// Added in v12.10
+    /// </remarks>
+    [JsonIgnore]
     IMetadata Metadata { get; }
 }

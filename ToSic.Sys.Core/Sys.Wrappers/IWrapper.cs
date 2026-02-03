@@ -7,7 +7,7 @@
 /// <typeparam name="T"></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IWrapper<out T>
+public interface IWrapper<out T>: IWrapperWip
 {
     /// <summary>
     /// The underlying, original object. Helpful for external objects which need the real, underlying item.
@@ -16,3 +16,5 @@ public interface IWrapper<out T>
     /// </summary>
     T? GetContents();
 }
+
+public interface IWrapperWip;

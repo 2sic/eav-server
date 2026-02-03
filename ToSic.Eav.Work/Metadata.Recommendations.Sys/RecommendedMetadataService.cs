@@ -2,8 +2,6 @@
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.Work;
-using ToSic.Eav.Data.Sys.ContentTypes;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata.Requirements.Sys;
 using ToSic.Sys.Utils;
 using static System.String;
@@ -127,20 +125,19 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 // and it's ServiceProvider is dead at that time, trying to debug
                 try
                 {
-                    var allForDecors = ct.Metadata
-                        .OfType(MetadataForDecorator.ContentTypeNameId)
-                        .Select(e => new MetadataForDecorator(e))
+                    var allForDecors = ct.Metadata.GetAll<MetadataForDecorator>()
                         .ToListOpt();
                     var allForThisTargetType = allForDecors
                         .Where(dec => dec.TargetType == targetType)
                         .ToListOpt();
                     l.A($"Found {allForDecors.Count} {nameof(MetadataForDecorator)}s " +
                         $"of which {allForThisTargetType.Count} for targetType {targetType} on {ct.Name}");
-                    return allForThisTargetType.Select(decorator => new RecommendationInfos
-                    {
-                        Type = ct,
-                        Decorator = decorator
-                    });
+                    return allForThisTargetType
+                        .Select(decorator => new RecommendationInfos
+                        {
+                            Type = ct,
+                            Decorator = decorator
+                        });
                 }
                 catch (Exception e)
                 {
@@ -180,7 +177,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                         if (targetName == "*") return true;
                         // Test if the current item (targetKey) is the expected type
                         if (!Guid.TryParse(targetKey, out var guidKey)) return false;
-                        var currentEntity = AppReader.List.One(guidKey);
+                        var currentEntity = AppReader.List.GetOne(guidKey);
                         return currentEntity?.Type?.Is(targetName) ?? false;
                     // App and ContentType don't need extra conditions / specifiers
                     case (int)TargetTypes.ContentType:
@@ -237,7 +234,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
             case TargetTypes.Entity:
                 if (!Guid.TryParse(key, out var guidKey))
                     return l.ReturnNull("entity not guid");
-                var entity = AppReader.List.One(guidKey);
+                var entity = AppReader.List.GetOne(guidKey);
                 if (entity == null)
                     return l.ReturnNull("entity not found");
                 var onEntity = GetMetadataExpectedDecorators(entity.Metadata, TargetTypes.Entity, "attached to Entity", PrioMax)
@@ -281,21 +278,20 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
             return l.Return([], "null metadata");
 
         var all = md
-            .OfType(MetadataExpectedDecorator.ContentTypeNameId)
+            .GetAll<MetadataExpectedDecorator>()
             .ToListOpt();
 
-        // var meantFor = (int)targetTypeFor;
         if (targetTypeFor > 0)
             all = all
-                .Where(r => (int)targetTypeFor == new MetadataForDecorator(r).TargetType)
+                .Where(mdExpected => mdExpected.TargetType == (int)targetTypeFor)
                 .ToListOpt();
+
         if (!all.Any())
             return l.Return([], "no recommendations");
 
         var resultAll = all
-            .SelectMany(rEntity =>
+            .SelectMany(rec =>
             {
-                var rec = new MetadataExpectedDecorator(rEntity);
                 var config = rec.Types;
                 var delWarning = rec.DeleteWarning;
                 return IsNullOrWhiteSpace(config)

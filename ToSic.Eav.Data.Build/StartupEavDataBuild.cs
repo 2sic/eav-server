@@ -4,9 +4,9 @@ using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.ValueConverter;
 
 // ReSharper disable once CheckNamespace
-namespace ToSic.Eav.Startup;
+namespace ToSic.Eav.Run.Startup;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEavDataBuild
 {
     public static IServiceCollection AddEavDataBuild(this IServiceCollection services)
@@ -23,6 +23,7 @@ public static class StartupEavDataBuild
         services.TryAddTransient<DimensionBuilder>();
         services.TryAddTransient<AttributeBuilder>();
         services.TryAddTransient<EntityBuilder>();
+        services.TryAddTransient<EntityConnectionBuilder>();
         services.TryAddTransient<ValueBuilder>();
 
         return services;

@@ -1,10 +1,8 @@
-﻿using ToSic.Lib.Features.Tests;
-using ToSic.Lib.Features.Tests.RequirementChecks.Mocks;
-using ToSic.Lib.Features.Tests.RequirementsServiceTests;
+﻿using ToSic.Sys.Features.Tests.RequirementChecks.Mocks;
 using ToSic.Sys.Requirements;
-using static ToSic.Lib.Features.Tests.RequirementChecks.Mocks.MockAnimalRequirementsCheck;
+using static ToSic.Sys.Features.Tests.RequirementChecks.Mocks.MockAnimalRequirementsCheck;
 
-namespace ToSic.Lib.RequirementsServiceTests.AnimalRequirements;
+namespace ToSic.Sys.Features.Tests.RequirementsServiceTests.AnimalRequirements;
 
 public class RequirementsServiceAnimals(RequirementsService requirementsService)
 {
