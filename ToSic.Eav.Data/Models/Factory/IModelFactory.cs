@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Models.Factory;
 
@@ -25,7 +25,7 @@ public interface IModelFactory
         where TModel : IModelSetup<TSource>;
 
     [return: NotNullIfNotNull(nameof(item))]
-    TCustom? AsCustomFrom<TCustom, TSource>(TSource? item, WrapDataSettings? settings = default)
-        where TCustom : class, IDataWrapper;
+    TCustom? AsCustomFrom<TCustom, TSource>(TSource? item, ModelSettings? settings = default)
+        where TCustom : class, IModelOfData;
 
 }

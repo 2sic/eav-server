@@ -1,6 +1,6 @@
-﻿namespace ToSic.Eav.Data.Sys;
+﻿namespace ToSic.Eav.Models.Sys;
 
-public record WrapDataSettings
+public record ModelSettings
 {
     /// <summary>
     /// Instructs the created model to be strict about missing properties.

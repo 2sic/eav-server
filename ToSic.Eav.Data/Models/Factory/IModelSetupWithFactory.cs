@@ -12,7 +12,7 @@ public interface IModelFactoryRequired;
 /// Marks objects such as custom items or data models, which can receive a _specific_ data-type (entity _or_ typed item) and wrap it.
 /// </summary>
 /// <remarks>
-/// This is more specific than the <see cref="IDataWrapper"/>, since that is just a marker interface.
+/// This is more specific than the <see cref="IModelOfData"/>, since that is just a marker interface.
 /// This one specifies that the object has the necessary `Setup()` method to receive the data of the expected type.
 /// 
 /// Typical use is for custom data such as classes inheriting from [](xref:Custom.Data.CustomItem)
@@ -29,7 +29,7 @@ public interface IModelFactoryRequired;
 /// The data type which can be accepted.
 /// Must be <see cref="IEntity"/> or <see cref="ITypedItem"/> (other types not supported for now).
 /// </typeparam>
-public interface IModelSetupWithFactory<in TSource> : IModelFactoryRequired, IDataWrapper
+public interface IModelSetupWithFactory<in TSource> : IModelFactoryRequired, IModelOfData
 {
     /// <summary>
     /// Add the data to use for the wrapper.

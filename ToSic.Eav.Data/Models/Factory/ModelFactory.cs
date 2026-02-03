@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Models.Factory;
 
@@ -17,7 +17,7 @@ internal class ModelFactory(IServiceProvider sp): IModelFactory
     }
 
     [return: NotNullIfNotNull("item")]
-    public TCustom? AsCustomFrom<TCustom, TData>(TData? item, WrapDataSettings? settings = default) where TCustom : class, IDataWrapper
+    public TCustom? AsCustomFrom<TCustom, TData>(TData? item, ModelSettings? settings = default) where TCustom : class, IModelOfData
     {
         throw new NotImplementedException($"This is only available once you get into 2sxc; EAV does not support it.");
     }

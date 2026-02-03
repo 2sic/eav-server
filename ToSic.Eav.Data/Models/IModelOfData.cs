@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Models;
 
 /// <summary>
 /// Marks objects such as custom items or data models, which can wrap data (usually Entities or TypedItems).
@@ -15,8 +15,8 @@
 /// History
 /// 
 /// * Made visible in the docs for better understanding in v19.01
-/// * Moved from `ToSic.Sxc.Data.ICanWrapData` to `ToSic.Eav.Data.IDataWrapper` in v21.01
+/// * Moved from `ToSic.Sxc.Data.ICanWrapData` to `ToSic.Eav.Models.IModelOfData` in v21.01
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IDataWrapper;
+public interface IModelOfData;
