@@ -35,28 +35,42 @@ public static partial class EntityListExtensions
         this IEnumerable<IEntity>? list,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        string? typeName = default
+        string? typeName = default,
+        NullToModel nullHandling = NullToModel.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
     {
+        // List null - always stop here
+        // Not all options listed, as the explicit return-Empty is automatically covered
         if (list == null)
-            return [];
+            return (nullHandling & NullToModel.ListAsThrow) != 0
+                ? throw new ArgumentNullException(nameof(list))
+                : [];
 
         var nameList = typeName != null
             ? [typeName]
             : DataModelAnalyzer.GetValidTypeNames<TModel>();
 
+        if (nullHandling == NullToModel.Undefined)
+            nullHandling = NullToModel.Default;
+
         foreach (var name in nameList)
         {
-            // ReSharper disable once PossibleMultipleEnumeration - should not ToList or anything, because it could lose optimizations of the FastLookup etc.
+            // ReSharper disable once PossibleMultipleEnumeration - should not do ToList _before_ using this, because it could lose optimizations of the FastLookup etc.
             var found = list
                 .GetAll(typeName: name)
                 .ToListOpt();
 
-            if (found.Any())
-                return found
-                    .Select(raw => raw.AsInternal<TModel>(skipTypeCheck: true)!)
-                    .ToList();
+            if (!found.Any())
+                continue;
+
+            var result = found
+                .Select(raw => raw.AsInternal<TModel>(skipTypeCheck: true, nullHandling: nullHandling)!);
+                    
+            if ((nullHandling & NullToModel.ModelAsSkip) != 0)
+                result = result.Where(item => item != null);
+
+            return result.ToList();
         }
 
         return [];

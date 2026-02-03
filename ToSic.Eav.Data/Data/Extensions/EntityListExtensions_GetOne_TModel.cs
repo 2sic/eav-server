@@ -18,10 +18,11 @@ public static partial class EntityListExtensions
         this IEnumerable<IEntity>? list,
         int id,
         NoParamOrder npo = default,
-        bool skipTypeCheck = false
+        bool skipTypeCheck = false,
+        NullToModel nullHandling = NullToModel.Undefined
     ) where TModel : class, IModelSetup<IEntity>, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(id)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck);
+        (list?.GetOne(id)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
@@ -37,9 +38,10 @@ public static partial class EntityListExtensions
         Guid guid,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
-        bool nullIfNull = false
+        //bool nullIfNull = false,
+        NullToModel nullHandling = NullToModel.Undefined
     ) where TModel : class, IModelSetup<IEntity>, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(guid)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull);
+        (list?.GetOne(guid)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, /*nullIfNull: nullIfNull,*/ nullHandling: nullHandling);
 
 }

@@ -31,10 +31,11 @@ public class EqualityTests(TestDataGenerator generator)
     }
 
     [Fact]
-    public void EqualsRecast()
+    public void EqualsRecast_UsingAsICanBeEntity()
     {
         var entity = generator.CreateMetadataForDecorator();
         var md = entity.As<TestModelMetadataForDecorator>()!;
+        // Recast via ICanBeEntity
         var md2 = md.As<TestModelMetadataForDecorator>()!;
         CheckAllEquals(md, md2);
     }

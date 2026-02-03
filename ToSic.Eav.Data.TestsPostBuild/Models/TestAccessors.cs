@@ -9,10 +9,11 @@ public static class TestAccessors
         this IEntity? entity,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
-        bool nullIfNull = false
+        //bool nullIfNull = false
+        NullToModel nullHandling = NullToModel.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
-        => entity.As<TModel>(npo, skipTypeCheck, nullIfNull);
+        => entity.As<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
 
 
     internal static TModel? FirstTac<TModel>(

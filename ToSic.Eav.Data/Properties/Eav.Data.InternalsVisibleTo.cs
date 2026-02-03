@@ -5,6 +5,7 @@
 //[assembly: InternalsVisibleTo("ToSic.Eav.Persistence.Efc")]
 
 [assembly: InternalsVisibleTo("ToSic.Eav.Data.Tests")]
+[assembly: InternalsVisibleTo("ToSic.Eav.Data.TestsPostBuild")]
 
 
 //[assembly: InternalsVisibleTo("ToSic.Eav.Core.Tests")]
