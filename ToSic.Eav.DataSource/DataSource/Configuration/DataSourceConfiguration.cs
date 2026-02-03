@@ -16,11 +16,8 @@ internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies serv
     #region Dependencies - Must be in DI
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public class Dependencies(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
-        : DependenciesBase(connect: [zoneCultureResolverLazy])
-    {
-        public LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy { get; } = zoneCultureResolverLazy;
-    }
+    public record Dependencies(LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy)
+        : DependenciesRecord(connect: [ZoneCultureResolverLazy]);
 
     #endregion
 

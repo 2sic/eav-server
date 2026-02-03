@@ -2,6 +2,9 @@
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Catalog;
+using ToSic.Eav.LookUp;
+using ToSic.Eav.LookUp.Sources;
+using ToSic.Eav.LookUp.Sys.Engines;
 using ToSic.Eav.Services;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -79,16 +82,50 @@ public sealed class SystemData : CustomDataSource
             return GetTrivialMessage(false, false);
 
         // Construct basic options and build the source
+        var lookUp = CreateLookUpEngine();
+
         var options = new DataSourceOptions
         {
             AppIdentityOrReader = this.PureIdentity(),
-            LookUp = Configuration.LookUpEngine,
+            LookUp = lookUp,
         };
         var ds = _dataSourceFactory.Create(dsType.Type, options: options);
 
         // Get the stream, if not found, return trivial message, otherwise return the list
         var stream = ds.GetStream(SysDataStream, nullIfNotFound: true);
         return stream?.List ?? GetTrivialMessage(true, false);
+    }
+
+    private ILookUpEngine CreateLookUpEngine()
+    {
+        var lookUp = Configuration.LookUpEngine;
+        var qsLookUp = TryFindQueryStringSource(lookUp);
+        if (qsLookUp == null)
+            return lookUp;
+
+        var newLookup = new LookUpInLookUps(DataSourceConstants.MyConfigurationSourceName, [qsLookUp]);
+        lookUp = new LookUpEngine(lookUp, Log, overrides: [newLookup]);
+
+        return lookUp;
+    }
+
+    /// <summary>
+    /// Helper to find the underlying source of the QueryString parameters,
+    /// as we will pass these directly to the constructed data-source.
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <returns></returns>
+    private static ILookUp? TryFindQueryStringSource(ILookUpEngine parent)
+    {
+        while (true)
+        {
+            var qsLookUp = parent.Sources.FirstOrDefault(l => l.Name.EqualsInsensitive("QueryString"));
+            if (qsLookUp != null)
+                return qsLookUp;
+            if (parent.Downstream == null)
+                return null;
+            parent = parent.Downstream;
+        }
     }
 
     private IEnumerable<IEntity> GetTrivialMessage(bool dsFound, bool streamFound)
