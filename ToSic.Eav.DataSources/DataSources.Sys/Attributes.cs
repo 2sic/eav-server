@@ -34,7 +34,7 @@ namespace ToSic.Eav.DataSources.Sys;
 public sealed class Attributes: CustomDataSourceAdvanced
 {
 
-    #region Configuration-properties (no config)
+    #region Configuration-properties
 
     private const string TypeNameFallbackToTryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
     private const string AttribContentTypeName = "Attribute";

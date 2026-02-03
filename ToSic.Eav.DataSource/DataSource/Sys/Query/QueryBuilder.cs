@@ -112,7 +112,7 @@ public class QueryBuilder(
             var partEngine = new LookUpEngine(baseLookUp, Log, sources: [querySpecsLookUp]);
             // add / set item part configuration
             //partLookUp.Add(querySpecsLookUp);
-            var partConfig = new DataSourceOptions
+            var partOptions = new DataSourceOptions
             {
                 AppIdentityOrReader = appIdentity,
                 LookUp = partEngine,
@@ -122,7 +122,7 @@ public class QueryBuilder(
 
             // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
             var dsType = dataQueryPart.DataSourceType;
-            var dataSource = dataSourceFactory.Create(type: dsType, options: partConfig);
+            var dataSource = dataSourceFactory.Create(type: dsType, options: partOptions);
             try { dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Title); }
             catch { /* ignore */ }
 

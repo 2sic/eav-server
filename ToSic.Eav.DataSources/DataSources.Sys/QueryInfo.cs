@@ -34,7 +34,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     public QueryBuilder QueryBuilder { get; }
     private readonly LazySvc<QueryManager> _queryManager;
 
-    #region Configuration-properties (no config)
+    #region Configuration-properties
 
     private const string DefQuery = "not-configured"; // can't be blank, otherwise tokens fail
     private const string QueryStreamsContentType = "QueryStream";

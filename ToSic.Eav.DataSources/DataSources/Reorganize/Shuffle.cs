@@ -21,7 +21,7 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsShuffle")]
 public sealed class Shuffle: DataSourceBase
 {
-    #region Configuration-properties (no config)
+    #region Configuration-properties
 
     private const int DefaultTakeAll = 0;
 
@@ -38,7 +38,8 @@ public sealed class Shuffle: DataSourceBase
 
 
     #endregion
-    [PrivateApi] 
+    
+    [PrivateApi]
     private static readonly bool DebugShuffleDs = false;
 
     /// <inheritdoc />

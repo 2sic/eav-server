@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources.Sys;
 // ReSharper disable once UnusedMember.Global
 public sealed class ContentTypes: CustomDataSource
 {
-    #region Configuration-properties (no config)
+    #region Configuration-properties
 
     /// <summary>
     /// The app id

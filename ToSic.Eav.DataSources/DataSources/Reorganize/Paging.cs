@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources;
 
 public sealed class Paging: CustomDataSourceAdvanced
 {
-    #region Configuration-properties (no config)
+    #region Configuration-properties
 
     private const int DefPageSize = 10;
     private const int DefPageNum = 1;

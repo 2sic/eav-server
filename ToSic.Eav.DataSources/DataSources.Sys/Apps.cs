@@ -36,7 +36,7 @@ namespace ToSic.Eav.DataSources.Sys;
 public sealed class Apps: CustomDataSource
 {
 
-    #region Configuration-properties (no config)
+    #region Configuration-properties
 
     private const string ZoneIdField = "ZoneId";
     private const string AppsContentTypeName = "App";
