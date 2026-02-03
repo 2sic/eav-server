@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources;
 /// DataSource which applies OData system query options ($filter, $orderby, $top, $skip, $select) to the upstream stream.
 /// It parses a raw OData query string and builds the corresponding ValueFilter/ValueSort pipeline.
 /// </summary>
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi("Internal only, probably not used for real, as it's now a standard feature of any query")]
 [VisualQuery(
     NiceName = "OData",
     UiHint = "Filter and sort using OData options like $filter, $orderby, $top, $skip",
@@ -18,7 +18,7 @@ namespace ToSic.Eav.DataSources;
     NameId = "ToSic.Eav.DataSources.OData, ToSic.Eav.DataSources",
     In = [InStreamDefaultRequired],
     DynamicOut = false,
-    Audience = Audience.Advanced,
+    Audience = Audience.System,
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter", // TODO: change
     HelpLink = "https://go.2sxc.org/DsOData")]
 public sealed class OData : DataSourceBase
