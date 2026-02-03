@@ -38,8 +38,20 @@ public sealed class SystemData : CustomDataSource
     /// <summary>
     /// The NameId of the DataSource to get data from.
     /// </summary>
-    [Configuration(Fallback = "", Token = $"[{DataSourceConstants.ParamsSourceName}:{nameof(DataSourceGuid)}]")]
-    public string DataSourceGuid => Configuration.GetThis(fallback: "");
+    /// <remarks>
+    /// It uses a fairly exotic name to avoid conflicts with parameter names of the data-sources being called.
+    /// </remarks>
+    [Configuration(Fallback = "", Token = $"[{DataSourceConstants.ParamsSourceName}:{nameof(SysDataSourceGuid)}]")]
+    public string SysDataSourceGuid => Configuration.GetThis(fallback: "");
+
+    /// <summary>
+    /// The NameId of the DataSource to get data from.
+    /// </summary>
+    /// <remarks>
+    /// It uses a fairly exotic name to avoid conflicts with parameter names of the data-sources being called.
+    /// </remarks>
+    [Configuration(Fallback = DataSourceConstants.StreamDefaultName, Token = $"[{DataSourceConstants.ParamsSourceName}:{nameof(SysDataStream)}]")]
+    public string SysDataStream => Configuration.GetThis(fallback: DataSourceConstants.StreamDefaultName);
 
     #endregion
 
@@ -58,25 +70,28 @@ public sealed class SystemData : CustomDataSource
     private IEnumerable<IEntity> GetList()
     {
         // If nothing relevant specified, return trivial message
-        if (string.IsNullOrWhiteSpace(DataSourceGuid))
-            return GetTrivialMessage();
+        if (string.IsNullOrWhiteSpace(SysDataSourceGuid))
+            return GetTrivialMessage(false, false);
 
         // Try to find in catalog, if not found, return trivial message
-        var dsType = _catalog.FindDataSourceInfo(DataSourceGuid, AppId);
+        var dsType = _catalog.FindDataSourceInfo(SysDataSourceGuid, AppId);
         if (dsType == null)
-            return GetTrivialMessage();
+            return GetTrivialMessage(false, false);
 
-        // Construct basic options and get the list from the specified data source
+        // Construct basic options and build the source
         var options = new DataSourceOptions
         {
             AppIdentityOrReader = this.PureIdentity(),
             LookUp = Configuration.LookUpEngine,
         };
         var ds = _dataSourceFactory.Create(dsType.Type, options: options);
-        return ds.List;
+
+        // Get the stream, if not found, return trivial message, otherwise return the list
+        var stream = ds.GetStream(SysDataStream, nullIfNotFound: true);
+        return stream?.List ?? GetTrivialMessage(true, false);
     }
 
-    private IEnumerable<IEntity> GetTrivialMessage()
+    private IEnumerable<IEntity> GetTrivialMessage(bool dsFound, bool streamFound)
     {
         var l = Log.Fn<IEnumerable<IEntity>>();
 
@@ -90,8 +105,9 @@ public sealed class SystemData : CustomDataSource
         [
             dataFactory.Create(new RawEntity(new()
             {
-                { "Name", "Dummy Data from the SystemData DataSource" },
-                { nameof(DataSourceGuid), DataSourceGuid }
+                { "Name", "SystemData DataSource - Source with specified name not found." },
+                { nameof(SysDataSourceGuid), $"{SysDataSourceGuid} ({(dsFound ? "" : "not ")}found)" },
+                { nameof(SysDataStream), $"{SysDataStream} ({(streamFound ? "" : "not ")}found)" },
             }))
         ];
 
