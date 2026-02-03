@@ -31,7 +31,7 @@ public static partial class EntityExtensions
     /// <param name="entity"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
-    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="NullToModel.Default"/></param>
+    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? As<TModel>(
@@ -39,7 +39,7 @@ public static partial class EntityExtensions
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
-        NullToModel nullHandling = NullToModel.Undefined
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
     {
@@ -55,14 +55,14 @@ public static partial class EntityExtensions
     /// <param name="canBeEntity"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
-    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="NullToModel.Default"/></param>
+    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? As<TModel>(
         this ICanBeEntity? canBeEntity,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
-        NullToModel nullHandling = NullToModel.Undefined
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
     {
@@ -76,7 +76,7 @@ public static partial class EntityExtensions
     /// <param name="entity">The entity to convert.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
-    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="NullToModel.Default"/></param>
+    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <param name="methodName">Automatically added method name</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
@@ -84,13 +84,13 @@ public static partial class EntityExtensions
         this IEntity? entity,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
-        NullToModel nullHandling = NullToModel.Undefined,
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined,
         [CallerMemberName] string? methodName = default
     )
         where TModel : class, IModelSetup<IEntity>, new()
     {
-        if (nullHandling == NullToModel.Undefined)
-            nullHandling = NullToModel.Default;
+        if (nullHandling == ModelNullHandling.Undefined)
+            nullHandling = ModelNullHandling.Default;
 
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
@@ -116,9 +116,9 @@ public static partial class EntityExtensions
         var ok = wrapper.SetupModel(entity);
         return ok
             ? wrapper
-            : (nullHandling & NullToModel.ModelAsModelForce) != 0
+            : (nullHandling & ModelNullHandling.ModelAsModelForce) != 0
                 ? wrapper
-                : (nullHandling & NullToModel.ModelAsThrow) != 0
+                : (nullHandling & ModelNullHandling.ModelNullThrows) != 0
                     ? throw new InvalidCastException($"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead")
                     : default;
     }

@@ -31,17 +31,17 @@ public static partial class EntityListExtensions
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
         string? typeName = default,
-        NullToModel nullHandling = NullToModel.Undefined
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
     {
         if (list == null)
-            return (nullHandling & NullToModel.ListAsThrow) != 0
+            return (nullHandling & ModelNullHandling.ListNullThrows) != 0
                 ? throw new ArgumentNullException(nameof(list))
                 : ((IEntity?)null).AsInternal<TModel>(nullHandling: nullHandling);
 
-        if (nullHandling == NullToModel.Undefined)
-            nullHandling = NullToModel.Default;
+        if (nullHandling == ModelNullHandling.Undefined)
+            nullHandling = ModelNullHandling.Default;
 
         var nameList = typeName != null
             ? [typeName]

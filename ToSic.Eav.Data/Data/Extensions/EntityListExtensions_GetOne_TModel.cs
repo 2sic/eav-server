@@ -19,7 +19,7 @@ public static partial class EntityListExtensions
         int id,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
-        NullToModel nullHandling = NullToModel.Undefined
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
     ) where TModel : class, IModelSetup<IEntity>, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         (list?.GetOne(id)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
@@ -39,7 +39,7 @@ public static partial class EntityListExtensions
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
         //bool nullIfNull = false,
-        NullToModel nullHandling = NullToModel.Undefined
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
     ) where TModel : class, IModelSetup<IEntity>, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         (list?.GetOne(guid)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, /*nullIfNull: nullIfNull,*/ nullHandling: nullHandling);
