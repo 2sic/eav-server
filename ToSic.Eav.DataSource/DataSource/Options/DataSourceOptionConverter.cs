@@ -12,7 +12,7 @@ public class DataSourceOptionConverter
     {
         // other is null
         if (other is null)
-            return original as DataSourceOptions ?? new DataSourceOptions()
+            return original as DataSourceOptions ?? new DataSourceOptions
             {
                 AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
             };

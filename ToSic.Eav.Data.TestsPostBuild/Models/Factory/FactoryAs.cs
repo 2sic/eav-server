@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Models.Factory;
 using ToSic.Eav.Models.TestData;
 
-namespace ToSic.Eav.Models;
+namespace ToSic.Eav.Models.Factory;
 
-public class AssembleTests(TestDataGenerator generator, IModelFactory factory)
+public class FactoryAs(TestDataGenerator generator, IModelFactory factory)
 {
 
     [Fact]
