@@ -22,18 +22,16 @@ namespace ToSic.Eav.DataSources.Sys;
 /// you can specify the NameId of another data-source, and this will return the list of that data-source.
 /// </remarks>
 /// <inheritdoc />
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [VisualQuery(
-    ConfigurationType = "",
-    NameId = "37cf83f7-5e57-4c4a-9798-a7e1440f99b3",
     NiceName = "System Data",
+    NameId = "37cf83f7-5e57-4c4a-9798-a7e1440f99b3",
     Type = DataSourceType.System,
     UiHint = "System-Data DataSource to access any other DataSource - use with caution.",
-    Audience = Audience.System, // Never show in Visual Query, as it's too powerful
-    DynamicOut = false
+    Audience = Audience.System // Never show in Visual Query, as it's too powerful
 )]
 // ReSharper disable once UnusedMember.Global
-public sealed class SystemData : CustomDataSource
+public sealed class SysData : CustomDataSource
 {
     private readonly DataSourceCatalog _catalog;
     private readonly IDataSourcesService _dataSourceFactory;
@@ -47,8 +45,8 @@ public sealed class SystemData : CustomDataSource
     /// <remarks>
     /// It uses a fairly exotic name to avoid conflicts with parameter names of the data-sources being called.
     /// </remarks>
-    [Configuration(Fallback = "", Token = $"[{DataSourceConstants.ParamsSourceName}:{nameof(SysDataSourceGuid)}]")]
-    public string SysDataSourceGuid => Configuration.GetThis(fallback: "");
+    [Configuration(Fallback = "", Token = $"[{DataSourceConstants.ParamsSourceName}:{nameof(SysDataSource)}]")]
+    public string SysDataSource => Configuration.GetThis(fallback: "");
 
     /// <summary>
     /// The NameId of the DataSource to get data from.
@@ -56,7 +54,7 @@ public sealed class SystemData : CustomDataSource
     /// <remarks>
     /// It uses a fairly exotic name to avoid conflicts with parameter names of the data-sources being called.
     /// </remarks>
-    [Configuration(Fallback = DataSourceConstants.StreamDefaultName, Token = $"[{DataSourceConstants.ParamsSourceName}:{nameof(SysDataStream)}]")]
+    [Configuration(Fallback = DataSourceConstants.StreamDefaultName, Token = $"[{DataSourceConstants.ParamsSourceName}:{nameof(SysDataStream)}||{DataSourceConstants.StreamDefaultName}]")]
     public string SysDataStream => Configuration.GetThis(fallback: DataSourceConstants.StreamDefaultName);
 
     #endregion
@@ -66,7 +64,7 @@ public sealed class SystemData : CustomDataSource
     /// TODO
     /// </summary>
     [PrivateApi]
-    public SystemData(Dependencies services, DataSourceCatalog catalog, IDataSourcesService dataSourceFactory, IUser user)
+    public SysData(Dependencies services, DataSourceCatalog catalog, IDataSourcesService dataSourceFactory, IUser user)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SysData", connect: [catalog, dataSourceFactory])
     {
         _catalog = catalog;
@@ -78,11 +76,11 @@ public sealed class SystemData : CustomDataSource
     private IEnumerable<IEntity> GetList()
     {
         // If nothing relevant specified, return trivial message
-        if (string.IsNullOrWhiteSpace(SysDataSourceGuid))
+        if (string.IsNullOrWhiteSpace(SysDataSource))
             return GetTrivialMessage(false, false);
 
         // Try to find in catalog, if not found, return trivial message
-        var dsInfo = _catalog.FindDataSourceInfo(SysDataSourceGuid, AppId);
+        var dsInfo = _catalog.FindDataSourceInfo(SysDataSource, AppId);
         if (dsInfo == null)
             return GetTrivialMessage(false, false);
 
@@ -143,7 +141,7 @@ public sealed class SystemData : CustomDataSource
         var dataFactory = DataFactory.SpawnNew(options: new()
         {
             TitleField = "Name",
-            TypeName = nameof(SystemData),
+            TypeName = nameof(SysData),
         });
 
         List<IEntity> result =
@@ -151,8 +149,8 @@ public sealed class SystemData : CustomDataSource
             dataFactory.Create(new RawEntity(new()
             {
                 { "Name", "SystemData DataSource - Error or Source/stream not found." },
-                { nameof(SysDataSourceGuid), $"{SysDataSourceGuid} ({(dsFound ? "" : "not ")}found)" },
-                { nameof(SysDataStream), $"{SysDataStream} ({(streamFound ? "" : "not ")}found)" },
+                { nameof(SysDataSource), $"'{SysDataSource}' ({(dsFound ? "" : "not ")}found)" },
+                { nameof(SysDataStream), $"'{SysDataStream}' ({(streamFound ? "" : "not ")}found)" },
                 { "Allowed", allowed ?? "unknown" }
             }))
         ];
