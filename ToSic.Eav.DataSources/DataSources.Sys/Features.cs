@@ -15,6 +15,7 @@ namespace ToSic.Eav.DataSources.Sys;
     Type = DataSourceType.System,
     NameId = "398d0b9f-044f-48f7-83ef-307872f7ed93",
     Audience = Audience.Advanced,
+    DataConfidentiality = DataConfidentiality.Never, // this is just a test, can be changed to something else any time
     DynamicOut = false
 )]
 // ReSharper disable once UnusedMember.Global

@@ -139,4 +139,16 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// Made public and renamed to `Audience` in v15.03
     /// </remarks>
     public Audience Audience { get; set; } = Audience.Default;
+
+    /// <summary>
+    /// Gets or sets the level of confidentiality assigned to the data.
+    /// </summary>
+    /// <remarks>
+    /// This is used by the SystemData DataSource to determine if the current user has access to the data.
+    /// Default is <see cref="DataConfidentiality.Unknown"/>, which means no specific confidentiality is assigned.
+    /// This results in a data-source being unaccessible to all users except for super-users.
+    ///
+    /// New in v21.02
+    /// </remarks>
+    public DataConfidentiality DataConfidentiality { get; set; } = DataConfidentiality.Unknown;
 }

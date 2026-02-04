@@ -2,10 +2,12 @@
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Catalog;
+using ToSic.Eav.DataSource.VisualQuery.Sys;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sys.Engines;
 using ToSic.Eav.Services;
+using ToSic.Sys.Users;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -35,6 +37,7 @@ public sealed class SystemData : CustomDataSource
 {
     private readonly DataSourceCatalog _catalog;
     private readonly IDataSourcesService _dataSourceFactory;
+    private readonly IUser _user;
 
     #region Configuration-properties
 
@@ -63,10 +66,12 @@ public sealed class SystemData : CustomDataSource
     /// TODO
     /// </summary>
     [PrivateApi]
-    public SystemData(Dependencies services, DataSourceCatalog catalog, IDataSourcesService dataSourceFactory) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SysData", connect: [])
+    public SystemData(Dependencies services, DataSourceCatalog catalog, IDataSourcesService dataSourceFactory, IUser user)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SysData", connect: [catalog, dataSourceFactory])
     {
         _catalog = catalog;
         _dataSourceFactory = dataSourceFactory;
+        _user = user;
         ProvideOut(GetList);
     }
 
@@ -77,9 +82,12 @@ public sealed class SystemData : CustomDataSource
             return GetTrivialMessage(false, false);
 
         // Try to find in catalog, if not found, return trivial message
-        var dsType = _catalog.FindDataSourceInfo(SysDataSourceGuid, AppId);
-        if (dsType == null)
+        var dsInfo = _catalog.FindDataSourceInfo(SysDataSourceGuid, AppId);
+        if (dsInfo == null)
             return GetTrivialMessage(false, false);
+
+        if (!dsInfo.IsAllowed(_user))
+            return GetTrivialMessage(true, false, $"Not allowed, DataConfidentiality: {dsInfo.VisualQuery?.DataConfidentiality}");
 
         // Construct basic options and build the source
         var lookUp = CreateLookUpEngine();
@@ -89,7 +97,7 @@ public sealed class SystemData : CustomDataSource
             AppIdentityOrReader = this.PureIdentity(),
             LookUp = lookUp,
         };
-        var ds = _dataSourceFactory.Create(dsType.Type, options: options);
+        var ds = _dataSourceFactory.Create(dsInfo.Type, options: options);
 
         // Get the stream, if not found, return trivial message, otherwise return the list
         var stream = ds.GetStream(SysDataStream, nullIfNotFound: true);
@@ -128,7 +136,7 @@ public sealed class SystemData : CustomDataSource
         }
     }
 
-    private IEnumerable<IEntity> GetTrivialMessage(bool dsFound, bool streamFound)
+    private IEnumerable<IEntity> GetTrivialMessage(bool dsFound, bool streamFound, string? allowed = default)
     {
         var l = Log.Fn<IEnumerable<IEntity>>();
 
@@ -142,9 +150,10 @@ public sealed class SystemData : CustomDataSource
         [
             dataFactory.Create(new RawEntity(new()
             {
-                { "Name", "SystemData DataSource - Source with specified name not found." },
+                { "Name", "SystemData DataSource - Error or Source/stream not found." },
                 { nameof(SysDataSourceGuid), $"{SysDataSourceGuid} ({(dsFound ? "" : "not ")}found)" },
                 { nameof(SysDataStream), $"{SysDataStream} ({(streamFound ? "" : "not ")}found)" },
+                { "Allowed", allowed ?? "unknown" }
             }))
         ];
 

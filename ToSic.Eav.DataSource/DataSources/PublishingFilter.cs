@@ -26,13 +26,20 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Keep data based on user roles (editor sees draft items)",
     Icon = DataSourceIcons.Eye, 
     Type = DataSourceType.Security, 
-    NameId = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources",
-    In = [DataSourceConstantsInternal.StreamPublishedName + "*", StreamDefaultName + "*",  DataSourceConstantsInternal.StreamDraftsName + "*"],
-    DynamicOut = false, 
+    NameId = NameId,
+    In =
+    [
+        DataSourceConstantsInternal.StreamPublishedName + "*",
+        StreamDefaultName + "*",
+        DataSourceConstantsInternal.StreamDraftsName + "*"
+    ],
+    DynamicOut = false,
+    DataConfidentiality = DataConfidentiality.Public,
     HelpLink = "https://go.2sxc.org/DsPublishingFilter")]
 
 public class PublishingFilter : DataSourceBase
 {
+    internal const string NameId = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources";
 
     #region Configuration-properties
 

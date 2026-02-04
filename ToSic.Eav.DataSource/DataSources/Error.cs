@@ -13,11 +13,12 @@
     Icon = DataSourceIcons.Warning,
     Type = DataSourceType.Debug,
     Audience = Audience.Advanced,
-    NameId = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid
+    NameId = NameId
 )]
 [PublicApi]
 public class Error: DataSourceBase
 {
+    internal const string NameId = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a";
     /// <summary>
     /// The error title. Defaults to "Demo Error"
     /// </summary>
