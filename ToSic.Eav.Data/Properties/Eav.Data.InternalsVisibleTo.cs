@@ -10,6 +10,7 @@
 
 //[assembly: InternalsVisibleTo("ToSic.Eav.Core.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Eav.DataSource.Tests")]
+[assembly: InternalsVisibleTo("ToSic.Eav.DataSources.Tests")]
 //[assembly: InternalsVisibleTo("ToSic.Testing.Shared")]
 //[assembly: InternalsVisibleTo("ToSic.Sxc.WebApi")]
 //[assembly: InternalsVisibleTo("ToSic.Sxc")]
