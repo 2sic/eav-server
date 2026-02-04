@@ -2,10 +2,9 @@
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using static ToSic.Eav.DataSources.CompareOperators;
 using static ToSic.Eav.TestData.PersonSpecs;
-using static ToSic.Eav.DataSourceTests.ValueSortShared;
-using ToSic.Eav.DataSources.ValueFilter;
+using static ToSic.Eav.DataSources.ValueFilterTests.ValueSortShared;
 
-namespace ToSic.Eav.DataSourceTests;
+namespace ToSic.Eav.DataSources.ValueFilterTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
@@ -52,7 +51,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
     {
         var vf = GetFilter(table, ml, FieldCity, value: city);
         if (lang != null) vf.Languages = lang;
-        Equal(expected, vf.ListTac().Count());//, $"Should find exactly {expected} people with this city");
+        Equal(expected, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, $"Should find exactly {expected} people with this city");
     }
 
     [Fact]
@@ -60,7 +59,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
     {
         var vf = GetFilter(true, false, FieldCity);
         vf.Value = City1.ToLowerInvariant(); // test for the first value
-        Equal(Quarter, vf.ListTac().Count());//, "Should find exactly 2500 people with this city");
+        Equal(Quarter, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 2500 people with this city");
     }
 
     #region String Case Sensitive
@@ -68,7 +67,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
     public void ValueFilter_SimpleTextFilterCSWithResults()
     {
         var vf = GetFilter(true, false, FieldCity, "===", City1);
-        Equal(Quarter, vf.ListTac().Count());//, "Should find exactly 2500 people with this city");
+        Equal(Quarter, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 2500 people with this city");
     }       
 
     [Fact]
@@ -77,7 +76,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         var vf = GetFilter(true, false, FieldCity, "===");
         //vf.Operator = "===";
         vf.Value = City1.ToLowerInvariant(); // test for the first value
-        Equal(0, vf.ListTac().Count());//, "Should find exactly 0 people with this city");
+        Equal(0, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 0 people with this city");
     }
 
     [Fact]
@@ -87,7 +86,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         //vf.Attribute = "CityMaybeNull";
         //vf.Operator = "===";
         vf.Value = "Grabs"; // test for the first value
-        Equal(Quarter, vf.ListTac().Count());//, "Should find exactly 0 people with this city");
+        Equal(Quarter, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 0 people with this city");
     }
 
     #endregion
@@ -100,7 +99,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Attribute = "City";
         vf.Operator = OpAll;
         vf.Value = "uCHs";
-        Equal(10000, vf.ListTac().Count());//, "Should find exactly 10000 people with this city");
+        Equal(10000, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 10000 people with this city");
     }
     #endregion
 
@@ -113,7 +112,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Attribute = "City";
         vf.Operator = OpContains;
         vf.Value = "uCHs";
-        Equal(2500, vf.ListTac().Count());//, "Should find exactly 2500 people with this city");
+        Equal(2500, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 2500 people with this city");
     }
 
     #endregion
@@ -128,7 +127,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Operator = OpContains;
         vf.Value = "uCHs";
         vf.Take = "5";
-        Equal(5, vf.ListTac().Count());//, "Should find exactly 5 people with this city");
+        Equal(5, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 5 people with this city");
     }
     [Fact]
     public void ValueFilter_TakeContainsCH1000()
@@ -138,7 +137,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Operator = OpContains;
         vf.Value = "CH";
         vf.Take = "1000";
-        Equal(1000, vf.ListTac().Count());//, "Should find exactly 5 people with this city");
+        Equal(1000, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 5 people with this city");
     }
 
     [Fact]
@@ -149,7 +148,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Operator = OpAll;
         vf.Value = "uCHs";
         vf.Take = "10000";
-        Equal(10000, vf.ListTac().Count());//, "Should find exactly 5 people with this city");
+        Equal(10000, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 5 people with this city");
     }        
     [Fact]
     public void ValueFilter_TakeNone()
@@ -159,7 +158,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Operator = OpNone;
         vf.Value = "uCHs";
         vf.Take = "10000";
-        Equal(0, vf.ListTac().Count());//, "Should find none");
+        Equal(0, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find none");
     }        
 
     [Fact]
@@ -170,7 +169,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Operator = OpAll;
         vf.Value = "uCHs";
         vf.Take = "90000";
-        Equal(10000, vf.ListTac().Count());//, "Should find exactly 5 people with this city");
+        Equal(10000, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 5 people with this city");
     }        
     #endregion
 
@@ -183,7 +182,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Attribute = "City";
         vf.Operator = "begins";
         vf.Value = "bu";
-        Equal(2500, vf.ListTac().Count());//, "Should find exactly 2500 people with this city");
+        Equal(2500, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 2500 people with this city");
     }
     [Fact]
     public void ValueFilter_SimpleTextFilterBeginsNone()
@@ -192,7 +191,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Attribute = "CityMaybeNull";
         vf.Operator = "begins";
         vf.Value = "St.";
-        Equal(0, vf.ListTac().Count());//, "Should find exactly 0 people with this city");
+        Equal(0, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 0 people with this city");
     }
     #endregion
 
@@ -204,7 +203,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Attribute = "City";
         vf.Operator = OpContains;
         vf.Value = "Buchs SG";
-        Equal(0, vf.ListTac().Count());//, "Should find exactly 0 people with this city");
+        Equal(0, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 0 people with this city");
     }
 
     [Fact]
@@ -214,7 +213,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Attribute = "City";
         vf.Operator = "!contains";
         vf.Value = "ch";
-        Equal(5000, vf.ListTac().Count());//, "Should find exactly 5000 people with this city");
+        Equal(5000, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 5000 people with this city");
     }
     #endregion
 
@@ -225,7 +224,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         var vf = _testDataGeneratedOutsideTimer;
         vf.Attribute = "City";
         vf.Value = "Daniel";
-        Equal(0, vf.ListTac().Count());//, "Should find exactly 0 people with this city");
+        Equal(0, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 0 people with this city");
     }
         
     [Fact]
@@ -234,7 +233,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         var vf = _testDataGeneratedOutsideTimer;
         vf.Attribute = "ZIPCodeOrSomeOtherNotExistingField";
         vf.Value = "9470"; // test for the first value
-        Equal(0, vf.ListTac().Count());//, "Should find exactly 0 people with this city");
+        Equal(0, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 0 people with this city");
     }
 
     [Fact]
@@ -244,7 +243,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         var vf = _testDataGeneratedOutsideTimer;
         vf.Attribute = "CityMaybeNull";
         vf.Value = specs.TestCities[1]; // test for the second value
-        Equal(2500, vf.ListTac().Count());//, "Should find exactly 250 people with this city");
+        Equal(2500, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 250 people with this city");
     }
 
 
@@ -256,7 +255,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Attribute = "City";
         // vf.Operator = "==";
         vf.Value = "inexisting city";
-        Equal(0, vf.ListTac().Count());//, "Should find exactly 0 people with this city");
+        Equal(0, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 0 people with this city");
     }
 
     [Fact]
@@ -268,8 +267,8 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Value = "inexisting city";
             
         // attach fallback to give all if no match
-        vf.Attach(StreamFallbackName, vf.InTac()[StreamDefaultName]);
-        Equal(TestVolume, vf.ListTac().Count());//, "Should find exactly 0 people with this city");
+        vf.Attach(StreamFallbackName, DataSourceTestAccessors.InTac(vf)[StreamDefaultName]);
+        Equal(TestVolume, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 0 people with this city");
     }
     #endregion
 

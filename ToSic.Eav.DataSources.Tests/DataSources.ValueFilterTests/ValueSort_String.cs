@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.DataSources.ValueFilter;
-using static ToSic.Eav.TestData.PersonSpecs;
+﻿using static ToSic.Eav.TestData.PersonSpecs;
 #pragma warning disable xUnit1026
 
-namespace ToSic.Eav.DataSourceTests;
+namespace ToSic.Eav.DataSources.ValueFilterTests;
 // Todo
 // 1. Tests with standard fields like EntityTitle
 // 2. Tests with multiple fileds like City,Name

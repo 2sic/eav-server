@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.DataSources.ValueFilter;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSources.ValueFilterTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
@@ -25,7 +23,7 @@ public class ValueFilterBoolean(ValueFilterMaker valueFilterMaker)
         var vf = valueFilterMaker.CreateValueFilterForTesting(populationRoot * Specs.IsMaleForEveryX, useTable); // only every 3rd is male in the demo data
         vf.Attribute = "IsMale";
         vf.Value = compareValue;
-        var found = vf.ListTac().Count();
+        var found = DataSourceTestAccessors.ListTac((IDataSource)vf).Count();
         Equal(desiredFinds, found); //, "Should find exactly this amount people");
     }
 

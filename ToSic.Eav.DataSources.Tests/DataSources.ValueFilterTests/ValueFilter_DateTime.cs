@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.DataSources.ValueFilter;
-using static ToSic.Eav.DataSources.CompareOperators;
+﻿using static ToSic.Eav.DataSources.CompareOperators;
 using static ToSic.Eav.TestData.PersonSpecs;
 #pragma warning disable xUnit1026
 
-namespace ToSic.Eav.DataSourceTests;
+namespace ToSic.Eav.DataSources.ValueFilterTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
@@ -36,7 +35,7 @@ public class ValueFilterDateTime(ValueFilterMaker valueFilterMaker)
     public void DateTimeFilter(string attr, string value, int expected, string operation, string name)
     {
         var vf = PrepareDateTimeFilterDs(attr, value, operation);
-        var list = vf.ListTac().ToList();
+        var list = DataSourceTestAccessors.ListTac((IDataSource)vf).ToList();
         Equal(expected, list.Count());//, $"{name}: find exactly " + expected + " amount people");
     }
 

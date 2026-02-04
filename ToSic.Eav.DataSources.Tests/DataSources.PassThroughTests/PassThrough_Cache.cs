@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace ToSic.Eav.DataSourceTests;
+namespace ToSic.Eav.DataSources.PassThroughTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 

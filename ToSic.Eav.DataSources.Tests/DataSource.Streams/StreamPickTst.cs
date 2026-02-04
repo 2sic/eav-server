@@ -2,7 +2,7 @@
 using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.Services;
 
-namespace ToSic.Eav.DataSourceTests.Streams;
+namespace ToSic.Eav.DataSource.Streams;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class StreamPickTst(IDataSourcesService dsBuild, Generator<DataTablePerson> personTableGenerator)

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSources.ValueFilterTests;
 
 internal class ValueSortShared
 {

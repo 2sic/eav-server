@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.DataSources.ValueFilter;
-
-namespace ToSic.Eav.DataSourceTests;
+﻿namespace ToSic.Eav.DataSources.ValueFilterTests;
 // Todo
 // Create tests with language-parameters as well, as these tests ignore the language and always use default
 
@@ -70,7 +68,7 @@ public class ValueFilterNumbers(ValueFilterMaker valueFilterMaker)
     public void NumberFilter(string attr, string value, int expected, string operation = null)
     {
         var vf = PrepareNumberFilterDs(attr, value, operation);
-        Equal(expected, vf.ListTac().Count());//, "Should find exactly " + expected + " amount people");
+        Equal(expected, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly " + expected + " amount people");
     }
 
     private ValueFilter PrepareNumberFilterDs(string attr, string value, string operation)

@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.LookUp;
-using ToSic.Eav.LookUp.TestHelpers;
+﻿using ToSic.Eav.LookUp.TestHelpers;
 
-namespace ToSic.Eav.DataSourceTests.LookUps;
+namespace ToSic.Eav.LookUp;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class LookUpsTest(DataSourcesTstBuilder dsSvc, DataTablePerson personTableGenerator)

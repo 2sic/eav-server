@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.LookUp;
 
-namespace ToSic.Eav.DataSourceTests;
+namespace ToSic.Eav.DataSources.ValueFilterTests;
 
 public class ValueFilterMaker(DataSourcesTstBuilder dsSvc, Generator<DataTablePerson> personTableGenerator, DataBuilder dataBuilder)
 {

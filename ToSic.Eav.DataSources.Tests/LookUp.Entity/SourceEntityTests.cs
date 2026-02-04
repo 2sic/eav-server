@@ -1,14 +1,11 @@
-﻿using ToSic.Eav;
-using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Data.TestData;
-using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.TestHelpers;
-using Xunit.DependencyInjection;
 
-namespace ToSic.Sys.LookUp;
+namespace ToSic.Eav.LookUp.Entity;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class SourceEntityTests(DataBuilder dataBuilder)

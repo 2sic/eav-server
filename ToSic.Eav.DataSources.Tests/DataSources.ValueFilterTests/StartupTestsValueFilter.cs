@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.DataSourceTests;
 
-namespace ToSic.Eav.DataSources.ValueFilter;
+namespace ToSic.Eav.DataSources.ValueFilterTests;
 
 internal class StartupTestsValueFilter: StartupCoreDataSourcesAndTestData
 {

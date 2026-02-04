@@ -1,6 +1,6 @@
 ﻿using static ToSic.Eav.DataSource.DataSourceConstants;
 
-namespace ToSic.Eav.DataSourceTests.Streams;
+namespace ToSic.Eav.DataSource.Streams;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class StreamFallbackTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
