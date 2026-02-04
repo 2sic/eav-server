@@ -1,6 +1,6 @@
 ﻿// 2018-03-09 2dm disabled various tests related to code-based content-types, which ATM are never in use
 
-namespace ToSic.Eav.Core.Tests.Types;
+namespace ToSic.Eav.Data.Build.Types_Old_Tests_All_Disabled_Since_We_Dont_Have_Code_First_ATM;
 
 public class GlobalManagerTests
 {

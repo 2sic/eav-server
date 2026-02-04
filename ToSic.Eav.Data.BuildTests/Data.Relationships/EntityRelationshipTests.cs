@@ -1,9 +1,8 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Data.TestData;
-using Xunit.DependencyInjection;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Data.Relationships;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class EntityRelationshipTests(DataBuilder dataBuilder)

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-
-namespace ToSic.Eav.Data.Builder;
+﻿namespace ToSic.Eav.Data.Build.ContentTypes;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class ContentType_Test(ContentTypeBuilder ctBuilder)

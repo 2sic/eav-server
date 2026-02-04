@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Build.CodeContentTypes;
+﻿using ToSic.Eav.Data.Build.CodeContentTypes;
 using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.Data.Builder;
+namespace ToSic.Eav.Data.Build.ContentTypes;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class ContentTypeFactoryClassTests(ContentTypeFactory factory)

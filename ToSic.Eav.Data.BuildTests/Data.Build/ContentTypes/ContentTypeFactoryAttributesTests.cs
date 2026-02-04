@@ -1,11 +1,9 @@
-﻿using System.Xml.Linq;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Build.CodeContentTypes;
+﻿using ToSic.Eav.Data.Build.CodeContentTypes;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 
-namespace ToSic.Eav.Data.Builder;
+namespace ToSic.Eav.Data.Build.ContentTypes;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class ContentTypeFactoryAttributesTests(ContentTypeFactory factory)

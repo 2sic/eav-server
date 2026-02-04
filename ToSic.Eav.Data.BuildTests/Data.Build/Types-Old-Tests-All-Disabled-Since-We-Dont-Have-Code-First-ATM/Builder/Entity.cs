@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Core.Tests.Types.Builder;
+﻿namespace ToSic.Eav.Data.Build.Types_Old_Tests_All_Disabled_Since_We_Dont_Have_Code_First_ATM.Builder;
 
 //public static class Entity
 //{

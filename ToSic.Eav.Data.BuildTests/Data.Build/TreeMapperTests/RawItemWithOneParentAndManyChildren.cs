@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 
-namespace ToSic.Eav.Data.BuildTests.TreeMapperTests;
+namespace ToSic.Eav.Data.Build.TreeMapperTests;
 
 internal class RawItemWithOneParentAndManyChildren(int id, Guid guid, int parentId, List<int>? childrenIds)
     : IRawEntity, IHasRelationshipKeys
