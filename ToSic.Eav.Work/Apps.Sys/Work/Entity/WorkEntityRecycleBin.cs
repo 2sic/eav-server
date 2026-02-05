@@ -209,7 +209,9 @@ public class WorkEntityRecycleBin(
 
         try
         {
-            return jsonSerializer.New().Deserialize(json);
+            var serializer = jsonSerializer.New();
+            serializer.Initialize(AppWorkCtx.AppReader);
+            return serializer.Deserialize(json);
         }
         catch
         {

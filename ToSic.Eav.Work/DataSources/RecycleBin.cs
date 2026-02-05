@@ -29,8 +29,7 @@ public class RecycleBin : CustomDataSource
             () => GetList(recycleBin.New(AppId).Get()),
             options: () => new()
             {
-                AutoId = false,
-                TitleField = "Name",
+                AutoId = true,
                 TypeName = "RecycleBin",
             });
     }
@@ -41,10 +40,8 @@ public class RecycleBin : CustomDataSource
         var list = recycleBinItems
             .Select(r => new RawEntity(new()
             {
-                { AttributeNames.IdNiceName, r.EntityId },
-                { AttributeNames.GuidNiceName, r.EntityGuid },
-                { AttributeNames.CreatedNiceName, r.DeletedUtc },
-                { AttributeNames.ModifiedNiceName, r.DeletedUtc },
+                { nameof(r.EntityId), r.EntityId },
+                { nameof(r.EntityGuid), r.EntityGuid.ToString() },
                 { nameof(r.AppId), r.AppId },
                 { nameof(r.ContentTypeStaticName), r.ContentTypeStaticName },
                 { nameof(r.ContentTypeName), r.ContentTypeName },
@@ -52,6 +49,9 @@ public class RecycleBin : CustomDataSource
                 { nameof(r.DeletedUtc), r.DeletedUtc },
                 { nameof(r.DeletedBy), r.DeletedBy },
                 { nameof(r.ParentRef), r.ParentRef },
+                { AttributeNames.CreatedNiceName, r.DeletedUtc },
+                { AttributeNames.ModifiedNiceName, r.DeletedUtc },
+                { AttributeNames.TitleNiceName, $"{r.ContentTypeName}({r.EntityId})" },
             }))
             .ToList();
 
