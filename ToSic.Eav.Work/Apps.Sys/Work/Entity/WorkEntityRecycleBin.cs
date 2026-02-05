@@ -84,14 +84,22 @@ public class WorkEntityRecycleBin(
             .Where(e => e.AppId == appId)
             .Select(e => e.EntityId);
 
+        var entityGuidsInApp = db.TsDynDataEntities
+            .AsNoTracking()
+            .IgnoreQueryFilters()
+            .Where(e => e.AppId == appId)
+            .Select(e => e.EntityGuid);
+
         var historyMissingEntityRows = db.TsDynDataHistories
             .AsNoTracking()
             .Where(h => h.SourceTable == EntitiesTableName
                 && h.Operation == EavConstants.HistoryEntityJson
                 && h.ParentRef == parentRef
                 && h.SourceId != null
+                && h.SourceGuid != null
                 && h.TransactionId != null
-                && !entityIdsInApp.Contains(h.SourceId.Value))
+                && !entityIdsInApp.Contains(h.SourceId.Value)
+                && !entityGuidsInApp.Contains(h.SourceGuid.Value))
             .OrderByDescending(h => h.Timestamp)
             .Select(h => new HistoryDeletedEntityRow(
                 h.SourceId!.Value,
@@ -176,6 +184,7 @@ public class WorkEntityRecycleBin(
         Dictionary<int, TransactionInfo> transactions,
         string? parentRef)
         => historyDeletedEntitiesLatest
+            .Where(i => i.EntityGuid != Guid.Empty)
             .Select(h =>
             {
                 transactions.TryGetValue(h.DeletedTransactionId, out var tx);
@@ -194,7 +203,6 @@ public class WorkEntityRecycleBin(
                     DeletedBy: tx?.User,
                     ParentRef: parentRef);
             })
-            .Where(i => i.EntityGuid != Guid.Empty)
             .ToList();
 
     private string? ResolveHistoryJson(HistoryDeletedEntityRow row)
