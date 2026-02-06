@@ -112,7 +112,7 @@ public class WorkEntityRecycleBin(
 
         return historyMissingEntityRows
             .GroupBy(h => h.EntityGuid)
-            .Select(g => g.OrderByDescending(h => h.EntityId).First())
+            .Select(g => g.OrderByDescending(h => h.Timestamp).First())
             .ToList();
     }
 
