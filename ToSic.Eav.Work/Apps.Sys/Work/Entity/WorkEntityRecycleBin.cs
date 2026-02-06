@@ -111,8 +111,8 @@ public class WorkEntityRecycleBin(
             .ToList();
 
         return historyMissingEntityRows
-            .GroupBy(h => h.EntityId)
-            .Select(g => g.First())
+            .GroupBy(h => h.EntityGuid)
+            .Select(g => g.OrderByDescending(h => h.EntityId).First())
             .ToList();
     }
 
