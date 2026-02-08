@@ -1,5 +1,7 @@
-﻿using ToSic.Eav.Data.Raw.Sys;
+﻿using System.Text.Json;
+using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
@@ -9,32 +11,49 @@ namespace ToSic.Eav.DataSources.Sys;
 
 public static class FeaturesToRawEntity
 {
-    public static IRawEntity ToRawEntity(this FeatureState state)
-        => new RawEntity
+    public const string FeatureStateTypeName = "FeatureState";
+
+    public static IRawEntity ToRawEntity(this FeatureState state, bool detailed = false)
+    {
+        var values = new Dictionary<string, object?>
+        {
+            { nameof(state.NameId), state.NameId },
+            { AttributeNames.TitleNiceName, state.Aspect.Name },
+            { nameof(Aspect.Description), state.Aspect.Description },
+            { nameof(state.IsEnabled), state.IsEnabled },
+            { nameof(state.EnabledByDefault), state.EnabledByDefault },
+            // Not important, don't include
+            //{ "EnabledReason", EnabledReason },
+            //{ "EnabledReasonDetailed", EnabledReasonDetailed },
+            //{ "SecurityImpact", Security?.Impact },
+            //{ "SecurityMessage", Security?.Message },
+            { nameof(state.EnabledInConfiguration), state.EnabledInConfiguration },
+            { nameof(state.Expiration), state.Expiration },
+            { nameof(state.IsForEditUi), state.IsForEditUi },
+            { $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? EavConstants.NullNameId },
+            { $"{nameof(state.License)}{nameof(state.License.Guid)}", state.License?.Guid ?? Guid.Empty },
+            { nameof(state.AllowedByLicense), state.AllowedByLicense },
+            { nameof(state.Aspect.Link), state.Aspect.Link },
+            { nameof(state.IsPublic), state.IsPublic },
+        };
+
+        if (detailed)
+        {
+            values.Add(nameof(state.EnabledReason), state.EnabledReason);
+            values.Add(nameof(state.EnabledReasonDetailed), state.EnabledReasonDetailed);
+            values.Add(nameof(state.Aspect.IsConfigurable), state.Aspect.IsConfigurable);
+            values.Add(nameof(state.Configuration), JsonSerializer.Serialize(state.Configuration));
+            values.Add(nameof(state.Aspect.ConfigurationContentType), state.Aspect.ConfigurationContentType);
+            values.Add("SecurityImpact", state.Security?.Impact);
+            values.Add("SecurityMessage", state.Security?.Message);
+        }
+
+        return new RawEntity
         {
             Guid = state.Aspect.Guid,
-            Values = new Dictionary<string, object?>
-            {
-                { nameof(state.NameId), state.NameId },
-                { AttributeNames.TitleNiceName, state.Aspect.Name },
-                { nameof(Aspect.Description), state.Aspect.Description },
-                { nameof(state.IsEnabled), state.IsEnabled },
-                { nameof(state.EnabledByDefault), state.EnabledByDefault },
-                // Not important, don't include
-                //{ "EnabledReason", EnabledReason },
-                //{ "EnabledReasonDetailed", EnabledReasonDetailed },
-                //{ "SecurityImpact", Security?.Impact },
-                //{ "SecurityMessage", Security?.Message },
-                { nameof(state.EnabledInConfiguration), state.EnabledInConfiguration },
-                { nameof(state.Expiration), state.Expiration },
-                { nameof(state.IsForEditUi), state.IsForEditUi },
-                { $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? EavConstants.NullNameId },
-                { $"{nameof(state.License)}{nameof(state.License.Guid)}", state.License?.Guid ?? Guid.Empty },
-                { nameof(state.AllowedByLicense), state.AllowedByLicense },
-                { nameof(state.Aspect.Link), state.Aspect.Link },
-                { nameof(state.IsPublic), state.IsPublic },
-            }
+            Values = values,
         };
+    }
 
     /// <summary>
     /// Important: We are creating an object which is basically the License.

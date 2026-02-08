@@ -21,10 +21,6 @@ namespace ToSic.Eav.DataSources.Sys;
 // ReSharper disable once UnusedMember.Global
 public sealed class Features : CustomDataSource
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Constructs a new Scopes DS
-    /// </summary>
     [PrivateApi]
     public Features(Dependencies services, ISysFeaturesService featuresService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Feats", connect: [featuresService])
     {
