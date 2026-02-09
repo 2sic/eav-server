@@ -4,7 +4,17 @@ namespace ToSic.Sys.Capabilities.Features;
 
 public partial class BuiltInFeatures
 {
+    /// <summary>
+    /// Features of Patron Data, which are auto-enabled if Patron Data is enabled, and auto-disabled if Patron Data is disabled.
+    /// </summary>
     internal static List<FeatureLicenseRule> ForPatronDataAutoEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronData, true);
+
+    /// <summary>
+    /// Features of Patron Data, which are auto-disabled if Patron Data is disabled.
+    /// Mainly for testing.
+    /// </summary>
+    // ReSharper disable once UnusedMember.Global
+    internal static List<FeatureLicenseRule> ForPatronDataAutoDisabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronData, false);
 
 
     public static readonly Feature ContentTypeFieldsReuseDefinitions = new(){
@@ -104,6 +114,32 @@ public partial class BuiltInFeatures
 
         EnableForSystemTypes = true,
         DisabledBehavior = FeatureDisabledBehavior.Downgrade,
+    };
+
+    public static readonly Feature EntityUndelete = new()
+    {
+        NameId = nameof(EntityUndelete),
+        Guid = new("07803050-9f7b-4cc4-a760-3a7f6fbe1b9a"),
+        Name = "Entity Undelete (new v21)",
+        IsPublic = false,
+        Ui = true,
+        Description = "Allows undeleting data/entities which was previously deleted.",
+        Security = FeaturesCatalogRules.Security0Neutral,
+        LicenseRules = ForPatronDataAutoEnabled,
+    };
+
+    public static readonly Feature EntityInspectRelationships = new()
+    {
+        NameId = nameof(EntityInspectRelationships),
+        Guid = new("f0a6163c-7e95-4a10-bddd-2c84455f9d9a"),
+        Name = "Entity inspect relationships (new v21)",
+        IsPublic = false,
+        Ui = true,
+        Description = "Allows inspecting relationships of entities.",
+        Security = FeaturesCatalogRules.Security0Neutral,
+        LicenseRules = ForPatronDataAutoEnabled,
+        DisabledBehavior = FeatureDisabledBehavior.Disable,
+
     };
 
 }

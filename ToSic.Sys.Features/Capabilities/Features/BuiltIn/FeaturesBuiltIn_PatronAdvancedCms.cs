@@ -6,18 +6,6 @@ public partial class BuiltInFeatures
 {
     internal static List<FeatureLicenseRule> ForPatronAdvancedCmsAutoEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronAdvancedCms, true);
 
-    public static readonly Feature EntitiesUndelete = new()
-    {
-        NameId = nameof(EntitiesUndelete),
-        Guid = new("07803050-9f7b-4cc4-a760-3a7f6fbe1b9a"),
-        Name = "Entities Undelete (new v21)",
-        IsPublic = false,
-        Ui = true,
-        Description = "Allows undeleting data/entities which was previously deleted.",
-        Security = FeaturesCatalogRules.Security0Neutral,
-        LicenseRules = ForPatronAdvancedCmsAutoEnabled
-    };
-
     public static readonly Feature CopyrightManagement = new()
     {
         NameId = nameof(CopyrightManagement),
