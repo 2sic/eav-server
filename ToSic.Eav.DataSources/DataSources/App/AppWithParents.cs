@@ -43,7 +43,7 @@ internal class AppWithParents: DataSourceBase
         {
             AppIdentityOrReader = appReader,
         });
-        var initialLink = initialSource.Link;
+        var initialLink = initialSource.GetLink();
 
         // 2dm 2023-01-22 #maybeSupportIncludeParentApps
         var parentAppState = appReader.GetParentCache();
@@ -54,7 +54,7 @@ internal class AppWithParents: DataSourceBase
             {
                 AppIdentityOrReader = parentAppState,
             });
-            initialLink = initialLink.Add(next.Link.Rename(inName: $"App{parentAppState.NameId}"));
+            initialLink = initialLink.WithMore([next.GetLink().WithRename(inName: $"App{parentAppState.NameId}")]);
             parentAppState = parentAppState.ParentApp?.AppState;
         }
 

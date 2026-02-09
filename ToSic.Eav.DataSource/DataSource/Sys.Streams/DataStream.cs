@@ -182,6 +182,8 @@ public class DataStream(
     public ILog Log => Source?.Log!; // Note that it can be null, but most commands on Log are null-safe
 
 
-    public IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: Source, stream: this, outName: Name))!;
+    public IDataSourceLink GetLink() =>
+        _link.Get(() => new DataSourceLink { DataSource = Source, Stream = this, OutName = Name })!;
+
     private readonly GetOnce<IDataSourceLink> _link = new();
 }

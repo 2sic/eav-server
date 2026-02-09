@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.DataSource.Sys.Query;
 using ToSic.Sys.Users.Permissions;
 using static ToSic.Eav.DataSource.DataSourceConstants;
+using static ToSic.Eav.DataSource.Sys.DataSourceConstantsInternal;
 
 
 namespace ToSic.Eav.DataSources;
@@ -29,9 +30,9 @@ namespace ToSic.Eav.DataSources;
     NameId = NameId,
     In =
     [
-        DataSourceConstantsInternal.StreamPublishedName + "*",
-        StreamDefaultName + "*",
-        DataSourceConstantsInternal.StreamDraftsName + "*"
+        StreamPublishedName + InStreamRequiredSuffix,
+        StreamDefaultName + InStreamRequiredSuffix,
+        StreamDraftsName + InStreamRequiredSuffix
     ],
     DataConfidentiality = DataConfidentiality.Public,
     HelpLink = "https://go.2sxc.org/DsPublishingFilter")]
@@ -58,7 +59,7 @@ public class PublishingFilter : DataSourceBase
     /// Constructs a new PublishingFilter
     /// </summary>
     [PrivateApi]
-    public PublishingFilter(Dependencies services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Publsh", connect: [userPermissions])
+    public PublishingFilter(Dependencies services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{LogPrefix}.Publsh", connect: [userPermissions])
     {
         _userPermissions = userPermissions;
         ProvideOut(PublishingFilterList);
@@ -74,8 +75,8 @@ public class PublishingFilter : DataSourceBase
                               ?? _userPermissions.UserPermissions()?.ShowDraftData
                               ?? QueryConstants.ParamsShowDraftsDefault;
         var inStreamName = finalShowDrafts
-            ? DataSourceConstantsInternal.StreamDraftsName
-            : DataSourceConstantsInternal.StreamPublishedName;
+            ? StreamDraftsName
+            : StreamPublishedName;
 
         // Standard / old case: if the inputs already have the correct streams, use them.
         if (In.TryGetValue(inStreamName, out var inStream))

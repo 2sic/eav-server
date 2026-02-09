@@ -19,5 +19,5 @@ public interface IDataSourceLinkable
     /// A link - or possibly many.
     /// In most cases, this references the parent object which provides this/these links.
     /// </summary>
-    IDataSourceLink Link { get; }
+    IDataSourceLink GetLink();
 }

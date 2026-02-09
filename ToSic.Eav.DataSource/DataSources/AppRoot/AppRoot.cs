@@ -22,9 +22,10 @@ public class AppRoot : DataSourceBase, IAppRoot
     }
     private readonly IAppReaderFactory _appReaders;
 
-    public override IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
-        .AddStream(name: DataSourceConstantsInternal.StreamPublishedName)
-        .AddStream(name: DataSourceConstantsInternal.StreamDraftsName))!;
+    public override IDataSourceLink GetLink() =>
+        _link.Get(() => new DataSourceLink { DataSource = this }
+            .WithAnotherStream(name: DataSourceConstantsInternal.StreamPublishedName)
+            .WithAnotherStream(name: DataSourceConstantsInternal.StreamDraftsName))!;
 
     private readonly GetOnce<IDataSourceLink> _link = new();
 

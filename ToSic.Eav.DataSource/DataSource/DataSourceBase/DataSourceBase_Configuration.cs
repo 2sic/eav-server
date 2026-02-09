@@ -39,7 +39,7 @@ partial class DataSourceBase
     public void Setup(IDataSourceOptions? options, IDataSourceLinkable? attach)
     {
         var l = Log.Fn();
-        var mainUpstream = attach?.Link?.DataSource;
+        var mainUpstream = attach?.GetLink()?.DataSource;
 
         var appIdRequired = options?.AppIdentityOrReader
                             ?? mainUpstream
@@ -47,10 +47,10 @@ partial class DataSourceBase
         (this as IAppIdentitySync).UpdateAppIdentity(appIdRequired);
             
         // Attach in-bound, and make it immutable afterward
-        if (attach?.Link == null)
+        if (attach?.GetLink() == null)
             l.A("Nothing to attach");
         else
-            Connect(attach.Link);
+            Connect(attach.GetLink());
 
         if (options?.Immutable == true)
             Immutable = true;

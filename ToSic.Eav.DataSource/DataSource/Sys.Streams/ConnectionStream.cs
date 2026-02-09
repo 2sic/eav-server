@@ -89,5 +89,5 @@ internal class ConnectionStream(
 
     #endregion
 
-    public IDataSourceLink Link => InnerStream.Link;
+    public IDataSourceLink GetLink() => InnerStream.GetLink();
 }

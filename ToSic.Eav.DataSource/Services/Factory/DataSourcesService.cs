@@ -53,9 +53,9 @@ internal class DataSourcesService(
     /// <inheritdoc />
     public TDataSource Create<TDataSource>(IDataSourceLinkable? attach = default, IDataSourceOptions? options = default) where TDataSource : IDataSource
     {
-        var l = Log.Fn<TDataSource>($"{typeof(TDataSource).Name}, attach:{attach?.Link?.DataSource?.Show()}");
+        var l = Log.Fn<TDataSource>($"{typeof(TDataSource).Name}, attach:{attach?.GetLink()?.DataSource?.Show()}");
 
-        var primarySource = attach?.Link?.DataSource;
+        var primarySource = attach?.GetLink()?.DataSource;
         
         if (primarySource == null && options?.AppIdentityOrReader == null)
             throw new($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.AppIdentity no not be null.");

@@ -3,6 +3,6 @@
 partial class DataSourceBase: IDataSourceLinkable
 {
     /// <inheritdoc />
-    public virtual IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this))!;
-    private readonly GetOnce<IDataSourceLink> _link = new();
+    public virtual IDataSourceLink GetLink() => _link ??= new DataSourceLink { DataSource = this };
+    private IDataSourceLink? _link;
 }
