@@ -48,7 +48,7 @@ public class DataSourceConstants
     /// Marker for specifying that the Default `In` stream is required on the <see cref="VisualQueryAttribute"/>.
     /// </summary>
     [PublicApi]
-    public const string InStreamDefaultRequired = "Default" + InStreamRequiredSuffix;
+    public const string InStreamDefaultRequired = StreamDefaultName + InStreamRequiredSuffix;
 
     /// <summary>
     /// The source name to get query parameters.

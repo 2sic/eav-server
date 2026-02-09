@@ -12,6 +12,8 @@ partial class DataSourceBase
     /// <remarks>
     /// * Added in v15.0x
     /// * Important: The internals of this class are not documented, as they will change with time.
+    /// * Important: This must be a `class`, not a `record`, because it needs to be inherited and extended by inheriting DataSources, and some platforms like DNN would not support records.
+    ///     Changing to records would be a breaking change.
     /// </remarks>
     [PrivateApi]
     public class Dependencies(
