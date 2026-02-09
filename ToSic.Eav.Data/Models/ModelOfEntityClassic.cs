@@ -54,7 +54,7 @@ public abstract partial class ModelOfEntityClassic: IModelOfData, /*IDataWrapper
 
     public bool SetupModel(IEntity? source)
     {
-        Entity = source;
+        Entity = source!;
         return true;
     }
 

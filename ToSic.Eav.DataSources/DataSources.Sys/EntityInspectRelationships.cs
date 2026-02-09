@@ -67,7 +67,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
         var childrenWithField = entity.Attributes
             .GetEntityAttributes()
             .SelectMany(a => a.Value.TypedContents?
-                .Select(e => new RelInfo(e, Field: a.Key, IsChild: true)))
+                .Select(e => new RelInfo(e, Field: a.Key, IsChild: true)) ?? [])
             .ToList();
 
         var parentsWithField = entity.Relationships

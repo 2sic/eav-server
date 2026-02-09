@@ -41,7 +41,7 @@ public abstract record ModelOfEntityCore
 
     bool IModelSetup<IEntity>.SetupModel(IEntity? source)
     {
-        Entity = source;
+        Entity = source!;
         return true;
     }
 

@@ -45,7 +45,7 @@ public partial class EntityWrapper : IEntity, IEntityWrapper
 
     public bool SetupModel(IEntity? source)
     {
-        Entity = source;
+        Entity = source!;
         RootContentsForEqualityCheck = Entity;
 
         // If it's not itself a wrapper, then we're done
