@@ -79,6 +79,14 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Depend
 
     #endregion
 
+    #region IDataSourceLinkable
+
+    /// <inheritdoc />
+    public virtual IDataSourceLink GetLink() => _link ??= new DataSourceLink { DataSource = this };
+    private IDataSourceLink? _link;
+
+    #endregion
+
     void IAppIdentitySync.UpdateAppIdentity(IAppIdentity appIdentity)
     {
         AppId = appIdentity.AppId;

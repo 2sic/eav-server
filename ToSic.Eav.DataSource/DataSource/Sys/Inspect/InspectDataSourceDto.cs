@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSource.Sys.Query;
+﻿using System.Linq;
+using ToSic.Eav.DataSource.Sys.Query;
 
 namespace ToSic.Eav.DataSource.Sys.Inspect;
 
@@ -29,7 +30,7 @@ public class InspectDataSourceDto
 
     public IList<OutDto>? Out;
 
-    public DataSourceConnections? Connections { get; set; }
+    public DataSourceConnectionsDto? Connections { get; init; }
 
     public InspectDataSourceDto(IDataSource ds)
     {
@@ -37,8 +38,15 @@ public class InspectDataSourceDto
         {
             Guid = ds.Guid;
             Type = ds.GetType().Name;
-            Connections = (ds as DataSourceBase)?.Connections;
             Configuration = ds.Configuration.Values;
+
+            var connections = (ds as DataSourceBase)?.Connections;
+            if (connections != null)
+                Connections = new()
+                {
+                    In = connections.In.Select(c => new DataSourceConnectionDto(c)).ToList(),
+                    Out = connections.Out.Select(c => new DataSourceConnectionDto(c)).ToList(),
+                };
 
             try
             {

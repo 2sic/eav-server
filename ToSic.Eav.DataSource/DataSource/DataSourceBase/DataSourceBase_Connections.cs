@@ -8,9 +8,12 @@ partial class DataSourceBase
 {
     #region Connections
 
+    /// <summary>
+    /// Connections are only Visual Query UI to provide additional debug information.
+    /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [field: AllowNull, MaybeNull]
-    internal DataSourceConnections Connections => field ??= new(this);
+    internal DataSourceConnections Connections => field ??= new();
 
     #endregion
 
@@ -159,7 +162,7 @@ partial class DataSourceBase
     {
         if (dataStream == null!)
             return;
-        Attach(new DataSourceConnection(dataStream, this, streamName));
+        Attach(new DataSourceConnection(dataStream.Source, dataStream.Name, this, streamName, DirectlyAttachedStream: dataStream));
     }
 
     private void Attach(DataSourceConnection connection)
@@ -168,7 +171,7 @@ partial class DataSourceBase
         if (Immutable && !_overrideImmutable)
             throw l.Done(new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}"));
         _inRw[connection.TargetStream] = new ConnectionStream(Services.CacheService, connection, Error);
-        Connections.AddIn(connection);
+        Connections.RegisterForInspection(connection);
         l.Done();
     }
         

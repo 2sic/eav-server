@@ -7,38 +7,30 @@ namespace ToSic.Eav.DataSource.Sys.Streams;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal class ConnectionStream(
     LazySvc<IDataSourceCacheService> cache,
-    DataSourceConnection? connection,
+    DataSourceConnection connection,
     DataSourceErrorHelper errorHandler)
     : IDataStream, IWrapper<IDataStream>
 {
-    public DataSourceConnection? Connection = connection;
+    public DataSourceConnection Connection = connection;
 
     private IDataStream LoadStream()
     {
-        if (Connection == null) 
+        if (Connection == null! /* paranoid check, but really impossible */)
             return CreateErrorStream("Missing Connection", "ConnectionStream can't LoadStream()");
 
-        var dataSource = Connection.DataSource;
+        var dataSource = Connection.Source;
         var streamName = Connection.SourceStream;
-        IDataStream stream;
-        var noName = string.IsNullOrEmpty(streamName);
-        if (dataSource == null! || noName)
-        {
-            if (Connection.DirectlyAttachedStream == null)
-                return CreateErrorStream("Missing Source or Name", 
-                    $"LoadStream(): No Stream and name or source were also missing - name: '{streamName}', source: '{dataSource}'");
-            stream = Connection.DirectlyAttachedStream;
-        }
-        else
-        {
-            if (!dataSource.Out.TryGetValue(streamName, out var value))
-                return CreateErrorStream("Source doesn't have Stream", $"LoadStream(): Source '{dataSource.Label}' doesn't have stream '{streamName}'", dataSource);
-            if (value == null!)
-                return CreateErrorStream("Source Stream is Null", $"Source '{dataSource.Label}' has stream '{streamName}' but it's null", dataSource);
-            stream = value;
-        }
+        if (dataSource == null! || string.IsNullOrEmpty(streamName))
+            return Connection.DirectlyAttachedStream 
+                   ?? CreateErrorStream("Missing Source or Name",
+                       $"LoadStream(): No Stream and name or source were also missing - name: '{streamName}', source: '{dataSource}'");
 
-        return stream;
+        if (!dataSource.Out.TryGetValue(streamName, out var stream))
+            return CreateErrorStream("Source doesn't have Stream", $"LoadStream(): Source '{dataSource.Label}' doesn't have stream '{streamName}'", dataSource);
+        
+        return stream
+            ?? CreateErrorStream("Source Stream is Null", $"Source '{dataSource.Label}' has stream '{streamName}' but it's null", dataSource);
+
     }
 
     private IDataStream CreateErrorStream(string title, string message, IDataSource? intendedSource = null)
