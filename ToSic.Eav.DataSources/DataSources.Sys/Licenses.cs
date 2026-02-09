@@ -14,8 +14,7 @@ namespace ToSic.Eav.DataSources.Sys;
     Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.System,
     NameId = "402fa226-5584-46d1-a763-e63ba0774c31",
-    Audience = Audience.Advanced,
-    DynamicOut = false
+    Audience = Audience.Advanced
 )]
 // ReSharper disable once UnusedMember.Global
 public sealed class Licenses : CustomDataSource

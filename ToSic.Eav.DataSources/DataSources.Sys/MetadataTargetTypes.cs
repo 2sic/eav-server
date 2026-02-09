@@ -16,8 +16,7 @@ namespace ToSic.Eav.DataSources.Sys;
     Icon = DataSourceIcons.MetadataTargetTypes,
     Type = DataSourceType.System,
     NameId = NameId,
-    Audience = Audience.Advanced,
-    DynamicOut = false
+    Audience = Audience.Advanced
 )]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 public class MetadataTargetTypes : CustomDataSource

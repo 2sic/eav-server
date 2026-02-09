@@ -16,7 +16,6 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.Filter1,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
-    DynamicOut = false,
     In = [StreamDefaultName],
     HelpLink = "https://go.2sxc.org/DsFilterDuplicates")]
 

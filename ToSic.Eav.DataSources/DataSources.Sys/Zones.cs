@@ -19,7 +19,6 @@ namespace ToSic.Eav.DataSources.Sys;
     Type = DataSourceType.System,
     NameId = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
     Audience = Audience.Advanced,
-    DynamicOut = false,
     NameIds =
     [
         "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",

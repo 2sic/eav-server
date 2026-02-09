@@ -22,7 +22,6 @@ namespace ToSic.Eav.DataSources.Sys;
     Type = DataSourceType.System,
     NameId = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
     Audience = Audience.Advanced,
-    DynamicOut = false,
     ConfigurationType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
     NameIds =
     [

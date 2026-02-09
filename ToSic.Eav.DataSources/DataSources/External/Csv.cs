@@ -24,7 +24,6 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.Description,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
-    DynamicOut = false,
     ConfigurationType = "|Config ToSic.Eav.DataSources.CsvDataSource",
     HelpLink = "https://go.2sxc.org/DsCsv")]
 public class Csv : CustomDataSourceAdvanced

@@ -24,7 +24,6 @@ namespace ToSic.Eav.DataSources.Sys;
     Type = DataSourceType.System,
     NameId = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
     Audience = Audience.Advanced,
-    DynamicOut = false,
     ConfigurationType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
     HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]
 

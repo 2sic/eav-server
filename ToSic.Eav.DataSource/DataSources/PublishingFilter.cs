@@ -33,7 +33,6 @@ namespace ToSic.Eav.DataSources;
         StreamDefaultName + "*",
         DataSourceConstantsInternal.StreamDraftsName + "*"
     ],
-    DynamicOut = false,
     DataConfidentiality = DataConfidentiality.Public,
     HelpLink = "https://go.2sxc.org/DsPublishingFilter")]
 

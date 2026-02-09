@@ -15,7 +15,6 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.PersonCircled,
     Type = DataSourceType.Security,
     NameId = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
-    DynamicOut = false,
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.OwnerFilter",
     HelpLink = "https://go.2sxc.org/DsOwnerFilter")]

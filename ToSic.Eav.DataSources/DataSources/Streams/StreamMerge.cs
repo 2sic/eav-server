@@ -19,7 +19,6 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.MergeLeft,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
-    DynamicOut = false,
     DynamicIn = true,
     HelpLink = "https://go.2sxc.org/DsStreamMerge")]
 

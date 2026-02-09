@@ -15,7 +15,6 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.Shuffle,
     Type = DataSourceType.Sort, 
     NameId = "ToSic.Eav.DataSources.Shuffle, ToSic.Eav.DataSources",
-    DynamicOut = false,
     In = [InStreamDefaultRequired],
     ConfigurationType = "38e7822b-1049-4539-bb3f-f99949b1b1d1",
     HelpLink = "https://go.2sxc.org/DsShuffle")]

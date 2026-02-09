@@ -17,7 +17,6 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.RouteAlt,
     Type = DataSourceType.Filter, 
     NameId = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
-    DynamicOut = false,
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
     HelpLink = "https://go.2sxc.org/DsTypeFilter")]

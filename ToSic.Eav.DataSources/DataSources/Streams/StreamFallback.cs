@@ -16,7 +16,6 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.Merge,
     Type = DataSourceType.Logic, 
     NameId = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
-    DynamicOut = false,
     DynamicIn = true,
     HelpLink = "https://go.2sxc.org/DsStreamFallback")]
 

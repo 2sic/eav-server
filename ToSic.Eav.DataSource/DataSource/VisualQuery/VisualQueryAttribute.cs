@@ -47,7 +47,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     public const string OutModeMirrorIn = "mirror-in";
 
     /// <summary>
-    /// Provide more options for the Out-Mode, like "mirror-in" 
+    /// Provide more options for the Out-Mode, like "mirror-in", so the UI can better show the streams available on Out.
     /// </summary>
     /// <remarks>
     /// Experimental ca. v20

@@ -20,7 +20,6 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Filter,
     NameId = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
     In = [InStreamDefaultRequired, StreamFallbackName],
-    DynamicOut = false,
     ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
     HelpLink = "https://go.2sxc.org/DsRelationshipFilter")]
 public sealed class RelationshipFilter : DataSourceBase

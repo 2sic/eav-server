@@ -25,7 +25,6 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.FormDyn,
     Type = DataSourceType.Source,
     NameId = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
-    DynamicOut = false,
     ConfigurationType = "c76901b5-0345-4866-9fa3-6208de7f8543",
     NameIds =
     [

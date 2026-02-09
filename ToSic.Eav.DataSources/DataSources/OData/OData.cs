@@ -17,7 +17,6 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Filter,
     NameId = "ToSic.Eav.DataSources.OData, ToSic.Eav.DataSources",
     In = [InStreamDefaultRequired],
-    DynamicOut = false,
     Audience = Audience.System,
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter", // TODO: change
     HelpLink = "https://go.2sxc.org/DsOData")]
