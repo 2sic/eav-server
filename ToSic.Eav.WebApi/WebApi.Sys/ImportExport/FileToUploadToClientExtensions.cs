@@ -28,11 +28,4 @@ public static class FileToUploadToClientExtensions
             FileDownloadName = file.FileName
         };
 #endif
-
-    //public static FileToUploadToClient ToHttpResponse(this FileToUploadToClient file, string fileName, string fileType, string fileContent)
-    //{
-    //    var fileBytes = Encoding.UTF8.GetBytes(fileContent);
-    //    return ToHttpResponse(new () { FileName = fileName, FileType = fileType, FileBytes = fileBytes });
-    //}
-
 }

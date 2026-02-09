@@ -16,6 +16,7 @@ public static class DictionaryExtensions
     /// <remarks>
     /// Works for Dictionary and ImmutableDictionary, but NOT for ReadOnlyDictionary, which doesn't seem to expose its comparer.
     /// </remarks>
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsIgnoreCase<T>(this IDictionary<string, T> original)
         => original is Dictionary<string, T> dic && dic.Comparer.IsIgnoreCase()
         || original is ImmutableDictionary<string, T> dicIm && dicIm.KeyComparer.IsIgnoreCase();
