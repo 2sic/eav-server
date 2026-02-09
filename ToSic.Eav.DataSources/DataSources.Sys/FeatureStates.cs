@@ -4,11 +4,14 @@ using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.DataSources.Sys;
 
-/// <inheritdoc />
 /// <summary>
-/// A DataSource that list all features.
+/// A DataSource that list all feature states.
 /// </summary>
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+/// <remarks>
+/// New v21.02
+/// </remarks>
+/// <inheritdoc />
+[PrivateApi]
 [VisualQuery(
     NiceName = "Feature States",
     UiHint = "List all features states",
