@@ -17,7 +17,7 @@ public static class DataSourceErrors
     public static void VerifyStreamIsError(IDataSource source, string errTitle, string streamName = DataSourceConstants.StreamDefaultName)
     {
         NotNull(source);
-        var stream = source[streamName];
+        var stream = source.GetStream(streamName);
         NotNull(stream);
         Single(stream.List);
         var firstAndOnly = stream.List.FirstOrDefault();

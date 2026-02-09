@@ -11,7 +11,7 @@ public class PagingTest(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> 
     public void Paging_BasicPagingPg1On1000Items()
     {
         var ds = CreatePagingForTesting(1000);
-        var pgStream = ds["Paging"].ListTac().First();
+        var pgStream = ds.GetStreamTac("Paging")!.ListTac().First();
         Equal(1.ToDecimal(), pgStream.GetTac<int>("PageNumber"));
         Equal(10.ToDecimal(), pgStream.GetTac<int>("PageSize"));
         Equal(100.ToDecimal(), pgStream.GetTac<int>("PageCount"));
@@ -27,11 +27,11 @@ public class PagingTest(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> 
     {
         var ds = CreatePagingForTesting(1001);
         ds.PageNumber = 7;
-        var pgstream = ds["Paging"].ListTac().First();
-        Equal(7.ToDecimal(), pgstream.GetTac<int>("PageNumber"));
-        Equal(10.ToDecimal(), pgstream.GetTac<int>("PageSize"));
-        Equal(101.ToDecimal(), pgstream.GetTac<int>("PageCount"));
-        Equal(1001.ToDecimal(), pgstream.GetTac<int>("ItemCount"));
+        var entity = ds.GetStreamTac("Paging")!.ListTac().First();
+        Equal(7.ToDecimal(), entity.GetTac<int>("PageNumber"));
+        Equal(10.ToDecimal(), entity.GetTac<int>("PageSize"));
+        Equal(101.ToDecimal(), entity.GetTac<int>("PageCount"));
+        Equal(1001.ToDecimal(), entity.GetTac<int>("ItemCount"));
 
         var result = ds.ListTac();
         Equal(10, result.Count());
@@ -44,11 +44,11 @@ public class PagingTest(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> 
         var ds = CreatePagingForTesting(223);
         ds.PageSize = 50;
         ds.PageNumber = 5;
-        var pgstream = ds["Paging"].ListTac().First();
-        Equal(5.ToDecimal(), pgstream.GetTac<int>("PageNumber"));
-        Equal(50.ToDecimal(), pgstream.GetTac<int>("PageSize"));
-        Equal(5.ToDecimal(), pgstream.GetTac<int>("PageCount"));
-        Equal(223.ToDecimal(), pgstream.GetTac<int>("ItemCount"));
+        var entity = ds.GetStreamTac("Paging")!.ListTac().First();
+        Equal(5.ToDecimal(), entity.GetTac<int>("PageNumber"));
+        Equal(50.ToDecimal(), entity.GetTac<int>("PageSize"));
+        Equal(5.ToDecimal(), entity.GetTac<int>("PageCount"));
+        Equal(223.ToDecimal(), entity.GetTac<int>("ItemCount"));
 
         var result = ds.ListTac();
         Equal(23, result.Count());

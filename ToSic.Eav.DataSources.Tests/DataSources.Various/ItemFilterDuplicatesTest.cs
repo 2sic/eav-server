@@ -14,7 +14,7 @@ public class ItemFilterDuplicatesTest(DataSourcesTstBuilder dsSvc, Generator<Dat
         var found = sf.ListTac().Count();
         Equal(desiredFinds, found);//, "Should find exactly this amount people");
 
-        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListTac().Count();
+        var dupls = sf.GetStreamTac(ItemFilterDuplicates.DuplicatesStreamName)!.ListTac().Count();
         Equal(desiredFinds, dupls);//, "Should find exactly this amount people");
     }
 
@@ -27,7 +27,7 @@ public class ItemFilterDuplicatesTest(DataSourcesTstBuilder dsSvc, Generator<Dat
         var found = sf.ListTac().Count();
         Equal(desiredFinds, found);//, "Should find exactly this amount people");
 
-        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListTac().Count();
+        var dupls = sf.GetStreamTac(ItemFilterDuplicates.DuplicatesStreamName)!.ListTac().Count();
         Equal(desiredDupls, dupls);//, "Should find exactly this amount people");
     }
 
@@ -43,7 +43,7 @@ public class ItemFilterDuplicatesTest(DataSourcesTstBuilder dsSvc, Generator<Dat
         var found = sf.ListTac().Count();
         Equal(desiredFinds, found);//, "Should find exactly this amount people");
 
-        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListTac().Count();
+        var dupls = sf.GetStreamTac(ItemFilterDuplicates.DuplicatesStreamName)!.ListTac().Count();
         Equal(desiredDupls, dupls);//, "Should find exactly this amount people");
     }
 
@@ -59,7 +59,7 @@ public class ItemFilterDuplicatesTest(DataSourcesTstBuilder dsSvc, Generator<Dat
         var found = sf.ListTac().Count();
         Equal(desiredFinds, found);//, "Should find exactly this amount people");
 
-        var dupls = sf[ItemFilterDuplicates.DuplicatesStreamName].ListTac().Count();
+        var dupls = sf.GetStreamTac(ItemFilterDuplicates.DuplicatesStreamName)!.ListTac().Count();
         Equal(desiredDupls, dupls);//, "Should find exactly this amount people");
     }
 

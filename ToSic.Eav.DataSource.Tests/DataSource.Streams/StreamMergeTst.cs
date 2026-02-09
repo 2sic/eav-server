@@ -63,7 +63,7 @@ public class StreamMergeTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePers
 
         // Second has the same amount, but they should be different entity objects
         var secondSf = GenerateSecondStreamWithSomeResults(sf, itemsInSecondStream);
-        sf.Attach("another", secondSf.GetStreamTac());
+        sf.Attach("another", secondSf.GetStreamTac(null!)!);
         VerifyStreams(sf, desiredFinds, ItemsToGenerate, itemsInSecondStream, ItemsToGenerate - itemsInSecondStream);
     }
 

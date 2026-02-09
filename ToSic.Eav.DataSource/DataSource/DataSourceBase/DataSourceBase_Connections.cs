@@ -19,11 +19,14 @@ partial class DataSourceBase
 
     /// <inheritdoc />
     [PublicApi]
-    public virtual IReadOnlyDictionary<string, IDataStream> In
-        => _in.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inRw))!;
-    private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _in = new();
-    private readonly IDictionary<string, IDataStream> _inRw
-        = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
+    [field: AllowNull, MaybeNull]
+    public virtual IReadOnlyDictionary<string, IDataStream> In => field ??= new ReadOnlyDictionary<string, IDataStream>(_in);
+
+    /// <summary>
+    /// Private In-streams dictionary, which is used to build the public In property.
+    /// It's only useful during creation of the source, once the real `In` is accessed, changes will not have an effect anymore.
+    /// </summary>
+    private readonly Dictionary<string, IDataStream> _in = new(InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Get a specific Stream from In.
@@ -69,6 +72,7 @@ partial class DataSourceBase
     /// <remarks>
     /// Introduced in 2sxc 16.01
     /// </remarks>
+    [PublicApi]
     protected internal IImmutableList<IEntity>? TryGetOut(string name = DataSourceConstants.StreamDefaultName)
         => !Out.ContainsKey(name)
             ? null
@@ -170,7 +174,7 @@ partial class DataSourceBase
         var l = Log.Fn($"{nameof(connection)}: {connection.SourceStream} to {connection.TargetStream}");
         if (Immutable && !_overrideImmutable)
             throw l.Done(new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}"));
-        _inRw[connection.TargetStream] = new ConnectionStream(Services.CacheService, connection, Error);
+        _in[connection.TargetStream] = new ConnectionStream(Services.CacheService, connection, Error);
         Connections.RegisterForInspection(connection);
         l.Done();
     }

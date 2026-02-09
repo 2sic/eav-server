@@ -14,28 +14,28 @@ public class QuickCachesTest(DataSourcesTstBuilder dsSvc, IListCacheSvc listCach
         False(listCache.HasStreamTac(ds.CacheFullKey), "Should not have it in cache yet");
 
         // manually add to cache
-        listCache.Set(ds[DataSourceConstants.StreamDefaultName]);
+        listCache.Set(ds.GetStreamTac(DataSourceConstants.StreamDefaultName)!);
         True(listCache.HasStreamTac(ds.CacheFullKey + "&Stream=Default"), "Should have it in cache now");
-        True(listCache.HasStreamTac(ds[DataSourceConstants.StreamDefaultName]), "Should also have the DS default");
-            
-        True(listCache.HasStreamTac(ds[DataSourceConstants.StreamDefaultName]), "should have it by stream as well");
-            
+        True(listCache.HasStreamTac(ds.GetStreamTac(DataSourceConstants.StreamDefaultName)!), "Should also have the DS default");
+
+        True(listCache.HasStreamTac(ds.GetStreamTac(DataSourceConstants.StreamDefaultName)!), "should have it by stream as well");
+
 
         // Try to auto-retrieve 
         var cached = listCache.GetTac(ds.CacheFullKey + "&Stream=Default").List;
 
         Single(cached);
 
-        cached = listCache.GetTac(ds[DataSourceConstants.StreamDefaultName]).List;
+        cached = listCache.GetTac(ds.GetStreamTac(DataSourceConstants.StreamDefaultName)!).List;
         Single(cached);
 
         var lci = listCache.GetTac(ds.CacheFullKey);
         Null(lci);//, "Cached should be null because the name isn't correct");
 
-        lci = listCache.GetTac(ds[DataSourceConstants.StreamDefaultName]);
+        lci = listCache.GetTac(ds.GetStreamTac(DataSourceConstants.StreamDefaultName)!);
         NotNull(lci);//, "Cached should be found because using stream instead of name");
 
-        cached = listCache.GetTac(ds[DataSourceConstants.StreamDefaultName]).List;
+        cached = listCache.GetTac(ds.GetStreamTac(DataSourceConstants.StreamDefaultName)!).List;
         Single(cached);
 
     }

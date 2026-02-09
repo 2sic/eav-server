@@ -13,12 +13,12 @@ public class DataTableTest(DataTablePerson dataTablePerson, DataSourcesTstBuilde
         var ds = dataTablePerson.Generate(itemsToGenerate);
         True(ds.InTac().Count == 0, "In count should be 0");
         True(ds.Out.Count == 1, "Out count should be 1");
-        var defaultOut = ds[DataSourceConstants.StreamDefaultName];
+        var defaultOut = ds.GetStreamTac(DataSourceConstants.StreamDefaultName);
         NotNull(defaultOut);
         try
         {
             // ReSharper disable once UnusedVariable
-            var x = ds["Something"];
+            var x = ds.GetStreamTac("Something");
             Fail("Access to another out should fail");
         }
         catch { /* ignore */ }

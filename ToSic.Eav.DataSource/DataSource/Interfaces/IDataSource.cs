@@ -52,7 +52,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// Gets the Dictionary of Out-Streams. This is the internal accessor, as usually you'll use this["name"] instead. <br/>
     /// In rare cases you need the Out, for example to list the stream names in the data source.
     /// </summary>
-    /// <returns>A dictionary of named <see cref="IDataStream"/> objects, case insensitive</returns>
+    /// <returns>A dictionary of named <see cref="IDataStream"/> objects, case-insensitive</returns>
     IReadOnlyDictionary<string, IDataStream> Out { get; }
 
     /// <summary>
@@ -60,6 +60,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// </summary>
     /// <returns>an <see cref="IDataStream"/> of the desired name</returns>
     /// <exception cref="NullReferenceException">if the stream does not exist</exception>
+    [Obsolete("This is an old API, better use GetStream(...) as it provides more options to handle errors.")]
     IDataStream? this[string outName] { get; }
 
     /// <summary>
@@ -84,9 +85,9 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     IEnumerable<IEntity> List { get; }
 
     /// <summary>
-    /// List of all In connections.
+    /// All In connections, read-only.
     /// </summary>
-    /// <returns>A dictionary of named <see cref="IDataStream"/> objects, case insensitive</returns>
+    /// <returns>A dictionary of named <see cref="IDataStream"/> objects, case-insensitive</returns>
     IReadOnlyDictionary<string, IDataStream> In { get; }
 
     #endregion

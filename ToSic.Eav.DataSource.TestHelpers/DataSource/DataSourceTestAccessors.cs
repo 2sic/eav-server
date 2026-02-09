@@ -28,8 +28,8 @@ public static class DataSourceTestAccessors
     public static IEnumerable<IEntity> ListTac(this IDataSource source)
         => source.List;
 
-    public static IDataStream GetStreamTac(this IDataSource source)
-        => source.GetStream();
+    public static IDataStream? GetStreamTac(this IDataSource source, string name)
+        => source.GetStream(name: name);
 
     public static IEnumerable<IEntity> OutTac(this IDataSource source, string name)
         => source.Out[name];
