@@ -185,10 +185,10 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         };
 
         var options = _optionConverter.Convert(optionObject, throwIfNull: false, throwIfNoMatch: false);
-        if (options?.Values == null)
+        if (options?.MyConfigValues == null)
             throw new InvalidOperationException("Failed to convert ValueFilter configuration to data-source options.");
 
-        return dataSourcesService.Create<ValueFilter>(upstream, options);
+        return dataSourcesService.Create<ValueFilter>(attach: upstream, options: options);
     }
 
     private IDataSource ApplyOrderBy(IDataSource upstream, OrderByClause? clause)
@@ -213,7 +213,7 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         };
 
         var options = _optionConverter.Convert(optionObject, throwIfNull: false, throwIfNoMatch: false);
-        if (options?.Values == null)
+        if (options?.MyConfigValues == null)
             throw new InvalidOperationException("Failed to convert ValueSort configuration to data-source options.");
 
         return dataSourcesService.Create<ValueSort>(attach: upstream, options: options);

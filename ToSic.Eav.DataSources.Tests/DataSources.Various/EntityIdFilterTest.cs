@@ -1,7 +1,8 @@
-﻿namespace ToSic.Eav.DataSources.Various;
+﻿// ReSharper disable StringLiteralTypo
+namespace ToSic.Eav.DataSources.Various;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
-public class EntityIdFilterTest(DataSourcesTstBuilder DsSvc, Generator<DataTablePerson> personTableGenerator)
+public class EntityIdFilterTest(DataSourcesTstBuilder dsSvc, Generator<DataTablePerson> personTableGenerator)
 {
     [Fact]
     public void EntityIdFilter_SingleItem()
@@ -83,7 +84,7 @@ public class EntityIdFilterTest(DataSourcesTstBuilder DsSvc, Generator<DataTable
     public EntityIdFilter CreateFilterForTesting(int testItemsInRootSource, string entityIdsValue)
     {
         var ds = personTableGenerator.New().Generate(testItemsInRootSource, 1001);
-        var filtered = DsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
+        var filtered = dsSvc.CreateDataSource<EntityIdFilter>(ds.Configuration.LookUpEngine);
         filtered.AttachTac(ds);
         filtered.EntityIds = entityIdsValue;
         return filtered;

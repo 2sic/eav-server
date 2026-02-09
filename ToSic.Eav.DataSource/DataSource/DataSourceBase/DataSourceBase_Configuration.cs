@@ -6,9 +6,8 @@ namespace ToSic.Eav.DataSource;
 partial class DataSourceBase
 {
     /// <inheritdoc />
-    public IDataSourceConfiguration Configuration => _config.Get(() => ((DataSourceConfiguration)Services.Configuration).Attach(this))!;
-
-    private readonly GetOnce<IDataSourceConfiguration> _config = new();
+    public IDataSourceConfiguration Configuration => field
+        ??= ((DataSourceConfiguration)Services.Configuration).Attach(this);
 
     /// <summary>
     /// Add a value to the configuration list for later resolving tokens and using in Cache-Keys.
@@ -62,8 +61,9 @@ partial class DataSourceBase
         {
             l.A("Add lookups");
             dsConfig.LookUpEngine = lookUp;
-            var configValues = options?.Values;
-            if (configValues != null) dsConfig.AddMany(configValues.ToEditableInIgnoreCase());
+            var configValues = options?.MyConfigValues;
+            if (configValues != null)
+                dsConfig.AddMany(configValues.ToEditableIgnoreCase());
         }
         l.Done();
     }

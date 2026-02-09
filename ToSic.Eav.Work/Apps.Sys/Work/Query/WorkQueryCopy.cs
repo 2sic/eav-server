@@ -65,7 +65,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
         var newWiringValue = _builder.Value.Value.String(newWiring, []);
         var newWiringValues = new List<IValue> { newWiringValue };
-        var queryAttributes = (query as ICanBeEntity).Entity.Attributes.ToEditableInIgnoreCase();
+        var queryAttributes = (query as ICanBeEntity).Entity.Attributes.ToEditableIgnoreCase();
         queryAttributes[nameof(QueryDefinition.StreamWiring)] = _builder.Value.Attribute.CreateFrom(
             queryAttributes[nameof(QueryDefinition.StreamWiring)],
             newWiringValues.ToImmutableOpt()

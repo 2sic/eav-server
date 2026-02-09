@@ -14,7 +14,7 @@ public sealed record DataSourceOptions: IDataSourceOptions
 {
     public DataSourceOptions() { }
 
-    public IImmutableDictionary<string, string>? Values { get; init; }
+    public IImmutableDictionary<string, string>? MyConfigValues { get; init; }
 
     // todo: improve to probably be IAppIdentity or IAppReader
     // #WipAppIdentityOrReader must become not null

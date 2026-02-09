@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.LookUp.Sys.Engines;
-using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
 
@@ -19,7 +18,7 @@ public class DataSourceOptionConverter
 
         var secondDs = Convert(other, throwIfNull: false, throwIfNoMatch: false);
         if (original is not DataSourceOptions typed)
-            return secondDs ?? new DataSourceOptions()
+            return secondDs ?? new DataSourceOptions
             {
                 AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
             };
@@ -28,7 +27,7 @@ public class DataSourceOptionConverter
         return typed with
         {
             AppIdentityOrReader = secondDs?.AppIdentityOrReader ?? typed.AppIdentityOrReader,
-            Values = secondDs?.Values ?? typed.Values,
+            MyConfigValues = secondDs?.MyConfigValues ?? typed.MyConfigValues,
             LookUp = secondDs?.LookUp ?? typed.LookUp,
             ShowDrafts = secondDs?.ShowDrafts ?? typed.ShowDrafts
         };
@@ -50,12 +49,12 @@ public class DataSourceOptionConverter
         }
 
         // Check if it's a possible value
-        var values = Values(original, throwIfNull: false, throwIfNoMatch: false);
+        var values = TryGetParams(original, throwIfNull: false, throwIfNoMatch: false);
         if (values != null)
             return new()
             {
                 AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
-                Values = values,
+                MyConfigValues = values,
             };
 
         if (!throwIfNoMatch) return null;

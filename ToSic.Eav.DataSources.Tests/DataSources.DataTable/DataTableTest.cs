@@ -14,7 +14,7 @@ public class DataTableTest(DataTablePerson dataTablePerson, DataSourcesTstBuilde
         True(ds.InTac().Count == 0, "In count should be 0");
         True(ds.Out.Count == 1, "Out count should be 1");
         var defaultOut = ds[DataSourceConstants.StreamDefaultName];
-        True(defaultOut != null);
+        NotNull(defaultOut);
         try
         {
             // ReSharper disable once UnusedVariable
