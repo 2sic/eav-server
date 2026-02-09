@@ -1,9 +1,11 @@
-﻿namespace ToSic.Eav.DataSource.Configuration;
+﻿using ToSic.Eav.DataSource.Sys;
+
+namespace ToSic.Eav.DataSource.Configuration;
 
 public class TestDataSourceBase(DataSourceBase.Dependencies services)
     : DataSourceBase(services, "Tst.Test")
 {
 
     // make public for testing, otherwise protected...
-    public void ConfigMask(string key, string mask) => base.ConfigMask(key, mask);
+    public void ConfigMaskTac(string key, string mask) => this.ConfigMask(key, mask);
 }

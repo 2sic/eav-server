@@ -19,7 +19,7 @@ public static class BreachExtensions
     {
         var ds = new CustomDataSource(services, logName);
         ds.Error.ConnectToParent(wrapper);
-        ds.AutoLoadAllConfigMasks(wrapper.GetType());
+        ds.AutoLoadAllConfigMasks(wrapper.GetType(), services.ConfigDataLoader);
         return ds;
     }
 

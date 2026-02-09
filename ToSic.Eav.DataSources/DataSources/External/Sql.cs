@@ -208,7 +208,7 @@ public class Sql : CustomDataSourceAdvanced
 
                 var paramName = $"@{ExtractedParamPrefix}{paramNumber++}";
                 result.Append(paramName);
-                ConfigMask(paramName, curMatch.ToString());
+                this.ConfigMask(paramName, curMatch.ToString());
 
                 // add name to list for caching-key
                 additionalParams.Add(paramName);

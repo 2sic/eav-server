@@ -12,6 +12,11 @@ public class ConfigurationDataLoader() : ServiceBase(EavLogs.Eav + "CnfLdr")
 
     internal static ConcurrentDictionary<Type, List<ConfigMaskInfo>> Cache = new();
 
+    /// <summary>
+    /// Find all the tokens on all the properties - and cache the results for next time.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     internal List<ConfigMaskInfo> GetTokens(Type type)
     {
         var l = Log.Fn<List<ConfigMaskInfo>>();

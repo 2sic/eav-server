@@ -2,14 +2,20 @@
 
 namespace ToSic.Eav.DataSource.Sys;
 
-[PrivateApi]
+[PrivateApi("Must be public, as it will be serialized in some DTOs")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class DataSourceConnection(IDataSource source, string sourceStream, IDataSource target, string targetStream)
+public class DataSourceConnection(IDataSource dataSource, string sourceStream, IDataSource dataTarget, string targetStream)
 {
+    public DataSourceConnection(IDataStream sourceStream, IDataSource target, string targetStream)
+        : this(sourceStream.Source, sourceStream.Name, target, targetStream)
+    {
+        DirectlyAttachedStream = sourceStream;
+    }
+
     [JsonIgnore]    // don't try to serialize, as it's too large of an object
-    public IDataSource DataSource = source;
+    public IDataSource DataSource = dataSource;
     [JsonIgnore]    // don't try to serialize, as it's too large of an object
-    public IDataSource DataTarget = target;
+    public IDataSource DataTarget = dataTarget;
         
     [JsonIgnore]    // don't try to serialize, as it's too large of an object
     public string SourceStream { get; } = sourceStream;
@@ -30,11 +36,6 @@ public class DataSourceConnection(IDataSource source, string sourceStream, IData
 
     #endregion
 
-    public DataSourceConnection(IDataStream sourceStream, IDataSource target, string targetStream)
-        : this(sourceStream.Source, sourceStream.Name, target, targetStream)
-    {
-        DirectlyAttachedStream = sourceStream;
-    }
 }
     
     

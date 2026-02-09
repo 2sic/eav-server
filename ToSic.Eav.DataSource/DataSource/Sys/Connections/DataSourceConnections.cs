@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSource.Sys;
 
-[PrivateApi]
+[PrivateApi("Must be public as it will be serialized in some DTOs")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceConnections(DataSourceBase parent)
 {
@@ -17,7 +17,8 @@ public class DataSourceConnections(DataSourceBase parent)
     {
         // Check if a connection was already added?
         var existing = In.FirstOrDefault(item => item.SourceStream == connection.SourceStream);
-        if (existing != null) In.Remove(existing);
+        if (existing != null)
+            In.Remove(existing);
                 
         In.Add(connection);
         (connection.DataSource as DataSourceBase)?.Connections.Out.Add(connection);
