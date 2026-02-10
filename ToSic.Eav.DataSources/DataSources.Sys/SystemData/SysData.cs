@@ -1,9 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using ToSic.Eav.Apps.Sys;
+﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Catalog;
-using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.DataSource.VisualQuery.Sys;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.Sources;
@@ -35,12 +33,9 @@ namespace ToSic.Eav.DataSources.Sys;
     DynamicOut = true
 )]
 // ReSharper disable once UnusedMember.Global
-public sealed class SysData : CustomDataSource
+public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCatalog catalog, IDataSourcesService dataSourceFactory, IUser user)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.SysDat", connect: [catalog, dataSourceFactory])
 {
-    private readonly DataSourceCatalog _catalog;
-    private readonly IDataSourcesService _dataSourceFactory;
-    private readonly IUser _user;
-
     #region Configuration-properties
 
     /// <summary>
@@ -52,125 +47,48 @@ public sealed class SysData : CustomDataSource
     [Configuration(Fallback = "", Token = $"[{ParamsSourceName}:{nameof(SysDataSource)}]")]
     public string SysDataSource => Configuration.GetThis(fallback: "");
 
-    /// <summary>
-    /// The NameId of the DataSource to get data from.
-    /// </summary>
-    /// <remarks>
-    /// It uses a fairly exotic name to avoid conflicts with parameter names of the data-sources being called.
-    /// </remarks>
-    [Configuration(Fallback = StreamDefaultName, Token = $"[{ParamsSourceName}:{nameof(SysDataStream)}||{StreamDefaultName}]")]
-    public string SysDataStream => Configuration.GetThis(fallback: StreamDefaultName);
+    ///// <summary>
+    ///// The NameId of the DataSource to get data from.
+    ///// </summary>
+    ///// <remarks>
+    ///// It uses a fairly exotic name to avoid conflicts with parameter names of the data-sources being called.
+    ///// </remarks>
+    //[Configuration(Fallback = StreamDefaultName, Token = $"[{ParamsSourceName}:{nameof(SysDataStream)}||{StreamDefaultName}]")]
+    //public string SysDataStream => Configuration.GetThis(fallback: StreamDefaultName);
 
     #endregion
 
-    public SysData(Dependencies services, DataSourceCatalog catalog, IDataSourcesService dataSourceFactory, IUser user)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SysData", connect: [catalog, dataSourceFactory])
+    public override IReadOnlyDictionary<string, IDataStream> Out => field ??= GetDataSource().Out;
+
+    private IDataSource GetDataSource()
     {
-        _catalog = catalog;
-        _dataSourceFactory = dataSourceFactory;
-        _user = user;
-        //ProvideOut(GetList);
-    }
+        var inStreamName = StreamDefaultName;
 
-    public override IReadOnlyDictionary<string, IDataStream> Out => field ??= new ReadOnlyDictionary<string, IDataStream>(GenerateOut());
-
-    public Dictionary<string, IDataStream> GenerateOut()
-    {
-        var streamNames = SysDataStream
-            .UseFallbackIfNoValue(StreamDefaultName);
-
-        var l = Log.Fn<Dictionary<string, IDataStream>>($"Streams: {streamNames}");
-            
-        var streams = streamNames
-            .CsvToArrayWithoutEmpty()
-            .Select(streamName => (Out: streamName, In: streamName))
-            .ToList();
-
-        if (!streams.Any())
-        {
-            streams = [(StreamDefaultName, StreamDefaultName)];
-            l.A($"Stream list was empty, added default stream. Length: {streams.Count}");
-        }
-        else if (!streams.Any(pair => pair.Out.EqualsInsensitive(StreamDefaultName)))
-        {
-            var first = streams.First().In;
-            streams.Insert(0, (StreamDefaultName, first));
-            l.A($"Stream list was missing default, added it to mirror the first stream name '{first}'. Length: {streams.Count}");
-        }
-
-        // First get all the stream functions on the distinct In-stream names
-        // So that we don't duplicate
-        //var inStreams = streams
-        //    .Select(pair => pair.In)
-        //    .Distinct(StringComparer.InvariantCultureIgnoreCase)
-        //    .ToDictionary(
-        //        name => name,
-        //        Func<IEnumerable<IEntity>> (name) => () => GetList(name),
-        //        StringComparer.InvariantCultureIgnoreCase
-        //    );
-
-        var result = streams.ToDictionary(
-            pair => pair.Out,
-            IDataStream (pair) => new DataStream(Services.CacheService, this, pair.Out, () => GetOrUseCache(pair.In)),
-            StringComparer.InvariantCultureIgnoreCase
-        );
-
-        return l.Return(result, $"Dic with {result.Count} entries");
-
-        //var outDic = new Dictionary<string, IDataStream>(StringComparer.InvariantCultureIgnoreCase)
-        //    {
-        //        [DataSourceConstants.StreamDefaultName] = new DataStream(Services.CacheService, this, DataSourceConstants.StreamDefaultName, GetOrUseCache())
-        //    };
-        //return outDic;
-    }
-
-    private readonly Dictionary<string, IEnumerable<IEntity>> _cache = new(StringComparer.InvariantCultureIgnoreCase);
-
-    private IEnumerable<IEntity> GetList()
-    {
-        return GetList(inStreamName: SysDataStream);
-    }
-
-    private IEnumerable<IEntity> GetOrUseCache(string inStreamName)
-    {
-        if (_cache.TryGetValue(inStreamName, out var cached))
-            return cached;
-
-        var result = GetList(inStreamName);
-        // ReSharper disable PossibleMultipleEnumeration
-        _cache[inStreamName] = result;
-        return result;
-        // ReSharper restore PossibleMultipleEnumeration
-    }
-
-    private IEnumerable<IEntity> GetList(string inStreamName)
-    {
         // If nothing relevant specified, return trivial message
         if (string.IsNullOrWhiteSpace(SysDataSource))
-            return GetTrivialMessage(false, inStreamName, false);
+            return GetTrivialMessageDs(false, inStreamName, false);
 
         // Try to find in catalog, if not found, return trivial message
-        var dsInfo = _catalog.FindDataSourceInfo(SysDataSource, AppId);
+        var dsInfo = catalog.FindDataSourceInfo(SysDataSource, AppId);
         if (dsInfo == null)
-            return GetTrivialMessage(false, inStreamName, false);
+            return GetTrivialMessageDs(false, inStreamName, false);
 
-        if (!dsInfo.IsAllowed(_user))
-            return GetTrivialMessage(true, SysDataStream, false, $"Not allowed, DataConfidentiality: {dsInfo.VisualQuery?.DataConfidentiality}");
+        if (!dsInfo.IsAllowed(user))
+            return GetTrivialMessageDs(true, inStreamName, false, $"Not allowed, DataConfidentiality: {dsInfo.VisualQuery?.DataConfidentiality}");
 
         // Construct basic options and build the source
-        var lookUp = CreateLookUpEngine();
 
-        var options = new DataSourceOptions
+        var options = CreateInnerOptions();
+        return dataSourceFactory.Create(dsInfo.Type, options: options);
+    }
+
+    private DataSourceOptions CreateInnerOptions() =>
+        new()
         {
             AppIdentityOrReader = this.PureIdentity(),
-            LookUp = lookUp,
+            LookUp = CreateLookUpEngine(),
         };
-        var ds = _dataSourceFactory.Create(dsInfo.Type, options: options);
 
-        // Get the stream, if not found, return trivial message, otherwise return the list
-        var stream = ds.GetStream(inStreamName, nullIfNotFound: true);
-        return stream?.List ?? GetTrivialMessage(true, inStreamName, false);
-    }
 
     private ILookUpEngine CreateLookUpEngine()
     {
@@ -202,6 +120,14 @@ public sealed class SysData : CustomDataSource
                 return null;
             parent = parent.Downstream;
         }
+    }
+
+    private IDataSource GetTrivialMessageDs(bool dsFound, string streamName, bool streamFound, string? allowed = default)
+    {
+        var msg = GetTrivialMessage(dsFound, streamName, streamFound, allowed);
+        var ds = dataSourceFactory.Create<Error>(options: CreateInnerOptions());
+        ds.UseCustomErrorData(msg);
+        return ds;
     }
 
     private IEnumerable<IEntity> GetTrivialMessage(bool dsFound, string streamName, bool streamFound, string? allowed = default)
