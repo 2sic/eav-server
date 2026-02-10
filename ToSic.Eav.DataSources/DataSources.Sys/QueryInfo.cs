@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.DataSource.Sys;
-using ToSic.Eav.DataSource.Sys.Query;
+﻿using ToSic.Eav.DataSource.Query.Sys;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Services;
 using static ToSic.Eav.DataSource.DataSourceConstants;

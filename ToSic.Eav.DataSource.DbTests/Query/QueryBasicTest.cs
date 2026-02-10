@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Apps;
-using ToSic.Eav.DataSource.Sys.Query;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.ImportExport.Json.Sys;
 
 namespace ToSic.Eav.DataSource.DbTests.Query;

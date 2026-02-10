@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Sys.Query;
+﻿namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
 /// Constants used by Queries / VisualQuery

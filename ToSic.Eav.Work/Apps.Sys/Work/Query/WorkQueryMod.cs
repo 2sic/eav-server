@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource.Sys.Query;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 using static System.StringComparer;

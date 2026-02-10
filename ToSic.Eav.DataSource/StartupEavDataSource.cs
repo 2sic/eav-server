@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.DataSource.Sys.AppDataSources;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Catalog;
 using ToSic.Eav.DataSource.Sys.Configuration;
-using ToSic.Eav.DataSource.Sys.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 

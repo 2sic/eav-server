@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.DataSource.Sys.Query;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization.Sys;

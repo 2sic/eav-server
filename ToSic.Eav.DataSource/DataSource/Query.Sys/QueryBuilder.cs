@@ -9,7 +9,7 @@ using ToSic.Eav.LookUp.Sys.Engines;
 using ToSic.Eav.Services;
 using ToSic.Sys.Users.Permissions;
 
-namespace ToSic.Eav.DataSource.Sys.Query;
+namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
 /// Factory to create a Data Query

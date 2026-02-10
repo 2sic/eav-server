@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Sys.Query;
+﻿namespace ToSic.Eav.DataSource.Query.Sys;
 
 internal class QueryWiringsHelper(ILog? parentLog, string logName) : HelperBase(parentLog, logName)
 {

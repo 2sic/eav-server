@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.DataSource.VisualQuery.Sys;
 using ToSic.Eav.Models;
 
-namespace ToSic.Eav.DataSource.Sys.Query;
+namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
 /// The configuration / definition of a query part. The <see cref="QueryDefinition"/> uses a bunch of these together to build a query. 

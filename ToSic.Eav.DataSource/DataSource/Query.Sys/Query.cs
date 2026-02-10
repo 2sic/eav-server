@@ -6,7 +6,7 @@ using static System.String;
 using static System.StringComparer;
 
 
-namespace ToSic.Eav.DataSource.Sys.Query;
+namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
 /// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 

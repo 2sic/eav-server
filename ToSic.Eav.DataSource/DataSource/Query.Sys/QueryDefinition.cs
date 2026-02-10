@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Models;
 
-namespace ToSic.Eav.DataSource.Sys.Query;
+namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
 /// This contains the structure / definition of a query, which was originally stored in an <see cref="IEntity"/>
@@ -39,7 +39,7 @@ public partial record QueryDefinition : ModelOfEntity
     /// Connections used in the query to map various DataSource Out-Streams to various other DataTarget In-Streams
     /// </summary>
     [field: AllowNull, MaybeNull]
-    public IList<QueryWire> Connections => field ??= Sys.Query.QueryWiringSerializer.Deserialize(StreamWiring);
+    public IList<QueryWire> Connections => field ??= QueryWiringSerializer.Deserialize(StreamWiring);
 
     /// <summary>
     /// The connections as they are serialized in the Entity

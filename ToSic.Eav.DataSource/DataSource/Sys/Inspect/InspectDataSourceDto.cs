@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys.Query;
+﻿using ToSic.Eav.DataSource.Query.Sys;
 
 namespace ToSic.Eav.DataSource.Sys.Inspect;
 

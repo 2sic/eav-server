@@ -2,7 +2,7 @@
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Serialization.Sys.Json;
 
-namespace ToSic.Eav.DataSource.Sys.Query;
+namespace ToSic.Eav.DataSource.Query.Sys;
 // TODO: this is the old untyped implementation - should be replaced with a clean Dto version
 // Note that the DTO already exists in another file...
 

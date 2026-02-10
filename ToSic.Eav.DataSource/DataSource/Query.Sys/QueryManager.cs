@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 
-namespace ToSic.Eav.DataSource.Sys.Query;
+namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
 /// Non-Generic Helpers to work with common Data Queries (not Typed Queries).
