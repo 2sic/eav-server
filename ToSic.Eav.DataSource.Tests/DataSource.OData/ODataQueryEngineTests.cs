@@ -1,14 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
-using ToSic.Eav.TestData;
-using Xunit.DependencyInjection;
 
-namespace ToSic.Sys.OData.Tests;
+namespace ToSic.Eav.DataSource.OData;
 
 [Startup(typeof(ODataValueFilterTestStartup))]
 public class ODataQueryEngineTests(

@@ -10,7 +10,7 @@ public class QueryODataParams
 {
     public QueryODataParams(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc)
     {
-        if (parseFunc == null)
+        if (parseFunc == null!)
             return;
 
         // Get url parameters by passing tokens into the configuration, then parsing the result with the ODataParams as keys
