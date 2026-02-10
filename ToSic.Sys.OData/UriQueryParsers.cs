@@ -10,113 +10,225 @@ public static class UriQueryParser
     // Entry: dictionary with keys like $filter, $orderby, etc.
     public static ODataQuery Parse(IDictionary<string, string> queryOptions)
     {
-        var result = new ODataQuery();
 
         if (queryOptions == null)
-            return result;
+            return new();
 
-        if (queryOptions.TryGetValue(ODataConstants.FilterParamName, out var filter)) 
-            result.Filter = new() { Expression = new FilterExpressionParser(filter).ParseExpression() };
+        var hasSelect = queryOptions.TryGetValue(ODataConstants.SelectParamName, out var selExpSelect);
+        var hasExpand = queryOptions.TryGetValue(ODataConstants.ExpandParamName, out var selExpExpand);
+        var exp = hasSelect || hasExpand
+            ? new SelectExpandClause
+            {
+                Select = hasSelect && selExpSelect != null
+                    ? SplitComma(selExpSelect).ToList()
+                    : [],
+                Expand = hasExpand && selExpExpand != null
+                    ? SplitComma(selExpExpand).ToList()
+                    : []
+            }
+            : null;
 
-        if (queryOptions.TryGetValue(ODataConstants.OrderByParamName, out var orderby))
-            result.OrderBy = ParseOrderBy(orderby);
 
-        var hasSelect = queryOptions.TryGetValue(ODataConstants.SelectParamName, out var select);
-        var hasExpand = queryOptions.TryGetValue(ODataConstants.ExpandParamName, out var expand);
-        if (hasSelect || hasExpand)
+        var result = new ODataQuery()
         {
-            result.SelectExpand = new();
-            if (hasSelect && select != null)
-                foreach (var s in SplitComma(select))
-                    result.SelectExpand.Select.Add(s);
-            if (hasExpand && expand != null)
-                foreach (var e in SplitComma(expand))
-                    result.SelectExpand.Expand.Add(e);
-        }
+            Filter = queryOptions.TryGetValue(ODataConstants.FilterParamName, out var filter)
+                ? new() { Expression = new FilterExpressionParser(filter).ParseExpression() }
+                : null,
 
-        if (queryOptions.TryGetValue(ODataConstants.SearchParamName, out var search))
-            result.Search = new() { Expression = new SearchExpressionParser(search).ParseSearch() };
+            OrderBy = queryOptions.TryGetValue(ODataConstants.OrderByParamName, out var orderby)
+                ? ParseOrderBy(orderby)
+                : null,
 
-        if (queryOptions.TryGetValue(ODataConstants.ComputeParamName, out var compute))
-            result.Compute = ParseCompute(compute);
+            SelectExpand = exp,
 
-        if (queryOptions.TryGetValue(ODataConstants.TopParamName, out var top) && long.TryParse(top, NumberStyles.Integer, CultureInfo.InvariantCulture, out var topVal))
-            result.Top = topVal;
+            Search = queryOptions.TryGetValue(ODataConstants.SearchParamName, out var search)
+                ? new() { Expression = new SearchExpressionParser(search).ParseSearch() }
+                : null,
 
-        if (queryOptions.TryGetValue(ODataConstants.SkipParamName, out var skip) && long.TryParse(skip, NumberStyles.Integer, CultureInfo.InvariantCulture, out var skipVal))
-            result.Skip = skipVal;
+            Compute = queryOptions.TryGetValue(ODataConstants.ComputeParamName, out var compute)
+                ? ParseCompute(compute)
+                : null,
 
-        if (queryOptions.TryGetValue(ODataConstants.IndexParamName, out var index) && long.TryParse(index, NumberStyles.Integer, CultureInfo.InvariantCulture, out var idxVal))
-            result.Index = idxVal;
+            Top = queryOptions.TryGetValue(ODataConstants.TopParamName, out var top) && long.TryParse(top, NumberStyles.Integer, CultureInfo.InvariantCulture, out var topVal)
+                ? topVal
+                : null,
 
-        if (queryOptions.TryGetValue(ODataConstants.CountParamName, out var count))
-        {
-            if (string.Equals(count, "true", StringComparison.OrdinalIgnoreCase))
-                result.Count = true;
-            else if (string.Equals(count, "false", StringComparison.OrdinalIgnoreCase))
-                result.Count = false;
-        }
+            Skip = queryOptions.TryGetValue(ODataConstants.SkipParamName, out var skip) && long.TryParse(skip, NumberStyles.Integer, CultureInfo.InvariantCulture, out var skipVal)
+                ? skipVal
+                : null,
 
-        if (queryOptions.TryGetValue(ODataConstants.SkipTokenParamName, out var sk))
-            result.SkipToken = sk;
+            Index = queryOptions.TryGetValue(ODataConstants.IndexParamName, out var index) && long.TryParse(index, NumberStyles.Integer, CultureInfo.InvariantCulture, out var idxVal)
+                ? idxVal
+                : null,
 
-        if (queryOptions.TryGetValue(ODataConstants.DeltaTokenParamName, out var dt))
-            result.DeltaToken = dt;
+            Count = queryOptions.TryGetValue(ODataConstants.CountParamName, out var count)
+                ? string.Equals(count, "true", StringComparison.OrdinalIgnoreCase)
+                    ? true
+                    : string.Equals(count, "false", StringComparison.OrdinalIgnoreCase)
+                        ? false
+                        : null
+                : null,
+
+            SkipToken = queryOptions.TryGetValue(ODataConstants.SkipTokenParamName, out var sk)
+                ? sk
+                : null,
+
+            DeltaToken = queryOptions.TryGetValue(ODataConstants.DeltaTokenParamName, out var dt)
+                ? dt
+                : null,
+        };
+
+        #region Old Code, non Functional
+
+        //if (queryOptions.TryGetValue(ODataConstants.FilterParamName, out var filter)) 
+        //    result.Filter = new() { Expression = new FilterExpressionParser(filter).ParseExpression() };
+
+        //if (queryOptions.TryGetValue(ODataConstants.OrderByParamName, out var orderby))
+        //    result.OrderBy = ParseOrderBy(orderby);        
+
+        //var hasSelect = queryOptions.TryGetValue(ODataConstants.SelectParamName, out var select);
+        //var hasExpand = queryOptions.TryGetValue(ODataConstants.ExpandParamName, out var expand);
+        //if (hasSelect || hasExpand)
+        //{
+        //    result.SelectExpand = new SelectExpandClause();
+        //    if (hasSelect && select != null)
+        //        foreach (var s in SplitComma(select))
+        //            result.SelectExpand.Select.Add(s);
+        //    if (hasExpand && expand != null)
+        //        foreach (var e in SplitComma(expand))
+        //            result.SelectExpand.Expand.Add(e);
+        //}
+
+        //if (queryOptions.TryGetValue(ODataConstants.SearchParamName, out var search))
+        //    result.Search = new() { Expression = new SearchExpressionParser(search).ParseSearch() };
+
+        //if (queryOptions.TryGetValue(ODataConstants.ComputeParamName, out var compute))
+        //    result.Compute = ParseCompute(compute);
+
+        //if (queryOptions.TryGetValue(ODataConstants.TopParamName, out var top) && long.TryParse(top, NumberStyles.Integer, CultureInfo.InvariantCulture, out var topVal))
+        //    result.Top = topVal;
+
+        //if (queryOptions.TryGetValue(ODataConstants.SkipParamName, out var skip) && long.TryParse(skip, NumberStyles.Integer, CultureInfo.InvariantCulture, out var skipVal))
+        //    result.Skip = skipVal;
+
+        //if (queryOptions.TryGetValue(ODataConstants.IndexParamName, out var index) && long.TryParse(index, NumberStyles.Integer, CultureInfo.InvariantCulture, out var idxVal))
+        //    result.Index = idxVal;
+
+        //if (queryOptions.TryGetValue(ODataConstants.CountParamName, out var count))
+        //{
+        //    if (string.Equals(count, "true", StringComparison.OrdinalIgnoreCase))
+        //        result.Count = true;
+        //    else if (string.Equals(count, "false", StringComparison.OrdinalIgnoreCase))
+        //        result.Count = false;
+        //}
+
+        //if (queryOptions.TryGetValue(ODataConstants.SkipTokenParamName, out var sk))
+        //    result.SkipToken = sk;
+
+        //if (queryOptions.TryGetValue(ODataConstants.DeltaTokenParamName, out var dt))
+        //    result.DeltaToken = dt;
+
+        #endregion
 
         return result;
     }
 
     public static ODataQuery Parse(SystemQueryOptions systemQueryOptions)
     {
-        var result = new ODataQuery();
 
-        if (!systemQueryOptions.RawAllSystem.Any()) return result;
-
-        if (systemQueryOptions.Filter.HasValue())
-        {
-            result.Filter = new() { Expression = new FilterExpressionParser(systemQueryOptions.Filter).ParseExpression() };
-        }
-
-        if (systemQueryOptions.OrderBy.HasValue())
-        {
-            result.OrderBy = ParseOrderBy(systemQueryOptions.OrderBy);
-        }
+        if (!systemQueryOptions.RawAllSystem.Any())
+            return new();
 
         var hasSelect = systemQueryOptions.Select.Any();
         var hasExpand = systemQueryOptions.Expand.HasValue();
-        if (hasSelect || hasExpand)
+        var expand = (hasSelect || hasExpand)
+            ? new SelectExpandClause()
+            {
+                Select = hasSelect ? [..systemQueryOptions.Select] : [],
+                Expand = hasExpand ? SplitComma(systemQueryOptions.Expand!).ToList() : []
+            }
+            : null;
+
+        var result = new ODataQuery()
         {
-            result.SelectExpand = new();
-            if (hasSelect) 
-                result.SelectExpand.Select.AddRange(systemQueryOptions.Select);
-            if (hasExpand)
-                foreach (var e in SplitComma(systemQueryOptions.Expand!))
-                    result.SelectExpand.Expand.Add(e);
-        }
+            Filter = systemQueryOptions.Filter.HasValue()
+                ? new() { Expression = new FilterExpressionParser(systemQueryOptions.Filter).ParseExpression() }
+                : null,
+            OrderBy = systemQueryOptions.OrderBy.HasValue()
+                ? ParseOrderBy(systemQueryOptions.OrderBy)
+                : null,
+            SelectExpand = expand,
+            Search = systemQueryOptions.Search.HasValue()
+                ? new() { Expression = new SearchExpressionParser(systemQueryOptions.Search).ParseSearch() }
+                : null,
+            Compute = systemQueryOptions.Compute.HasValue()
+                ? ParseCompute(systemQueryOptions.Compute)
+                : null,
 
-        if (systemQueryOptions.Search.HasValue())
-            result.Search = new() { Expression = new SearchExpressionParser(systemQueryOptions.Search).ParseSearch() };
+            Top = systemQueryOptions.Top,
 
-        if (systemQueryOptions.Compute.HasValue())
-            result.Compute = ParseCompute(systemQueryOptions.Compute);
+            Skip = systemQueryOptions.Skip,
 
-        if (systemQueryOptions.Top.HasValue)
-            result.Top = systemQueryOptions.Top.Value;
+            Index = systemQueryOptions.Index,
 
-        if (systemQueryOptions.Skip.HasValue)
-            result.Skip = systemQueryOptions.Skip.Value;
+            Count = systemQueryOptions.Count,
 
-        if (systemQueryOptions.Index.HasValue)
-            result.Index = systemQueryOptions.Index.Value;
+            SkipToken = systemQueryOptions.SkipToken.HasValue()
+                ? systemQueryOptions.SkipToken
+                : null,
 
-        if (systemQueryOptions.Count.HasValue) 
-            result.Count = systemQueryOptions.Count.Value;
+            DeltaToken = systemQueryOptions.DeltaToken,
+        };
 
-        if (systemQueryOptions.SkipToken.HasValue())
-            result.SkipToken = systemQueryOptions.SkipToken;
+        #region Old Code non functional
 
-        if (systemQueryOptions.DeltaToken.HasValue())
-            result.DeltaToken = systemQueryOptions.DeltaToken;
+        //if (systemQueryOptions.Filter.HasValue())
+        //{
+        //    result.Filter = new() { Expression = new FilterExpressionParser(systemQueryOptions.Filter).ParseExpression() };
+        //}
+
+        //if (systemQueryOptions.OrderBy.HasValue())
+        //{
+        //    result.OrderBy = ParseOrderBy(systemQueryOptions.OrderBy);
+        //}
+
+        //var hasSelect = systemQueryOptions.Select.Any();
+        //var hasExpand = systemQueryOptions.Expand.HasValue();
+        //if (hasSelect || hasExpand)
+        //{
+        //    result.SelectExpand = new();
+        //    if (hasSelect) 
+        //        result.SelectExpand.Select.AddRange(systemQueryOptions.Select);
+        //    if (hasExpand)
+        //        foreach (var e in SplitComma(systemQueryOptions.Expand!))
+        //            result.SelectExpand.Expand.Add(e);
+        //}
+
+        //if (systemQueryOptions.Search.HasValue())
+        //    result.Search = new() { Expression = new SearchExpressionParser(systemQueryOptions.Search).ParseSearch() };
+
+        //if (systemQueryOptions.Compute.HasValue())
+        //    result.Compute = ParseCompute(systemQueryOptions.Compute);
+
+        //if (systemQueryOptions.Top.HasValue)
+        //    result.Top = systemQueryOptions.Top.Value;
+
+        //if (systemQueryOptions.Skip.HasValue)
+        //    result.Skip = systemQueryOptions.Skip.Value;
+
+        //if (systemQueryOptions.Index.HasValue)
+        //    result.Index = systemQueryOptions.Index.Value;
+
+        //if (systemQueryOptions.Count.HasValue) 
+        //    result.Count = systemQueryOptions.Count.Value;
+
+        //if (systemQueryOptions.SkipToken.HasValue())
+        //    result.SkipToken = systemQueryOptions.SkipToken;
+
+        //if (systemQueryOptions.DeltaToken.HasValue())
+        //    result.DeltaToken = systemQueryOptions.DeltaToken;
+
+        #endregion
 
         return result;
     }

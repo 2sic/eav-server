@@ -3,15 +3,15 @@ namespace ToSic.Sys.OData.Ast;
 // Root container for parsed system query options
 public sealed class ODataQuery
 {
-    public FilterClause? Filter { get; set; }
-    public OrderByClause? OrderBy { get; set; }
-    public SelectExpandClause? SelectExpand { get; set; }
-    public SearchClause? Search { get; set; }
-    public ComputeClause? Compute { get; set; }
-    public long? Top { get; set; }
-    public long? Skip { get; set; }
-    public long? Index { get; set; }
-    public bool? Count { get; set; }
-    public string? SkipToken { get; set; }
-    public string? DeltaToken { get; set; }
+    public FilterClause? Filter { get; init; }
+    public OrderByClause? OrderBy { get; init; }
+    public SelectExpandClause? SelectExpand { get; init; }
+    public SearchClause? Search { get; init; }
+    public ComputeClause? Compute { get; init; }
+    public long? Top { get; init; }
+    public long? Skip { get; init; }
+    public long? Index { get; init; }
+    public bool? Count { get; init; }
+    public string? SkipToken { get; init; }
+    public string? DeltaToken { get; init; }
 }
