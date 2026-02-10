@@ -6,7 +6,7 @@ namespace ToSic.Eav.DataSource.DbTests.Query;
 
 [Startup(typeof(StartupTestFullWithDb))]
 public class QueryGlobalTestJsonSerializer(
-    QueryManager queryManager,
+    QueryDefinitionService queryDefSvc,
     QueryFactory queryFactory,
     QueryDefinitionFactory queryDefFactory)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
@@ -18,7 +18,7 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void FindGlobalQueries()
     {
-        var queries = queryManager.AllQueryEntities(KnownAppsConstants.PresetIdentity);
+        var queries = queryDefSvc.AllQueryEntities(KnownAppsConstants.PresetIdentity);
         var count = queries.Count;
         True(count is >= GlobalQueryCount and <= GlobalQueryCount + 5, $"should find {GlobalQueryCount} +/-5 query definitions, found {queries.Count}");
     }
@@ -28,7 +28,7 @@ public class QueryGlobalTestJsonSerializer(
     public void ReviewGlobalZonesQuery()
     {
         var queryName = $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones";
-        var queryEnt = queryManager.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, queryName);
+        var queryEnt = queryDefSvc.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, queryName);
         Equal(queryName, queryEnt.GetTac<string>("Name"));//, "should find zones");
 
         var qdef = queryDefFactory.Create(queryEnt.AppId, queryEnt);
@@ -38,7 +38,7 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void UseGlobalZonesQuery()
     {
-        var queryEnt = queryManager.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones");
+        var queryEnt = queryDefSvc.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones");
 
         var qDef = queryDefFactory.Create(AppForQueryTests, queryEnt);
 
@@ -52,7 +52,7 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void UseOldPrefixThrows()
     {
-        Throws<Exception>(() => queryManager.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones"));
+        Throws<Exception>(() => queryDefSvc.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones"));
     }
 
 }

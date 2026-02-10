@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSource.DbTests.Query;
 
 [Startup(typeof(StartupTestFullWithDb))]
 public class QueryBasicTest(JsonSerializer jsonSerializer,
-    QueryManager queryManager,
+    QueryDefinitionService queryDefSvc,
     QueryFactory queryFactory,
     QueryDefinitionFactory queryDefFactory,
     IAppReaderFactory appReaderFactory)
@@ -33,7 +33,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
     private QueryDefinition LoadQueryDef(int appId, int queryId)
     {
         var appState = appReaderFactory.GetTac(appId);
-        var pipelineEntity = queryManager.GetDefinition(appState, queryId);
+        var pipelineEntity = queryDefSvc.GetDefinition(appState, queryId);
 
         return pipelineEntity; // queryDefFactory.Create(appId, pipelineEntity);
     }

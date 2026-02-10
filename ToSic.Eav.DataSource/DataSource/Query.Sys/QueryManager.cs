@@ -1,14 +1,9 @@
-﻿using ToSic.Eav.Apps;
-
-namespace ToSic.Eav.DataSource.Query.Sys;
+﻿namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
 /// Non-Generic Helpers to work with common Data Queries (not Typed Queries).
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class QueryManager(
-    Generator<Query> queryGenerator,
-    LazySvc<IAppReaderFactory> appReaders,
-    LazySvc<QueryDefinitionFactory> queryDefBuilder)
-    : QueryManager<Query>(queryGenerator, appReaders, queryDefBuilder);
+public class QueryManager(QueryDefinitionService queryDefSvc, Generator<Query> queryGenerator)
+    : QueryManager<Query>(queryDefSvc, queryGenerator);

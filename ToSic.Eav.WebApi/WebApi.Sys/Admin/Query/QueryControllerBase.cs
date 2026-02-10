@@ -40,14 +40,14 @@ public abstract class QueryControllerBase<TImplementation>(
         LazySvc<DataSourceCatalog> DataSourceCatalogLazy,
         Generator<JsonSerializer> JsonSerializer,
         Generator<PassThrough> PassThrough,
-        LazySvc<QueryManager> QueryManager,
+        LazySvc<QueryDefinitionService> QueryDefSvc,
         Generator<IAppReaderFactory> AppStates,
         GenWorkBasic<WorkQueryMod> WorkUnitQueryMod,
         GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy)
         : DependenciesRecord(connect:
         [
-            QueryFactory, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough, QueryManager,
-            AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
+            QueryFactory, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough,
+            QueryDefSvc, AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
         ]);
 
     #endregion
@@ -63,7 +63,7 @@ public abstract class QueryControllerBase<TImplementation>(
             return l.Return(new(), "no id, empty");
 
         var appState = Services.AppStates.New().Get(appId);
-        var qDef = Services.QueryManager.Value.GetDefinition(appState, id.Value);
+        var qDef = Services.QueryDefSvc.Value.GetDefinition(appState, id.Value);
 
         #region Deserialize some Entity-Values
 
@@ -197,7 +197,7 @@ public abstract class QueryControllerBase<TImplementation>(
 
         // Get the query, run it and track how much time this took
         // var qDef = Services.QueryFactory.GetQueryDefinition(appId, id);
-        var qDef = services.QueryManager.Value.GetDefinition(appId, id);
+        var qDef = services.QueryDefSvc.Value.GetDefinition(appId, id);
         var builtQuery = Services.QueryFactory.CreateWithTestParams(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
 
@@ -260,7 +260,7 @@ public abstract class QueryControllerBase<TImplementation>(
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
             var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppReader);
             var ents = deser.Deserialize(args.GetContentString());
-            var qdef = Services.QueryManager.Value.GetDefinition(args.AppId, ents);
+            var qdef = Services.QueryDefSvc.Value.GetDefinition(args.AppId, ents);
             workUnit.SaveCopy(qdef);
 
             return l.ReturnTrue();

@@ -31,7 +31,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
 {
     private readonly IDataSourceGenerator<Attributes> _attributesGenerator;
     private QueryFactory QueryFactory { get; }
-    private readonly LazySvc<QueryManager> _queryManager;
+    private readonly LazySvc<QueryDefinitionService> _queryDefSvc;
 
     #region Configuration-properties
 
@@ -54,11 +54,13 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     /// Constructs a new Attributes DS
     /// </summary>
     public QueryInfo(Dependencies services,
-        LazySvc<QueryManager> queryManager, QueryFactory queryFactory, IDataSourceGenerator<Attributes> attributesGenerator) : base(
-        services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn", connect: [queryFactory, queryManager, attributesGenerator])
+        LazySvc<QueryDefinitionService> queryDefSvc,
+        QueryFactory queryFactory,
+        IDataSourceGenerator<Attributes> attributesGenerator)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn", connect: [queryDefSvc, queryFactory, attributesGenerator])
     {
+        _queryDefSvc = queryDefSvc;
         QueryFactory = queryFactory;
-        _queryManager = queryManager;
         _attributesGenerator = attributesGenerator;
         ProvideOut(GetStreamsOfQuery);
         ProvideOut(GetAttributes, "Attributes");
@@ -147,10 +149,10 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
             return l.ReturnNull("empty name");
 
         // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-        var found = _queryManager.Value.TryGetQueryEntity(this, qName, recurseParents: 3)
+        var found = _queryDefSvc.Value.TryGetQueryEntity(this, qName, recurseParents: 3)
                     ?? throw new($"Can't build query info - query not found '{qName}'");
 
-        var builtQuery = QueryFactory.CreateWithTestParams(_queryManager.Value.GetDefinition(AppId, found),
+        var builtQuery = QueryFactory.CreateWithTestParams(_queryDefSvc.Value.GetDefinition(AppId, found),
             lookUps: Configuration.LookUpEngine);
         return l.Return(builtQuery.Main);
     }

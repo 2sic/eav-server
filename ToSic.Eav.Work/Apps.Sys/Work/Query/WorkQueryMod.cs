@@ -10,13 +10,13 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkQueryMod(
     LazySvc<AppCachePurger> systemManagerLazy,
-    LazySvc<QueryManager> queryManager,
+    LazySvc<QueryDefinitionService> queryDefSvc,
     LazySvc<QueryDefinitionFactory> queryDefBuilder,
     GenWorkDb<WorkEntityCreate> entCreate,
     GenWorkDb<WorkEntityDelete> delete,
     GenWorkDb<WorkEntityUpdate> entUpdate)
     : WorkUnitBase<IAppWorkCtx>("AWk.QryMod",
-        connect: [systemManagerLazy, queryManager, queryDefBuilder, delete, entCreate, entUpdate])
+        connect: [systemManagerLazy, queryDefSvc, queryDefBuilder, delete, entCreate, entUpdate])
 {
     public bool Delete(int id)
     {
@@ -30,7 +30,7 @@ public class WorkQueryMod(
 
 
         // Get the Entity describing the Query and Query Parts (DataSources)
-        var qDef = queryManager.Value.GetDefinition(AppWorkCtx.AppReader, id);
+        var qDef = queryDefSvc.Value.GetDefinition(AppWorkCtx.AppReader, id);
         //var qDef = queryDefBuilder.Value.Create(AppWorkCtx.AppId, queryEntity);
 
         var parts = qDef.Parts;
@@ -52,7 +52,7 @@ public class WorkQueryMod(
     }
 
     private QueryDefinition Get(int queryId)
-        => queryManager.Value.GetDefinition(AppWorkCtx.AppReader, queryId);
+        => queryDefSvc.Value.GetDefinition(AppWorkCtx.AppReader, queryId);
 
     /// <summary>
     /// Update an existing query in this app

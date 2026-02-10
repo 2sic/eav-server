@@ -14,23 +14,23 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 {
 
     public WorkQueryCopy(
-        LazySvc<QueryManager> queryManager,
+        LazySvc<QueryDefinitionService> queryDefSvc,
         LazySvc<DataBuilder> builder,
         LazySvc<JsonSerializer> jsonSerializer,
-        GenWorkDb<WorkEntitySave> entSave) : base("AWk.QryMod", connect: [entSave, queryManager, jsonSerializer, builder])
+        GenWorkDb<WorkEntitySave> entSave) : base("AWk.QryMod", connect: [entSave, queryDefSvc, jsonSerializer, builder])
     {
         _entSave = entSave;
-        _queryManager = queryManager;
+        _queryDefSvc = queryDefSvc;
         _serializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppReader));
         _builder = builder;
     }
 
     private readonly GenWorkDb<WorkEntitySave> _entSave;
     private readonly LazySvc<DataBuilder> _builder;
-    private readonly LazySvc<QueryManager> _queryManager;
+    private readonly LazySvc<QueryDefinitionService> _queryDefSvc;
     private readonly LazySvc<JsonSerializer> _serializer;
 
-    private QueryDefinition Get(int queryId) => _queryManager.Value.GetDefinition(AppWorkCtx.AppReader, queryId);
+    private QueryDefinition Get(int queryId) => _queryDefSvc.Value.GetDefinition(AppWorkCtx.AppReader, queryId);
 
 
     public void SaveCopy(int id) => SaveCopy(Get(id));
