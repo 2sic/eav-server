@@ -6,7 +6,8 @@ using ToSic.Eav.LookUp.Sys.Engines;
 namespace ToSic.Eav.DataSource.Sys.Query;
 
 /// <summary>
-/// Helpers to work with Data Queries
+/// Helpers to work with Data Queries.
+/// This is a generic manager, since we may need it for classic queries or for TypedQueries within 2sxc.
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]

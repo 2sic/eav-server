@@ -3,7 +3,7 @@
 namespace ToSic.Eav.DataSource.Sys.Query;
 
 /// <summary>
-/// Helpers to work with Data Queries
+/// Non-Generic Helpers to work with common Data Queries (not Typed Queries).
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
