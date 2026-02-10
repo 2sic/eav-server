@@ -7,7 +7,7 @@ namespace ToSic.Eav.DataSource.DbTests.Query;
 [Startup(typeof(StartupTestFullWithDb))]
 public class QueryGlobalTestJsonSerializer(
     QueryManager queryManager,
-    QueryBuilder queryBuilder,
+    QueryFactory queryFactory,
     QueryDefinitionBuilder queryDefinitionBuilder)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
@@ -18,7 +18,7 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void FindGlobalQueries()
     {
-        var queries = queryManager.AllQueryItems(KnownAppsConstants.PresetIdentity);
+        var queries = queryManager.AllQueryEntities(KnownAppsConstants.PresetIdentity);
         var count = queries.Count;
         True(count is >= GlobalQueryCount and <= GlobalQueryCount + 5, $"should find {GlobalQueryCount} +/-5 query definitions, found {queries.Count}");
     }
@@ -28,21 +28,21 @@ public class QueryGlobalTestJsonSerializer(
     public void ReviewGlobalZonesQuery()
     {
         var queryName = $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones";
-        var queryEnt = queryManager.FindQuery(KnownAppsConstants.PresetIdentity, queryName);
+        var queryEnt = queryManager.FindQueryEntity(KnownAppsConstants.PresetIdentity, queryName);
         Equal(queryName, queryEnt.GetTac<string>("Name"));//, "should find zones");
 
-        var qdef = queryDefinitionBuilder.Create(queryEnt, queryEnt.AppId);
+        var qdef = queryDefinitionBuilder.Create(queryEnt.AppId, queryEnt);
         Equal(2, qdef.Parts.Count);//, "counting parts of the query definition, should have the zone + sort = 2 parts");
     }
 
     [Fact]
     public void UseGlobalZonesQuery()
     {
-        var queryEnt = queryManager.FindQuery(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones");
+        var queryEnt = queryManager.FindQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones");
 
-        var qDef = queryDefinitionBuilder.Create(queryEnt, AppForQueryTests);
+        var qDef = queryDefinitionBuilder.Create(AppForQueryTests, queryEnt);
 
-        var fac = queryBuilder;
+        var fac = queryFactory;
         var query = fac.GetDataSourceForTesting(qDef).Main;
 
         var list = query.ListTac();
@@ -52,7 +52,7 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void UseOldPrefixThrows()
     {
-        Throws<Exception>(() => queryManager.FindQuery(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones"));
+        Throws<Exception>(() => queryManager.FindQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones"));
     }
 
 }

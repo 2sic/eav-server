@@ -2,10 +2,10 @@
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys.Streams;
 
-namespace ToSic.Eav.DataSource.Sys.Inspect;
+namespace ToSic.Eav.DataSource.Query.Sys.Inspect;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InspectStream
+public class QueryStreamInfoDto
 {
     public Guid Target;
     public Guid Source;
@@ -28,7 +28,7 @@ public class InspectStream
     [JsonIgnore]
     protected readonly IDataStream? Stream;
 
-    public InspectStream(IDataStream stream, IDataSource target, string inName)
+    public QueryStreamInfoDto(IDataStream stream, IDataSource target, string inName)
     {
         try
         {
@@ -55,7 +55,7 @@ public class InspectStream
     }
 
 
-    public bool Equals(InspectStream comparison) =>
+    public bool Equals(QueryStreamInfoDto comparison) =>
         comparison.Target == Target
         && comparison.Source == Source
         && comparison.TargetIn == TargetIn

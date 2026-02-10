@@ -30,7 +30,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
     private readonly LazySvc<QueryManager> _queryManager;
     private readonly LazySvc<JsonSerializer> _serializer;
 
-    private QueryDefinition Get(int queryId) => _queryManager.Value.Get(AppWorkCtx.AppReader, queryId);
+    private QueryDefinition Get(int queryId) => _queryManager.Value.GetDefinition(AppWorkCtx.AppReader, queryId);
 
 
     public void SaveCopy(int id) => SaveCopy(Get(id));

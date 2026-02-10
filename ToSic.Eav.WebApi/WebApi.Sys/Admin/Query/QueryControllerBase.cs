@@ -3,8 +3,8 @@ using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Query.Sys;
+using ToSic.Eav.DataSource.Query.Sys.Inspect;
 using ToSic.Eav.DataSource.Sys.Catalog;
-using ToSic.Eav.DataSource.Sys.Inspect;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.LookUp.Sys.Engines;
@@ -34,9 +34,9 @@ public abstract class QueryControllerBase<TImplementation>(
     #region Constructor / DI / Services
 
     public record Dependencies(
-        QueryBuilder QueryBuilder,
+        QueryFactory QueryFactory,
         LazySvc<ConvertToEavLight> EntToDicLazy,
-        LazySvc<InspectQuery> QueryInfoLazy,
+        LazySvc<QueryInspectionService> QueryInfoLazy,
         LazySvc<DataSourceCatalog> DataSourceCatalogLazy,
         Generator<JsonSerializer> JsonSerializer,
         Generator<PassThrough> PassThrough,
@@ -46,7 +46,7 @@ public abstract class QueryControllerBase<TImplementation>(
         GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy)
         : DependenciesRecord(connect:
         [
-            QueryBuilder, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough, QueryManager,
+            QueryFactory, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough, QueryManager,
             AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
         ]);
 
@@ -63,7 +63,7 @@ public abstract class QueryControllerBase<TImplementation>(
             return l.Return(new(), "no id, empty");
 
         var appState = Services.AppStates.New().Get(appId);
-        var qDef = Services.QueryManager.Value.Get(appState, id.Value);
+        var qDef = Services.QueryManager.Value.GetDefinition(appState, id.Value);
 
         #region Deserialize some Entity-Values
 
@@ -196,8 +196,9 @@ public abstract class QueryControllerBase<TImplementation>(
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
         // Get the query, run it and track how much time this took
-        var qDef = Services.QueryBuilder.GetQueryDefinition(appId, id);
-        var builtQuery = Services.QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
+        // var qDef = Services.QueryFactory.GetQueryDefinition(appId, id);
+        var qDef = services.QueryManager.Value.GetDefinition(appId, id);
+        var builtQuery = Services.QueryFactory.GetDataSourceForTesting(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields
@@ -259,7 +260,7 @@ public abstract class QueryControllerBase<TImplementation>(
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
             var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppReader);
             var ents = deser.Deserialize(args.GetContentString());
-            var qdef = Services.QueryBuilder.Create(ents, args.AppId);
+            var qdef = Services.QueryManager.Value.GetDefinition(args.AppId, ents);
             workUnit.SaveCopy(qdef);
 
             return l.ReturnTrue();

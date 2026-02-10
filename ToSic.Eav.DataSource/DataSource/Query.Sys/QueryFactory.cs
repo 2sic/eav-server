@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context.Sys.ZoneCulture;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.Sources;
@@ -14,47 +13,51 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 /// <summary>
 /// Factory to create a Data Query
 /// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class QueryBuilder(
+public class QueryFactory(
+    LazySvc<IAppReaderFactory> appReaders,
     IDataSourcesService dataSourceFactory,
     IZoneCultureResolver cultureResolver,
     Generator<PassThrough> passThrough,
     IAppsCatalog appsCatalog,
-    ICurrentContextUserPermissionsService userPermissions,
-    QueryDefinitionBuilder queryDefinitionBuilder)
+    ICurrentContextUserPermissionsService userPermissions)
     : ServiceBase("DS.PipeFt",
-        connect: [cultureResolver, appsCatalog, dataSourceFactory, passThrough, userPermissions, queryDefinitionBuilder])
+        connect: [appReaders, cultureResolver, appsCatalog, dataSourceFactory, passThrough, userPermissions])
 {
-    QueryWiringsHelper WiringsHelper => new(Log, "QueryWiringsHelper");
+    private QueryWiringsHelper WiringsHelper => new(Log);
 
-    public QueryDefinition Create(IEntity entity, int appId)
-        => queryDefinitionBuilder.Create(entity, appId);
+    //public QueryDefinition Create(IEntity entity, int appId)
+    //    => queryDefinitionBuilder.Create(entity, appId);
 
-    /// <summary>
-    /// Build a query-definition object based on the entity-ID defining the query
-    /// </summary>
-    /// <returns></returns>
-    public QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
-    {
-        var l = Log.Fn<QueryDefinition>($"def#{queryEntityId} for a#{appId}");
-        try
-        {
-            var app = appsCatalog.AppIdentity(appId);
-            var source = dataSourceFactory.CreateDefault(new DataSourceOptions { AppIdentityOrReader = app });
-            var appEntities = source.List;
+    // 2026-02-10 2dm - moved to QueryManager / QueryService, as it's basically duplicate code
+    ///// <summary>
+    ///// Build a query-definition object based on the entity-ID defining the query
+    ///// </summary>
+    ///// <returns></returns>
+    //public QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
+    //{
+    //    var l = Log.Fn<QueryDefinition>($"def#{queryEntityId} for a#{appId}");
+    //    try
+    //    {
+    //        //var app = appsCatalog.AppIdentity(appId);
+    //        //var source = dataSourceFactory.CreateDefault(new DataSourceOptions { AppIdentityOrReader = app });
+    //        //var appEntities = source.List;
 
-            // use findRepo, as it uses the cache, which gives the list of all items
-            var dataQuery = appEntities.FindRepoId(queryEntityId);
-            if (dataQuery == null)
-                throw new KeyNotFoundException($"QueryEntity with ID {queryEntityId} not found on AppId {appId}");
-            var result = Create(dataQuery, appId);
-            return l.Return(result);
-        }
-        catch (KeyNotFoundException)
-        {
-            throw l.Ex(new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId));
-        }
-    }
+    //        var appEntities = appReaders.Value.Get(appReaders.Value.AppIdentity(appId)).List;
+
+    //        // use findRepo, as it uses the cache, which gives the list of all items
+    //        var dataQuery = appEntities.FindRepoId(queryEntityId);
+    //        if (dataQuery == null)
+    //            throw new KeyNotFoundException($"QueryEntity with ID {queryEntityId} not found on AppId {appId}");
+    //        var result = Create(dataQuery, appId);
+    //        return l.Return(result);
+    //    }
+    //    catch (KeyNotFoundException)
+    //    {
+    //        throw l.Ex(new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId));
+    //    }
+    //}
 
 
     public QueryResult BuildQuery(

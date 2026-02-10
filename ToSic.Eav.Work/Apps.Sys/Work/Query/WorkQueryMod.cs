@@ -30,8 +30,8 @@ public class WorkQueryMod(
 
 
         // Get the Entity describing the Query and Query Parts (DataSources)
-        var queryEntity = queryManager.Value.GetQueryEntity(id, AppWorkCtx.AppReader);
-        var qDef = queryDefBuilder.Value.Create(queryEntity, AppWorkCtx.AppId);
+        var qDef = queryManager.Value.GetDefinition(AppWorkCtx.AppReader, id);
+        //var qDef = queryDefBuilder.Value.Create(AppWorkCtx.AppId, queryEntity);
 
         var parts = qDef.Parts;
         var mdItems = parts
@@ -52,7 +52,7 @@ public class WorkQueryMod(
     }
 
     private QueryDefinition Get(int queryId)
-        => queryManager.Value.Get(AppWorkCtx.AppReader, queryId);
+        => queryManager.Value.GetDefinition(AppWorkCtx.AppReader, queryId);
 
     /// <summary>
     /// Update an existing query in this app

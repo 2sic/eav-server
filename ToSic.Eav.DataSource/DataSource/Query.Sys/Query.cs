@@ -9,11 +9,17 @@ using static System.StringComparer;
 namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
-/// Provides a data-source to a query, but won't assemble/compile the query unless accessed (lazy). 
+/// Provides a Query as a data-source.
 /// </summary>
-[PrivateApi]
+/// <remarks>
+/// Note that this source provides access to the query, but it won't run unless you access the data.
+/// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
+[method: PrivateApi]
+public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> queryBuilder, LazySvc<QueryDefinitionBuilder> queryDefBuilder)
+    : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.Query", connect: [queryBuilder, queryDefBuilder]), IQuery,
+        ICacheAlsoAffectsOut
 {
     #region Configuration-properties
 
@@ -42,14 +48,6 @@ public class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 
     #endregion
 
-    /// <inheritdoc />
-    [PrivateApi]
-    public Query(Dependencies services, LazySvc<QueryBuilder> queryBuilder) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Query", connect: [queryBuilder])
-    {
-        _queryBuilderLazy = queryBuilder;
-    }
-    private readonly LazySvc<QueryBuilder> _queryBuilderLazy;
-
     /// <summary>
     /// Initialize a full query object. This is necessary for it to work
     /// </summary>
@@ -57,19 +55,23 @@ public class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
     [PrivateApi]
     public void Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine? lookUpEngineOrNull, IDataSource? source = null)
     {
+        var l = Log.Fn($"{zoneId}/{appId}");
+
         ZoneId = zoneId;
         AppId = appId;
-        Definition = _queryBuilderLazy.Value.Create(queryDef, appId);
+        Definition = queryDefBuilder.Value.Create(appId, queryDef);
         this.Init(lookUpEngineOrNull);
 
         // hook up in, just in case we get parameters from an In
         if (source == null)
-            Log.A("found target for Query, will attach");
+        {
+            l.A("found target for Query, will attach");
+            _inSource = source;
+        }
 
-        _inSource = source;
+        l.Done();
     }
 
-    [PublicApi]
     [field: AllowNull, MaybeNull]
     public override IReadOnlyDictionary<string, IDataStream> In
         => _inSource?.In ?? (field ??= new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase));
@@ -93,7 +95,7 @@ public class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 
         // now provide an override source for this
         var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, resolvedParams);
-        var queryInfos = _queryBuilderLazy.Value.BuildQuery(Definition, Configuration.LookUpEngine,
+        var queryInfos = queryBuilder.Value.BuildQuery(Definition, Configuration.LookUpEngine,
             [paramsOverride]);
         var source = queryInfos.Main;
         var outWritable = new StreamDictionary(this, Services.CacheService, streams: source.Out);
@@ -141,6 +143,7 @@ public class Query : DataSourceBase, IQuery, ICacheAlsoAffectsOut
 
     // # RemoveDataSourceReset v21
     /// <inheritdoc />
+    [PrivateApi("should be removed soon")]
     public void Reset()
     {
         var l = Log.Fn("Reset query and update RequiresRebuildOfOut");

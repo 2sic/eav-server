@@ -1,9 +1,7 @@
-﻿using ToSic.Eav.DataSource.Query.Sys;
-
-namespace ToSic.Eav.DataSource.Sys.Inspect;
+﻿namespace ToSic.Eav.DataSource.Query.Sys.Inspect;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InspectDataSourceDto
+public class QuerySourceInfoDto
 {
     /// <summary>
     /// DS Guid for identification
@@ -27,11 +25,11 @@ public class InspectDataSourceDto
 
     public Dictionary<string, object?>? Definition;
 
-    public IList<OutDto>? Out;
+    public IList<QuerySourceOutDto>? Out;
 
-    public DataSourceConnectionsDto? Connections { get; init; }
+    public QueryConnectionsDto? Connections { get; init; }
 
-    public InspectDataSourceDto(IDataSource ds)
+    public QuerySourceInfoDto(IDataSource ds)
     {
         try
         {
@@ -43,14 +41,14 @@ public class InspectDataSourceDto
             if (connections != null)
                 Connections = new()
                 {
-                    In = connections.In.Select(c => new DataSourceConnectionDto(c)).ToList(),
-                    Out = connections.Out.Select(c => new DataSourceConnectionDto(c)).ToList(),
+                    In = connections.In.Select(c => new QueryConnectionDto(c)).ToList(),
+                    Out = connections.Out.Select(c => new QueryConnectionDto(c)).ToList(),
                 };
 
             try
             {
                 Out = ds.Out
-                    .Select(o => new OutDto
+                    .Select(o => new QuerySourceOutDto
                     {
                         Name = o.Key,
                         Scope = o.Value.Scope
@@ -65,7 +63,7 @@ public class InspectDataSourceDto
         }
     }
 
-    public InspectDataSourceDto WithQueryDef(QueryDefinition queryDefinition)
+    public QuerySourceInfoDto WithQueryDef(QueryDefinition queryDefinition)
     {
         // find this item in the query def
         var partDef = queryDefinition.Parts

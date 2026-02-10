@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource.DbTests.Query;
 [Startup(typeof(StartupTestFullWithDb))]
 public class QueryBasicTest(JsonSerializer jsonSerializer,
     QueryManager queryManager,
-    QueryBuilder queryBuilder,
+    QueryFactory queryFactory,
     QueryDefinitionBuilder queryDefinitionBuilder,
     IAppReaderFactory appReaderFactory)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
@@ -33,9 +33,9 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
     private QueryDefinition LoadQueryDef(int appId, int queryId)
     {
         var appState = appReaderFactory.GetTac(appId);
-        var pipelineEntity = queryManager.GetQueryEntity(queryId, appState);
+        var pipelineEntity = queryManager.GetDefinition(appState, queryId);
 
-        return queryDefinitionBuilder.Create(pipelineEntity, appId);
+        return pipelineEntity; // queryDefinitionBuilder.Create(appId, pipelineEntity);
     }
 
 
@@ -90,7 +90,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
     public void Query_Run_And_Run_Materialized()
     {
         var qdef = LoadQueryDef(AppForQueryTests, BasicId);
-        var query = queryBuilder.GetDataSourceForTesting(qdef).Main;
+        var query = queryFactory.GetDataSourceForTesting(qdef).Main;
         var countDef = query.ListTac().Count();
         True(countDef > 0, "result > 0");
         Equal(BasicCount, countDef);
@@ -99,8 +99,8 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
         var strQuery = ser.Serialize((qdef as ICanBeEntity).Entity, 10);
         var eDef2 = ser.Deserialize(strQuery, true);
         // TODO: #42
-        var qdef2 = queryDefinitionBuilder.Create(eDef2, 0);
-        var query2 = queryBuilder.GetDataSourceForTesting(qdef2).Main;
+        var qdef2 = queryDefinitionBuilder.Create(0, eDef2);
+        var query2 = queryFactory.GetDataSourceForTesting(qdef2).Main;
         var countDef2 = query2.ListTac().Count();
         Equal(countDef2, countDef); //, "countdefs should be same");
     }

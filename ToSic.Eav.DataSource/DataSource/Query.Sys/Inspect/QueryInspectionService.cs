@@ -1,16 +1,14 @@
-﻿using ToSic.Eav.DataSource.Query.Sys;
-
-namespace ToSic.Eav.DataSource.Sys.Inspect;
+﻿namespace ToSic.Eav.DataSource.Query.Sys.Inspect;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InspectQuery: ServiceBase
+public class QueryInspectionService: ServiceBase
 {
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public InspectQuery() : base("Qry.Info") { }
+    public QueryInspectionService() : base("Qry.Info") { }
         
-    public InspectQuery BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult)
+    public QueryInspectionService BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult)
     {
         QueryDefinition = queryDef;
         GetStreamInfosRecursive(queryResult);
@@ -23,8 +21,9 @@ public class InspectQuery: ServiceBase
         get => field ?? throw new ArgumentNullException(nameof(QueryDefinition), @"QueryDefinition must be set before using InspectQuery");
         private set;
     }
-    public List<InspectStream> Streams = [];
-    public Dictionary<Guid, InspectDataSourceDto> Sources = [];
+
+    public List<QueryStreamInfoDto> Streams = [];
+    public Dictionary<Guid, QuerySourceInfoDto> Sources = [];
 
     /// <summary>
     /// Provide an array of infos related to a stream and data source
@@ -37,7 +36,7 @@ public class InspectQuery: ServiceBase
             // First get all the streams (do this first so they stay together)
             try
             {
-                var stmInfo = new InspectStream(stream.Value, target, stream.Key);
+                var stmInfo = new QueryStreamInfoDto(stream.Value, target, stream.Key);
                 if (Streams.Any(existing => existing.Equals(stmInfo)))
                     continue;
                 Streams.Add(stmInfo);
@@ -50,7 +49,7 @@ public class InspectQuery: ServiceBase
             // Try to add the target to Data-Source-Stats;
             try
             {
-                var di = new InspectDataSourceDto(target);
+                var di = new QuerySourceInfoDto(target);
                 if (di.Guid != null && !Sources.ContainsKey(di.Guid.Value))
                     Sources.Add(di.Guid.Value, di.WithQueryDef(QueryDefinition));
             }
@@ -62,7 +61,7 @@ public class InspectQuery: ServiceBase
             // Try to add the source to the data-source-stats
             try
             {
-                var di = new InspectDataSourceDto(stream.Value.Source);
+                var di = new QuerySourceInfoDto(stream.Value.Source);
                 if (di.Guid != null && !Sources.ContainsKey(di.Guid.Value))
                     Sources.Add(di.Guid.Value, di.WithQueryDef(QueryDefinition));
             }

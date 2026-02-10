@@ -3,10 +3,14 @@ using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.DataSource.Query.Sys;
 
+/// <summary>
+/// Helper to build a QueryDefinition object based on a query definition entity.
+/// </summary>
+/// <param name="catalog"></param>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Eav.QDefBl", connect: [catalog])
 {
-    public QueryDefinition Create(IEntity entity, int appId)
+    public QueryDefinition Create(int appId, IEntity entity)
     {
         var parts = GenerateParts(entity);
         return new(entity, appId, parts);
@@ -46,7 +50,7 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
     /// Check if a Query part has an old assembly name, and if yes, correct it to the new name
     /// </summary>
     /// <returns></returns>
-    private string GetCorrectedTypeName(string assemblyAndType)
+    private static string GetCorrectedTypeName(string assemblyAndType)
     {
         // Correct old stored names (ca. before 2sxc 4 to new)
         var newName = assemblyAndType.EndsWith(DataSourceConstantsInternal.V3To4DataSourceDllOld)

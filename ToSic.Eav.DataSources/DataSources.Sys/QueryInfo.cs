@@ -30,7 +30,7 @@ namespace ToSic.Eav.DataSources.Sys;
 public sealed class QueryInfo : CustomDataSourceAdvanced
 {
     private readonly IDataSourceGenerator<Attributes> _attributesGenerator;
-    public QueryBuilder QueryBuilder { get; }
+    private QueryFactory QueryFactory { get; }
     private readonly LazySvc<QueryManager> _queryManager;
 
     #region Configuration-properties
@@ -54,10 +54,10 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     /// Constructs a new Attributes DS
     /// </summary>
     public QueryInfo(Dependencies services,
-        LazySvc<QueryManager> queryManager, QueryBuilder queryBuilder, IDataSourceGenerator<Attributes> attributesGenerator) : base(
-        services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn", connect: [queryBuilder, queryManager, attributesGenerator])
+        LazySvc<QueryManager> queryManager, QueryFactory queryFactory, IDataSourceGenerator<Attributes> attributesGenerator) : base(
+        services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn", connect: [queryFactory, queryManager, attributesGenerator])
     {
-        QueryBuilder = queryBuilder;
+        QueryFactory = queryFactory;
         _queryManager = queryManager;
         _attributesGenerator = attributesGenerator;
         ProvideOut(GetStreamsOfQuery);
@@ -147,10 +147,10 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
             return l.ReturnNull("empty name");
 
         // important, use "Name" and not get-best-title, as some queries may not be correctly typed, so missing title-info
-        var found = _queryManager.Value.FindQuery(this, qName, recurseParents: 3)
+        var found = _queryManager.Value.FindQueryEntity(this, qName, recurseParents: 3)
                     ?? throw new($"Can't build query info - query not found '{qName}'");
 
-        var builtQuery = QueryBuilder.GetDataSourceForTesting(QueryBuilder.Create(found, AppId),
+        var builtQuery = QueryFactory.GetDataSourceForTesting(_queryManager.Value.GetDefinition(AppId, found),
             lookUps: Configuration.LookUpEngine);
         return l.Return(builtQuery.Main);
     }
