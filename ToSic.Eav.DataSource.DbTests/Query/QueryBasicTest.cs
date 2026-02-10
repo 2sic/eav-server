@@ -90,7 +90,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
     public void Query_Run_And_Run_Materialized()
     {
         var qdef = LoadQueryDef(AppForQueryTests, BasicId);
-        var query = queryFactory.GetDataSourceForTesting(qdef).Main;
+        var query = queryFactory.BuildWithTestParams(qdef).Main;
         var countDef = query.ListTac().Count();
         True(countDef > 0, "result > 0");
         Equal(BasicCount, countDef);
@@ -100,7 +100,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
         var eDef2 = ser.Deserialize(strQuery, true);
         // TODO: #42
         var qdef2 = queryDefinitionBuilder.Create(0, eDef2);
-        var query2 = queryFactory.GetDataSourceForTesting(qdef2).Main;
+        var query2 = queryFactory.BuildWithTestParams(qdef2).Main;
         var countDef2 = query2.ListTac().Count();
         Equal(countDef2, countDef); //, "countdefs should be same");
     }

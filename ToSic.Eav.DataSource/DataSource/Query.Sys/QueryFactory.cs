@@ -11,7 +11,7 @@ using ToSic.Sys.Users.Permissions;
 namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
-/// Factory to create a Data Query
+/// Factory to create a Data Query based on Query Definitions.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -27,45 +27,9 @@ public class QueryFactory(
 {
     private QueryWiringsHelper WiringsHelper => new(Log);
 
-    //public QueryDefinition Create(IEntity entity, int appId)
-    //    => queryDefinitionBuilder.Create(entity, appId);
-
-    // 2026-02-10 2dm - moved to QueryManager / QueryService, as it's basically duplicate code
-    ///// <summary>
-    ///// Build a query-definition object based on the entity-ID defining the query
-    ///// </summary>
-    ///// <returns></returns>
-    //public QueryDefinition GetQueryDefinition(int appId, int queryEntityId)
-    //{
-    //    var l = Log.Fn<QueryDefinition>($"def#{queryEntityId} for a#{appId}");
-    //    try
-    //    {
-    //        //var app = appsCatalog.AppIdentity(appId);
-    //        //var source = dataSourceFactory.CreateDefault(new DataSourceOptions { AppIdentityOrReader = app });
-    //        //var appEntities = source.List;
-
-    //        var appEntities = appReaders.Value.Get(appReaders.Value.AppIdentity(appId)).List;
-
-    //        // use findRepo, as it uses the cache, which gives the list of all items
-    //        var dataQuery = appEntities.FindRepoId(queryEntityId);
-    //        if (dataQuery == null)
-    //            throw new KeyNotFoundException($"QueryEntity with ID {queryEntityId} not found on AppId {appId}");
-    //        var result = Create(dataQuery, appId);
-    //        return l.Return(result);
-    //    }
-    //    catch (KeyNotFoundException)
-    //    {
-    //        throw l.Ex(new Exception("QueryEntity not found with ID " + queryEntityId + " on AppId " + appId));
-    //    }
-    //}
-
-
-    public QueryResult BuildQuery(
-        QueryDefinition queryDef,
-        ILookUpEngine? lookUpEngineToClone,
-        List<ILookUp> overrideLookUps) 
+    public QueryFactoryResult Build(QueryDefinition queryDef, ILookUpEngine? lookUpEngineToClone, List<ILookUp> overrideLookUps) 
     {
-        var l = Log.Fn<QueryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
+        var l = Log.Fn<QueryFactoryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
         #region prepare shared / global value providers
             
         var showDrafts = userPermissions.UserPermissions().ShowDraftData;
@@ -115,8 +79,8 @@ public class QueryFactory(
                 dimensions
             );
             var partEngine = new LookUpEngine(baseLookUp, Log, sources: [querySpecsLookUp]);
+            
             // add / set item part configuration
-            //partLookUp.Add(querySpecsLookUp);
             var partOptions = new DataSourceOptions
             {
                 AppIdentityOrReader = appIdentity,
@@ -128,7 +92,10 @@ public class QueryFactory(
             // Check type because we renamed the DLL with the parts, and sometimes the old dll-name had been saved
             var dsType = dataQueryPart.DataSourceType;
             var dataSource = dataSourceFactory.Create(type: dsType, options: partOptions);
-            try { dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Title); }
+            try
+            {
+                dataSource.AddDebugInfo(dataQueryPart.Guid, dataQueryPart.Title);
+            }
             catch { /* ignore */ }
 
             // new with errors
@@ -146,7 +113,7 @@ public class QueryFactory(
 
             var partGuidStr = dataQueryPart.Guid.ToString();
 
-            l.A($"add '{dsType.FullName}' as part#{dataQueryPart.Id}({partGuidStr.Substring(0, 6)}...)");
+            l.A($"add '{dsType.FullName}' as part#{dataQueryPart.Id} ({partGuidStr})");
             dataSources.Add(partGuidStr, dataSource);
         }
         dataSources.Add("Out", outTarget);
@@ -158,15 +125,17 @@ public class QueryFactory(
     }
 
 
-
-
-
-
-    public QueryResult GetDataSourceForTesting(QueryDefinition queryDef, ILookUpEngine? lookUps = null)
+    /// <summary>
+    /// Generate a query but set test parameters. Used in Visual Query.
+    /// </summary>
+    /// <param name="queryDef"></param>
+    /// <param name="lookUps"></param>
+    /// <returns></returns>
+    public QueryFactoryResult BuildWithTestParams(QueryDefinition queryDef, ILookUpEngine? lookUps = null)
     {
-        var l = Log.Fn<QueryResult>($"a#{queryDef.AppId}, pipe:{queryDef.Guid} ({queryDef.Id})");
+        var l = Log.Fn<QueryFactoryResult>($"a#{queryDef.AppId}, pipe:{queryDef.Guid} ({queryDef.Id})");
         var testValueProviders = queryDef.TestParameterLookUps;
-        return l.ReturnAsOk(BuildQuery(queryDef, lookUps, testValueProviders));
+        return l.ReturnAsOk(Build(queryDef, lookUps, testValueProviders));
     }
 
 }

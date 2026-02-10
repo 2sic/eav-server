@@ -162,7 +162,9 @@ public abstract class QueryControllerBase<TImplementation>(
     /// </summary>
     protected QueryRunDto DebugStream(int appId, int id, int top, ILookUpEngine lookUps, string from, string streamName)
     {
-        IDataSource GetSubStream(QueryResult builtQuery)
+        return RunDevInternal(appId, id, lookUps, top, GetSubStream);
+
+        IDataSource GetSubStream(QueryFactoryResult builtQuery)
         {
             // Find the DataSource
             if (!builtQuery.DataSources.TryGetValue(from, out var source))
@@ -177,8 +179,6 @@ public abstract class QueryControllerBase<TImplementation>(
 
             return passThroughDs;
         }
-
-        return RunDevInternal(appId, id, lookUps, top, GetSubStream);
     }
 
     /// <summary>
@@ -191,14 +191,14 @@ public abstract class QueryControllerBase<TImplementation>(
     /// <param name="partLookup">This retrieves which part of the query should be provided - for scenarios where only a single stream in the query is analyzed</param>
     /// <returns></returns>
     protected QueryRunDto RunDevInternal(int appId, int id, ILookUpEngine lookUps, int top,
-        Func<QueryResult, IDataSource> partLookup) 
+        Func<QueryFactoryResult, IDataSource> partLookup) 
     {
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
         // Get the query, run it and track how much time this took
         // var qDef = Services.QueryFactory.GetQueryDefinition(appId, id);
         var qDef = services.QueryManager.Value.GetDefinition(appId, id);
-        var builtQuery = Services.QueryFactory.GetDataSourceForTesting(qDef, lookUps: lookUps);
+        var builtQuery = Services.QueryFactory.BuildWithTestParams(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields

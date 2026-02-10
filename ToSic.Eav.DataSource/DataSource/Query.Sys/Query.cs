@@ -95,7 +95,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
 
         // now provide an override source for this
         var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, resolvedParams);
-        var queryInfos = queryBuilder.Value.BuildQuery(Definition, Configuration.LookUpEngine,
+        var queryInfos = queryBuilder.Value.Build(Definition, Configuration.LookUpEngine,
             [paramsOverride]);
         var source = queryInfos.Main;
         var outWritable = new StreamDictionary(this, Services.CacheService, streams: source.Out);

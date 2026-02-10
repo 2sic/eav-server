@@ -31,7 +31,7 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
         return l.Return(parts, $"{parts.Count}");
     }
 
-    public QueryPartDefinition CreatePart(IEntity entity)
+    private QueryPartDefinition CreatePart(IEntity entity)
     {
         var assemblyAndType = entity.Get<string>(nameof(QueryPartDefinition.PartAssemblyAndType))
                               ?? throw new("Tried to get DataSource Type of a query part, but didn't find anything");

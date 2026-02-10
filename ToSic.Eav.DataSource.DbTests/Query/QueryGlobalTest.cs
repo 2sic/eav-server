@@ -28,7 +28,7 @@ public class QueryGlobalTestJsonSerializer(
     public void ReviewGlobalZonesQuery()
     {
         var queryName = $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones";
-        var queryEnt = queryManager.FindQueryEntity(KnownAppsConstants.PresetIdentity, queryName);
+        var queryEnt = queryManager.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, queryName);
         Equal(queryName, queryEnt.GetTac<string>("Name"));//, "should find zones");
 
         var qdef = queryDefinitionBuilder.Create(queryEnt.AppId, queryEnt);
@@ -38,12 +38,12 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void UseGlobalZonesQuery()
     {
-        var queryEnt = queryManager.FindQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones");
+        var queryEnt = queryManager.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones");
 
         var qDef = queryDefinitionBuilder.Create(AppForQueryTests, queryEnt);
 
         var fac = queryFactory;
-        var query = fac.GetDataSourceForTesting(qDef).Main;
+        var query = fac.BuildWithTestParams(qDef).Main;
 
         var list = query.ListTac();
         True(list.Count() > 1, "should find a few portals in the eav-testing-DB");
@@ -52,7 +52,7 @@ public class QueryGlobalTestJsonSerializer(
     [Fact]
     public void UseOldPrefixThrows()
     {
-        Throws<Exception>(() => queryManager.FindQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones"));
+        Throws<Exception>(() => queryManager.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefixPreV15}Zones"));
     }
 
 }

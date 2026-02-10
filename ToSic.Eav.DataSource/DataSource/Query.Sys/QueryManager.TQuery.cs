@@ -25,7 +25,7 @@ public class QueryManager<TQuery>(
     {
         var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
         var app = appReaders.Value.GetOrKeep(appIdentity);
-        var qEntity = GetQueryEntity(app, queryId);
+        var qEntity = GetQueryEntityOrThrow(app, queryId);
         return l.Return(GetDefinition(app.AppId, qEntity));
     }
 
@@ -41,7 +41,7 @@ public class QueryManager<TQuery>(
     /// </summary>
     /// <param name="appReaderOrId">DataSource to load Entity from</param>
     /// <param name="entityId">EntityId</param>
-    private IEntity GetQueryEntity(IAppIdentity appReaderOrId, int entityId)
+    private IEntity GetQueryEntityOrThrow(IAppIdentity appReaderOrId, int entityId)
     {
         var l = Log.Fn<IEntity>($"{entityId}");
         var app = appReaders.Value.GetOrKeep(appReaderOrId);
@@ -104,10 +104,10 @@ public class QueryManager<TQuery>(
         return l.Return(queries, "ok");
     }
 
-    public TQuery? GetQuery(IAppIdentity appIdentity, string? nameOrGuid, ILookUpEngine lookUps, int recurseParents = 0)
+    public TQuery? TryGetQuery(IAppIdentity appIdentity, string? nameOrGuid, ILookUpEngine lookUps, int recurseParents = 0)
     {
         var l = Log.Fn<TQuery>($"{nameOrGuid}, recurse: {recurseParents}");
-        var qEntity = FindQueryEntity(appIdentity, nameOrGuid, recurseParents);
+        var qEntity = TryGetQueryEntity(appIdentity, nameOrGuid, recurseParents);
         if (qEntity == null)
             return l.ReturnNull("not found");
         var delayedQuery = queryGenerator.New();
@@ -115,7 +115,7 @@ public class QueryManager<TQuery>(
         return l.Return(delayedQuery, "found");
     }
 
-    internal IEntity? FindQueryEntity(IAppIdentity appIdentity, string? nameOrGuid, int recurseParents = 0) 
+    internal IEntity? TryGetQueryEntity(IAppIdentity appIdentity, string? nameOrGuid, int recurseParents = 0) 
     {
         var l = Log.Fn<IEntity?>($"{nameOrGuid}, recurse: {recurseParents}");
 
@@ -123,7 +123,7 @@ public class QueryManager<TQuery>(
             return l.ReturnNull("null - no name");
 
         var all = AllQueryEntities(appIdentity, recurseParents);
-        var result = FindByNameOrGuid(all, nameOrGuid);
+        var result = TryFindByNameOrGuid(all, nameOrGuid);
 
         // If nothing found, and we have an old name, try the new name
         if (result == null && nameOrGuid.StartsWith(DataSourceConstantsInternal.SystemQueryPrefixPreV15))
@@ -134,7 +134,7 @@ public class QueryManager<TQuery>(
     }
 
 
-    private static IEntity? FindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
+    private static IEntity? TryFindByNameOrGuid(IImmutableList<IEntity> queries, string nameOrGuid) =>
         queries.FirstOrDefault(q =>
             q.Get<string>("Name").EqualsInsensitive(nameOrGuid)
             || q.EntityGuid.ToString().EqualsInsensitive(nameOrGuid)
