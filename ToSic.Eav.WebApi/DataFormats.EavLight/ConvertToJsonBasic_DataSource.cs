@@ -30,11 +30,12 @@ partial class ConvertToEavLight
         l.A($"{msg} Streams: {Join(",", streamsList)}");
 
         // Pre-process the guids list to ensure they are guids
-        var realGuids = filterGuids?
-                            .Select(str => Guid.TryParse(str, out var guid) ? guid : Guid.Empty)
-                            .Where(guid => guid != Guid.Empty)
-                            .ToArray()
-                        ?? [];
+        var realGuids = DataSourceConvertHelper.SafeParseGuidList(filterGuids);
+        //var realGuids = filterGuids?
+        //                    .Select(str => Guid.TryParse(str, out var guid) ? guid : Guid.Empty)
+        //                    .Where(guid => guid != Guid.Empty)
+        //                    .ToArray()
+        //                ?? [];
 
 
         var allStreams = streamsList

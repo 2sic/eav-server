@@ -38,6 +38,11 @@ public class DataSourceConstants
     #region Query / Visual Query
 
     /// <summary>
+    /// Internal code for queries to determine that all streams should be delivered.
+    /// </summary>
+    public const string AllStreams = "*";
+
+    /// <summary>
     /// Use this in the `In` stream names array of the <see cref="VisualQueryAttribute"/>
     /// to mark an in-stream as being required.
     /// </summary>
