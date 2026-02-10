@@ -13,12 +13,13 @@
     Type = DataSourceType.Source, 
     Audience = Audience.Advanced,
     NameId = NameId,
+    NameIds = ["ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources"],
     DynamicOut = true,
     OutMode = VisualQueryAttribute.OutModeMirrorIn, // New v20 - improved visual query
     DynamicIn = true)]
 public class PassThrough : DataSourceBase
 {
-    internal const string NameId = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources";
+    internal const string NameId = "777b8436-3d91-460a-8bf7-132bacc6ac66";
 
     /// <inheritdoc />
     /// <summary>

@@ -17,7 +17,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Find items based on one or more IDs",
     Icon = DataSourceIcons.Fingerprint,
     Type = DataSourceType.Filter, 
-    NameId = "ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources",
+    NameId = "7b1ce21f-19bd-4ffe-96cb-3f33349a1711",
+    NameIds = ["ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
     HelpLink = "https://go.2sxc.org/DsIdFilter")]

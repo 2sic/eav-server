@@ -15,7 +15,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Rename some attributes / properties",
     Icon = DataSourceIcons.EditAttributes,
     Type = DataSourceType.Modify,
-    NameId = "ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources",
+    NameId = "516075bd-fa73-4a97-9d61-f3152f350e15",
+    NameIds = ["ToSic.Eav.DataSources.AttributeRename, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired],
     ConfigurationType = "c5918cb8-d35a-48c7-9380-a437edde66d2",
     HelpLink = "https://go.2sxc.org/DsAttributeRename")]

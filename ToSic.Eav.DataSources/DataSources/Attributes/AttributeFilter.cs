@@ -16,7 +16,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Remove attributes/properties to limit what is available",
     Icon = DataSourceIcons.Delete,
     Type = DataSourceType.Modify,
-    NameId = "ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources",
+    NameId = "ab81bc37-ca26-413f-bb37-7c063aa859bf",
+    NameIds = ["ToSic.Eav.DataSources.AttributeFilter, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.AttributeFilter",
     HelpLink = "https://go.2sxc.org/DsAttributeFilter")]

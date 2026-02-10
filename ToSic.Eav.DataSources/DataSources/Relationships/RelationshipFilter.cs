@@ -18,7 +18,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Keep items having a relationship matching a criteria",
     Icon = DataSourceIcons.Share,
     Type = DataSourceType.Filter,
-    NameId = "ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources",
+    NameId = "bf067cb8-b19d-4ad7-956d-2d234cad490a",
+    NameIds = ["ToSic.Eav.DataSources.RelationshipFilter, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired, StreamFallbackName],
     ConfigurationType = "|Config ToSic.Eav.DataSources.RelationshipFilter",
     HelpLink = "https://go.2sxc.org/DsRelationshipFilter")]

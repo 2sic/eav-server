@@ -15,7 +15,7 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Filter and sort using OData options like $filter, $orderby, $top, $skip",
     Icon = DataSourceIcons.FilterList,
     Type = DataSourceType.Filter,
-    NameId = "ToSic.Eav.DataSources.OData, ToSic.Eav.DataSources",
+    NameId = "ea87b773-efd2-4751-939b-76601bbd23d1", // "ToSic.Eav.DataSources.OData, ToSic.Eav.DataSources",
     In = [InStreamDefaultRequired],
     Audience = Audience.System,
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter", // TODO: change

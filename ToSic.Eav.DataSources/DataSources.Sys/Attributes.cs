@@ -25,7 +25,8 @@ namespace ToSic.Eav.DataSources.Sys;
     UiHint = "Attributes/fields of a Content-Type",
     Icon = DataSourceIcons.Dns,
     Type = DataSourceType.System,
-    NameId = "ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources",
+    NameId = "9876676d-67ab-451f-b12e-69b5db7c8d42",
+    NameIds = ["ToSic.Eav.DataSources.System.Attributes, ToSic.Eav.DataSources"],
     Audience = Audience.Advanced,
     ConfigurationType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]

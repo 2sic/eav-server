@@ -22,7 +22,8 @@ namespace ToSic.Eav.DataSources.Sys;
     UiHint = "List the DataSources available in the system",
     Icon = DataSourceIcons.ArrowUpBoxed,
     Type = DataSourceType.System,
-    NameId = "ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources",
+    NameId = "35d51935-8ac4-42fa-87ac-b10c04d73181",
+    NameIds = ["ToSic.Eav.DataSources.System.QueryInfo, ToSic.Eav.DataSources"],
     Audience = Audience.Advanced,
     ConfigurationType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
     HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]

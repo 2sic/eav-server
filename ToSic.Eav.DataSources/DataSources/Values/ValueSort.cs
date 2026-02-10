@@ -16,7 +16,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Sort items by a property",
     Icon = DataSourceIcons.Sort,
     Type = DataSourceType.Sort,
-    NameId = "ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources",
+    NameId = "dbfd32a4-4978-4d74-b1e6-66570a5aeac1",
+    NameIds = ["ToSic.Eav.DataSources.ValueSort, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.ValueSort",
     HelpLink = "https://go.2sxc.org/DsValueSort")]

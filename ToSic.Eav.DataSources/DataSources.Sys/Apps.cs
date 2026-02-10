@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources.Sys;
     UiHint = "Apps of a Zone",
     Icon = DataSourceIcons.Apps,
     Type = DataSourceType.System,
-    NameId = "ToSic.Eav.DataSources.System.Apps, ToSic.Eav.Apps",
+    NameId = "81aa4147-19ad-4b62-8ab0-9205c3466d65",
     Audience = Audience.Advanced,
     ConfigurationType = "fabc849e-b426-42ea-8e1c-c04e69facd9b",
     NameIds =

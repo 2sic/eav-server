@@ -29,7 +29,8 @@ partial class App : IDataSourceReset // #RemoveDataSourceReset v21
         get
         {
             // Use pre-built if already ready and nothing changed RequiresRebuild
-            if (!_requiresRebuildOfOut) return _out.AsReadOnly();
+            if (!_requiresRebuildOfOut)
+                return _out.AsReadOnly();
 
             // Parse config before we continue, as AppSwitch could be set now
             Configuration.Parse();

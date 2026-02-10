@@ -17,7 +17,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Keep items which have a property with the expected value",
     Icon = DataSourceIcons.FilterList,
     Type = DataSourceType.Filter,
-    NameId = "ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources",
+    NameId = "26455fe7-e179-418c-86f7-88dd34fde6a6",
+    NameIds = ["ToSic.Eav.DataSources.ValueFilter, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired, StreamFallbackName],
     ConfigurationType = "|Config ToSic.Eav.DataSources.ValueFilter",
     HelpLink = "https://go.2sxc.org/DsValueFilter")]

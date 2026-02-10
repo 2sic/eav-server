@@ -17,7 +17,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Get data from another Query",
     Icon = DataSourceIcons.Launch,
     Type = DataSourceType.Source,
-    NameId = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
+    NameId = "12063e86-7bd9-4439-9144-cd573086c4b9",
+    NameIds = ["ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources"],
     DynamicOut = true,
     ConfigurationType = "78d25ea6-66cc-44a2-b45d-77749cd9420a",
     HelpLink = "https://go.2sxc.org/QueryRun"

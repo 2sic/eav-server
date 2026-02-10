@@ -18,7 +18,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Combine multiple streams into one",
     Icon = DataSourceIcons.MergeLeft,
     Type = DataSourceType.Logic, 
-    NameId = "ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources",
+    NameId = "806d650d-7540-4501-8d99-1cf2320217a4",
+    NameIds = ["ToSic.Eav.DataSources.StreamMerge, ToSic.Eav.DataSources"],
     DynamicIn = true,
     HelpLink = "https://go.2sxc.org/DsStreamMerge")]
 

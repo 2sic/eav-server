@@ -24,10 +24,11 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Get data from a database using SQL",
     Icon = DataSourceIcons.FormDyn,
     Type = DataSourceType.Source,
-    NameId = "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
+    NameId = "4bad53df-56ff-4eac-ba54-80f0d963f8ab",
     ConfigurationType = "c76901b5-0345-4866-9fa3-6208de7f8543",
     NameIds =
     [
+        "ToSic.Eav.DataSources.Sql, ToSic.Eav.DataSources",
         "ToSic.Eav.DataSources.SqlDataSource, ToSic.Eav.DataSources"
     ],
     HelpLink = "https://go.2sxc.org/DsSql")]

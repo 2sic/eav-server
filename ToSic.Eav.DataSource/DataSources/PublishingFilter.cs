@@ -28,6 +28,7 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.Eye, 
     Type = DataSourceType.Security, 
     NameId = NameId,
+    NameIds = ["ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources"],
     In =
     [
         StreamPublishedName + InStreamRequiredSuffix,
@@ -39,7 +40,7 @@ namespace ToSic.Eav.DataSources;
 
 public class PublishingFilter : DataSourceBase
 {
-    internal const string NameId = "ToSic.Eav.DataSources.PublishingFilter, ToSic.Eav.DataSources";
+    internal const string NameId = "11deeb51-6ef7-40f7-bcd3-e2bcb65dd4a8";
 
     #region Configuration-properties
 

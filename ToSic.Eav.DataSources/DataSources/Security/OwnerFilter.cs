@@ -14,7 +14,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Keep only item owned / created by a specified user",
     Icon = DataSourceIcons.PersonCircled,
     Type = DataSourceType.Security,
-    NameId = "ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources",
+    NameId = "d73417a7-5167-4b2e-aa50-d1191fb13000",
+    NameIds = ["ToSic.Eav.DataSources.OwnerFilter, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.OwnerFilter",
     HelpLink = "https://go.2sxc.org/DsOwnerFilter")]
