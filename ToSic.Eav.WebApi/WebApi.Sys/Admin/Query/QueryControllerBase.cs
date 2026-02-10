@@ -12,6 +12,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Sys.OData;
 using SystemJsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Sys.Admin.Query;
@@ -202,7 +203,7 @@ public abstract class QueryControllerBase<TImplementation>(
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields
-        var systemQueryOptions = new QueryODataParams(outSource.Configuration).SystemQueryOptions;
+        var systemQueryOptions = new QueryODataParams(outSource.Configuration.Parse).SystemQueryOptions;
 
         var timer = new Stopwatch();
         timer.Start();

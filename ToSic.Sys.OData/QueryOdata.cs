@@ -1,26 +1,30 @@
 ﻿using System.Collections.ObjectModel;
-using ToSic.Eav.DataSource;
-using ToSic.Sys.OData;
+using static System.StringComparer;
 
-namespace ToSic.Eav.WebApi.Sys.Admin.Query;
+namespace ToSic.Sys.OData;
 
-internal class QueryODataParams
+/// <summary>
+/// Helper to retrieve all OData parameters from the query string, and parse them into a SystemQueryOptions object.
+/// </summary>
+public class QueryODataParams
 {
-    public QueryODataParams(IDataSourceConfiguration? config)
+    public QueryODataParams(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc)
     {
-        if (config == null)
+        if (parseFunc == null)
             return;
 
-        var extraParams = config.Parse(ODataParams);
+        // Get url parameters by passing tokens into the configuration, then parsing the result with the ODataParams as keys
+        var extraParams = parseFunc(ODataParams);
 
         // filter out keys with empty values
         extraParams = extraParams
             .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Value))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        SystemQueryOptions = new SystemQueryOptions(
-            RawAllSystem: new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(extraParams, StringComparer.InvariantCultureIgnoreCase)),
-            Custom: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+        // Construct the options
+        SystemQueryOptions = new(
+            RawAllSystem: new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(extraParams, InvariantCultureIgnoreCase)),
+            Custom: new Dictionary<string, string>(OrdinalIgnoreCase),
             Select: SystemQueryOptionsParser.ParseSelect(Get(extraParams, ODataConstants.SelectParamName)),
             Filter: Get(extraParams, ODataConstants.FilterParamName),
             OrderBy: Get(extraParams, ODataConstants.OrderByParamName),
@@ -44,12 +48,12 @@ internal class QueryODataParams
         Skip: null,
         Count: null,
         Expand: null,
-        RawAllSystem: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-        Custom: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        RawAllSystem: new Dictionary<string, string>(OrdinalIgnoreCase),
+        Custom: new Dictionary<string, string>(OrdinalIgnoreCase));
 
 
     public static Dictionary<string, string> ODataParams =
-        new(StringComparer.InvariantCultureIgnoreCase)
+        new(InvariantCultureIgnoreCase)
         {
             [ODataConstants.SelectParamName] = $"[QueryString:{ODataConstants.SelectParamName}]",
             [ODataConstants.ExpandParamName] = $"[QueryString:{ODataConstants.ExpandParamName}]",
@@ -75,8 +79,15 @@ internal class QueryODataParams
 
     private static bool? AsBool(string? s)
     {
-        if (s == null) return null;
-        if (bool.TryParse(s, out var b)) return b;
-        return s == "1" ? true : s == "0" ? false : null;
+        if (s == null)
+            return null;
+        if (bool.TryParse(s, out var b))
+            return b;
+        return s switch
+        {
+            "1" => true,
+            "0" => false,
+            _ => null
+        };
     }
 }
