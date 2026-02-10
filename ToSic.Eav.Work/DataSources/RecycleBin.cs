@@ -11,10 +11,6 @@ namespace ToSic.Eav.DataSources;
 [VisualQuery(
     NiceName = "RecycleBin",
     NameId = "f890bec1-dee8-4ed6-9f2e-8ad412d2f4dc",
-    NameIds =
-    [
-        "ToSic.Eav.DataSources.RecycleBin", // for use in the front end
-    ],
     Type = DataSourceType.System,
     Audience = Audience.System,
     DataConfidentiality = DataConfidentiality.System,
