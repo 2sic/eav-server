@@ -86,6 +86,7 @@ partial class DataSourceBase
     private StreamDictionary OutWritable => field ??= new(Services.CacheService);
 
     /// <inheritdoc />
+    [Obsolete("This is an old API, better use GetStream(...) as it provides more options to handle errors.")]
     public IDataStream? this[string outName] => GetStream(outName);
 
     /// <inheritdoc />
@@ -143,12 +144,23 @@ partial class DataSourceBase
         DoWhileOverrideImmutable(() =>
         {
             foreach (var link in list)
+            {
+                // Experimental 2026-02-09 2dm - if the link is a wildcard, we want to attach all streams from the source to this target, so we ignore the stream name and just attach the source, which will handle it.
+                //if (link.InName == "*" && link is { OutName: "*", DataSource: not null })
+                //    Attach(link.DataSource);
+
+                // Case 1: If stream is defined, use that (precedence)
                 if (link.Stream != null)
                     Attach(link.InName, link.Stream);
+
+                // Case 2: If we have a DataSource, use that now
                 else if (link.DataSource != null)
                     Attach(link.InName, link.DataSource, link.OutName);
+
+                // Case X: Exception
                 else
                     throw new ArgumentException("Can't connect as both the stream and the source are null");
+            }
         });
         l.Done();
     }

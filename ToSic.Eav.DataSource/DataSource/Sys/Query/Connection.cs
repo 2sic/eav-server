@@ -5,7 +5,7 @@
 /// </summary>
 [PrivateApi("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public struct Connection
+public struct Connection : IEquatable<Connection>
 {
     internal const string FromField = "From";
     internal const string OutField = "Out";
@@ -23,7 +23,7 @@ public struct Connection
     public string Out { get; set; }
 
     /// <summary>
-    /// The DataSource ID which receives data, an <see cref="IDataSourceTarget"/>
+    /// The DataSource ID which receives data, an <see cref="IDataSource"/>
     /// </summary>
     public string To { get; set; }
 
@@ -34,4 +34,19 @@ public struct Connection
 
     [PrivateApi]
     public override string ToString() => From + ":" + Out + ">" + To + ":" + In;
+
+    public bool Equals(Connection other)
+    {
+        return From == other.From && Out == other.Out && To == other.To && In == other.In;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Connection other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(From, Out, To, In);
+    }
 }

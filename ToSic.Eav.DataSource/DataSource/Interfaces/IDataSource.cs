@@ -56,7 +56,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     IReadOnlyDictionary<string, IDataStream> Out { get; }
 
     /// <summary>
-    /// Gets the Out-Stream with specified Name. 
+    /// Gets the Out-Stream with specified Name. _DEPRECATED_ - use GetStream(...) instead as it provides more options to handle errors.
     /// </summary>
     /// <returns>an <see cref="IDataStream"/> of the desired name</returns>
     /// <exception cref="NullReferenceException">if the stream does not exist</exception>

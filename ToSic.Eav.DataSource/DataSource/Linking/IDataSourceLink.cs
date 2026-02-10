@@ -30,7 +30,10 @@ public interface IDataSourceLink : IDataSourceLinkable
     [ShowApiWhenReleased(ShowApiMode.Never)]
     string InName { get; }
 
-
+    /// <summary>
+    /// A directly defined stream to connect to.
+    /// Takes precedence over Source if defined.
+    /// </summary>
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
     IDataStream? Stream { get; }
