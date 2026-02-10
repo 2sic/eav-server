@@ -39,7 +39,7 @@ public class ODataQueryEngineTests(
             ["$filter"] = filter
         });
 
-        var result = _engine.Execute(table, query);
+        var result = _engine.ExecuteTac(table, query);
         return result;
     }
 
@@ -109,7 +109,7 @@ public class ODataQueryEngineTests(
             ["$filter"] = $"contains({PersonSpecs.FieldCity},'{PersonSpecs.City1}') and {PersonSpecs.FieldHeight} gt 180"
         });
 
-        var result = _engine.Execute(table, query);
+        var result = _engine.ExecuteTac(table, query);
 
         Assert.Equal(expected.Count, result.Items.Count);
         Assert.All(result.Items, entity =>
@@ -133,7 +133,7 @@ public class ODataQueryEngineTests(
             ["$filter"] = $"not contains({PersonSpecs.FieldCity},'{PersonSpecs.City1}')"
         });
 
-        var result = _engine.Execute(table, query);
+        var result = _engine.ExecuteTac(table, query);
 
         Assert.Equal(expected.Count, result.Items.Count);
         Assert.All(result.Items, entity =>
@@ -150,7 +150,7 @@ public class ODataQueryEngineTests(
             ["$top"] = "3"
         });
 
-        var result = _engine.Execute(table, query);
+        var result = _engine.ExecuteTac(table, query);
         Assert.Equal(3, result.Items.Count);
 
         var expected = table.List
@@ -173,7 +173,7 @@ public class ODataQueryEngineTests(
             ["$top"] = "5"
         });
 
-        var result = _engine.Execute(table, query);
+        var result = _engine.ExecuteTac(table, query);
 
         var expected = table.List
             .OrderBy(e => e.EntityId)
@@ -194,7 +194,7 @@ public class ODataQueryEngineTests(
             ["$select"] = "EntityId,City"
         });
 
-        var result = _engine.Execute(table, query);
+        var result = _engine.ExecuteTac(table, query);
 
         Assert.NotEmpty(result.Projection);
         Assert.Equal(result.Items.Count, result.Projection.Count);
