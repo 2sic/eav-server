@@ -29,7 +29,7 @@ public class FeaturesForDataSources(ISysFeaturesService featureSvc, IDataFactory
             TypeName = FeaturesToRawEntity.FeatureStateTypeName,
         });
 
-        var featState = featureSvc.Get(feature.NameId)!.ToRawEntity();
+        var featState = featureSvc.Get(feature.NameId)!.ToRawEntity(minimal: true);
 
         var converted = df.Create(featState);
         

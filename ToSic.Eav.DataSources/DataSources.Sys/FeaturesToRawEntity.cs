@@ -12,7 +12,7 @@ public static class FeaturesToRawEntity
 {
     public const string FeatureStateTypeName = "FeatureState";
 
-    public static IRawEntity ToRawEntity(this FeatureState state, bool detailed = false)
+    public static IRawEntity ToRawEntity(this FeatureState state, bool minimal = false, bool detailed = false)
     {
         var values = new Dictionary<string, object?>
         {
@@ -20,32 +20,51 @@ public static class FeaturesToRawEntity
             { AttributeNames.TitleNiceName, state.Aspect.Name },
             { nameof(Aspect.Description), state.Aspect.Description },
             { nameof(state.IsEnabled), state.IsEnabled },
-            { nameof(state.EnabledByDefault), state.EnabledByDefault },
-            // Not important, don't include
-            //{ "EnabledReason", EnabledReason },
-            //{ "EnabledReasonDetailed", EnabledReasonDetailed },
-            //{ "SecurityImpact", Security?.Impact },
-            //{ "SecurityMessage", Security?.Message },
-            { nameof(state.EnabledInConfiguration), state.EnabledInConfiguration },
-            { nameof(state.Expiration), state.Expiration },
-            { nameof(state.IsForEditUi), state.IsForEditUi },
+            { nameof(state.Aspect.Link), state.Aspect.Link },
             { $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? EavConstants.NullNameId },
             { $"{nameof(state.License)}{nameof(state.License.Guid)}", state.License?.Guid ?? Guid.Empty },
-            { nameof(state.AllowedByLicense), state.AllowedByLicense },
-            { nameof(state.Aspect.Link), state.Aspect.Link },
-            { nameof(state.IsPublic), state.IsPublic },
+
         };
+        if (!minimal)
+            values = new(values)
+            {
+                //{ nameof(state.NameId), state.NameId },
+                //{ AttributeNames.TitleNiceName, state.Aspect.Name },
+                //{ nameof(Aspect.Description), state.Aspect.Description },
+                //{ nameof(state.IsEnabled), state.IsEnabled },
+                { nameof(state.EnabledByDefault), state.EnabledByDefault },
+                { nameof(state.EnabledInConfiguration), state.EnabledInConfiguration },
+                { nameof(state.Expiration), state.Expiration },
+                { nameof(state.IsForEditUi), state.IsForEditUi },
+                //{ $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? EavConstants.NullNameId },
+                //{ $"{nameof(state.License)}{nameof(state.License.Guid)}", state.License?.Guid ?? Guid.Empty },
+                { nameof(state.AllowedByLicense), state.AllowedByLicense },
+                //{ nameof(state.Aspect.Link), state.Aspect.Link },
+                { nameof(state.IsPublic), state.IsPublic },
+            };
 
         if (detailed)
-        {
-            values.Add(nameof(state.EnabledReason), state.EnabledReason);
-            values.Add(nameof(state.EnabledReasonDetailed), state.EnabledReasonDetailed);
-            values.Add(nameof(state.Aspect.IsConfigurable), state.Aspect.IsConfigurable);
-            values.Add(nameof(state.Configuration), JsonSerializer.Serialize(state.Configuration));
-            values.Add(nameof(state.Aspect.ConfigurationContentType), state.Aspect.ConfigurationContentType);
-            values.Add("SecurityImpact", state.Security?.Impact);
-            values.Add("SecurityMessage", state.Security?.Message);
-        }
+            values = new(values)
+            {
+                { nameof(state.EnabledReason), state.EnabledReason },
+                { nameof(state.EnabledReasonDetailed), state.EnabledReasonDetailed },
+                { nameof(state.Aspect.IsConfigurable), state.Aspect.IsConfigurable },
+                { nameof(state.Configuration), JsonSerializer.Serialize(state.Configuration) },
+                { nameof(state.Aspect.ConfigurationContentType), state.Aspect.ConfigurationContentType },
+                { "SecurityImpact", state.Security?.Impact },
+                { "SecurityMessage", state.Security?.Message },
+            };
+
+        //if (detailed)
+        //{
+        //    values.Add(nameof(state.EnabledReason), state.EnabledReason);
+        //    values.Add(nameof(state.EnabledReasonDetailed), state.EnabledReasonDetailed);
+        //    values.Add(nameof(state.Aspect.IsConfigurable), state.Aspect.IsConfigurable);
+        //    values.Add(nameof(state.Configuration), JsonSerializer.Serialize(state.Configuration));
+        //    values.Add(nameof(state.Aspect.ConfigurationContentType), state.Aspect.ConfigurationContentType);
+        //    values.Add("SecurityImpact", state.Security?.Impact);
+        //    values.Add("SecurityMessage", state.Security?.Message);
+        //}
 
         return new RawEntity
         {

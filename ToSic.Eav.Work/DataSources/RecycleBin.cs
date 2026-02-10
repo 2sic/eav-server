@@ -3,6 +3,8 @@ using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.DataSources.Sys;
+using ToSic.Sys.Capabilities.Features;
 using static ToSic.Eav.Apps.Sys.Work.WorkEntityRecycleBin;
 
 namespace ToSic.Eav.DataSources;
@@ -18,8 +20,8 @@ namespace ToSic.Eav.DataSources;
 // ReSharper disable once UnusedMember.Global
 public class RecycleBin : CustomDataSource
 {
-    public RecycleBin(Dependencies services, GenWorkDb<WorkEntityRecycleBin> recycleBin)
-        : base(services, logName: "CDS.RecycleBin", connect: [recycleBin])
+    public RecycleBin(Dependencies services, GenWorkDb<WorkEntityRecycleBin> recycleBin, FeaturesForDataSources featuresForDs)
+        : base(services, logName: "CDS.RecycleBin", connect: [recycleBin, featuresForDs])
     {
         ProvideOutRaw(
             () => GetList(recycleBin.New(AppId).Get()),
@@ -28,6 +30,10 @@ public class RecycleBin : CustomDataSource
                 AutoId = true,
                 TypeName = "RecycleBin",
             });
+
+        // Feature State / Status
+        ProvideOut(name: FeaturesForDataSources.StreamName,
+            data: () => featuresForDs.GetDataForFeature(BuiltInFeatures.EntityUndelete));
     }
 
     private IEnumerable<IRawEntity> GetList(IReadOnlyList<RecycleBinItem> recycleBinItems)
