@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources;
     UiHint = "All data in an app with streams for type",
     Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.Source,
-    NameId = "43ef548c-fc61-4196-8eb6-b7af23cc288a",
+    NameId = "abbaaaaa-fc61-4196-8eb6-b7af23cc288a", // special "magic" ID so it's clearly visible when diagnosing data
     NameIds = ["ToSic.Eav.DataSources.App, ToSic.Eav.DataSources"],
     DynamicOut = true,
     In = [DataSourceConstants.StreamDefaultName],

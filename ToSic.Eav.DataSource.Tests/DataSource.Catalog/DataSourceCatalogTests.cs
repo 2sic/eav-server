@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Sys.Catalog;
+using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.DataSource.Catalog;
 
@@ -41,6 +42,23 @@ public class DataSourceCatalogTests(DataSourceCatalog dsCatalog)
             Null(sqlDs);
         else
             NotNull(sqlDs);
+    }
+
+    [Fact]
+    public void NoNameIdsAreDuplicate()
+    {
+        var dsList = dsCatalog.GetAll(false, 0);
+        var grouped = dsList
+            .GroupBy(c => c.NameId)
+            // Skip the ones without a key
+            .Where(g => g.Key != DataSourceInfo.ErrorNoNameId)
+            .ToList();
+
+        foreach (var group in grouped)
+            Single(group);
+
+        var withoutId = dsList.Where(c => c.NameId == DataSourceInfo.ErrorNoNameId);
+        Equal(dsList.Count, grouped.Count + withoutId.Count());
     }
 
 }

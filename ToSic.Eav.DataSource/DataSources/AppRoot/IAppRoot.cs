@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources;
     Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.Source,
     Audience = Audience.Advanced,
-    NameId = "aabbccdd-8c07-47b6-8e7f-25c00f975943", // Note: special "magic" guid aabbccdd to better detect it in any data
+    NameId = "abbcacbe-8c07-47b6-8e7f-25c00f975943", // Note: special "magic" guid abb-cacbe - almost app-cache to better detect it in any data
     NameIds =
     [
         "ToSic.Eav.DataSources.IAppRoot, ToSic.Eav.DataSources",

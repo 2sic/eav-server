@@ -5,11 +5,12 @@ namespace ToSic.Eav.DataSource.VisualQuery.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceInfo: TypeWithMetadataBase<VisualQueryAttribute>
 {
-        
+    public const string ErrorNoNameId = "error-no-name-id";
+
     public VisualQueryAttribute? VisualQuery { get; }
 
     // By default, the name is the global name of the VisualQuery.
-    public override string NameId => VisualQuery?.NameId ?? "error-no-name-id";
+    public override string NameId => VisualQuery?.NameId ?? ErrorNoNameId;
 
     public bool IsGlobal { get; }
 
