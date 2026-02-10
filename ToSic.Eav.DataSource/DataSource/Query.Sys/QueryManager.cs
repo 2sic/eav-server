@@ -10,5 +10,5 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 public class QueryManager(
     Generator<Query> queryGenerator,
     LazySvc<IAppReaderFactory> appReaders,
-    LazySvc<QueryDefinitionBuilder> queryDefBuilder)
+    LazySvc<QueryDefinitionFactory> queryDefBuilder)
     : QueryManager<Query>(queryGenerator, appReaders, queryDefBuilder);

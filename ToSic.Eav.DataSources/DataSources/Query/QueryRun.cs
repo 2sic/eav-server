@@ -139,7 +139,7 @@ public class QueryRun(DataSourceBase.Dependencies services, Generator<Query> que
     private IDictionary<string, string> ResolveParams(IEntity runEntity)
     {
         var fieldParams = runEntity.Get<string>(FieldParams);
-        var newParamsDic = QueryDefinition.GenerateParamsDic(fieldParams, Log);
+        var newParamsDic = QueryDefinitionParams.GenerateParamsDic(fieldParams, Log);
         var resultingParams = Configuration.Parse(newParamsDic);
         Log.A($"Resolved wrapper params - found {resultingParams.Count} ["
               + string.Join(",", resultingParams.Select(p => p.Key + "=" + p.Value))

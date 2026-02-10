@@ -40,7 +40,7 @@ public class PassThrough : DataSourceBase
     public override IReadOnlyDictionary<string, IDataStream> Out => In;
 
     /// <summary>
-    /// provide a static cachekey - as there is nothing dynamic on this source to modify the cache
+    /// provide a static cache key - as there is nothing dynamic on this source to modify the cache
     /// </summary>
     /// <remarks>
     /// if the key is not static (like the default setup) it will always cause errors

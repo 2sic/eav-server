@@ -19,15 +19,15 @@ public class QueryFactory(
     LazySvc<IAppReaderFactory> appReaders,
     IDataSourcesService dataSourceFactory,
     IZoneCultureResolver cultureResolver,
-    Generator<PassThrough> passThrough,
+    Generator<PassThrough> genPassThrough,
     IAppsCatalog appsCatalog,
     ICurrentContextUserPermissionsService userPermissions)
     : ServiceBase("DS.PipeFt",
-        connect: [appReaders, cultureResolver, appsCatalog, dataSourceFactory, passThrough, userPermissions])
+        connect: [appReaders, cultureResolver, appsCatalog, dataSourceFactory, genPassThrough, userPermissions])
 {
     private QueryWiringsHelper WiringsHelper => new(Log);
 
-    public QueryFactoryResult Build(QueryDefinition queryDef, ILookUpEngine? lookUpEngineToClone, List<ILookUp> overrideLookUps) 
+    public QueryFactoryResult Create(QueryDefinition queryDef, ILookUpEngine? lookUpEngineToClone, List<ILookUp> overrideLookUps) 
     {
         var l = Log.Fn<QueryFactoryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
         #region prepare shared / global value providers
@@ -38,16 +38,6 @@ public class QueryFactory(
 
         // centralizing building of the primary configuration template for each part
         var baseLookUp = new LookUpEngine(lookUpEngineToClone, Log, sources: [queryDef.ParamsLookUp], overrides: overrideLookUps);
-
-        #endregion
-
-        #region Load Query Entity and Query Parts
-
-        // tell the primary-out that it has this guid, for better debugging
-        var passThroughLookUp = new LookUpEngine(baseLookUp, Log);
-        IDataSource outTarget = passThrough.New().Init(passThroughLookUp);
-        if (outTarget.Guid == Guid.Empty)
-            outTarget.AddDebugInfo(queryDef.Guid, null);
 
         #endregion
 
@@ -116,6 +106,17 @@ public class QueryFactory(
             l.A($"add '{dsType.FullName}' as part#{dataQueryPart.Id} ({partGuidStr})");
             dataSources.Add(partGuidStr, dataSource);
         }
+
+        #region Load Query Entity and Query Parts
+
+        // tell the primary-out that it has this guid, for better debugging
+        var passThroughLookUp = new LookUpEngine(baseLookUp, Log);
+        IDataSource outTarget = genPassThrough.New().Init(passThroughLookUp);
+        if (outTarget.Guid == Guid.Empty)
+            outTarget.AddDebugInfo(queryDef.Guid, null);
+
+        #endregion
+
         dataSources.Add("Out", outTarget);
 
         #endregion
@@ -131,11 +132,11 @@ public class QueryFactory(
     /// <param name="queryDef"></param>
     /// <param name="lookUps"></param>
     /// <returns></returns>
-    public QueryFactoryResult BuildWithTestParams(QueryDefinition queryDef, ILookUpEngine? lookUps = null)
+    public QueryFactoryResult CreateWithTestParams(QueryDefinition queryDef, ILookUpEngine? lookUps = null)
     {
         var l = Log.Fn<QueryFactoryResult>($"a#{queryDef.AppId}, pipe:{queryDef.Guid} ({queryDef.Id})");
         var testValueProviders = queryDef.TestParameterLookUps;
-        return l.ReturnAsOk(Build(queryDef, lookUps, testValueProviders));
+        return l.ReturnAsOk(Create(queryDef, lookUps, testValueProviders));
     }
 
 }

@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkQueryMod(
     LazySvc<AppCachePurger> systemManagerLazy,
     LazySvc<QueryManager> queryManager,
-    LazySvc<QueryDefinitionBuilder> queryDefBuilder,
+    LazySvc<QueryDefinitionFactory> queryDefBuilder,
     GenWorkDb<WorkEntityCreate> entCreate,
     GenWorkDb<WorkEntityDelete> delete,
     GenWorkDb<WorkEntityUpdate> entUpdate)

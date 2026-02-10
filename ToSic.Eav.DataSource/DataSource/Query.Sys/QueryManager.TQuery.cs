@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 public class QueryManager<TQuery>(
     Generator<TQuery> queryGenerator,
     LazySvc<IAppReaderFactory> appReaders,
-    LazySvc<QueryDefinitionBuilder> queryDefBuilder)
+    LazySvc<QueryDefinitionFactory> queryDefBuilder)
     : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.QryMan", connect: [queryGenerator, appReaders, queryDefBuilder])
     where TQuery : Query
 {

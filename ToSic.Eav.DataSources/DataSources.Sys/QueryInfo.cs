@@ -150,7 +150,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
         var found = _queryManager.Value.TryGetQueryEntity(this, qName, recurseParents: 3)
                     ?? throw new($"Can't build query info - query not found '{qName}'");
 
-        var builtQuery = QueryFactory.BuildWithTestParams(_queryManager.Value.GetDefinition(AppId, found),
+        var builtQuery = QueryFactory.CreateWithTestParams(_queryManager.Value.GetDefinition(AppId, found),
             lookUps: Configuration.LookUpEngine);
         return l.Return(builtQuery.Main);
     }

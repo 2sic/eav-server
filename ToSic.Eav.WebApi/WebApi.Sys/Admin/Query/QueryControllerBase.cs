@@ -198,7 +198,7 @@ public abstract class QueryControllerBase<TImplementation>(
         // Get the query, run it and track how much time this took
         // var qDef = Services.QueryFactory.GetQueryDefinition(appId, id);
         var qDef = services.QueryManager.Value.GetDefinition(appId, id);
-        var builtQuery = Services.QueryFactory.BuildWithTestParams(qDef, lookUps: lookUps);
+        var builtQuery = Services.QueryFactory.CreateWithTestParams(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields

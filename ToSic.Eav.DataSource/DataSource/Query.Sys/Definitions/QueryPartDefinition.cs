@@ -6,14 +6,13 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 /// <summary>
 /// The configuration / definition of a query part. The <see cref="QueryDefinition"/> uses a bunch of these together to build a query. 
 /// </summary>
-[PrivateApi("this is just fyi")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
+/// <remarks>
+/// Made visible in the docs v21.02, but still just fyi/internal.
+/// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public record QueryPartDefinition : ModelOfEntity
 {
-    public QueryPartDefinition(IEntity? entity,
-        string typeIdentifier,
-        Type type,
-        DataSourceInfo dataSourceInfo) : base(entity!)
+    internal QueryPartDefinition(IEntity? entity, string typeIdentifier, Type type, DataSourceInfo dataSourceInfo) : base(entity!)
     {
         DataSourceTypeIdentifier = typeIdentifier;
         DataSourceType = type;

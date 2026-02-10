@@ -31,7 +31,7 @@ public static class StartupEavDataSource
         services.TryAddTransient<IAppRoot, AppRoot>();
 
         services.TryAddTransient<QueryFactory>();
-        services.TryAddTransient<QueryDefinitionBuilder>();
+        services.TryAddTransient<QueryDefinitionFactory>();
         services.TryAddTransient<QueryManager>();
         services.TryAddTransient(typeof(QueryManager<>)); // new v20
         services.TryAddTransient<ConfigurationDataLoader>();

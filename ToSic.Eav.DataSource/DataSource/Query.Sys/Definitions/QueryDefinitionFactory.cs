@@ -4,12 +4,25 @@ using ToSic.Eav.DataSource.VisualQuery.Sys;
 namespace ToSic.Eav.DataSource.Query.Sys;
 
 /// <summary>
-/// Helper to build a QueryDefinition object based on a query definition entity.
+/// Helper to build a <see cref="QueryDefinition"/> objects based on a query definition entity.
 /// </summary>
-/// <param name="catalog"></param>
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Eav.QDefBl", connect: [catalog])
+/// <remarks>
+/// Made visible in the docs v21.02, but still just fyi/internal.
+/// </remarks>
+/// <param name="dsCatalog"></param>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+public class QueryDefinitionFactory(DataSourceCatalog dsCatalog) : ServiceBase("Eav.QDefBl", connect: [dsCatalog])
 {
+    /// <summary>
+    /// Create a <see cref="QueryDefinition"/> based on the given query definition entity.
+    /// </summary>
+    /// <remarks>
+    ///  The entity should have the correct metadata and properties to be used as a query definition, otherwise this will fail.
+    /// This is usually used to create a QueryDefinition from an entity stored in the database, but it can also be used to create a QueryDefinition from an entity created in memory (e.g. for testing purposes).
+    /// </remarks>
+    /// <param name="appId"></param>
+    /// <param name="entity"></param>
+    /// <returns></returns>
     public QueryDefinition Create(int appId, IEntity entity)
     {
         var parts = GenerateParts(entity);
@@ -20,14 +33,14 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
     {
         var l = Log.Fn<List<QueryPartDefinition>>();
 
-        // Generate parts first
-        var temp = entity.Metadata
+        var partEntities = entity.Metadata
             .Where(m => m.Type.Is(QueryPartDefinition.TypeName))
             .ToList();
 
-        var parts = temp
+        var parts = partEntities
             .Select(CreatePart)
             .ToList();
+
         return l.Return(parts, $"{parts.Count}");
     }
 
@@ -37,8 +50,8 @@ public class QueryDefinitionBuilder(DataSourceCatalog catalog) : ServiceBase("Ea
                               ?? throw new("Tried to get DataSource Type of a query part, but didn't find anything");
 
         var correctedName = GetCorrectedTypeName(assemblyAndType);
-        var dsTypeIdentifier = catalog.Find(correctedName, entity.AppId);
-        var dsInfo = catalog.FindDsiByGuidOrName(correctedName, entity.AppId)
+        var dsTypeIdentifier = dsCatalog.Find(correctedName, entity.AppId);
+        var dsInfo = dsCatalog.FindDsiByGuidOrName(correctedName, entity.AppId)
                      ?? DataSourceInfo.CreateError(dsTypeIdentifier, false, DataSourceType.System,
                          new("Error finding data source", $"Tried to find {assemblyAndType} ({correctedName}) but can't find it."));
 

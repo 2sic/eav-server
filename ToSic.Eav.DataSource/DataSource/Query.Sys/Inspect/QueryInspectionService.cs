@@ -1,13 +1,8 @@
 ﻿namespace ToSic.Eav.DataSource.Query.Sys.Inspect;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class QueryInspectionService: ServiceBase
+public class QueryInspectionService() : ServiceBase("Qry.Info")
 {
-    /// <summary>
-    /// DI Constructor
-    /// </summary>
-    public QueryInspectionService() : base("Qry.Info") { }
-        
     public QueryInspectionService BuildQueryInfo(QueryDefinition queryDef, IDataSource queryResult)
     {
         QueryDefinition = queryDef;

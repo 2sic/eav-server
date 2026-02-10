@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
-public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> queryBuilder, LazySvc<QueryDefinitionBuilder> queryDefBuilder)
+public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> queryBuilder, LazySvc<QueryDefinitionFactory> queryDefBuilder)
     : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.Query", connect: [queryBuilder, queryDefBuilder]), IQuery,
         ICacheAlsoAffectsOut
 {
@@ -95,7 +95,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
 
         // now provide an override source for this
         var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, resolvedParams);
-        var queryInfos = queryBuilder.Value.Build(Definition, Configuration.LookUpEngine,
+        var queryInfos = queryBuilder.Value.Create(Definition, Configuration.LookUpEngine,
             [paramsOverride]);
         var source = queryInfos.Main;
         var outWritable = new StreamDictionary(this, Services.CacheService, streams: source.Out);
@@ -129,7 +129,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
 
     /// <inheritdoc />
     public void Params(string list)
-        => Params(QueryDefinition.GenerateParamsDic(list, Log));
+        => Params(QueryDefinitionParams.GenerateParamsDic(list, Log));
 
     /// <inheritdoc />
     public void Params(IDictionary<string, string> values)

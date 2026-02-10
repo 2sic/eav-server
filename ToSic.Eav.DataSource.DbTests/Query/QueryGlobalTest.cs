@@ -8,7 +8,7 @@ namespace ToSic.Eav.DataSource.DbTests.Query;
 public class QueryGlobalTestJsonSerializer(
     QueryManager queryManager,
     QueryFactory queryFactory,
-    QueryDefinitionBuilder queryDefinitionBuilder)
+    QueryDefinitionFactory queryDefFactory)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     public static int AppForQueryTests = 4;
@@ -31,7 +31,7 @@ public class QueryGlobalTestJsonSerializer(
         var queryEnt = queryManager.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, queryName);
         Equal(queryName, queryEnt.GetTac<string>("Name"));//, "should find zones");
 
-        var qdef = queryDefinitionBuilder.Create(queryEnt.AppId, queryEnt);
+        var qdef = queryDefFactory.Create(queryEnt.AppId, queryEnt);
         Equal(2, qdef.Parts.Count);//, "counting parts of the query definition, should have the zone + sort = 2 parts");
     }
 
@@ -40,10 +40,10 @@ public class QueryGlobalTestJsonSerializer(
     {
         var queryEnt = queryManager.TryGetQueryEntity(KnownAppsConstants.PresetIdentity, $"{DataSourceConstantsInternal.SystemQueryPrefix}Zones");
 
-        var qDef = queryDefinitionBuilder.Create(AppForQueryTests, queryEnt);
+        var qDef = queryDefFactory.Create(AppForQueryTests, queryEnt);
 
         var fac = queryFactory;
-        var query = fac.BuildWithTestParams(qDef).Main;
+        var query = fac.CreateWithTestParams(qDef).Main;
 
         var list = query.ListTac();
         True(list.Count() > 1, "should find a few portals in the eav-testing-DB");
