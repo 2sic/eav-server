@@ -1,7 +1,7 @@
 namespace ToSic.Sys.OData.Ast;
 
 // Root container for parsed system query options
-public sealed class Query
+public sealed class ODataQuery
 {
     public FilterClause? Filter { get; set; }
     public OrderByClause? OrderBy { get; set; }

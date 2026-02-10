@@ -16,26 +16,26 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
     /// Apply filter and orderby clauses to the provided root data source and return the filtered entities plus a select projection.
     /// Note: skip/top are applied after materialising the stream because there is no dedicated skip/take data-source yet.
     /// </summary>
-    public QueryExecutionResult Execute(IDataSource root, Query query)
+    public QueryExecutionResult Execute(IDataSource root, ODataQuery oDataQuery)
     {
         if (root == null)
             throw new ArgumentNullException(nameof(root));
-        if (query == null)
-            throw new ArgumentNullException(nameof(query));
+        if (oDataQuery == null)
+            throw new ArgumentNullException(nameof(oDataQuery));
 
-        var pipeline = BuildFilteredAndSorted(root, query);
+        var pipeline = BuildFilteredAndSorted(root, oDataQuery);
         var entities = pipeline.List?.ToImmutableOpt()
                        ?? ImmutableList<IEntity>.Empty;
 
         var sequence = entities.AsEnumerable();
-        if (query.Skip.HasValue)
+        if (oDataQuery.Skip.HasValue)
         {
-            var skip = ClampToInt(query.Skip.Value);
+            var skip = ClampToInt(oDataQuery.Skip.Value);
             sequence = sequence.Skip(skip);
         }
-        if (query.Top.HasValue)
+        if (oDataQuery.Top.HasValue)
         {
-            var take = ClampToInt(query.Top.Value);
+            var take = ClampToInt(oDataQuery.Top.Value);
             sequence = sequence.Take(take);
         }
 
@@ -43,15 +43,15 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
 
         // WARNING: It appears that this projection-result is never used!
         // Because at least from what I can tell, only the materialized result is used.
-        var projection = new ODataSelectForQueryEngineProbablyNotUsed(query.SelectExpand?.Select)
+        var projection = new ODataSelectForQueryEngineProbablyNotUsed(oDataQuery.SelectExpand?.Select)
             .ApplySelect(materialised);
         return new(materialised, projection);
     }
 
-    public IDataSource BuildFilteredAndSorted(IDataSource root, Query query)
+    public IDataSource BuildFilteredAndSorted(IDataSource root, ODataQuery oDataQuery)
     {
-        var current = ApplyFilter(root, query.Filter?.Expression);
-        current = ApplyOrderBy(current, query.OrderBy);
+        var current = ApplyFilter(root, oDataQuery.Filter?.Expression);
+        current = ApplyOrderBy(current, oDataQuery.OrderBy);
         return current;
     }
 

@@ -4,9 +4,9 @@ public sealed class ComputeClause
 {
     public sealed class Item
     {
-        public Expr? Expression { get; set; }
-        public string? Alias { get; set; }
+        public Expr? Expression { get; init; }
+        public string? Alias { get; init; }
     }
 
-    public List<Item> Items { get; } = new List<Item>();
+    public List<Item> Items { get; } = [];
 }

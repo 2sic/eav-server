@@ -126,7 +126,7 @@ internal sealed class FilterExpressionParser(string text)
             case TokKind.Number:
                 var numTok = Next();
                 return numTok.Text.Contains(".")
-                    ? new LiteralExpr(double.Parse(numTok.Text, CultureInfo.InvariantCulture))
+                    ? new(double.Parse(numTok.Text, CultureInfo.InvariantCulture))
                     : new LiteralExpr(long.Parse(numTok.Text, CultureInfo.InvariantCulture));
             case TokKind.Sub:
                 Next();

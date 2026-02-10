@@ -10,7 +10,7 @@ public class SystemQueryOptionsParserTests
     public void Select_SimpleList()
     {
         var r = SystemQueryOptionsParser.Parse(U("$select=Id,Title,Content"));
-        Equal(new[] { "Id", "Title", "Content" }, r.Select);
+        Equal(["Id", "Title", "Content"], r.Select);
         Null(r.Filter);
         Null(r.OrderBy);
         Null(r.Top);
@@ -33,14 +33,14 @@ public class SystemQueryOptionsParserTests
     public void Select_NestedParentheses_NotSplitInside()
     {
         var r = SystemQueryOptionsParser.Parse(U("$select=Id,Categories(Name,Key),Author/FullName"));
-        Equal(new[] { "Id", "Categories(Name,Key)", "Author/FullName" }, r.Select);
+        Equal(["Id", "Categories(Name,Key)", "Author/FullName"], r.Select);
     }
 
     [Fact]
     public void Select_PercentEncodedKey()
     {
         var r = SystemQueryOptionsParser.Parse(U("%24select=Id,Title"));
-        Equal(new[] { "Id", "Title" }, r.Select);
+        Equal(["Id", "Title"], r.Select);
         // implementation unescapes keys, so the stored key is "$select"
         True(r.RawAllSystem.ContainsKey("$select"));
     }
@@ -49,7 +49,7 @@ public class SystemQueryOptionsParserTests
     public void Select_CaseInsensitiveKey()
     {
         var r = SystemQueryOptionsParser.Parse(U("$SeLeCt=Id,Title"));
-        Equal(new[] { "Id", "Title" }, r.Select);
+        Equal(["Id", "Title"], r.Select);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class SystemQueryOptionsParserTests
     {
         var r = SystemQueryOptionsParser.Parse(U("$select=Id,Title&%24select=Id,Overridden"));
         // Implementation unescapes keys and last-value-wins, so the later %24select overwrites $select
-        Equal(new[] { "Id", "Overridden" }, r.Select);
+        Equal(["Id", "Overridden"], r.Select);
         // Keys are unescaped, so only one entry exists ("$select") and it contains the final value
         Single(r.RawAllSystem);
         True(r.RawAllSystem.ContainsKey("$select"));
@@ -127,7 +127,7 @@ public class SystemQueryOptionsParserTests
                     "&$orderby=PublicationMoment%20desc&$top=25&$skip=50&$count=true&PageId=123&ModuleId=456");
         var r = SystemQueryOptionsParser.Parse(uri);
 
-        Equal(new[] { "Id", "Title" }, r.Select);
+        Equal(["Id", "Title"], r.Select);
         Equal("Author,Categories", r.Expand);
         Equal("ShowOnStartPage eq true", r.Filter);
         Equal("PublicationMoment desc", r.OrderBy);
@@ -143,7 +143,7 @@ public class SystemQueryOptionsParserTests
     public void CustomParams_AreSeparated()
     {
         var r = SystemQueryOptionsParser.Parse(U("$select=Id&foo=bar&baz=qux"));
-        Equal(new[] { "Id" }, r.Select);
+        Equal(["Id"], r.Select);
         Equal(2, r.Custom.Count);
         True(r.Custom.ContainsKey("foo"));
         True(r.Custom.ContainsKey("baz"));
@@ -171,14 +171,14 @@ public class SystemQueryOptionsParserTests
     public void Select_TrimSegments()
     {
         var r = SystemQueryOptionsParser.Parse(U("$select= Id , Title ,  Content "));
-        Equal(new[] { "Id", "Title", "Content" }, r.Select);
+        Equal(["Id", "Title", "Content"], r.Select);
     }
 
     [Fact]
     public void Select_WithParenthesesAndTrailingComma()
     {
         var r = SystemQueryOptionsParser.Parse(U("$select=Categories(Name,Key),"));
-        Equal(new[] { "Categories(Name,Key)" }, r.Select);
+        Equal(["Categories(Name,Key)"], r.Select);
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class SystemQueryOptionsParserTests
     public void Select_KeyWithLeadingSpaces_IsTrimmed()
     {
         var r = SystemQueryOptionsParser.Parse(U("   %24select=Id"));
-        Equal(new[] { "Id" }, r.Select);
+        Equal(["Id"], r.Select);
         True(r.RawAllSystem.ContainsKey("$select"));
     }
 
@@ -208,14 +208,14 @@ public class SystemQueryOptionsParserTests
     public void Select_IgnoresEmptySegments()
     {
         var r = SystemQueryOptionsParser.Parse(U("$select=Id,,Title"));
-        Equal(new[] { "Id", "Title" }, r.Select);
+        Equal(["Id", "Title"], r.Select);
     }
 
     [Fact]
     public void ParameterCount_ExactlyAtLimitProcessed()
     {
         var sb = new System.Text.StringBuilder();
-        for (int i = 0; i < 500; i++)
+        for (var i = 0; i < 500; i++)
         {
             if (i > 0) sb.Append('&');
             sb.Append("p").Append(i).Append('=').Append(i);
@@ -229,7 +229,7 @@ public class SystemQueryOptionsParserTests
     [Fact]
     public void ValueLength_AtLimit_NotTruncated()
     {
-        string atLimit = new string('b', 8192);
+        var atLimit = new string('b', 8192);
         var r = SystemQueryOptionsParser.Parse(U("$filter=" + atLimit));
         NotNull(r.Filter);
         Equal(8192, r.Filter!.Length);
@@ -246,7 +246,7 @@ public class SystemQueryOptionsParserTests
     public void Select_DuplicateEncodedThenPlain_LastWins()
     {
         var r = SystemQueryOptionsParser.Parse(U("%24select=Id,Original&$select=Id,Final"));
-        Equal(new[] { "Id", "Final" }, new[] { r.Select[0], r.Select[1] });
+        Equal(["Id", "Final"], new[] { r.Select[0], r.Select[1] });
         Equal("Id,Final", r.RawAllSystem["$select"]);
     }
 
@@ -267,7 +267,7 @@ public class SystemQueryOptionsParserTests
     {
         // Build 520 custom parameters; parser limit is 500 so only first 500 should be processed.
         var sb = new System.Text.StringBuilder();
-        for (int i = 0; i < 520; i++)
+        for (var i = 0; i < 520; i++)
         {
             if (i > 0) sb.Append('&');
             sb.Append("p").Append(i).Append('=').Append(i);
@@ -281,8 +281,8 @@ public class SystemQueryOptionsParserTests
     public void ValueLength_TruncatedAtLimit()
     {
         // Limit is 8192 characters; create a longer value that should be truncated.
-        int over = 9000;
-        string longVal = new string('a', over);
+        var over = 9000;
+        var longVal = new string('a', over);
         var r = SystemQueryOptionsParser.Parse(U("$filter=" + longVal));
         NotNull(r.Filter);
         // Expect truncated length == 8192 (knowledge of current constant; adjust if constant changes)
@@ -295,7 +295,7 @@ public class SystemQueryOptionsParserTests
         // Provide more than 200 select items; expect only first 200 retained.
         var sb = new System.Text.StringBuilder();
         sb.Append("$select=");
-        for (int i = 0; i < 205; i++)
+        for (var i = 0; i < 205; i++)
         {
             if (i > 0) sb.Append(',');
             sb.Append("F").Append(i);

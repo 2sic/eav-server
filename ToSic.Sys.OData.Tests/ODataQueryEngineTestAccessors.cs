@@ -6,7 +6,13 @@ namespace ToSic.Sys.OData.Tests;
 
 internal static class ODataQueryEngineTestAccessors
 {
+    public static QueryExecutionResult ExecuteTac(this ODataQueryEngine engine, IDataSource root, ODataQuery oDataQuery)
+        => engine.Execute(root, oDataQuery);
 
-    public static QueryExecutionResult ExecuteTac(this ODataQueryEngine engine, IDataSource root, Query query)
-        => engine.Execute(root, query);
+}
+
+internal static class UriQueryParserTac
+{
+    public static ODataQuery Parse(IDictionary<string, string> queryOptions)
+        => UriQueryParser.Parse(queryOptions);
 }

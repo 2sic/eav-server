@@ -96,7 +96,7 @@ namespace ToSic.Sys.OData
             var selectRaw = Get(ODataConstants.SelectParamName, sys);
             var selectList = ParseSelect(selectRaw);
 
-            return new SystemQueryOptions(
+            return new(
                 Select: selectList,
                 Expand: Get(ODataConstants.ExpandParamName, sys),
                 Filter: Get(ODataConstants.FilterParamName, sys),

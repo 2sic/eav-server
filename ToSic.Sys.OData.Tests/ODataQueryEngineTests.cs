@@ -34,7 +34,7 @@ public class ODataQueryEngineTests(
     private QueryExecutionResult FilterPrepareAndRun(int count, string filter)
     {
         var table = PersonsTable(count, specs: PersonInCities);
-        var query = UriQueryParser.Parse(new Dictionary<string, string>
+        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
         {
             ["$filter"] = filter
         });
@@ -104,7 +104,7 @@ public class ODataQueryEngineTests(
                 && (e.Get<int?>(PersonSpecs.FieldHeight) ?? 0) > 180)
             .ToList();
 
-        var query = UriQueryParser.Parse(new Dictionary<string, string>
+        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
         {
             ["$filter"] = $"contains({PersonSpecs.FieldCity},'{PersonSpecs.City1}') and {PersonSpecs.FieldHeight} gt 180"
         });
@@ -128,7 +128,7 @@ public class ODataQueryEngineTests(
                 .Contains(PersonSpecs.City1, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
-        var query = UriQueryParser.Parse(new Dictionary<string, string>
+        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
         {
             ["$filter"] = $"not contains({PersonSpecs.FieldCity},'{PersonSpecs.City1}')"
         });
@@ -144,7 +144,7 @@ public class ODataQueryEngineTests(
     public void OrderByHeightDescendingWithTop()
     {
         var table = PersonsTable();
-        var query = UriQueryParser.Parse(new Dictionary<string, string>
+        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
         {
             ["$orderby"] = "Height desc",
             ["$top"] = "3"
@@ -166,7 +166,7 @@ public class ODataQueryEngineTests(
     public void SkipAndTopReturnExpectedPage()
     {
         var table = PersonsTable();
-        var query = UriQueryParser.Parse(new Dictionary<string, string>
+        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
         {
             ["$orderby"] = "EntityId asc",
             ["$skip"] = "10",
@@ -189,7 +189,7 @@ public class ODataQueryEngineTests(
     public void SelectProjectsRequestedFields()
     {
         var table = PersonsTable();
-        var query = UriQueryParser.Parse(new Dictionary<string, string>
+        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
         {
             ["$select"] = "EntityId,City"
         });

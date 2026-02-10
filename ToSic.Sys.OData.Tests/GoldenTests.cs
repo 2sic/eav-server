@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
 using ToSic.Sys.OData.Ast;
-using Xunit;
 
 namespace ToSic.Sys.OData.Tests
 {
     public class GoldenTests
     {
-        private static Query Parse(IDictionary<string,string> q) => UriQueryParser.Parse(q);
+        private static ODataQuery Parse(IDictionary<string,string> q) => UriQueryParserTac.Parse(q);
 
         [Theory]
         [InlineData("price eq 10", "(price eq 10)")]

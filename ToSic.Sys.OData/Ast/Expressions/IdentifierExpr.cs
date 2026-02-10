@@ -1,8 +1,7 @@
 namespace ToSic.Sys.OData.Ast;
 
-public sealed class IdentifierExpr : Expr
+public sealed class IdentifierExpr(string name) : Expr
 {
-    public IdentifierExpr(string name) { Name = name; }
-    public string Name { get; }
+    public string Name { get; } = name;
     public override string ToString() => Name;
 }

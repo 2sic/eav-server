@@ -8,15 +8,15 @@ namespace ToSic.Sys.OData;
 public static class UriQueryParser
 {
     // Entry: dictionary with keys like $filter, $orderby, etc.
-    public static Query Parse(IDictionary<string, string> queryOptions)
+    public static ODataQuery Parse(IDictionary<string, string> queryOptions)
     {
-        var result = new Query();
+        var result = new ODataQuery();
 
         if (queryOptions == null)
             return result;
 
         if (queryOptions.TryGetValue(ODataConstants.FilterParamName, out var filter)) 
-            result.Filter = new FilterClause { Expression = new FilterExpressionParser(filter).ParseExpression() };
+            result.Filter = new() { Expression = new FilterExpressionParser(filter).ParseExpression() };
 
         if (queryOptions.TryGetValue(ODataConstants.OrderByParamName, out var orderby))
             result.OrderBy = ParseOrderBy(orderby);
@@ -25,7 +25,7 @@ public static class UriQueryParser
         var hasExpand = queryOptions.TryGetValue(ODataConstants.ExpandParamName, out var expand);
         if (hasSelect || hasExpand)
         {
-            result.SelectExpand = new SelectExpandClause();
+            result.SelectExpand = new();
             if (hasSelect && select != null)
                 foreach (var s in SplitComma(select))
                     result.SelectExpand.Select.Add(s);
@@ -35,7 +35,7 @@ public static class UriQueryParser
         }
 
         if (queryOptions.TryGetValue(ODataConstants.SearchParamName, out var search))
-            result.Search = new SearchClause { Expression = new SearchExpressionParser(search).ParseSearch() };
+            result.Search = new() { Expression = new SearchExpressionParser(search).ParseSearch() };
 
         if (queryOptions.TryGetValue(ODataConstants.ComputeParamName, out var compute))
             result.Compute = ParseCompute(compute);
@@ -66,15 +66,15 @@ public static class UriQueryParser
         return result;
     }
 
-    public static Query Parse(SystemQueryOptions systemQueryOptions)
+    public static ODataQuery Parse(SystemQueryOptions systemQueryOptions)
     {
-        var result = new Query();
+        var result = new ODataQuery();
 
         if (!systemQueryOptions.RawAllSystem.Any()) return result;
 
         if (systemQueryOptions.Filter.HasValue())
         {
-            result.Filter = new FilterClause { Expression = new FilterExpressionParser(systemQueryOptions.Filter).ParseExpression() };
+            result.Filter = new() { Expression = new FilterExpressionParser(systemQueryOptions.Filter).ParseExpression() };
         }
 
         if (systemQueryOptions.OrderBy.HasValue())
@@ -86,7 +86,7 @@ public static class UriQueryParser
         var hasExpand = systemQueryOptions.Expand.HasValue();
         if (hasSelect || hasExpand)
         {
-            result.SelectExpand = new SelectExpandClause();
+            result.SelectExpand = new();
             if (hasSelect) 
                 result.SelectExpand.Select.AddRange(systemQueryOptions.Select);
             if (hasExpand)
@@ -95,7 +95,7 @@ public static class UriQueryParser
         }
 
         if (systemQueryOptions.Search.HasValue())
-            result.Search = new SearchClause { Expression = new SearchExpressionParser(systemQueryOptions.Search).ParseSearch() };
+            result.Search = new() { Expression = new SearchExpressionParser(systemQueryOptions.Search).ParseSearch() };
 
         if (systemQueryOptions.Compute.HasValue())
             result.Compute = ParseCompute(systemQueryOptions.Compute);
@@ -133,7 +133,7 @@ public static class UriQueryParser
             var asc = part.TrimEnd().EndsWith(" asc", StringComparison.OrdinalIgnoreCase);
             var exprText = desc ? part.Substring(0, part.Length - 5) : asc ? part.Substring(0, part.Length - 4) : part;
             var expr = new FilterExpressionParser(exprText).ParseExpression();
-            clause.Items.Add(new OrderByClause.Item { Expression = expr, Descending = desc });
+            clause.Items.Add(new() { Expression = expr, Descending = desc });
         }
         return clause;
     }
@@ -149,7 +149,7 @@ public static class UriQueryParser
             var exprText = part.Substring(0, idx).Trim();
             var alias = part.Substring(idx + 4).Trim();
             var expr = new FilterExpressionParser(exprText).ParseExpression();
-            clause.Items.Add(new ComputeClause.Item { Expression = expr, Alias = alias });
+            clause.Items.Add(new() { Expression = expr, Alias = alias });
         }
         return clause;
     }
