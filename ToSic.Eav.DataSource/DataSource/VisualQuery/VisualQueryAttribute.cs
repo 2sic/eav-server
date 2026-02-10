@@ -1,14 +1,14 @@
-﻿using ToSic.Sys.Data;
-
-namespace ToSic.Eav.DataSource.VisualQuery;
+﻿namespace ToSic.Eav.DataSource.VisualQuery;
 
 /// <summary>
-/// Custom Attribute for DataSources and use in the VisualQuery Designer.
+/// Custom Attribute for DataSources and their use in the **VisualQuery Designer**.
+/// </summary>
+/// <remarks>
 /// Will add information about help, configuration-content-types etc.
 /// Only DataSources which have this attribute will be listed in the designer-tool.
 ///
 /// Read more here: [](xref:NetCode.DataSources.Custom.VisualQueryAttribute)
-/// </summary>
+/// </remarks>
 [PublicApi]
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]

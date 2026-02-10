@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using ToSic.Eav.DataSource.Sys.Query;
+﻿using ToSic.Eav.DataSource.Sys.Query;
 
 namespace ToSic.Eav.DataSource.Sys.Inspect;
 

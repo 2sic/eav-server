@@ -5,7 +5,7 @@
 /// </summary>
 [PrivateApi("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public struct Connection : IEquatable<Connection>
+public struct QueryWire : IEquatable<QueryWire>
 {
     internal const string FromField = "From";
     internal const string OutField = "Out";
@@ -35,14 +35,14 @@ public struct Connection : IEquatable<Connection>
     [PrivateApi]
     public override string ToString() => From + ":" + Out + ">" + To + ":" + In;
 
-    public bool Equals(Connection other)
+    public bool Equals(QueryWire other)
     {
         return From == other.From && Out == other.Out && To == other.To && In == other.In;
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is Connection other && Equals(other);
+        return obj is QueryWire other && Equals(other);
     }
 
     public override int GetHashCode()

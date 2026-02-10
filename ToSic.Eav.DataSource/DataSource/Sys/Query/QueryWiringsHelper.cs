@@ -49,11 +49,11 @@ internal class QueryWiringsHelper(ILog? parentLog, string logName) : HelperBase(
     /// <summary>
     /// Wire all Out-Wirings on specified DataSources
     /// </summary>
-    internal static (bool ConnectionsWereAdded, List<Connection> InitializedWirings) ConnectOutStreams(
+    internal static (bool ConnectionsWereAdded, List<QueryWire> InitializedWirings) ConnectOutStreams(
         IEnumerable<KeyValuePair<string, IDataSource>> dataSourcesToInit,
         IDictionary<string, IDataSource> allDataSources,
-        IList<Connection> allWirings,
-        List<Connection> initializedWirings)
+        IList<QueryWire> allWirings,
+        List<QueryWire> initializedWirings)
     {
         var connectionsWereAdded = false;
 
@@ -74,7 +74,7 @@ internal class QueryWiringsHelper(ILog? parentLog, string logName) : HelperBase(
 
         return (connectionsWereAdded, initializedWirings);
 
-        bool AddConnectionFromWire(Connection wire)
+        bool AddConnectionFromWire(QueryWire wire)
         {
             var errMsg = $"Trouble with connecting query from {wire.From}:{wire.Out} to {wire.To}:{wire.In}. ";
             if (!allDataSources.TryGetValue(wire.From, out var conSource))

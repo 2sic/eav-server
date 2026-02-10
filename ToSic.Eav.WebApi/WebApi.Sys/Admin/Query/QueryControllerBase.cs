@@ -12,7 +12,6 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.WebApi.Sys.Dto;
-using Connection = ToSic.Eav.DataSource.Sys.Query.Connection;
 using SystemJsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Sys.Admin.Query;
@@ -150,7 +149,7 @@ public abstract class QueryControllerBase<TImplementation>(
         // Update Pipeline Entity with new Wirings etc.
         var wiringString = data.Pipeline[nameof(QueryDefinition.StreamWiring)]?.ToString() ?? "";
         var wirings =
-            SystemJsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
+            SystemJsonSerializer.Deserialize<List<QueryWire>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
             ?? [];
 
         Services.WorkUnitQueryMod.New(appId: appId).Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);

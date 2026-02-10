@@ -6,8 +6,6 @@ using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Sys.Utils;
-using Connection = ToSic.Eav.DataSource.Sys.Query.Connection;
-using Connections = ToSic.Eav.DataSource.Sys.Query.Connections;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -101,11 +99,11 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
 
 
-    private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
+    private static string RemapWiringToCopy(IList<QueryWire> origWiring, Dictionary<string, string> keyMap)
     {
-        var wiringsClone = new List<Connection>();
+        var wiringsClone = new List<QueryWire>();
         if (origWiring == null)
-            return Connections.Serialize(wiringsClone);
+            return QueryWiringSerializer.Serialize(wiringsClone);
 
         foreach (var wireInfo in origWiring)
         {
@@ -117,7 +115,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
             wiringsClone.Add(wireInfoClone);
         }
-        var newWiring = Connections.Serialize(wiringsClone);
+        var newWiring = QueryWiringSerializer.Serialize(wiringsClone);
         return newWiring;
     }
 

@@ -4,8 +4,6 @@ using ToSic.Eav.DataSource.Sys.Query;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 using static System.StringComparer;
-using Connection = ToSic.Eav.DataSource.Sys.Query.Connection;
-using Connections = ToSic.Eav.DataSource.Sys.Query.Connections;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -64,7 +62,7 @@ public class WorkQueryMod(
     /// <param name="newDsGuids"></param>
     /// <param name="headerValues"></param>
     /// <param name="wirings"></param>
-    public void Update(int queryId, IList<Dictionary<string, object>> partDefs, ICollection<Guid> newDsGuids, Dictionary<string, object> headerValues, ICollection<Connection> wirings)
+    public void Update(int queryId, IList<Dictionary<string, object>> partDefs, ICollection<Guid> newDsGuids, Dictionary<string, object> headerValues, ICollection<QueryWire> wirings)
     {
         // Get/Save Query EntityGuid. Its required to assign Query Parts to it.
         var qdef = Get(queryId);
@@ -167,7 +165,7 @@ public class WorkQueryMod(
     /// <param name="values"></param>
     /// <param name="wirings"></param>
     /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
-    private void SaveHeader(int id, Dictionary<string, object> values, ICollection<Connection> wirings, IDictionary<string, Guid> renamedDataSources)
+    private void SaveHeader(int id, Dictionary<string, object> values, ICollection<QueryWire> wirings, IDictionary<string, Guid> renamedDataSources)
     {
         var l = Log.Fn($"save pipe a#{AppWorkCtx.AppId}, pipe:{id}");
         wirings = RenameWiring(wirings, renamedDataSources, Log);
@@ -178,7 +176,7 @@ public class WorkQueryMod(
                 $"DataSource \"{wireInfo.To}\" has multiple In-Streams with Name \"{wireInfo.In}\". Each In-Stream must have an unique Name and can have only one connection.");
 
         // add to new object...then send to save/update
-        values[nameof(QueryDefinition.StreamWiring)] = Connections.Serialize(wirings);
+        values[nameof(QueryDefinition.StreamWiring)] = QueryWiringSerializer.Serialize(wirings);
         entUpdate.New(AppWorkCtx.AppReader).UpdateParts(id, values, new());
         l.Done();
     }
@@ -190,13 +188,13 @@ public class WorkQueryMod(
     /// <param name="renamedDataSources"></param>
     /// <param name="lg"></param>
     /// <returns></returns>
-    private static ICollection<Connection> RenameWiring(ICollection<Connection> wirings, IDictionary<string, Guid>? renamedDataSources, ILog lg)
+    private static ICollection<QueryWire> RenameWiring(ICollection<QueryWire> wirings, IDictionary<string, Guid>? renamedDataSources, ILog lg)
     {
-        var l = lg.Fn<ICollection<Connection>>();
+        var l = lg.Fn<ICollection<QueryWire>>();
         if (renamedDataSources == null)
             return l.Return(wirings, "no renames, no changes");
 
-        var wiringsNew = new List<Connection>();
+        var wiringsNew = new List<QueryWire>();
         foreach (var wireInfo in wirings)
         {
             var newWireInfo = wireInfo;
