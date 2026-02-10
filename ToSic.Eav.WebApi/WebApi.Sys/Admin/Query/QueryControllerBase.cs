@@ -203,7 +203,7 @@ public abstract class QueryControllerBase<TImplementation>(
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields
-        var systemQueryOptions = new QueryODataParams(outSource.Configuration.Parse).SystemQueryOptions;
+        var systemQueryOptions = QueryODataParams.Create(outSource.Configuration.Parse);
 
         var timer = new Stopwatch();
         timer.Start();

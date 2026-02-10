@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Convert;
 using static System.String;
 
 namespace ToSic.Eav.DataFormats.EavLight;
@@ -12,12 +14,19 @@ partial class ConvertToEavLight
 
     #region Many variations of the Prepare-Statement expecting various kinds of input
 
-    /// <inheritdoc cref="IConvertDataSource{T}.Convert" />
+    /// <inheritdoc cref="IConvertDataSource{T}.Convert(IDataSource, IEnumerable{string})" />
     public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string>? streams = null)
-        => Convert(source, streams, null);
-        
+        => Convert(source, streams, filterGuids: null, selectFields: null);
+
     [PrivateApi("not public yet, as the signature is not final yet")]
-    public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string>? streams, string[]? filterGuids)
+    public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string>? streams,
+        string[]? filterGuids)
+    {
+        return Convert(source, streams, filterGuids, selectFields: null);
+    }
+
+    [PrivateApi("not public yet, as the signature is not final yet")]
+    public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string>? streams, string[]? filterGuids, IDictionary<string, ICollection<string>>? selectFields)
     {
         var l = Log.Fn<IDictionary<string, IEnumerable<EavLightEntity>>>(timer: true);
 
@@ -48,13 +57,22 @@ partial class ConvertToEavLight
                     var filtered = realGuids.Any()
                         ? list.Where(e => realGuids.Contains(e.EntityGuid))
                         : list;
+
+                    if (selectFields != null)
+                    {
+                        var specs = selectFields.TryGetValue(s, out var fields)
+                            ? fields
+                            : [];
+                        AddSelectFields(specs);
+                    }
+
                     return Convert(filtered);
                 });
 
         return l.ReturnAsOk(allStreams);
     }
 
-    /// <inheritdoc cref="IConvertDataSource{T}.Convert" />
+    /// <inheritdoc cref="IConvertDataSource{T}.Convert(IDataSource, string)" />
     public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, string streams)
         => Convert(source, streams?.Split(','));
 

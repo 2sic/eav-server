@@ -19,4 +19,11 @@ public record SystemQueryOptions(
     long? Index = null,
     string? SkipToken = null,
     string? DeltaToken = null
-);
+)
+{
+    public bool IsEmpty() => !RawAllSystem.Any();
+
+    public bool IsEmptyExceptForSelect() =>
+        IsEmpty()
+        || (RawAllSystem.Count == 1 && RawAllSystem.ContainsKey(ODataConstants.SelectParamName));
+}

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using ToSic.Sys.Utils;
 using static System.StringComparer;
 
 namespace ToSic.Sys.OData;
@@ -8,39 +9,50 @@ namespace ToSic.Sys.OData;
 /// </summary>
 public class QueryODataParams
 {
-    public QueryODataParams(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc)
+    public static Dictionary<string, SystemQueryOptions> CreateMany(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string[] streamNames)
+    {
+        streamNames = streamNames.Any()
+            ? streamNames
+            : ["Default"];
+        return streamNames.ToDictionary(n => n, n => Create(parseFunc, n), OrdinalIgnoreCase);
+    }
+
+    public static SystemQueryOptions Create(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string? streamName = default) =>
+        CreateInternal(parseFunc, streamName.EqualsInsensitive("Default") ? default : streamName);
+
+    private static SystemQueryOptions CreateInternal(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string? streamName = default)
     {
         if (parseFunc == null!)
-            return;
+            return SystemQueryOptionsEmpty;
 
         // Get url parameters by passing tokens into the configuration, then parsing the result with the ODataParams as keys
-        var extraParams = parseFunc(ODataParams);
+        var odataDic = parseFunc(GetODataParams(streamName));
 
         // filter out keys with empty values
-        extraParams = extraParams
+        odataDic = odataDic
             .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Value))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         // Construct the options
-        SystemQueryOptions = new(
-            RawAllSystem: new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(extraParams, InvariantCultureIgnoreCase)),
+        return new(
+            RawAllSystem: new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(odataDic, OrdinalIgnoreCase)),
             Custom: new Dictionary<string, string>(OrdinalIgnoreCase),
-            Select: SystemQueryOptionsParser.ParseSelect(Get(extraParams, ODataConstants.SelectParamName)),
-            Filter: Get(extraParams, ODataConstants.FilterParamName),
-            OrderBy: Get(extraParams, ODataConstants.OrderByParamName),
-            Top: AsInt(Get(extraParams, ODataConstants.TopParamName)), // long in OData spec, but int should be enough for us
-            Skip: AsInt(Get(extraParams, ODataConstants.SkipParamName)), // long in OData spec, but int should be enough for us
-            Count: AsBool(Get(extraParams, ODataConstants.CountParamName)),
-            Expand: Get(extraParams, ODataConstants.ExpandParamName),
-            Search: Get(extraParams, ODataConstants.SearchParamName),
-            Compute: Get(extraParams, ODataConstants.ComputeParamName),
-            Index: AsLong(Get(extraParams, ODataConstants.IndexParamName)),
-            SkipToken: Get(extraParams, ODataConstants.SkipTokenParamName),
-            DeltaToken: Get(extraParams, ODataConstants.DeltaTokenParamName)
+            Select: SystemQueryOptionsParser.ParseSelect(Get(odataDic, ODataConstants.SelectParamName)),
+            Filter: Get(odataDic, ODataConstants.FilterParamName),
+            OrderBy: Get(odataDic, ODataConstants.OrderByParamName),
+            Top: AsInt(Get(odataDic, ODataConstants.TopParamName)), // long in OData spec, but int should be enough for us
+            Skip: AsInt(Get(odataDic, ODataConstants.SkipParamName)), // long in OData spec, but int should be enough for us
+            Count: AsBool(Get(odataDic, ODataConstants.CountParamName)),
+            Expand: Get(odataDic, ODataConstants.ExpandParamName),
+            Search: Get(odataDic, ODataConstants.SearchParamName),
+            Compute: Get(odataDic, ODataConstants.ComputeParamName),
+            Index: AsLong(Get(odataDic, ODataConstants.IndexParamName)),
+            SkipToken: Get(odataDic, ODataConstants.SkipTokenParamName),
+            DeltaToken: Get(odataDic, ODataConstants.DeltaTokenParamName)
         );
     }
 
-    public SystemQueryOptions SystemQueryOptions { get; init; } = /* Empty */ new(
+    private static readonly SystemQueryOptions SystemQueryOptionsEmpty = /* Empty */ new(
         Select: [],
         Filter: null,
         OrderBy: null,
@@ -52,7 +64,25 @@ public class QueryODataParams
         Custom: new Dictionary<string, string>(OrdinalIgnoreCase));
 
 
-    public static Dictionary<string, string> ODataParams =
+    /// <summary>
+    /// Experimental: try to get OData parameters for multiple streams, using a prefix such as "Authors$select" for the "Authors" stream.
+    /// This is not part of the OData spec, but could be useful in some scenarios.
+    /// </summary>
+    /// <param name="streamName"></param>
+    /// <returns></returns>
+    private static Dictionary<string, string> GetODataParams(string? streamName = default)
+    {
+        if (streamName.IsEmpty())
+            return ODataParams;
+
+        return ODataParams
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Replace(":", $":{streamName}")
+            );
+    }
+
+    internal static readonly Dictionary<string, string> ODataParams =
         new(InvariantCultureIgnoreCase)
         {
             [ODataConstants.SelectParamName] = $"[QueryString:{ODataConstants.SelectParamName}]",
