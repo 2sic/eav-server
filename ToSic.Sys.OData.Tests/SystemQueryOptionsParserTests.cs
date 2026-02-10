@@ -1,5 +1,3 @@
-using static Xunit.Assert;
-
 namespace ToSic.Sys.OData.Tests;
 
 public class SystemQueryOptionsParserTests
