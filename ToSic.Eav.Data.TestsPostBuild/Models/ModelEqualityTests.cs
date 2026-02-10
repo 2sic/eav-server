@@ -3,7 +3,7 @@ using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models;
 
-public class EqualityTests(TestDataGenerator generator)
+public class ModelEqualityTests(TestDataGenerator generator)
 {
     private static void CheckAllEquals(TestModelMetadataForDecorator md, TestModelMetadataForDecorator md2)
     {
