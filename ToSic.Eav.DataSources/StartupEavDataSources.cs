@@ -28,6 +28,9 @@ public static class StartupEavDataSources
 
         services.TryAddTransient<ITreeMapper, TreeMapper>();
 
+        // wip v21.02
+        services.TryAddTransient<FeaturesForDataSources>();
+
         return services;
     }
 

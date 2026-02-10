@@ -38,38 +38,45 @@ public sealed class EntityInspectRelationships : CustomDataSource
     public int Id => Configuration.GetThis(0);
 
     [PrivateApi]
-    public EntityInspectRelationships(Dependencies services, IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [appReaders, featuresSvc])
+    public EntityInspectRelationships(Dependencies services, IAppReaderFactory appReaders, FeaturesForDataSources featuresForDs)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [appReaders, featuresForDs])
     {
+        // Main stream
         ProvideOutRaw(
-            () => GetList(appReaders, featuresSvc),
+            () => GetRelationships(appReaders, featuresForDs.Features),
             options: () => new() { TypeName = "EntityRelationship", AutoId = false }
         );
+
+        // Feature State / Status
+        ProvideOut(name: FeaturesForDataSources.StreamName,
+            data: () => featuresForDs.GetDataForFeature(BuiltInFeatures.EntityInspectRelationships));
+
     }
 
-    private IEnumerable<IRawEntity> GetList(IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
+    private IEnumerable<IRawEntity> GetRelationships(IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
     {
         var id = Id;
         var l = Log.Fn<IEnumerable<IRawEntity>>($"Id: {id}");
         if (id == 0)
             return l.Return([], "no id provided, []");
 
-        var appReader = appReaders.Get(this.PureIdentity());
-
-        var entity = appReader.List.GetOne(Id);
-
+        // Check if Entity found
+        var entity = appReaders.Get(this.PureIdentity()).List.GetOne(Id);
         if (entity == null)
             return l.Return([], $"no entity with id {id} found, []");
 
+        // Check if the feature is on, this changes what the user will see
         var featureEnabled = featuresSvc.IsEnabled(BuiltInFeatures.EntityInspectRelationships);
 
 
+        // Get all the child relationships, incl. what field the data is in
         var childrenWithField = entity.Attributes
             .GetEntityAttributes()
             .SelectMany(a => a.Value.TypedContents?
                 .Select(e => new RelInfo(e, Field: a.Key, IsChild: true)) ?? [])
             .ToList();
 
+        // Get all the parent relationships, incl. what field the data is in
         var parentsWithField = entity.Relationships
             .FindParents(log: l)
             .SelectMany(parent => parent.Attributes
@@ -79,6 +86,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
             )
             .ToList();
 
+        // Merge, convert and return
         var merged = childrenWithField.Union(parentsWithField).ToList();
 
         var converted = merged.Select(m => m.ToRawEntity(featureEnabled));
@@ -106,4 +114,10 @@ public sealed class EntityInspectRelationships : CustomDataSource
         private static readonly string FeatureNotEnabledMessage =
             $"hidden, feature {BuiltInFeatures.EntityInspectRelationships.NameId} not enabled";
     }
+
+    private static IEnumerable<IRawEntity> GetList(ISysFeaturesService featureSvc) =>
+    [
+        featureSvc.Get(BuiltInFeatures.EntityInspectRelationships.NameId)!
+            .ToRawEntity(detailed: true)
+    ];
 }
