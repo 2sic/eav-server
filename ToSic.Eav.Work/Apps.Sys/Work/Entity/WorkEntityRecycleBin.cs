@@ -26,7 +26,10 @@ public class WorkEntityRecycleBin(
         DateTime DeletedUtc,
         string? DeletedBy,
         string? ParentRef
-    );
+    )
+    {
+        public string? Json { get; init; }
+    };
 
     private sealed record HistoryDeletedEntityRow(int EntityId, Guid? EntityGuid, int DeletedTransactionId, DateTime Timestamp, string? Json, byte[]? CJson);
 
@@ -71,15 +74,18 @@ public class WorkEntityRecycleBin(
             .SelectMany(
                 t => t.ctJoin.DefaultIfEmpty(),
                 (t, ct) => new RecycleBinItem(
-                    t.e.EntityId,
-                    t.e.EntityGuid,
-                    t.e.AppId,
-                    ct != null ? ct.StaticName : (t.e.ContentType ?? ""),
-                    ct != null ? ct.Name : (t.e.ContentType ?? ""),
-                    t.e.TransDeletedId!.Value,
-                    (t.tx == null ? (DateTime?)null : t.tx.Timestamp) ?? DateTime.MinValue,
+                    EntityId: t.e.EntityId,
+                    EntityGuid: t.e.EntityGuid,
+                    AppId: t.e.AppId,
+                    ContentTypeStaticName: ct != null ? ct.StaticName : (t.e.ContentType ?? ""),
+                    ContentTypeName: ct != null ? ct.Name : (t.e.ContentType ?? ""),
+                    DeletedTransactionId: t.e.TransDeletedId!.Value,
+                    DeletedUtc: (t.tx == null ? (DateTime?)null : t.tx.Timestamp) ?? DateTime.MinValue,
                     t.tx != null ? t.tx.User : null,
-                    parentRef))
+                    parentRef)
+                {
+                    Json = t.e.Json,
+                })
             .ToList();
 
     private static List<HistoryDeletedEntityRow> LoadHistoryDeletedEntitiesLatest(EavDbContext db, int appId, string? parentRef)
@@ -153,7 +159,10 @@ public class WorkEntityRecycleBin(
                     DeletedTransactionId: h.DeletedTransactionId,
                     DeletedUtc: tx.Timestamp != default ? tx.Timestamp : h.Timestamp,
                     DeletedBy: tx.User,
-                    ParentRef: parentRef);
+                    ParentRef: parentRef)
+                {
+                    Json = json,
+                };
             })
             .ToList();
     }
