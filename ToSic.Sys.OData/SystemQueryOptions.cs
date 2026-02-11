@@ -1,29 +1,41 @@
 namespace ToSic.Sys.OData;
 
-public record SystemQueryOptions(
-    IReadOnlyDictionary<string, string> RawAllSystem,
-    IReadOnlyDictionary<string, string> Custom,
+public record SystemQueryOptions
+{
+
+    public IReadOnlyDictionary<string, string> RawAllSystem
+    {
+        get => field ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        init;
+    }
+
+    public IReadOnlyDictionary<string, string> Custom
+    {
+        get => field ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        init;
+    }
 
     // Implemented
-    IReadOnlyList<string> Select,
-    string? Filter = null,
-    string? OrderBy = null,
-    int? Top = null, // long in OData spec, but int should be enough for us
-    int? Skip = null, // long in OData spec, but int should be enough for us
-    bool? Count = null,
-    string? Expand = null,
+    public IReadOnlyList<string> Select { get => field ??= []; init; }
+    public string? Filter { get; init; }
+    public string? OrderBy { get; init; }
+    public int? Top { get; init; }
+    public int? Skip { get; init; }
+    public bool? Count { get; init; }
+    public string? Expand { get; init; }
 
     // TODO: $search, $compute, $index, $skiptoken, $deltatoken
-    string? Search = null,
-    string? Compute = null,
-    long? Index = null,
-    string? SkipToken = null,
-    string? DeltaToken = null
-)
-{
+    public string? Search { get; init; }
+    public string? Compute { get; init; }
+    public long? Index { get; init; }
+    public string? SkipToken { get; init; }
+    public string? DeltaToken { get; init; }
+
+
     public bool IsEmpty() => !RawAllSystem.Any();
 
     public bool IsEmptyExceptForSelect() =>
         IsEmpty()
         || (RawAllSystem.Count == 1 && RawAllSystem.ContainsKey(ODataConstants.SelectParamName));
+
 }

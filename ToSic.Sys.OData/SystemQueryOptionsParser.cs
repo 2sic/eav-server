@@ -39,7 +39,7 @@ namespace ToSic.Sys.OData
                     ? q.Substring(1)
                     : string.Empty;
             if (string.IsNullOrEmpty(q))
-                return EmptyResult(sys, custom);
+                return new() { RawAllSystem = sys, Custom = custom };
 
             // Streaming parse instead of string.Split to avoid large temporary arrays under heavy input.
             var index = 0;
@@ -96,17 +96,18 @@ namespace ToSic.Sys.OData
             var selectRaw = Get(ODataConstants.SelectParamName, sys);
             var selectList = ParseSelect(selectRaw);
 
-            return new(
-                Select: selectList,
-                Expand: Get(ODataConstants.ExpandParamName, sys),
-                Filter: Get(ODataConstants.FilterParamName, sys),
-                OrderBy: Get(ODataConstants.OrderByParamName, sys),
-                Top: AsInt(Get(ODataConstants.TopParamName, sys)),
-                Skip: AsInt(Get(ODataConstants.SkipParamName, sys)),
-                Count: AsBool(Get(ODataConstants.CountParamName, sys)),
-                RawAllSystem: sys,
-                Custom: custom
-            );
+            return new()
+            {
+                Select = selectList,
+                Expand = Get(ODataConstants.ExpandParamName, sys),
+                Filter = Get(ODataConstants.FilterParamName, sys),
+                OrderBy = Get(ODataConstants.OrderByParamName, sys),
+                Top = AsInt(Get(ODataConstants.TopParamName, sys)),
+                Skip = AsInt(Get(ODataConstants.SkipParamName, sys)),
+                Count = AsBool(Get(ODataConstants.CountParamName, sys)),
+                RawAllSystem = sys,
+                Custom = custom
+            };
         }
 
         /// <summary>
@@ -159,20 +160,6 @@ namespace ToSic.Sys.OData
                 AddSegment(raw.AsSpan(start), list);
             return [..list];
         }
-
-        private static SystemQueryOptions EmptyResult(
-            IReadOnlyDictionary<string, string>? sys = null,
-            IReadOnlyDictionary<string, string>? custom = null)
-            => new(
-                Select: [],
-                Filter: null,
-                OrderBy: null,
-                Top: null,
-                Skip: null,
-                Count: null,
-                Expand: null,
-                RawAllSystem: sys ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-                Custom: custom ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 
         private static string SafeUnescape(string input)
         {
