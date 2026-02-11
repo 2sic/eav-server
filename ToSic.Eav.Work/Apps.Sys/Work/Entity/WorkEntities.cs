@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.DataSource.OData;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 using ToSic.Sys.OData;
@@ -59,7 +60,7 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
             return typeFilter.List;
 
         // v20 support OData filtering, sorting... if present in query string
-        var query = UriQueryParser.Parse(systemQueryOptions);
+        var query = systemQueryOptions.ToQuery();
         var engine = new ODataQueryEngine(dataSourcesService);
         var result = engine.Execute(typeFilter, query);
         return result.Items;

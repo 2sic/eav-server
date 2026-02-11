@@ -28,10 +28,10 @@ public class ODataQueryEngineTests(
     private QueryExecutionResult FilterPrepareAndRun(int count, string filter)
     {
         var table = PersonsTable(count, specs: PersonInCities);
-        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
+        var query = new Dictionary<string, string>
         {
             ["$filter"] = filter
-        });
+        }.ToQueryTac();
 
         var result = _engine.ExecuteTac(table, query);
         return result;
@@ -98,10 +98,10 @@ public class ODataQueryEngineTests(
                 && (e.Get<int?>(PersonSpecs.FieldHeight) ?? 0) > 180)
             .ToList();
 
-        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
+        var query = new Dictionary<string, string>
         {
             ["$filter"] = $"contains({PersonSpecs.FieldCity},'{PersonSpecs.City1}') and {PersonSpecs.FieldHeight} gt 180"
-        });
+        }.ToQueryTac();
 
         var result = _engine.ExecuteTac(table, query);
 
@@ -122,10 +122,10 @@ public class ODataQueryEngineTests(
                 .Contains(PersonSpecs.City1, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
-        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
+        var query = new Dictionary<string, string>
         {
             ["$filter"] = $"not contains({PersonSpecs.FieldCity},'{PersonSpecs.City1}')"
-        });
+        }.ToQueryTac();
 
         var result = _engine.ExecuteTac(table, query);
 
@@ -138,11 +138,11 @@ public class ODataQueryEngineTests(
     public void OrderByHeightDescendingWithTop()
     {
         var table = PersonsTable();
-        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
+        var query = new Dictionary<string, string>
         {
             ["$orderby"] = "Height desc",
             ["$top"] = "3"
-        });
+        }.ToQueryTac();
 
         var result = _engine.ExecuteTac(table, query);
         Assert.Equal(3, result.Items.Count);
@@ -160,12 +160,12 @@ public class ODataQueryEngineTests(
     public void SkipAndTopReturnExpectedPage()
     {
         var table = PersonsTable();
-        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
+        var query = new Dictionary<string, string>
         {
             ["$orderby"] = "EntityId asc",
             ["$skip"] = "10",
             ["$top"] = "5"
-        });
+        }.ToQueryTac();
 
         var result = _engine.ExecuteTac(table, query);
 
@@ -183,10 +183,10 @@ public class ODataQueryEngineTests(
     public void SelectProjectsRequestedFields()
     {
         var table = PersonsTable();
-        var query = UriQueryParserTac.Parse(new Dictionary<string, string>
+        var query = new Dictionary<string, string>
         {
             ["$select"] = "EntityId,City"
-        });
+        }.ToQueryTac();
 
         var result = _engine.ExecuteTac(table, query);
 

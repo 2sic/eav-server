@@ -4,7 +4,7 @@ namespace ToSic.Sys.OData.Tests
 {
     public class GoldenTests
     {
-        private static ODataQuery Parse(IDictionary<string,string> q) => UriQueryParserTac.Parse(q);
+        private static ODataQuery Parse(IDictionary<string,string> q) => q.ToQueryTac();
 
         [Theory]
         [InlineData("price eq 10", "(price eq 10)")]

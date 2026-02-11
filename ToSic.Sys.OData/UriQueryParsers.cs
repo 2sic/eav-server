@@ -8,7 +8,9 @@ namespace ToSic.Sys.OData;
 public static class UriQueryParser
 {
     // Entry: dictionary with keys like $filter, $orderby, etc.
-    public static ODataQuery Parse(IDictionary<string, string> queryOptions)
+    // IMPORTANT: THIS code seems stale, it's only used in unit tests so something is probably wrong
+    // as we shouldn't have code and tests but never really use it
+    public static ODataQuery ToQuery(this IDictionary<string, string> queryOptions)
     {
 
         if (queryOptions == null! /* paranoid */)
@@ -133,7 +135,7 @@ public static class UriQueryParser
         return result;
     }
 
-    public static ODataQuery Parse(ODataOptions oDataOptions)
+    public static ODataQuery ToQuery(this ODataOptions oDataOptions)
     {
 
         if (oDataOptions.IsEmpty())

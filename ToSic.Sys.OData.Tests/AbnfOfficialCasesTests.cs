@@ -245,7 +245,7 @@ public class AbnfOfficialCasesTests
         TryMapToSystemOption(rule, input, out var key, out var value).Should().BeTrue();
 
         var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { [key] = value };
-        var parsed = UriQueryParserTac.Parse(dict);
+        var parsed = dict.ToQueryTac();
 
         // Assert corresponding property populated
         var ok = key switch
@@ -283,7 +283,7 @@ public class AbnfOfficialCasesTests
         var set = false;
         try
         {
-            var parsed = UriQueryParserTac.Parse(dict);
+            var parsed = dict.ToQueryTac();
             set = key switch
             {
                 "$filter" => parsed.Filter != null,
