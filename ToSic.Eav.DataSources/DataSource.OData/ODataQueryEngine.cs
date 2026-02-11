@@ -1,8 +1,9 @@
 using System.Globalization;
+using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 using ToSic.Sys.OData.Ast;
 
-namespace ToSic.Eav.DataSources;
+namespace ToSic.Eav.DataSource.OData;
 
 /// <summary>
 /// Translates OData system query options into an EAV data-source pipeline using the existing ValueFilter / ValueSort components.

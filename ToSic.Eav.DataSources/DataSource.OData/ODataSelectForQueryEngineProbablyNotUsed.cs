@@ -1,6 +1,6 @@
 using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.DataSources;
+namespace ToSic.Eav.DataSource.OData;
 
 /// <summary>
 /// Apply Select clause to a set of entities

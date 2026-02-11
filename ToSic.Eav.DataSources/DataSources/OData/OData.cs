@@ -1,3 +1,4 @@
+using ToSic.Eav.DataSource.OData;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.Services;
 using ToSic.Sys.OData;
@@ -72,7 +73,7 @@ public sealed class OData : DataSourceBase
             return l.Return(inList, "no system options");
 
         // Build query AST and pipeline, then apply skip/top during execution
-        var query = UriQueryParser.Parse(options);
+        var query = options.ToQuery();
 
         // Use the upstream data source (not this) as the root for filtering/sorting
         var upstream = In[StreamDefaultName].Source;
