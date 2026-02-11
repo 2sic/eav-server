@@ -15,8 +15,8 @@ public class SystemQueryOptionsParserTests
         Null(r.Skip);
         Null(r.Count);
         Null(r.Expand);
-        Single(r.RawAllSystem);
-        Empty(r.Custom);
+        Single(r.AllRawTac);
+        Empty(r.CustomTac);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class SystemQueryOptionsParserTests
         var r = SystemQueryOptionsParser.Parse(U("%24select=Id,Title"));
         Equal(["Id", "Title"], r.Select);
         // implementation unescapes keys, so the stored key is "$select"
-        True(r.RawAllSystem.ContainsKey("$select"));
+        True(r.AllRawTac.ContainsKey("$select"));
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public class SystemQueryOptionsParserTests
         // Implementation unescapes keys and last-value-wins, so the later %24select overwrites $select
         Equal(["Id", "Overridden"], r.Select);
         // Keys are unescaped, so only one entry exists ("$select") and it contains the final value
-        Single(r.RawAllSystem);
-        True(r.RawAllSystem.ContainsKey("$select"));
+        Single(r.AllRawTac);
+        True(r.AllRawTac.ContainsKey("$select"));
     }
 
     [Fact]
@@ -132,9 +132,9 @@ public class SystemQueryOptionsParserTests
         Equal(25, r.Top);
         Equal(50, r.Skip);
         True(r.Count);
-        Equal("123", r.Custom["PageId"]);
-        Equal("456", r.Custom["ModuleId"]);
-        Equal(7, r.RawAllSystem.Count); // $select,$expand,$filter,$orderby,$top,$skip,$count
+        Equal("123", r.CustomTac["PageId"]);
+        Equal("456", r.CustomTac["ModuleId"]);
+        Equal(7, r.AllRawTac.Count); // $select,$expand,$filter,$orderby,$top,$skip,$count
     }
 
     [Fact]
@@ -142,9 +142,9 @@ public class SystemQueryOptionsParserTests
     {
         var r = SystemQueryOptionsParser.Parse(U("$select=Id&foo=bar&baz=qux"));
         Equal(["Id"], r.Select);
-        Equal(2, r.Custom.Count);
-        True(r.Custom.ContainsKey("foo"));
-        True(r.Custom.ContainsKey("baz"));
+        Equal(2, r.CustomTac.Count);
+        True(r.CustomTac.ContainsKey("foo"));
+        True(r.CustomTac.ContainsKey("baz"));
     }
 
     [Fact]
@@ -152,8 +152,8 @@ public class SystemQueryOptionsParserTests
     {
         var r = SystemQueryOptionsParser.Parse(U("alpha=1&beta=2"));
         Empty(r.Select);
-        Empty(r.RawAllSystem);
-        Equal(2, r.Custom.Count);
+        Empty(r.AllRawTac);
+        Equal(2, r.CustomTac.Count);
     }
 
     [Fact]
@@ -161,8 +161,8 @@ public class SystemQueryOptionsParserTests
     {
         var r = SystemQueryOptionsParser.Parse(new Uri("https://example.test/app/data/BlogPost"));
         Empty(r.Select);
-        Empty(r.RawAllSystem);
-        Empty(r.Custom);
+        Empty(r.AllRawTac);
+        Empty(r.CustomTac);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class SystemQueryOptionsParserTests
     {
         var r = SystemQueryOptionsParser.Parse(U("$select="));
         Empty(r.Select);
-        Equal(string.Empty, r.RawAllSystem["$select"]);
+        Equal(string.Empty, r.AllRawTac["$select"]);
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class SystemQueryOptionsParserTests
     {
         var r = SystemQueryOptionsParser.Parse(U("   %24select=Id"));
         Equal(["Id"], r.Select);
-        True(r.RawAllSystem.ContainsKey("$select"));
+        True(r.AllRawTac.ContainsKey("$select"));
     }
 
     [Fact]
@@ -219,9 +219,9 @@ public class SystemQueryOptionsParserTests
             sb.Append("p").Append(i).Append('=').Append(i);
         }
         var r = SystemQueryOptionsParser.Parse(U(sb.ToString()));
-        Equal(500, r.Custom.Count);
-        True(r.Custom.ContainsKey("p0"));
-        True(r.Custom.ContainsKey("p499"));
+        Equal(500, r.CustomTac.Count);
+        True(r.CustomTac.ContainsKey("p0"));
+        True(r.CustomTac.ContainsKey("p499"));
     }
 
     [Fact]
@@ -245,7 +245,7 @@ public class SystemQueryOptionsParserTests
     {
         var r = SystemQueryOptionsParser.Parse(U("%24select=Id,Original&$select=Id,Final"));
         Equal(["Id", "Final"], new[] { r.Select[0], r.Select[1] });
-        Equal("Id,Final", r.RawAllSystem["$select"]);
+        Equal("Id,Final", r.AllRawTac["$select"]);
     }
 
     [Fact]
@@ -254,8 +254,8 @@ public class SystemQueryOptionsParserTests
         // "%ZZselect" is invalid percent encoding so key stays raw and becomes a custom param.
         var r = SystemQueryOptionsParser.Parse(U("%ZZselect=Id&$filter=Title%2")); // value has dangling %2
         // Custom should contain the invalid key literally
-        True(r.Custom.ContainsKey("%ZZselect"));
-        Equal("Id", r.Custom["%ZZselect"]);
+        True(r.CustomTac.ContainsKey("%ZZselect"));
+        Equal("Id", r.CustomTac["%ZZselect"]);
         // $filter should be captured; its value invalid escape remains raw "Title%2"
         Equal("Title%2", r.Filter);
     }
@@ -272,7 +272,7 @@ public class SystemQueryOptionsParserTests
         }
         var r = SystemQueryOptionsParser.Parse(U(sb.ToString()));
         // All are custom (no $) so count should be capped at 500
-        Equal(500, r.Custom.Count);
+        Equal(500, r.CustomTac.Count);
     }
 
     [Fact]

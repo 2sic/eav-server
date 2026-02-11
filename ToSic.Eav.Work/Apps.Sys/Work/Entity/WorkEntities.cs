@@ -55,7 +55,7 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
             return typeFilter.List;
 
         var systemQueryOptions = SystemQueryOptionsParser.Parse(fullRequest);
-        if (!systemQueryOptions.RawAllSystem.Any())
+        if (!systemQueryOptions.AllRaw.Any())
             return typeFilter.List;
 
         // v20 support OData filtering, sorting... if present in query string

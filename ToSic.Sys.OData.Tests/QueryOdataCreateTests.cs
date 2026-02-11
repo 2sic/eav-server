@@ -2,19 +2,19 @@
 
 public class QueryOdataCreateTests
 {
-    private static SystemQueryOptions CreateWithAllValues(string? name = null)
+    private static ODataOptions CreateWithAllValues(string? name = null)
     {
         return QueryODataParams.Create(v => v, name);
     }
 
-    private static SystemQueryOptions CreateWithNoValues() =>
+    private static ODataOptions CreateWithNoValues() =>
         QueryODataParams.Create(v => v.ToDictionary(
                 pair => pair.Key,
                 pair => ""),
             null
         );
 
-    private static SystemQueryOptions CreateSelectOnly() =>
+    private static ODataOptions CreateSelectOnly() =>
         QueryODataParams.Create(v => v.ToDictionary(
                 pair => pair.Key,
                 pair => pair.Key == ODataConstants.SelectParamName ? "test" : ""),
@@ -24,7 +24,7 @@ public class QueryOdataCreateTests
 
     [Fact]
     public void CreateAllValuesHasAllValues() =>
-        Equal(QueryODataParams.ODataParams.Count, CreateWithAllValues().RawAllSystem.Count);
+        Equal(QueryODataParams.ODataParams.Count, CreateWithAllValues().AllRawTac.Count);
 
     [Fact]
     public void CreateAllValuesIsNotEmpty() =>
@@ -40,24 +40,24 @@ public class QueryOdataCreateTests
     [InlineData(null)]
     [InlineData("Default")]
     public void CreateAllValuesUnchanged(string? name) =>
-        Equal(QueryODataParams.ODataParams, CreateWithAllValues(name).RawAllSystem);
+        Equal(QueryODataParams.ODataParams, CreateWithAllValues(name).AllRawTac);
 
     [Fact]
     public void CreateAllValuesWithNameChanged() =>
-        NotEqual(QueryODataParams.ODataParams, CreateWithAllValues("Test").RawAllSystem);
+        NotEqual(QueryODataParams.ODataParams, CreateWithAllValues("Test").AllRawTac);
 
     [Theory]
     [InlineData("Test")]
     [InlineData("Books")]
     [InlineData("Authors")]
     public void CreateAllValuesWithNameEveryValueContainsKey(string name) =>
-        Equal(QueryODataParams.ODataParams.Count, CreateWithAllValues(name).RawAllSystem.Count(pair => pair.Value.Contains($":{name}")));
+        Equal(QueryODataParams.ODataParams.Count, CreateWithAllValues(name).AllRawTac.Count(pair => pair.Value.Contains($":{name}")));
 
 
 
     [Fact]
     public void CreateNoValuesHasAllValues() =>
-        Empty(CreateWithNoValues().RawAllSystem);
+        Empty(CreateWithNoValues().AllRawTac);
 
     [Fact]
     public void CreateNoValuesIsEmpty() =>
@@ -71,7 +71,7 @@ public class QueryOdataCreateTests
 
     [Fact]
     public void CreateSelectOnlyHasAllValues() =>
-        Single(CreateSelectOnly().RawAllSystem);
+        Single(CreateSelectOnly().AllRawTac);
 
     [Fact]
     public void CreateSelectOnlyIsEmpty() =>

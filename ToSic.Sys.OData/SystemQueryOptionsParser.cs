@@ -18,8 +18,8 @@ namespace ToSic.Sys.OData
         /// This intentionally does not validate entity or property names.
         /// </summary>
         /// <param name="uri"></param>
-        /// <returns>SystemQueryOptions</returns>
-        public static SystemQueryOptions Parse(Uri uri)
+        /// <returns>ODataOptions</returns>
+        public static ODataOptions Parse(Uri uri)
             => Parse(uri.Query);
 
         /// <summary>
@@ -27,20 +27,20 @@ namespace ToSic.Sys.OData
         /// This intentionally does not validate entity or property names.
         /// </summary>
         /// <param name="queryString">uri query string</param>
-        /// <returns>SystemQueryOptions</returns>
-        public static SystemQueryOptions Parse(string queryString)
+        /// <returns>ODataOptions</returns>
+        public static ODataOptions Parse(string queryString)
         {
-            var sys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var custom = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
             var q = queryString ?? string.Empty;
             if (q.Length > 0 && q[0] == '?')
                 q = q.Length > 1
                     ? q.Substring(1)
                     : string.Empty;
             if (string.IsNullOrEmpty(q))
-                return new() { RawAllSystem = sys, Custom = custom };
+                return new();
 
+            var sys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var custom = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            
             // Streaming parse instead of string.Split to avoid large temporary arrays under heavy input.
             var index = 0;
             var paramCount = 0;
@@ -105,7 +105,7 @@ namespace ToSic.Sys.OData
                 Top = AsInt(Get(ODataConstants.TopParamName, sys)),
                 Skip = AsInt(Get(ODataConstants.SkipParamName, sys)),
                 Count = AsBool(Get(ODataConstants.CountParamName, sys)),
-                RawAllSystem = sys,
+                AllRaw = sys,
                 Custom = custom
             };
         }

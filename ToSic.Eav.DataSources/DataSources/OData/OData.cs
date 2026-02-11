@@ -68,7 +68,7 @@ public sealed class OData : DataSourceBase
 
         // Parse OData options (safe against malformed % etc.)
         var options = SystemQueryOptionsParser.Parse(raw!);
-        if (!options.RawAllSystem.Any())
+        if (!options.AllRaw.Any())
             return l.Return(inList, "no system options");
 
         // Build query AST and pipeline, then apply skip/top during execution

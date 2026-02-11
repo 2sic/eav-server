@@ -1,14 +1,21 @@
 namespace ToSic.Sys.OData;
 
-public record SystemQueryOptions
+public record ODataOptions
 {
-
-    public IReadOnlyDictionary<string, string> RawAllSystem
+    /// <summary>
+    /// Contains all settings in raw form, mainly for detecting if any settings were applied.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> AllRaw
     {
         get => field ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         init;
     }
 
+    /// <summary>
+    /// Contains all raw parameters which don't start with "$", for potential custom processing.
+    /// This is not part of the OData spec, but could be useful in some scenarios.
+    /// As of 2026-02, I believe it's not really used... could be a leftover of initial development
+    /// </summary>
     public IReadOnlyDictionary<string, string> Custom
     {
         get => field ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -32,10 +39,10 @@ public record SystemQueryOptions
     public string? DeltaToken { get; init; }
 
 
-    public bool IsEmpty() => !RawAllSystem.Any();
+    public bool IsEmpty() => !AllRaw.Any();
 
     public bool IsEmptyExceptForSelect() =>
         IsEmpty()
-        || (RawAllSystem.Count == 1 && RawAllSystem.ContainsKey(ODataConstants.SelectParamName));
+        || (AllRaw.Count == 1 && AllRaw.ContainsKey(ODataConstants.SelectParamName));
 
 }

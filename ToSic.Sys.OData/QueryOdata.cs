@@ -5,11 +5,11 @@ using static System.StringComparer;
 namespace ToSic.Sys.OData;
 
 /// <summary>
-/// Helper to retrieve all OData parameters from the query string, and parse them into a SystemQueryOptions object.
+/// Helper to retrieve all OData parameters from the query string, and parse them into a ODataOptions object.
 /// </summary>
 public class QueryODataParams
 {
-    public static Dictionary<string, SystemQueryOptions> CreateMany(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string[] streamNames)
+    public static Dictionary<string, ODataOptions> CreateMany(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string[] streamNames)
     {
         streamNames = streamNames.Any()
             ? streamNames
@@ -17,10 +17,10 @@ public class QueryODataParams
         return streamNames.ToDictionary(n => n, n => Create(parseFunc, n), OrdinalIgnoreCase);
     }
 
-    public static SystemQueryOptions Create(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string? streamName = default) =>
+    public static ODataOptions Create(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string? streamName = default) =>
         CreateInternal(parseFunc, streamName.EqualsInsensitive("Default") ? default : streamName);
 
-    private static SystemQueryOptions CreateInternal(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string? streamName = default)
+    private static ODataOptions CreateInternal(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string? streamName = default)
     {
         if (parseFunc == null!)
             return new();
@@ -36,7 +36,7 @@ public class QueryODataParams
         // Construct the options
         return new()
         {
-            RawAllSystem = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(odataDic, OrdinalIgnoreCase)),
+            AllRaw = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(odataDic, OrdinalIgnoreCase)),
             Custom = new Dictionary<string, string>(OrdinalIgnoreCase),
             Select = SystemQueryOptionsParser.ParseSelect(Get(odataDic, ODataConstants.SelectParamName)),
             Filter = Get(odataDic, ODataConstants.FilterParamName),
