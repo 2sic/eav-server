@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.ValueConverter;
 
 // ReSharper disable once CheckNamespace
@@ -25,6 +26,10 @@ public static class StartupEavDataBuild
         services.TryAddTransient<EntityBuilder>();
         services.TryAddTransient<EntityConnectionBuilder>();
         services.TryAddTransient<ValueBuilder>();
+
+        // Data Processors v21 WIP
+        // Must be Add, since many should be possible.
+        services.AddTransient<IDataProcessor, DataProcessor>();
 
         return services;
     }
