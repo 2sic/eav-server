@@ -2,7 +2,14 @@
 
 public enum DataPreprocessorDecision
 {
+    /// <summary>
+    /// Nothing special to do, just continue.
+    /// </summary>
     Continue = 0,
+
+    /// <summary>
+    /// Skip this data. For example, when the pre-processor already handled it in some custom way.
+    /// </summary>
     Skip = 50,
 
     /// <summary>

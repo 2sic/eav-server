@@ -7,16 +7,19 @@ namespace ToSic.Eav.Metadata.Sys;
 
 internal class PermissionDataProcessor(IUser user) : ServiceBase("Sec.Process"), IDataProcessor, IDataProcessorPreSave, IDataProcessorPreEdit
 {
-    async Task<DataProcessorResult<IEntity?>> IDataProcessorPreSave.Process(IEntity entity) =>
+    async Task<DataProcessorResult<IEntity?>> IDataProcessorPreSave.Process(DataProcessorResult<IEntity?> entity) =>
         await ProcessInternal(entity, "save");
 
-    async Task<DataProcessorResult<IEntity?>> IDataProcessorPreEdit.Process(IEntity entity) =>
+    async Task<DataProcessorResult<IEntity?>> IDataProcessorPreEdit.Process(DataProcessorResult<IEntity?> entity) =>
         await ProcessInternal(entity, "edit");
 
-    private async Task<DataProcessorResult<IEntity?>> ProcessInternal(IEntity entity, string verb)
-    {
-        return user.IsSiteAdmin
-            ? new DataProcessorResult<IEntity?>(entity, DataPreprocessorDecision.Continue)
-            : new(null, DataPreprocessorDecision.Error, new UnauthorizedAccessException($"User is not authorized to {verb} this entity."));
-    }
+    private async Task<DataProcessorResult<IEntity?>> ProcessInternal(DataProcessorResult<IEntity?> data, string verb) =>
+        user.IsSiteAdmin
+            ? data
+            : new()
+            {
+                Data = null,
+                Decision = DataPreprocessorDecision.Error,
+                Exceptions = [new UnauthorizedAccessException($"User is not authorized to {verb} this entity.")]
+            };
 }

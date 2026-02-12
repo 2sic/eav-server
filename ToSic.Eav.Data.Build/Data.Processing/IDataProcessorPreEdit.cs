@@ -2,5 +2,5 @@
 
 public interface IDataProcessorPreEdit
 {
-    Task<DataProcessorResult<IEntity?>> Process(IEntity entity);
+    Task<DataProcessorResult<IEntity?>> Process(DataProcessorResult<IEntity?> entity);
 }
