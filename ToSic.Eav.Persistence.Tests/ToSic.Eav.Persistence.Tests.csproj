@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.Core.TestHelpers\ToSic.Eav.Core.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence\ToSic.Eav.Persistence.csproj" />
   </ItemGroup>
 

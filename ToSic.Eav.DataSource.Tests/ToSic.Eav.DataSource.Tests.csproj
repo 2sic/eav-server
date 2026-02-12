@@ -5,6 +5,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Data.TestHelpers\ToSic.Eav.Data.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSource.TestHelpers\ToSic.Eav.DataSource.TestHelpers.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Security.TestHelpers\ToSic.Sys.Security.TestHelpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

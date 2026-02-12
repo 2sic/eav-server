@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.Core.TestHelpers\ToSic.Eav.Core.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Data.Build.TestHelpers\ToSic.Eav.Data.Build.TestHelpers.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Data.Stack\ToSic.Eav.Data.Stack.csproj" />
+    <ProjectReference Include="..\ToSic.Eav.Data\ToSic.Eav.Data.csproj" />
   </ItemGroup>
 
 </Project>
