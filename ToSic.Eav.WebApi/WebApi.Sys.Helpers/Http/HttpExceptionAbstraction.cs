@@ -1,14 +1,14 @@
 ﻿using System.Net;
 #if NETFRAMEWORK
 using System.Net.Http;
-using BaseType = System.Web.Http.HttpResponseException;
+using HttpResponseException = System.Web.Http.HttpResponseException;
 #else
-using BaseType = System.Exception;
+using HttpResponseException = System.Exception;
 #endif
 namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class HttpExceptionAbstraction: BaseType
+public class HttpExceptionAbstraction: HttpResponseException
 {
     public HttpExceptionAbstraction(HttpStatusCode statusCode, string message, string? title = null)
 #if NETFRAMEWORK
@@ -28,4 +28,14 @@ public class HttpExceptionAbstraction: BaseType
 
     public int Status { get; set; } = 500;
     public string Value { get; set; }   // additional message, because sometimes we need to pick it up elsewhere
+
+    public static HttpExceptionAbstraction? FromPossibleException(Exception? original, HttpStatusCode statusCode)
+    {
+        if (original == null)
+            return null;
+
+        if (original is HttpExceptionAbstraction httpEx)
+            return httpEx;
+        return new(statusCode, original.Message, original.Source);
+    }
 }
