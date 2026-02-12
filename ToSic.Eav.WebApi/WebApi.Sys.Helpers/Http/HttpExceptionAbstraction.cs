@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using System.Net.Http;
 #if NETFRAMEWORK
+using System.Net.Http;
 using BaseType = System.Web.Http.HttpResponseException;
 #else
 using BaseType = System.Exception;

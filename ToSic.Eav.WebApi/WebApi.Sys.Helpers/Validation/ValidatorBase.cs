@@ -30,7 +30,8 @@ public abstract class ValidatorBase(ILog parentLog, string logName) : HelperBase
     /// <param name="addition"></param>
     protected void Add(string addition)
     {
-        Log.A($"Add problem to list:{addition}");
+        var l = Log.Fn($"Add problem to list:{addition}");
         Errors += (Errors == string.Empty ? "" : "\n") + addition;
+        l.Done();
     }
 }
