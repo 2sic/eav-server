@@ -4,9 +4,12 @@ using ToSic.Eav.DataSource.Sys;
 namespace ToSic.Eav.DataSources.Sys;
 
 /// <summary>
-/// Generic data source to provide reflection data about classes or interfaces.
-/// Used for example to provide the list of IDataProcessor implementations, but can be used for any class or interface type.
+/// Generic data source to provide reflection data about classes or interfaces - but only such that are registered in the DI.
 /// </summary>
+/// <remarks>
+/// Used for example to provide the list of IDataProcessor implementations, but can be used for any class or interface type.
+/// Created in v21.02.
+/// </remarks>
 /// <typeparam name="TClassOrInterface"></typeparam>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
