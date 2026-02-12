@@ -16,7 +16,7 @@ internal class PermissionDataProcessor(IUser user) : ServiceBase("Sec.Process"),
     private async Task<DataProcessorResult<IEntity?>> ProcessInternal(IEntity entity, string verb)
     {
         return user.IsSiteAdmin
-            ? new DataProcessorResult<IEntity?>(entity)
-            : new(null, new UnauthorizedAccessException($"User is not authorized to {verb} this entity."));
+            ? new DataProcessorResult<IEntity?>(entity, DataPreprocessorDecision.Continue)
+            : new(null, DataPreprocessorDecision.Error, new UnauthorizedAccessException($"User is not authorized to {verb} this entity."));
     }
 }
