@@ -105,10 +105,10 @@ public class RecycleBin : CustomDataSource
                 var first = c.First();
                 return new RawEntity(new()
                 {
-                    { "Name", first.ContentTypeName },
-                    { "StaticName", first.ContentTypeStaticName },
-                    { "Count", c.Count() },
                     { AttributeNames.TitleNiceName, $"{first.ContentTypeName} ({c.Count()})" },
+                    { "Name", first.ContentTypeName },
+                    { AttributeNames.NameIdNiceName, first.ContentTypeStaticName },
+                    { "Count", c.Count() },
                 });
             })
             .ToList();
