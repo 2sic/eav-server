@@ -5,4 +5,7 @@
 /// Specs still very unclear; 2dm.
 /// </summary>
 [PrivateApi("WIP v21")]
-public interface IDataProcessor;
+public interface IDataProcessor
+{
+    Task<DataProcessorResult<IEntity?>> Process(string action, DataProcessorResult<IEntity?> entity);
+}

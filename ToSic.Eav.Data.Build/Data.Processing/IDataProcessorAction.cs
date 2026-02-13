@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Eav.Data.Processing;
 
-public interface IDataProcessorPreEdit
+public interface IDataProcessorAction
 {
     Task<DataProcessorResult<IEntity?>> Process(DataProcessorResult<IEntity?> entity);
+
 }

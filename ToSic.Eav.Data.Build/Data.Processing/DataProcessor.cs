@@ -1,3 +1,5 @@
 ﻿namespace ToSic.Eav.Data.Processing;
 
-public sealed class DataProcessor: DataProcessorBase;
+public sealed class DataProcessor: DataProcessorBase
+{
+}
