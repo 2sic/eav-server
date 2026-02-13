@@ -5,6 +5,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Utils;
 using static ToSic.Eav.Apps.Sys.Work.WorkEntityRecycleBin;
 
 namespace ToSic.Eav.DataSources;
@@ -37,18 +38,20 @@ public class RecycleBin : CustomDataSource
         : base(services, logName: "CDS.RecycleBin", connect: [recycleBin, featuresForDs])
     {
         ProvideOutRaw(
-            () =>
-            {
-                Configuration.Parse();
-                var l = Log.Fn<IEnumerable<IRawEntity>>($"DateFrom:{DateFrom}, DateTo:{DateTo}, ContentType:{ContentType}");
-                var items = recycleBin.New(AppId).Get(DateFrom, DateTo, ContentType);
-                var result = GetList(items);
-                return l.Return(result, $"{items.Count} items");
-            },
+            () => GetList(recycleBin).Entities,
             options: () => new()
             {
                 AutoId = true,
                 TypeName = "RecycleBin",
+            });
+
+        ProvideOutRaw(
+            () => GetList(recycleBin).ContentTypes,
+            name: "ContentTypes",
+            options: () => new()
+            {
+                AutoId = true,
+                TypeName = "ContentTypes",
             });
 
         // Feature State / Status
@@ -56,10 +59,23 @@ public class RecycleBin : CustomDataSource
             data: () => featuresForDs.GetDataForFeature(BuiltInFeatures.EntityUndelete));
     }
 
-    private IEnumerable<IRawEntity> GetList(IReadOnlyList<RecycleBinItem> recycleBinItems)
+    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) _cache = (null, null);
+
+    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) GetList(GenWorkDb<WorkEntityRecycleBin> recycleBin)
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
-        var list = recycleBinItems
+        var l = Log.Fn<(IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes)>($"DateFrom:{DateFrom}, DateTo:{DateTo}, ContentType:{ContentType}");
+
+        if (_cache.Entities != null)
+            return l.Return(_cache, "from cache");
+
+        var items = recycleBin.New(AppId)
+            .Get(DateFrom, DateTo, null/*ContentType*/);
+
+        var ct = ContentType;
+        var itemsOfContentType = items
+            .Where(i => i.ContentTypeName.EqualsInsensitive(ct));
+
+        var list = itemsOfContentType
             .Select(r => new RawEntity(new()
             {
                 { nameof(r.EntityId), r.EntityId },
@@ -81,6 +97,9 @@ public class RecycleBin : CustomDataSource
             }))
             .ToList();
 
-        return l.Return(list, $"{list.Count}");
+        // TODO: @2rb - ensure we have the content-types
+        _cache = (list, [] /* todo */);
+
+        return l.Return(_cache, $"{list.Count}");
     }
 }
