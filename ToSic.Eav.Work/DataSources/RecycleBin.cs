@@ -20,11 +20,31 @@ namespace ToSic.Eav.DataSources;
 // ReSharper disable once UnusedMember.Global
 public class RecycleBin : CustomDataSource
 {
+    #region Configuration properties
+
+    [Configuration]
+    public DateTime? DateFrom => Configuration.GetThis(default(DateTime?));
+
+    [Configuration]
+    public DateTime? DateTo => Configuration.GetThis(default(DateTime?));
+
+    [Configuration]
+    public string? ContentType => Configuration.GetThis();
+
+    #endregion
+
     public RecycleBin(Dependencies services, GenWorkDb<WorkEntityRecycleBin> recycleBin, FeaturesForDataSources featuresForDs)
         : base(services, logName: "CDS.RecycleBin", connect: [recycleBin, featuresForDs])
     {
         ProvideOutRaw(
-            () => GetList(recycleBin.New(AppId).Get()),
+            () =>
+            {
+                Configuration.Parse();
+                var l = Log.Fn<IEnumerable<IRawEntity>>($"DateFrom:{DateFrom}, DateTo:{DateTo}, ContentType:{ContentType}");
+                var items = recycleBin.New(AppId).Get(DateFrom, DateTo, ContentType);
+                var result = GetList(items);
+                return l.Return(result, $"{items.Count} items");
+            },
             options: () => new()
             {
                 AutoId = true,
@@ -52,6 +72,9 @@ public class RecycleBin : CustomDataSource
                 { nameof(r.DeletedBy), r.DeletedBy },
                 { nameof(r.ParentRef), r.ParentRef },
                 { nameof(r.Json), r.Json },
+                { nameof(r.FilterDateFrom), r.FilterDateFrom },
+                { nameof(r.FilterDateTo), r.FilterDateTo },
+                { nameof(r.FilterContentType), r.FilterContentType },
                 { AttributeNames.CreatedNiceName, r.DeletedUtc },
                 { AttributeNames.ModifiedNiceName, r.DeletedUtc },
                 { AttributeNames.TitleNiceName, $"{r.ContentTypeName}({r.EntityId})" },

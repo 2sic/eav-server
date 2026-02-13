@@ -29,21 +29,23 @@ public class WorkEntityRecycleBin(
     )
     {
         public string? Json { get; init; }
+        public DateTime? FilterDateFrom { get; init; }
+        public DateTime? FilterDateTo { get; init; }
+        public string? FilterContentType { get; init; }
     };
 
     private sealed record HistoryDeletedEntityRow(int EntityId, Guid? EntityGuid, int DeletedTransactionId, DateTime Timestamp, string? Json, byte[]? CJson);
 
-    public IReadOnlyList<RecycleBinItem> Get()
+    public IReadOnlyList<RecycleBinItem> Get(DateTime? dateFrom = null, DateTime? dateTo = null, string? contentType = null)
     {
         var l = Log.Fn<IReadOnlyList<RecycleBinItem>>();
-
 
         var appId = AppWorkCtx.AppId;
         var parentRef = DbVersioning.ParentRefForApp(appId);
         var db = AppWorkCtx.DbStorage.SqlDb;
 
-        var softDeletedItems = LoadSoftDeletedRecycleBinItems(db, appId, parentRef);
-        var historyOnlyItems = LoadHistoryOnlyRecycleBinItems(db, appId, parentRef);
+        var softDeletedItems = LoadSoftDeletedRecycleBinItems(db, appId, parentRef, dateFrom, dateTo, contentType);
+        var historyOnlyItems = LoadHistoryOnlyRecycleBinItems(db, appId, parentRef, dateFrom, dateTo, contentType);
 
         var items = softDeletedItems
             .Concat(historyOnlyItems)
@@ -53,7 +55,7 @@ public class WorkEntityRecycleBin(
         return l.Return(items, $"found:{items.Count}");
     }
 
-    private static List<RecycleBinItem> LoadSoftDeletedRecycleBinItems(EavDbContext db, int appId, string? parentRef)
+    private static List<RecycleBinItem> LoadSoftDeletedRecycleBinItems(EavDbContext db, int appId, string? parentRef, DateTime? dateFrom, DateTime? dateTo, string? contentType)
         => db.TsDynDataEntities
             .AsNoTracking()
             .IgnoreQueryFilters()
@@ -66,6 +68,8 @@ public class WorkEntityRecycleBin(
             .SelectMany(
                 t => t.txJoin.DefaultIfEmpty(),
                 (t, tx) => new { t.e, tx })
+            .Where(et => !dateFrom.HasValue || (et.tx != null && et.tx.Timestamp >= dateFrom.Value))
+            .Where(et => !dateTo.HasValue || (et.tx != null && et.tx.Timestamp <= dateTo.Value))
             .GroupJoin(
                 db.TsDynDataContentTypes.AsNoTracking().IgnoreQueryFilters(),
                 et => et.e.ContentTypeId,
@@ -73,22 +77,34 @@ public class WorkEntityRecycleBin(
                 (et, ctJoin) => new { et.e, et.tx, ctJoin })
             .SelectMany(
                 t => t.ctJoin.DefaultIfEmpty(),
-                (t, ct) => new RecycleBinItem(
-                    EntityId: t.e.EntityId,
-                    EntityGuid: t.e.EntityGuid,
-                    AppId: t.e.AppId,
-                    ContentTypeStaticName: ct != null ? ct.StaticName : (t.e.ContentType ?? ""),
-                    ContentTypeName: ct != null ? ct.Name : (t.e.ContentType ?? ""),
-                    DeletedTransactionId: t.e.TransDeletedId!.Value,
-                    DeletedUtc: (t.tx == null ? (DateTime?)null : t.tx.Timestamp) ?? DateTime.MinValue,
-                    t.tx != null ? t.tx.User : null,
-                    parentRef)
+                (t, ct) => new
                 {
-                    Json = t.e.Json,
+                    t.e,
+                    t.tx,
+                    ct,
+                    ContentTypeStaticName = ct != null ? ct.StaticName : (t.e.ContentType ?? ""),
+                    ContentTypeName = ct != null ? ct.Name : (t.e.ContentType ?? "")
                 })
+            .Where(t => string.IsNullOrWhiteSpace(contentType) || t.ContentTypeStaticName == contentType || t.ContentTypeName == contentType)
+            .Select(t => new RecycleBinItem(
+                EntityId: t.e.EntityId,
+                EntityGuid: t.e.EntityGuid,
+                AppId: t.e.AppId,
+                ContentTypeStaticName: t.ContentTypeStaticName,
+                ContentTypeName: t.ContentTypeName,
+                DeletedTransactionId: t.e.TransDeletedId!.Value,
+                DeletedUtc: (t.tx == null ? (DateTime?)null : t.tx.Timestamp) ?? DateTime.MinValue,
+                t.tx != null ? t.tx.User : null,
+                parentRef)
+            {
+                Json = t.e.Json,
+                FilterDateFrom = dateFrom,
+                FilterDateTo = dateTo,
+                FilterContentType = contentType
+            })
             .ToList();
 
-    private static List<HistoryDeletedEntityRow> LoadHistoryDeletedEntitiesLatest(EavDbContext db, int appId, string? parentRef)
+    private static List<HistoryDeletedEntityRow> LoadHistoryDeletedEntitiesLatest(EavDbContext db, int appId, string? parentRef, DateTime? dateFrom, DateTime? dateTo)
     {
         var entityIdsInApp = db.TsDynDataEntities
             .AsNoTracking()
@@ -112,6 +128,8 @@ public class WorkEntityRecycleBin(
                 && h.TransactionId != null
                 && !entityIdsInApp.Contains(h.SourceId.Value)
                 && !entityGuidsInApp.Contains(h.SourceGuid.Value))
+            .Where(h => !dateFrom.HasValue || h.Timestamp >= dateFrom.Value)
+            .Where(h => !dateTo.HasValue || h.Timestamp <= dateTo.Value)
             .GroupBy(h => h.SourceGuid)
             .Select(g => g.OrderByDescending(h => h.Timestamp).First())
             .Select(h => new HistoryDeletedEntityRow(
@@ -124,9 +142,9 @@ public class WorkEntityRecycleBin(
             .ToList();
     }
 
-    private List<RecycleBinItem> LoadHistoryOnlyRecycleBinItems(EavDbContext db, int appId, string? parentRef)
+    private List<RecycleBinItem> LoadHistoryOnlyRecycleBinItems(EavDbContext db, int appId, string? parentRef, DateTime? dateFrom, DateTime? dateTo, string? contentType)
     {
-        var historyRows = LoadHistoryDeletedEntitiesLatest(db, appId, parentRef);
+        var historyRows = LoadHistoryDeletedEntitiesLatest(db, appId, parentRef, dateFrom, dateTo);
         if (historyRows.Count == 0)
             return [];
 
@@ -162,8 +180,14 @@ public class WorkEntityRecycleBin(
                     ParentRef: parentRef)
                 {
                     Json = json,
+                    FilterDateFrom = dateFrom,
+                    FilterDateTo = dateTo,
+                    FilterContentType = contentType
                 };
             })
+            .Where(i => string.IsNullOrWhiteSpace(contentType) 
+                || string.Equals(i.ContentTypeStaticName, contentType, StringComparison.OrdinalIgnoreCase) 
+                || string.Equals(i.ContentTypeName, contentType, StringComparison.OrdinalIgnoreCase))
             .ToList();
     }
 
