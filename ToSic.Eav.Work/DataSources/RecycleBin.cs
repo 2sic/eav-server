@@ -98,15 +98,19 @@ public class RecycleBin : CustomDataSource
             .ToList();
 
         var contentTypes = items
-            .GroupBy(i => new { i.ContentTypeStaticName, i.ContentTypeName })
-            .OrderBy(c => c.Key.ContentTypeName)
-            .Select(c => new RawEntity(new()
+            .GroupBy(i => i.ContentTypeStaticName)
+            .OrderBy(c => c.Key)
+            .Select(c =>
             {
-                { "Name", c.Key.ContentTypeName },
-                { "StaticName", c.Key.ContentTypeStaticName },
-                { "Count", c.Count() },
-                { AttributeNames.TitleNiceName, $"{c.Key.ContentTypeName} ({c.Count()})" },
-            }))
+                var first = c.First();
+                return new RawEntity(new()
+                {
+                    { "Name", first.ContentTypeName },
+                    { "StaticName", first.ContentTypeStaticName },
+                    { "Count", c.Count() },
+                    { AttributeNames.TitleNiceName, $"{first.ContentTypeName} ({c.Count()})" },
+                });
+            })
             .ToList();
 
         _cache = (list, contentTypes);
