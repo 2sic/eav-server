@@ -69,11 +69,12 @@ public class RecycleBin : CustomDataSource
             return l.Return(_cache, "from cache");
 
         var items = recycleBin.New(AppId)
-            .Get(DateFrom, DateTo, null/*ContentType*/);
+            .Get(DateFrom, DateTo);
 
         var ct = ContentType;
-        var itemsOfContentType = items
-            .Where(i => i.ContentTypeName.EqualsInsensitive(ct));
+        var itemsOfContentType = string.IsNullOrEmpty(ct)
+        ? items
+        : items.Where(i => i.ContentTypeName.EqualsInsensitive(ct));
 
         var list = itemsOfContentType
             .Select(r => new RawEntity(new()
@@ -97,9 +98,20 @@ public class RecycleBin : CustomDataSource
             }))
             .ToList();
 
-        // TODO: @2rb - ensure we have the content-types
-        _cache = (list, [] /* todo */);
+        var contentTypes = items
+            .GroupBy(i => new { i.ContentTypeStaticName, i.ContentTypeName })
+            .OrderBy(c => c.Key.ContentTypeName)
+            .Select(c => new RawEntity(new()
+            {
+                { "Name", c.Key.ContentTypeName },
+                { "StaticName", c.Key.ContentTypeStaticName },
+                { "Count", c.Count() },
+                { AttributeNames.TitleNiceName, $"{c.Key.ContentTypeName} ({c.Count()})" },
+            }))
+            .ToList();
 
-        return l.Return(_cache, $"{list.Count}");
+        _cache = (list, contentTypes);
+
+        return l.Return(_cache, $"entities:{list.Count}, contentTypes:{contentTypes.Count}");
     }
 }
