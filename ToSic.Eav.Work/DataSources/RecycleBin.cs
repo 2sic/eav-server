@@ -73,41 +73,41 @@ public class RecycleBin : CustomDataSource
         var ct = ContentType;
         var itemsOfContentType = string.IsNullOrEmpty(ct)
         ? items
-        : items.Where(i => i.ContentTypeName.EqualsInsensitive(ct));
+        : items.Where(i => i.TypeName.EqualsInsensitive(ct));
 
         var list = itemsOfContentType
             .Select(r => new RawEntity(new()
             {
-                { nameof(r.EntityId), r.EntityId },
-                { nameof(r.EntityGuid), r.EntityGuid.ToString() },
+                { nameof(r.Id), r.Id },
+                { nameof(r.Guid), r.Guid.ToString() },
                 { nameof(r.AppId), r.AppId },
-                { nameof(r.ContentTypeStaticName), r.ContentTypeStaticName },
-                { nameof(r.ContentTypeName), r.ContentTypeName },
-                { nameof(r.DeletedTransactionId), r.DeletedTransactionId },
-                { nameof(r.DeletedUtc), r.DeletedUtc },
+                { nameof(r.TypeNameId), r.TypeNameId },
+                { nameof(r.TypeName), r.TypeName },
+                { nameof(r.TransactionId), r.TransactionId },
+                { nameof(r.Deleted), r.Deleted },
                 { nameof(r.DeletedBy), r.DeletedBy },
                 { nameof(r.ParentRef), r.ParentRef },
                 { nameof(r.Json), r.Json },
                 { nameof(r.FilterDateFrom), r.FilterDateFrom },
                 { nameof(r.FilterDateTo), r.FilterDateTo },
                 { nameof(r.FilterContentType), r.FilterContentType },
-                { AttributeNames.CreatedNiceName, r.DeletedUtc },
-                { AttributeNames.ModifiedNiceName, r.DeletedUtc },
-                { AttributeNames.TitleNiceName, $"{r.ContentTypeName}({r.EntityId})" },
+                { AttributeNames.CreatedNiceName, r.Deleted },
+                { AttributeNames.ModifiedNiceName, r.Deleted },
+                { AttributeNames.TitleNiceName, $"{r.TypeName}({r.Id})" },
             }))
             .ToList();
 
         var contentTypes = items
-            .GroupBy(i => i.ContentTypeStaticName)
+            .GroupBy(i => i.TypeNameId)
             .OrderBy(c => c.Key)
             .Select(c =>
             {
                 var first = c.First();
                 return new RawEntity(new()
                 {
-                    { AttributeNames.TitleNiceName, $"{first.ContentTypeName} ({c.Count()})" },
-                    { "Name", first.ContentTypeName },
-                    { AttributeNames.NameIdNiceName, first.ContentTypeStaticName },
+                    { AttributeNames.TitleNiceName, $"{first.TypeName} ({c.Count()})" },
+                    { "Name", first.TypeName },
+                    { AttributeNames.NameIdNiceName, first.TypeNameId },
                     { "Count", c.Count() },
                 });
             })
