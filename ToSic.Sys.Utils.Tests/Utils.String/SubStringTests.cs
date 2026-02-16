@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.Utils.Tests.String;
+﻿namespace ToSic.Sys.Utils.String;
 
 public class SubStringTests
 {

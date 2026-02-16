@@ -1,4 +1,6 @@
-﻿namespace ToSic.Sys.Utils.Tests.ValueTypeExtensions;
+﻿using ToSic.Sys.Utils;
+
+namespace ToSic.Sys.ValueTypeExtensions;
 
 public class StringArrayValuePairsToDicImInv
 {

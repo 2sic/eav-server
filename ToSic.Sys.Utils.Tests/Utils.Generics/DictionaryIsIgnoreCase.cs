@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using static System.StringComparer;
 
-namespace ToSic.Sys.Utils.Tests.Internal.Plumbing.Generics;
+namespace ToSic.Sys.Utils.Generics;
 
 public class DictionaryIsIgnoreCase
 {

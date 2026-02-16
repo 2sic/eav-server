@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace ToSic.Sys.Utils.Tests.Anonymous;
+namespace ToSic.Sys.Utils.Anonymous;
 
 public class IsAnonymousTests
 {

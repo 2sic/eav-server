@@ -1,7 +1,6 @@
 using System.Text;
-using ToSic.Sys.Security.Encryption;
 
-namespace ToSic.Sys.Utils.Tests.Security.Encryption;
+namespace ToSic.Sys.Security.Encryption;
 
 public class RsaCryptographyServiceTests : IDisposable
 {
@@ -15,8 +14,8 @@ public class RsaCryptographyServiceTests : IDisposable
         _tempTestFolder = Path.Combine(Path.GetTempPath(), "RsaCryptographyServiceTests", Guid.NewGuid().ToString());
         Directory.CreateDirectory(_tempTestFolder);
 
-        _globalConfig = new TestGlobalConfiguration(_tempTestFolder);
-        _rsaService = new RsaCryptographyService(_globalConfig);
+        _globalConfig = new(_tempTestFolder);
+        _rsaService = new(_globalConfig);
     }
 
     public void Dispose()

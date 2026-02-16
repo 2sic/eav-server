@@ -3,7 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Xunit.Abstractions;
 
-namespace ToSic.Eav.Core.Tests.Signature;
+namespace ToSic.Sys.Security.Signatures;
 
 public class SignatureHashSha1(ITestOutputHelper output)
 {

@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Identity;
 using Xunit.Abstractions;
 
-namespace ToSic.Sys.Utils.Tests.Identity;
+namespace ToSic.Sys.Eav.Identity;
 
 public class GuidMapperTest(ITestOutputHelper output)
 {

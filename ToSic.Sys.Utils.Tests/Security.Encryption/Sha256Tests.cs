@@ -1,8 +1,7 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using ToSic.Sys.Security.Encryption;
 
-namespace ToSic.Sys.Utils.Tests.Security.Encryption;
+namespace ToSic.Sys.Security.Encryption;
 
 public class Sha256Tests
 {

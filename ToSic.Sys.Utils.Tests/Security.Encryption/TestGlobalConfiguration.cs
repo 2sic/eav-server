@@ -1,7 +1,6 @@
 using ToSic.Sys.Configuration;
-using ToSic.Sys.Security.Encryption;
 
-namespace ToSic.Sys.Utils.Tests.Security.Encryption;
+namespace ToSic.Sys.Security.Encryption;
 
 /// <summary>
 /// Test implementation of IGlobalConfiguration for unit testing

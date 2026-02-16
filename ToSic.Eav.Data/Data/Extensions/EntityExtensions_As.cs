@@ -97,9 +97,6 @@ public static partial class EntityExtensions
         if (entity == null)
             return new TModel().SetupWithDataNullChecks(entity, nullHandling);
 
-        //if (nullIfNull && entity == null)
-        //    return null;
-
         // If it is not null, do check if the cast uses the correct type
         //if (entity != null)
         DataModelAnalyzer.IsTypeNameAllowedOrThrow<TModel>(entity, entity.EntityId, skipTypeCheck);
