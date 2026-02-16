@@ -19,26 +19,40 @@ public class DataModelAnalyzer
                 DataModelNames.UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.ContentType)
             );
     }
+    /// <summary>
+    /// Figure out the expected ContentTypeName of a DataWrapper type.
+    /// </summary>
+    /// <returns></returns>
+    /// <remarks>
+    /// If it is decorated with <see cref="ModelSpecsAttribute"/> then use the information it provides, otherwise
+    /// use the type name.
+    /// </remarks>
+    public static List<string> GetValidTypeNames(Type tCustom)
+    {
+        return ContentTypeNamesCache
+            .Get<ModelSpecsAttribute>(tCustom, attribute =>
+                DataModelNames.UseSpecifiedNameOrDeriveFromType(tCustom, attribute?.ContentType)
+            );
+    }
 
     private static readonly ClassAttributeLookup<List<string>> ContentTypeNamesCache = new();
 
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="TCustom"></typeparam>
+    /// <param name="type"></param>
     /// <param name="entity"></param>
     /// <param name="id"></param>
     /// <param name="skipTypeCheck"></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException">Thrown if the names don't match and skipTypeCheck is `false` (default).</exception>
-    public static bool IsTypeNameAllowedOrThrow<TCustom>(IEntity entity, object id, bool skipTypeCheck)
-        where TCustom : class
+    public static bool IsTypeNameAllowedOrThrow(Type type, IEntity entity, object id, bool skipTypeCheck)
     {
         if (skipTypeCheck)
             return true;
 
         // Do Type-Name check
-        var typeNames = GetValidTypeNames<TCustom>();
+        var typeNames = GetValidTypeNames(type);
 
         // Check all type names if they are `*` or match the data ContentType
         if (typeNames.Any(t => t == ModelSpecsAttribute.ForAnyContentType || entity.Type.Is(t)))

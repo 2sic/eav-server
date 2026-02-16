@@ -25,26 +25,26 @@ public static class AsModel
         ModelNullHandling nullHandling = ModelNullHandling.Undefined,
         [CallerMemberName] string? methodName = default
     )
-        where TModel : class, IModelSetup<IEntity> // , new()
+        where TModel : class, IModelSetup<IEntity>
     {
         if (nullHandling == ModelNullHandling.Undefined)
             nullHandling = ModelNullHandling.Default;
 
+        // Figure out the true type to create, based on Attribute
+        // This is important, in case an interface was passed in.
+        var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
         if (entity == null)
-        {
-            var trueType1 = ModelAnalyseUse.GetTargetType<TModel>();
-            return (TypeFactory.CreateInstance(trueType1) as TModel)?.SetupWithDataNullChecks(entity, nullHandling);
-        }
+            return (TypeFactory.CreateInstance(trueType) as TModel)?.SetupWithDataNullChecks(entity, nullHandling);
 
         // If it is not null, do check if the cast uses the correct type
-        DataModelAnalyzer.IsTypeNameAllowedOrThrow<TModel>(entity, entity.EntityId, skipTypeCheck);
+        DataModelAnalyzer.IsTypeNameAllowedOrThrow(trueType, entity, entity.EntityId, skipTypeCheck);
 
         // Create the model
-        var trueType2 = ModelAnalyseUse.GetTargetType<TModel>();
-        var wrapper = TypeFactory.CreateInstance(trueType2) as TModel
-            ?? throw new InvalidCastException($"Cannot create a {typeof(TModel)} based of the recommended type {trueType2.Name}.");
+        var wrapper = TypeFactory.CreateInstance(trueType) as TModel
+            ?? throw new InvalidCastException($"Cannot create a {typeof(TModel)} based of the recommended type {trueType.Name}.");
 
         // Throw if TModel inherits from INeedsFactory
         if (wrapper is IModelFactoryRequired)
