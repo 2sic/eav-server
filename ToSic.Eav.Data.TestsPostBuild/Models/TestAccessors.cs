@@ -27,7 +27,7 @@ public static class TestAccessors
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>//, new()
-        => entity.AsInternal<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
+        => entity.AsInternal<TModel>(npo, skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
     internal static TModel? FirstTac<TModel>(
         this IEnumerable<IEntity>? list,

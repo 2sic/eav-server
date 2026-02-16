@@ -5,23 +5,6 @@ public class DataModelAnalyzer
     /// <summary>
     /// Figure out the expected ContentTypeName of a DataWrapper type.
     /// </summary>
-    /// <typeparam name="TCustom"></typeparam>
-    /// <returns></returns>
-    /// <remarks>
-    /// If it is decorated with <see cref="ModelSpecsAttribute"/> then use the information it provides, otherwise
-    /// use the type name.
-    /// </remarks>
-    public static List<string> GetValidTypeNames<TCustom>()
-        where TCustom : class
-    {
-        return ContentTypeNamesCache
-            .Get<TCustom, ModelSpecsAttribute>(attribute =>
-                DataModelNames.UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.ContentType)
-            );
-    }
-    /// <summary>
-    /// Figure out the expected ContentTypeName of a DataWrapper type.
-    /// </summary>
     /// <returns></returns>
     /// <remarks>
     /// If it is decorated with <see cref="ModelSpecsAttribute"/> then use the information it provides, otherwise

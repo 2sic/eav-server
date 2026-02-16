@@ -33,7 +33,7 @@ public static partial class EntityListExtensions
         string? typeName = default,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class
     {
         if (list == null)
             return (nullHandling & ModelNullHandling.ListNullThrows) != 0
@@ -43,16 +43,20 @@ public static partial class EntityListExtensions
         if (nullHandling == ModelNullHandling.Undefined)
             nullHandling = ModelNullHandling.Default;
 
+        // Figure out the true type to create, based on Attribute
+        // This is important, in case an interface was passed in.
+        var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+
         var nameList = typeName != null
             ? [typeName]
-            : DataModelAnalyzer.GetValidTypeNames<TModel>();
+            : DataModelAnalyzer.GetValidTypeNames(trueType);
 
         foreach (var name in nameList)
         {
             // ReSharper disable once PossibleMultipleEnumeration - should not ToList or anything, because it could lose optimizations of the FastLookup etc.
             var first = list.First(typeName: name);
             if (first != null)
-                return first.AsInternal<TModel>(skipTypeCheck: true, nullHandling: nullHandling);
+                return first.AsInternal<TModel>(trueType: trueType, skipTypeCheck: true, nullHandling: nullHandling);
         }
 
         // Nothing found

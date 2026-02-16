@@ -7,7 +7,7 @@ public class DataModelAnalyzerTests
 {
     private void AssertTypeName<T>(string name)
         where T : class, IWrapperWip =>
-        Equal(name, string.Join(",", DataModelAnalyzerTestAccessors.GetContentTypeNamesTac<T>()));
+        Equal(name, string.Join(",", DataModelAnalyzerTestAccessors.GetContentTypeNamesTac(typeof(T))));
 
     private void AssertStreamNames<T>(string namesCsv)
         where T : class, IWrapperWip =>

@@ -21,23 +21,27 @@ public static class AsModel
     internal static TModel? AsInternal<TModel>(
         this IEntity? entity,
         NoParamOrder npo = default,
+        Type trueType = default,
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined,
         [CallerMemberName] string? methodName = default
     )
-        where TModel : class, IModelSetup<IEntity>
+        where TModel : class
     {
         if (nullHandling == ModelNullHandling.Undefined)
             nullHandling = ModelNullHandling.Default;
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
-        var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+        trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
 
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
         if (entity == null)
-            return (TypeFactory.CreateInstance(trueType) as TModel)?.SetupWithDataNullChecks(entity, nullHandling);
+        {
+            // TODO: MAYBE IMPROVE tests / exceptions if not matching the type
+            return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)?.SetupWithDataNullChecks(entity, nullHandling) as TModel;
+        }
 
         // If it is not null, do check if the cast uses the correct type
         DataModelAnalyzer.IsTypeNameAllowedOrThrow(trueType, entity, entity.EntityId, skipTypeCheck);
@@ -52,7 +56,7 @@ public static class AsModel
 
         // Do Setup and check if it's ok.
         // Wrapper will return false if the entity is null or invalid for the model.
-        var ok = wrapper.SetupModel(entity);
+        var ok = (wrapper as IModelSetup<IEntity>)?.SetupModel(entity) ?? false;
         return ok
             ? wrapper
             : (nullHandling & ModelNullHandling.ModelAsModelForce) != 0
