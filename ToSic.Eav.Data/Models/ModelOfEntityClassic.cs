@@ -48,7 +48,7 @@ namespace ToSic.Eav.Models;
 /// - Stabilizing in v21 (now first class citizen, part of ToSic.Eav.Models)
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still beta, name may change")]
-public abstract partial class ModelOfEntityClassic: IModelOfData, /*IDataWrapperNeedingFactory<IEntity>,*/ ICanBeEntity, IModelSetup<IEntity>, IModelFactoryRequired
+public abstract partial class ModelOfEntityClassic: IModelOfData, ICanBeEntity, IModelSetup<IEntity>
 {
     #region Explicit Interfaces for internal use - Setup, etc.
 
