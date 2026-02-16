@@ -22,12 +22,19 @@ public static class TypeFactory
     /// The Generic Wrapper: Uses the central cache but returns the correct type.
     /// </summary>
     public static T CreateInstance<T>() where T: class =>
-        (T)CreateInstance(typeof(T));
+        (T)CreateInstanceFunc(typeof(T))();
 
-    public static object CreateInstance(Type type)
-    {
-        // GetOrAdd ensures we only compile the expression once
-        var factory = Cache.GetOrAdd(type, t =>
+    public static object CreateInstance(Type type) =>
+        CreateInstanceFunc(type)();
+
+    /// <summary>
+    /// GetOrAdd ensures we only compile the expression once
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static Func<object> CreateInstanceFunc(Type type) =>
+        Cache.GetOrAdd(type, t =>
         {
             // If it's a value type (struct), we use Activator or a specialized expression
             // but for simplicity, here is the standard class implementation:
@@ -43,7 +50,4 @@ public static class TypeFactory
             var lambda = Expression.Lambda<Func<object>>(newExp);
             return lambda.Compile();
         });
-
-        return factory();
-    }
 }
