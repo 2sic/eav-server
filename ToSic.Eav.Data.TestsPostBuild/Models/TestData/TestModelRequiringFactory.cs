@@ -7,7 +7,7 @@ namespace ToSic.Eav.Models.TestData;
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelRequiringFactoryEmptyConstructor() : IModelSetup<IEntity>, IModelFactoryRequired
+public class TestModelRequiringFactoryEmptyConstructor : IModelSetup<IEntity>, IModelFactoryRequired
 {
     public bool SetupModel(IEntity? source) => true;
 }
