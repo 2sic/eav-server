@@ -16,25 +16,6 @@ public static class ModelSetupExtensions
         return ok ? wrapper : default;
     }
 
-    ///// <summary>
-    ///// Helper to set up the data being wrapped, returning the wrapper for easy chaining.
-    ///// </summary>
-    //[return: NotNullIfNotNull(nameof(data))]
-    //internal static TModel? CreateAndSetup<TModel, TData>(this TModel model, TData? data,
-    //    NullToModel nullHandling)
-    //    where TData : class
-    //    where TModel : class, IModelSetup<TData>, new()
-    //{
-    //    if (data == null)
-    //    {
-    //        if ((nullHandling & NullToModel.DataAsNull) != 0)
-    //            return default;
-    //        if ((nullHandling & NullToModel.DataAsThrow) != 0)
-    //            throw new InvalidCastException("data is null");
-    //    }
-
-    //}
-
     /// <summary>
     /// Helper to set up the data being wrapped, returning the wrapper for easy chaining.
     /// </summary>

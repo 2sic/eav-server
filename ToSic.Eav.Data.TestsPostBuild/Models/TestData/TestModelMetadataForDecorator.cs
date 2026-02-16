@@ -3,10 +3,13 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Models.TestData;
 
+[ModelSpecs(Use = typeof(TestModelMetadataForDecorator))]
+public interface ITestModelMetadataForDecorator : IModelSetup<IEntity>;
+
 /// <summary>
 /// Test Sample Model
 /// </summary>
-internal record TestModelMetadataForDecorator: IModelSetup<IEntity>, ICanBeEntity
+internal record TestModelMetadataForDecorator: ITestModelMetadataForDecorator, IModelSetup<IEntity>, ICanBeEntity
 {
     //public static string ContentTypeNameId = "4c88d78f-5f3e-4b66-95f2-6d63b7858847";
     //public static string ContentTypeName = "MetadataForDecorator";

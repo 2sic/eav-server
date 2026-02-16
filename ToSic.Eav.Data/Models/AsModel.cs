@@ -33,13 +33,18 @@ public static class AsModel
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
         if (entity == null)
-            return TypeFactory.CreateInstance<TModel>().SetupWithDataNullChecks(entity, nullHandling);
+        {
+            var trueType1 = ModelAnalyseUse.GetTargetType<TModel>();
+            return (TypeFactory.CreateInstance(trueType1) as TModel)?.SetupWithDataNullChecks(entity, nullHandling);
+        }
 
         // If it is not null, do check if the cast uses the correct type
         DataModelAnalyzer.IsTypeNameAllowedOrThrow<TModel>(entity, entity.EntityId, skipTypeCheck);
 
         // Create the model
-        var wrapper = TypeFactory.CreateInstance<TModel>();
+        var trueType2 = ModelAnalyseUse.GetTargetType<TModel>();
+        var wrapper = TypeFactory.CreateInstance(trueType2) as TModel
+            ?? throw new InvalidCastException($"Cannot create a {typeof(TModel)} based of the recommended type {trueType2.Name}.");
 
         // Throw if TModel inherits from INeedsFactory
         if (wrapper is IModelFactoryRequired)

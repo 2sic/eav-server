@@ -24,4 +24,13 @@ public class EntityAsInternalTests(TestDataGenerator generator)
             var entity = generator.CreateMetadataForDecorator();
             entity.AsInternalTac<WithConstructor>(skipTypeCheck: true);
         });
+
+    [Fact]
+    public void WorksWithInterfaceRedirect()
+    {
+        var entity = generator.CreateMetadataForDecorator();
+        var model = entity.AsInternalTac<ITestModelMetadataForDecorator>(skipTypeCheck: true);
+        NotNull(model);
+        IsType<TestModelMetadataForDecorator>(model);
+    }
 }
