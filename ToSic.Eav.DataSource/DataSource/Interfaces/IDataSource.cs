@@ -102,7 +102,7 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    void Setup(IDataSourceOptions? options, IDataSourceLinkable? attach);
+    void Setup(IDataSourceOptions? options); //, IDataSourceLinkable? attach);
 
     #endregion
 

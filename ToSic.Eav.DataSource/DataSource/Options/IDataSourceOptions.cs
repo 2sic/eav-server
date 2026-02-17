@@ -25,4 +25,7 @@ public interface IDataSourceOptions
     /// WIP experimental v19.01 2dm
     /// </summary>
     IWorkSpecs? Specs { get; }
+
+    IDataSourceLinkable? Attach { get; }
+
 }

@@ -10,10 +10,10 @@ partial class DataSourceBase
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public void Setup(IDataSourceOptions? options, IDataSourceLinkable? attach)
+    public void Setup(IDataSourceOptions? options) //, IDataSourceLinkable? attach)
     {
         var l = Log.Fn();
-        var attachLink = attach?.GetLink();
+        var attachLink = options?.Attach?.GetLink(); // ?? attach?.GetLink();
         var mainUpstream = attachLink?.DataSource;
 
         var appIdRequired = options?.AppIdentityOrReader

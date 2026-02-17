@@ -24,4 +24,7 @@ public sealed record DataSourceOptions: IDataSourceOptions
     public bool Immutable { get; init; }
 
     public IWorkSpecs? Specs { get; init; }
+
+    public IDataSourceLinkable? Attach { get; init; }
+
 }

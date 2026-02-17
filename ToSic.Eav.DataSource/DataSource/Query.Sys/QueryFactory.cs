@@ -117,7 +117,7 @@ public class QueryFactory(
             LookUp = passThroughLookUp
         };
         IDataSource outTarget = genPassThrough.New(); //.Init(passThroughLookUp);
-        outTarget.Setup(outOptions, null);
+        outTarget.Setup(outOptions); //, null);
         if (outTarget.Guid == Guid.Empty)
             outTarget.AddDebugInfo(queryDef.Guid, null);
 
