@@ -24,12 +24,8 @@ namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 /// It's just a base controller, because some methods need to be added at the SXC level which don't exist in the EAV.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class QueryControllerBase<TImplementation>(
-    QueryControllerBase<TImplementation>.Dependencies services,
-    string logName,
-    object[]? connect = default)
-    : ServiceBase<QueryControllerBase<TImplementation>.Dependencies>(services, logName, connect: connect)
-    where TImplementation : QueryControllerBase<TImplementation>
+public abstract class QueryControllerBase(QueryControllerBase.Dependencies services, string logName, object[]? connect = default)
+    : ServiceBase<QueryControllerBase.Dependencies>(services, logName, connect: connect)
 {
 
     #region Constructor / DI / Services
@@ -197,7 +193,7 @@ public abstract class QueryControllerBase<TImplementation>(
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
         // Get the query, run it and track how much time this took
-        var qDef = services.QueryDefSvc.Value.GetDefinition(appId, id);
+        var qDef = Services.QueryDefSvc.Value.GetDefinition(appId, id);
         var builtQuery = Services.QueryFactory.CreateWithTestParams(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
 

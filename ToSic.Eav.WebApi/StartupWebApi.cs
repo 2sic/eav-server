@@ -42,7 +42,7 @@ public static class StartupWebApi
         // APIs
         services.TryAddTransient<EntityPickerApi>();
         services.TryAddTransient<ContentTypeDtoService>();
-        services.TryAddTransient(typeof(QueryControllerBase<>.Dependencies));
+        services.TryAddTransient<QueryControllerBase.Dependencies>();
         services.TryAddTransient<ContentExportApi>();
         services.TryAddTransient<ContentImportApi>();
 
