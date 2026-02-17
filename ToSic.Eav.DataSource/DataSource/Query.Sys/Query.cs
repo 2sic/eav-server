@@ -91,16 +91,10 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
     private (IDataSource Source, StreamDictionary Out) CreateOutWithAllStreams()
     {
         var l = Log.Fn<(IDataSource Source, StreamDictionary Out)>(message: $"Query: '{Definition.Title}'", timer: true);
-        // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
-        // and the current In
-        var resolvedParams = Configuration.LookUpEngine.LookUp(Definition.ParamsDic);
 
-        // now provide an override source for this
-        var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, resolvedParams);
-        var queryInfos = queryBuilder.Value.Create(Definition, Configuration.LookUpEngine, [paramsOverride]);
-        var source = queryInfos.Main;
-        var outWritable = new StreamDictionary(this, Services.CacheService, streams: source.Out);
-        return l.Return((source, outWritable));
+        var queryInfos = queryBuilder.Value.CreateWithParams(Definition, Configuration.LookUpEngine);
+        var outWritable = new StreamDictionary(this, Services.CacheService, streams: queryInfos.Main.Out);
+        return l.Return((queryInfos.Main, outWritable));
     }
 
 

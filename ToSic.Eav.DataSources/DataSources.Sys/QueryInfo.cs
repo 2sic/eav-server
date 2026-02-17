@@ -143,7 +143,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     {
         var l = Log.Fn<IDataSource>();
 
-        Configuration.Parse();
+        //Configuration.Parse();
 
         var qName = QueryName;
         if (string.IsNullOrWhiteSpace(qName))
@@ -153,8 +153,14 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
         var found = _queryDefSvc.Value.TryGetQueryEntity(this, qName, recurseParents: 3)
                     ?? throw new($"Can't build query info - query not found '{qName}'");
 
-        var builtQuery = QueryFactory.CreateWithTestParams(_queryDefSvc.Value.GetDefinition(AppId, found),
-            lookUps: Configuration.LookUpEngine);
+        // 2026-02-17 2dm - previously also used test parameters to run QueryInfo
+        // believe this is a mistake, it certainly had side-effects in Attribute-pickers using the SysData query
+        // Made to use normal query and hope this works, monitor.
+        // Delete comment ca. 2026-06.
+        //var builtQuery = QueryFactory.CreateWithTestParams(_queryDefSvc.Value.GetDefinition(AppId, found),
+        //    lookUps: Configuration.LookUpEngine);
+        var definition = _queryDefSvc.Value.GetDefinition(AppId, found);
+        var builtQuery = QueryFactory.CreateWithParams(definition, Configuration.LookUpEngine);
         return l.Return(builtQuery.Main);
     }
 
