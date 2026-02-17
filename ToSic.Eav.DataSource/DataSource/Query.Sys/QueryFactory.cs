@@ -111,7 +111,13 @@ public class QueryFactory(
 
         // tell the primary-out that it has this guid, for better debugging
         var passThroughLookUp = new LookUpEngine(baseLookUp, Log);
-        IDataSource outTarget = genPassThrough.New().Init(passThroughLookUp);
+        var outOptions = new DataSourceOptions
+        {
+            AppIdentityOrReader = appIdentity,
+            LookUp = passThroughLookUp
+        };
+        IDataSource outTarget = genPassThrough.New(); //.Init(passThroughLookUp);
+        outTarget.Setup(outOptions, null);
         if (outTarget.Guid == Guid.Empty)
             outTarget.AddDebugInfo(queryDef.Guid, null);
 
