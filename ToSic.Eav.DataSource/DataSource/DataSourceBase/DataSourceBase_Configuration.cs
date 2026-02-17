@@ -10,13 +10,13 @@ partial class DataSourceBase
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public void Setup(IDataSourceOptions? options) //, IDataSourceLinkable? attach)
+    void IServiceWithSetup<IDataSourceOptions>.Setup(IDataSourceOptions options)
     {
         var l = Log.Fn();
-        var attachLink = options?.Attach?.GetLink(); // ?? attach?.GetLink();
+        var attachLink = options.Attach?.GetLink();
         var mainUpstream = attachLink?.DataSource;
 
-        var appIdRequired = options?.AppIdentityOrReader
+        var appIdRequired = options.AppIdentityOrReader
                             ?? mainUpstream
                             ?? throw new NullReferenceException("Setup needs a proper App ID, neither the options nor the attach.Link has it.");
         (this as IAppIdentitySync).UpdateAppIdentity(appIdRequired);
@@ -27,16 +27,16 @@ partial class DataSourceBase
         else
             Connect(attachLink);
 
-        if (options?.Immutable == true)
+        if (options.Immutable)
             Immutable = true;
         l.A($"{nameof(Immutable)}, {Immutable}");
 
-        var lookUp = options?.LookUp ?? mainUpstream?.Configuration?.LookUpEngine;
+        var lookUp = options.LookUp ?? mainUpstream?.Configuration?.LookUpEngine;
         if (lookUp != null && Configuration is DataSourceConfiguration dsConfig)
         {
             l.A("Add lookups");
             dsConfig.LookUpEngine = lookUp;
-            var configValues = options?.MyConfigValues;
+            var configValues = options.MyConfigValues;
             if (configValues != null)
                 dsConfig.AddMany(configValues.ToEditableIgnoreCase());
         }

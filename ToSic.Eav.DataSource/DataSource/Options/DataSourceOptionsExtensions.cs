@@ -5,10 +5,13 @@ namespace ToSic.Eav.DataSource;
 
 internal static class DataSourceOptionsExtensions
 {
-    internal static IDataSourceOptions? WithAttachOrNull(this IDataSourceOptions? options, IDataSourceLinkable? attach)
+    internal static IDataSourceOptions WithAttach(this IDataSourceOptions? options, IDataSourceLinkable? attach)
     {
         return attach == null
-            ? options
+            ? options ?? new DataSourceOptions
+            {
+                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
+            }
             : options.ToRecordOrNew(attach?.GetLink()?.DataSource?.PureIdentity() ?? null!) with { Attach = attach };
 
     }

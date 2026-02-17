@@ -18,7 +18,7 @@ internal class DataSourcesService(
     {
         var l = Log.Fn<IDataSource>();
         var newDs = serviceProvider.Build<IDataSource>(type, Log);
-        newDs.Setup(options.WithAttachOrNull(attach));//, /*attach*/ null);
+        newDs.Setup(options.WithAttach(attach));
         return l.Return(newDs);
     }
 
@@ -63,7 +63,7 @@ internal class DataSourcesService(
             options = OptionsWithLookUp(options);
 
         var newDs = serviceProvider.Build<TDataSource>(Log);
-        newDs.Setup(options.WithAttachOrNull(attach)); //, /*attach*/ null);
+        newDs.Setup(options.WithAttach(attach));
         return l.Return(newDs);
     }
 

@@ -19,7 +19,7 @@ public class QueryFactory(
     LazySvc<IAppReaderFactory> appReaders,
     IDataSourcesService dataSourceFactory,
     IZoneCultureResolver cultureResolver,
-    Generator<PassThrough> genPassThrough,
+    Generator<PassThrough, IDataSourceOptions> genPassThrough,
     IAppsCatalog appsCatalog,
     ICurrentContextUserPermissionsService userPermissions)
     : ServiceBase("DS.PipeFt",
@@ -116,8 +116,8 @@ public class QueryFactory(
             AppIdentityOrReader = appIdentity,
             LookUp = passThroughLookUp
         };
-        IDataSource outTarget = genPassThrough.New(); //.Init(passThroughLookUp);
-        outTarget.Setup(outOptions); //, null);
+        IDataSource outTarget = genPassThrough.New(outOptions); //.Init(passThroughLookUp);
+        //outTarget.Setup(outOptions); //, null);
         if (outTarget.Guid == Guid.Empty)
             outTarget.AddDebugInfo(queryDef.Guid, null);
 

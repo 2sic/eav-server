@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSource;
 /// Public interface for an Eav DataSource. All DataSource objects are based on this. 
 /// </summary>
 [PublicApi]
-public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IHasLog
+public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IHasLog, IServiceWithSetup<IDataSourceOptions>
 #pragma warning disable CS0618
     , IDataTarget
 #pragma warning restore CS0618
@@ -100,9 +100,9 @@ public interface IDataSource : IDataSourceLinkable, IAppIdentity, ICacheInfo, IH
     /// </summary>
     IDataSourceConfiguration Configuration { get; }
 
-    [PrivateApi]
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    void Setup(IDataSourceOptions? options); //, IDataSourceLinkable? attach);
+    //[PrivateApi]
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
+    //void Setup(IDataSourceOptions? options); //, IDataSourceLinkable? attach);
 
     #endregion
 
