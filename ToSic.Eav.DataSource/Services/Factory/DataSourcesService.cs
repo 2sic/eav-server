@@ -14,14 +14,18 @@ internal class DataSourcesService(
     #region GetDataSource
 
     /// <inheritdoc />
-    public IDataSource Create(Type type, IDataSourceLinkable? attach = default, IDataSourceOptions? options = default)
+    public IDataSource Create(Type type, IDataSourceOptions? options = default)
     {
         var l = Log.Fn<IDataSource>();
         var newDs = serviceProvider.Build<IDataSource>(type, Log);
-        newDs.Setup(options.WithAttach(attach));
+        newDs.Setup(options ?? DataSourceOptions.Empty());
         return l.Return(newDs);
     }
 
+    /// <inheritdoc />
+    [Obsolete("making this obsolete in v21; believe it's almost never used outside of 2sxc/eav")]
+    public IDataSource Create(Type type, IDataSourceLinkable? attach = default, IDataSourceOptions? options = default)
+        => Create(type, options.WithAttach(attach));
 
     #endregion
 
@@ -51,21 +55,28 @@ internal class DataSourcesService(
     }
 
     /// <inheritdoc />
-    public TDataSource Create<TDataSource>(IDataSourceLinkable? attach = default, IDataSourceOptions? options = default) where TDataSource : IDataSource
+    public TDataSource Create<TDataSource>(IDataSourceOptions? options = default)
+        where TDataSource : IDataSource
     {
-        var l = Log.Fn<TDataSource>($"{typeof(TDataSource).Name}, attach:{attach?.GetLink()?.DataSource?.Show()}");
+        var l = Log.Fn<TDataSource>($"{typeof(TDataSource).Name}, attach:{options?.Attach?.GetLink()?.DataSource?.Show()}");
 
-        var primarySource = attach?.GetLink()?.DataSource;
-        
+        var primarySource = options?.Attach?.GetLink()?.DataSource;
+
         if (primarySource == null && options?.AppIdentityOrReader == null)
-            throw new($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(attach)} and configuration.AppIdentity no not be null.");
+            throw new($"{nameof(Create)}<{nameof(TDataSource)}> requires one or both of {nameof(options.Attach)} and configuration.AppIdentity no not be null.");
         if (primarySource == null && options?.LookUp == null)
             options = OptionsWithLookUp(options);
 
         var newDs = serviceProvider.Build<TDataSource>(Log);
-        newDs.Setup(options.WithAttach(attach));
+        newDs.Setup(options ?? DataSourceOptions.Empty());
         return l.Return(newDs);
     }
+
+    /// <inheritdoc />
+    [Obsolete("v21")]
+    public TDataSource Create<TDataSource>(IDataSourceLinkable? attach = default, IDataSourceOptions? options = default)
+        where TDataSource : IDataSource =>
+        Create<TDataSource>(options.WithAttach(attach));
 
     #endregion
 
@@ -80,12 +91,12 @@ internal class DataSourcesService(
             throw new ArgumentNullException(nameof(IDataSourceOptions.AppIdentityOrReader));
         var l = Log.Fn<IDataSource>($"#{options.AppIdentityOrReader.Show()}, draft:{options.ShowDrafts}, lookUp:{options.LookUp != null}");
 
-        options = OptionsWithLookUp(options);
-        var appRoot = Create<IAppRoot>(options: options);
-        var publishingFilter = Create<PublishingFilter>(attach: appRoot, options: options);
+        var optionsSafe = OptionsWithLookUp(options);
+        var appRoot = Create<IAppRoot>(options: optionsSafe);
+        var publishingFilter = Create<PublishingFilter>(/*attach: appRoot,*/ options: optionsSafe with { Attach = appRoot });
 
-        if (options.ShowDrafts != null)
-            publishingFilter.ShowDrafts = options.ShowDrafts;
+        if (optionsSafe.ShowDrafts != null)
+            publishingFilter.ShowDrafts = optionsSafe.ShowDrafts;
 
         return l.Return(publishingFilter, "ok");
     }

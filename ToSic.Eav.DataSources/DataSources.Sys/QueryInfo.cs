@@ -120,7 +120,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
             .SelectMany(sName =>
             {
                 // Prepare Inspection DataSource
-                var attribInfo = _attributesGenerator.New(attach: query);
+                var attribInfo = _attributesGenerator.New(/*attach: query,*/ options: DataSourceOptions.OfDataSource(query));
 
                 // For non-default streams, it should know about the desired stream
                 // So we're attaching the other stream to the inspection

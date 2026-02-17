@@ -11,17 +11,11 @@ public class DataSourceOptionConverter
     {
         // other is null
         if (other is null)
-            return original as DataSourceOptions ?? new DataSourceOptions
-            {
-                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
-            };
+            return original as DataSourceOptions ?? DataSourceOptions.Empty();
 
         var secondDs = Convert(other, throwIfNull: false, throwIfNoMatch: false);
         if (original is not DataSourceOptions typed)
-            return secondDs ?? new DataSourceOptions
-            {
-                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
-            };
+            return secondDs ?? DataSourceOptions.Empty();
 
         // Most complex case, both are now "real" - must merge
         return typed with
@@ -29,7 +23,8 @@ public class DataSourceOptionConverter
             AppIdentityOrReader = secondDs?.AppIdentityOrReader ?? typed.AppIdentityOrReader,
             MyConfigValues = secondDs?.MyConfigValues ?? typed.MyConfigValues,
             LookUp = secondDs?.LookUp ?? typed.LookUp,
-            ShowDrafts = secondDs?.ShowDrafts ?? typed.ShowDrafts
+            ShowDrafts = secondDs?.ShowDrafts ?? typed.ShowDrafts,
+            Attach = secondDs?.Attach ?? typed.Attach,
         };
     }
 

@@ -27,4 +27,18 @@ public sealed record DataSourceOptions: IDataSourceOptions
 
     public IDataSourceLinkable? Attach { get; init; }
 
+    /// <summary>
+    /// WIP to keep track of all creations where the AppIdentityOrReader is not yet set, but should be. This will be used to find all places where this needs to be fixed.
+    /// </summary>
+    /// <returns></returns>
+    public static DataSourceOptions Empty() => new()
+    {
+        AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
+    };
+
+    public static DataSourceOptions OfDataSource(IDataSource source) => new()
+    {
+        AppIdentityOrReader = source,
+        Attach = source,
+    };
 }

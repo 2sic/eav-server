@@ -3,15 +3,12 @@ using ToSic.Eav.Apps.Sys;
 
 namespace ToSic.Eav.DataSource;
 
-internal static class DataSourceOptionsExtensions
+public static class DataSourceOptionsExtensions
 {
-    internal static IDataSourceOptions WithAttach(this IDataSourceOptions? options, IDataSourceLinkable? attach)
+    public static IDataSourceOptions WithAttach(this IDataSourceOptions? options, IDataSourceLinkable? attach)
     {
         return attach == null
-            ? options ?? new DataSourceOptions
-            {
-                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
-            }
+            ? options ?? DataSourceOptions.Empty()
             : options.ToRecordOrNew(attach?.GetLink()?.DataSource?.PureIdentity() ?? null!) with { Attach = attach };
 
     }

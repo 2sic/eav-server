@@ -19,13 +19,37 @@ public interface IDataSourcesService
     /// _Note that this is not the preferred way to do things - if possible, use the generic Create below._
     /// </summary>
     /// <param name="type">the .net type of this data-source</param>
-    /// <param name="attach">optional source to attach as `in` on the newly created data source. It can also provide `AppIdentity` and `LookUp`</param>
     /// <param name="options">optional configuration lookup if needed</param>
     /// <returns>A single DataSource</returns>
     /// <remarks>
     /// Released in v15.04
     /// </remarks>
+    IDataSource Create(Type type, IDataSourceOptions? options = default);
+
+    /// <summary>
+    /// Get DataSource for specified sourceName/Type.
+    /// 
+    /// _Note that this is not the preferred way to do things - if possible, use the generic Create below._
+    /// </summary>
+    /// <param name="type">the .net type of this data-source</param>
+    /// <param name="attach">optional source to attach as `in` on the newly created data source. It can also provide `AppIdentity` and `LookUp`</param>
+    /// <param name="options">optional configuration lookup if needed</param>
+    /// <returns>A single DataSource</returns>
+    /// <remarks>
+    /// Released in v15.04
+    /// Made obsolete in v21, as it is almost never used outside of 2sxc/eav - and we want to be able to remove it from the public API at some point.
+    /// </remarks>
+    [PrivateApi("Hidden in v21")]
+    [Obsolete("making this obsolete in v21; believe it's almost never used outside of 2sxc/eav")]
     IDataSource Create(Type type, IDataSourceLinkable? attach = default, IDataSourceOptions? options = default);
+
+    /// <summary>
+    /// Preferred way to create DataSources.
+    /// </summary>
+    /// <typeparam name="TDataSource">The type of the data source to be created.</typeparam>
+    /// <param name="options">optional configuration lookup if needed</param>
+    /// <returns></returns>
+    TDataSource Create<TDataSource>(IDataSourceOptions? options = default) where TDataSource : IDataSource;
 
     /// <summary>
     /// Preferred way to create DataSources.
@@ -34,6 +58,8 @@ public interface IDataSourcesService
     /// <param name="attach">optional source to attach as `in` on the newly created data source. It can also provide `AppIdentity` and `LookUp`</param>
     /// <param name="options">optional configuration lookup if needed</param>
     /// <returns></returns>
+    [PrivateApi("Hidden in v21")]
+    [Obsolete("making this obsolete in v21; believe it's almost never used outside of 2sxc/eav")]
     TDataSource Create<TDataSource>(IDataSourceLinkable? attach = default, IDataSourceOptions? options = default) where TDataSource : IDataSource;
 
     /// <summary>

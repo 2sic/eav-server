@@ -66,7 +66,7 @@ public class DataSourceMock: IDataSource
 
     public IDataSourceConfiguration Configuration { get; }
 
-    public void Setup(IDataSourceOptions? options, IDataSourceLinkable? attach)
+    public void Setup(IDataSourceOptions? options)
     {
         throw new NotImplementedException();
     }

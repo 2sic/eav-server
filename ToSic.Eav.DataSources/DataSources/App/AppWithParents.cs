@@ -58,7 +58,7 @@ internal class AppWithParents: DataSourceBase
             parentAppState = parentAppState.ParentApp?.AppState;
         }
 
-        var merge = _mergeGenerator.New(attach: initialLink);
+        var merge = _mergeGenerator.New(/*attach: initialLink, */options: new DataSourceOptions() { AppIdentityOrReader = parentAppState, Attach = initialLink });
 
         var result = merge.Out.First().Value.List.ToImmutableOpt();
         return l.Return(result, $"{result.Count}");
