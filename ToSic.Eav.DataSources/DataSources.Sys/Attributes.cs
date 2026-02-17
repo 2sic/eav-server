@@ -64,14 +64,15 @@ public sealed class Attributes: CustomDataSourceAdvanced
         var l = Log.Fn<IImmutableList<IEntity>>();
 
         // try to load the content-type - if it fails, return empty list
-        if (string.IsNullOrWhiteSpace(ContentTypeName))
+        var ctName = ContentTypeName;
+        if (string.IsNullOrWhiteSpace(ctName))
             return l.Return([], "no type name");
 
-        var typeNames = ContentTypeName.CsvToArrayWithoutEmpty();
+        var typeNames = ctName.CsvToArrayWithoutEmpty();
         if (typeNames.Length == 0)
             return l.Return([], "no type names");
 
-        var useStream = TypeNameFallbackToTryToUseInStream == ContentTypeName && In.ContainsKey(StreamDefaultName);
+        var useStream = TypeNameFallbackToTryToUseInStream == ctName && In.ContainsKey(StreamDefaultName);
         var optionalList = useStream
             ? In[StreamDefaultName]?.List.ToImmutableOpt()
             : null;
@@ -127,7 +128,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
         // gives a 0-list of attributes
         // so if that's the case, check the first item in the results
         if (list.SafeNone())
-            list = TypeNameFallbackToTryToUseInStream == ContentTypeName
+            list = TypeNameFallbackToTryToUseInStream == ctName
                 ? firstEntityInStream?.Attributes
                     .OrderBy(atPair => atPair.Key)
                     .Select(atPair => AsDic(

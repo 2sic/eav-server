@@ -197,7 +197,6 @@ public abstract class QueryControllerBase<TImplementation>(
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
         // Get the query, run it and track how much time this took
-        // var qDef = Services.QueryFactory.GetQueryDefinition(appId, id);
         var qDef = services.QueryDefSvc.Value.GetDefinition(appId, id);
         var builtQuery = Services.QueryFactory.CreateWithTestParams(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
@@ -210,7 +209,6 @@ public abstract class QueryControllerBase<TImplementation>(
         var results = Log.Quick(message: "Serialize", timer: true, func: () =>
         {
             var converter = Services.EntToDicLazy.Value;
-            //converter.WithGuid = true;
             converter.MaxItems = top;
             converter.AddSelectFields(systemQueryOptions.Select.ToListOpt());
 
