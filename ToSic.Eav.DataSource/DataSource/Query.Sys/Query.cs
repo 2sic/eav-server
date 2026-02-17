@@ -60,7 +60,9 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
         ZoneId = zoneId;
         AppId = appId;
         Definition = queryDefBuilder.Value.Create(appId, queryDef);
-        this.Init(lookUpEngineOrNull);
+        
+        if (lookUpEngineOrNull != null)
+            ((DataSourceConfiguration)Configuration).LookUpEngine = lookUpEngineOrNull;
 
         // hook up in, just in case we get parameters from an In
         if (source == null)
@@ -95,8 +97,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
 
         // now provide an override source for this
         var paramsOverride = new LookUpInDictionary(DataSourceConstants.ParamsSourceName, resolvedParams);
-        var queryInfos = queryBuilder.Value.Create(Definition, Configuration.LookUpEngine,
-            [paramsOverride]);
+        var queryInfos = queryBuilder.Value.Create(Definition, Configuration.LookUpEngine, [paramsOverride]);
         var source = queryInfos.Main;
         var outWritable = new StreamDictionary(this, Services.CacheService, streams: source.Out);
         return l.Return((source, outWritable));
