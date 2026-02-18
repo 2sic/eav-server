@@ -15,15 +15,15 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Split data into pages and forward just one batch",
     Icon = DataSourceIcons.Stories,
     Type = DataSourceType.Logic, 
-    NameId = "ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources",
-    DynamicOut = false,
+    NameId = "4c30d275-834d-42d5-8196-12c8dbbbb6f8",
+    NameIds = ["ToSic.Eav.DataSources.Paging, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
     HelpLink = "https://go.2sxc.org/DsPaging")]
 
 public sealed class Paging: CustomDataSourceAdvanced
 {
-    #region Configuration-properties (no config)
+    #region Configuration-properties
 
     private const int DefPageSize = 10;
     private const int DefPageNum = 1;

@@ -22,11 +22,12 @@ public class AppRoot : DataSourceBase, IAppRoot
     }
     private readonly IAppReaderFactory _appReaders;
 
-    public override IDataSourceLink Link => _link.Get(() => new DataSourceLink(null, dataSource: this)
-        .AddStream(name: DataSourceConstantsInternal.StreamPublishedName)
-        .AddStream(name: DataSourceConstantsInternal.StreamDraftsName))!;
+    IDataSourceLink IDataSourceLinkable.GetLink() => _link
+        ??= new DataSourceLink { DataSource = this }
+            .WithAnotherStream(name: DataSourceConstantsInternal.StreamPublishedName)
+            .WithAnotherStream(name: DataSourceConstantsInternal.StreamDraftsName);
 
-    private readonly GetOnce<IDataSourceLink> _link = new();
+    private IDataSourceLink? _link;
 
     /// <summary>
     /// Special CacheKey generator for AppRoots, which rely on the state

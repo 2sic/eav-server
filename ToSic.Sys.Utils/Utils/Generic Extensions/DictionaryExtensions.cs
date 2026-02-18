@@ -16,6 +16,7 @@ public static class DictionaryExtensions
     /// <remarks>
     /// Works for Dictionary and ImmutableDictionary, but NOT for ReadOnlyDictionary, which doesn't seem to expose its comparer.
     /// </remarks>
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsIgnoreCase<T>(this IDictionary<string, T> original)
         => original is Dictionary<string, T> dic && dic.Comparer.IsIgnoreCase()
         || original is ImmutableDictionary<string, T> dicIm && dicIm.KeyComparer.IsIgnoreCase();
@@ -57,8 +58,25 @@ public static class DictionaryExtensions
 
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IDictionary<string, T> ToEditableInIgnoreCase<T>(this IReadOnlyDictionary<string, T> original)
+    public static IDictionary<string, T> ToEditableIgnoreCase<T>(this IReadOnlyDictionary<string, T> original)
         => original.ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
+
+    /// <summary>
+    /// Convert a string-object dictionary to a string-string dictionary, filtering out null-object.
+    /// </summary>
+    /// <param name="original"></param>
+    /// <returns></returns>
+    [return: NotNullIfNotNull(nameof(original))]
+    public static ImmutableDictionary<string, string>? ToDicStringStringImInv(this IDictionary<string, object?> original)
+    {
+        return original
+            .Where(pair => pair.Value != null)
+            .ToImmutableDictionary(
+                pair => pair.Key,
+                pair => pair.Value!.ToString()!,
+                InvariantCultureIgnoreCase
+            );
+    }
 
 
     [ShowApiWhenReleased(ShowApiMode.Never)]

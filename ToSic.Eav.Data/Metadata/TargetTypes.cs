@@ -119,7 +119,7 @@ public enum TargetTypes
     [DocsWip("Modules (16)")]
     Module = 16,
 
-    /// <summary>A Module - like a module containing some content (17)</summary>
+    /// <summary>A Module variant - like a module instance in DNN (17)</summary>
     /// <remarks>New in v13 / beta</remarks>
     [PrivateApi]
     ModuleVariant = 17,

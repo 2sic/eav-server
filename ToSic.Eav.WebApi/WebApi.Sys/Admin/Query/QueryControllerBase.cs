@@ -2,9 +2,9 @@
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.Query.Sys;
+using ToSic.Eav.DataSource.Query.Sys.Inspect;
 using ToSic.Eav.DataSource.Sys.Catalog;
-using ToSic.Eav.DataSource.Sys.Inspect;
-using ToSic.Eav.DataSource.Sys.Query;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.LookUp.Sys.Engines;
@@ -12,7 +12,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.WebApi.Sys.Dto;
-using Connection = ToSic.Eav.DataSource.Sys.Query.Connection;
+using ToSic.Sys.OData;
 using SystemJsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.WebApi.Sys.Admin.Query;
@@ -24,31 +24,27 @@ namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 /// It's just a base controller, because some methods need to be added at the SXC level which don't exist in the EAV.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class QueryControllerBase<TImplementation>(
-    QueryControllerBase<TImplementation>.Dependencies services,
-    string logName,
-    object[]? connect = default)
-    : ServiceBase<QueryControllerBase<TImplementation>.Dependencies>(services, logName, connect: connect)
-    where TImplementation : QueryControllerBase<TImplementation>
+public abstract class QueryControllerBase(QueryControllerBase.Dependencies services, string logName, object[]? connect = default)
+    : ServiceBase<QueryControllerBase.Dependencies>(services, logName, connect: connect)
 {
 
     #region Constructor / DI / Services
 
     public record Dependencies(
-        QueryBuilder QueryBuilder,
+        QueryFactory QueryFactory,
         LazySvc<ConvertToEavLight> EntToDicLazy,
-        LazySvc<InspectQuery> QueryInfoLazy,
+        LazySvc<QueryInspectionService> QueryInfoLazy,
         LazySvc<DataSourceCatalog> DataSourceCatalogLazy,
         Generator<JsonSerializer> JsonSerializer,
         Generator<PassThrough> PassThrough,
-        LazySvc<QueryManager> QueryManager,
+        LazySvc<QueryDefinitionService> QueryDefSvc,
         Generator<IAppReaderFactory> AppStates,
         GenWorkBasic<WorkQueryMod> WorkUnitQueryMod,
         GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy)
         : DependenciesRecord(connect:
         [
-            QueryBuilder, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough, QueryManager,
-            AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
+            QueryFactory, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough,
+            QueryDefSvc, AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
         ]);
 
     #endregion
@@ -64,7 +60,7 @@ public abstract class QueryControllerBase<TImplementation>(
             return l.Return(new(), "no id, empty");
 
         var appState = Services.AppStates.New().Get(appId);
-        var qDef = Services.QueryManager.Value.Get(appState, id.Value);
+        var qDef = Services.QueryDefSvc.Value.GetDefinition(appState, id.Value);
 
         #region Deserialize some Entity-Values
 
@@ -150,7 +146,7 @@ public abstract class QueryControllerBase<TImplementation>(
         // Update Pipeline Entity with new Wirings etc.
         var wiringString = data.Pipeline[nameof(QueryDefinition.StreamWiring)]?.ToString() ?? "";
         var wirings =
-            SystemJsonSerializer.Deserialize<List<Connection>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
+            SystemJsonSerializer.Deserialize<List<QueryWire>>(wiringString, JsonOptions.UnsafeJsonWithoutEncodingHtml)
             ?? [];
 
         Services.WorkUnitQueryMod.New(appId: appId).Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
@@ -163,7 +159,9 @@ public abstract class QueryControllerBase<TImplementation>(
     /// </summary>
     protected QueryRunDto DebugStream(int appId, int id, int top, ILookUpEngine lookUps, string from, string streamName)
     {
-        IDataSource GetSubStream(QueryResult builtQuery)
+        return RunDevInternal(appId, id, lookUps, top, GetSubStream);
+
+        IDataSource GetSubStream(QueryFactoryResult builtQuery)
         {
             // Find the DataSource
             if (!builtQuery.DataSources.TryGetValue(from, out var source))
@@ -178,8 +176,6 @@ public abstract class QueryControllerBase<TImplementation>(
 
             return passThroughDs;
         }
-
-        return RunDevInternal(appId, id, lookUps, top, GetSubStream);
     }
 
     /// <summary>
@@ -192,24 +188,23 @@ public abstract class QueryControllerBase<TImplementation>(
     /// <param name="partLookup">This retrieves which part of the query should be provided - for scenarios where only a single stream in the query is analyzed</param>
     /// <returns></returns>
     protected QueryRunDto RunDevInternal(int appId, int id, ILookUpEngine lookUps, int top,
-        Func<QueryResult, IDataSource> partLookup) 
+        Func<QueryFactoryResult, IDataSource> partLookup) 
     {
         var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
         // Get the query, run it and track how much time this took
-        var qDef = Services.QueryBuilder.GetQueryDefinition(appId, id);
-        var builtQuery = Services.QueryBuilder.GetDataSourceForTesting(qDef, lookUps: lookUps);
+        var qDef = Services.QueryDefSvc.Value.GetDefinition(appId, id);
+        var builtQuery = Services.QueryFactory.CreateWithTestParams(qDef, lookUps: lookUps);
         var outSource = builtQuery.Main;
 
         // New v17 experimental with special fields
-        var systemQueryOptions = new QueryODataParams(outSource.Configuration).SystemQueryOptions;
+        var systemQueryOptions = QueryODataParams.Create(outSource.Configuration.Parse);
 
         var timer = new Stopwatch();
         timer.Start();
         var results = Log.Quick(message: "Serialize", timer: true, func: () =>
         {
             var converter = Services.EntToDicLazy.Value;
-            //converter.WithGuid = true;
             converter.MaxItems = top;
             converter.AddSelectFields(systemQueryOptions.Select.ToListOpt());
 
@@ -260,7 +255,7 @@ public abstract class QueryControllerBase<TImplementation>(
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
             var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppReader);
             var ents = deser.Deserialize(args.GetContentString());
-            var qdef = Services.QueryBuilder.Create(ents, args.AppId);
+            var qdef = Services.QueryDefSvc.Value.GetDefinition(args.AppId, ents);
             workUnit.SaveCopy(qdef);
 
             return l.ReturnTrue();

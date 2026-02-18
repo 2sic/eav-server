@@ -38,6 +38,7 @@
     <ProjectReference Include="..\ToSic.Eav.Repository.Efc\ToSic.Eav.Repository.Efc.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Work\ToSic.Eav.Work.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.OData\ToSic.Sys.OData.csproj" />
   </ItemGroup>
 
 </Project>

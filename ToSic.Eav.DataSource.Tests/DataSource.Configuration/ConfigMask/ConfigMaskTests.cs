@@ -7,7 +7,7 @@ public class ConfigMaskTests(DataSourcesTstBuilder dsSvc)
     public void ConfigMaskClassic()
     {
         var ds = GetDs();
-        ds.ConfigMask("Something", $"[{DataSourceConstants.MyConfigurationSourceName}:Test]");
+        ds.ConfigMaskTac("Something", $"[{DataSourceConstants.MyConfigurationSourceName}:Test]");
         var ccc = ds.CacheRelevantConfigurations.FirstOrDefault();
         Equal("Something", ccc);
 

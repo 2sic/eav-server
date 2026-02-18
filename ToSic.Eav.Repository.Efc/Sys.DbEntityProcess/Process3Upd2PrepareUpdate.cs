@@ -54,6 +54,8 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
             dbEnt.Version++;
             //newEnt = _factory.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
             newEnt = services.Builder.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
+
+            headerNeedsUpdate = true;
         }
 
         // prepare export for save json OR versioning later on

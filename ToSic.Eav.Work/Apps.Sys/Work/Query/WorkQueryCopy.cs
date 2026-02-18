@@ -1,13 +1,11 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.DataSource.Sys.Query;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Sys.Utils;
-using Connection = ToSic.Eav.DataSource.Sys.Query.Connection;
-using Connections = ToSic.Eav.DataSource.Sys.Query.Connections;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -16,23 +14,23 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 {
 
     public WorkQueryCopy(
-        LazySvc<QueryManager> queryManager,
+        LazySvc<QueryDefinitionService> queryDefSvc,
         LazySvc<DataBuilder> builder,
         LazySvc<JsonSerializer> jsonSerializer,
-        GenWorkDb<WorkEntitySave> entSave) : base("AWk.QryMod", connect: [entSave, queryManager, jsonSerializer, builder])
+        GenWorkDb<WorkEntitySave> entSave) : base("AWk.QryMod", connect: [entSave, queryDefSvc, jsonSerializer, builder])
     {
         _entSave = entSave;
-        _queryManager = queryManager;
+        _queryDefSvc = queryDefSvc;
         _serializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppReader));
         _builder = builder;
     }
 
     private readonly GenWorkDb<WorkEntitySave> _entSave;
     private readonly LazySvc<DataBuilder> _builder;
-    private readonly LazySvc<QueryManager> _queryManager;
+    private readonly LazySvc<QueryDefinitionService> _queryDefSvc;
     private readonly LazySvc<JsonSerializer> _serializer;
 
-    private QueryDefinition Get(int queryId) => _queryManager.Value.Get(AppWorkCtx.AppReader, queryId);
+    private QueryDefinition Get(int queryId) => _queryDefSvc.Value.GetDefinition(AppWorkCtx.AppReader, queryId);
 
 
     public void SaveCopy(int id) => SaveCopy(Get(id));
@@ -65,7 +63,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
         var newWiringValue = _builder.Value.Value.String(newWiring, []);
         var newWiringValues = new List<IValue> { newWiringValue };
-        var queryAttributes = (query as ICanBeEntity).Entity.Attributes.ToEditableInIgnoreCase();
+        var queryAttributes = (query as ICanBeEntity).Entity.Attributes.ToEditableIgnoreCase();
         queryAttributes[nameof(QueryDefinition.StreamWiring)] = _builder.Value.Attribute.CreateFrom(
             queryAttributes[nameof(QueryDefinition.StreamWiring)],
             newWiringValues.ToImmutableOpt()
@@ -101,11 +99,11 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
 
 
-    private static string RemapWiringToCopy(IList<Connection> origWiring, Dictionary<string, string> keyMap)
+    private static string RemapWiringToCopy(IList<QueryWire> origWiring, Dictionary<string, string> keyMap)
     {
-        var wiringsClone = new List<Connection>();
+        var wiringsClone = new List<QueryWire>();
         if (origWiring == null)
-            return Connections.Serialize(wiringsClone);
+            return QueryWiringSerializer.Serialize(wiringsClone);
 
         foreach (var wireInfo in origWiring)
         {
@@ -117,7 +115,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
             wiringsClone.Add(wireInfoClone);
         }
-        var newWiring = Connections.Serialize(wiringsClone);
+        var newWiring = QueryWiringSerializer.Serialize(wiringsClone);
         return newWiring;
     }
 

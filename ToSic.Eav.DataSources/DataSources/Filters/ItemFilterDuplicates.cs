@@ -15,8 +15,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Remove items which occur multiple times",
     Icon = DataSourceIcons.Filter1,
     Type = DataSourceType.Logic, 
-    NameId = "ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources",
-    DynamicOut = false,
+    NameId = "8259078e-08dd-48ea-9cbc-1767422fbd3f",
+    NameIds = ["ToSic.Eav.DataSources.ItemFilterDuplicates, ToSic.Eav.DataSources"],
     In = [StreamDefaultName],
     HelpLink = "https://go.2sxc.org/DsFilterDuplicates")]
 

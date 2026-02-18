@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-
-namespace ToSic.Eav.Data.BuildTests.DataFactories;
+﻿namespace ToSic.Eav.Data.Build.DataFactories;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class DataFactoryOptionTests(IDataFactory dataFactory)

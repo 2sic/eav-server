@@ -13,11 +13,12 @@
     Icon = DataSourceIcons.Warning,
     Type = DataSourceType.Debug,
     Audience = Audience.Advanced,
-    NameId = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a"   // namespace or guid
+    NameId = NameId
 )]
 [PublicApi]
 public class Error: DataSourceBase
 {
+    internal const string NameId = "e19ee6c4-5209-4c3d-8ae1-f4cbcf875c0a";
     /// <summary>
     /// The error title. Defaults to "Demo Error"
     /// </summary>
@@ -38,6 +39,9 @@ public class Error: DataSourceBase
     [Configuration(Fallback = 0, CacheRelevant = false)]
     public int DelaySeconds => Configuration.GetThis(0);
 
+    internal void UseCustomErrorData(IEnumerable<IEntity> custom) => _customErrors = custom;
+    private IEnumerable<IEntity>? _customErrors;
+
     /// <summary>
     /// Constructor to tell the system what out-streams we have.
     /// In this case it's just the "Default" containing a fake exception.
@@ -45,9 +49,15 @@ public class Error: DataSourceBase
     public Error(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Error")
         => ProvideOut(GenerateExceptionStream);
 
-    private IImmutableList<IEntity> GenerateExceptionStream()
+    private IEnumerable<IEntity> GenerateExceptionStream()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<IEnumerable<IEntity>>();
+
+        // New v21.02 - allow another source to create this and provide custom errors.
+        // This is for testing scenarios where you want to create specific exceptions, or a stream of exceptions.
+        if (_customErrors != null)
+            return l.Return(_customErrors, "using custom errors");
+
         l.A("This is a fake Error / Exception");
         l.A("The Error DataSource creates an exception on purpose, to test exception functionality in Visual Query");
         var errToReturn = Error.Create(title: Title, message: Message);

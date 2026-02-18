@@ -1,8 +1,7 @@
 namespace ToSic.Sys.OData.Ast;
 
-public sealed class ListExpr : Expr
+public sealed class ListExpr(IEnumerable<Expr> items) : Expr
 {
-    public ListExpr(IEnumerable<Expr> items) { Items = new List<Expr>(items ?? Array.Empty<Expr>()); }
-    public List<Expr> Items { get; }
+    public List<Expr> Items { get; } = [..items ?? []];
     public override string ToString() => $"({string.Join(", ", Items)})";
 }

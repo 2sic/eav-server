@@ -50,9 +50,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
 
         var ancestorDecorator = cType.GetDecorator<IAncestor>();
 
-        var properties = (details as ICanBeEntity)?.Entity == null
-            ? null
-            : ser.Convert((details as ICanBeEntity).Entity);
+        var properties = ((details as ICanBeEntity)?.Entity).NullOrGetWith(ser.Convert);
 
         var typeMetadata = cType.Metadata;
 

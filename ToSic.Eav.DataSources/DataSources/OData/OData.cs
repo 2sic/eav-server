@@ -1,3 +1,4 @@
+using ToSic.Eav.DataSource.OData;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.Services;
 using ToSic.Sys.OData;
@@ -9,16 +10,15 @@ namespace ToSic.Eav.DataSources;
 /// DataSource which applies OData system query options ($filter, $orderby, $top, $skip, $select) to the upstream stream.
 /// It parses a raw OData query string and builds the corresponding ValueFilter/ValueSort pipeline.
 /// </summary>
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi("Internal only, probably not used for real, as it's now a standard feature of any query")]
 [VisualQuery(
     NiceName = "OData",
     UiHint = "Filter and sort using OData options like $filter, $orderby, $top, $skip",
     Icon = DataSourceIcons.FilterList,
     Type = DataSourceType.Filter,
-    NameId = "ToSic.Eav.DataSources.OData, ToSic.Eav.DataSources",
+    NameId = "ea87b773-efd2-4751-939b-76601bbd23d1", // "ToSic.Eav.DataSources.OData, ToSic.Eav.DataSources",
     In = [InStreamDefaultRequired],
-    DynamicOut = false,
-    Audience = Audience.Advanced,
+    Audience = Audience.System,
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter", // TODO: change
     HelpLink = "https://go.2sxc.org/DsOData")]
 public sealed class OData : DataSourceBase
@@ -69,11 +69,11 @@ public sealed class OData : DataSourceBase
 
         // Parse OData options (safe against malformed % etc.)
         var options = SystemQueryOptionsParser.Parse(raw!);
-        if (!options.RawAllSystem.Any())
+        if (!options.AllRaw.Any())
             return l.Return(inList, "no system options");
 
         // Build query AST and pipeline, then apply skip/top during execution
-        var query = UriQueryParser.Parse(options);
+        var query = options.ToQuery();
 
         // Use the upstream data source (not this) as the root for filtering/sorting
         var upstream = In[StreamDefaultName].Source;

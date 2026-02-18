@@ -18,7 +18,7 @@ public class EntityAsTests(TestDataGenerator generator)
 
     [Fact]
     public void AsNullCapable() =>
-        NotNull(((IEntity)null!).AsTac<TestModelNullCapable>(nullHandling: NullToModel.DataAsModelTry));
+        NotNull(((IEntity)null!).AsTac<TestModelNullCapable>(nullHandling: ModelNullHandling.DataNullTryConvert));
 
     [Fact]
     public void AsNullUnCapable() =>
@@ -34,7 +34,7 @@ public class EntityAsTests(TestDataGenerator generator)
 
     [Fact]
     public void AsNullPreferNull() =>
-        Null(((IEntity)null!).AsTac<TestModelNullCapable>(nullHandling: NullToModel.DataAsNull));
+        Null(((IEntity)null!).AsTac<TestModelNullCapable>(nullHandling: ModelNullHandling.DataNullAsNull));
 
     [Fact]
     public void AsWrongTypeSkipCheckWorks()

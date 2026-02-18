@@ -9,6 +9,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Sys.OData\ToSic.Sys.OData.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.DataSource.TestHelpers\ToSic.Eav.DataSource.TestHelpers.csproj" />
   </ItemGroup>
 </Project>

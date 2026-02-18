@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.DataSource.Sys;
+﻿using ToSic.Eav.DataFormats.EavLight;
+
+namespace ToSic.Eav.DataSource.Sys;
 
 /// <summary>
 /// Marks objects which can convert a DataSource to another format.
@@ -29,5 +31,21 @@ public interface IConvertDataSource<T>
     [PrivateApi("not public yet, as the signature is not final yet")]
     [ShowApiWhenReleased(ShowApiMode.Never)]
     IDictionary<string, IEnumerable<T>> Convert(IDataSource source, IEnumerable<string> streams, string[] filterGuids);
+
+
+    /// <summary>
+    /// WIP v21
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="streams"></param>
+    /// <param name="filterGuids"></param>
+    /// <param name="selectFields"></param>
+    /// <returns></returns>
+    public IDictionary<string, IEnumerable<EavLightEntity>> Convert(
+        IDataSource source,
+        IEnumerable<string>? streams,
+        string[]? filterGuids,
+        IDictionary<string, ICollection<string>>? selectFields
+    );
 
 }

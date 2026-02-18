@@ -18,8 +18,7 @@ namespace ToSic.Eav.DataSources.Sys;
     NiceName = "Data Scopes",
     Type = DataSourceType.System,
     UiHint = "Data Scopes group Content-Types by topic",
-    Audience = Audience.Advanced,
-    DynamicOut = false
+    Audience = Audience.Advanced
 )]
 // ReSharper disable once UnusedMember.Global
 public sealed class Scopes : CustomDataSource

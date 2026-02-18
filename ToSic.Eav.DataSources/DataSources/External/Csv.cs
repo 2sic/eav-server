@@ -23,8 +23,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Load data from a CSV file",
     Icon = DataSourceIcons.Description,
     Type = DataSourceType.Source,
-    NameId = "ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources",
-    DynamicOut = false,
+    NameId = "69f7b35e-057d-422a-8383-acbbbacfefb4",
+    NameIds = ["ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources"],
     ConfigurationType = "|Config ToSic.Eav.DataSources.CsvDataSource",
     HelpLink = "https://go.2sxc.org/DsCsv")]
 public class Csv : CustomDataSourceAdvanced

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Core.Tests.Signature;
+﻿namespace ToSic.Sys.Security.Signatures;
 
 internal class KeyPairForTesting
 {

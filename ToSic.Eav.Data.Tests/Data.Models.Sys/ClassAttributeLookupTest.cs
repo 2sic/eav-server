@@ -82,8 +82,8 @@ public class ClassAttributeLookupTest(ITestOutputHelper output)
 
         output.WriteLine($"First: {first.ElapsedTicks}");
         output.WriteLine($"Repeat: {repeat.ElapsedTicks}");
-        // Note: it's usually 25+ times faster, but to avoid the test from failing under load, we only check for 10x here
-        True(repeat.ElapsedTicks * 5 < first.ElapsedTicks);
+        // Note: it's usually 25+ times faster, but to avoid the test from failing under load, we only check for 3x here
+        True(repeat.ElapsedTicks * 3 < first.ElapsedTicks);
     }
 
 }

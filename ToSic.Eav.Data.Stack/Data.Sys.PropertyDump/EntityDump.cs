@@ -37,15 +37,14 @@ public class EntityDump : IPropertyDumper
         if (dynChildField != null)
             resultDynChildren = entity.Children(dynChildField)
                 .Where(child => child != null)
-                .SelectMany(inner => dumpService.Dump(inner!, specs, pathRoot + inner!.GetBestTitle(specs.Dimensions))
-                );
+                .SelectMany(inner => dumpService.Dump(inner!, specs, pathRoot + inner!.GetBestTitle(specs.Dimensions)));
 
         // Get all properties which are not dynamic children
-        var childAttributes = entity.Attributes
-            .Where(att =>
-                att.Value.Type == ValueTypes.Entity
-                && (dynChildField == null || !att.Key.Equals(dynChildField, StringComparison.InvariantCultureIgnoreCase))
-            );
+        var childAttributes = entity.Attributes.GetEntityAttributes();
+
+        if (dynChildField != null)
+            childAttributes = childAttributes
+                .Where(att => !att.Key.EqualsInsensitive(dynChildField));
 
         var resultProperties = childAttributes
             .SelectMany(att => entity
@@ -57,7 +56,7 @@ public class EntityDump : IPropertyDumper
 
         // Get all normal properties
         var resultValues = entity.Attributes
-                .Where(att => att.Value.Type != ValueTypes.Entity && att.Value.Type != ValueTypes.Empty)
+                .Where(att => !att.IsEntity() && att.Value.Type != ValueTypes.Empty)
                 .Select(att =>
                 {
                     var property = entity.FindPropertyInternal(specs.ForOtherField(att.Key), new PropertyLookupPath().Add("EntityDump"));

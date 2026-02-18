@@ -29,9 +29,13 @@ public static partial class ModelFactoryExtensions
         if (list == null)
             return default;
 
+        // Figure out the true type to create, based on Attribute
+        // This is important, in case an interface was passed in.
+        var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+
         var nameList = typeName != null
             ? [typeName]
-            : DataModelAnalyzer.GetValidTypeNames<TModel>();
+            : DataModelAnalyzer.GetValidTypeNames(trueType);
 
         foreach (var name in nameList)
         {

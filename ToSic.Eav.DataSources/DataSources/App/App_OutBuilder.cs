@@ -29,7 +29,8 @@ partial class App : IDataSourceReset // #RemoveDataSourceReset v21
         get
         {
             // Use pre-built if already ready and nothing changed RequiresRebuild
-            if (!_requiresRebuildOfOut) return _out.AsReadOnly();
+            if (!_requiresRebuildOfOut)
+                return _out.AsReadOnly();
 
             // Parse config before we continue, as AppSwitch could be set now
             Configuration.Parse();
@@ -104,11 +105,12 @@ partial class App : IDataSourceReset // #RemoveDataSourceReset v21
     private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName)
     {
         var l = Log.Fn<EntityTypeFilter>($"..., ..., {typeName}");
-        var ds = _services.DataSourceFactory.Create<EntityTypeFilter>(attach: upstreamDataSource,
+        var ds = _services.DataSourceFactory.Create<EntityTypeFilter>(//attach: upstreamDataSource,
             options: new DataSourceOptions
             {
                 AppIdentityOrReader = this,
                 LookUp = Configuration.LookUpEngine,
+                Attach = upstreamDataSource,
             });
         ds.TypeName = typeName;
         ds.AddDebugInfo(Guid, null); // tell the inner source that it has the same ID as this one, as we're pretending it's the same source

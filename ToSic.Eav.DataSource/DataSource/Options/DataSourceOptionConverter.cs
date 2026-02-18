@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.LookUp.Sys.Engines;
-using static System.StringComparer;
 
 namespace ToSic.Eav.DataSource;
 
@@ -12,25 +11,20 @@ public class DataSourceOptionConverter
     {
         // other is null
         if (other is null)
-            return original as DataSourceOptions ?? new DataSourceOptions
-            {
-                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
-            };
+            return original as DataSourceOptions ?? DataSourceOptions.Empty();
 
         var secondDs = Convert(other, throwIfNull: false, throwIfNoMatch: false);
         if (original is not DataSourceOptions typed)
-            return secondDs ?? new DataSourceOptions()
-            {
-                AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
-            };
+            return secondDs ?? DataSourceOptions.Empty();
 
         // Most complex case, both are now "real" - must merge
         return typed with
         {
             AppIdentityOrReader = secondDs?.AppIdentityOrReader ?? typed.AppIdentityOrReader,
-            Values = secondDs?.Values ?? typed.Values,
+            MyConfigValues = secondDs?.MyConfigValues ?? typed.MyConfigValues,
             LookUp = secondDs?.LookUp ?? typed.LookUp,
-            ShowDrafts = secondDs?.ShowDrafts ?? typed.ShowDrafts
+            ShowDrafts = secondDs?.ShowDrafts ?? typed.ShowDrafts,
+            Attach = secondDs?.Attach ?? typed.Attach,
         };
     }
 
@@ -50,12 +44,12 @@ public class DataSourceOptionConverter
         }
 
         // Check if it's a possible value
-        var values = Values(original, throwIfNull: false, throwIfNoMatch: false);
+        var values = TryGetParams(original, throwIfNull: false, throwIfNoMatch: false);
         if (values != null)
             return new()
             {
                 AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
-                Values = values,
+                MyConfigValues = values,
             };
 
         if (!throwIfNoMatch) return null;
@@ -65,46 +59,22 @@ public class DataSourceOptionConverter
 
     }
 
-    public IImmutableDictionary<string, string>? Values(object? original, bool throwIfNull = false, bool throwIfNoMatch = true) =>
-        original switch
+    public IImmutableDictionary<string, string>? TryGetParams(object? dsParams, bool throwIfNull = false, bool throwIfNoMatch = true) =>
+        dsParams switch
         {
-            null when throwIfNull => throw new ArgumentNullException(nameof(original)),
+            null when throwIfNull => throw new ArgumentNullException(nameof(dsParams)),
             null => null,
             IImmutableDictionary<string, string> immutable => immutable,
             IDictionary<string, string> dicString => dicString.ToImmutableInvIgnoreCase(),
-            IDictionary<string, object> dicObj => ValuesFromDictionary(dicObj!),
+            IDictionary<string, object?> dicObj => dicObj.ToDicStringStringImInv(),
             Array { Length: 0 } => null,
-            Array arr2 when arr2.GetType() == typeof(string[]) => ValuesFromStringArray(arr2 as string[]),
-            IDataSourceParameters parameters => ValuesFromDictionary(parameters.ToDicInvariantInsensitive()),
-            _ => original.IsAnonymous() ? ValuesFromDictionary(original.ToDicInvariantInsensitive()) :
-                !throwIfNoMatch ? null : throw new ArgumentException(
-                    $"Could not convert {nameof(original)} of type '{original.GetType()}' to {nameof(IDataSource)}. " +
+            Array arr2 when arr2.GetType() == typeof(string[]) => (arr2 as string[]).ValuePairsToDicImInv(preferNullToEmpty: true),
+            IDataSourceParameters typed => typed.ToDicInvariantInsensitive().ToDicStringStringImInv(),
+            not null when dsParams.IsAnonymous() => dsParams.ToDicInvariantInsensitive().ToDicStringStringImInv(),
+            _ => !throwIfNoMatch
+                ? null
+                : throw new ArgumentException(
+                    $"Could not convert {nameof(dsParams)} of type '{dsParams.GetType()}' to {nameof(IDataSource)}. " +
                     $"{nameof(Convert)} only accepts object types as specified by the conversion methods of {nameof(DataSourceOptionConverter)}")
         };
-
-    [return: NotNullIfNotNull(nameof(original))]
-    private static ImmutableDictionary<string, string>? ValuesFromDictionary(IDictionary<string, object?>? original)
-        => original
-            ?.Where(pair => pair.Value != null)
-            .ToImmutableDictionary(
-                pair => pair.Key,
-                pair => pair.Value!.ToString()!,
-                InvariantCultureIgnoreCase
-            );
-
-    private static ImmutableDictionary<string, string>? ValuesFromStringArray(params string[]? values)
-    {
-        var cleaned = values
-                          ?.Where(v => v.HasValue())
-                          .ToList()
-                      ?? [];
-        if (cleaned.SafeNone())
-            return null;
-        var valDic = cleaned
-            .Select(v => v.Split('='))
-            .Where(pair => pair.Length == 2)
-            .ToImmutableDictionary(pair => pair[0], pair => pair[1], InvariantCultureIgnoreCase);
-        return valDic;
-    }
-
 }

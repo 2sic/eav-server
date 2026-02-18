@@ -5,16 +5,16 @@
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Eav.Data.TestHelpers\ToSic.Eav.Data.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Eav.DataSource.TestHelpers\ToSic.Eav.DataSource.TestHelpers.csproj" />
-    <ProjectReference Include="..\ToSic.Eav.DataSources\ToSic.Eav.DataSources.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Security.TestHelpers\ToSic.Sys.Security.TestHelpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Copy DataSources.CsvTests/Files to bin folder for reviewing during tests -->
+  <!--<ItemGroup>
+    --><!-- Copy DataSources.CsvTests/Files to bin folder for reviewing during tests --><!--
     <None Include="DataSources.CsvTests/Files\**" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
+  </ItemGroup>-->
 
 </Project>

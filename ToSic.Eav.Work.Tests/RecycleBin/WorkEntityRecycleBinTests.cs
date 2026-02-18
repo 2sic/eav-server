@@ -111,20 +111,20 @@ public class WorkEntityRecycleBinTests(
         var recycler = workEntityRecycleBin.New(appReader2);
         var items = recycler.Get();
 
-        var found = items.FirstOrDefault(i => i.EntityId == childId);
-        var sample = string.Join(", ", items.Take(10).Select(i => $"{i.EntityId}:{i.EntityGuid}"));
+        var found = items.FirstOrDefault(i => i.Id == childId);
+        var sample = string.Join(", ", items.Take(10).Select(i => $"{i.Id}:{i.Guid}"));
         True(found != null,
             $"RecycleBin did not contain expected entityId {childId} (guid {newGuid}). Count:{items.Count}. Sample:{sample}");
 
-        Equal(childId, found!.EntityId);
+        Equal(childId, found!.Id);
         Equal(TestSpecs.AppId, found.AppId);
-        NotEqual(0, found.DeletedTransactionId);
-        True(found.DeletedUtc > DateTime.MinValue);
+        NotEqual(0, found.TransactionId);
+        True(found.Deleted > DateTime.MinValue);
         Equal("test-user", found.DeletedBy);
-        NotEmpty(found.ContentTypeStaticName);
-        NotEmpty(found.ContentTypeName);
+        NotEmpty(found.TypeNameId);
+        NotEmpty(found.TypeName);
 
-        Equal(dbEnt.TransDeletedId!.Value, found.DeletedTransactionId);
+        Equal(dbEnt.TransDeletedId!.Value, found.TransactionId);
     }
 
     [Fact]
@@ -188,20 +188,20 @@ public class WorkEntityRecycleBinTests(
         var items = recycler.Get();
 
         // Assert
-        var found = items.FirstOrDefault(i => i.EntityId == sourceId);
+        var found = items.FirstOrDefault(i => i.Id == sourceId);
         NotNull(found);
 
-        Equal(sourceId, found!.EntityId);
-        Equal(entityGuid, found.EntityGuid);
+        Equal(sourceId, found!.Id);
+        Equal(entityGuid, found.Guid);
         Equal(TestSpecs.AppId, found.AppId);
 
-        Equal(tx.TransactionId, found.DeletedTransactionId);
-        True((found.DeletedUtc - txTimestamp).Duration() < TimeSpan.FromSeconds(2),
-            $"Expected DeletedUtc near {txTimestamp:o} but was {found.DeletedUtc:o}");
+        Equal(tx.TransactionId, found.TransactionId);
+        True((found.Deleted - txTimestamp).Duration() < TimeSpan.FromSeconds(2),
+            $"Expected Deleted near {txTimestamp:o} but was {found.Deleted:o}");
         Equal("history-only-test", found.DeletedBy);
 
-        Equal(templateEntity.Type.NameId, found.ContentTypeStaticName);
-        Equal(templateEntity.Type.Name, found.ContentTypeName);
+        Equal(templateEntity.Type.NameId, found.TypeNameId);
+        Equal(templateEntity.Type.Name, found.TypeName);
         Equal(parentRef, found.ParentRef);
     }
 }

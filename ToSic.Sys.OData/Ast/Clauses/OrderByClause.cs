@@ -4,9 +4,9 @@ public sealed class OrderByClause
 {
     public sealed class Item
     {
-        public Expr? Expression { get; set; }
-        public bool Descending { get; set; }
+        public Expr? Expression { get; init; }
+        public bool Descending { get; init; }
     }
 
-    public List<Item> Items { get; } = new List<Item>();
+    public List<Item> Items { get; } = [];
 }

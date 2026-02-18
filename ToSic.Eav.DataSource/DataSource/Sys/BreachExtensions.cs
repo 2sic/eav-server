@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSource.Sys;
 public static class BreachExtensions
 {
     public static IDataSourceLink CreateEmptyLink(IDataSource ds)
-        => new DataSourceLink(null, dataSource: ds);
+        => new DataSourceLink { DataSource = ds };
 
     public static CustomDataSource CustomDataSourceLight(CustomDataSource.Dependencies services,
         IDataSource wrapper,
@@ -19,7 +19,7 @@ public static class BreachExtensions
     {
         var ds = new CustomDataSource(services, logName);
         ds.Error.ConnectToParent(wrapper);
-        ds.AutoLoadAllConfigMasks(wrapper.GetType());
+        ds.AutoLoadAllConfigMasks(wrapper.GetType(), services.ConfigDataLoader);
         return ds;
     }
 

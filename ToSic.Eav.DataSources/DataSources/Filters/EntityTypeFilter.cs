@@ -16,8 +16,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Only keep items of the specified type",
     Icon = DataSourceIcons.RouteAlt,
     Type = DataSourceType.Filter, 
-    NameId = "ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources",
-    DynamicOut = false,
+    NameId = "d045a273-045f-427a-96f8-eeae6c6145ee",
+    NameIds = ["ToSic.Eav.DataSources.EntityTypeFilter, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityTypeFilter",
     HelpLink = "https://go.2sxc.org/DsTypeFilter")]

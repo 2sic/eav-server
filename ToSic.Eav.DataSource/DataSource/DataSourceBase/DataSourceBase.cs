@@ -15,11 +15,11 @@ namespace ToSic.Eav.DataSource;
 /// Consult the guide to upgrade your custom data sources.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Just FYI for people who need to know more about the internal APIs")]
-public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Dependencies>, IDataSource, IAppIdentitySync
+public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Dependencies>, IDataSource, IAppIdentitySync, IDataSourceLinkable, IServiceWithSetup<IDataSourceOptions>
 {
     /// <summary>
     /// Default Constructor, _protected_.
-    /// To inherit this, make sure your new class also gets the `MyServices` in its constructor and passes it to here.
+    /// To inherit this, make sure your new class also gets the `Dependencies` in its constructor and passes it to here.
     /// </summary>
     /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.Dependencies)</param>
     /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
@@ -27,26 +27,8 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Depend
     [PrivateApi]
     protected DataSourceBase(Dependencies services, string logName, object[]? connect = default) : base(services, logName, connect: connect)
     {
-        AutoLoadAllConfigMasks(GetType());
+        this.AutoLoadAllConfigMasks(GetType(), services.ConfigDataLoader);
     }
-
-    /// <summary>
-    /// Load all [Configuration] attributes and ensure we have the config masks.
-    /// </summary>
-    internal void AutoLoadAllConfigMasks(Type dataSourceType)
-    {
-        // Figure out the type which provides the configuration
-        var redefined = Attribute
-            .GetCustomAttributes(dataSourceType, typeof(ConfigurationSpecsWipAttribute), true)
-            .FirstOrDefault() as ConfigurationSpecsWipAttribute;
-
-        var type = redefined?.SpecsType ?? dataSourceType;
-
-        // Load all config masks which are defined on attributes
-        var configMasks = Services.ConfigDataLoader.GetTokens(type);
-        configMasks.ForEach(cm => ConfigMask(cm.Key, cm.Token, cm.CacheRelevant));
-    }
-
 
     /// <inheritdoc />
     [PrivateApi]
@@ -94,6 +76,14 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Depend
     [PublicApi]
     [field: AllowNull, MaybeNull]
     public DataSourceErrorHelper Error => field ??= Services.ErrorHandler.Value.ConnectToParent(this);
+
+    #endregion
+
+    #region IDataSourceLinkable
+
+    /// <inheritdoc />
+    IDataSourceLink IDataSourceLinkable.GetLink() => _link ??= new DataSourceLink { DataSource = this };
+    private IDataSourceLink? _link;
 
     #endregion
 

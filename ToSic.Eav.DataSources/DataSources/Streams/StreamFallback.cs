@@ -15,8 +15,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Find the first stream which has data",
     Icon = DataSourceIcons.Merge,
     Type = DataSourceType.Logic, 
-    NameId = "ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources",
-    DynamicOut = false,
+    NameId = "6393b2c6-0b38-4893-b657-7d2f6ac167e2",
+    NameIds = ["ToSic.Eav.DataSources.StreamFallback, ToSic.Eav.DataSources"],
     DynamicIn = true,
     HelpLink = "https://go.2sxc.org/DsStreamFallback")]
 

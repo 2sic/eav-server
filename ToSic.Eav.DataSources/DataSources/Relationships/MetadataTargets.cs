@@ -21,7 +21,6 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Lookup,
     NameId = "afaf73d9-775c-4932-aebd-23e898b1643e",
     In = [InStreamDefaultRequired],
-    DynamicOut = false,
     ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]

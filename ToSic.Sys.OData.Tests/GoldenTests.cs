@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
 using ToSic.Sys.OData.Ast;
-using Xunit;
 
 namespace ToSic.Sys.OData.Tests
 {
     public class GoldenTests
     {
-        private static Query Parse(IDictionary<string,string> q) => UriQueryParser.Parse(q);
+        private static ODataQuery Parse(IDictionary<string,string> q) => q.ToQueryTac();
 
         [Theory]
         [InlineData("price eq 10", "(price eq 10)")]
@@ -21,49 +18,49 @@ namespace ToSic.Sys.OData.Tests
         public void Filter_ABNF_Expressions_Render_As_Text(string filter, string expected)
         {
             var parsed = Parse(new Dictionary<string,string> { ["$filter"] = filter });
-            Assert.NotNull(parsed.Filter);
+            NotNull(parsed.Filter);
             var filterClause = parsed.Filter!;
-            Assert.NotNull(filterClause.Expression);
-            Assert.Equal(expected, filterClause.Expression!.ToString());
+            NotNull(filterClause.Expression);
+            Equal(expected, filterClause.Expression!.ToString());
         }
 
         [Fact]
         public void OrderBy_ABNF_Item_With_Direction()
         {
             var parsed = Parse(new Dictionary<string,string> { ["$orderby"] = "price desc, name asc" });
-            Assert.NotNull(parsed.OrderBy);
+            NotNull(parsed.OrderBy);
             var orderBy = parsed.OrderBy!;
-            Assert.Equal(2, orderBy.Items.Count);
-            Assert.NotNull(orderBy.Items[0].Expression);
-            Assert.Equal("price", orderBy.Items[0].Expression!.ToString());
-            Assert.True(orderBy.Items[0].Descending);
-            Assert.NotNull(orderBy.Items[1].Expression);
-            Assert.Equal("name", orderBy.Items[1].Expression!.ToString());
-            Assert.False(orderBy.Items[1].Descending);
+            Equal(2, orderBy.Items.Count);
+            NotNull(orderBy.Items[0].Expression);
+            Equal("price", orderBy.Items[0].Expression!.ToString());
+            True(orderBy.Items[0].Descending);
+            NotNull(orderBy.Items[1].Expression);
+            Equal("name", orderBy.Items[1].Expression!.ToString());
+            False(orderBy.Items[1].Descending);
         }
 
         [Fact]
         public void Compute_ABNF_Item_As_Alias()
         {
             var parsed = Parse(new Dictionary<string,string> { ["$compute"] = "price mul 0.9 as discounted" });
-            Assert.NotNull(parsed.Compute);
+            NotNull(parsed.Compute);
             var compute = parsed.Compute!;
-            Assert.Single(compute.Items);
-            Assert.NotNull(compute.Items[0].Expression);
-            Assert.Equal("(price mul 0.9)", compute.Items[0].Expression!.ToString());
-            Assert.Equal("discounted", compute.Items[0].Alias);
+            Single(compute.Items);
+            NotNull(compute.Items[0].Expression);
+            Equal("(price mul 0.9)", compute.Items[0].Expression!.ToString());
+            Equal("discounted", compute.Items[0].Alias);
         }
 
         [Fact]
         public void Select_Expand_Simple_Lists()
         {
             var parsed = Parse(new Dictionary<string,string> { ["$select"] = "id,name", ["$expand"] = "orders,category" });
-            Assert.NotNull(parsed.SelectExpand);
+            NotNull(parsed.SelectExpand);
             var se = parsed.SelectExpand!;
-            Assert.NotNull(se.Select);
-            Assert.NotNull(se.Expand);
-            Assert.Equal(new[] {"id","name"}, se.Select);
-            Assert.Equal(new[] {"orders","category"}, se.Expand);
+            NotNull(se.Select);
+            NotNull(se.Expand);
+            Equal(new[] {"id","name"}, se.Select);
+            Equal(new[] {"orders","category"}, se.Expand);
         }
 
         [Theory]
@@ -72,9 +69,9 @@ namespace ToSic.Sys.OData.Tests
         public void Search_ABNF_Shapes_Parse(string search)
         {
             var parsed = Parse(new Dictionary<string,string> { ["$search"] = search });
-            Assert.NotNull(parsed.Search);
+            NotNull(parsed.Search);
             var searchClause = parsed.Search!;
-            Assert.NotNull(searchClause.Expression);
+            NotNull(searchClause.Expression);
         }
 
         [Fact]
@@ -86,10 +83,10 @@ namespace ToSic.Sys.OData.Tests
                 ["$index"] = "-2",
                 ["$count"] = "true"
             });
-            Assert.Equal(10L, parsed.Top);
-            Assert.Equal(5L, parsed.Skip);
-            Assert.Equal(-2L, parsed.Index);
-            Assert.True(parsed.Count.HasValue && parsed.Count.Value);
+            Equal(10L, parsed.Top);
+            Equal(5L, parsed.Skip);
+            Equal(-2L, parsed.Index);
+            True(parsed.Count.HasValue && parsed.Count.Value);
         }
     }
 }

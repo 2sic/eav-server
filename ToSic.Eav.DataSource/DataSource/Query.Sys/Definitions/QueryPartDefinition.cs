@@ -1,0 +1,42 @@
+﻿using ToSic.Eav.DataSource.VisualQuery.Sys;
+using ToSic.Eav.Models;
+
+namespace ToSic.Eav.DataSource.Query.Sys;
+
+/// <summary>
+/// The configuration / definition of a query part. The <see cref="QueryDefinition"/> uses a bunch of these together to build a query. 
+/// </summary>
+/// <remarks>
+/// Made visible in the docs v21.02, but still just fyi/internal.
+/// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+public record QueryPartDefinition : ModelOfEntity
+{
+    internal QueryPartDefinition(IEntity? entity, string typeIdentifier, Type type, DataSourceInfo dataSourceInfo) : base(entity!)
+    {
+        DataSourceTypeIdentifier = typeIdentifier;
+        DataSourceType = type;
+        DataSourceInfo = dataSourceInfo;
+    }
+
+    /// <summary>Content-Type name of the query Content-Type</summary>
+    internal static readonly string TypeName = "DataPipelinePart";
+
+    /// <summary>
+    /// Information for this part, how it's to be displayed in the visual query.
+    /// This is a JSON string containing positioning etc.
+    /// </summary>
+    public string VisualDesignerData => GetThis("");
+
+    public string? PartAssemblyAndType => GetThis<string>(null);
+
+    /// <summary>
+    /// The .net type which the data source has for this part. <br/>
+    /// Will automatically resolve old names to new names as specified in the DataSources <see cref="VisualQueryAttribute"/>
+    /// </summary>
+    public string DataSourceTypeIdentifier { get; }
+
+    public Type DataSourceType { get; }
+
+    public DataSourceInfo DataSourceInfo { get; }
+}

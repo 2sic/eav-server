@@ -29,7 +29,7 @@ public class DataSourceConstantsInternal
     #region Stream names 
 
     
-    internal const string AllStreams = "***";
+    //internal const string AllStreams = "***";
     
     /// <summary>
     /// PublishedEntities Stream Name

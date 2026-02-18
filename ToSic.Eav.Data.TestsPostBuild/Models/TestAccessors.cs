@@ -5,16 +5,29 @@ namespace ToSic.Eav.Models;
 
 public static class TestAccessors
 {
+    internal static TModel? AsTac<TModel>(this IEntity? entity)
+        where TModel : class, IModelSetup<IEntity>, new()
+        => entity.As<TModel>();
+
     internal static TModel? AsTac<TModel>(
         this IEntity? entity,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
         //bool nullIfNull = false
-        NullToModel nullHandling = NullToModel.Undefined
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
         => entity.As<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
 
+    internal static TModel? AsInternalTac<TModel>(
+        this IEntity? entity,
+        NoParamOrder npo = default,
+        bool skipTypeCheck = false,
+        //bool nullIfNull = false
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
+    )
+        where TModel : class, IModelSetup<IEntity>//, new()
+        => entity.AsInternal<TModel>(npo, skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
     internal static TModel? FirstTac<TModel>(
         this IEnumerable<IEntity>? list,

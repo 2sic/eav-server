@@ -20,13 +20,14 @@ namespace ToSic.Eav.DataSources.Caching;
     UiHint = "Cache all streams based on some rules",
     Icon = DataSourceIcons.HistoryOff,
     Type = DataSourceType.Cache, 
-    NameId = "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
+    NameId = "6f1edac7-af4b-4c17-b38b-fc033b77c254",
     DynamicIn = true,
     DynamicOut = true,
     OutMode = VisualQueryAttribute.OutModeMirrorIn, // New v20 - improved visual query
     ConfigurationType = "|Config ToSic.Eav.DataSources.Caches.CacheAllStreams",
     NameIds =
     [
+        "ToSic.Eav.DataSources.Caching.CacheAllStreams, ToSic.Eav.DataSources",
         "ToSic.Eav.DataSources.Caches.CacheAllStreams, ToSic.Eav.DataSources"
     ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-CacheAllStreams")]
@@ -64,7 +65,9 @@ public class CacheAllStreams : DataSourceBase
     #region Dynamic Out
 
     /// <inheritdoc />
-    public override IReadOnlyDictionary<string, IDataStream> Out => _out.Get(() =>
+    public override IReadOnlyDictionary<string, IDataStream> Out => field ??= GenerateOut();
+
+    private IReadOnlyDictionary<string, IDataStream> GenerateOut()
     {
         Configuration.Parse();
 
@@ -75,8 +78,7 @@ public class CacheAllStreams : DataSourceBase
             outList.Add(dataStream.Key, StreamWithCaching(dataStream.Key));
 
         return new ReadOnlyDictionary<string, IDataStream>(outList);
-    })!;
-    private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _out = new();
+    }
 
     #endregion
 

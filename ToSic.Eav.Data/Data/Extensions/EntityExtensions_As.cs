@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using ToSic.Eav.Models;
-using ToSic.Eav.Models.Factory;
-using ToSic.Eav.Models.Sys;
+﻿using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Data;
 
@@ -31,7 +28,7 @@ public static partial class EntityExtensions
     /// <param name="entity"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
-    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="NullToModel.Default"/></param>
+    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? As<TModel>(
@@ -39,7 +36,7 @@ public static partial class EntityExtensions
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
-        NullToModel nullHandling = NullToModel.Undefined
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
     {
@@ -55,72 +52,19 @@ public static partial class EntityExtensions
     /// <param name="canBeEntity"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
-    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="NullToModel.Default"/></param>
+    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? As<TModel>(
         this ICanBeEntity? canBeEntity,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
-        NullToModel nullHandling = NullToModel.Undefined
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
     {
         return (canBeEntity?.Entity).AsInternal<TModel>(skipTypeCheck: skipTypeCheck);
     }
 
-    /// <summary>
-    /// Real implementation of As... methods
-    /// </summary>
-    /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
-    /// <param name="entity">The entity to convert.</param>
-    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
-    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="NullToModel.Default"/></param>
-    /// <param name="methodName">Automatically added method name</param>
-    /// <returns></returns>
-    /// <exception cref="InvalidCastException"></exception>
-    internal static TModel? AsInternal<TModel>(
-        this IEntity? entity,
-        NoParamOrder npo = default,
-        bool skipTypeCheck = false,
-        NullToModel nullHandling = NullToModel.Undefined,
-        [CallerMemberName] string? methodName = default
-    )
-        where TModel : class, IModelSetup<IEntity>, new()
-    {
-        if (nullHandling == NullToModel.Undefined)
-            nullHandling = NullToModel.Default;
-
-        // Note: No early null-check, as each model can decide if it's valid or not
-        // and the caller could always do a ?.As<TModel>() anyway.
-        if (entity == null)
-            return new TModel().SetupWithDataNullChecks(entity, nullHandling);
-
-        //if (nullIfNull && entity == null)
-        //    return null;
-
-        // If it is not null, do check if the cast uses the correct type
-        //if (entity != null)
-        DataModelAnalyzer.IsTypeNameAllowedOrThrow<TModel>(entity, entity.EntityId, skipTypeCheck);
-
-        // Create the model
-        var wrapper = new TModel();
-
-        // Throw if TModel inherits from INeedsFactory
-        if (wrapper is IModelFactoryRequired)
-            throw new InvalidCastException($"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead");
-
-        // Do Setup and check if it's ok.
-        // Wrapper will return false if the entity is null or invalid for the model.
-        var ok = wrapper.SetupModel(entity);
-        return ok
-            ? wrapper
-            : (nullHandling & NullToModel.ModelAsModelForce) != 0
-                ? wrapper
-                : (nullHandling & NullToModel.ModelAsThrow) != 0
-                    ? throw new InvalidCastException($"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead")
-                    : default;
-    }
 
 }

@@ -15,11 +15,16 @@ internal class ClassAttributeLookup<TValue>
         where TCustom : class
         where TAttribute : Attribute
     {
+        return Get(typeof(TCustom), func);
+    }
+
+    internal TValue Get<TAttribute>(Type type, Func<TAttribute?, TValue> func)
+        where TAttribute : Attribute
+    {
         // Check cache if already done
 #if DEBUG
         UsedCache = true;
 #endif
-        var type = typeof(TCustom);
         if (_cache.TryGetValue(type, out var typeName))
             return typeName;
 

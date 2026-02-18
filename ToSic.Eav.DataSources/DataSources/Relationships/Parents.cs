@@ -19,7 +19,6 @@ namespace ToSic.Eav.DataSources;
     Type = DataSourceType.Lookup,
     NameId = "915217e5-7957-4303-a19c-a15505f2ad1d",
     In = [InStreamDefaultRequired],
-    DynamicOut = false,
     ConfigurationType = "a72cb2f4-52bb-41e6-9281-10e69aeb0310",
     HelpLink = "https://go.2sxc.org/DsParents")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]

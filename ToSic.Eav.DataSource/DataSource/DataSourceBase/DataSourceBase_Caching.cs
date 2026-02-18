@@ -30,15 +30,15 @@ partial class DataSourceBase
 
     /// <inheritdoc />
     public virtual long CacheTimestamp
-        => In.ContainsKey(DataSourceConstants.StreamDefaultName) && In[DataSourceConstants.StreamDefaultName].Source != null
-            ? In[DataSourceConstants.StreamDefaultName].Source.CacheTimestamp
+        => In.TryGetValue(DataSourceConstants.StreamDefaultName, out var inStream) && inStream.Source != null! /* paranoid */
+            ? inStream.Source.CacheTimestamp
             : DateTime.Now.Ticks; // if no relevant up-stream, just return now!
 
     /// <inheritdoc />
     public virtual bool CacheChanged(long dependentTimeStamp) =>
-        !In.ContainsKey(DataSourceConstants.StreamDefaultName)
-        || In[DataSourceConstants.StreamDefaultName].Source == null
-        || In[DataSourceConstants.StreamDefaultName].Source.CacheChanged(dependentTimeStamp);
+        !In.TryGetValue(DataSourceConstants.StreamDefaultName, out var inStream)
+        || inStream.Source == null! /* paranoid */
+        || inStream.Source.CacheChanged(dependentTimeStamp);
 
     #endregion
 }

@@ -16,11 +16,8 @@ internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies serv
     #region Dependencies - Must be in DI
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public class Dependencies(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
-        : DependenciesBase(connect: [zoneCultureResolverLazy])
-    {
-        public LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy { get; } = zoneCultureResolverLazy;
-    }
+    public record Dependencies(LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy)
+        : DependenciesRecord(connect: [ZoneCultureResolverLazy]);
 
     #endregion
 
@@ -107,15 +104,12 @@ internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies serv
     /// but do it only once (for performance reasons)
     /// </summary>
     [PrivateApi]
-    public IDictionary<string, string> Parse(IDictionary<string, string> values)
-    {
-        // Ensure that we have a configuration-provider (not always the case, but required)
-        if (LookUpEngine == null)
-            throw new($"No LookUpEngine configured on this data-source. Cannot run {nameof(Parse)}");
-
-        // construct a property access for in, use it in the config provider
-        return LookUpEngine.LookUp(values, overrides: OverrideLookUps);
-    }
+    public IDictionary<string, string> Parse(IDictionary<string, string> values) =>
+        LookUpEngine == null
+            // Ensure that we have a configuration-provider (not always the case, but required)
+            ? throw new($"No LookUpEngine configured on this data-source. Cannot run {nameof(Parse)}") :
+            // construct a property access for in, use it in the config provider
+            LookUpEngine.LookUp(values, overrides: OverrideLookUps);
 
     private string? Parse(string? name)
     {
@@ -138,11 +132,8 @@ internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies serv
     /// </summary>
     [PrivateApi]
     [field: AllowNull, MaybeNull]
-    private IEnumerable<ILookUp> OverrideLookUps
-        => field ??=
-        [
-            new LookUpInDataSource(DataSourceForIn, Services.ZoneCultureResolverLazy.Value)
-        ];
+    private IEnumerable<ILookUp> OverrideLookUps => field
+        ??= [new LookUpInDataSource(DataSourceForIn, Services.ZoneCultureResolverLazy.Value)];
 
 
     public string? Get(string name)
@@ -167,6 +158,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies serv
     {
         if (values == null)
             return;
-        foreach (var pair in values) _values[pair.Key] = pair.Value;
+        foreach (var pair in values)
+            _values[pair.Key] = pair.Value;
     }
 }

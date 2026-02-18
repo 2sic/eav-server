@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.LookUp.TestHelpers\ToSic.Eav.LookUp.TestHelpers.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -13,6 +13,14 @@ public class DataModelNames
         return list;
     }
 
+    internal static List<string> UseSpecifiedNameOrDeriveFromType(Type tCustom, string? names)
+    {
+        var list = names != null
+            ? names.Split(',').Select(n => n.Trim()).ToList()
+            : CreateListOfNameVariants(tCustom.Name, tCustom.IsInterface);
+        return list;
+    }
+
 
     /// <summary>
     /// Take a class/interface name and create a list

@@ -4,7 +4,7 @@ using ToSic.Sys.Security.Encryption;
 
 #pragma warning disable xUnit1026
 
-namespace ToSic.Eav.Core.Tests.Signature;
+namespace ToSic.Sys.Security.Signatures;
 
 public class SignatureDataSha256
 {

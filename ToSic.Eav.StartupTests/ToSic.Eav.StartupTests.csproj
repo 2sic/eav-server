@@ -12,6 +12,7 @@
     <ProjectReference Include="..\ToSic.Eav.Testing.FullDbFixtures\ToSic.Eav.Testing.FullDbFixtures.csproj" />
     <ProjectReference Include="..\ToSic.Eav.WebApi\ToSic.Eav.WebApi.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Features.TestHelpers\ToSic.Sys.Features.TestHelpers.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.TestHelpers\ToSic.Sys.TestHelpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

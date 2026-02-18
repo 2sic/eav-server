@@ -36,23 +36,27 @@ public static partial class EntityListExtensions
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
         string? typeName = default,
-        NullToModel nullHandling = NullToModel.Undefined
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
     {
         // List null - always stop here
         // Not all options listed, as the explicit return-Empty is automatically covered
         if (list == null)
-            return (nullHandling & NullToModel.ListAsThrow) != 0
+            return (nullHandling & ModelNullHandling.ListNullThrows) != 0
                 ? throw new ArgumentNullException(nameof(list))
                 : [];
 
+        // Figure out the true type to create, based on Attribute
+        // This is important, in case an interface was passed in.
+        var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+
         var nameList = typeName != null
             ? [typeName]
-            : DataModelAnalyzer.GetValidTypeNames<TModel>();
+            : DataModelAnalyzer.GetValidTypeNames(trueType);
 
-        if (nullHandling == NullToModel.Undefined)
-            nullHandling = NullToModel.Default;
+        if (nullHandling == ModelNullHandling.Undefined)
+            nullHandling = ModelNullHandling.Default;
 
         foreach (var name in nameList)
         {
@@ -65,9 +69,9 @@ public static partial class EntityListExtensions
                 continue;
 
             var result = found
-                .Select(raw => raw.AsInternal<TModel>(skipTypeCheck: true, nullHandling: nullHandling)!);
+                .Select(raw => raw.AsInternal<TModel>(trueType: trueType, skipTypeCheck: true, nullHandling: nullHandling)!);
                     
-            if ((nullHandling & NullToModel.ModelAsSkip) != 0)
+            if ((nullHandling & ModelNullHandling.ModelNullSkip) != 0)
                 result = result.Where(item => item != null);
 
             return result.ToList();

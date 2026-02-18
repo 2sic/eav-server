@@ -12,12 +12,15 @@
     Icon = DataSourceIcons.CopyAll,
     Type = DataSourceType.Source, 
     Audience = Audience.Advanced,
-    NameId = "ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources",
+    NameId = NameId,
+    NameIds = ["ToSic.Eav.DataSources.PassThrough, ToSic.Eav.DataSources"],
     DynamicOut = true,
     OutMode = VisualQueryAttribute.OutModeMirrorIn, // New v20 - improved visual query
     DynamicIn = true)]
 public class PassThrough : DataSourceBase
 {
+    internal const string NameId = "777b8436-3d91-460a-8bf7-132bacc6ac66";
+
     /// <inheritdoc />
     /// <summary>
     /// Constructs a new PassThrough DataSources
@@ -38,7 +41,7 @@ public class PassThrough : DataSourceBase
     public override IReadOnlyDictionary<string, IDataStream> Out => In;
 
     /// <summary>
-    /// provide a static cachekey - as there is nothing dynamic on this source to modify the cache
+    /// provide a static cache key - as there is nothing dynamic on this source to modify the cache
     /// </summary>
     /// <remarks>
     /// if the key is not static (like the default setup) it will always cause errors

@@ -20,9 +20,8 @@ namespace ToSic.Eav.DataSources.Sys;
     UiHint = "Types of an App",
     Icon = DataSourceIcons.Dns,
     Type = DataSourceType.System,
-    NameId = "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
+    NameId = "d5372be5-3b29-45dd-9b74-97408bba2d42",
     Audience = Audience.Advanced,
-    DynamicOut = false,
     ConfigurationType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
     NameIds =
     [
@@ -36,7 +35,7 @@ namespace ToSic.Eav.DataSources.Sys;
 // ReSharper disable once UnusedMember.Global
 public sealed class ContentTypes: CustomDataSource
 {
-    #region Configuration-properties (no config)
+    #region Configuration-properties
 
     /// <summary>
     /// The app id

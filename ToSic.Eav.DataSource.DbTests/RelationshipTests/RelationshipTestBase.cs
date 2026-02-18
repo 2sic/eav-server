@@ -99,11 +99,11 @@ public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataB
         var item731 = appDs.ListTac().FindRepoId(731);
         NotNull(item731);//, "expecting item 731");
         var title = item731.GetBestTitle();
-        Equal(title, "2sic");//, "item 731 should have title '2sic'");
+        Equal("2sic", title);//, "item 731 should have title '2sic'");
 
         True(appDs.Out.ContainsKey(primaryType), $"app should contain stream of {primaryType}");
 
-        var stream = appDs[primaryType];
+        var stream = appDs.GetStreamTac(primaryType)!;
 
         True(stream.ListTac().Any(), "stream.List.Count() > 0");
 

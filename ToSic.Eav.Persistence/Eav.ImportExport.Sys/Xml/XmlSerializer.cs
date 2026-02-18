@@ -31,8 +31,10 @@ public class XmlSerializer(SerializerBase.Dependencies services) : SerializerBas
 
     public XElement ToXml(IEntity entity)
     {
+        // 2026-02-09 2dm - simplified code, but removed something which was there before, but probably not relevant
         var valuesXElement = entity.Attributes.Values
-            .Where(a => a.Type != ValueTypes.Entity || ((a.Values.FirstOrDefault() as IValue<IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
+            //.Where(a => a.Type != ValueTypes.Entity || ((a.Values.FirstOrDefault() as IValue<IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
+            .Where(a => !a.IsEntity())
             .OrderBy(a => a.Name)
             .SelectMany(a => a.Values.Select(v => XmlValue(a, v)));
 

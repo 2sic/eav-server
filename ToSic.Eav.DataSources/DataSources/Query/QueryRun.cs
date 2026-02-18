@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.DataSource.Sys;
-using ToSic.Eav.DataSource.Sys.Query;
+﻿using ToSic.Eav.DataSource.Query.Sys;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sources.Sys;
@@ -17,7 +17,8 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Get data from another Query",
     Icon = DataSourceIcons.Launch,
     Type = DataSourceType.Source,
-    NameId = "ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources",
+    NameId = "12063e86-7bd9-4439-9144-cd573086c4b9",
+    NameIds = ["ToSic.Eav.DataSources.QueryRun, ToSic.Eav.DataSources"],
     DynamicOut = true,
     ConfigurationType = "78d25ea6-66cc-44a2-b45d-77749cd9420a",
     HelpLink = "https://go.2sxc.org/QueryRun"
@@ -139,7 +140,7 @@ public class QueryRun(DataSourceBase.Dependencies services, Generator<Query> que
     private IDictionary<string, string> ResolveParams(IEntity runEntity)
     {
         var fieldParams = runEntity.Get<string>(FieldParams);
-        var newParamsDic = QueryDefinition.GenerateParamsDic(fieldParams, Log);
+        var newParamsDic = QueryDefinitionParams.GenerateParamsDic(fieldParams, Log);
         var resultingParams = Configuration.Parse(newParamsDic);
         Log.A($"Resolved wrapper params - found {resultingParams.Count} ["
               + string.Join(",", resultingParams.Select(p => p.Key + "=" + p.Value))

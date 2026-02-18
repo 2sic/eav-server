@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.OData;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.Services;
 using ToSic.Sys.OData;
@@ -48,18 +50,18 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     public IEnumerable<IEntity> Get(string contentTypeName, IAppWorkCtxPlus? overrideWorkCtx = default, Uri? fullRequest = null)
     {
         var dataSourcesService = dataSourceFactory.Value;
-        var typeFilter = dataSourcesService.Create<EntityTypeFilter>(attach: (overrideWorkCtx ?? AppWorkCtx).Data); // need to go to cache, to include published & unpublished
+        var typeFilter = dataSourcesService.Create<EntityTypeFilter>(DataSourceOptions.OfDataSource((overrideWorkCtx ?? AppWorkCtx).Data)); // need to go to cache, to include published & unpublished
         typeFilter.TypeName = contentTypeName;
 
         if (fullRequest is null)
             return typeFilter.List;
 
         var systemQueryOptions = SystemQueryOptionsParser.Parse(fullRequest);
-        if (!systemQueryOptions.RawAllSystem.Any())
+        if (!systemQueryOptions.AllRaw.Any())
             return typeFilter.List;
 
         // v20 support OData filtering, sorting... if present in query string
-        var query = UriQueryParser.Parse(systemQueryOptions);
+        var query = systemQueryOptions.ToQuery();
         var engine = new ODataQueryEngine(dataSourcesService);
         var result = engine.Execute(typeFilter, query);
         return result.Items;
@@ -69,7 +71,7 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     public IEnumerable<IEntity> GetWithParentAppsExperimental(string contentTypeName)
     {
         var l = Log.Fn<IEnumerable<IEntity>>($"{nameof(contentTypeName)}: {contentTypeName}");
-        var appWithParents = dataSourceFactory.Value.Create<AppWithParents>(attach: AppWorkCtx.Data);
+        var appWithParents = dataSourceFactory.Value.Create<AppWithParents>(DataSourceOptions.OfDataSource(AppWorkCtx.Data));
         var newCtx = AppWorkCtx.SpawnNewWithPresetData(data: appWithParents);
         return l.Return(Get(contentTypeName, newCtx));
     }

@@ -1,14 +1,14 @@
-﻿using ToSic.Sys.Data;
-
-namespace ToSic.Eav.DataSource.VisualQuery;
+﻿namespace ToSic.Eav.DataSource.VisualQuery;
 
 /// <summary>
-/// Custom Attribute for DataSources and use in the VisualQuery Designer.
+/// Custom Attribute for DataSources and their use in the **VisualQuery Designer**.
+/// </summary>
+/// <remarks>
 /// Will add information about help, configuration-content-types etc.
 /// Only DataSources which have this attribute will be listed in the designer-tool.
 ///
 /// Read more here: [](xref:NetCode.DataSources.Custom.VisualQueryAttribute)
-/// </summary>
+/// </remarks>
 [PublicApi]
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
@@ -47,7 +47,7 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     public const string OutModeMirrorIn = "mirror-in";
 
     /// <summary>
-    /// Provide more options for the Out-Mode, like "mirror-in" 
+    /// Provide more options for the Out-Mode, like "mirror-in", so the UI can better show the streams available on Out.
     /// </summary>
     /// <remarks>
     /// Experimental ca. v20
@@ -139,4 +139,16 @@ public class VisualQueryAttribute : Attribute, IHasIdentityNameId
     /// Made public and renamed to `Audience` in v15.03
     /// </remarks>
     public Audience Audience { get; set; } = Audience.Default;
+
+    /// <summary>
+    /// Gets or sets the level of confidentiality assigned to the data.
+    /// </summary>
+    /// <remarks>
+    /// This is used by the SystemData DataSource to determine if the current user has access to the data.
+    /// Default is <see cref="DataConfidentiality.Unknown"/>, which means no specific confidentiality is assigned.
+    /// This results in a data-source being unaccessible to all users except for super-users.
+    ///
+    /// New in v21.02
+    /// </remarks>
+    public DataConfidentiality DataConfidentiality { get; set; } = DataConfidentiality.Unknown;
 }

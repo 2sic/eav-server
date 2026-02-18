@@ -52,8 +52,8 @@ partial class JsonSerializer
                 .ToArray();
 
             var attribMdsOfEntity = attribMds
-                .SelectMany(set => set.Entity.Attributes
-                    .Where(a => a.Value.Type == ValueTypes.Entity)
+                .SelectMany(set => set.Entity.Attributes.GetEntityAttributes(filterNull: false)
+                    //.Where(a => a.Value.Type == ValueTypes.Entity)
                     .Select(a => new { set.Name, a.Key, a.Value })
                 )
                 .ToArray();

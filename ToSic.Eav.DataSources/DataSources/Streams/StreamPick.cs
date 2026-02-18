@@ -16,9 +16,9 @@ namespace ToSic.Eav.DataSources;
     UiHint = "Choose a stream",
     Icon = DataSourceIcons.Merge,
     Type = DataSourceType.Logic,
-    NameId = "ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources",
+    NameId = "5fc88c57-9216-4b8c-85e6-12f9fd588aa6",
+    NameIds = ["ToSic.Eav.DataSources.StreamPick, ToSic.Eav.DataSources"],
     ConfigurationType = "67b19864-df6d-400b-9f37-f41f1dd69c4a",
-    DynamicOut = false,
     DynamicIn = true,
     HelpLink = "https://go.2sxc.org/DsStreamPick")]
 

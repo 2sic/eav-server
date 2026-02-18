@@ -1,19 +1,14 @@
 namespace ToSic.Sys.OData.Ast;
 
-public sealed class BinaryExpr : Expr
+public sealed class BinaryExpr(Expr left, BinaryOp op, Expr right) : Expr
 {
-    public Expr Left { get; }
-    public BinaryOp Op { get; }
-    public Expr Right { get; }
-
-    public BinaryExpr(Expr left, BinaryOp op, Expr right)
-    {
-        Left = left; Op = op; Right = right;
-    }
+    public Expr Left { get; } = left;
+    public BinaryOp Op { get; } = op;
+    public Expr Right { get; } = right;
 
     public override string ToString()
     {
-        string op = Op switch
+        var op = Op switch
         {
             BinaryOp.Eq => "eq",
             BinaryOp.Ne => "ne",

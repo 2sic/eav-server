@@ -8,19 +8,25 @@ partial class DataSourceBase
 {
     #region Connections
 
+    /// <summary>
+    /// Connections are only Visual Query UI to provide additional debug information.
+    /// </summary>
     [InternalApi_DoNotUse_MayChangeWithoutNotice]
     [field: AllowNull, MaybeNull]
-    internal DataSourceConnections Connections => field ??= new(this);
+    internal DataSourceConnections Connections => field ??= new();
 
     #endregion
 
     /// <inheritdoc />
     [PublicApi]
-    public virtual IReadOnlyDictionary<string, IDataStream> In
-        => _in.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inRw))!;
-    private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _in = new();
-    private readonly IDictionary<string, IDataStream> _inRw
-        = new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase);
+    [field: AllowNull, MaybeNull]
+    public virtual IReadOnlyDictionary<string, IDataStream> In => field ??= new ReadOnlyDictionary<string, IDataStream>(_in);
+
+    /// <summary>
+    /// Private In-streams dictionary, which is used to build the public In property.
+    /// It's only useful during creation of the source, once the real `In` is accessed, changes will not have an effect anymore.
+    /// </summary>
+    private readonly Dictionary<string, IDataStream> _in = new(InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Get a specific Stream from In.
@@ -66,6 +72,7 @@ partial class DataSourceBase
     /// <remarks>
     /// Introduced in 2sxc 16.01
     /// </remarks>
+    [PublicApi]
     protected internal IImmutableList<IEntity>? TryGetOut(string name = DataSourceConstants.StreamDefaultName)
         => !Out.ContainsKey(name)
             ? null
@@ -79,6 +86,7 @@ partial class DataSourceBase
     private StreamDictionary OutWritable => field ??= new(Services.CacheService);
 
     /// <inheritdoc />
+    [Obsolete("This is an old API, better use GetStream(...) as it provides more options to handle errors.")]
     public IDataStream? this[string outName] => GetStream(outName);
 
     /// <inheritdoc />
@@ -136,12 +144,23 @@ partial class DataSourceBase
         DoWhileOverrideImmutable(() =>
         {
             foreach (var link in list)
+            {
+                // Experimental 2026-02-09 2dm - if the link is a wildcard, we want to attach all streams from the source to this target, so we ignore the stream name and just attach the source, which will handle it.
+                //if (link.InName == "*" && link is { OutName: "*", DataSource: not null })
+                //    Attach(link.DataSource);
+
+                // Case 1: If stream is defined, use that (precedence)
                 if (link.Stream != null)
                     Attach(link.InName, link.Stream);
+
+                // Case 2: If we have a DataSource, use that now
                 else if (link.DataSource != null)
                     Attach(link.InName, link.DataSource, link.OutName);
+
+                // Case X: Exception
                 else
                     throw new ArgumentException("Can't connect as both the stream and the source are null");
+            }
         });
         l.Done();
     }
@@ -159,7 +178,7 @@ partial class DataSourceBase
     {
         if (dataStream == null!)
             return;
-        Attach(new DataSourceConnection(dataStream, this, streamName));
+        Attach(new DataSourceConnection(dataStream.Source, dataStream.Name, this, streamName, DirectlyAttachedStream: dataStream));
     }
 
     private void Attach(DataSourceConnection connection)
@@ -167,8 +186,8 @@ partial class DataSourceBase
         var l = Log.Fn($"{nameof(connection)}: {connection.SourceStream} to {connection.TargetStream}");
         if (Immutable && !_overrideImmutable)
             throw l.Done(new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}"));
-        _inRw[connection.TargetStream] = new ConnectionStream(Services.CacheService, connection, Error);
-        Connections.AddIn(connection);
+        _in[connection.TargetStream] = new ConnectionStream(Services.CacheService, connection, Error);
+        Connections.RegisterForInspection(connection);
         l.Done();
     }
         

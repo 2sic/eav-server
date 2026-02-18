@@ -31,7 +31,7 @@ public static partial class EnumerableExtensions
     {
         return source.DistinctBy(keySelector, null);
     }
-#endif
+
     /// <summary>
     /// Returns all distinct elements of the given source, where "distinctness"
     /// is determined via a projection and the specified comparer for the projected type.
@@ -69,4 +69,6 @@ public static partial class EnumerableExtensions
             }
         }
     }
+#endif
+
 }

@@ -1,3 +1,5 @@
+using static System.StringComparison;
+
 namespace ToSic.Sys.OData.Internal;
 
 internal sealed class Lexer(string? text, bool searchMode = false)
@@ -26,50 +28,50 @@ internal sealed class Lexer(string? text, bool searchMode = false)
     {
         SkipWs();
         if (_position >= _text.Length)
-            return new Token(TokKind.Eof, string.Empty);
+            return new(TokKind.Eof, string.Empty);
 
         var c = _text[_position];
         switch (c)
         {
             case '(':
                 _position++;
-                return new Token(TokKind.LParen, "(");
+                return new(TokKind.LParen, "(");
 
             case ')':
                 _position++;
-                return new Token(TokKind.RParen, ")");
+                return new(TokKind.RParen, ")");
 
             case ',':
                 _position++;
-                return new Token(TokKind.Comma, ",");
+                return new(TokKind.Comma, ",");
 
             case '/':
                 _position++;
-                return new Token(TokKind.Slash, "/");
+                return new(TokKind.Slash, "/");
 
             case '.':
                 _position++;
-                return new Token(TokKind.Dot, ".");
+                return new(TokKind.Dot, ".");
 
             case ':':
                 _position++;
-                return new Token(TokKind.Colon, ":");
+                return new(TokKind.Colon, ":");
 
             case '+':
                 _position++;
-                return new Token(TokKind.Add, "+");
+                return new(TokKind.Add, "+");
 
             case '-':
                 _position++;
-                return new Token(TokKind.Sub, "-");
+                return new(TokKind.Sub, "-");
 
             case '*':
                 _position++;
-                return new Token(TokKind.Mul, "*");
+                return new(TokKind.Mul, "*");
 
             case '%':
                 _position++;
-                return new Token(TokKind.Mod, "%");
+                return new(TokKind.Mod, "%");
 
             case '\'':
                 return searchMode 
@@ -94,7 +96,7 @@ internal sealed class Lexer(string? text, bool searchMode = false)
                 if (c == '=')
                 {
                     _position++;
-                    return new Token(TokKind.Eq, "=");
+                    return new(TokKind.Eq, "=");
                 }
 
                 if (c == '!')
@@ -103,7 +105,7 @@ internal sealed class Lexer(string? text, bool searchMode = false)
                     if (_position < _text.Length && _text[_position] == '=')
                     {
                         _position++;
-                        return new Token(TokKind.Ne, "!=");
+                        return new(TokKind.Ne, "!=");
                     }
                 }
 
@@ -113,9 +115,9 @@ internal sealed class Lexer(string? text, bool searchMode = false)
                     if (_position < _text.Length && _text[_position] == '=')
                     {
                         _position++;
-                        return new Token(TokKind.Ge, ">=");
+                        return new(TokKind.Ge, ">=");
                     }
-                    return new Token(TokKind.Gt, ">");
+                    return new(TokKind.Gt, ">");
                 }
 
                 if (c == '<')
@@ -124,16 +126,16 @@ internal sealed class Lexer(string? text, bool searchMode = false)
                     if (_position < _text.Length && _text[_position] == '=')
                     {
                         _position++;
-                        return new Token(TokKind.Le, "<=");
+                        return new(TokKind.Le, "<=");
                     }
-                    return new Token(TokKind.Lt, "<");
+                    return new(TokKind.Lt, "<");
                 }
 
                 // unknown char - skip once; if at end, return EOF
                 _position++;
 
                 if (_position >= _text.Length)
-                    return new Token(TokKind.Eof, string.Empty);
+                    return new(TokKind.Eof, string.Empty);
 
                 return NextToken();
         }
@@ -163,7 +165,7 @@ internal sealed class Lexer(string? text, bool searchMode = false)
         {
             throw new FormatException("Unterminated string literal");
         }
-        return new Token(TokKind.String, buf.ToString());
+        return new(TokKind.String, buf.ToString());
     }
 
     private Token ReadNumber()
@@ -173,7 +175,7 @@ internal sealed class Lexer(string? text, bool searchMode = false)
             _position++;
 
         var t = _text.Substring(start, _position - start);
-        return new Token(TokKind.Number, t);
+        return new(TokKind.Number, t);
     }
 
     private Token ReadWord()
@@ -188,32 +190,32 @@ internal sealed class Lexer(string? text, bool searchMode = false)
             // ensure progress to avoid infinite loop
             w = _text[_position].ToString();
             _position++;
-            return new Token(TokKind.Identifier, w);
+            return new(TokKind.Identifier, w);
         }
 
         return w.ToUpperInvariant() switch
         {
-            "AND" => new Token(TokKind.And, w),
-            "OR" => new Token(TokKind.Or, w),
-            "NOT" => new Token(TokKind.Not, w),
-            "TRUE" => new Token(TokKind.True, w),
-            "FALSE" => new Token(TokKind.False, w),
-            "NULL" => new Token(TokKind.Null, w),
-            "IN" => new Token(TokKind.In, w),
-            "HAS" => new Token(TokKind.Has, w),
-            "EQ" => new Token(TokKind.Eq, w),
-            "NE" => new Token(TokKind.Ne, w),
-            "GT" => new Token(TokKind.Gt, w),
-            "GE" => new Token(TokKind.Ge, w),
-            "LT" => new Token(TokKind.Lt, w),
-            "LE" => new Token(TokKind.Le, w),
-            "ADD" => new Token(TokKind.Add, w),
-            "SUB" => new Token(TokKind.Sub, w),
-            "MUL" => new Token(TokKind.Mul, w),
-            "DIV" => new Token(TokKind.Div, w),
-            "DIVBY" => new Token(TokKind.DivBy, w),
-            "MOD" => new Token(TokKind.Mod, w),
-            _ => new Token(TokKind.Identifier, w),
+            "AND" => new(TokKind.And, w),
+            "OR" => new(TokKind.Or, w),
+            "NOT" => new(TokKind.Not, w),
+            "TRUE" => new(TokKind.True, w),
+            "FALSE" => new(TokKind.False, w),
+            "NULL" => new(TokKind.Null, w),
+            "IN" => new(TokKind.In, w),
+            "HAS" => new(TokKind.Has, w),
+            "EQ" => new(TokKind.Eq, w),
+            "NE" => new(TokKind.Ne, w),
+            "GT" => new(TokKind.Gt, w),
+            "GE" => new(TokKind.Ge, w),
+            "LT" => new(TokKind.Lt, w),
+            "LE" => new(TokKind.Le, w),
+            "ADD" => new(TokKind.Add, w),
+            "SUB" => new(TokKind.Sub, w),
+            "MUL" => new(TokKind.Mul, w),
+            "DIV" => new(TokKind.Div, w),
+            "DIVBY" => new(TokKind.DivBy, w),
+            "MOD" => new(TokKind.Mod, w),
+            _ => new(TokKind.Identifier, w),
         };
     }
 
@@ -230,15 +232,15 @@ internal sealed class Lexer(string? text, bool searchMode = false)
         }
         var w = _text.Substring(start, _position - start);
 
-        if (string.Equals(w, "AND", StringComparison.OrdinalIgnoreCase))
-            return new Token(TokKind.And, w);
+        if (string.Equals(w, "AND", OrdinalIgnoreCase))
+            return new(TokKind.And, w);
 
-        if (string.Equals(w, "OR", StringComparison.OrdinalIgnoreCase))
-            return new Token(TokKind.Or, w);
+        if (string.Equals(w, "OR", OrdinalIgnoreCase))
+            return new(TokKind.Or, w);
 
-        if (string.Equals(w, "NOT", StringComparison.OrdinalIgnoreCase))
-            return new Token(TokKind.Not, w);
+        if (string.Equals(w, "NOT", OrdinalIgnoreCase))
+            return new(TokKind.Not, w);
 
-        return new Token(TokKind.Identifier, w);
+        return new(TokKind.Identifier, w);
     }
 }

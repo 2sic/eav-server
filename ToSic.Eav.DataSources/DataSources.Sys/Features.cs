@@ -15,15 +15,11 @@ namespace ToSic.Eav.DataSources.Sys;
     Type = DataSourceType.System,
     NameId = "398d0b9f-044f-48f7-83ef-307872f7ed93",
     Audience = Audience.Advanced,
-    DynamicOut = false
+    DataConfidentiality = DataConfidentiality.Never // this is just a test, can be changed to something else any time
 )]
 // ReSharper disable once UnusedMember.Global
 public sealed class Features : CustomDataSource
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Constructs a new Scopes DS
-    /// </summary>
     [PrivateApi]
     public Features(Dependencies services, ISysFeaturesService featuresService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Feats", connect: [featuresService])
     {

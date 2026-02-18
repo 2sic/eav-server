@@ -17,9 +17,8 @@ namespace ToSic.Eav.DataSources.Sys;
     UiHint = "Zones of an installation",
     Icon = DataSourceIcons.BorderOuter,
     Type = DataSourceType.System,
-    NameId = "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",
+    NameId = "6edeedb4-db82-4afc-8e17-c29cd8b81770",
     Audience = Audience.Advanced,
-    DynamicOut = false,
     NameIds =
     [
         "ToSic.Eav.DataSources.System.Zones, ToSic.Eav.Apps",

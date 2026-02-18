@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Security.Encryption;
 
-namespace ToSic.Eav.Core.Tests.Signature;
+namespace ToSic.Sys.Security.Signatures;
 
 public class EncryptTests
 {

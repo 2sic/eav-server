@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Text;
 using YamlDotNet.RepresentationModel;
+using static System.StringComparison;
 
 namespace ToSic.Sys.OData.Tests;
 
@@ -68,10 +69,10 @@ public class AbnfOfficialCasesTests
         foreach (var node in (YamlSequenceNode)testCasesNode)
         {
             var map = (YamlMappingNode)node;
-            string name = GetString(map, "Name") ?? "";
-            string rule = GetString(map, "Rule") ?? "";
-            string input = GetString(map, "Input") ?? "";
-            int? failAt = GetInt(map, "FailAt");
+            var name = GetString(map, "Name") ?? "";
+            var rule = GetString(map, "Rule") ?? "";
+            var input = GetString(map, "Input") ?? "";
+            var failAt = GetInt(map, "FailAt");
             yield return new Case(name, rule, input, failAt);
         }
         
@@ -105,7 +106,7 @@ public class AbnfOfficialCasesTests
                 var searchStart = 0;
                 while (true)
                 {
-                    var idx = q.IndexOf(p, searchStart, StringComparison.OrdinalIgnoreCase);
+                    var idx = q.IndexOf(p, searchStart, OrdinalIgnoreCase);
                     if (idx < 0) break;
                     // Only accept if at start or immediately after '&' (top-level parameter)
                     if (idx == 0 || q[idx - 1] == '&')
@@ -127,8 +128,8 @@ public class AbnfOfficialCasesTests
         switch (rule)
         {
             case "filter":
-                if (!query.StartsWith("$filter=", StringComparison.OrdinalIgnoreCase) &&
-                    !query.StartsWith("filter=", StringComparison.OrdinalIgnoreCase)) return false;
+                if (!query.StartsWith("$filter=", OrdinalIgnoreCase) &&
+                    !query.StartsWith("filter=", OrdinalIgnoreCase)) return false;
                 optionKey = "$filter"; optionValue = query.Split('&')[0].Split('=')[1]; return true;
             case "orderby":
                 if (!TryPick("orderby", query, out val)) return false;
@@ -172,28 +173,28 @@ public class AbnfOfficialCasesTests
     {
         // We load once synchronously for data discovery. Test will call EnsureYamlAsync in body for runtime.
         var yaml = Yaml.Value;
-        bool yielded = false;
+        var yielded = false;
         foreach (var c in ParseYaml(yaml))
         {
             var isNegative = c.FailAt.HasValue;
             if (isNegative != negatives) continue;
             if (!TryMapToSystemOption(c.Rule, c.Input, out _, out _)) continue;
             // Skip payload-heavy geometry/geography literals we don't lex yet
-            if (c.Input.Contains("geometry'", StringComparison.OrdinalIgnoreCase) ||
-                c.Input.Contains("geography'", StringComparison.OrdinalIgnoreCase))
+            if (c.Input.Contains("geometry'", OrdinalIgnoreCase) ||
+                c.Input.Contains("geography'", OrdinalIgnoreCase))
             {
                 continue;
             }
             // Skip $filter cases that embed path-segment $count invocations we don't fully support yet
-            if (c.Input.Contains("/$count(", StringComparison.Ordinal))
+            if (c.Input.Contains("/$count(", Ordinal))
             {
                 continue;
             }
             // Skip known-unhandled alias/JSON reference cases that can stress our permissive lexer
-            if (c.Input.Contains("@ref=", StringComparison.OrdinalIgnoreCase) ||
-                c.Input.Contains("%40ref=", StringComparison.OrdinalIgnoreCase) ||
-                c.Input.Contains("@odata.id", StringComparison.OrdinalIgnoreCase) ||
-                c.Input.Contains("%40odata.id", StringComparison.OrdinalIgnoreCase))
+            if (c.Input.Contains("@ref=", OrdinalIgnoreCase) ||
+                c.Input.Contains("%40ref=", OrdinalIgnoreCase) ||
+                c.Input.Contains("@odata.id", OrdinalIgnoreCase) ||
+                c.Input.Contains("%40odata.id", OrdinalIgnoreCase))
             {
                 continue;
             }
@@ -202,14 +203,14 @@ public class AbnfOfficialCasesTests
                 // Only include negative cases we can truly validate at this minimal layer.
                 // 1) Search with truly unbalanced quotes using real '"' (not %22)
                 // 2) Search with unbalanced parentheses at top-level $search (not nested inside $expand)
-                var isSearch = c.Rule.Equals("search", StringComparison.OrdinalIgnoreCase) ||
-                               c.Input.Contains("$search=", StringComparison.OrdinalIgnoreCase);
-                var hasPercentQuote = c.Input.Contains("%22", StringComparison.OrdinalIgnoreCase);
-                var nestedSearch = c.Input.Contains("($search=", StringComparison.OrdinalIgnoreCase);
-                var hasUnencodedReserved = c.Input.Contains("$search=", StringComparison.OrdinalIgnoreCase) &&
-                                            (c.Input.Contains(";", StringComparison.Ordinal) ||
-                                             c.Input.Contains("#", StringComparison.Ordinal) ||
-                                             c.Input.Contains("&", StringComparison.Ordinal));
+                var isSearch = c.Rule.Equals("search", OrdinalIgnoreCase) ||
+                               c.Input.Contains("$search=", OrdinalIgnoreCase);
+                var hasPercentQuote = c.Input.Contains("%22", OrdinalIgnoreCase);
+                var nestedSearch = c.Input.Contains("($search=", OrdinalIgnoreCase);
+                var hasUnencodedReserved = c.Input.Contains("$search=", OrdinalIgnoreCase) &&
+                                            (c.Input.Contains(";", Ordinal) ||
+                                             c.Input.Contains("#", Ordinal) ||
+                                             c.Input.Contains("&", Ordinal));
 
                 if (!isSearch)
                 {
@@ -221,19 +222,19 @@ public class AbnfOfficialCasesTests
                     // Our lexer doesn't URL-decode and we don't parse nested $search inside $expand
                     continue;
                 }
-                if (c.Input.Contains("\"", StringComparison.Ordinal))
+                if (c.Input.Contains("\"", Ordinal))
                 {
                     // We don't enforce balanced quotes in minimal search parser; skip such negatives
                     continue;
                 }
             }
-            yield return new object[] { c.Name, c.Rule, c.Input };        
+            yield return [c.Name, c.Rule, c.Input];        
             yielded = true;
         }
         if (!yielded && negatives)
         {
             // Provide a single placeholder so the theory doesn't error out with "No data" on some environments
-            yield return new object[] { "__NO_NEGATIVE_CASES__", "search", "$search=__noop__" };
+            yield return ["__NO_NEGATIVE_CASES__", "search", "$search=__noop__"];
         }
     }
 
@@ -244,17 +245,17 @@ public class AbnfOfficialCasesTests
         TryMapToSystemOption(rule, input, out var key, out var value).Should().BeTrue();
 
         var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { [key] = value };
-        var parsed = UriQueryParser.Parse(dict);
+        var parsed = dict.ToQueryTac();
 
         // Assert corresponding property populated
-        bool ok = key switch
+        var ok = key switch
         {
             "$filter" => parsed.Filter != null,
-            "$orderby" => parsed.OrderBy != null && parsed.OrderBy.Items.Count > 0,
+            "$orderby" => parsed.OrderBy is { Items.Count: > 0 },
             "$select" => parsed.SelectExpand != null,
             "$expand" => parsed.SelectExpand != null,
             "$search" => parsed.Search != null,
-            "$compute" => parsed.Compute != null && parsed.Compute.Items.Count > 0,
+            "$compute" => parsed.Compute is { Items.Count: > 0 },
             "$top" => parsed.Top.HasValue,
             "$skip" => parsed.Skip.HasValue,
             "$index" => parsed.Index.HasValue,
@@ -278,19 +279,19 @@ public class AbnfOfficialCasesTests
         TryMapToSystemOption(rule, input, out var key, out var value).Should().BeTrue();
 
         var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { [key] = value };
-        bool threw = false;
-        bool set = false;
+        var threw = false;
+        var set = false;
         try
         {
-            var parsed = UriQueryParser.Parse(dict);
+            var parsed = dict.ToQueryTac();
             set = key switch
             {
                 "$filter" => parsed.Filter != null,
-                "$orderby" => parsed.OrderBy != null && parsed.OrderBy.Items.Count > 0,
+                "$orderby" => parsed.OrderBy is { Items.Count: > 0 },
                 "$select" => parsed.SelectExpand != null,
                 "$expand" => parsed.SelectExpand != null,
                 "$search" => parsed.Search != null,
-                "$compute" => parsed.Compute != null && parsed.Compute.Items.Count > 0,
+                "$compute" => parsed.Compute is { Items.Count: > 0 },
                 "$top" => parsed.Top.HasValue,
                 "$skip" => parsed.Skip.HasValue,
                 "$index" => parsed.Index.HasValue,

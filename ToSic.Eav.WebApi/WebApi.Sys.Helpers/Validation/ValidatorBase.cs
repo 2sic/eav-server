@@ -6,21 +6,20 @@ public abstract class ValidatorBase(ILog parentLog, string logName) : HelperBase
 {
     public string Errors = string.Empty;
 
-    private bool HasErrors => Errors != string.Empty;
-
     /// <summary>
     /// Determine if errors exist, and return that state
     /// </summary>
     /// <returns></returns>
-    protected bool BuildExceptionIfHasIssues([NotNullWhen(true)] out HttpExceptionAbstraction? preparedException, string? logMessage = null)
+    public static HttpExceptionAbstraction? BuildExceptionIfHasIssues(string errors, ILog? log, string? logMessage = null)
     {
-        var l = Log.Fn<bool>();
-        preparedException = HasErrors ? HttpException.BadRequest(Errors): null;
+        var l = log.Fn<HttpExceptionAbstraction?>();
+        var hasErrors = errors != "";
+        var preparedException = hasErrors ? HttpException.BadRequest(errors) : null;
         if (logMessage != null)
             l.A($"{nameof(logMessage)}:{logMessage}");
-        if (HasErrors)
-            l.A($"Errors:{Errors}");
-        return l.Return(!HasErrors, HasErrors ? "found errors" : "all ok");
+        if (hasErrors)
+            l.A($"Errors:{errors}");
+        return l.Return(preparedException, hasErrors ? "found errors" : "all ok");
     }
 
 
@@ -30,7 +29,8 @@ public abstract class ValidatorBase(ILog parentLog, string logName) : HelperBase
     /// <param name="addition"></param>
     protected void Add(string addition)
     {
-        Log.A($"Add problem to list:{addition}");
+        var l = Log.Fn($"Add problem to list:{addition}");
         Errors += (Errors == string.Empty ? "" : "\n") + addition;
+        l.Done();
     }
 }

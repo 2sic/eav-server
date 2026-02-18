@@ -14,7 +14,7 @@ public sealed record DataSourceOptions: IDataSourceOptions
 {
     public DataSourceOptions() { }
 
-    public IImmutableDictionary<string, string>? Values { get; init; }
+    public IImmutableDictionary<string, string>? MyConfigValues { get; init; }
 
     // todo: improve to probably be IAppIdentity or IAppReader
     // #WipAppIdentityOrReader must become not null
@@ -24,4 +24,21 @@ public sealed record DataSourceOptions: IDataSourceOptions
     public bool Immutable { get; init; }
 
     public IWorkSpecs? Specs { get; init; }
+
+    public IDataSourceLinkable? Attach { get; init; }
+
+    /// <summary>
+    /// WIP to keep track of all creations where the AppIdentityOrReader is not yet set, but should be. This will be used to find all places where this needs to be fixed.
+    /// </summary>
+    /// <returns></returns>
+    public static DataSourceOptions Empty() => new()
+    {
+        AppIdentityOrReader = null, // #WipAppIdentityOrReader must become not null
+    };
+
+    public static DataSourceOptions OfDataSource(IDataSource source) => new()
+    {
+        AppIdentityOrReader = source,
+        Attach = source,
+    };
 }
