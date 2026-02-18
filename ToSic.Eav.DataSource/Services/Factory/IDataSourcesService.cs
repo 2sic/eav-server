@@ -8,9 +8,10 @@ namespace ToSic.Eav.Services;
 /// Not meant for use in Razor code, but to be used in custom DataSources which may need other internal data sources to work.
 /// </summary>
 /// <remarks>
-/// Released in v15.06
+/// * Released in v15.06
+/// * Slimmed down in v21.02, but keeping older APIs available and hidden, in case they are used (but this is unlikely).
 /// </remarks>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public interface IDataSourcesService
 {
     /// <summary>
@@ -22,7 +23,7 @@ public interface IDataSourcesService
     /// <param name="options">optional configuration lookup if needed</param>
     /// <returns>A single DataSource</returns>
     /// <remarks>
-    /// Released in v15.04
+    /// Released in v21.02
     /// </remarks>
     IDataSource Create(Type type, IDataSourceOptions? options = default);
 
@@ -39,7 +40,6 @@ public interface IDataSourcesService
     /// Released in v15.04
     /// Made obsolete in v21, as it is almost never used outside of 2sxc/eav - and we want to be able to remove it from the public API at some point.
     /// </remarks>
-    [PrivateApi("Hidden in v21")]
     [Obsolete("making this obsolete in v21; believe it's almost never used outside of 2sxc/eav")]
     IDataSource Create(Type type, IDataSourceLinkable? attach = default, IDataSourceOptions? options = default);
 
@@ -49,6 +49,9 @@ public interface IDataSourcesService
     /// <typeparam name="TDataSource">The type of the data source to be created.</typeparam>
     /// <param name="options">optional configuration lookup if needed</param>
     /// <returns></returns>
+    /// <remarks>
+    /// Released in v21.02
+    /// </remarks>
     TDataSource Create<TDataSource>(IDataSourceOptions? options = default) where TDataSource : IDataSource;
 
     /// <summary>
@@ -58,7 +61,6 @@ public interface IDataSourcesService
     /// <param name="attach">optional source to attach as `in` on the newly created data source. It can also provide `AppIdentity` and `LookUp`</param>
     /// <param name="options">optional configuration lookup if needed</param>
     /// <returns></returns>
-    [PrivateApi("Hidden in v21")]
     [Obsolete("making this obsolete in v21; believe it's almost never used outside of 2sxc/eav")]
     TDataSource Create<TDataSource>(IDataSourceLinkable? attach = default, IDataSourceOptions? options = default) where TDataSource : IDataSource;
 
