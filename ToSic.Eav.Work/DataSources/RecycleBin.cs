@@ -40,7 +40,6 @@ public class RecycleBin : CustomDataSource
             () => GetList(recycleBin).Entities,
             options: () => new()
             {
-                AutoId = true,
                 TypeName = "RecycleBin",
             });
 
@@ -78,8 +77,6 @@ public class RecycleBin : CustomDataSource
         var list = itemsOfContentType
             .Select(r => new RawEntity(new()
             {
-                { nameof(r.Id), r.Id },
-                { nameof(r.Guid), r.Guid.ToString() },
                 { nameof(r.AppId), r.AppId },
                 { nameof(r.TypeNameId), r.TypeNameId },
                 { nameof(r.TypeName), r.TypeName },
@@ -88,13 +85,12 @@ public class RecycleBin : CustomDataSource
                 { nameof(r.DeletedBy), r.DeletedBy },
                 { nameof(r.ParentRef), r.ParentRef },
                 { nameof(r.Json), r.Json },
-                { nameof(r.FilterDateFrom), r.FilterDateFrom },
-                { nameof(r.FilterDateTo), r.FilterDateTo },
-                { nameof(r.FilterContentType), r.FilterContentType },
-                { AttributeNames.CreatedNiceName, r.Deleted },
-                { AttributeNames.ModifiedNiceName, r.Deleted },
                 { AttributeNames.TitleNiceName, $"{r.TypeName}({r.Id})" },
-            }))
+            })
+            {
+                Id = r.Id,
+                Guid = r.Guid,
+            })
             .ToList();
 
         var contentTypes = items
