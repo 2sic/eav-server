@@ -29,12 +29,12 @@ public enum DataConfidentiality
     Public,
 
     /// <summary>
-    /// Internal data; accessible within the organization.
+    /// Internal data; accessible within the organization if someone has a login.
     /// </summary>
     Internal,
 
     /// <summary>
-    /// Confidential data; accessible only to specific users.
+    /// Confidential data; accessible only to specific users / SiteAdmins.
     /// </summary>
     Confidential,
 
