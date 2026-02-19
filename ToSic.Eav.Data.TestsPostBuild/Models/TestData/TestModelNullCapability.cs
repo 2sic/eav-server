@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Models.TestData;
 
-public class TestModelNullCapable : IModelSetup<IEntity>
+public class TestModelNullCapable : IModelFromEntity, IModelSetup<IEntity>
 {
 
     bool IModelSetup<IEntity>.SetupModel(IEntity? source)
@@ -12,7 +12,7 @@ public class TestModelNullCapable : IModelSetup<IEntity>
 
 }
 
-public class TestModelNullUnCapable : IModelSetup<IEntity>
+public class TestModelNullUnCapable : IModelFromEntity, IModelSetup<IEntity>
 {
 
     bool IModelSetup<IEntity>.SetupModel(IEntity? source)

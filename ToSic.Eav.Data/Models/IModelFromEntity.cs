@@ -14,4 +14,4 @@
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IModelOfEntity: IModelOfData;
+public interface IModelFromEntity: IModelFromData;

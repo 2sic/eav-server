@@ -12,7 +12,7 @@ public static partial class ToModelExtensions
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? ToModel<TModel>(this IEntity? entity)
-        where TModel : class, IModelOfEntity
+        where TModel : class, IModelFromEntity
     {
         return entity.ToModelInternal<TModel>();
     }
@@ -36,7 +36,7 @@ public static partial class ToModelExtensions
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelOfEntity
+        where TModel : class, IModelFromEntity
     {
         return entity.ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
     }
@@ -59,7 +59,7 @@ public static partial class ToModelExtensions
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelOfEntity
+        where TModel : class, IModelFromEntity
     {
         return (canBeEntity?.Entity).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck);
     }

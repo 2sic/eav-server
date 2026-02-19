@@ -26,7 +26,7 @@ public static class ToModelIntern
         ModelNullHandling nullHandling = ModelNullHandling.Undefined,
         [CallerMemberName] string? methodName = default
     )
-        where TModel : class, IModelOfEntity
+        where TModel : class, IModelFromEntity
     {
         if (nullHandling == ModelNullHandling.Undefined)
             nullHandling = ModelNullHandling.Default;

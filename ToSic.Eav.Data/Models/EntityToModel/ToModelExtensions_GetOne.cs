@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Models;
 
-public static partial class ToModelsExtensions
+public static partial class ToModelExtensions
 {
 
     /// <summary>
@@ -18,7 +18,7 @@ public static partial class ToModelsExtensions
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
-    ) where TModel : class, IModelSetup<IEntity>, new() =>
+    ) where TModel : class, IModelFromEntity, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         (list?.GetOne(id)).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
@@ -38,7 +38,7 @@ public static partial class ToModelsExtensions
         bool skipTypeCheck = false,
         //bool nullIfNull = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
-    ) where TModel : class, IModelSetup<IEntity>, new() =>
+    ) where TModel : class, IModelFromEntity, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         (list?.GetOne(guid)).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, /*nullIfNull: nullIfNull,*/ nullHandling: nullHandling);
 

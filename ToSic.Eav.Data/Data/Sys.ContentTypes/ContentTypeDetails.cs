@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [ModelSpecs(ContentType = ContentTypeName)]
-public record ContentTypeDetails : ModelOfEntityBasic
+public record ContentTypeDetails : ModelFromEntityBasic
 {
     public const string ContentTypeName = "ContentType";
 

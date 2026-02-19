@@ -15,7 +15,7 @@ public static partial class ToModelExtensions
     /// <returns>An enumerable collection of wrapped entities of the specified model type. Returns an empty collection if the
     /// input is null or contains no matching entities.</returns>
     public static IEnumerable<TModel> GetAll<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity, new()
         => list.GetAll<TModel>(typeName: null);
 
     /// <summary>
@@ -37,7 +37,7 @@ public static partial class ToModelExtensions
         string? typeName = default,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity, new()
     {
         // List null - always stop here
         // Not all options listed, as the explicit return-Empty is automatically covered

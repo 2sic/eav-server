@@ -6,7 +6,7 @@ namespace ToSic.Eav.Models;
 public static class TestAccessors
 {
     internal static TModel? AsTac<TModel>(this IEntity? entity)
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity, new()
         => entity.ToModel<TModel>();
 
     internal static TModel? AsTac<TModel>(
@@ -16,7 +16,7 @@ public static class TestAccessors
         //bool nullIfNull = false
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity, new()
         => entity.ToModel<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
 
     internal static TModel? AsInternalTac<TModel>(
@@ -26,7 +26,7 @@ public static class TestAccessors
         //bool nullIfNull = false
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>//, new()
+        where TModel : class, IModelFromEntity//, new()
         => entity.ToModelInternal<TModel>(npo, skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
     internal static TModel? FirstTac<TModel>(
@@ -35,11 +35,11 @@ public static class TestAccessors
         NoParamOrder npo = default,
         string? typeName = default,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined)
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity, new()
         => list.First<TModel>(npo, typeName, nullHandling);
 
     public static TModel? FirstTac<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity, new()
         => list.First<TModel>();
 
 }

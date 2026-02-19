@@ -10,12 +10,13 @@ namespace ToSic.Eav.Models;
 /// If serialized or use otherwise it will not include anything which was not added explicitly.
 ///
 /// This is the **record** implementation, which is the preferred future way of creating models.
-/// To use the **class** based implementation (for example in DNN code not supporting c# 10), use the <see cref="ModelOfEntityClassic"/>
+/// To use the **class** based implementation (for example in DNN code not supporting c# 10), use the <see cref="ModelFromEntityClassic"/>
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract record ModelOfEntity
-    : IModelSetup<IEntity>,     // Allow setting up the wrapper with an entity
+public abstract record ModelFromEntity
+    : IModelFromEntity,         // Model will be built using an entity
+        IModelSetup<IEntity>,   // Allow setting up the wrapper with an entity
         ICanBeEntity            // Allow retrieving the entity directly if needed
 {
     #region Constructors & Setup
@@ -26,13 +27,13 @@ public abstract record ModelOfEntity
     /// <remarks>
     /// This is the primary constructor used by most inheriting classes.
     /// </remarks>
-    protected ModelOfEntity() { }
+    protected ModelFromEntity() { }
 
     /// <summary>
     /// Standard constructor providing the entity during construction.
     /// </summary>
     /// <param name="entity">Entity to wrap</param>
-    protected ModelOfEntity(IEntity entity)
+    protected ModelFromEntity(IEntity entity)
         => Entity = entity;
 
     /// <summary>

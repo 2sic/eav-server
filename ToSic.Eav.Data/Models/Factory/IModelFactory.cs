@@ -26,6 +26,6 @@ public interface IModelFactory
 
     [return: NotNullIfNotNull(nameof(item))]
     TCustom? AsCustomFrom<TCustom, TSource>(TSource? item, ModelSettings? settings = default)
-        where TCustom : class, IModelOfData;
+        where TCustom : class, IModelFromData;
 
 }

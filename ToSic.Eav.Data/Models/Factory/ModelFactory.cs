@@ -17,7 +17,7 @@ internal class ModelFactory(IServiceProvider sp): IModelFactory
     }
 
     [return: NotNullIfNotNull("item")]
-    public TCustom? AsCustomFrom<TCustom, TData>(TData? item, ModelSettings? settings = default) where TCustom : class, IModelOfData
+    public TCustom? AsCustomFrom<TCustom, TData>(TData? item, ModelSettings? settings = default) where TCustom : class, IModelFromData
     {
         throw new NotImplementedException($"This is only available once you get into 2sxc; EAV does not support it.");
     }

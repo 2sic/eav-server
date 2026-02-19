@@ -7,7 +7,7 @@ namespace ToSic.Eav.Apps.AppReader.Sys;
 /// </summary>
 [PrivateApi("Note: was public till 16.08")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal record AppConfiguration : ModelOfEntityBasic, IAppConfiguration
+internal record AppConfiguration : ModelFromEntityBasic, IAppConfiguration
 {
     //public AppConfiguration(IEntity entity) : base(entity) { }
 

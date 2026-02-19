@@ -10,7 +10,7 @@ public static class HasMetadataExtensions
         NoParamOrder npo = default,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelOfEntity
+        where TModel : class, IModelFromEntity
     {
         return parent.Metadata.First<TModel>(nullHandling: nullHandling);
     }

@@ -47,7 +47,7 @@ namespace ToSic.Eav.Models;
 /// - Stabilizing in v21 (now first class citizen, part of ToSic.Eav.Models)
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still beta, name may change")]
-public abstract partial class ModelOfEntityClassic: ICanBeEntity, IModelSetup<IEntity>
+public abstract partial class ModelFromEntityClassic: IModelFromEntity, IModelSetup<IEntity>, ICanBeEntity
 {
     #region Explicit Interfaces for internal use - Setup, etc.
 
@@ -94,7 +94,7 @@ public abstract partial class ModelOfEntityClassic: ICanBeEntity, IModelSetup<IE
     /// Override ToString to give more information about the current object
     /// </summary>
     public override string ToString() 
-        => $"{nameof(ModelOfEntityClassic)} Data Model {GetType().FullName} " + (Entity == null! ? "without backing data (null)" : $"for id:{Entity.EntityId} ({Entity})");
+        => $"{nameof(ModelFromEntityClassic)} Data Model {GetType().FullName} " + (Entity == null! ? "without backing data (null)" : $"for id:{Entity.EntityId} ({Entity})");
 
 
     #region GetThis

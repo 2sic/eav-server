@@ -11,7 +11,7 @@ public static partial class ToModelExtensions
         //bool skipTypeCheck = false,
         //bool nullIfNull = false
     )
-        where TModel : class, IModelOfEntity, new()
+        where TModel : class, IModelFromEntity, new()
     {
         return entities.ToModelsInternal<TModel>(/*skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull*/);
     }
@@ -34,7 +34,7 @@ public static partial class ToModelExtensions
         //bool skipTypeCheck = true
         //bool nullIfNull = false
     )
-        where TModel : class, IModelOfEntity, new()
+        where TModel : class, IModelFromEntity, new()
     {
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.

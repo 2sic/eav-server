@@ -16,7 +16,6 @@
 /// History
 /// 
 /// * Introduced in v21
-/// * NOT visible in the docs for better understanding in v21
 /// * The `Setup()` method is still internal, as the signature may still change
 /// </remarks>
 /// <typeparam name="TSource">
@@ -24,7 +23,7 @@
 /// Must be <see cref="IEntity"/> or <see cref="ITypedItem"/> (other types not supported for now).
 /// </typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
-public interface IModelSetup<in TSource>: IModelOfEntity
+public interface IModelSetup<in TSource>
 {
     /// <summary>
     /// Add the contents to use for the wrapper.

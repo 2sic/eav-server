@@ -3,21 +3,22 @@
 // Note: this used to be called EntityBasedType
 
 /// <summary>
-/// A basic model (record) of entities. It extends the core implementation by providing Id, Guid and Title by default.
+/// A basic model (record) of entities.
+/// It extends the blank implementation by providing the basic Entity properties `Id`, `Guid` and `Title` by default.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public abstract record ModelOfEntityBasic: ModelOfEntity, IModelOfEntityBasic
+public abstract record ModelFromEntityBasic: ModelFromEntity, IModelFromEntityBasic
 {
     /// <summary>
     /// Empty constructor, so it can be inherited without having to specify a constructor.
     /// </summary>
-    protected ModelOfEntityBasic() { }
+    protected ModelFromEntityBasic() { }
 
     /// <summary>
     /// Constructor which already includes the data to wrap; rarely used.
     /// </summary>
     /// <param name="entity"></param>
-    protected ModelOfEntityBasic(IEntity entity) : base(entity) { }
+    protected ModelFromEntityBasic(IEntity entity) : base(entity) { }
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]

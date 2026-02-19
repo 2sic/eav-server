@@ -8,7 +8,7 @@ namespace ToSic.Eav.ImportExport.Sys;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [ModelSpecs(ContentType = ContentTypeNameId)]
-public record ExportConfiguration : ModelOfEntityBasic
+public record ExportConfiguration : ModelFromEntityBasic
 {
     public const string ContentTypeNameId = "d7f2e4fa-5306-41bb-a3cd-d9529c838879";
     public const string ContentTypeName = "🧑‍💻SystemExportConfiguration";
