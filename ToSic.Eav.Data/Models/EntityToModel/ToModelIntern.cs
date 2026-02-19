@@ -4,7 +4,7 @@ using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Models;
 
-public static class AsModelInternal
+public static class ToModelIntern
 {
     /// <summary>
     /// Real implementation of As... methods
@@ -18,7 +18,7 @@ public static class AsModelInternal
     /// <param name="methodName">Automatically added method name</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
-    internal static TModel? AsInternal<TModel>(
+    internal static TModel? ToModelInternal<TModel>(
         this IEntity? entity,
         NoParamOrder npo = default,
         Type? trueType = default,
@@ -34,11 +34,7 @@ public static class AsModelInternal
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
         if (entity == null)
-        {
             return FromNull<TModel>(trueType, nullHandling);
-            //// TODO: MAYBE IMPROVE tests / exceptions if not matching the type
-            //return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)?.SetupWithDataNullChecks(entity, nullHandling) as TModel;
-        }
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
@@ -73,6 +69,7 @@ public static class AsModelInternal
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
         trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
+
         // TODO: MAYBE IMPROVE tests / exceptions if not matching the type
         return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)?.SetupWithDataNullChecks((IEntity?)null, nullHandling) as TModel;
 

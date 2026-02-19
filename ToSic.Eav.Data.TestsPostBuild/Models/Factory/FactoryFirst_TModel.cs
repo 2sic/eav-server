@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Eav.Models.TestData;
+﻿using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models.Factory;
 
@@ -11,7 +10,7 @@ public partial class FactoryFirst_TModel(TestDataGenerator generator, IModelFact
     public void GetOneRequiringFactory(int amountMdFor)
     {
         var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
-        factory.First<TestModelRequiringFactoryEmptyConstructor>(entity.Metadata,
+        entity.Metadata.First<TestModelRequiringFactoryEmptyConstructor>(factory,
             typeName: nameof(TestModelMetadataForDecorator)
         );
     }

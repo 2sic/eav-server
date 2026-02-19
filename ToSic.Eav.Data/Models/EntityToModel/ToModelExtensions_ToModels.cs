@@ -3,9 +3,9 @@ using ToSic.Eav.Models.Factory;
 
 namespace ToSic.Eav.Models;
 
-public static partial class EntityListToModelExtensions
+public static partial class ToModelExtensions
 {
-    public static IEnumerable<TModel> AsList<TModel>(
+    public static IEnumerable<TModel> ToModels<TModel>(
         this IEnumerable<IEntity?> entities,
         NoParamOrder npo = default
         //bool skipTypeCheck = false,
@@ -13,7 +13,7 @@ public static partial class EntityListToModelExtensions
     )
         where TModel : class, IModelOfEntity, new()
     {
-        return entities.AsListInternal<TModel>(/*skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull*/);
+        return entities.ToModelsInternal<TModel>(/*skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull*/);
     }
 
 
@@ -27,7 +27,7 @@ public static partial class EntityListToModelExtensions
     /// <param name="nullIfNull">If the underlying data is null, prefer null over an empty model.</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
-    internal static IEnumerable<TModel> AsListInternal<TModel>(
+    internal static IEnumerable<TModel> ToModelsInternal<TModel>(
         this IEnumerable<IEntity?> entities,
         [CallerMemberName] string? methodName = default,
         NoParamOrder npo = default

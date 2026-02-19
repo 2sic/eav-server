@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Models;
 
-public static partial class EntityListToModelExtensions
+public static partial class ToModelExtensions
 {
     /// <summary>
     /// Returns a collection of wrapper objects of type `TModel` for all entities of the specified type.
@@ -68,7 +68,7 @@ public static partial class EntityListToModelExtensions
                 continue;
 
             var result = found
-                .Select(raw => raw.AsInternal<TModel>(trueType: trueType, skipTypeCheck: true, nullHandling: nullHandling)!);
+                .Select(raw => raw.ToModelInternal<TModel>(trueType: trueType, skipTypeCheck: true, nullHandling: nullHandling)!);
                     
             if ((nullHandling & ModelNullHandling.ModelNullSkip) != 0)
                 result = result.Where(item => item != null);

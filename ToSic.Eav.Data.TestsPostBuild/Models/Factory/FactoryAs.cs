@@ -11,7 +11,7 @@ public class FactoryAs(TestDataGenerator generator, IModelFactory factory)
     public void AssembleWithFactory()
     {
         var entity = generator.CreateMetadataForDecorator();
-        var model = factory.As<TestModelRequiringFactory>(entity);
+        var model = entity.ToModel<TestModelRequiringFactory>(factory);
         NotNull(model);
         Equal((int)TargetTypes.Entity, model.TargetType);
         Equal(TestModelRequiringFactory.TestModelDependencyInjection.HelloMessage, model.SomethingFromDependency);
@@ -20,6 +20,6 @@ public class FactoryAs(TestDataGenerator generator, IModelFactory factory)
     [Fact]
     public void AssembleWithFactoryNullThrows() =>
         Throws<ArgumentNullException>(() =>
-            ((IModelFactory)null).As<TestModelRequiringFactory>(generator.CreateMetadataForDecorator())
+            generator.CreateMetadataForDecorator().ToModel<TestModelRequiringFactory>((IModelFactory)null)
         );
 }

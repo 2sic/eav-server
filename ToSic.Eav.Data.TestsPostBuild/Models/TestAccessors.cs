@@ -7,7 +7,7 @@ public static class TestAccessors
 {
     internal static TModel? AsTac<TModel>(this IEntity? entity)
         where TModel : class, IModelSetup<IEntity>, new()
-        => entity.As<TModel>();
+        => entity.ToModel<TModel>();
 
     internal static TModel? AsTac<TModel>(
         this IEntity? entity,
@@ -17,7 +17,7 @@ public static class TestAccessors
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>, new()
-        => entity.As<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
+        => entity.ToModel<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
 
     internal static TModel? AsInternalTac<TModel>(
         this IEntity? entity,
@@ -27,7 +27,7 @@ public static class TestAccessors
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelSetup<IEntity>//, new()
-        => entity.AsInternal<TModel>(npo, skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
+        => entity.ToModelInternal<TModel>(npo, skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
     internal static TModel? FirstTac<TModel>(
         this IEnumerable<IEntity>? list,

@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Models;
 
-public static partial class EntityListToModelExtensions
+public static partial class ToModelsExtensions
 {
 
     /// <summary>
@@ -20,7 +20,7 @@ public static partial class EntityListToModelExtensions
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     ) where TModel : class, IModelSetup<IEntity>, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(id)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
+        (list?.GetOne(id)).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
@@ -40,6 +40,6 @@ public static partial class EntityListToModelExtensions
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     ) where TModel : class, IModelSetup<IEntity>, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(guid)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, /*nullIfNull: nullIfNull,*/ nullHandling: nullHandling);
+        (list?.GetOne(guid)).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, /*nullIfNull: nullIfNull,*/ nullHandling: nullHandling);
 
 }

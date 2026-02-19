@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Models;
 
-public static partial class ModelFactoryExtensions
+public static partial class ToModelExtensions
 {
     /// <summary>
     /// Returns a collection of wrapper objects of type `TModel` for all entities of the specified type name.
@@ -19,8 +19,8 @@ public static partial class ModelFactoryExtensions
     /// <param name="factory">The factory to use for creating wrapper instances.</param>
     // ReSharper disable once MethodOverloadWithOptionalParameter
     public static IEnumerable<TModel?> GetAll<TModel>(
-        this IModelFactory factory,
-        IEnumerable<IEntity>? list,
+        this IEnumerable<IEntity>? list,
+        IModelFactory factory,
         NoParamOrder npo = default,
         string? typeName = default
     ) where TModel : class, IModelSetup<IEntity>

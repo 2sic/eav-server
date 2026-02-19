@@ -16,7 +16,7 @@ public class ModelEqualityTests(TestDataGenerator generator)
     public void EqualsSelf()
     {
         var entity = generator.CreateMetadataForDecorator();
-        var md = entity.As<TestModelMetadataForDecorator>()!;
+        var md = entity.AsTac<TestModelMetadataForDecorator>()!;
         CheckAllEquals(md, md);
     }
 
@@ -25,8 +25,8 @@ public class ModelEqualityTests(TestDataGenerator generator)
     public void EqualsSecondCast()
     {
         var entity = generator.CreateMetadataForDecorator();
-        var md = entity.As<TestModelMetadataForDecorator>()!;
-        var md2 = entity.As<TestModelMetadataForDecorator>()!;
+        var md = entity.AsTac<TestModelMetadataForDecorator>()!;
+        var md2 = entity.AsTac<TestModelMetadataForDecorator>()!;
         CheckAllEquals(md, md2);
     }
 
@@ -34,9 +34,9 @@ public class ModelEqualityTests(TestDataGenerator generator)
     public void EqualsRecast_UsingAsICanBeEntity()
     {
         var entity = generator.CreateMetadataForDecorator();
-        var md = entity.As<TestModelMetadataForDecorator>()!;
+        var md = entity.AsTac<TestModelMetadataForDecorator>()!;
         // Recast via ICanBeEntity
-        var md2 = md.As<TestModelMetadataForDecorator>()!;
+        var md2 = md.ToModel<TestModelMetadataForDecorator>()!;
         CheckAllEquals(md, md2);
     }
 
@@ -44,7 +44,7 @@ public class ModelEqualityTests(TestDataGenerator generator)
     public void EqualsRecordWith()
     {
         var entity = generator.CreateMetadataForDecorator();
-        var md = entity.As<TestModelMetadataForDecorator>()!;
+        var md = entity.AsTac<TestModelMetadataForDecorator>()!;
         var md2 = md with { };
         CheckAllEquals(md, md2);
     }

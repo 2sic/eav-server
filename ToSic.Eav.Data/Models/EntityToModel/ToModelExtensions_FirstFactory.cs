@@ -3,7 +3,7 @@ using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Models;
 
-public static partial class ModelFactoryExtensions
+public static partial class ToModelExtensions
 {
 
     #region Generic
@@ -18,8 +18,8 @@ public static partial class ModelFactoryExtensions
     /// <param name="factory">A factory to create the target model.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? First<TModel>(
-        this IModelFactory factory,
-        IEnumerable<IEntity>? list,
+        this IEnumerable<IEntity>? list,
+        IModelFactory factory,
         NoParamOrder npo = default,
         string? typeName = default
     )

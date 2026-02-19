@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Models;
 
-public static partial class EntityListToModelExtensions
+public static partial class ToModelExtensions
 {
 
     #region Generic
@@ -14,7 +14,7 @@ public static partial class EntityListToModelExtensions
     /// <param name="list">The collection of entities to search.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? First<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelOfEntity, new()
         => list.First<TModel>(typeName: null);
 
     /// <summary>
@@ -41,7 +41,7 @@ public static partial class EntityListToModelExtensions
         if (list == null)
             return (nullHandling & ModelNullHandling.ListNullThrows) != 0
                 ? throw new ArgumentNullException(nameof(list))
-                : AsModelInternal.FromNull<TModel>(trueType: null, nullHandling);
+                : Models.ToModel.FromNull<TModel>(trueType: null, nullHandling);
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
@@ -51,16 +51,11 @@ public static partial class EntityListToModelExtensions
             ? [typeName]
             : DataModelAnalyzer.GetValidTypeNames(trueType);
 
-        foreach (var name in nameList)
-        {
-            // ReSharper disable once PossibleMultipleEnumeration - should not ToList or anything, because it could lose optimizations of the FastLookup etc.
-            var first = list.First(typeName: name);
-            if (first != null)
-                return first.AsInternal<TModel>(trueType: trueType, skipTypeCheck: true, nullHandling: nullHandling);
-        }
-
-        // Nothing found
-        return AsModelInternal.FromNull<TModel>(trueType, nullHandling);
+        var firstMatch = nameList.Select(list.First).OfType<IEntity>().FirstOrDefault();
+        return firstMatch != null
+            ? firstMatch.ToModelInternal<TModel>(trueType: trueType, skipTypeCheck: true, nullHandling: nullHandling)
+            // Nothing found
+            : Models.ToModel.FromNull<TModel>(trueType, nullHandling);
     }
 
     #endregion

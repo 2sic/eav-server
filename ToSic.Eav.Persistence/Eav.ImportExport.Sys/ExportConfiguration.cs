@@ -39,7 +39,7 @@ public record ExportConfiguration : ModelOfEntityBasic
     /// </summary>
     public ICollection<ExportDecorator> ExportMarkers => _exportMarkers.Get(() => Entity
         .Parents(ExportDecorator.ContentTypeNameId)
-        .Select(e => e.As<ExportDecorator>()!)
+        .Select(e => e.ToModel<ExportDecorator>()!)
         .ToListOpt()
     )!;
     private readonly GetOnce<ICollection<ExportDecorator>> _exportMarkers = new();
