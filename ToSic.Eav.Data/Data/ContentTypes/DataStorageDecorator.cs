@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.ContentTypes;
 
-public record DataStorageDecorator: ModelOfEntityCore
+public record DataStorageDecorator: ModelOfEntity
 {
     public string StoreType => GetThis("");
 

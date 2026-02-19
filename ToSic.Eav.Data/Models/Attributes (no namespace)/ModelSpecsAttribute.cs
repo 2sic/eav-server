@@ -18,7 +18,7 @@ namespace ToSic.Eav.Models;
 /// History:
 /// 
 /// * New / WIP in v19.01 (internal)
-/// * Moved from Sxc.Data.Models to Eav.Model v21.01
+/// * Moved from Sxc.Data.Models to Eav.Models v21.01
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]

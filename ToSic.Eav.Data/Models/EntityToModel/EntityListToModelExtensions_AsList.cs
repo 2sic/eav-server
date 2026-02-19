@@ -11,7 +11,7 @@ public static partial class EntityListToModelExtensions
         //bool skipTypeCheck = false,
         //bool nullIfNull = false
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelOfEntity, new()
     {
         return entities.AsListInternal<TModel>(/*skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull*/);
     }
@@ -21,7 +21,7 @@ public static partial class EntityListToModelExtensions
     /// Real implementation of As... methods
     /// </summary>
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
-    /// <param name="list">The entity to convert.</param>
+    /// <param name="entities">The entity to convert.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
     /// <param name="nullIfNull">If the underlying data is null, prefer null over an empty model.</param>
@@ -34,7 +34,7 @@ public static partial class EntityListToModelExtensions
         //bool skipTypeCheck = true
         //bool nullIfNull = false
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelOfEntity, new()
     {
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
@@ -61,7 +61,7 @@ public static partial class EntityListToModelExtensions
 
                 // Do Setup and check if it's ok.
                 // Wrapper will return false if the entity is null or invalid for the model.
-                var ok = wrapper.SetupModel(e);
+                var ok = (wrapper as IModelSetup<IEntity>)?.SetupModel(e) ?? false;
                 return ok ? wrapper : default!;
             })
             .Where(m => m != null)
