@@ -42,7 +42,7 @@ public static partial class EntityListExtensions
         if (list == null)
             return (nullHandling & ModelNullHandling.ListNullThrows) != 0
                 ? throw new ArgumentNullException(nameof(list))
-                : AsModel.FromNull<TModel>(trueType: null, nullHandling);
+                : AsModelInternal.FromNull<TModel>(trueType: null, nullHandling);
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
@@ -61,7 +61,7 @@ public static partial class EntityListExtensions
         }
 
         // Nothing found
-        return AsModel.FromNull<TModel>(trueType, nullHandling);
+        return AsModelInternal.FromNull<TModel>(trueType, nullHandling);
     }
 
     #endregion

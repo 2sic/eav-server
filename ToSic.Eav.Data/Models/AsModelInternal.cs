@@ -4,7 +4,7 @@ using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Models;
 
-public static class AsModel
+public static class AsModelInternal
 {
     /// <summary>
     /// Real implementation of As... methods
