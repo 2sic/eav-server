@@ -50,7 +50,7 @@ public partial class EntityListFirst
     public void NotFoundButForceModel(int amount)
     {
         var entity = generator.EntityWithMetadataForDecorator(amount);
-        NotNull(entity.Metadata.FirstTac<TestModelMetadataForDecorator>(typeName: "some other name", nullHandling: ModelNullHandling.PreferModelForce));
+        NotNull(entity.Metadata.FirstTac<TestModelMetadataForDecorator>(typeName: "some other name", nullHandling: ModelNullHandling.PreferModel));
     }
 
 }

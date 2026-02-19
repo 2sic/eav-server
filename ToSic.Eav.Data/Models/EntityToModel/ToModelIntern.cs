@@ -56,7 +56,7 @@ public static class ToModelIntern
         var ok = (wrapper as IModelSetup<IEntity>)?.SetupModel(entity) ?? false;
         return ok
             ? wrapper
-            : (nullHandling & ModelNullHandling.ModelAsModelForce) != 0
+            : (nullHandling & ModelNullHandling.ModelNullAsModel) != 0
                 ? wrapper
                 : (nullHandling & ModelNullHandling.ModelNullThrows) != 0
                     ? throw new InvalidCastException($"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead")

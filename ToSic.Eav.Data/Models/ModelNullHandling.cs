@@ -60,7 +60,7 @@ public enum ModelNullHandling
 
     ModelNullThrows = 1 << 9,
 
-    ModelAsModelForce = 1 << 10,
+    ModelNullAsModel = 1 << 10,
 
 
 
@@ -92,13 +92,8 @@ public enum ModelNullHandling
                | ModelNullAsNull
                | ModelNullSkip,
 
-    PreferModelTry = ListNullAsEmpty
-               | DataNullTryConvert
-               | TypeCheckIgnore
-               | ModelNullAsNull,
-
-    PreferModelForce = ListNullAsEmpty
+    PreferModel = ListNullAsEmpty
                | DataNullForceConvert
                | TypeCheckIgnore
-               | ModelAsModelForce,
+               | ModelNullAsModel,
 }
