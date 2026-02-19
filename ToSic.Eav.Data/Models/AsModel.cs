@@ -6,13 +6,13 @@ namespace ToSic.Eav.Models;
 
 public static class AsModel
 {
-
     /// <summary>
     /// Real implementation of As... methods
     /// </summary>
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
     /// <param name="entity">The entity to convert.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="trueType">The true type to actually use, in case the caller already checked for GetTargetType (so it should be reused)</param>
     /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
     /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <param name="methodName">Automatically added method name</param>
@@ -21,7 +21,7 @@ public static class AsModel
     internal static TModel? AsInternal<TModel>(
         this IEntity? entity,
         NoParamOrder npo = default,
-        Type trueType = default,
+        Type? trueType = default,
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined,
         [CallerMemberName] string? methodName = default
@@ -31,17 +31,18 @@ public static class AsModel
         if (nullHandling == ModelNullHandling.Undefined)
             nullHandling = ModelNullHandling.Default;
 
-        // Figure out the true type to create, based on Attribute
-        // This is important, in case an interface was passed in.
-        trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
-
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
         if (entity == null)
         {
-            // TODO: MAYBE IMPROVE tests / exceptions if not matching the type
-            return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)?.SetupWithDataNullChecks(entity, nullHandling) as TModel;
+            return FromNull<TModel>(trueType, nullHandling);
+            //// TODO: MAYBE IMPROVE tests / exceptions if not matching the type
+            //return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)?.SetupWithDataNullChecks(entity, nullHandling) as TModel;
         }
+
+        // Figure out the true type to create, based on Attribute
+        // This is important, in case an interface was passed in.
+        trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
 
         // If it is not null, do check if the cast uses the correct type
         DataModelAnalyzer.IsTypeNameAllowedOrThrow(trueType, entity, entity.EntityId, skipTypeCheck);
@@ -65,4 +66,16 @@ public static class AsModel
                     ? throw new InvalidCastException($"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead")
                     : default;
     }
+
+    internal static TModel? FromNull<TModel>(Type? trueType = default, ModelNullHandling nullHandling = ModelNullHandling.Undefined)
+        where TModel : class
+    {
+        // Figure out the true type to create, based on Attribute
+        // This is important, in case an interface was passed in.
+        trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
+        // TODO: MAYBE IMPROVE tests / exceptions if not matching the type
+        return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)?.SetupWithDataNullChecks((IEntity?)null, nullHandling) as TModel;
+
+    }
+
 }

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Metadata;
+﻿using ToSic.Eav.Data;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models;
@@ -42,6 +43,15 @@ public partial class EntityListFirst
     {
         var entity = generator.EntityWithMetadataForDecorator(amount);
         Null(entity.Metadata.FirstTac<TestModelMetadataForDecorator>(typeName: "some other name"));
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(5)]
+    public void NotFoundButForceModel(int amount)
+    {
+        var entity = generator.EntityWithMetadataForDecorator(amount);
+        NotNull(entity.Metadata.FirstTac<TestModelMetadataForDecorator>(typeName: "some other name", nullHandling: ModelNullHandling.PreferModelForce));
     }
 
 }

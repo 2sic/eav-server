@@ -25,6 +25,7 @@ public static partial class EntityListExtensions
     /// <param name="list">The collection of entities to search.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="typeName">The name of the type to match.</param>
+    /// <param name="nullHandling"></param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? First<TModel>(
         this IEnumerable<IEntity>? list,
@@ -35,13 +36,13 @@ public static partial class EntityListExtensions
     )
         where TModel : class
     {
+        if (nullHandling == ModelNullHandling.Undefined)
+            nullHandling = ModelNullHandling.Default;
+
         if (list == null)
             return (nullHandling & ModelNullHandling.ListNullThrows) != 0
                 ? throw new ArgumentNullException(nameof(list))
-                : ((IEntity?)null).AsInternal<TModel>(nullHandling: nullHandling);
-
-        if (nullHandling == ModelNullHandling.Undefined)
-            nullHandling = ModelNullHandling.Default;
+                : AsModel.FromNull<TModel>(trueType: null, nullHandling);
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
@@ -60,7 +61,7 @@ public static partial class EntityListExtensions
         }
 
         // Nothing found
-        return default;
+        return AsModel.FromNull<TModel>(trueType, nullHandling);
     }
 
     #endregion
