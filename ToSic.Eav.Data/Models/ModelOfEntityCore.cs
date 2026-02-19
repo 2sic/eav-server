@@ -3,20 +3,16 @@
 namespace ToSic.Eav.Models;
 
 /// <summary>
-/// Foundation for a class which gets its data from an Entity.
+/// Foundation for a *record* which gets its data from an Entity. Completely empty, no public properties.
 /// </summary>
 /// <remarks>
-/// This is used for more type safety - because some internal objects need entities for data-storage,
-/// but when programming they should use typed objects to not accidentally access invalid properties.
-///
-/// The **Core** implementation has zero public properties, so when serialized etc. will not include anything
-/// which was not added explicitly.
+/// The **Core** implementation has zero public properties.
+/// If serialized or use otherwise it will not include anything which was not added explicitly.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract record ModelOfEntityCore
     : IModelSetup<IEntity>,     // Allow setting up the wrapper with an entity
-        IWrapper<IEntity>,      // Make sure it can be seen as an entity wrapper
         ICanBeEntity            // Allow retrieving the entity directly if needed
 {
     #region Constructors & Setup
@@ -44,8 +40,6 @@ public abstract record ModelOfEntityCore
         Entity = source!;
         return true;
     }
-
-    IEntity IWrapper<IEntity>.GetContents() => Entity;
 
     #endregion
 

@@ -16,7 +16,7 @@ public static class EntityToModelExtensions
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? As<TModel>(this IEntity? entity)
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelOfEntity, new()
     {
         return entity.AsInternal<TModel>();
     }
@@ -40,7 +40,7 @@ public static class EntityToModelExtensions
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelOfEntity, new()
     {
         return entity.AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
     }
@@ -63,7 +63,7 @@ public static class EntityToModelExtensions
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelOfEntity, new()
     {
         return (canBeEntity?.Entity).AsInternal<TModel>(skipTypeCheck: skipTypeCheck);
     }

@@ -24,7 +24,7 @@
 /// Must be <see cref="IEntity"/> or <see cref="ITypedItem"/> (other types not supported for now).
 /// </typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
-public interface IModelSetup<in TSource>
+public interface IModelSetup<in TSource>: IModelOfEntity
 {
     /// <summary>
     /// Add the contents to use for the wrapper.

@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 /// Made visible in the docs v21.02, but still just fyi/internal.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public record QueryDefinition : ModelOfEntity
+public record QueryDefinition : ModelOfEntityBasic
 {
     internal QueryDefinition(IEntity headerEntity, int appId, List<QueryPartDefinition> parts) : base(headerEntity)
     {

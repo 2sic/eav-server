@@ -2,11 +2,14 @@
 
 // Note: this used to be called EntityBasedType
 
+/// <summary>
+/// A basic model (record) of entities. It extends the core implementation by providing Id, Guid and Title by default.
+/// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public abstract record ModelOfEntity: ModelOfEntityCore, IModelOfEntity
+public abstract record ModelOfEntityBasic: ModelOfEntityCore, IModelOfEntityBasic
 {
-    protected ModelOfEntity() { }
-    protected ModelOfEntity(IEntity entity) : base(entity) { }
+    protected ModelOfEntityBasic() { }
+    protected ModelOfEntityBasic(IEntity entity) : base(entity) { }
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]

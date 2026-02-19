@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Eav.Models.Factory;
 
 namespace ToSic.Eav.Models;
 

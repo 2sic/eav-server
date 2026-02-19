@@ -1,12 +1,11 @@
 ﻿using ToSic.Eav.Models;
-using ToSic.Sys.Wrappers;
 
 namespace ToSic.Eav.Data.Models.Sys;
 
 public class ModelAnalyseUseTests
 {
     private static void AssertType<TInspect, TExpected>()
-        where TInspect : class, IWrapperWip
+        where TInspect : class, IModelOfEntity
     {
         var data = DataModelAnalyzerTestAccessors.GetTargetTypeTac<TInspect>();
         Equal(typeof(TExpected), data);
@@ -15,7 +14,7 @@ public class ModelAnalyseUseTests
     #region NotDecorated - should return itself as the type
 
     // ReSharper disable once ClassNeverInstantiated.Local
-    private class NotDecorated : IWrapperWip;
+    private class NotDecorated : IModelOfEntity;
 
     [Fact]
     public void NotDecoratedDataModelType() =>
@@ -25,7 +24,7 @@ public class ModelAnalyseUseTests
 
     #region Interface not Decorated - should return itself as the type
 
-    private interface INotDecorated : IWrapperWip;
+    private interface INotDecorated : IModelOfEntity;
 
     [Fact]
     //[ExpectedException(typeof(TypeInitializationException))]
@@ -37,7 +36,7 @@ public class ModelAnalyseUseTests
     #region Decorated - should return the decorated type
 
     [ModelSpecs(Use = typeof(DecoratedEntity))]
-    private record Decorated: ModelOfEntity;
+    private record Decorated: ModelOfEntityBasic;
 
     private record DecoratedEntity : Decorated;
 
@@ -74,7 +73,7 @@ public class ModelAnalyseUseTests
     #region Interface decorated - should return the decorated type
 
     [ModelSpecs(Use = typeof(EntityOfIDecorated))]
-    private interface IDecorated : IWrapperWip;
+    private interface IDecorated : IModelOfEntity;
 
     private record EntityOfIDecorated : InheritReDecorated, IDecorated;
 

@@ -9,7 +9,7 @@ namespace ToSic.Sys.Capabilities.Licenses;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [ModelSpecs(ContentType = ContentTypeNameId)]
-internal record LicenseEntity : ModelOfEntity
+internal record LicenseEntity : ModelOfEntityBasic
 {
     public const string ContentTypeNameId = "57248ccb-24f1-44c6-9c6c-085e44ebb0cb";
     public const string ContentTypeName = "⚙️License";

@@ -26,7 +26,7 @@ public static class AsModelInternal
         ModelNullHandling nullHandling = ModelNullHandling.Undefined,
         [CallerMemberName] string? methodName = default
     )
-        where TModel : class
+        where TModel : class, IModelOfEntity
     {
         if (nullHandling == ModelNullHandling.Undefined)
             nullHandling = ModelNullHandling.Default;

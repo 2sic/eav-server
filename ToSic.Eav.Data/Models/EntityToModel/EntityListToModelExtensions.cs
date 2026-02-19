@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Eav.Models;
 
+// This is the main shared file to place the docs on this class.
+
 /// <summary>
 /// WIP v21
 /// </summary>

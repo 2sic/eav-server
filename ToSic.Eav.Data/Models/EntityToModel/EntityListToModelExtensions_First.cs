@@ -33,7 +33,7 @@ public static partial class EntityListToModelExtensions
         string? typeName = default,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class
+        where TModel : class, IModelOfEntity
     {
         if (nullHandling == ModelNullHandling.Undefined)
             nullHandling = ModelNullHandling.Default;
