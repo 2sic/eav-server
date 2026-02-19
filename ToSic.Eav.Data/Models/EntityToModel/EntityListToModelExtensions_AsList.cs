@@ -1,8 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Eav.Models;
 using ToSic.Eav.Models.Factory;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Models;
 
 public static partial class EntityListToModelExtensions
 {

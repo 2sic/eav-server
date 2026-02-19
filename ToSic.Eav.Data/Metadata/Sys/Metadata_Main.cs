@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Security.Permissions;
+﻿using ToSic.Eav.Models;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Metadata.Sys;
 

@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Models;
-
-namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Models;
 
 public static partial class EntityListToModelExtensions
 {

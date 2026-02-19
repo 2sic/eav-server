@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.Models;
-using ToSic.Eav.Models.Factory;
+﻿using ToSic.Eav.Models.Factory;
 using ToSic.Eav.Models.Sys;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Models;
 
 public static partial class ModelFactoryExtensions
 {
