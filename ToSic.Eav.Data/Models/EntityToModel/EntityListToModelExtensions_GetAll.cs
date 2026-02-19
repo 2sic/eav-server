@@ -3,7 +3,7 @@ using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Data;
 
-public static partial class EntityListExtensions
+public static partial class EntityListToModelExtensions
 {
     /// <summary>
     /// Returns a collection of wrapper objects of type `TModel` for all entities of the specified type.

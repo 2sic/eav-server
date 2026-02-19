@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data;
 
-public static partial class EntityListExtensions
+public static partial class EntityListToModelExtensions
 {
 
     /// <summary>

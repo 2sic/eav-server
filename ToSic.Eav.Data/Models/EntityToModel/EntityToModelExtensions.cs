@@ -2,7 +2,11 @@
 
 namespace ToSic.Eav.Data;
 
-public static partial class EntityExtensions
+/// <summary>
+/// WIP v21
+/// </summary>
+[WorkInProgressApi("WIP v21")]
+public static class EntityToModelExtensions
 {
     /// <summary>
     /// WIP

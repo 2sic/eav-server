@@ -4,7 +4,7 @@ using ToSic.Eav.Models.Factory;
 
 namespace ToSic.Eav.Data;
 
-public static partial class EntityExtensions
+public static partial class EntityListToModelExtensions
 {
     public static IEnumerable<TModel> AsList<TModel>(
         this IEnumerable<IEntity?> entities,
