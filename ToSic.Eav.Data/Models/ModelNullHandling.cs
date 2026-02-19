@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data;
+﻿namespace ToSic.Eav.Models;
 
 [Flags]
 public enum ModelNullHandling
