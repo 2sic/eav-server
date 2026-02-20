@@ -49,7 +49,7 @@ public static class ToModelIntern
 
         // Throw if TModel inherits from INeedsFactory
         if (wrapper is IModelFactoryRequired)
-            throw new InvalidCastException($"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead");
+            throw RequiresFactoryException();
 
         // Do Setup and check if it's ok.
         // Wrapper will return false if the entity is null or invalid for the model.
@@ -59,8 +59,16 @@ public static class ToModelIntern
             : (nullHandling & ModelNullHandling.ModelNullAsModel) != 0
                 ? wrapper
                 : (nullHandling & ModelNullHandling.ModelNullThrows) != 0
-                    ? throw new InvalidCastException($"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead")
+                    ? throw RequiresFactoryException()
                     : default;
+
+        InvalidCastException RequiresFactoryException() => new(
+            $"""
+             Cannot cast to '{typeof(TModel)}' because it says it requires a factory.
+             This is usually because the model has more advanced features.
+             Please use '.{methodName}<TModel>(..., factory: modelFactory)' or the appropriate create method on a factory, such as 'As<{typeof(TModel)}>().
+             """
+        );
     }
 
     internal static TModel? FromNull<TModel>(Type? trueType = default, ModelNullHandling nullHandling = ModelNullHandling.Undefined)

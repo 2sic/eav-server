@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Models;
 
 [WorkInProgressApi("beta v21")]
-public static class GetModelExtensions
+public static partial class ToModelExtensions
 {
     /// <summary>
     /// Get a typed metadata from an object which has metadata. Will return `null` if no data found.
