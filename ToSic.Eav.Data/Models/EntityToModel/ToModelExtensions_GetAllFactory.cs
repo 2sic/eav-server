@@ -18,12 +18,12 @@ public static partial class ToModelExtensions
     /// source is null or no matching entities are found.</returns>
     /// <param name="factory">The factory to use for creating wrapper instances.</param>
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public static IEnumerable<TModel?> GetAll<TModel>(
+    public static IEnumerable<TModel?> GetModels<TModel>(
         this IEnumerable<IEntity>? list,
         IModelFactory factory,
         NoParamOrder npo = default,
         string? typeName = default
-    ) where TModel : class, IModelSetup<IEntity>
+    ) where TModel : class, IModelFromEntity
     {
         if (list == null)
             return [];

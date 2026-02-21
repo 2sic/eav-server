@@ -12,13 +12,13 @@ public static partial class ToModelExtensions
     /// <param name="parent">An object which has metadata.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <returns></returns>
-    public static TModel? GetMetadata<TModel>(
+    public static TModel? GetMetadataModel<TModel>(
         this IHasMetadata parent,
         NoParamOrder npo = default
         //ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelFromEntity
     {
-        return parent.Metadata.First<TModel>(/*nullHandling: nullHandling*/);
+        return parent.Metadata.FirstModel<TModel>(/*nullHandling: nullHandling*/);
     }
 }

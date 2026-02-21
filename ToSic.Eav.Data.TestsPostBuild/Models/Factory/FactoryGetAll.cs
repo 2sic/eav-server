@@ -10,7 +10,7 @@ public class FactoryGetAll(TestDataGenerator generator, IModelFactory factory)
     public void GetAllRequiringFactory(int amountMdFor)
     {
         var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
-        var list = entity.Metadata.GetAll<TestModelRequiringFactoryEmptyConstructor>(
+        var list = entity.Metadata.GetModels<TestModelRequiringFactoryEmptyConstructor>(
             factory,
             typeName: nameof(TestModelMetadataForDecorator)
         );

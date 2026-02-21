@@ -7,6 +7,6 @@ public static class ContentTypeExtensions
         contentType.PiggyBack.GetOrGenerate(
             parent: contentType.Metadata,
             key: nameof(DetailsOrNull),
-            create: () => contentType.Metadata.First<ContentTypeDetails>()
+            create: () => contentType.Metadata.FirstModel<ContentTypeDetails>()
         ).Value;
 }

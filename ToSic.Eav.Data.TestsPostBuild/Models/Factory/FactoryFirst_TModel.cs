@@ -10,7 +10,7 @@ public partial class FactoryFirst_TModel(TestDataGenerator generator, IModelFact
     public void GetOneRequiringFactory(int amountMdFor)
     {
         var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
-        entity.Metadata.First<TestModelRequiringFactoryEmptyConstructor>(factory,
+        entity.Metadata.FirstModel<TestModelRequiringFactoryEmptyConstructor>(factory,
             typeName: nameof(TestModelMetadataForDecorator)
         );
     }

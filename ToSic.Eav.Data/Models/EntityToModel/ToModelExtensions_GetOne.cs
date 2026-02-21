@@ -12,7 +12,7 @@ public static partial class ToModelExtensions
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck"></param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? GetOne<TModel>(
+    public static TModel? GetModel<TModel>(
         this IEnumerable<IEntity>? list,
         int id,
         NoParamOrder npo = default,
@@ -31,7 +31,7 @@ public static partial class ToModelExtensions
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck"></param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? GetOne<TModel>(
+    public static TModel? GetModel<TModel>(
         this IEnumerable<IEntity>? list,
         Guid guid,
         NoParamOrder npo = default,

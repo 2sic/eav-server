@@ -36,10 +36,10 @@ public static class TestAccessors
         string? typeName = default,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined)
         where TModel : class, IModelFromEntity, new()
-        => list.First<TModel>(npo, typeName, nullHandling);
+        => list.FirstModel<TModel>(npo, typeName, nullHandling);
 
     public static TModel? FirstTac<TModel>(this IEnumerable<IEntity>? list)
         where TModel : class, IModelFromEntity, new()
-        => list.First<TModel>();
+        => list.FirstModel<TModel>();
 
 }

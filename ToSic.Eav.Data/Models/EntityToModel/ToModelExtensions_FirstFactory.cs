@@ -17,13 +17,13 @@ public static partial class ToModelExtensions
     /// <param name="typeName">The name of the type to match.</param>
     /// <param name="factory">A factory to create the target model.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? First<TModel>(
+    public static TModel? FirstModel<TModel>(
         this IEnumerable<IEntity>? list,
         IModelFactory factory,
         NoParamOrder npo = default,
         string? typeName = default
     )
-        where TModel : class, IModelSetup<IEntity>
+        where TModel : class, IModelFromEntity
     {
         if (list == null)
             return default;

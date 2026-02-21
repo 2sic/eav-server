@@ -14,7 +14,7 @@ public static partial class ToModelExtensions
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     public static TModel? ToModel<TModel>(this IEntity entity, IModelFactory factory)
-        where TModel : class, IModelSetup<IEntity>
+        where TModel : class, IModelFromEntity
     {
         if (factory == null)
             throw new ArgumentNullException(nameof(factory));

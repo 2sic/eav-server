@@ -9,10 +9,10 @@ internal class ModelFactory(IServiceProvider sp): IModelFactory
 {
     [return: NotNullIfNotNull(nameof(source))]
     public TModel? Create<TSource, TModel>(TSource? source)
-        where TModel : IModelSetup<TSource>
+        where TModel : IModelFromEntity
     {
         var wrapper = sp.Build<TModel>();
-        var ok = wrapper.SetupModel(source);
+        var ok = (wrapper as IModelSetup<TSource>)?.SetupModel(source) ?? false;
         return ok ? wrapper : default;
     }
 

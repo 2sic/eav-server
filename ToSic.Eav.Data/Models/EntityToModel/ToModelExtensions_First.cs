@@ -13,9 +13,9 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel">The target model to convert to.</typeparam>
     /// <param name="list">The collection of entities to search.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? First<TModel>(this IEnumerable<IEntity>? list)
+    public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list)
         where TModel : class, IModelFromEntity, new()
-        => list.First<TModel>(typeName: null);
+        => list.FirstModel<TModel>(typeName: null);
 
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
@@ -26,7 +26,7 @@ public static partial class ToModelExtensions
     /// <param name="typeName">The name of the type to match.</param>
     /// <param name="nullHandling"></param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? First<TModel>(
+    public static TModel? FirstModel<TModel>(
         this IEnumerable<IEntity>? list,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,

@@ -29,7 +29,7 @@ partial class Metadata<T>
     public IEnumerable<IPermission> Permissions
     {
         get => field == null || UpStreamChanged()
-            ? field = AllWithHidden.GetAll<Permission>()
+            ? field = AllWithHidden.GetModels<Permission>()
                 .ToImmutableOpt()
             : field;
         set;
