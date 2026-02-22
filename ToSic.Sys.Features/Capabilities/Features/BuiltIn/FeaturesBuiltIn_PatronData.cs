@@ -120,10 +120,10 @@ public partial class BuiltInFeatures
     {
         NameId = nameof(EntityUndelete),
         Guid = new("07803050-9f7b-4cc4-a760-3a7f6fbe1b9a"),
-        Name = "Entity Undelete (new v21)",
+        Name = "Entity Undelete / Recycle Bin (new v21)",
         IsPublic = false,
         Ui = true,
-        Description = "Allows undeleting data/entities which was previously deleted.",
+        Description = "Allows undeleting data/entities which was previously deleted using the Recycle Bin.",
         Security = FeaturesCatalogRules.Security0Neutral,
         LicenseRules = ForPatronDataAutoEnabled,
     };

@@ -9,6 +9,8 @@ using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Sys;
+using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Utils.Compression;
 
 namespace ToSic.Eav.Apps.Sys.Work;
@@ -18,16 +20,24 @@ public class WorkEntityRecycle(
     AppCachePurger appCachePurger,
     LazySvc<ImportService> import,
     LazySvc<JsonSerializer> jsonSerializer,
-    LazySvc<Compressor> compressor)
-    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor])
+    LazySvc<Compressor> compressor,
+    ISysFeaturesService featuresService)
+    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService])
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
     public void Recycle(int transactionId)
     {
+        featuresService.ThrowIfNotEnabled("Feature Undelete not enabled.",BuiltInFeatures.EntityUndelete.Guid);
+        RecycleInternal(transactionId);
+    }
+
+    internal void RecycleInternal(int transactionId)
+    {
         var l = Log.Fn($"tx:{transactionId}");
 
-        ValidateInputs(transactionId);
+        if (transactionId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(transactionId));
 
         var db = AppWorkCtx.DbStorage.SqlDb;
         EnsureTransactionExists(db, transactionId);
@@ -52,12 +62,6 @@ public class WorkEntityRecycle(
         appCachePurger.Purge(AppWorkCtx);
 
         l.Done();
-    }
-
-    private static void ValidateInputs(int transactionId)
-    {
-        if (transactionId <= 0)
-            throw new ArgumentOutOfRangeException(nameof(transactionId));
     }
 
     private static void EnsureTransactionExists(EavDbContext db, int transactionId)
