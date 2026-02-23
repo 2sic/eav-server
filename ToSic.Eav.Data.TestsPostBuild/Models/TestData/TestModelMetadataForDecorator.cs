@@ -4,7 +4,7 @@ using ToSic.Eav.Metadata;
 namespace ToSic.Eav.Models.TestData;
 
 [ModelSpecs(Use = typeof(TestModelMetadataForDecorator))]
-public interface ITestModelMetadataForDecorator : IModelSetup<IEntity>;
+public interface ITestModelMetadataForDecorator : IModelFromEntity, IModelSetup<IEntity>;
 
 /// <summary>
 /// Test Sample Model

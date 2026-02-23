@@ -7,7 +7,7 @@ namespace ToSic.Eav.Models.TestData;
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelRequiringFactoryEmptyConstructor : IModelSetup<IEntity>, IModelFactoryRequired
+public class TestModelRequiringFactoryEmptyConstructor : IModelFromEntity, IModelSetup<IEntity>, IModelFactoryRequired
 {
     public bool SetupModel(IEntity? source) => true;
 }
@@ -15,7 +15,7 @@ public class TestModelRequiringFactoryEmptyConstructor : IModelSetup<IEntity>, I
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelRequiringFactory(TestModelRequiringFactory.TestModelDependencyInjection dependency) : IModelSetup<IEntity>, IModelFactoryRequired
+public class TestModelRequiringFactory(TestModelRequiringFactory.TestModelDependencyInjection dependency) : IModelFromEntity, IModelSetup<IEntity>, IModelFactoryRequired
 {
     public class TestModelDependencyInjection
     {

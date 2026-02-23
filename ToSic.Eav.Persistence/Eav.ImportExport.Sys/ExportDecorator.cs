@@ -4,7 +4,7 @@ namespace ToSic.Eav.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [ModelSpecs(ContentType = ContentTypeNameId)]
-public record ExportDecorator : ModelOfEntityCore
+public record ExportDecorator : ModelFromEntity
 {
     public const string ContentTypeNameId = "32698880-1c2e-41ab-bcfc-420091d3263f";
     public const string ContentTypeName = "SystemExportDecorator";

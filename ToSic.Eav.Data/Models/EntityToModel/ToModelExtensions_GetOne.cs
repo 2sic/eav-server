@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Models;
+﻿namespace ToSic.Eav.Models;
 
-namespace ToSic.Eav.Data;
-
-public static partial class EntityListExtensions
+public static partial class ToModelExtensions
 {
 
     /// <summary>
@@ -14,15 +12,15 @@ public static partial class EntityListExtensions
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck"></param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? GetOne<TModel>(
+    public static TModel? GetModel<TModel>(
         this IEnumerable<IEntity>? list,
         int id,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
-    ) where TModel : class, IModelSetup<IEntity>, new() =>
+    ) where TModel : class, IModelFromEntity, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(id)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
+        (list?.GetOne(id)).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
@@ -33,15 +31,15 @@ public static partial class EntityListExtensions
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck"></param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? GetOne<TModel>(
+    public static TModel? GetModel<TModel>(
         this IEnumerable<IEntity>? list,
         Guid guid,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
         //bool nullIfNull = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
-    ) where TModel : class, IModelSetup<IEntity>, new() =>
+    ) where TModel : class, IModelFromEntity, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(guid)).AsInternal<TModel>(skipTypeCheck: skipTypeCheck, /*nullIfNull: nullIfNull,*/ nullHandling: nullHandling);
+        (list?.GetOne(guid)).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, /*nullIfNull: nullIfNull,*/ nullHandling: nullHandling);
 
 }

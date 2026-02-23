@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys.FileSystemState;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.InputTypes;
+using ToSic.Eav.Models;
 using ToSic.Sys.Utils;
 using static ToSic.Eav.Data.Sys.InputTypes.InputTypeDefinition;
 
@@ -111,7 +112,7 @@ public class WorkInputTypes(
     private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus? overrideCtx = default) =>
         (overrideCtx ?? AppWorkCtx)
         .AppReader.List
-        .GetAll<InputTypeDefinition>()
+        .GetModels<InputTypeDefinition>()
         .Select(e => new InputTypeInfo(metadata: (e as ICanBeEntity)?.Entity.Metadata)
         {
             Type = e.Type,

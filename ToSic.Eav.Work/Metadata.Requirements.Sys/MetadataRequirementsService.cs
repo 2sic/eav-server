@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Models;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
@@ -80,7 +81,7 @@ public class MetadataRequirementsService(
             return l.Return((true, []), "no metadata");
 
         // Preflight - ensure that they are of type RequirementDecorator
-        var reqList = entities.GetAll<RequirementDecorator>().ToListOpt();
+        var reqList = entities.GetModels<RequirementDecorator>().ToListOpt();
         if (!reqList.Any())
             return l.Return((true, []), "no requirements");
 

@@ -1,20 +1,19 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Eav.Models;
 using ToSic.Eav.Models.Factory;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Models;
 
-public static partial class EntityExtensions
+public static partial class ToModelExtensions
 {
-    public static IEnumerable<TModel> AsList<TModel>(
+    public static IEnumerable<TModel> ToModels<TModel>(
         this IEnumerable<IEntity?> entities,
         NoParamOrder npo = default
         //bool skipTypeCheck = false,
         //bool nullIfNull = false
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity, new()
     {
-        return entities.AsListInternal<TModel>(/*skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull*/);
+        return entities.ToModelsInternal<TModel>(/*skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull*/);
     }
 
 
@@ -22,20 +21,20 @@ public static partial class EntityExtensions
     /// Real implementation of As... methods
     /// </summary>
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
-    /// <param name="list">The entity to convert.</param>
+    /// <param name="entities">The entity to convert.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
     /// <param name="nullIfNull">If the underlying data is null, prefer null over an empty model.</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
-    internal static IEnumerable<TModel> AsListInternal<TModel>(
+    internal static IEnumerable<TModel> ToModelsInternal<TModel>(
         this IEnumerable<IEntity?> entities,
         [CallerMemberName] string? methodName = default,
         NoParamOrder npo = default
         //bool skipTypeCheck = true
         //bool nullIfNull = false
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity, new()
     {
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
@@ -62,7 +61,7 @@ public static partial class EntityExtensions
 
                 // Do Setup and check if it's ok.
                 // Wrapper will return false if the entity is null or invalid for the model.
-                var ok = wrapper.SetupModel(e);
+                var ok = (wrapper as IModelSetup<IEntity>)?.SetupModel(e) ?? false;
                 return ok ? wrapper : default!;
             })
             .Where(m => m != null)

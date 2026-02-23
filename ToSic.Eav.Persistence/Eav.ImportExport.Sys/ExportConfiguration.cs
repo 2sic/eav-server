@@ -8,7 +8,7 @@ namespace ToSic.Eav.ImportExport.Sys;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [ModelSpecs(ContentType = ContentTypeNameId)]
-public record ExportConfiguration : ModelOfEntity
+public record ExportConfiguration : ModelFromEntityBasic
 {
     public const string ContentTypeNameId = "d7f2e4fa-5306-41bb-a3cd-d9529c838879";
     public const string ContentTypeName = "🧑‍💻SystemExportConfiguration";
@@ -39,7 +39,7 @@ public record ExportConfiguration : ModelOfEntity
     /// </summary>
     public ICollection<ExportDecorator> ExportMarkers => _exportMarkers.Get(() => Entity
         .Parents(ExportDecorator.ContentTypeNameId)
-        .Select(e => e.As<ExportDecorator>()!)
+        .Select(e => e.ToModel<ExportDecorator>()!)
         .ToListOpt()
     )!;
     private readonly GetOnce<ICollection<ExportDecorator>> _exportMarkers = new();

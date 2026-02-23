@@ -22,10 +22,10 @@ public interface IModelFactory
     /// <param name="source">The source object containing data used to set up the wrapper model. Cannot be null.</param>
     /// <returns>An instance of <typeparamref name="TModel"/> initialized with the specified source object.</returns>
     public TModel? Create<TSource, TModel>(TSource? source)
-        where TModel : IModelSetup<TSource>;
+        where TModel : IModelFromEntity;
 
     [return: NotNullIfNotNull(nameof(item))]
     TCustom? AsCustomFrom<TCustom, TSource>(TSource? item, ModelSettings? settings = default)
-        where TCustom : class, IModelOfData;
+        where TCustom : class, IModelFromData;
 
 }

@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Models;
 
 /// <summary>
-/// Foundation for interfaces which will enhance <see cref="ModelOfEntity"/> which gets its data from an Entity. <br/>
+/// Foundation for interfaces which enhance <see cref="ModelFromEntityBasic"/> to always include `Id`, `Guid` and `Title`
 /// </summary>
 /// <remarks>
 /// This is used for more type safety - so you base your interfaces - like IPerson on this,
@@ -11,7 +11,7 @@
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IModelOfEntity: ICanBeEntity
+public interface IModelFromEntityBasic: ICanBeEntity
 {
     /// <summary>
     /// The title as string.

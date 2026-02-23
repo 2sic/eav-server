@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Models;
-using ToSic.Eav.Models.Factory;
+﻿using ToSic.Eav.Models.Factory;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Models;
 
-public static partial class ModelFactoryExtensions
+public static partial class ToModelExtensions
 {
     /// <summary>
     /// Returns a collection of wrapper objects of type `TModel` for all entities of the specified type name.
@@ -19,12 +18,12 @@ public static partial class ModelFactoryExtensions
     /// source is null or no matching entities are found.</returns>
     /// <param name="factory">The factory to use for creating wrapper instances.</param>
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public static IEnumerable<TModel?> GetAll<TModel>(
-        this IModelFactory factory,
-        IEnumerable<IEntity>? list,
+    public static IEnumerable<TModel?> GetModels<TModel>(
+        this IEnumerable<IEntity>? list,
+        IModelFactory factory,
         NoParamOrder npo = default,
         string? typeName = default
-    ) where TModel : class, IModelSetup<IEntity>
+    ) where TModel : class, IModelFromEntity
     {
         if (list == null)
             return [];

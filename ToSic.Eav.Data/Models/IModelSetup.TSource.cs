@@ -16,7 +16,6 @@
 /// History
 /// 
 /// * Introduced in v21
-/// * NOT visible in the docs for better understanding in v21
 /// * The `Setup()` method is still internal, as the signature may still change
 /// </remarks>
 /// <typeparam name="TSource">

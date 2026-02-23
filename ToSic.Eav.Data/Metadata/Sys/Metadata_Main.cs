@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Security.Permissions;
+﻿using ToSic.Eav.Models;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Metadata.Sys;
 
@@ -28,7 +29,7 @@ partial class Metadata<T>
     public IEnumerable<IPermission> Permissions
     {
         get => field == null || UpStreamChanged()
-            ? field = AllWithHidden.GetAll<Permission>()
+            ? field = AllWithHidden.GetModels<Permission>()
                 .ToImmutableOpt()
             : field;
         set;

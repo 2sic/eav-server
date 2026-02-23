@@ -1,13 +1,8 @@
-﻿using ToSic.Eav.Models;
-using ToSic.Eav.Models.Factory;
+﻿using ToSic.Eav.Models.Factory;
 
-namespace ToSic.Eav.Data;
+namespace ToSic.Eav.Models;
 
-/// <summary>
-/// WIP v21
-/// </summary>
-[WorkInProgressApi("WIP v21")]
-public static partial class ModelFactoryExtensions
+public static partial class ToModelExtensions
 {
     /// <summary>
     /// WIP, v21
@@ -18,13 +13,13 @@ public static partial class ModelFactoryExtensions
     /// <param name="factory"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static TModel? As<TModel>(this IModelFactory factory, IEntity? entity)
-        where TModel : class, IModelSetup<IEntity>
+    public static TModel? ToModel<TModel>(this IEntity entity, IModelFactory factory)
+        where TModel : class, IModelFromEntity
     {
         if (factory == null)
             throw new ArgumentNullException(nameof(factory));
 
-        if (entity == null)
+        if (entity == null! /* paranoid */)
             return default;
 
         var wrapper = factory.Create<IEntity, TModel>(entity);

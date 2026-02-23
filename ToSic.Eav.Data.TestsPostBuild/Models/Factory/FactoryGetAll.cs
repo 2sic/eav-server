@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Eav.Models.TestData;
+﻿using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models.Factory;
 
@@ -11,8 +10,8 @@ public class FactoryGetAll(TestDataGenerator generator, IModelFactory factory)
     public void GetAllRequiringFactory(int amountMdFor)
     {
         var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
-        var list = factory.GetAll<TestModelRequiringFactoryEmptyConstructor>(
-            entity.Metadata,
+        var list = entity.Metadata.GetModels<TestModelRequiringFactoryEmptyConstructor>(
+            factory,
             typeName: nameof(TestModelMetadataForDecorator)
         );
         Equal(amountMdFor, list.Count());

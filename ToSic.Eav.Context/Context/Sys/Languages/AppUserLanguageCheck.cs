@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.Sys.Permissions;
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
+using ToSic.Eav.Models;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Performance;
@@ -107,7 +108,7 @@ public class AppUserLanguageCheck(
                 {
                     var pChecker = checkGenerator.New();
                     var permissions = permissionEntities
-                        .Select(p => p.As<Permission>(skipTypeCheck: true)!)
+                        .Select(p => p.ToModel<Permission>(skipTypeCheck: true)!)
                         .ToListOpt();
                     pChecker.For("user language", ctx, readerSafe, permissions);
                     ok = pChecker.PermissionsAllow(GrantSets.WriteSomething).Allowed;

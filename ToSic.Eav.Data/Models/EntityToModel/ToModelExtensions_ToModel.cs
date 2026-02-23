@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Models;
+﻿namespace ToSic.Eav.Models;
 
-namespace ToSic.Eav.Data;
-
-public static partial class EntityExtensions
+public static partial class ToModelExtensions
 {
     /// <summary>
     /// WIP
@@ -13,10 +11,10 @@ public static partial class EntityExtensions
     /// <param name="entity"></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
-    public static TModel? As<TModel>(this IEntity? entity)
-        where TModel : class, IModelSetup<IEntity>, new()
+    public static TModel? ToModel<TModel>(this IEntity? entity)
+        where TModel : class, IModelFromEntity
     {
-        return entity.AsInternal<TModel>();
+        return entity.ToModelInternal<TModel>();
     }
 
     /// <summary>
@@ -31,16 +29,16 @@ public static partial class EntityExtensions
     /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
-    public static TModel? As<TModel>(
+    public static TModel? ToModel<TModel>(
         this IEntity? entity,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity
     {
-        return entity.AsInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
+        return entity.ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
     }
 
     /// <summary>
@@ -55,15 +53,15 @@ public static partial class EntityExtensions
     /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
-    public static TModel? As<TModel>(
+    public static TModel? ToModel<TModel>(
         this ICanBeEntity? canBeEntity,
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>, new()
+        where TModel : class, IModelFromEntity
     {
-        return (canBeEntity?.Entity).AsInternal<TModel>(skipTypeCheck: skipTypeCheck);
+        return (canBeEntity?.Entity).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck);
     }
 
 

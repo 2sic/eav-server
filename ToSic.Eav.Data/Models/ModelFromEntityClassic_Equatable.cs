@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Models;
 
-partial class ModelOfEntityClassic: IMultiWrapper<IEntity>, IEquatable<IEntity>
+partial class ModelFromEntityClassic: IMultiWrapper<IEntity>, IEquatable<IEntity>
 {
     bool IEquatable<IEntity>.Equals(IEntity? other) => Equals(other);
 
@@ -26,7 +26,7 @@ partial class ModelOfEntityClassic: IMultiWrapper<IEntity>, IEquatable<IEntity>
     /// <param name="a">first item to compare</param>
     /// <param name="b">second item to compare</param>
     /// <returns>true, if both wrappers are the same type and wrap the same entity</returns>
-    public static bool operator ==(ModelOfEntityClassic a, ModelOfEntityClassic b)
+    public static bool operator ==(ModelFromEntityClassic a, ModelFromEntityClassic b)
         => MultiWrapperEquality.IsEqual(a, b);
 
     /// <summary>
@@ -36,6 +36,6 @@ partial class ModelOfEntityClassic: IMultiWrapper<IEntity>, IEquatable<IEntity>
     /// <param name="item1">first item to compare</param>
     /// <param name="item2">second item to compare</param>
     /// <returns>false, if both wrappers are the same type and wrap the same entity</returns>
-    public static bool operator !=(ModelOfEntityClassic item1, ModelOfEntityClassic item2)
+    public static bool operator !=(ModelFromEntityClassic item1, ModelFromEntityClassic item2)
         => !MultiWrapperEquality.IsEqual(item1, item2);
 }

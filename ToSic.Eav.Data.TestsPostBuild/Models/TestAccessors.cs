@@ -6,8 +6,8 @@ namespace ToSic.Eav.Models;
 public static class TestAccessors
 {
     internal static TModel? AsTac<TModel>(this IEntity? entity)
-        where TModel : class, IModelSetup<IEntity>, new()
-        => entity.As<TModel>();
+        where TModel : class, IModelFromEntity, new()
+        => entity.ToModel<TModel>();
 
     internal static TModel? AsTac<TModel>(
         this IEntity? entity,
@@ -16,8 +16,8 @@ public static class TestAccessors
         //bool nullIfNull = false
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>, new()
-        => entity.As<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
+        where TModel : class, IModelFromEntity, new()
+        => entity.ToModel<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
 
     internal static TModel? AsInternalTac<TModel>(
         this IEntity? entity,
@@ -26,19 +26,20 @@ public static class TestAccessors
         //bool nullIfNull = false
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelSetup<IEntity>//, new()
-        => entity.AsInternal<TModel>(npo, skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
+        where TModel : class, IModelFromEntity//, new()
+        => entity.ToModelInternal<TModel>(npo, skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
     internal static TModel? FirstTac<TModel>(
         this IEnumerable<IEntity>? list,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        string? typeName = default)
-        where TModel : class, IModelSetup<IEntity>, new()
-        => list.First<TModel>(npo, typeName);
+        string? typeName = default,
+        ModelNullHandling nullHandling = ModelNullHandling.Undefined)
+        where TModel : class, IModelFromEntity, new()
+        => list.FirstModel<TModel>(npo, typeName, nullHandling);
 
     public static TModel? FirstTac<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : class, IModelSetup<IEntity>, new()
-        => list.First<TModel>();
+        where TModel : class, IModelFromEntity, new()
+        => list.FirstModel<TModel>();
 
 }

@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Eav.Models.Factory;
 
 namespace ToSic.Eav.Models;
 
@@ -48,7 +47,7 @@ namespace ToSic.Eav.Models;
 /// - Stabilizing in v21 (now first class citizen, part of ToSic.Eav.Models)
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still beta, name may change")]
-public abstract partial class ModelOfEntityClassic: IModelOfData, ICanBeEntity, IModelSetup<IEntity>
+public abstract partial class ModelFromEntityClassic: IModelFromEntity, IModelSetup<IEntity>, ICanBeEntity
 {
     #region Explicit Interfaces for internal use - Setup, etc.
 
@@ -95,25 +94,10 @@ public abstract partial class ModelOfEntityClassic: IModelOfData, ICanBeEntity, 
     /// Override ToString to give more information about the current object
     /// </summary>
     public override string ToString() 
-        => $"{nameof(ModelOfEntityClassic)} Data Model {GetType().FullName} " + (Entity == null! ? "without backing data (null)" : $"for id:{Entity.EntityId} ({Entity})");
+        => $"{nameof(ModelFromEntityClassic)} Data Model {GetType().FullName} " + (Entity == null! ? "without backing data (null)" : $"for id:{Entity.EntityId} ({Entity})");
 
-
-    #region As - ATM not needed any more v21 using new As/AsList extensions
-
-    ///// <inheritdoc cref="DataModelHelpers.As{TCustom}"/>
-    //protected T? As<T>(object? item)
-    //    where T : class, IDataWrapper
-    //    => DataModelHelpers.As<T>(_modelFactory, item);
-
-    ///// <inheritdoc cref="DataModelHelpers.AsList{T}"/>
-    //protected IEnumerable<T>? AsList<T>(object source, NoParamOrder npo = default, bool nullIfNull = false)
-    //    where T : class, IDataWrapper
-    //    => DataModelHelpers.AsList<T>(_modelFactory, source, new() { ItemIsStrict = true }, npo, nullIfNull);
-
-    #endregion
 
     #region GetThis
-
 
     /// <summary>
     /// Get a value from the underlying entity, whose name matches the property requesting this.
@@ -123,7 +107,7 @@ public abstract partial class ModelOfEntityClassic: IModelOfData, ICanBeEntity, 
     /// <param name="fallback">Value to provide if nothing was found - required</param>
     /// <param name="propertyName">The property name - will be autofill by the compiler</param>
     /// <returns>The typed value</returns>
-    //[return: NotNullIfNotNull(nameof(fallback))]
+    [return: NotNullIfNotNull(nameof(fallback))]
     protected T? GetThis<T>(T? fallback, [CallerMemberName] string? propertyName = default)
         => Entity == null!
             ? fallback

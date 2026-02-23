@@ -167,7 +167,7 @@ public class WorkEntityRecycleTests(
         dc2.SqlDb.SaveChanges();
 
         var recycler = workEntityRecycle.New(appId: TestSpecs.AppId);
-        recycler.Recycle(transactionId: deleteTrans.TransactionId);
+        recycler.RecycleInternal(transactionId: deleteTrans.TransactionId);
 
         // Assert
         var dc3 = dbDataGenerator.New(new(TestSpecs.ZoneId, TestSpecs.AppId));
@@ -284,7 +284,7 @@ public class WorkEntityRecycleTests(
 
         // Act
         var recycler = workEntityRecycle.New(appId: TestSpecs.AppId);
-        recycler.Recycle(transactionId: tx.TransactionId);
+        recycler.RecycleInternal(transactionId: tx.TransactionId);
 
         // Assert
         var dc2 = dbDataGenerator.New(new(TestSpecs.ZoneId, TestSpecs.AppId));
@@ -472,7 +472,7 @@ public class WorkEntityRecycleTests(
 
         // Act
         var recycler = workEntityRecycle.New(appId: TestSpecs.AppId);
-        recycler.Recycle(transactionId: tx.TransactionId);
+        recycler.RecycleInternal(transactionId: tx.TransactionId);
 
         // Assert
         var dc2 = dbDataGenerator.New(new(TestSpecs.ZoneId, TestSpecs.AppId));

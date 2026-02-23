@@ -44,4 +44,13 @@ public partial class EntityListFirst
         Null(entity.Metadata.FirstTac<TestModelMetadataForDecorator>(typeName: "some other name"));
     }
 
+    [Theory]
+    [InlineData(1)]
+    [InlineData(5)]
+    public void NotFoundButForceModel(int amount)
+    {
+        var entity = generator.EntityWithMetadataForDecorator(amount);
+        NotNull(entity.Metadata.FirstTac<TestModelMetadataForDecorator>(typeName: "some other name", nullHandling: ModelNullHandling.PreferModel));
+    }
+
 }
