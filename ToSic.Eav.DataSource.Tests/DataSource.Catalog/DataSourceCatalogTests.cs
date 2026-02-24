@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.DataSource.Sys.Catalog;
 using ToSic.Eav.DataSource.VisualQuery.Sys;
+using ToSic.Eav.DataSources;
 
 namespace ToSic.Eav.DataSource.Catalog;
 
@@ -42,6 +43,14 @@ public class DataSourceCatalogTests(DataSourceCatalog dsCatalog)
             Null(sqlDs);
         else
             NotNull(sqlDs);
+    }
+
+    [Fact]
+    public void FindDataSourceInfoByFullTypeName()
+    {
+        var dsInfo = dsCatalog.FindDataSourceInfo(typeof(PublishingFilter).FullName!, 0);
+        NotNull(dsInfo);
+        Equal(PublishingFilter.NameId, dsInfo!.NameId);
     }
 
     [Fact]
