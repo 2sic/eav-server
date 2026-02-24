@@ -4,7 +4,8 @@ using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
-namespace ToSic.Eav.Data.Build;
+
+namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
 /// WIP v21

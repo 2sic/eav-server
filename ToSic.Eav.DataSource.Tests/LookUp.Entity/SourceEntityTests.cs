@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Data.TestData;
@@ -7,10 +7,10 @@ using ToSic.Eav.LookUp.TestHelpers;
 
 namespace ToSic.Eav.LookUp.Entity;
 
-[Startup(typeof(StartupTestsEavDataBuild))]
-public class SourceEntityTests(DataBuilder dataBuilder)
+[Startup(typeof(StartupTestsEavDataBuildWithTestData))]
+public class SourceEntityTests(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
 {
-    private readonly LookUpInEntity _person = new("no-name", dataBuilder.TestEntityDaniel(), null);
+    private readonly LookUpInEntity _person = new("no-name", dataAssembler.TestEntityDaniel(typeAssembler), null);
 
     [Fact]
     public void FirstNameNotEmpty() => NotEqual(string.Empty, _person.GetTac("FirstName"));
@@ -49,16 +49,16 @@ public class SourceEntityTests(DataBuilder dataBuilder)
     [Fact]
     public void SubPropertyTODO() // not quite done yet!
     {
-        var dan = dataBuilder.TestEntityDaniel();
+        var dan = dataAssembler.TestEntityDaniel(typeAssembler);
 
         var relationshipList = new List<EntityRelationship>
         {
-            new(dan, dataBuilder.TestEntityLeonie())
+            new(dan, dataAssembler.TestEntityLeonie(typeAssembler))
         };
 
         for (var p = 0; p < 15; p++)
         {
-            var relPet = new EntityRelationship(dan, dataBuilder.TestEntityPet(p));
+            var relPet = new EntityRelationship(dan, dataAssembler.TestEntityPet(typeAssembler, p));
             relationshipList.Add(relPet);
         }
 

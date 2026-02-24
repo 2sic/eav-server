@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
-
+using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Dimensions;
@@ -104,9 +105,9 @@ partial class JsonSerializer
 
 
         l.A("build entity");
-        var builder = Services.DataBuilder;
+        var builder = Services.DataAssembler;
         var partsBuilder = builder.EntityConnection.UseOptional(source: AppReaderOrNull?.AppState, metadata: mdItems);
-        var newEntity = Services.DataBuilder.Entity.Create(
+        var newEntity = Services.DataAssembler.Entity.Create(
             appId: AppId,
             guid: jEnt.Guid,
             entityId: jEnt.Id,
@@ -152,14 +153,15 @@ partial class JsonSerializer
     private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAttributes, IEntitiesSource? relationshipsSource = null)
     {
         var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>(timer: true);
-        var valBuilder = Services.DataBuilder.Value;
+        var valBuilder = Services.DataAssembler.Value;
+        var relBuilder = Services.DataAssembler.Relationship;
         var attribs = new[]
         {
             BuildAttrib(jAttributes.DateTime, ValueTypes.DateTime, valBuilder.DateTime),
             BuildAttrib(jAttributes.Boolean, ValueTypes.Boolean, valBuilder.Bool),
             BuildAttrib(jAttributes.Custom, ValueTypes.Custom, valBuilder.String),
             BuildAttrib(jAttributes.Json, ValueTypes.Json, valBuilder.String),
-            BuildAttrib(jAttributes.Entity, ValueTypes.Entity, (v, _) => valBuilder.Relationship(v, relationshipsSource)),
+            BuildAttrib(jAttributes.Entity, ValueTypes.Entity, (v, _) => relBuilder.Relationship(relBuilder.ToSource(v, relationshipsSource))),
             BuildAttrib(jAttributes.Hyperlink, ValueTypes.Hyperlink, valBuilder.String),
             BuildAttrib(jAttributes.Number, ValueTypes.Number, valBuilder.Number),
             BuildAttrib(jAttributes.String, ValueTypes.String, valBuilder.String)
@@ -180,7 +182,7 @@ partial class JsonSerializer
         if (list == null)
             return null;
 
-        var builder = Services.DataBuilder;
+        var builder = Services.DataAssembler;
         var newAttributes = list.ToDictionary(
             a => a.Key,
             attrib => builder.Attribute.Create(
@@ -205,7 +207,7 @@ partial class JsonSerializer
                 a =>
                 {
                     var values = GetValues(a, jAttributes, relationshipsSource);
-                    return Services.DataBuilder.Attribute.Create(a.Name, a.Type, values);
+                    return Services.DataAssembler.Attribute.Create(a.Name, a.Type, values);
                 },
                 InvariantCultureIgnoreCase
             );
@@ -213,15 +215,16 @@ partial class JsonSerializer
     }
 
     private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAttribs, IEntitiesSource? relationshipsSource)
-        => a.Type switch
+    {
+        var relAssembler = Services.DataAssembler.Relationship;
+        return a.Type switch
         {
             ValueTypes.Boolean => BuildValues(jAttribs.Boolean, a),
             ValueTypes.DateTime => BuildValues(jAttribs.DateTime, a),
             ValueTypes.Entity => jAttribs.Entity == null || !jAttribs.Entity.ContainsKey(a.Name)
                 ? new List<IValue>() // just keep the empty definition, as that's fine
                 : jAttribs.Entity[a.Name]
-                    .Select(v => Services.DataBuilder.Value.Relationship(
-                        v.Value, relationshipsSource ?? LazyRelationshipLookupList))
+                    .Select(v => relAssembler.Relationship(relAssembler.ToSource(v.Value, relationshipsSource ?? LazyRelationshipLookupList)))
                     .ToListOpt(),
             ValueTypes.Hyperlink => BuildValues(jAttribs.Hyperlink, a),
             ValueTypes.Number => BuildValues(jAttribs.Number, a),
@@ -234,13 +237,14 @@ partial class JsonSerializer
                 new List<IValue>(),
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
 
     private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>>? dic, IContentTypeAttribute attrDef)
     {
         if (dic == null || !dic.ContainsKey(attrDef.Name))
             return new List<IValue>();
         return dic[attrDef.Name]
-            .Select(IValue (v) => Services.DataBuilder.Value.Create(v.Value, RecreateLanguageList(v.Key)))
+            .Select(IValue (v) => Services.DataAssembler.Value.Create(v.Value, languages: RecreateLanguageList(v.Key)))
             .ToListOpt();
     }
 

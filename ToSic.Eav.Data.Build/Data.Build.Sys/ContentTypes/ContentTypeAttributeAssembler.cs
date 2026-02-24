@@ -1,17 +1,17 @@
-﻿
-using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
-/// Builder to create / clone <see cref="IContentTypeAttribute"/> definitions.
+/// Internal helper to assemble <see cref="IContentTypeAttribute"/> definitions.
 /// </summary>
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[method: PrivateApi]
+public class ContentTypeAttributeAssembler() : ServiceBase("Eav.CtAtBl")
 {
     /// <summary>
     /// Create a ContentType Attribute.
@@ -74,9 +74,7 @@ public class ContentTypeAttributeBuilder() : ServiceBase("Eav.CtAtBl")
         int? id = default,
         int? sortOrder = default,
         IMetadata? metadata = default,
-        List<IEntity>? metadataItems = default//,
-        // #CleanUpMetadataVarieties 2025-09-05 2dm
-        //Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = null
+        List<IEntity>? metadataItems = default
     )
     {
         // Prepare parts which we also need for new Metadata Creation

@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.EntityPair;
+﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
@@ -6,7 +7,7 @@ using ToSic.Eav.Repository.Efc.Sys.DbEntities;
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class EntityProcessServices(
     DbStorage.DbStorage dbStorage,
-    DataBuilder builder,
+    DataAssembler dataAssembler,
     ICollection<IEntityPair<SaveOptions>> entityOptionPairs, ILog parentLog) : HelperBase(parentLog, "DB.PrepEy")
 {
     #region Logging
@@ -23,7 +24,7 @@ internal class EntityProcessServices(
 
     public DbEntity DbEntity = dbStorage.Entities;
 
-    public DataBuilder Builder = builder;
+    public DataAssembler DataAssembler = dataAssembler;
 
     public JsonSerializer Serializer { get; } = dbStorage.JsonSerializerGenerator.New();
 
@@ -32,7 +33,7 @@ internal class EntityProcessServices(
     public EntityAnalyzeStructure StructureAnalyzer => field ??= new(DbStorage, LogDetails);
 
     [field: AllowNull, MaybeNull]
-    public EntityAnalyzePublishing PublishingAnalyzer => field ??= new(DbStorage, Builder, entityOptionPairs, LogDetails);
+    public EntityAnalyzePublishing PublishingAnalyzer => field ??= new(DbStorage, DataAssembler, entityOptionPairs, LogDetails);
 
     public int TransactionId => _transactionId ??= DbStorage.Versioning.GetTransactionId();
     private int? _transactionId;

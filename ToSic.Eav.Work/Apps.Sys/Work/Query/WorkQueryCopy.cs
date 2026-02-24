@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.DataSource.Query.Sys;
@@ -15,7 +16,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
 
     public WorkQueryCopy(
         LazySvc<QueryDefinitionService> queryDefSvc,
-        LazySvc<DataBuilder> builder,
+        LazySvc<DataAssembler> builder,
         LazySvc<JsonSerializer> jsonSerializer,
         GenWorkDb<WorkEntitySave> entSave) : base("AWk.QryMod", connect: [entSave, queryDefSvc, jsonSerializer, builder])
     {
@@ -26,7 +27,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
     }
 
     private readonly GenWorkDb<WorkEntitySave> _entSave;
-    private readonly LazySvc<DataBuilder> _builder;
+    private readonly LazySvc<DataAssembler> _builder;
     private readonly LazySvc<QueryDefinitionService> _queryDefSvc;
     private readonly LazySvc<JsonSerializer> _serializer;
 
@@ -79,7 +80,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
             (query as ICanBeEntity).Entity,
             id: 0,
             guid: newQueryGuid,
-            attributes: _builder.Value.Attribute.Create(queryAttributes)
+            attributes: _builder.Value.AttributeList.Finalize(queryAttributes)
         );
 
         var entityList = newParts

@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Data.Sys.Entities;
@@ -16,11 +17,11 @@ namespace ToSic.Eav.Repository.Efc.Tests.MergeEntities;
 // TODO: THIS IS A VERY long test class - consider splitting it up into multiple classes
 
 [Startup(typeof(StartupTestsApps))]
-public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     [field: AllowNull, MaybeNull]
-    private DimensionBuilder LanguageBuilder => field ??= new();
-    private ILanguage Clone(ILanguage orig, bool readOnly) => LanguageBuilder.CreateFrom(orig, readOnly);
+    private LanguageAssembler LanguageAssembler => field ??= new();
+    private ILanguage Clone(ILanguage orig, bool readOnly) => LanguageAssembler.CreateFrom(orig, readOnly);
 
     // Todo
     // finish implementing ML-handling and test every possible case
@@ -37,10 +38,10 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
 
     private IContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
     {
-        return dataBuilder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
+        return typeAssembler.Attribute.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
     }
 
-    IContentType _ctPerson => dataBuilder.ContentType.CreateContentTypeTac(appId: AppId, name: "Person", attributes: new List<IContentTypeAttribute>
+    IContentType _ctPerson => typeAssembler.Type.CreateContentTypeTac(appId: AppId, name: "Person", attributes: new List<IContentTypeAttribute>
     {
         ContentTypeAttribute(AppId, "FullName", "String", true, 0, 0),
         ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
@@ -52,7 +53,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
 
     readonly Entity _origENull = null;
 
-    private Entity GirlSingle => dataBuilder.CreateEntityTac(appId: AppId, entityId: 999, contentType: _ctPerson, values: new()
+    private Entity GirlSingle => dataAssembler.CreateEntityTac(appId: AppId, entityId: 999, contentType: _ctPerson, values: new()
     {
         {"FullName", "Sandra Unmarried"},
         {"FirstName", "Sandra"},
@@ -60,7 +61,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
         {"Birthday", new DateTime(1981, 5, 14) }
     });
 
-    private Entity GirlMarried => dataBuilder.CreateEntityTac(appId: AppId, contentType: dataBuilder.ContentType.Transient("DynPerson"), values: new()
+    private Entity GirlMarried => dataAssembler.CreateEntityTac(appId: AppId, contentType: typeAssembler.Type.Transient("DynPerson"), values: new()
     {
         {"FullName", "Sandra Unmarried-Married"},
         {"FirstName", "Sandra"},
@@ -70,7 +71,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
         {"WeddingDate", DateTime.Today }
     });
 
-    private Entity GirlMarriedUpdate => dataBuilder.CreateEntityTac(appId: AppId, contentType: _ctPerson, values: new()
+    private Entity GirlMarriedUpdate => dataAssembler.CreateEntityTac(appId: AppId, contentType: _ctPerson, values: new()
     {
         {"FullName", "Sandra Unmarried-Married"},
         //{"FirstName", "Sandra"},
@@ -139,7 +140,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
 
     #region Test Data ML
 
-    IContentType _ctMlProduct => dataBuilder.ContentType.CreateContentTypeTac(appId: -1, name: "Product", attributes: new List<IContentTypeAttribute>
+    IContentType _ctMlProduct => typeAssembler.Type.CreateContentTypeTac(appId: -1, name: "Product", attributes: new List<IContentTypeAttribute>
         {
             ContentTypeAttribute(AppId, AttributeNames.TitleNiceName, "String", true, 0, 0),
             ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
@@ -148,7 +149,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
     );
 
     private readonly Entity _prodNull = null;
-    private Entity ProdNoLang => dataBuilder.CreateEntityTac(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new()
+    private Entity ProdNoLang => dataAssembler.CreateEntityTac(appId: AppId, entityId: 3006, contentType: _ctMlProduct, values: new()
     {
         { AttributeNames.TitleNiceName, "Original Product No Lang" },
         { "Teaser", "Original Teaser no lang" },
@@ -159,20 +160,20 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
     private Entity _prodEn;
     private Entity GetProdEn() 
     {
-        var title = dataBuilder.Attribute.CreateTypedAttributeTac(AttributeNames.TitleNiceName, ValueTypes.String, new List<IValue>
+        var title = dataAssembler.Attribute.CreateTypedAttributeTac(AttributeNames.TitleNiceName, ValueTypes.String, new List<IValue>
         {
-            dataBuilder.Value.BuildTac(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn}),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn}),
         });
-        var teaser = dataBuilder.Attribute.CreateTypedAttributeTac("Teaser", ValueTypes.String, new List<IValue>
+        var teaser = dataAssembler.Attribute.CreateTypedAttributeTac("Teaser", ValueTypes.String, new List<IValue>
         {
-            dataBuilder.Value.BuildTac(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { langEn }),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> { langEn }),
         });
-        var file = dataBuilder.Attribute.CreateTypedAttributeTac("File", ValueTypes.String, new List<IValue>
+        var file = dataAssembler.Attribute.CreateTypedAttributeTac("File", ValueTypes.String, new List<IValue>
         {
-            dataBuilder.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn }),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn }),
         });
 
-        return dataBuilder.CreateEntityTac(appId: AppId, entityId: 3006, contentType: dataBuilder.ContentType.Transient("Product"), values: new()
+        return dataAssembler.CreateEntityTac(appId: AppId, entityId: 3006, contentType: typeAssembler.Type.Transient("Product"), values: new()
         {
             {title.Name, title},
             {teaser.Name, teaser},
@@ -187,34 +188,34 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataBuilder dataBuilder
 
     private Entity GetProductEntityMl()
     {
-        var title = dataBuilder.Attribute.CreateTypedAttributeTac(AttributeNames.TitleNiceName, ValueTypes.String, new List<IValue>
+        var title = dataAssembler.Attribute.CreateTypedAttributeTac(AttributeNames.TitleNiceName, ValueTypes.String, new List<IValue>
         {
-            dataBuilder.Value.BuildTac(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn }),
-            dataBuilder.Value.BuildTac(ValueTypes.String, "Title DE",
+            dataAssembler.Value.BuildTac(ValueTypes.String, "TitleEn, language En", new List<ILanguage> { langEn }),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "Title DE",
                 new List<ILanguage> { langDeDe, Clone(langDeCh, true)}),
-            dataBuilder.Value.BuildTac(ValueTypes.String, "titre FR", new List<ILanguage> { langFr })
+            dataAssembler.Value.BuildTac(ValueTypes.String, "titre FR", new List<ILanguage> { langFr })
         });
 
-        var teaser = dataBuilder.Attribute.CreateTypedAttributeTac("Teaser", ValueTypes.String, new List<IValue>
+        var teaser = dataAssembler.Attribute.CreateTypedAttributeTac("Teaser", ValueTypes.String, new List<IValue>
         {
-            dataBuilder.Value.BuildTac(ValueTypes.String, "teaser de de", new List<ILanguage> {langDeDe }),
-            dataBuilder.Value.BuildTac(ValueTypes.String, "teaser de CH", new List<ILanguage> {langDeCh }),
-            dataBuilder.Value.BuildTac(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "teaser de de", new List<ILanguage> {langDeDe }),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "teaser de CH", new List<ILanguage> {langDeCh }),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "teaser FR", new List<ILanguage> { Clone(langFr,true)}),
             // special test: leave EN (primary) at end of list, as this could happen in real life
-            dataBuilder.Value.BuildTac(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn }),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "Teaser EN, lang en", new List<ILanguage> {langEn }),
         });
-        var file = dataBuilder.Attribute.CreateTypedAttributeTac("File", ValueTypes.String, new List<IValue>
+        var file = dataAssembler.Attribute.CreateTypedAttributeTac("File", ValueTypes.String, new List<IValue>
         {
-            dataBuilder.Value.BuildTac(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
-            dataBuilder.Value.BuildTac(ValueTypes.String, "File de de",
+            dataAssembler.Value.BuildTac(ValueTypes.String, "Filen EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "File de de",
                 new List<ILanguage> { langDeDe, langFr }),
-            dataBuilder.Value.BuildTac(ValueTypes.String, "File FR", new List<ILanguage> {langFr }),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "File FR", new List<ILanguage> {langFr }),
             // special test - empty language item
-            dataBuilder.Value.BuildTac(ValueTypes.String, "File without language!", DataConstants.NoLanguages.ToList()),
-            dataBuilder.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "File without language!", DataConstants.NoLanguages.ToList()),
+            dataAssembler.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
         });
 
-        return dataBuilder.CreateEntityTac(appId: AppId, entityId: 430, contentType: dataBuilder.ContentType.Transient("Product"), values: new()
+        return dataAssembler.CreateEntityTac(appId: AppId, entityId: 430, contentType: typeAssembler.Type.Transient("Product"), values: new()
         {
             {title.Name, title},
             {teaser.Name, teaser},

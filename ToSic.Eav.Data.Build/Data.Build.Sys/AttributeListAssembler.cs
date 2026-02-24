@@ -2,15 +2,16 @@
 using ToSic.Eav.Data.Sys;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.Build.Sys;
 
-partial class AttributeBuilder
+public class AttributeListAssembler(AttributeAssembler attributeAssembler, ValueAssembler valueAssembler)
+    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld", connect: [attributeAssembler, valueAssembler])
 {
 
-    public IImmutableDictionary<string, IAttribute> Empty() => EmptyList;
-    public static readonly IImmutableDictionary<string, IAttribute> EmptyList = new Dictionary<string, IAttribute>().ToImmutableDictionary();
+    public static readonly IImmutableDictionary<string, IAttribute> EmptyList =
+        new Dictionary<string, IAttribute>().ToImmutableDictionary();
     
-    public IReadOnlyDictionary<string, IAttribute> Create(IContentType contentType, ILookup<string, IValue>? preparedValues)
+    public IReadOnlyDictionary<string, IAttribute> CreateListForType(IContentType contentType, ILookup<string, IValue>? preparedValues)
     {
         var attributes = contentType
             .Attributes
@@ -23,19 +24,31 @@ partial class AttributeBuilder
                     var values = preparedValues?.Contains(a.Name) == true
                         ? preparedValues[a.Name].ToListOpt()
                         : null;
-                    var entityAttribute = Create(a.Name, a.Type, values ?? []);
+                    var entityAttribute = attributeAssembler.Create(a.Name, a.Type, values ?? []);
                     return entityAttribute;
                 }, InvariantCultureIgnoreCase);
         return attributes;
     }
 
+    /// <summary>
+    /// Finalize a dictionary of attributes, ensuring it is immutable and has the correct comparer. If the input is null, it returns an empty list.
+    /// </summary>
+    /// <param name="attributes"></param>
+    /// <returns></returns>
+    public IReadOnlyDictionary<string, IAttribute> Finalize(IDictionary<string, IAttribute>? attributes)
+        => attributes?.ToImmutableInvIgnoreCase() ?? EmptyList;
 
-    public IReadOnlyDictionary<string, IAttribute> Create(IDictionary<string, IAttribute>? attributes)
-        => attributes?.ToImmutableInvIgnoreCase() ?? Empty();
-
-    public IReadOnlyDictionary<string, IAttribute> Create(IDictionary<string, object?>? attributes, IImmutableList<ILanguage>? languages = null)
+    /// <summary>
+    /// Finalize a dictionary of attributes, ensuring it is immutable and has the correct comparer.
+    /// If the input is null, it returns an empty list.
+    /// If the input is not null, it will convert all attributes to the correct type.
+    /// </summary>
+    /// <param name="attributes"></param>
+    /// <param name="languages"></param>
+    /// <returns></returns>
+    public IReadOnlyDictionary<string, IAttribute> Finalize(IDictionary<string, object?>? attributes, IImmutableList<ILanguage>? languages = null)
         => attributes == null
-            ? Empty()
+            ? EmptyList
             : CreateInternal(attributes, languages)
                 .ToImmutableInvIgnoreCase();
 
@@ -57,11 +70,11 @@ partial class AttributeBuilder
                 var valuesModelList = new List<IValue>();
                 if (pair.Value != null)
                 {
-                    var valueModel = valueBuilder.Build(attributeType, pair.Value, languages);
+                    var valueModel = valueAssembler.Create(attributeType, pair.Value, languages);
                     valuesModelList.Add(valueModel);
                 }
 
-                var attributeModel = Create(pair.Key, attributeType, valuesModelList);
+                var attributeModel = attributeAssembler.Create(pair.Key, attributeType, valuesModelList);
 
                 return attributeModel;
             },
@@ -69,7 +82,7 @@ partial class AttributeBuilder
 
     #region Mutable operations - WIP
 
-    public IDictionary<string, IAttribute> Mutable(IReadOnlyDictionary<string, IAttribute>? attributes)
+    public IDictionary<string, IAttribute> ConvertToMutable(IReadOnlyDictionary<string, IAttribute>? attributes)
         => attributes?.ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase)
            ?? new Dictionary<string, IAttribute>(InvariantCultureIgnoreCase);
 
@@ -81,10 +94,11 @@ partial class AttributeBuilder
         result[newAttribute.Name] = newAttribute;
         return result;
     }
+
     public IDictionary<string, IAttribute> Replace(IReadOnlyDictionary<string, IAttribute> target, IEnumerable<IAttribute> newAttributes)
     {
         // ReSharper disable once UseObjectOrCollectionInitializer
-        var result = target.ToDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
+        var result = ConvertToMutable(target);
         // Do this in a separate step, so it lands at the end of the list
         foreach (var newAttribute in newAttributes)
             result[newAttribute.Name] = newAttribute;

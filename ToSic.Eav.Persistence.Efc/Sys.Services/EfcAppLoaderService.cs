@@ -10,6 +10,7 @@ using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
@@ -36,14 +37,15 @@ public class EfcAppLoaderService(
     IAppStateCacheService appStates,
     ILogStore logStore,
     ISysFeaturesService sysFeaturesSvc,
-    DataBuilder dataBuilder,
+    DataAssembler dataAssembler,
+    ContentTypeAssembler typeAssembler,
     Generator<IDataDeserializer> dataDeserializer,
     Generator<IAppContentTypesLoader> appFileContentTypesLoader,
     Generator<IAppStateBuilder> appStateBuilder)
     : ServiceBase("Db.Efc11",
         connect:
         [
-            context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, sysFeaturesSvc, dataBuilder,
+            context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, sysFeaturesSvc, dataAssembler, typeAssembler,
             dataDeserializer, appFileContentTypesLoader, appStateBuilder
         ]), IAppsAndZonesLoaderWithRaw
 {
@@ -101,7 +103,7 @@ public class EfcAppLoaderService(
     /// It uses temporary caching, so if called multiple times it loads from a private field.
     /// </summary>
     ICollection<IContentType> IContentTypeLoader.ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
-        => new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc)
+        => new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, typeAssembler, appStates, sysFeaturesSvc)
             .LoadContentTypesFromDb(appId, source)
             .ToListOpt(); // WIP
 
@@ -254,7 +256,7 @@ public class EfcAppLoaderService(
             if (startAt <= AppStateLoadSequence.ContentTypeLoad)
             {
                 var typeTimer = Stopwatch.StartNew();
-                var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, dataBuilder, appStates, sysFeaturesSvc);
+                var loader = new EfcContentTypeLoaderService(this, appFileContentTypesLoader, dataDeserializer, typeAssembler, appStates, sysFeaturesSvc);
                 var dbTypesPreMerge = loader.LoadContentTypesFromDb(state.AppId, state);
                 var data = loader.LoadExtensionsTypesAndMerge(builder.Reader, dbTypesPreMerge);
                 builder.InitContentTypes(data.Types.ToListOpt());
@@ -301,7 +303,7 @@ public class EfcAppLoaderService(
         foreach (var fileEntity in fileEntities)
         {
             var tryToFindType = builder.Reader.TryGetContentType(fileEntity.Type.Name);
-            var updated = tryToFindType == null ? fileEntity : dataBuilder.Entity.CreateFrom(fileEntity, type: tryToFindType);
+            var updated = tryToFindType == null ? fileEntity : dataAssembler.Entity.CreateFrom(fileEntity, type: tryToFindType);
             l.A($"Add file entity {updated.EntityId} / {updated.Type.Name}");
             builder.Add(updated, updated.EntityId, false);
         }
@@ -361,7 +363,7 @@ public class EfcAppLoaderService(
             // But there are edge cases of 2sxc systems upgraded from old versions, where
             // the content-type was DB-based. So there are cases where the data will not be in JSON,
             // and it won't find anything - even though the configuration exists. 
-            var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, sysFeaturesSvc);
+            var entityLoader = new EntityLoader(this, dataDeserializer, dataAssembler, typeAssembler, sysFeaturesSvc);
             var appConfigs = entityLoader.LoadEntityHeadersFromDb(appId, [], filterJsonType: AppLoadConstants.TypeAppConfig);
             if (appConfigs.Count == 0)
                 return l.Return((null, null), "not in db");
@@ -401,7 +403,7 @@ public class EfcAppLoaderService(
 
     internal void LoadEntities(IAppStateBuilder builder, CodeRefTrail codeRefTrail, int[] entityIds)
     {
-        var entityLoader = new EntityLoader(this, dataDeserializer, dataBuilder, sysFeaturesSvc);
+        var entityLoader = new EntityLoader(this, dataDeserializer, dataAssembler, typeAssembler, sysFeaturesSvc);
         var entitySqlTime = entityLoader.LoadEntities(builder, codeRefTrail, entityIds);
         AddSqlTime(entitySqlTime);
     }

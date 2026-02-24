@@ -5,25 +5,27 @@ using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Values;
 
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
-/// Special factory to convert POCOs into content types.
+/// Special system to manage and to convert c# classes with their definitions/attributes into content types.
 /// </summary>
-public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttributeBuilder ctAttributeBuilder, EntityBuilder entityBuilder, AttributeBuilder attributeBuilder)
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[method: PrivateApi]
+public class CodeContentTypesManager(ContentTypeAssembler ctAssembler, EntityAssembler entityAssembler, AttributeListAssembler attributeListAssembler)
     : ServiceBase("Eav.CtFact")
 {
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
 
-    public IContentType Create<T>()
-        => Create(typeof(T));
+    public IContentType Get<T>()
+        => Get(typeof(T));
 
-    public IContentType Create(Type type)
+    public IContentType Get(Type type)
     {
         if (Cache.TryGetValue(type, out var contentType))
             return contentType;
-        var created = Create(type,  name: null, nameId: null, scope: null);
+        var created = Get(type,  name: null, nameId: null, scope: null);
         Cache[type] = created;
         return created;
     }
@@ -31,7 +33,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
     private static readonly Dictionary<Type, IContentType> Cache = new();
 
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    private IContentType Create(Type type, string? name = default, string? nameId = default, string? scope = default, int appId = NoAppId)
+    private IContentType Get(Type type, string? name = default, string? nameId = default, string? scope = default, int appId = NoAppId)
     {
         var l = Log.Fn<IContentType>(timer: true);
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
@@ -52,7 +54,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
             ? null
             : new ContentTypeVirtualAttributes(vAttributes.ToDictionary(va => va.Name, va => va));
 
-        var contentType = ctBuilder.Create(
+        var contentType = ctAssembler.Type.Create(
             appId,
             name: ctName,
             nameId: ctNameId,
@@ -80,12 +82,12 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
 
         // All props
         var dic = new Dictionary<string, object?> { { nameof(ContentTypeDetails.Description), description } };
-        var attributes = attributeBuilder.Create(dic);
+        var attributes = attributeListAssembler.Finalize(dic);
 
         // Create a Description entity
-        var entity = entityBuilder.Create(
+        var entity = entityAssembler.Create(
             NoAppId,
-            ctBuilder.Transient(NoAppId, ContentTypeDetails.ContentTypeName, ContentTypeDetails.ContentTypeName),
+            ctAssembler.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName, ContentTypeDetails.ContentTypeName),
             attributes: attributes
         );
         return l.Return(entity, "created");
@@ -158,7 +160,7 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
                 var attrMetadata = ContentTypeAttributeDetails(specs?.Description, specs?.InputTypeWIP)
                     .ToListOfOneOrNull();
 
-                return ctAttributeBuilder.Create(
+                return ctAssembler.Attribute.Create(
                     NoAppId,
                     name: attrName,
                     type: attrType,
@@ -188,12 +190,12 @@ public class ContentTypeFactory(ContentTypeBuilder ctBuilder, ContentTypeAttribu
         if (inputType != null)
             dic.Add(AttributeMetadataConstants.GeneralFieldInputType, inputType);
 
-        var attributes = attributeBuilder.Create(dic);
+        var attributes = attributeListAssembler.Finalize(dic);
 
         // Create a Description entity
-        var entity = entityBuilder.Create(
+        var entity = entityAssembler.Create(
             NoAppId,
-            ctBuilder.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral, AttributeMetadataConstants.TypeGeneral),
+            ctAssembler.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral, AttributeMetadataConstants.TypeGeneral),
             attributes: attributes);
         return l.Return(entity, "created");
     }

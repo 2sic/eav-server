@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.DataSources.Sys;
 
 namespace ToSic.Eav.DataSources;
@@ -10,15 +11,15 @@ internal partial class TreeMapper : ServiceBase, ITreeMapper, ICanDebug
 
     #region Constructor / DI
 
-    private readonly DataBuilder _builder;
+    private readonly DataAssembler _dataAssembler;
 
     /// <summary>
     /// Constructor for DI
     /// </summary>
-    /// <param name="builder"></param>
-    public TreeMapper(DataBuilder builder): base("DS.TreeMp")
+    /// <param name="dataAssembler"></param>
+    public TreeMapper(DataAssembler dataAssembler): base("DS.TreeMp")
     {
-        _builder = builder;
+        _dataAssembler = dataAssembler;
         Debug = false;
     }
 

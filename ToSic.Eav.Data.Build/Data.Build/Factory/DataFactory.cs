@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
@@ -10,8 +10,13 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilder, Generator<IDataFactory, DataFactoryOptions> selfGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
-    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataBuilder, selfGenerator, ctFactoryLazy]), IDataFactory
+internal class DataFactory(
+    Generator<DataAssembler, DataAssemblerOptions> dataAssembler,
+    LazySvc<ContentTypeTypeAssembler> typeAssembler,
+
+    Generator<IDataFactory, DataFactoryOptions> selfGenerator,
+    LazySvc<CodeContentTypesManager> ctFactoryLazy)
+    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, ctFactoryLazy]), IDataFactory
 {
 
     #region Properties to configure Builder / Defaults
@@ -32,8 +37,8 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
     [field: AllowNull, MaybeNull]
     public IContentType ContentType => field
         ??= Options.Type != null
-            ? ctFactoryLazy.Value.Create(Options.Type)
-            : DataBuilder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
+            ? ctFactoryLazy.Value.Get(Options.Type)
+            : typeAssembler.Value.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
 
     /// <summary>
     /// The DataBuilder used for this DataFactory.
@@ -43,7 +48,7 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
     /// So once it's accessed, options cannot be updated anymore.
     /// </remarks>
     [field: AllowNull, MaybeNull]
-    private DataBuilder DataBuilder => field ??= dataBuilder.New(new() {
+    private DataAssembler DataAssembler => field ??= dataAssembler.New(new() {
         AllowUnknownValueTypes = Options.AllowUnknownValueTypes
     });
 
@@ -59,7 +64,7 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
 
     [field: AllowNull, MaybeNull]
     private RawRelationshipsConvertHelper RelsConvertHelper => field
-        ??= new(DataBuilder, Log);
+        ??= new(DataAssembler, Log);
 
     #endregion
 
@@ -164,8 +169,8 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
             ? (IdCounter < 0 ? IdCounter-- : IdCounter++) // negative means we're counting down
             : id;
 
-        var attributes = DataBuilder.Attribute.Create(valuesWithRelationships);
-        var ent = DataBuilder.Entity.Create(
+        var attributes = DataAssembler.AttributeList.Finalize(valuesWithRelationships);
+        var ent = DataAssembler.Entity.Create(
             appId: Options.AppId,
             entityId: entityId,
             contentType: ContentType,

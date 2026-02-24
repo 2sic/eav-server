@@ -60,7 +60,7 @@ internal class Process3New2DbStoreNewHeaders() : Process0Base("DB.EPr3n2")
             {
                 // Update the IDs in the NewEntity for versioning and/or json persistence
                 var entityWithCorrectId = d.IsNew
-                    ? services.Builder.Entity.CreateFrom(d.NewEntity, id: d.DbEntity!.EntityId)
+                    ? services.DataAssembler.Entity.CreateFrom(d.NewEntity, id: d.DbEntity!.EntityId)
                     : d.NewEntity;
 
                 // Prepare export for save json OR versioning later on

@@ -1,8 +1,9 @@
-﻿using ToSic.Eav.Data.Sys.EntityPair;
+﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
-internal class EntityAnalyzePublishing(DbStorage.DbStorage dbStorage, DataBuilder builder, ICollection<IEntityPair<SaveOptions>> entityOptionPairs, ILog? log) : HelperBase(log, "Db.AzPubl")
+internal class EntityAnalyzePublishing(DbStorage.DbStorage dbStorage, DataAssembler dataAssembler, ICollection<IEntityPair<SaveOptions>> entityOptionPairs, ILog? log) : HelperBase(log, "Db.AzPubl")
 {
     [field: AllowNull, MaybeNull]
     private Dictionary<int, int?> EntityDraftMapCache => field ??= dbStorage.Publishing
@@ -67,7 +68,7 @@ internal class EntityAnalyzePublishing(DbStorage.DbStorage dbStorage, DataBuilde
 
         if (logDetails)
             l.A("original is published, so we'll draft in a branch");
-        var clone = builder.Entity.CreateFrom(newEnt,
+        var clone = dataAssembler.Entity.CreateFrom(newEnt,
             publishedId: newEnt.EntityId, // set this, in case we'll create a new one
             id: existingDraftId ?? 0  // set to the draft OR 0 = new
         );

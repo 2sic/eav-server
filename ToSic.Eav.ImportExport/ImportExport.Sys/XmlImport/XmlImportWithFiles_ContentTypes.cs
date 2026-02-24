@@ -71,7 +71,7 @@ partial class XmlImportWithFiles
                     guid = result;
                 var sysSettings = JsonDeserializeAttribute.SysSettings(nameId, xmlField.Attribute(XmlConstants.SysSettings)?.Value, Log);
 
-                var attribute = Services.MultiBuilder.Value.TypeAttributeBuilder
+                var attribute = Services.TypeAssembler.Value.Attribute
                     .Create(
                         appId: AppId,
                         name: nameId,
@@ -106,7 +106,7 @@ partial class XmlImportWithFiles
             ? xmlContentType.Attribute(XmlConstants.Scope)?.Value
               ?? Services.Environment.FallbackContentTypeScope
             : Services.Environment.FallbackContentTypeScope;
-        var ct = Services.MultiBuilder.Value.ContentType.Create(
+        var ct = Services.TypeAssembler.Value.Type.Create(
             appId: AppId,
             id: 0,
             name: typeName,

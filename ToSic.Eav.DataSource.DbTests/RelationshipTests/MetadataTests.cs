@@ -1,12 +1,11 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.LookUp;
+﻿using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.Sys.Engines;
 using static ToSic.Eav.DataSource.DbTests.RelationshipTests.MetadataTestSpecs;
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class MetadataTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class MetadataTests(DataSourcesTstBuilder dsSvc, LookUpTestData lookUpTestData): IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private void TestMetadata(int expected, DataSources.Metadata ds) => Equal(expected, ds.ListTac().Count()); //, $"should have {expected} md items");
 
@@ -32,9 +31,9 @@ public class MetadataTests(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
 
 
 
-    protected DataSources.Metadata PrepareDs(string appType = null, IEnumerable<int> ids = null, string typeName = null, ILookUpEngine lookUpEngine = null)
+    protected DataSources.Metadata PrepareDs(string? appType = null, IEnumerable<int>? ids = null, string? typeName = null, ILookUpEngine? lookUpEngine = null)
     {
-        if(lookUpEngine == null) lookUpEngine = new LookUpTestData(dataBuilder).AppSetAndRes();
+        lookUpEngine ??= lookUpTestData.AppSetAndRes();
 
         var baseDs = dsSvc.DataSourceSvc.CreateDefault(new DataSourceOptions { AppIdentityOrReader = AppIdentity, LookUp = lookUpEngine } );
         var appDs = dsSvc.CreateDataSource<App>(baseDs);

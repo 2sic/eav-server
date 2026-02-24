@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Global;
@@ -16,8 +17,8 @@ public abstract class SerializerBase(SerializerBase.Dependencies services, strin
 {
     #region MyServices
 
-    public record Dependencies(ITargetTypeService MetadataTargets, DataBuilder DataBuilder, IGlobalDataService GlobalData, object[]? Connect = default)
-        : DependenciesRecord(connect: [MetadataTargets, DataBuilder, GlobalData, ..Connect ?? []]);
+    public record Dependencies(ITargetTypeService MetadataTargets, DataAssembler DataAssembler, ContentTypeAssembler TypeAssembler, IGlobalDataService GlobalData, object[]? Connect = default)
+        : DependenciesRecord(connect: [MetadataTargets, DataAssembler, TypeAssembler, GlobalData, ..Connect ?? []]);
 
     #endregion
 
@@ -113,7 +114,7 @@ public abstract class SerializerBase(SerializerBase.Dependencies services, strin
 
     protected IContentType GetTransientContentType(string name, string nameId)
     {
-        var transientContentType = Services.DataBuilder.ContentType.Transient(AppId, name, nameId);
+        var transientContentType = Services.TypeAssembler.Type.Transient(AppId, name, nameId);
         return DeserializationSettings?.ContentTypeProvider?.LazyTypeGenerator(AppId, name, nameId, transientContentType)
                ?? transientContentType;
     }

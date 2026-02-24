@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.Metadata.Sys;
@@ -14,19 +15,23 @@ public static class StartupEavDataBuild
     public static IServiceCollection AddEavDataBuild(this IServiceCollection services)
     {
         services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
-        services.TryAddTransient<DataBuilder>();
+        services.TryAddTransient<DataAssembler>();
 
         // Content Type
-        services.TryAddTransient<ContentTypeBuilder>();
-        services.TryAddTransient<ContentTypeAttributeBuilder>();
-        services.TryAddTransient<ContentTypeFactory>();
+        services.TryAddTransient<ContentTypeTypeAssembler>();
+        services.TryAddTransient<ContentTypeAttributeAssembler>();
+        services.TryAddTransient<ContentTypeAssembler>();
+        services.TryAddTransient<CodeContentTypesManager>();
 
         // Entities
-        services.TryAddTransient<DimensionBuilder>();
-        services.TryAddTransient<AttributeBuilder>();
-        services.TryAddTransient<EntityBuilder>();
+        services.TryAddTransient<LanguageAssembler>();
+        services.TryAddTransient<AttributeAssembler>();
+        services.TryAddTransient<AttributeListAssembler>();
+        services.TryAddTransient<EntityAssembler>();
         services.TryAddTransient<EntityConnectionBuilder>();
-        services.TryAddTransient<ValueBuilder>();
+        services.TryAddTransient<ValueAssembler>();
+        services.TryAddTransient<ValueListAssembler>();
+        services.TryAddTransient<RelationshipAssembler>();
 
         services.AddEavDataProcessors();
 

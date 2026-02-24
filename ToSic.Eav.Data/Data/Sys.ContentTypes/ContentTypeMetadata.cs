@@ -22,18 +22,6 @@ public class ContentTypeMetadata : Metadata<string>
         : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, source: source)
     { }
 
-    // #CleanUpMetadataVarieties 2025-09-05 2dm
-    ///// <summary>
-    ///// Used in cases where the metadata-provider is already known
-    ///// </summary>
-    ///// <param name="typeId">type id / static-name</param>
-    ///// <param name="items"></param>
-    ///// <param name="deferredSource">remote / deferred metadata provider</param>
-    ///// <param name="title"></param>
-    //public ContentTypeMetadata(string typeId, IEnumerable<IEntity>? items, Func<IHasMetadataSourceAndExpiring>? deferredSource, string title)
-    //    : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, items: items, deferredSource: deferredSource)
-    //{ }
-
     // #BreakingChangeV20 - removed this completely; must communicate
     ///// <summary>
     ///// Description <see cref="IEntity"/> metadata of this content-type.

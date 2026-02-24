@@ -93,7 +93,7 @@ partial class JsonSerializer
                         var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
                             name: jsonAttr.Name, sysSettings: attrSysSettings, source: mdSource);
 
-                        var attDef = Services.DataBuilder.TypeAttributeBuilder
+                        var attDef = Services.TypeAssembler.Attribute
                             .Create(
                                 appId: AppId,
                                 name: jsonAttr.Name,
@@ -122,7 +122,7 @@ partial class JsonSerializer
                 relationships.List.AddRange(ctMeta);
 
                 // Create the Content Type
-                var type = Services.DataBuilder.ContentType.Create(
+                var type = Services.TypeAssembler.Type.Create(
                     appId: AppId,
                     name: jsonType.Name,
                     nameId: jsonType.Id,

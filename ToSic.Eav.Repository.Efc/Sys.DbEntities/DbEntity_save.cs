@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.EntityPair;
+﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
@@ -98,7 +99,7 @@ partial class DbEntity
                 dbEnt = CreateDbRecord(newEnt, transactionId, contentTypeId);
                 SaveCreatedNoChangeDetection([dbEnt]);
                 // update the ID - for versioning and/or json persistence
-                newEnt = builder.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
+                newEnt = dataAssembler.Entity.CreateFrom(newEnt, id: dbEnt.EntityId);
 
                 // prepare export for save json OR versioning later on
                 jsonExport = GenerateJsonOrReportWhyNot(newEnt, logDetails);
@@ -154,7 +155,7 @@ partial class DbEntity
                     // increase version
                     dbEnt.Version++;
                     //newEnt = _factory.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
-                    newEnt = builder.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
+                    newEnt = dataAssembler.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
 
                     // prepare export for save json OR versioning later on
                     jsonExport = Serializer.Serialize(newEnt);

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Integration;
@@ -19,7 +20,7 @@ public class SaveHistoryInboundParentsTests(
     Generator<EfcAppLoaderService> appLoadGenerator,
     IImportExportEnvironment environment,
     EntitySaver entitySaver,
-    DataBuilder dataBuilder)
+    DataAssembler dataAssembler)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     [Fact]
@@ -73,7 +74,7 @@ public class SaveHistoryInboundParentsTests(
         var ct = app1.GetContentTypeTac(titleAttribute!.CtNameId);
 
         var parentGuid = Guid.NewGuid();
-        var parentEntity = dataBuilder.CreateEntityTac(appId: test.AppId, guid: parentGuid, contentType: ct, values: new()
+        var parentEntity = dataAssembler.CreateEntityTac(appId: test.AppId, guid: parentGuid, contentType: ct, values: new()
         {
             { titleField, "history parents parent " + DateTime.UtcNow }
         });
@@ -81,7 +82,7 @@ public class SaveHistoryInboundParentsTests(
         var parentId = dbData.Save(so.AddToAll([saveParent])).First().Id;
 
         var childGuid = Guid.NewGuid();
-        var childEntity = dataBuilder.CreateEntityTac(appId: test.AppId, guid: childGuid, contentType: ct, values: new()
+        var childEntity = dataAssembler.CreateEntityTac(appId: test.AppId, guid: childGuid, contentType: ct, values: new()
         {
             { titleField, "history parents child " + DateTime.UtcNow }
         });
@@ -111,7 +112,7 @@ public class SaveHistoryInboundParentsTests(
         var app2 = loader2.AppStateReaderRawTac(test.AppId);
         var existing = app2.List.GetOne(childId)!;
 
-        var update = dataBuilder.CreateEntityTac(appId: test.AppId, entityId: 0, contentType: existing.Type, values: new()
+        var update = dataAssembler.CreateEntityTac(appId: test.AppId, entityId: 0, contentType: existing.Type, values: new()
         {
             { titleField, "changed title " + DateTime.UtcNow }
         });

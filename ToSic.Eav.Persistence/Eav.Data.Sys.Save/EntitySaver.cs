@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Sys.Save;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", connect: [dataBuilder])
+public class EntitySaver(DataAssembler dataAssembler) : ServiceBase("Dta.Saver", connect: [dataAssembler])
 {
     private LogSettings LogSettings { get; set; } = null!;
 
@@ -57,9 +58,9 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
         #region Step 2: clean up unwanted attributes from both lists
 
         var origAttribsOrNull = original != null
-            ? dataBuilder.Attribute.Mutable(original.Attributes)
+            ? dataAssembler.AttributeList.ConvertToMutable(original.Attributes)
             : null;
-        var newAttribs = dataBuilder.Attribute.Mutable(update.Attributes);
+        var newAttribs = dataAssembler.AttributeList.ConvertToMutable(update.Attributes);
 
         l.A($"has orig:{originalWasSaved}, origAtts⋮{origAttribsOrNull?.Count}, newAtts⋮{newAttribs.Count}");
 
@@ -137,12 +138,12 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
             }
 
         var preCleaned = CorrectPublishedAndGuidImports(mergedAttribs);
-        var clone = dataBuilder.Entity.CreateFrom(
+        var clone = dataAssembler.Entity.CreateFrom(
             idProvidingEntity,
             id: newId,
             guid: preCleaned.NewGuid,
             type: newType,
-            attributes: dataBuilder.Attribute.Create(preCleaned.Attributes),
+            attributes: dataAssembler.AttributeList.Finalize(preCleaned.Attributes),
             isPublished: preCleaned.NewIsPublished);
         return l.ReturnAsOk(new EntityPair<SaveOptions>(clone, saveOptions));
     }
@@ -156,8 +157,8 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
 
     private IAttribute CreateIsPublishedAttribute(bool isPublished)
     {
-        var values = new List<IValue> { dataBuilder.Value.Bool(isPublished, []) };
-        var attribute = dataBuilder.Attribute.Create(AttributeNames.EntityFieldIsPublished, ValueTypes.Boolean, values);
+        var values = new List<IValue> { dataAssembler.Value.Bool(isPublished, []) };
+        var attribute = dataAssembler.Attribute.Create(AttributeNames.EntityFieldIsPublished, ValueTypes.Boolean, values);
         return attribute;
     }
 
@@ -199,7 +200,7 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                     }
 
                     //field.Value.Values = values;
-                    return dataBuilder.Attribute.CreateFrom(pair.Value, values.ToImmutableSafe());
+                    return dataAssembler.Attribute.CreateFrom(pair.Value, values.ToImmutableSafe());
                 },
                 InvariantCultureIgnoreCase
             );
@@ -265,11 +266,11 @@ public class EntitySaver(DataBuilder dataBuilder) : ServiceBase("Dta.Saver", con
                 continue;
 
             // Add the value with the remaining languages / relationships
-            var val = dataBuilder.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableSafe());
+            var val = dataAssembler.Value.CreateFrom(orgVal, languages: remainingLanguages.ToImmutableSafe());
             result.Add(val);
         }
 
-        var final = dataBuilder.Attribute.CreateFrom(update, result.ToImmutableSafe());
+        var final = dataAssembler.Attribute.CreateFrom(update, result.ToImmutableSafe());
         return l.Return(final);
     }
     

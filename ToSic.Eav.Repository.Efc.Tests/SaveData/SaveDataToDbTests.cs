@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.SaveData;
 /// Make various changes and see if they worked - but rollback any changes afterward using transactions.
 /// </summary>
 [Startup(typeof(StartupTestsApps))]
-public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> appLoadGenerator, IImportExportEnvironment environment, EntitySaver entitySaver, DataBuilder dataBuilder)
+public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> appLoadGenerator, IImportExportEnvironment environment, EntitySaver entitySaver, DataAssembler dataAssembler)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 
@@ -66,7 +67,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         var itm1 = app1.List.GetOne(test.ExistingItem);
 
         // todo: make some minor changes
-        var itmNewTitle = dataBuilder.CreateEntityTac(appId: test.AppId, entityId: 0, contentType: itm1.Type,
+        var itmNewTitle = dataAssembler.CreateEntityTac(appId: test.AppId, entityId: 0, contentType: itm1.Type,
             values: new()
             {
                 { test.TitleField, "changed title on " + DateTime.Now }
@@ -109,7 +110,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         var app1 = loader1.AppStateReaderRawTac(test.AppId);
         var ct1 = app1.GetContentTypeTac(ctName);
 
-        var newE = dataBuilder.CreateEntityTac(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new()
+        var newE = dataAssembler.CreateEntityTac(appId: test.AppId, guid: Guid.NewGuid(), contentType: ct1, values: new()
         {
             { test.TitleField, ctTitle }
         });

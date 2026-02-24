@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.DataSource;
@@ -12,7 +13,7 @@ namespace ToSic.Eav.DataSource;
 /// Constructor - to find out if it's used anywhere
 /// </remarks>
 [PublicApi]
-public class DataSourceErrorHelper(DataBuilder builder)
+public class DataSourceErrorHelper(DataAssembler dataAssembler, LazySvc<ContentTypeAssembler> typeAssembler)
 {
     [PrivateApi]
     internal DataSourceErrorHelper ConnectToParent(IDataSource source)
@@ -122,11 +123,11 @@ public class DataSourceErrorHelper(DataBuilder builder)
 
         // Don't use the default data builder here, as it needs DI and this object
         // will often be created late when DI is already destroyed
-        var errorEntity = builder.Entity.Create(
+        var errorEntity = dataAssembler.Entity.Create(
             appId: DataConstants.ErrorAppId,
             entityId: DataConstants.ErrorEntityId,
-            contentType: builder.ContentType.Transient(DataConstants.ErrorTypeName),
-            attributes: builder.Attribute.Create(values),
+            contentType: typeAssembler.Value.Type.Transient(DataConstants.ErrorTypeName),
+            attributes: dataAssembler.AttributeList.Finalize(values),
             titleField: DataConstants.ErrorFieldTitle
         );
         return errorEntity;

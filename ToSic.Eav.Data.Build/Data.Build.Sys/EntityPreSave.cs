@@ -1,8 +1,7 @@
-﻿
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
 /// Helper commands to build an entity

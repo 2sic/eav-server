@@ -30,7 +30,9 @@ partial class TreeMapper
             })
             .ToList();
 
-        var attrBld = _builder.Attribute;
+        var attrBld = _dataAssembler.Attribute;
+        var atListAss = _dataAssembler.AttributeList;
+        var relAssembler = _dataAssembler.Relationship;
 
         var result = withKeys
             .Select(pair =>
@@ -38,12 +40,12 @@ partial class TreeMapper
                 // Create list of the new attributes with the parent and child relationships
                 var newAttributes = new List<IAttribute>();
                 if (pair.Partner.RelatedId != null)
-                    newAttributes.Add(attrBld.Relationship(newParentField, new List<object> { pair.Partner.RelatedId }, lookup));
+                    newAttributes.Add(attrBld.Relationship(newParentField, relAssembler.ToSource(new List<object> { pair.Partner.RelatedId }, lookup)));
                 if (pair.Partner.OwnId != null)
-                    newAttributes.Add(attrBld.Relationship(newChildrenField, new List<object> { $"{PrefixForNeeds}{pair.Partner.OwnId}" }, lookup));
+                    newAttributes.Add(attrBld.Relationship(newChildrenField, relAssembler.ToSource(new List<object> { $"{PrefixForNeeds}{pair.Partner.OwnId}" }, lookup)));
                 // Create combine list of attributes and generate an entity from that
-                var attributes = attrBld.Replace(pair.Entity.Attributes, newAttributes);
-                var newEntity = _builder.Entity.CreateFrom(pair.Entity, attributes: attrBld.Create(attributes));
+                var attributes = atListAss.Replace(pair.Entity.Attributes, newAttributes);
+                var newEntity = _dataAssembler.Entity.CreateFrom(pair.Entity, attributes: atListAss.Finalize(attributes));
 
                 // Assemble a new pair, for later populating the lookup list
                 // It's important to use the _new_ entity here, because the original is missing the new attributes

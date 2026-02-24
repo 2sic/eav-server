@@ -1,12 +1,16 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys.Dimensions;
 
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.Build.Sys;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class DimensionBuilder
+/// <summary>
+/// Internal data assembler to create languages.
+/// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+public class LanguageAssembler
 {
-    public Language CreateFrom(ILanguage orig, bool? readOnly) => new(orig.Key, readOnly ?? orig.ReadOnly, orig.DimensionId);
+    public Language CreateFrom(ILanguage orig, bool? readOnly) =>
+        new(orig.Key, readOnly ?? orig.ReadOnly, orig.DimensionId);
 
     public IImmutableList<ILanguage> Merge(IEnumerable<ILanguage> languages, List<ILanguage> updates)
     {

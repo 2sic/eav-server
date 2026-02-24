@@ -1,19 +1,19 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> workEntSave)
-    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntCre", connect: [workEntSave, builder])
+public class WorkEntityCreate(DataAssembler dataAssembler, GenWorkDb<WorkEntitySave> workEntSave)
+    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntCre", connect: [workEntSave, dataAssembler])
 {
     public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget? metadataFor = null)
     {
         var l = Log.Fn<(int EntityId, Guid EntityGuid)>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
 
-        var newEnt = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
+        var newEnt = dataAssembler.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
             contentType: AppWorkCtx.AppReader.GetContentType(typeName),
-            attributes: builder.Attribute.Create(values!),
+            attributes: dataAssembler.AttributeList.Finalize(values!),
             metadataFor: metadataFor);
 
         var entSaver = workEntSave.New(AppWorkCtx);
@@ -47,9 +47,9 @@ public class WorkEntityCreate(DataBuilder builder, GenWorkDb<WorkEntitySave> wor
             return existingEnt.EntityId;
         }
 
-        var newE = builder.Entity.Create(appId: AppWorkCtx.AppId, guid: newGuid,
+        var newE = dataAssembler.Entity.Create(appId: AppWorkCtx.AppId, guid: newGuid,
             contentType: AppWorkCtx.AppReader.GetContentType(typeName),
-            attributes: builder.Attribute.Create(values!));
+            attributes: dataAssembler.AttributeList.Finalize(values!));
         var entSaver = workEntSave.New(AppWorkCtx);
         return entSaver.Save(newE, entSaver.SaveOptions()).Id;
     }

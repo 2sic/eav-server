@@ -1,20 +1,16 @@
-using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Services;
 
 namespace ToSic.Eav.DataSource.OData;
 
-[Startup(typeof(ODataValueFilterTestStartup))]
+[Startup(typeof(StartupCoreDataSourcesAndTestData))]
 public class ODataQueryEngineTests(
     IDataSourcesService dataSourcesService,
-    DataSourcesTstBuilder dsBuilder,
-    DataBuilder dataBuilder)
+    DataTablePerson dataTablePerson)
 {
     private readonly ODataQueryEngine _engine = new(dataSourcesService);
 
     private DataTable PersonsTable(int count = 200, PersonSpecs? specs = null)
-        => new DataTablePerson(dsBuilder, dataBuilder)
-            .Generate(count, useCacheForSpeed: false, specs: specs);
+        => dataTablePerson.Generate(count, useCacheForSpeed: false, specs: specs);
 
     private const string CityToFind = "Bern";
     private const string CitiesWithB = "Buchs,Bern";
@@ -42,9 +38,9 @@ public class ODataQueryEngineTests(
     {
         var result = FilterPrepareAndRun(250, $"{PersonSpecs.FieldCity} eq '{CityToFind}'");
 
-        Assert.Equal(50, result.Items.Count);
-        Assert.All(result.Items,
-            e => Assert.Equal(CityToFind, e.Get<string>(PersonSpecs.FieldCity))
+        Equal(50, result.Items.Count);
+        All(result.Items,
+            e => Equal(CityToFind, e.Get<string>(PersonSpecs.FieldCity))
         );
     }
 
@@ -54,9 +50,9 @@ public class ODataQueryEngineTests(
     {
         var result = FilterPrepareAndRun(250, $"startswith({PersonSpecs.FieldCity}, '{CityToFind}')");
 
-        Assert.Equal(50, result.Items.Count);
-        Assert.All(result.Items,
-            e => Assert.Equal(CityToFind, e.Get<string>(PersonSpecs.FieldCity))
+        Equal(50, result.Items.Count);
+        All(result.Items,
+            e => Equal(CityToFind, e.Get<string>(PersonSpecs.FieldCity))
         );
     }
 
@@ -67,10 +63,10 @@ public class ODataQueryEngineTests(
     {
         var result = FilterPrepareAndRun(250, $"startswith({PersonSpecs.FieldCity}, '{start}')");
 
-        Assert.Equal(100, result.Items.Count);
+        Equal(100, result.Items.Count);
         var cities = expectedCities.Split(',');
-        Assert.All(result.Items,
-            e => Assert.Contains(e.Get<string>(PersonSpecs.FieldCity)!, cities)
+        All(result.Items,
+            e => Contains(e.Get<string>(PersonSpecs.FieldCity)!, cities)
         );
     }
 
@@ -81,10 +77,10 @@ public class ODataQueryEngineTests(
     {
         var result = FilterPrepareAndRun(250, $"not startswith({PersonSpecs.FieldCity}, '{start}')");
 
-        Assert.Equal(expected, result.Items.Count);
+        Equal(expected, result.Items.Count);
         var cities = notExpectedCities.Split(',');
-        Assert.All(result.Items,
-            e => Assert.DoesNotContain(e.Get<string>(PersonSpecs.FieldCity)!, cities)
+        All(result.Items,
+            e => DoesNotContain(e.Get<string>(PersonSpecs.FieldCity)!, cities)
         );
     }
 
@@ -105,11 +101,11 @@ public class ODataQueryEngineTests(
 
         var result = _engine.ExecuteTac(table, query);
 
-        Assert.Equal(expected.Count, result.Items.Count);
-        Assert.All(result.Items, entity =>
+        Equal(expected.Count, result.Items.Count);
+        All(result.Items, entity =>
         {
-            Assert.Contains(PersonSpecs.City1, entity.Get<string>(PersonSpecs.FieldCity) ?? string.Empty, StringComparison.OrdinalIgnoreCase);
-            Assert.True(entity.Get<int?>(PersonSpecs.FieldHeight) > 180);
+            Contains(PersonSpecs.City1, entity.Get<string>(PersonSpecs.FieldCity) ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            True(entity.Get<int?>(PersonSpecs.FieldHeight) > 180);
         });
     }
 
@@ -129,9 +125,9 @@ public class ODataQueryEngineTests(
 
         var result = _engine.ExecuteTac(table, query);
 
-        Assert.Equal(expected.Count, result.Items.Count);
-        Assert.All(result.Items, entity =>
-            Assert.DoesNotContain(PersonSpecs.City1, entity.Get<string>(PersonSpecs.FieldCity) ?? string.Empty, StringComparison.OrdinalIgnoreCase));
+        Equal(expected.Count, result.Items.Count);
+        All(result.Items, entity =>
+            DoesNotContain(PersonSpecs.City1, entity.Get<string>(PersonSpecs.FieldCity) ?? string.Empty, StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -145,7 +141,7 @@ public class ODataQueryEngineTests(
         }.ToQueryTac();
 
         var result = _engine.ExecuteTac(table, query);
-        Assert.Equal(3, result.Items.Count);
+        Equal(3, result.Items.Count);
 
         var expected = table.List
             .OrderByDescending(e => e.Get<int?>(PersonSpecs.FieldHeight))
@@ -153,7 +149,7 @@ public class ODataQueryEngineTests(
             .Select(e => e.EntityId)
             .ToArray();
 
-        Assert.Equal(expected, result.Items.Select(e => e.EntityId).ToArray());
+        Equal(expected, result.Items.Select(e => e.EntityId).ToArray());
     }
 
     [Fact]
@@ -176,7 +172,7 @@ public class ODataQueryEngineTests(
             .Select(e => e.EntityId)
             .ToArray();
 
-        Assert.Equal(expected, result.Items.Select(e => e.EntityId).ToArray());
+        Equal(expected, result.Items.Select(e => e.EntityId).ToArray());
     }
 
     [Fact]
@@ -190,23 +186,15 @@ public class ODataQueryEngineTests(
 
         var result = _engine.ExecuteTac(table, query);
 
-        Assert.NotEmpty(result.Projection);
-        Assert.Equal(result.Items.Count, result.Projection.Count);
+        NotEmpty(result.Projection);
+        Equal(result.Items.Count, result.Projection.Count);
 
         foreach (var (entity, projection) in result.Items.Zip(result.Projection, (entity, projection) => (entity, projection)))
         {
-            Assert.Equal(2, projection.Count);
-            Assert.Equal(entity.EntityId, Assert.IsType<int>(projection["EntityId"]));
-            Assert.Equal(entity.Get<string>(PersonSpecs.FieldCity), projection[PersonSpecs.FieldCity] as string);
+            Equal(2, projection.Count);
+            Equal(entity.EntityId, IsType<int>(projection["EntityId"]));
+            Equal(entity.Get<string>(PersonSpecs.FieldCity), projection[PersonSpecs.FieldCity] as string);
         }
-    }
-}
-
-internal class ODataValueFilterTestStartup : StartupCoreDataSourcesAndTestData
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        base.ConfigureServices(services);
     }
 }
 

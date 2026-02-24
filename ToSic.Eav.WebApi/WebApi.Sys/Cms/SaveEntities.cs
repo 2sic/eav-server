@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -7,8 +8,8 @@ using ToSic.Eav.WebApi.Sys.Dto;
 namespace ToSic.Eav.WebApi.Sys.Cms;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave> workEntSave)
-    : ServiceBase("Eav.SavHlp", connect: [entityBuilder, workEntSave])
+public class SaveEntities(EntityAssembler entityAssembler, GenWorkDb<WorkEntitySave> workEntSave)
+    : ServiceBase("Eav.SavHlp", connect: [entityAssembler, workEntSave])
 {
     public void UpdateGuidAndPublishedAndSaveMany(IAppWorkCtx appCtx, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
     {
@@ -18,7 +19,7 @@ public class SaveEntities(EntityBuilder entityBuilder, GenWorkDb<WorkEntitySave>
         var saveOptions = saver.SaveOptions();
 
         var entitiesToImport = itemsToImport
-            .Select(bundle => entityBuilder.CreateFrom(
+            .Select(bundle => entityAssembler.CreateFrom(
                     bundle.Entity,
                     guid: bundle.Header.Guid,
                     isPublished: enforceDraft ? false : null

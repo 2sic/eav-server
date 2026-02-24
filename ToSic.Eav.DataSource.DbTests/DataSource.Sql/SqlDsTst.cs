@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.TestHelpers;
 
 namespace ToSic.Eav.DataSource.DbTests.DataSource.Sql;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class SqlDsTst(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder): IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class SqlDsTst(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler, LookUpTestData lookUpTestData): IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private const string ConnectionDummy = "";
     private const string ContentTypeName = "SqlData";
@@ -128,7 +129,7 @@ And ProductSort = @" + DataSources.Sql.ExtractedParamPrefix + @"3";
 
     public DataSources.Sql GenerateSqlDataSource(string connection, string query, string typeName)
     {
-        return dsSvc.CreateDataSource<DataSources.Sql>(new LookUpTestData(dataBuilder).AppSetAndRes())
+        return dsSvc.CreateDataSource<DataSources.Sql>(lookUpTestData.AppSetAndRes())
             .Setup(connection, query, typeName);
     }
 }

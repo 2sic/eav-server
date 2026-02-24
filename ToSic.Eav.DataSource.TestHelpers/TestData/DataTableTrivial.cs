@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
@@ -6,7 +7,7 @@ using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.TestData;
 
-public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
+public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler, LookUpTestData lookUpTestData)
 {
     private static readonly Dictionary<int, DataTable> CachedDs = new();
 
@@ -24,7 +25,7 @@ public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataBuilder dataBuild
         AddSemiRandomTrivial(dataTable, itemsToGenerate, firstId);
 
         var source = dsSvc
-                .CreateDataSource<DataTable>(new LookUpTestData(dataBuilder).AppSetAndRes())
+                .CreateDataSource<DataTable>(lookUpTestData.AppSetAndRes())
                 .Setup(dataTable, "Person", modifiedField: PersonSpecs.FieldModifiedInternal)
             ;
 

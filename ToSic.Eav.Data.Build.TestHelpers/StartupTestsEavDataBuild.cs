@@ -19,6 +19,8 @@ public class StartupTestsEavDataBuild
     /// </summary>
     public virtual void ConfigureServices(IServiceCollection services) =>
         services
+            //.AddDataSourceTestHelpers()
+
             .AddEavDataBuild()
             .AddEavModels()
             .AddEavData()

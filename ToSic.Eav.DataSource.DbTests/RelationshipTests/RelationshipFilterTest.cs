@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder) : RelationshipTestBase(dsSvc, dataBuilder), IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
+    : RelationshipTestBase(dsSvc, dataAssembler, typeAssembler), IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 
     // todo: necessary tests
@@ -60,17 +62,17 @@ public partial class RelationshipFilterTest(DataSourcesTstBuilder dsSvc, DataBui
 
     [Fact]
     public void DS_RelFil_Companies_Having_Category_Title() 
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb)
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb)
             .Run(true);
 
     [Fact]
     public void DS_RelFil_Companies_Having_Category_Active() 
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, "true", relAttribute: "Active")
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, "true", relAttribute: "Active")
             .Run(true);
 
     [Fact]
     public void DS_RelFil_Companies_Having_InexistingProperty_Title() 
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-inexisting-property", RelationshipTestSpecs.Company, CompInexistingProp, CatWeb)
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-inexisting-property", RelationshipTestSpecs.Company, CompInexistingProp, CatWeb)
             .Run(false);
 
 }

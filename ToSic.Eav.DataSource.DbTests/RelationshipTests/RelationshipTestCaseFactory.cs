@@ -1,8 +1,9 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
-internal class RelationshipTestCaseFactory(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
+internal class RelationshipTestCaseFactory(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
 {
     public RelationshipTestCase New(string name,
         string type,
@@ -12,6 +13,6 @@ internal class RelationshipTestCaseFactory(DataSourcesTstBuilder dsSvc, DataBuil
         string? compareMode = null,
         string? separator = null,
         string? direction = null) =>
-        new(dsSvc, dataBuilder, name, type, relationship, filter, relAttribute, compareMode,
+        new(dsSvc, dataAssembler, typeAssembler, name, type, relationship, filter, relAttribute, compareMode,
             separator, direction);
 }

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.Testing;
 using ToSic.Sys.Utils;
@@ -8,7 +7,7 @@ namespace ToSic.Eav.DataSources.CsvTests;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
 // ReSharper disable once InconsistentNaming
-public class CsvDsTst_RerunIfFailed(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
+public class CsvDsTst_RerunIfFailed(DataSourcesTstBuilder dsSvc, LookUpTestData lookUpTestData)
 {
 
     private const int TestFileRowCount = 40;
@@ -120,7 +119,7 @@ public class CsvDsTst_RerunIfFailed(DataSourcesTstBuilder dsSvc, DataBuilder dat
 
     public Csv CreateCsvDataSource(string filePath, string delimiter = ";", string contentType = "Anonymous", string idColumnName = null, string titleColumnName = null)
     {
-        var source = dsSvc.CreateDataSource<Csv>(new LookUpTestData(dataBuilder).AppSetAndRes());
+        var source = dsSvc.CreateDataSource<Csv>(lookUpTestData.AppSetAndRes());
 
         source.FilePath = filePath;
         source.Delimiter = delimiter;

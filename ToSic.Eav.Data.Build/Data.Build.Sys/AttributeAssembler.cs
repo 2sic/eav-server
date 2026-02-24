@@ -1,12 +1,17 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys.Attributes;
-using ToSic.Eav.Data.Sys.Entities.Sources;
 
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.Build.Sys;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilder languageBuilder)
-    : ServiceWithSetup<DataBuilderOptions>("DaB.AttBld", connect: [languageBuilder, valueBuilder])
+/// <summary>
+/// Internal data assembler to create attributes.
+/// </summary>
+/// <param name="valueAssembler"></param>
+/// <param name="languageAssembler"></param>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[method: PrivateApi]
+public partial class AttributeAssembler(ValueAssembler valueAssembler, LanguageAssembler languageAssembler)
+    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld", connect: [languageAssembler, valueAssembler])
 {
 
     /// <summary>
@@ -33,7 +38,7 @@ public partial class AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilde
                 Type = type,
                 ValuesImmutable = imValues.SafeAny()
                     ? imValues
-                    : valueBuilder.NewEmptyRelationshipValues
+                    : RelationshipAssembler.NewEmptyRelationshipValues
             },
             ValueTypes.Object => new Attribute<object> { Name = name, Type = type, ValuesImmutable = imValues },
             // ReSharper disable PatternIsRedundant
@@ -64,9 +69,9 @@ public partial class AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilde
     )
     {
         var l = Log.IfDetails(Options.LogSettings).Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
-        var valueLanguages = languageBuilder.GetBestValueLanguages(language, languageReadOnly);
+        var valueLanguages = languageAssembler.GetBestValueLanguages(language, languageReadOnly);
 
-        var valueWithLanguages = valueBuilder.Build(type, value, valueLanguages.ToImmutableOpt());
+        var valueWithLanguages = valueAssembler.Create(type, value, valueLanguages.ToImmutableOpt());
 
         // add or replace to the collection
         if (originalOrNull == null)
@@ -74,7 +79,7 @@ public partial class AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilde
 
         // maybe: test if the new model has the same type as the attribute we're adding to
         // ca: if(attrib.ControlledType != valueModel.)
-        var updatedValueList = valueBuilder.Replace(originalOrNull.Values, valueToReplace, valueWithLanguages);
+        var updatedValueList = new ValueListAssembler().Replace(originalOrNull.Values, valueToReplace, valueWithLanguages);
         return l.Return(originalOrNull.With(updatedValueList));
     }
 
@@ -84,14 +89,11 @@ public partial class AttributeBuilder(ValueBuilder valueBuilder, DimensionBuilde
     public IAttribute CreateFrom(IAttribute original, IImmutableList<IValue> values)
         => original.With(values);
 
-    public IAttribute<IEnumerable<IEntity>> Relationship(string name, IEnumerable<IEntity> directSource) => 
+    public IAttribute<IEnumerable<IEntity>> Relationship(string name, IEnumerable<IEntity?> directSource) => 
         new Attribute<IEnumerable<IEntity>>
         {
             Name = name,
             Type = ValueTypes.Entity,
-            ValuesImmutable = valueBuilder.Relationships(directSource),
+            ValuesImmutable = RelationshipAssembler.RelationshipQ(directSource).ToValueList(),
         };
-
-    public IAttribute<IEnumerable<IEntity>> Relationship(string name, IEnumerable<object> keys, ILookup<object, IEntity> lookup) => 
-        Relationship(name, new LookUpEntitiesSource<object>(keys, lookup));
 }

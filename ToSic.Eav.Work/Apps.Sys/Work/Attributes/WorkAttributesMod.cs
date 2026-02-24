@@ -1,6 +1,5 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
@@ -14,11 +13,11 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkAttributesMod(
     GenWorkDb<WorkMetadata> workMetadata,
     GenWorkBasic<WorkAttributes> workAttributes,
-    ContentTypeAttributeBuilder attributeBuilder,
+    ContentTypeAttributeAssembler attributeAssembler,
     Generator<IDataDeserializer> dataDeserializer,
     LazySvc<ISysFeaturesService> features)
     : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.AttMod",
-        connect: [attributeBuilder, workMetadata, workAttributes, features, dataDeserializer])
+        connect: [attributeAssembler, workMetadata, workAttributes, features, dataDeserializer])
 {
     #region Getters which don't modify, but need the DB
 
@@ -41,7 +40,7 @@ public class WorkAttributesMod(
     public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder)
     {
         var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-        var attDef = attributeBuilder.Create(
+        var attDef = attributeAssembler.Create(
             appId: AppWorkCtx.AppId,
             name: staticName,
             type: ValueTypeHelpers.Get(type),

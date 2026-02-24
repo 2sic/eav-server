@@ -1,21 +1,22 @@
 ﻿using ToSic.Eav.Data.Build.CodeContentTypes;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Build.ContentTypes;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class ContentTypeFactoryClassTests(ContentTypeFactory factory)
+public class ContentTypeFactoryClassTests(CodeContentTypesManager ctDefFactory)
 {
     //private static string? GetDescription(IContentType type)
     //    => type.Metadata.Description?.Get<string>(nameof(ContentTypeDetails.Description));
 
     [Fact]
     public void Basic()
-        => NotNull(factory);
+        => NotNull(ctDefFactory);
 
 
     private T GetPropNoSpecsEmpty<T>(Func<IContentType, T> getFunc)
-        => getFunc(factory.CreateTac<CodeTypeNoSpecsEmpty>());
+        => getFunc(ctDefFactory.CreateTac<CodeTypeNoSpecsEmpty>());
 
     [Fact]
     public void Create_NoSpecs_Name()
@@ -31,13 +32,13 @@ public class ContentTypeFactoryClassTests(ContentTypeFactory factory)
 
     [Fact]
     public void Create_NoSpecs_AppId()
-        => Equal(ContentTypeFactory.NoAppId, GetPropNoSpecsEmpty(x => x.AppId));
+        => Equal(CodeContentTypesManager.NoAppId, GetPropNoSpecsEmpty(x => x.AppId));
 
     //[Fact] public void Create_NoSpecs_Description() => Null(GetDescription(factory.Create(typeof(TestTypeNoSpecsEmpty))));
 
 
     private T GetPropWithSpecsEmpty<T>(Func<IContentType, T> getFunc)
-        => getFunc(factory.CreateTac<CodeTypeWithSpecsEmpty>());
+        => getFunc(ctDefFactory.CreateTac<CodeTypeWithSpecsEmpty>());
 
     [Fact]
     public void Create_WithSpecs_Name()
@@ -53,7 +54,7 @@ public class ContentTypeFactoryClassTests(ContentTypeFactory factory)
 
     [Fact]
     public void Create_WithSpecs_AppId()
-        => Equal(ContentTypeFactory.NoAppId, GetPropWithSpecsEmpty(x => x.AppId));
+        => Equal(CodeContentTypesManager.NoAppId, GetPropWithSpecsEmpty(x => x.AppId));
 
     //[Fact] public void Create_WithSpecs_Description() => Equal(TestTypeWithSpecsEmpty.SpecDescription, GetDescription(factory.Create(typeof(TestTypeWithSpecsEmpty))));
 

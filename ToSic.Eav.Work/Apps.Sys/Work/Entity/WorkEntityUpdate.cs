@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Save;
 
@@ -6,10 +6,10 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityUpdate(
-    DataBuilder builder,
+    DataAssembler dataAssembler,
     LazySvc<EntitySaver> entitySaverLazy,
     GenWorkDb<WorkEntitySave> workEntSave)
-    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntUpd", connect: [builder, entitySaverLazy, workEntSave])
+    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntUpd", connect: [dataAssembler, entitySaverLazy, workEntSave])
 {
     /// <summary>
     /// Update an entity
@@ -81,6 +81,6 @@ public class WorkEntityUpdate(
         if (values == null || !values.Any())
             return l.ReturnNull("nothing to save");
 
-        return l.Return(builder.Entity.Create(appId: AppWorkCtx.AppId, contentType: orig.Type, attributes: builder.Attribute.Create(values!)), "ok");
+        return l.Return(dataAssembler.Entity.Create(appId: AppWorkCtx.AppId, contentType: orig.Type, attributes: dataAssembler.AttributeList.Finalize(values!)), "ok");
     }
 }

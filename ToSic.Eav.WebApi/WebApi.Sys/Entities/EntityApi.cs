@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys.Permissions;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
@@ -17,10 +18,10 @@ public class EntityApi(
     GenWorkPlus<WorkEntities> workEntities,
     GenWorkDb<WorkEntityDelete> entDelete,
     Generator<IConvertToEavLight> entitiesToDicLazy,
-    EntityBuilder entityBuilder,
+    EntityAssembler entityAssembler,
     Generator<MultiPermissionsTypes> multiPermissionsTypes)
     : ServiceBase("Api.Entity",
-        connect: [appWorkCtxSvc, workEntities, entDelete, entitiesToDicLazy.SetInit(etd => etd.WithGuid = true), entityBuilder, multiPermissionsTypes])
+        connect: [appWorkCtxSvc, workEntities, entDelete, entitiesToDicLazy.SetInit(etd => etd.WithGuid = true), entityAssembler, multiPermissionsTypes])
 {
 
     #region DI Constructor & Init
@@ -89,7 +90,7 @@ public class EntityApi(
                 ? bundle.Entity!.EntityGuid
                 : Guid.NewGuid();
             if (hasEntity && !useEntityGuid)
-                bundle.Entity = entityBuilder.CreateFrom(bundle.Entity!, guid: bundle.Header.Guid);
+                bundle.Entity = entityAssembler.CreateFrom(bundle.Entity!, guid: bundle.Header.Guid);
         }
 
         // Update header with ContentTypeName in case it wasn't there before
@@ -116,7 +117,7 @@ public class EntityApi(
             return found;
 
         // TODO: 2023-02-25 seems that EntityId is reset, but RepositoryId isn't - not sure why or if this is correct
-        var copy = entityBuilder.CreateFrom(found, id: 0, guid: Guid.Empty);
+        var copy = entityAssembler.CreateFrom(found, id: 0, guid: Guid.Empty);
         return copy;
     }
 

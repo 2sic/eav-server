@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Sys;
@@ -13,8 +14,8 @@ using static ToSic.Eav.ImportExport.Sys.ImpExpConstants;
 namespace ToSic.Eav.Persistence.File;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataBuilder dataBuilder)
-    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataBuilder]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
+public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
+    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataAssembler, typeAssembler]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
 {
     private FileSystemLoaderOptions Options { get; set; } = null!;
 
@@ -212,7 +213,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
             infoIfError = "couldn't set source/parent";
             TypeIdSeed += TypeIdDirection;
-            ct = dataBuilder.ContentType.CreateFrom(ct, id: TypeIdSeed, repoType: Options.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
+            ct = typeAssembler.Type.CreateFrom(ct, id: TypeIdSeed, repoType: Options.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
             return l.Return(ct, $"file size was: {json.Length}");
         }
 #pragma warning disable CS0162 // Unreachable code detected

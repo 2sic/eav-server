@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sys.Engines;
@@ -6,7 +7,8 @@ using ToSic.Eav.LookUp.TestHelpers;
 
 namespace ToSic.Eav.LookUp;
 
-public class LookUpTestData(DataBuilder builder)
+
+public class LookUpTestData(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
 {
     private static LookUpEngine EmptyLookupEngine(List<ILookUp>? sources = null)
         => new(null, sources: sources);
@@ -25,7 +27,7 @@ public class LookUpTestData(DataBuilder builder)
 
     public LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = LookUpTestConstants.AppIdUnknown)
     {
-        var ent = builder.CreateEntityTac(appId: appId, contentType: builder.ContentType.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
+        var ent = dataAssembler.CreateEntityTac(appId: appId, contentType: typeAssembler.Type.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
         return new(name, ent, null);
     }
 
