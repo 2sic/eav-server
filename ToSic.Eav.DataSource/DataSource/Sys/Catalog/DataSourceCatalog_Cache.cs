@@ -40,8 +40,5 @@ partial class DataSourceCatalog
             ?? (isLocal ? list.FirstOrDefault(dst => dst.TypeName.EqualsInsensitive(name)) : null)
             // Otherwise check for historical names in the VisualQuery Attribute
             ?? list.FirstOrDefault(dst =>
-                dst.VisualQuery?.NameIds.Any(pn => pn.EqualsInsensitive(name)) ?? false)
-            // Fallback for legacy/full CLR references like Namespace.Type or Namespace.Type, Assembly
-            ?? list.FirstOrDefault(dst => dst.Type.FullName.EqualsInsensitive(name))
-            ?? list.FirstOrDefault(dst => dst.Type.AssemblyQualifiedName?.StartsWith(name, StringComparison.OrdinalIgnoreCase) == true);
+                dst.VisualQuery?.NameIds.Any(pn => pn.EqualsInsensitive(name)) ?? false);
 }
