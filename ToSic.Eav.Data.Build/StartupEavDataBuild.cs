@@ -5,6 +5,7 @@ using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.Metadata.Sys;
+using ToSic.Sys.Utils.Assemblies;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run.Startup;
@@ -45,13 +46,32 @@ public static class StartupEavDataBuild
     /// <returns></returns>
     public static IServiceCollection AddEavDataProcessors(this IServiceCollection services)
     {
-        // Register using the interface, so it can be found in dropdowns
-        // Must be "Add", since many should be possible.
-        services.AddTransient<IDataProcessor, DataProcessor>();
-        services.AddTransient<IDataProcessor, PermissionDataProcessor>();
+        // Register baseline processors using interface so they are discoverable in the system data-source.
+        // Dedupe-safe multi-registration (safe if called multiple times)
+        // Microsoft DI has this pattern specifically for multi-registrations that should not duplicate: TryAddEnumerable.
+        // - It still allows multiple implementations of the same service (which you want for IDataProcessor).
+        // - But it prevents duplicates of the exact same (service type + implementation type) from being added again.
+        services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IDataProcessor), typeof(DataProcessor)));
+        services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IDataProcessor), typeof(PermissionDataProcessor)));
 
         // Register directly, so it can be instantiated
         services.TryAddTransient<PermissionDataProcessor>();
+
+        // Auto-register all concrete IDataProcessor implementations from loaded assemblies (incl. optional bin dlls).
+        // Keep this startup-only and dedupe by stable identity to avoid duplicate service descriptors.
+        var discoveredTypes = AssemblyHandling
+            .FindInherited(typeof(IDataProcessor))
+            .Where(type => !type.IsAbstract && !type.IsInterface)
+            .GroupBy(type => type.FullName ?? type.AssemblyQualifiedName ?? type.Name, StringComparer.Ordinal)
+            .Select(group => group.First());
+
+        foreach (var discoveredType in discoveredTypes)
+        {
+            services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IDataProcessor), discoveredType));
+
+            // Register concrete type too, so Build(...) / direct resolution can create it with DI.
+            services.TryAddTransient(discoveredType);
+        }
 
         return services;
     }
