@@ -57,7 +57,7 @@ public class RecycleBin : CustomDataSource
             data: () => featuresForDs.GetDataForFeature(BuiltInFeatures.EntityUndelete));
     }
 
-    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) _cache = (null, null);
+    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) _cache = (null!, null!); // temp null at start
 
     private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) GetList(GenWorkDb<WorkEntityRecycleBin> recycleBin)
     {
