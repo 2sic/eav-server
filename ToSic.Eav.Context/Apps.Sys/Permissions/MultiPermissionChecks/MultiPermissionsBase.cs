@@ -7,9 +7,10 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// Calling Ensure or similar will verify that all permission checks succeed
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class MultiPermissionsBase<TServices>(TServices services, string logName, object[]? connect = default)
-    : ServiceBase<TServices>(services, logName, connect: connect), IMultiPermissionCheck
+public abstract class MultiPermissionsBase<TServices, TOptions>(TServices services, string logName, object[]? connect = default)
+    : ServiceWithSetup<TServices, TOptions>(services, logName, connect: connect), IMultiPermissionCheck
     where TServices : IDependencies
+    where TOptions : class, new()
 {
     /// <summary>
     /// All the permission checks that will be used

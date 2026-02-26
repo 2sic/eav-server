@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// Do consolidate permission checks on a set of permissions
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Dependencies>
+public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Dependencies, MultiPermissionsApp.Options>
 {
     #region Constructors and DI
 
@@ -20,7 +20,20 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
         Generator<ISysFeaturesService> FeatIntGen)
         : DependenciesRecord(connect: [ZoneMapper, AppPermCheckGenerator, FeatIntGen]);
 
-    public record OptionsType();
+    public record Options
+    {
+        public IContextOfSite Context
+        {
+            get => field ?? throw new ArgumentNullException(nameof(Context));
+            init;
+        }
+        public IAppIdentity App
+        {
+            get => field ?? throw new ArgumentNullException(nameof(Context));
+            init;
+        }
+
+    };
 
     /// <summary>
     /// Constructor for DI
@@ -30,6 +43,12 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
     protected MultiPermissionsApp(Dependencies services, string logName, object[]? connect = default)
         : base(services, logName, connect)
     { }
+
+    public override void Setup(Options options)
+    {
+        base.Setup(options);
+        Init(options.Context, options.App);
+    }
 
     public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app)
     {
