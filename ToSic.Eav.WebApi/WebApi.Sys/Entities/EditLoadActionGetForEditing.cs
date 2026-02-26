@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Dto;
 
@@ -8,9 +9,9 @@ namespace ToSic.Eav.WebApi.Sys.Entities;
 public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, EntityAssembler entityAssembler)
     : ServiceBase("Api.Entity", connect: [appWorkCtxSvc, entityAssembler])
 {
-    public List<BundleWithHeaderOptional<IEntity>> Run(int appId, bool showDrafts, List < ItemIdentifier> items)
+    public List<BundleWithHeaderOptional<IEntity>> Run(LowCodeActionContext actionCtx, /*IAppWorkCtxPlus appWorkCtxPlus,*/ List<ItemIdentifier> items)
     {
-        var appWorkCtxPlus = appWorkCtxSvc.ContextPlus(appId, showDrafts);
+        var appWorkCtxPlus = actionCtx.Get<IAppWorkCtxPlus>(EditLoadContextConstants.AppCtxWork);
 
         ReplaceSimpleTypeNames(appWorkCtxPlus, items);
 

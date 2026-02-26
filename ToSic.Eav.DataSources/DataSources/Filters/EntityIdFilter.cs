@@ -21,6 +21,7 @@ namespace ToSic.Eav.DataSources;
     NameIds = ["ToSic.Eav.DataSources.EntityIdFilter, ToSic.Eav.DataSources"],
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
+    DataConfidentiality = DataConfidentiality.Internal,
     HelpLink = "https://go.2sxc.org/DsIdFilter")]
 
 public class EntityIdFilter : DataSourceBase
