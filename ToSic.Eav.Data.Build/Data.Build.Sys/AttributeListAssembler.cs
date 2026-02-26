@@ -66,7 +66,7 @@ public class AttributeListAssembler(AttributeAssembler attributeAssembler, Value
                     return typedValue;
 
                 // Not yet a proper IAttribute, construct from value
-                var attributeType = DataTypes.GetAttributeTypeName(pair.Value, Options.AllowUnknownValueTypes);
+                var attributeType = DataTypes.GetAttributeTypeName(pair.Value, MyOptions.AllowUnknownValueTypes);
                 var valuesModelList = new List<IValue>();
                 if (pair.Value != null)
                 {

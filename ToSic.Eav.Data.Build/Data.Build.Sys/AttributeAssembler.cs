@@ -68,7 +68,7 @@ public partial class AttributeAssembler(ValueAssembler valueAssembler, LanguageA
         bool languageReadOnly = false
     )
     {
-        var l = Log.IfDetails(Options.LogSettings).Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
+        var l = Log.IfDetails(MyOptions.LogSettings).Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
         var valueLanguages = languageAssembler.GetBestValueLanguages(language, languageReadOnly);
 
         var valueWithLanguages = valueAssembler.Create(type, value, valueLanguages.ToImmutableOpt());

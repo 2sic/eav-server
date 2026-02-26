@@ -20,7 +20,7 @@ public class HttpRequestLoggingScoped(ILogStore logStore) : ServiceWithSetup<Htt
 
         RootLog = new Log(options.RootName);
         
-        StoreEntry = logStore.Add(Options.Segment, RootLog);
+        StoreEntry = logStore.Add(MyOptions.Segment, RootLog);
     }
 
     private bool _setupWasAlreadyCalled;

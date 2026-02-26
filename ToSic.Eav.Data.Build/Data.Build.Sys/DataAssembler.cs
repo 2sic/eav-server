@@ -30,16 +30,16 @@ public class DataAssembler(
 
     [field: AllowNull, MaybeNull]
     public AttributeAssembler Attribute => field
-        ??= attributeAssembler.New(Options);
+        ??= attributeAssembler.New(MyOptions);
 
     [field: AllowNull, MaybeNull]
     public AttributeListAssembler AttributeList => field
-        ??= attributeListAssembler.New(Options);
+        ??= attributeListAssembler.New(MyOptions);
 
 
     [field: AllowNull, MaybeNull]
     public ValueAssembler Value => field
-        ??= valueBuilder.New(Options);
+        ??= valueBuilder.New(MyOptions);
 
     [field: AllowNull, MaybeNull]
     public ValueListAssembler ValueList => field ??= new();

@@ -20,6 +20,8 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
         Generator<ISysFeaturesService> FeatIntGen)
         : DependenciesRecord(connect: [ZoneMapper, AppPermCheckGenerator, FeatIntGen]);
 
+    public record OptionsType();
+
     /// <summary>
     /// Constructor for DI
     /// </summary>
