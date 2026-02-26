@@ -52,6 +52,7 @@ public static class StartupWebApi
 
         // Internal API helpers
         services.TryAddTransient<EntityApi>();
+        services.TryAddTransient<EditLoadActionGetForEditing>(); // WIP v21
         services.TryAddTransient<IUiData, UiData>();
 
         // WIP Converter clean-up v12.05

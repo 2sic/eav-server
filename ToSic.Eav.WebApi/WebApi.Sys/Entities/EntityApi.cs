@@ -1,11 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys.Permissions;
 using ToSic.Eav.Context;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Sys.OData;
 using ToSic.Sys.Security.Permissions;
@@ -18,10 +14,9 @@ public class EntityApi(
     GenWorkPlus<WorkEntities> workEntities,
     GenWorkDb<WorkEntityDelete> entDelete,
     Generator<IConvertToEavLight> entitiesToDicLazy,
-    EntityAssembler entityAssembler,
     Generator<MultiPermissionsTypes> multiPermissionsTypes)
     : ServiceBase("Api.Entity",
-        connect: [appWorkCtxSvc, workEntities, entDelete, entitiesToDicLazy.SetInit(etd => etd.WithGuid = true), entityAssembler, multiPermissionsTypes])
+        connect: [appWorkCtxSvc, workEntities, entDelete, entitiesToDicLazy.SetInit(etd => etd.WithGuid = true), multiPermissionsTypes])
 {
 
     #region DI Constructor & Init
@@ -35,12 +30,6 @@ public class EntityApi(
     private IAppWorkCtxPlus _appWorkCtxPlus = null!;
 
     #endregion
-
-    ///// <summary>
-    ///// Get all Entities of specified Type
-    ///// </summary>
-    //public IEnumerable<IDictionary<string, object>> GetEntities(string contentType)
-    //    => entitiesToDicLazy.New().Convert(workEntities.New(_appWorkCtxPlus).Get(contentType));
 
     /// <summary>
     /// Get all Entities of specified Type
@@ -57,70 +46,7 @@ public class EntityApi(
         }
         return converter.Convert(list)!;
     }
-
-    public List<BundleWithHeaderOptional<IEntity>> GetEntitiesForEditing(List<ItemIdentifier> items)
-    {
-        ReplaceSimpleTypeNames(items);
-
-        var list = items
-            .Select(p =>
-            {
-                var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
-                    ? GetEditableEditionAndMaybeCloneIt(p)
-                    : null;
-                return new BundleWithHeaderOptional<IEntity>
-                {
-                    Header = p,
-                    Entity = ent
-                };
-            })
-            .ToList();
-
-        // make sure the header has the right "new" guid as well - as this is the primary one to work with
-        // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
-        var itemsWithEmptyHeaderGuid = list
-            .Where(i => i.Header!.Guid == default)
-            .ToArray(); // must do toArray, to prevent re-checking after setting the guid
-
-        foreach (var bundle in itemsWithEmptyHeaderGuid)
-        {
-            var hasEntity = bundle.Entity != null;
-            var useEntityGuid = hasEntity && bundle.Entity!.EntityGuid != default;
-            bundle.Header!.Guid = useEntityGuid
-                ? bundle.Entity!.EntityGuid
-                : Guid.NewGuid();
-            if (hasEntity && !useEntityGuid)
-                bundle.Entity = entityAssembler.CreateFrom(bundle.Entity!, guid: bundle.Header.Guid);
-        }
-
-        // Update header with ContentTypeName in case it wasn't there before
-        foreach (var itm in list.Where(i => i.Header!.ContentTypeName == null && i.Entity != null))
-            itm.Header!.ContentTypeName = itm.Entity!.Type.NameId;
-
-        // Add EditInfo for read-only data
-        foreach (var bundle in list) 
-            bundle.Header!.EditInfo = new(bundle.Entity);
-
-        return list;
-    }
-
-
-    private IEntity GetEditableEditionAndMaybeCloneIt(ItemIdentifier p)
-    {
-        var appState = _appWorkCtxPlus.AppReader;
-        var found = appState.List.GetOrThrow(p.ContentTypeName!, p.DuplicateEntity ?? p.EntityId);
-        // if there is a draft, use that for editing - not the original
-        found = appState.GetDraft(found) ?? found;
-
-        // If we want the original (not a copy for new) then stop here
-        if (!p.DuplicateEntity.HasValue)
-            return found;
-
-        // TODO: 2023-02-25 seems that EntityId is reset, but RepositoryId isn't - not sure why or if this is correct
-        var copy = entityAssembler.CreateFrom(found, id: 0, guid: Guid.Empty);
-        return copy;
-    }
-
+    
     /// <summary>
     /// Delete the entity specified by ID.
     /// </summary>
@@ -147,27 +73,6 @@ public class EntityApi(
     public void Delete(string contentType, Guid entityGuid, bool force = false, int? parentId = null, string? parentField = null) 
         => Delete(contentType, workEntities.New(_appWorkCtxPlus.AppReader).Get(entityGuid)!.EntityId, force, parentId, parentField);
 
-
-    /// <summary>
-    /// clean up content-type names in case it's using the nice-name instead of the static name...
-    /// </summary>
-    /// <param name="items"></param>
-    private void ReplaceSimpleTypeNames(List<ItemIdentifier> items)
-    {
-        foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
-        {
-            var ct = _appWorkCtxPlus.AppReader.TryGetContentType(itm.ContentTypeName!);
-            if (ct == null)
-            {
-                if (!itm.ContentTypeName!.StartsWith("@"))
-                    throw new("Can't find content type " + itm.ContentTypeName);
-                items.Remove(itm);
-                continue;
-            }
-            if (ct.NameId != itm.ContentTypeName) // not using the static name...fix
-                itm.ContentTypeName = ct.NameId;
-        }
-    }
 
     // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
     public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Grants> requiredGrants)
