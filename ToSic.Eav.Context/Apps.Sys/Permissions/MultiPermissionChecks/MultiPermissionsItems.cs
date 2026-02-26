@@ -1,25 +1,36 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Sys.Security.Permissions;
-
+﻿using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MultiPermissionsItems(MultiPermissionsApp.Dependencies services)
-    : MultiPermissionsApp(services, "Sec.MpItms")
+    : MultiPermissionsApp(services, "Sec.MpItms"),
+        IServiceWithSetup<MultiPermissionsItems.Options>,
+        IHasOptions<MultiPermissionsItems.Options>
 {
-    public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)
+    public new record Options: MultiPermissionsApp.Options
     {
-        var l = Log.Fn<MultiPermissionsItems>($"..., appId: {app.AppId}, entityId: {item.EntityId}");
-        Init(context, app);
-        _items = [item];
-        return l.Return(this);
+        public List<IEntity> Entities { get; init; } = [];
     }
 
-    private List<IEntity> _items = [];
+    public new Options MyOptions => (Options)base.MyOptions;
+
+
+    public void Setup(Options options) => base.Setup(options);
+
+
+    //public MultiPermissionsItems Init(IContextOfSite context, IAppIdentity app, IEntity item)
+    //{
+    //    var l = Log.Fn<MultiPermissionsItems>($"..., appId: {app.AppId}, entityId: {item.EntityId}");
+    //    Init(context, app);
+    //    _items = [item];
+    //    return l.Return(this);
+    //}
+
+    //private List<IEntity> _items = [];
 
     protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
-        => _items.ToDictionary(i => i.EntityId.ToString(), BuildItemPermissionChecker);
+        => MyOptions.Entities.ToDictionary(i => i.EntityId.ToString(), BuildItemPermissionChecker);
 
     /// <summary>
     /// Creates a permission checker for an entity in this app

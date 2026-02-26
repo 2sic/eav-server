@@ -14,7 +14,7 @@ public class EntityApi(
     GenWorkPlus<WorkEntities> workEntities,
     GenWorkDb<WorkEntityDelete> entDelete,
     Generator<IConvertToEavLight> entitiesToDicLazy,
-    Generator<MultiPermissionsTypes> multiPermissionsTypes)
+    Generator<MultiPermissionsTypes, MultiPermissionsTypes.Options> multiPermissionsTypes)
     : ServiceBase("Api.Entity",
         connect: [appWorkCtxSvc, workEntities, entDelete, entitiesToDicLazy.SetInit(etd => etd.WithGuid = true), multiPermissionsTypes])
 {
@@ -77,7 +77,7 @@ public class EntityApi(
     // 2020-12-08 2dm - unused code, disable for now, delete ca. Feb 2021
     public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Grants> requiredGrants)
     {
-        var permCheck = multiPermissionsTypes.New().Init(context, app, contentType);
+        var permCheck = multiPermissionsTypes.New(new() { SiteContext = context, App = app, ContentTypes = [contentType] });
         if (!permCheck.EnsureAll(requiredGrants, out var error))
             throw HttpException.PermissionDenied(error);
         return Init(app.AppId);

@@ -21,6 +21,11 @@ public abstract class MultiPermissionsBase<TServices, TOptions>(TServices servic
 
     #region abstract methods
 
+    /// <summary>
+    /// Since the final permission check can check for many things,
+    /// this will create the list of permission checkers.
+    /// </summary>
+    /// <returns></returns>
     protected abstract Dictionary<string, IPermissionCheck> InitializePermissionChecks();
 
     #endregion
