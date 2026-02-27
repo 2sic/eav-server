@@ -1,9 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Errors;
 using static ToSic.Eav.DataSource.DataSourceConstants;
-
 
 namespace ToSic.Eav.DataSources;
 
@@ -23,7 +21,6 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter",
     DataConfidentiality = DataConfidentiality.Internal,
     HelpLink = "https://go.2sxc.org/DsIdFilter")]
-
 public class EntityIdFilter : DataSourceBase
 {
     #region Configuration-properties
@@ -35,12 +32,7 @@ public class EntityIdFilter : DataSourceBase
     public string EntityIds
     {
         get => Configuration.GetThis(fallback: "");
-        set
-        {
-            // kill any spaces in the string
-            var cleaned = Regex.Replace(value ?? "", @"\s+", "");
-            Configuration.SetThisObsolete(cleaned);
-        }
+        set => Configuration.SetThisObsolete(value ?? "");
     }
 
     #endregion
@@ -57,7 +49,7 @@ public class EntityIdFilter : DataSourceBase
     private IImmutableList<IEntity> GetList()
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        var entityIdsOrError = CustomConfigurationParse();
+        var entityIdsOrError = this.CustomConfigurationParse(EntityIds);
         if (!entityIdsOrError.IsOk)
             return l.ReturnAsError(entityIdsOrError.ErrorsSafe());
 
@@ -76,17 +68,48 @@ public class EntityIdFilter : DataSourceBase
         return l.ReturnAsOk(result);
     }
 
-    [PrivateApi]
-    private ResultOrError<int[]> CustomConfigurationParse()
-    {
-        var l = Log.Fn<ResultOrError<int[]>>();
-        Configuration.Parse();
+    //[PrivateApi]
+    //private ResultOrError<int[]> CustomConfigurationParse()
+    //{
+    //    var l = Log.Fn<ResultOrError<int[]>>();
 
-        #region clean up list of IDs to remove all white-space etc.
+    //    // clean up list of IDs to remove all white-space etc.
+
+    //    try
+    //    {
+    //        var configEntityIds = EntityIds;
+    //        // check if we have anything to work with
+    //        if (string.IsNullOrWhiteSpace(configEntityIds))
+    //            return l.Return(new(true, []), "empty");
+
+    //        var preCleanedIds = configEntityIds.CsvToArrayWithoutEmpty();
+    //        var lstEntityIds = new List<int>();
+    //        foreach (var strEntityId in preCleanedIds)
+    //            if (int.TryParse(strEntityId, out var entityIdToAdd))
+    //                lstEntityIds.Add(entityIdToAdd);
+    //        return l.Return(new(true, lstEntityIds.Distinct().ToArray()), EntityIds);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return l.ReturnAsError(new(false, [],
+    //            Error.Create(title: "Can't find IDs", message: "Unable to load EntityIds from Configuration. Unexpected Exception.",
+    //                exception: ex)));
+    //    }
+    //}
+
+}
+
+internal static class EntityIdFilterExtensions
+{
+    internal static ResultOrError<int[]> CustomConfigurationParse(this IDataSource dataSource, string entityIds)
+    {
+        var l = dataSource.Log.Fn<ResultOrError<int[]>>();
+
+        // clean up list of IDs to remove all white-space etc.
 
         try
         {
-            var configEntityIds = EntityIds;
+            var configEntityIds = Regex.Replace(entityIds ?? "", @"\s+", "");
             // check if we have anything to work with
             if (string.IsNullOrWhiteSpace(configEntityIds))
                 return l.Return(new(true, []), "empty");
@@ -96,16 +119,13 @@ public class EntityIdFilter : DataSourceBase
             foreach (var strEntityId in preCleanedIds)
                 if (int.TryParse(strEntityId, out var entityIdToAdd))
                     lstEntityIds.Add(entityIdToAdd);
-            return l.Return(new(true, lstEntityIds.Distinct().ToArray()), EntityIds);
+            return l.Return(new(true, lstEntityIds.Distinct().ToArray()), entityIds);
         }
         catch (Exception ex)
         {
             return l.ReturnAsError(new(false, [],
-                Error.Create(title: "Can't find IDs", message: "Unable to load EntityIds from Configuration. Unexpected Exception.",
+                dataSource.Error.Create(title: "Can't find IDs", message: "Unable to load EntityIds from Configuration. Unexpected Exception.",
                     exception: ex)));
         }
-
-        #endregion
     }
-
 }
