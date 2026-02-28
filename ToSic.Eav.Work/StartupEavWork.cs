@@ -54,7 +54,8 @@ public static class StartupEavWork
         services.TryAddTransient<AppInitializedChecker>();
         services.TryAddTransient<AppInitializer>();
 
-
+        // v21.04 - processing content type data, a bit more complex, needs to be able to run in different contexts
+        services.TryAddTransient<ContentTypeDataProcessorRunner>();
 
         // export import stuff
         services.TryAddScoped<ExportListXml>();

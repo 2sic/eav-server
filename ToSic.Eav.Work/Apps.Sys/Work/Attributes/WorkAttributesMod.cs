@@ -6,6 +6,7 @@ using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 using static ToSic.Sys.Capabilities.Features.BuiltInFeatures;
+using static ToSic.Eav.Data.Processing.DataProcessingEvents;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -15,9 +16,10 @@ public class WorkAttributesMod(
     GenWorkBasic<WorkAttributes> workAttributes,
     ContentTypeAttributeAssembler attributeAssembler,
     Generator<IDataDeserializer> dataDeserializer,
-    LazySvc<ISysFeaturesService> features)
+    LazySvc<ISysFeaturesService> features,
+    LazySvc<ContentTypeDataProcessorRunner> contentTypeDataProcessorRunner)
     : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.AttMod",
-        connect: [attributeAssembler, workMetadata, workAttributes, features, dataDeserializer])
+        connect: [attributeAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeDataProcessorRunner])
 {
     #region Getters which don't modify, but need the DB
 
@@ -37,7 +39,7 @@ public class WorkAttributesMod(
 
     #region Add Field
 
-    public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder)
+    public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder, bool triggerPostSave = true)
     {
         var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
         var attDef = attributeAssembler.Create(
@@ -49,6 +51,9 @@ public class WorkAttributesMod(
             sortOrder: sortOrder
         );
         var id = AddFieldToDbAndInitGeneralMetadata(contentTypeId, attDef, inputType);
+        if (triggerPostSave)
+            // Field definition changed => generated models may have new/removed properties.
+            TriggerPostSaveForContentType(contentTypeId, reason: "field-add");
         return l.Return(id);
     }
 
@@ -90,10 +95,14 @@ public class WorkAttributesMod(
     public bool SetInputType(int attributeId, string inputType)
     {
         var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
+        // Capture content-type before mutation because this path only receives attribute id.
+        var contentTypeId = TryResolveContentTypeIdByAttribute(attributeId);
         var newValues = new Dictionary<string, object> { { AttributeMetadataConstants.GeneralFieldInputType, inputType } };
 
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
         workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
+        if (contentTypeId.HasValue)
+            TriggerPostSaveForContentType(contentTypeId.Value, reason: "field-input-type");
         return l.ReturnTrue();
     }
 
@@ -101,6 +110,7 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
         AppWorkCtx.DbStorage.Attributes.RenameAttribute(attributeId, contentTypeId, newName);
+        TriggerPostSaveForContentType(contentTypeId, reason: "field-rename");
         return l.ReturnTrue();
     }
 
@@ -109,6 +119,7 @@ public class WorkAttributesMod(
         var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{orderCsv}");
         var sortOrderList = orderCsv.Split(',').Select(int.Parse).ToList();
         AppWorkCtx.DbStorage.ContentType.SortAttributes(contentTypeId, sortOrderList);
+        TriggerPostSaveForContentType(contentTypeId, reason: "field-reorder");
         return l.ReturnTrue();
     }
 
@@ -116,7 +127,11 @@ public class WorkAttributesMod(
     public bool Delete(int contentTypeId, int attributeId)
     {
         var l = Log.Fn<bool>($"delete field type#{contentTypeId}, attrib:{attributeId}");
-        return l.Return(AppWorkCtx.DbStorage.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId));
+        var success = AppWorkCtx.DbStorage.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
+        // Trigger only when delete succeeded; failed delete should not cause code regeneration.
+        if (success)
+            TriggerPostSaveForContentType(contentTypeId, reason: "field-delete");
+        return l.Return(success);
     }
 
 
@@ -127,6 +142,7 @@ public class WorkAttributesMod(
     public bool FieldShare(int attributeId, bool share, bool hide = false)
     {
         var l = Log.Fn<bool>($"attributeId:{attributeId}, share:{share}, hide:{hide}");
+        var contentTypeId = 0;
 
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
             l.W("Setting up field share but feature is not enabled / licensed.");
@@ -140,6 +156,7 @@ public class WorkAttributesMod(
             // get field attributeId
             var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
                 ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+            contentTypeId = attribute.ContentTypeId;
 
             // ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
             if (attribute.Guid.HasValue == false)
@@ -152,12 +169,16 @@ public class WorkAttributesMod(
             });
         });
 
+        if (contentTypeId > 0)
+            // Sharing alters effective schema behavior and should re-run generators.
+            TriggerPostSaveForContentType(contentTypeId, reason: "field-share");
         return l.ReturnTrue();
     }
 
-    public bool FieldInherit(int attributeId, Guid inheritMetadataOf)
+    public bool FieldInherit(int attributeId, Guid inheritMetadataOf, bool triggerPostSave = true)
     {
         var l = Log.Fn<bool>($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
+        var contentTypeId = 0;
 
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
             l.W("Setting up field share but feature is not enabled / licensed.");
@@ -172,6 +193,7 @@ public class WorkAttributesMod(
             // get field attributeId
             var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
                 ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+            contentTypeId = attribute.ContentTypeId;
 
             // set InheritMetadataOf to the guid above(as string)
             attribute.SysSettings = serializer.Serialize(new()
@@ -183,6 +205,9 @@ public class WorkAttributesMod(
             });
         });
 
+        if (triggerPostSave && contentTypeId > 0)
+            // Allow caller to suppress trigger when this method is part of a larger multi-step operation.
+            TriggerPostSaveForContentType(contentTypeId, reason: "field-inherit");
         return l.ReturnTrue();
     }
 
@@ -227,12 +252,30 @@ public class WorkAttributesMod(
         var newAttributeId = AddField(contentTypeId, name,
             type: pairTypeWithAttribute.Attribute.Type.ToString(),
             inputType: pairTypeWithAttribute.Attribute.InputType,
-            sortOrder: contentType.Attributes.Count() + 1);
+            sortOrder: contentType.Attributes.Count() + 1,
+            triggerPostSave: false);
 
         // 3. Configure inherit
-        FieldInherit(newAttributeId, inheritMetadataOf: sourceField);
+        FieldInherit(newAttributeId, inheritMetadataOf: sourceField, triggerPostSave: false);
+
+        // AddInheritedField is one logical schema operation, so trigger generation once.
+        TriggerPostSaveForContentType(contentTypeId, reason: "field-add-inherited");
 
         return l.ReturnTrue();
+    }
+
+    private int? TryResolveContentTypeIdByAttribute(int attributeId)
+        => AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)?.ContentTypeId;
+
+    private void TriggerPostSaveForContentType(int contentTypeId, string reason)
+    {
+        // Schema updates should trigger data processors for the affected content-type.
+        // Runner is intentionally best-effort so editor save is never blocked by generation issues.
+        contentTypeDataProcessorRunner.Value.RunFor(
+            AppWorkCtx.AppId,
+            contentTypeId,
+            PostSaveContentTypeFieldChange,
+            reason);
     }
 
     #endregion
