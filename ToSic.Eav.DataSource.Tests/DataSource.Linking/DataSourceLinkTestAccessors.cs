@@ -15,7 +15,7 @@ public static class DataSourceLinkTestAccessors
 
     public static IDataSourceLink WithAnotherStreamTac(this IDataSourceLink link, string? name = default,
         string? outName = default, string? inName = default) =>
-        link.WithAnotherStream(name, outName, inName);
+        link.WithAnotherStream(name: name, outName: outName, inName: inName);
 
     public static IDataSourceLink WithMoreTac(this IDataSourceLink link, IDataSourceLinkable[] more) =>
         link.WithMore(more);
