@@ -267,7 +267,7 @@ public class ValueFilterString(ValueFilterMaker valueFilterMaker)
         vf.Value = "inexisting city";
             
         // attach fallback to give all if no match
-        vf.Attach(StreamFallbackName, DataSourceTestAccessors.InTac(vf)[StreamDefaultName]);
+        vf.AttachTac(StreamFallbackName, DataSourceTestAccessors.InTac(vf)[StreamDefaultName]);
         Equal(TestVolume, DataSourceTestAccessors.ListTac((IDataSource)vf).Count());//, "Should find exactly 0 people with this city");
     }
     #endregion

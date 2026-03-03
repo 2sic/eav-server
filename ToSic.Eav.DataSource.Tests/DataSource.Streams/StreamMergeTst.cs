@@ -31,7 +31,7 @@ public class StreamMergeTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePers
     {
         var desiredFinds = ItemsToGenerate * 2;
         var sf = CreateMergeDs(ItemsToGenerate);
-        sf.Attach("another", sf.InTac().FirstOrDefault().Value);
+        sf.AttachTac("another", sf.InTac().FirstOrDefault().Value);
         VerifyStreams(sf, desiredFinds, ItemsToGenerate, ItemsToGenerate, 0);
     }
 
@@ -47,7 +47,7 @@ public class StreamMergeTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePers
 
         // Additional has the same amount, but they should be different entity objects
         for (var i = 1; i < amount; i++)
-            main.Attach("another" + i, SourceList(ItemsToGenerate));
+            main.AttachTac("another" + i, SourceList(ItemsToGenerate));
 
         VerifyStreams(main, desiredFinds, desiredFinds, 0, desiredFinds);
     }
@@ -63,7 +63,7 @@ public class StreamMergeTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePers
 
         // Second has the same amount, but they should be different entity objects
         var secondSf = GenerateSecondStreamWithSomeResults(sf, itemsInSecondStream);
-        sf.Attach("another", secondSf.GetStreamTac(null!)!);
+        sf.AttachTac("another", secondSf.GetStreamTac(null!)!);
         VerifyStreams(sf, desiredFinds, ItemsToGenerate, itemsInSecondStream, ItemsToGenerate - itemsInSecondStream);
     }
 
@@ -73,9 +73,9 @@ public class StreamMergeTst(DataSourcesTstBuilder DsSvc, Generator<DataTablePers
     {
         var desiredFinds = ItemsToGenerate * 3;
         var sf = CreateMergeDs(ItemsToGenerate);
-        sf.Attach("another", sf.InTac().FirstOrDefault().Value);
-        sf.Attach("middle", null);
-        sf.Attach("xFinal", sf.InTac().FirstOrDefault().Value);
+        sf.AttachTac("another", sf.InTac().FirstOrDefault().Value);
+        sf.AttachTac("middle", null);
+        sf.AttachTac("xFinal", sf.InTac().FirstOrDefault().Value);
 
         VerifyStreams(sf, desiredFinds, ItemsToGenerate, ItemsToGenerate, 0);
     }
