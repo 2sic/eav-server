@@ -2,12 +2,12 @@
 
 public static class ContentTypeFactoryTestAccessors
 {
-    extension(ContentTypeFactory factory)
+    extension(CodeContentTypesManager ctDefFactory)
     {
         public IContentType CreateTac(Type t)
-            => factory.Create(t);
+            => ctDefFactory.Get(t);
 
         public IContentType CreateTac<T>()
-            => factory.Create<T>();
+            => ctDefFactory.Get<T>();
     }
 }

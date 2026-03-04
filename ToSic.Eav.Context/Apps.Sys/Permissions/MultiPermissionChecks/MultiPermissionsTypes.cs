@@ -1,43 +1,52 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Sys.Security.Permissions;
+﻿using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, LazySvc<IAppReaderFactory> appReaderFactory)
-    : MultiPermissionsApp(services, LogName, connect: [appReaderFactory])
+    : MultiPermissionsApp(services, "Sec.MPTyps", connect: [appReaderFactory]),
+        IServiceWithSetup<MultiPermissionsTypes.Options>,
+        IHasOptions<MultiPermissionsTypes.Options>
 {
-    private const string LogName = "Sec.MPTyps";
+    public new record Options : MultiPermissionsApp.Options
+    {
+        public IEnumerable<string> ContentTypes
+        {
+            get => field ?? throw new ArgumentNullException(nameof(ContentTypes));
+            init;
+        }
+    }
 
-    // Will be initialized in Init / InitTypesAfterInit;
-    private IEnumerable<string> ContentTypes { get; set; } = null!;
+    public new Options MyOptions => (Options)base.MyOptions;
 
     // Note: AppState must be public, as we have some extension methods that need it
     [field: AllowNull, MaybeNull]
-    public IAppReader AppState => field ??= appReaderFactory.Value.GetOrKeep(App);
+    public IAppReader AppState => field ??= appReaderFactory.Value.GetOrKeep(MyOptions.App);
 
-    public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
-    {
-        var l = Log.Fn<MultiPermissionsTypes>($"..., appId: {app.AppId}, contentType: '{contentType}'");
-        Init(context, app);
-        ContentTypes = [contentType];
-        return l.Return(this);
-    }
+    public void Setup(Options options) => base.Setup(options);
 
-    /// <summary>
-    /// This step is separate, because extension methods need it _after_ Init
-    /// </summary>
-    /// <param name="contentTypes"></param>
-    /// <returns></returns>
-    public MultiPermissionsTypes InitTypesAfterInit(IEnumerable<string> contentTypes)
-    {
-        ContentTypes = contentTypes;
-        return this;
-    }
+    //public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
+    //{
+    //    var l = Log.Fn<MultiPermissionsTypes>($"..., appId: {app.AppId}, contentType: '{contentType}'");
+    //    Init(context, app);
+    //    ContentTypes = [contentType];
+    //    return l.Return(this);
+    //}
+
+    ///// <summary>
+    ///// This step is separate, because extension methods need it _after_ Init
+    ///// </summary>
+    ///// <param name="contentTypes"></param>
+    ///// <returns></returns>
+    //public MultiPermissionsTypes InitTypesAfterInit(IEnumerable<string> contentTypes)
+    //{
+    //    ContentTypes = contentTypes;
+    //    return this;
+    //}
 
 
     protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
-        => InitPermissionChecksForType(ContentTypes);
+        => InitPermissionChecksForType(MyOptions.ContentTypes);
 
     protected Dictionary<string, IPermissionCheck> InitPermissionChecksForType(IEnumerable<string> contentTypes)
         => contentTypes.Distinct().ToDictionary(t => t, BuildTypePermissionChecker);
@@ -50,8 +59,11 @@ public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, La
     /// <returns></returns>
     private IPermissionCheck BuildTypePermissionChecker(string typeName)
     {
-        Log.A($"BuildTypePermissionChecker({typeName})");
+        var l = Log.Fn<IPermissionCheck>($"BuildTypePermissionChecker({typeName})");
         // now do relevant security checks
-        return BuildPermissionChecker(AppState.TryGetContentType(typeName));
+        var appState = appReaderFactory.Value.GetOrKeep(MyOptions.App);
+        var result = BuildPermissionChecker(appState.TryGetContentType(typeName));
+        return l.Return(result);
     }
+
 }

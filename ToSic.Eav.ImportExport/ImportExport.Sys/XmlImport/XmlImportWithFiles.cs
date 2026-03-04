@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Repositories.Sys;
@@ -18,9 +19,10 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
         AppCachePurger AppCachePurger,
         IAppsCatalog AppsCatalog,
         LazySvc<XmlToEntity> XmlToEntity,
-        LazySvc<DataBuilder> MultiBuilder,
+        LazySvc<DataAssembler> DataAssembler,
+        LazySvc<ContentTypeAssembler> TypeAssembler,
         DataImportLogSettings LogSettings)
-        : DependenciesRecord(connect: [ImporterLazy, StorageFactory, Environment, AppsCatalog, XmlToEntity, AppCachePurger, MultiBuilder, LogSettings]);
+        : DependenciesRecord(connect: [ImporterLazy, StorageFactory, Environment, AppsCatalog, XmlToEntity, AppCachePurger, DataAssembler, TypeAssembler, LogSettings]);
 
     public int AppId { get; private set; }
     public int ZoneId { get; private set; }

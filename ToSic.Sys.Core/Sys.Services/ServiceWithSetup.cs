@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Sys.Services;
 
+// #NoEditorBrowsableBecauseOfInheritance
+//[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder npo = default, object[]? connect = default)
     : ServiceBase(logName, npo, connect: connect),
         IHasOptions<TOptions>,
@@ -8,14 +10,14 @@ public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder np
 {
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
-    public virtual TOptions Options
+    public virtual TOptions MyOptions
     {
         get => field ??= GetDefaultOptions();
         private set;
     }
 
     public virtual void Setup(TOptions options)
-        => Options = options;
+        => MyOptions = options;
 
     /// <summary>
     /// Method to generate new / default options. You can override this to provide your own default options.

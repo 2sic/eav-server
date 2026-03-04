@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.EntityPair;
+﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
@@ -8,10 +9,10 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 ///
 /// Trying to extract logic steps for an entity to better reorganize sequencing.
 /// </summary>
-internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataBuilder builder, ICollection<IEntityPair<SaveOptions>> entityOptionPairs, ILog parentLog) : HelperBase(parentLog, "DB.PrepEy")
+internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataAssembler dataAssembler, ICollection<IEntityPair<SaveOptions>> entityOptionPairs, ILog parentLog) : HelperBase(parentLog, "DB.PrepEy")
 {
     [field: AllowNull, MaybeNull]
-    public EntityProcessServices Services => field ??= new(dbStorage, builder, entityOptionPairs, Log);
+    public EntityProcessServices Services => field ??= new(dbStorage, dataAssembler, entityOptionPairs, Log);
 
     public ICollection<EntityProcessData> ProcessBatch1(ICollection<EntityProcessData> data, bool logProcess)
         => ProcessBatch(data, GetStandardProcessBatch1(), logProcess);

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -64,13 +64,15 @@ public class AttributeRename : DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public AttributeRename(DataBuilder dataBuilder, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen", connect: [dataBuilder])
+    public AttributeRename(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen", connect: [dataAssembler])
     {
-        _dataBuilder = dataBuilder;
+        _dataAssembler = dataAssembler;
+        _typeAssembler = typeAssembler;
         ProvideOut(GetList);
     }
 
-    private readonly DataBuilder _dataBuilder;
+    private readonly DataAssembler _dataAssembler;
+    private readonly ContentTypeAssembler _typeAssembler;
 
 
     /// <summary>
@@ -136,7 +138,7 @@ public class AttributeRename : DataSourceBase
         var typeName = TypeName;
         IContentType? newType = null;
         if (!string.IsNullOrEmpty(typeName))
-            newType = _dataBuilder.ContentType.Transient(AppId, typeName!, typeName!);
+            newType = _typeAssembler.Type.Transient(AppId, typeName!, typeName!);
 
         var source = TryGetIn();
         if (source is null)
@@ -146,7 +148,7 @@ public class AttributeRename : DataSourceBase
             .Select(entity =>
             {
                 var values = CreateDic(entity);
-                return _dataBuilder.Entity.CreateFrom(entity, attributes: _dataBuilder.Attribute.Create(values), type: newType);
+                return _dataAssembler.Entity.CreateFrom(entity, attributes: _dataAssembler.AttributeList.Finalize(values), type: newType);
             })
             .ToImmutableOpt();
 
@@ -157,7 +159,7 @@ public class AttributeRename : DataSourceBase
 
     private IAttribute CloneAttributeAndRename(IAttribute original, string newName)
     {
-        var newAttrib = _dataBuilder.Attribute.Create(newName, original.Type, original.Values.ToList());
+        var newAttrib = _dataAssembler.Attribute.Create(newName, original.Type, original.Values.ToList());
         // #immutable
         //newAttrib.Values = original.Values;
         return newAttrib;

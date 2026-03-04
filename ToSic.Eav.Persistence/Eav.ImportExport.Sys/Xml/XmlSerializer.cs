@@ -31,10 +31,12 @@ public class XmlSerializer(SerializerBase.Dependencies services) : SerializerBas
 
     public XElement ToXml(IEntity entity)
     {
-        // 2026-02-09 2dm - simplified code, but removed something which was there before, but probably not relevant
+        // Regression history:
+        // - A 2026-02 simplification switched this to <c>!a.IsEntity()</c>.
+        // - That removed valid entity values from app exports (for example fields such as Settings/Items/Images)
         var valuesXElement = entity.Attributes.Values
-            //.Where(a => a.Type != ValueTypes.Entity || ((a.Values.FirstOrDefault() as IValue<IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
-            .Where(a => !a.IsEntity())
+            .Where(a => !a.IsEntity() || ((a.Values.FirstOrDefault() as IValue<IEnumerable<IEntity>>)?.TypedContents?.Any() ?? false))
+            //.Where(a => !a.IsEntity())
             .OrderBy(a => a.Name)
             .SelectMany(a => a.Values.Select(v => XmlValue(a, v)));
 

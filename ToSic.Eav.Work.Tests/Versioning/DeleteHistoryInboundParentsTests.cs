@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys;
@@ -16,7 +15,7 @@ public class DeleteHistoryInboundParentsTests(
     Generator<DbStorage, StorageOptions> dbDataGenerator,
     GenWorkDb<WorkEntityDelete> workEntityDelete,
     ImportService importService,
-    DataBuilder dataBuilder)
+    DataAssembler dataAssembler)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private sealed class Specs : IAppIdentity
@@ -54,10 +53,10 @@ public class DeleteHistoryInboundParentsTests(
         var now = DateTime.UtcNow;
 
         var newGuid = Guid.NewGuid();
-        var newChild = dataBuilder.Entity.Create(
+        var newChild = dataAssembler.Entity.Create(
             appId: TestSpecs.AppId,
             contentType: templateEntity.Type,
-            attributes: dataBuilder.Attribute.Create(templateEntity.Type, preparedValues: null),
+            attributes: dataAssembler.AttributeList.CreateListForType(templateEntity.Type, preparedValues: null),
             entityId: 0,
             repositoryId: 0,
             guid: newGuid,

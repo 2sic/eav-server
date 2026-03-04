@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// Do consolidate permission checks on a set of permissions
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Dependencies>
+public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Dependencies, MultiPermissionsApp.Options>
 {
     #region Constructors and DI
 
@@ -19,6 +19,21 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
         Generator<AppPermissionCheck> AppPermCheckGenerator,
         Generator<ISysFeaturesService> FeatIntGen)
         : DependenciesRecord(connect: [ZoneMapper, AppPermCheckGenerator, FeatIntGen]);
+
+    public record Options
+    {
+        public IContextOfSite SiteContext
+        {
+            get => field ?? throw new ArgumentNullException(nameof(SiteContext));
+            init;
+        }
+        public IAppIdentity App
+        {
+            get => field ?? throw new ArgumentNullException(nameof(SiteContext));
+            init;
+        }
+
+    };
 
     /// <summary>
     /// Constructor for DI
@@ -29,26 +44,26 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
         : base(services, logName, connect)
     { }
 
-    public MultiPermissionsApp Init(IContextOfSite context, IAppIdentity app)
+    public override void Setup(Options options)
     {
-        var l = Log.Fn<MultiPermissionsApp>($"..., appId: {app.AppId}, ...");
-        Context = context;
-        App = app;
+        base.Setup(options);
 
-        SamePortal = context.Site.ZoneId == App.ZoneId;
+        var app = MyOptions.App;
+        var context = MyOptions.SiteContext;
+        var l = Log.Fn($"..., appId: {app.AppId}, ...");
+
+        SamePortal = context.Site.ZoneId == app.ZoneId;
         SiteForSecurityCheck = SamePortal 
             ? context.Site 
             // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
             // todo: probably enhance with a Site.IsMultiZone check
-            : Services.ZoneMapper.Value.SiteOfZone(App.ZoneId)
+            : Services.ZoneMapper.Value.SiteOfZone(app.ZoneId)
               ?? context.Site;
-        return l.Return(this, $"ready for app:{app.Show()} tenant/zone:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
+        l.Done($"ready for app:{app.Show()} tenant/zone:{SiteForSecurityCheck.Id}/{context.Site.ZoneId} same:{SamePortal}");
     }
     /// <summary>
     /// The current app which will be used and can be re-used externally
     /// </summary>
-    protected IAppIdentity App { get; private set; } = null!;
-    public IContextOfSite Context { get; private set; } = null!;
     protected ISite SiteForSecurityCheck { get; private set; } = null!;
     protected bool SamePortal { get; private set; }
     public ISysFeaturesService FeaturesInternal => Services.FeatIntGen.New();
@@ -61,10 +76,10 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
     public bool ZoneIsOfCurrentContextOrUserIsSuper(out string? error)
     {
         var l = Log.Fn<bool>();
-        var zoneSameOrSuperUser = SamePortal || Context.User.IsSystemAdmin;
+        var zoneSameOrSuperUser = SamePortal || MyOptions.SiteContext.User.IsSystemAdmin;
         error = zoneSameOrSuperUser
             ? null
-            : $"accessing app {App.AppId} in zone {App.ZoneId} is not allowed for this user";
+            : $"accessing app {MyOptions.App.Show()} is not allowed for this user as it changes zones";
         return l.Return(zoneSameOrSuperUser, zoneSameOrSuperUser ? $"SamePortal:{SamePortal} - ok": "not ok, generate error");
     }
 
@@ -81,11 +96,11 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
         var l = Log.Fn<IPermissionCheck>($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 
         // user has edit permissions on this app, and it's the same app as the user is coming from
-        var modifiedContext = Context.Clone(Log);
+        var modifiedContext = MyOptions.SiteContext.Clone(Log);
         modifiedContext.Site = SiteForSecurityCheck;
-        var result = Services.AppPermCheckGenerator.New().ForParts(modifiedContext, App, type, item);
+        var result = Services.AppPermCheckGenerator.New().ForParts(modifiedContext, MyOptions.App, type, item);
 
-        return l.Return(result, $"for {App.Show()} in {SiteForSecurityCheck?.Id}");
+        return l.Return(result, $"for {MyOptions.App.Show()} in {SiteForSecurityCheck?.Id}");
     }
 
 }

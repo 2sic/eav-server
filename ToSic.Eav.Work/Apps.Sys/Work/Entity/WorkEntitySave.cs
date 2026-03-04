@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.LogSettings;
-using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
@@ -20,16 +20,16 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntitySave(
-    LazySvc<DataBuilder> multiBuilder,
+    LazySvc<DataAssembler> dataAssembler,
     AppsCacheSwitch appsCache,
     LazySvc<IImportExportEnvironment> environmentLazy,
     DataImportLogSettings importLogSettings
     )
-    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntSav", connect: [multiBuilder, appsCache, environmentLazy])
+    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntSav", connect: [dataAssembler, appsCache, environmentLazy])
 {
     // Note: Singleton
 
-    private DataBuilder Builder => multiBuilder.Value;
+    private DataAssembler DataAssembler => dataAssembler.Value;
 
 
     public void Import(List<IEntity> newEntities)
@@ -40,7 +40,7 @@ public class WorkEntitySave(
 
         var saveOptions = SaveOptions();
         var savePairs = newEntities
-            .Select(e => Builder.Entity.CreateFrom(e, id: 0, repositoryId: 0))
+            .Select(e => DataAssembler.Entity.CreateFrom(e, id: 0, repositoryId: 0))
             .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
             .ToListOpt();
 
@@ -83,7 +83,7 @@ public class WorkEntitySave(
                     var newType = appReader.TryGetContentType(e2.Type.Name);
                     return newType == null
                         ? pair
-                        : pair with { Entity = Builder.Entity.CreateFrom(pair.Entity, type: newType) };
+                        : pair with { Entity = DataAssembler.Entity.CreateFrom(pair.Entity, type: newType) };
                 })
                 .ToListOpt();
 
@@ -94,7 +94,7 @@ public class WorkEntitySave(
                     var attributes = AttributesWithEmptyEphemerals(pair.Entity);
                     return attributes == null
                         ? pair
-                        : pair with { Entity = Builder.Entity.CreateFrom(pair.Entity, attributes: attributes) };
+                        : pair with { Entity = DataAssembler.Entity.CreateFrom(pair.Entity, attributes: attributes) };
                 })
                 .ToListOpt();
 
@@ -138,22 +138,23 @@ public class WorkEntitySave(
             return entity;
 
         // Create new attributes with updated relationship
+        var relAss = DataAssembler.Relationship;
         var relationshipsUpdated = relationshipAttributes
             .Select(a =>
             {
                 if (a.TypedContents == null)
                     return null!;
-                var newLazyEntities = Builder.Value.Relationships(a.TypedContents, appState);
-                return Builder.Attribute.CreateFrom(a.Attribute, newLazyEntities);
+                var newLazyEntities = relAss.Relationship(relAss.ToSource(a.TypedContents, appState)).ToValueList();
+                return DataAssembler.Attribute.CreateFrom(a.Attribute, newLazyEntities);
             })
-            .Where(a => a != null)
+            .Where(a => a != null!)
             .ToListOpt();
 
         // Assemble the attributes (replace the relationships)
-        var attributes = Builder.Attribute.Replace(entity.Attributes, relationshipsUpdated);
+        var attributes = DataAssembler.AttributeList.Replace(entity.Attributes, relationshipsUpdated);
 
         // return cloned entity
-        return Builder.Entity.CreateFrom(entity, attributes: Builder.Attribute.Create(attributes));
+        return DataAssembler.Entity.CreateFrom(entity, attributes: DataAssembler.AttributeList.Finalize(attributes));
     }
 
 
@@ -180,7 +181,7 @@ public class WorkEntitySave(
             {
                 if (!toClear.Any(tc => tc.Name.EqualsInsensitive(pair.Key)))
                     return pair.Value;
-                var empty = Builder.Attribute.CreateFrom(pair.Value, []);
+                var empty = DataAssembler.Attribute.CreateFrom(pair.Value, []);
                 l.A("Cleared " + pair.Key);
                 return empty;
             }, InvariantCultureIgnoreCase);

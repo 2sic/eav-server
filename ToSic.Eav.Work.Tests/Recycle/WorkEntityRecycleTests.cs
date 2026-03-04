@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
@@ -21,7 +20,7 @@ public class WorkEntityRecycleTests(
     Generator<DbStorage, StorageOptions> dbDataGenerator,
     GenWorkDb<WorkEntityRecycle> workEntityRecycle,
     ImportService importService,
-    DataBuilder dataBuilder)
+    DataAssembler dataAssembler)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private sealed class Specs : IAppIdentity
@@ -59,10 +58,10 @@ public class WorkEntityRecycleTests(
         var now = DateTime.UtcNow;
 
         var newGuid = Guid.NewGuid();
-        var newEntity = dataBuilder.Entity.Create(
+        var newEntity = dataAssembler.Entity.Create(
             appId: TestSpecs.AppId,
             contentType: templateEntity.Type,
-            attributes: dataBuilder.Attribute.Create(templateEntity.Type, preparedValues: null),
+            attributes: dataAssembler.AttributeList.CreateListForType(templateEntity.Type, preparedValues: null),
             entityId: 0,
             repositoryId: 0,
             guid: newGuid,
@@ -365,10 +364,10 @@ public class WorkEntityRecycleTests(
         var parentGuid = Guid.NewGuid();
         var now = DateTime.UtcNow;
 
-        var parentEntity = dataBuilder.Entity.Create(
+        var parentEntity = dataAssembler.Entity.Create(
             appId: TestSpecs.AppId,
             contentType: selectedType,
-            attributes: dataBuilder.Attribute.Create(selectedType, preparedValues: null),
+            attributes: dataAssembler.AttributeList.CreateListForType(selectedType, preparedValues: null),
             entityId: 0,
             repositoryId: 0,
             guid: parentGuid,

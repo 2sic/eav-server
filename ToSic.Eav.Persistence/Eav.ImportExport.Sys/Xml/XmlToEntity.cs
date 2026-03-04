@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using ToSic.Eav.Data.Build;
-
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Data.Sys.Entities;
@@ -15,8 +15,8 @@ namespace ToSic.Eav.ImportExport.Sys.Xml;
 /// Import EAV Data from XML Format
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
-    : ServiceBase("Imp.XmlEnt", connect: [dataBuilder, globalData])
+public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
+    : ServiceBase("Imp.XmlEnt", connect: [dataAssembler, globalData])
 {
 
     public XmlToEntity Init(int appId, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang,
@@ -210,7 +210,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
 
             // construct value elements
             var currentAttributesImportValues = tempTargetValues
-                .Select(tempImportValue => dataBuilder.Value.Build(
+                .Select(tempImportValue => dataAssembler.Value.Create(
                         ValueTypeHelpers.Get(
                             tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value ??
                             throw new NullReferenceException("can't build attribute with unknown value-type")
@@ -223,7 +223,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
                 .ToListOpt();
 
             // construct the attribute with these value elements
-            var newAttr = dataBuilder.Attribute.Create(
+            var newAttr = dataAssembler.Attribute.Create(
                 sourceAttrib.StaticName,
                 ValueTypeHelpers.Get(tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)
                     ?.Value ?? ""),
@@ -255,10 +255,10 @@ public class XmlToEntity(IGlobalDataService globalData, DataBuilder dataBuilder)
             var newTypeRepoType = xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True"
                 ? RepositoryTypes.Folder
                 : RepositoryTypes.Sql;
-            contentType = dataBuilder.ContentType.Create(appId: AppId, id: 0, name: typeName, nameId: null!, scope: null!, repositoryType: newTypeRepoType);
+            contentType = typeAssembler.Type.Create(appId: AppId, id: 0, name: typeName, nameId: null!, scope: null!, repositoryType: newTypeRepoType);
         }
 
-        var targetEntity = dataBuilder.Entity.Create(
+        var targetEntity = dataAssembler.Entity.Create(
             appId: AppId,
             guid: guid,
             contentType: contentType,

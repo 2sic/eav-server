@@ -8,9 +8,9 @@ public static class ValueBuilderTestAccessors
     /// Test accessor to reduce use-count of the real code
     /// </summary>
     /// <returns></returns>
-    public static IValue BuildTac(this ValueBuilder vBuilder, ValueTypes type, object value, IList<ILanguage> languages)
-        => vBuilder.Build(type, value, languages?.ToImmutableOpt());
+    public static IValue BuildTac(this ValueAssembler vAssembler, ValueTypes type, object value, IList<ILanguage> languages)
+        => vAssembler.Create(type, value, languages?.ToImmutableOpt());
 
-    public static IValue BuildTac(this ValueBuilder vBuilder, ValueTypes type, object value, IImmutableList<ILanguage> languages)
-        => vBuilder.Build(type, value, languages);
+    public static IValue BuildTac(this ValueAssembler vAssembler, ValueTypes type, object value, IImmutableList<ILanguage> languages)
+        => vAssembler.Create(type, value, languages);
 }

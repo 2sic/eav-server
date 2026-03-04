@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.EntityPair;
@@ -20,9 +21,10 @@ public class ImportService(
     Generator<IStorage, StorageOptions> storageFactory,
     IImportExportEnvironment importExportEnvironment,
     LazySvc<EntitySaver> entitySaverLazy,
-    DataBuilder dataBuilder,
+    DataAssembler dataAssembler,
+    ContentTypeAssembler typeAssembler,
     DataImportLogSettings logSettings)
-    : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataBuilder, logSettings])
+    : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataAssembler, typeAssembler, logSettings])
 {
     #region Detailed Logging
 
@@ -199,7 +201,7 @@ public class ImportService(
     private List<IEntity> MetadataWithResetIds(IMetadata metadata)
     {
         return metadata.Concat(metadata.Permissions.Select(p => ((ICanBeEntity)p).Entity))
-            .Select(e => dataBuilder.Entity.CreateFrom(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
+            .Select(e => dataAssembler.Entity.CreateFrom(e, id: 0, repositoryId: 0, guid: Guid.NewGuid()))
             .ToList();
     }
 
@@ -219,13 +221,13 @@ public class ImportService(
                 .Select(a =>
                 {
                     var attributeMetadata = MetadataWithResetIds(a.Metadata);
-                    return dataBuilder.TypeAttributeBuilder.CreateFrom(a, metadataItems: attributeMetadata);
+                    return typeAssembler.Attribute.CreateFrom(a, metadataItems: attributeMetadata);
                 })
                 .ToList();
 
 
             var ctMetadata = MetadataWithResetIds(contentType.Metadata);
-            var newType = dataBuilder.ContentType.CreateFrom(contentType, metadataItems: ctMetadata,
+            var newType = typeAssembler.Type.CreateFrom(contentType, metadataItems: ctMetadata,
                 attributes: newAttributes);
 
             return l.Return(newType, "existing not found, only reset IDs");
@@ -249,7 +251,7 @@ public class ImportService(
 
                 if (newAttribute.Metadata.Permissions.Any())
                     newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => ((ICanBeEntity)p).Entity));
-                return dataBuilder.TypeAttributeBuilder.CreateFrom(newAttribute, metadataItems: newMetaList);
+                return typeAssembler.Attribute.CreateFrom(newAttribute, metadataItems: newMetaList);
             })
             .ToList();
 
@@ -261,7 +263,7 @@ public class ImportService(
             .Select(p => ((ICanBeEntity)p).Entity)
         );
 
-        var newContentType = dataBuilder.ContentType.CreateFrom(contentType, metadataItems: merged, attributes: mergedAttributes);
+        var newContentType = typeAssembler.Type.CreateFrom(contentType, metadataItems: merged, attributes: mergedAttributes);
         // contentType.Metadata.Use(merged);
 
         return l.Return(newContentType, "done");
@@ -272,7 +274,7 @@ public class ImportService(
         var existingMetadata = appState.GetMetadata(mdType, key, newMd.Type.NameId).FirstOrDefault();
         if (existingMetadata == null)
             // Must Reset guid, reset, otherwise the save process assumes it already exists in the DB; NOTE: clone would be ok
-            return new EntityPair<SaveOptions>(dataBuilder.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0), SaveOptions);
+            return new EntityPair<SaveOptions>(dataAssembler.Entity.CreateFrom(newMd, guid: Guid.NewGuid(), id: 0), SaveOptions);
 
         return entitySaverLazy.Value.CreateMergedForSaving(existingMetadata, newMd, SaveOptions, logSettings: LogSettings);
     }
@@ -315,7 +317,7 @@ public class ImportService(
         // Simplest case - nothing existing to update: return update-entity unchanged
         if (existingEntities == null || !existingEntities.Any())
         {
-            var toCreate = dataBuilder.Entity.CreateFrom(update, type: typeReset);
+            var toCreate = dataAssembler.Entity.CreateFrom(update, type: typeReset);
             return l.Return(new EntityPair<SaveOptions>(toCreate, saveOptions) , "is new, nothing to merge, just set type to be sure");
         }
 

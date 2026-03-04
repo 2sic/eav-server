@@ -3,11 +3,11 @@
 /// <summary>
 /// Base class for any service which expects a Dependencies class
 /// </summary>
-/// <typeparam name="TDependencies"></typeparam>
+/// <typeparam name="TServices">Services/dependencies</typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 // #NoEditorBrowsableBecauseOfInheritance
 //[ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class ServiceBase<TDependencies>: ServiceBase where TDependencies : IDependencies
+public abstract class ServiceBase<TServices>: ServiceBase where TServices : IDependencies
 {
     /// <summary>
     /// Constructor for normal case, with services
@@ -16,7 +16,7 @@ public abstract class ServiceBase<TDependencies>: ServiceBase where TDependencie
     /// <param name="logName">The new objects name in the logs</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="connect">Optional array of services to connect the logs to.</param>
-    protected ServiceBase(TDependencies services, string logName, NoParamOrder npo = default, object[]? connect = default)
+    protected ServiceBase(TServices services, string logName, NoParamOrder npo = default, object[]? connect = default)
         : base(logName, connect: connect)
     {
         Services = services.ConnectServices(Log);
@@ -25,5 +25,5 @@ public abstract class ServiceBase<TDependencies>: ServiceBase where TDependencie
     /// <summary>
     /// The services which came through the `TDependencies services` in the constructor.
     /// </summary>
-    protected readonly TDependencies Services;
+    protected readonly TServices Services;
 }

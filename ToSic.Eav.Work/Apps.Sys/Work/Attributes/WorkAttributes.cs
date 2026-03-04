@@ -115,5 +115,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
     private IContentTypeAttribute? GetAttribute(int attributeId) =>
         AppWorkCtx.AppReader.ContentTypes
             .Select(ct => ct.Attributes.FirstOrDefault(a => a.AttributeId == attributeId))
-            .FirstOrDefault();
+            // must check for null, as some types don't have any attributes, so the previous select would return null
+            // so the first one may end up being a null, even if there are other attributes in other types, so we need to check all of them until we find a match
+            .FirstOrDefault(a => a != null);
 }

@@ -87,7 +87,7 @@ partial class FileSystemLoader
                 .Select(ct =>
                 {
                     TypeIdSeed += TypeIdDirection;
-                    var typeWithOrigin = dataBuilder.ContentType.CreateFrom(
+                    var typeWithOrigin = typeAssembler.Type.CreateFrom(
                         ct.ContentType,
                         id: TypeIdSeed,
                         repoType: Options.RepoType,
@@ -147,7 +147,7 @@ partial class FileSystemLoader
                 {
                     EntityIdSeed += EntityIdDirection;
                     var newId = EntityIdSeed;
-                    return dataBuilder.Entity.CreateFrom(e, id: newId, repositoryId: newId);
+                    return dataAssembler.Entity.CreateFrom(e, id: newId, repositoryId: newId);
                 })
                 .ToListOpt();
             return l.Return(entities, $"{entities.Count}");

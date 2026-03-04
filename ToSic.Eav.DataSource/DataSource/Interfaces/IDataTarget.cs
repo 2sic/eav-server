@@ -12,12 +12,6 @@ namespace ToSic.Eav.DataSources;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IDataTarget
 {
-    // Removed from IDataTarget in 15.06
-    ///// <summary>
-    ///// List of all In connections
-    ///// </summary>
-    //IDictionary<string, IDataStream> In { get; }
-		
     /// <summary>
     /// Attach a DataSource to In - replaces all existing in-streams.
     /// </summary>

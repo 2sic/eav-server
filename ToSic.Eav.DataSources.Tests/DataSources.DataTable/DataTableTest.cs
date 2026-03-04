@@ -1,9 +1,10 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 
 namespace ToSic.Eav.DataSources.DataTable;
 
 [Startup(typeof(StartupCoreDataSourcesAndTestData))]
-public class DataTableTest(DataTablePerson dataTablePerson, DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
+public class DataTableTest(DataTablePerson dataTablePerson, DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, DataTableTrivial dataTableTrivial)
 {
 
     [Fact]
@@ -44,7 +45,7 @@ public class DataTableTest(DataTablePerson dataTablePerson, DataSourcesTstBuilde
     public void DataTable_DefaultTitleField()
     {
         const int itemsToGenerate = 25;
-        var ds = new DataTableTrivial(dsSvc, dataBuilder).Generate(itemsToGenerate);
+        var ds = dataTableTrivial.Generate(itemsToGenerate);
 
         Equal(25, ds.ListTac().Count());
         var first = ds.ListTac().First();

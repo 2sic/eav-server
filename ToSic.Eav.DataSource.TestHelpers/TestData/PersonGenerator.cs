@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using static ToSic.Eav.TestData.PersonSpecs;
 
 namespace ToSic.Eav.TestData;
 
-internal class PersonGenerator(DataBuilder dataBuilder)
+public class PersonGenerator(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
 {
     private static Person SemiRandom(PersonSpecs specs, int i)
     {
@@ -67,29 +68,29 @@ internal class PersonGenerator(DataBuilder dataBuilder)
             {FieldHeight, MaybeMakeMlNonString(multiLanguage, FieldHeight, ValueTypes.Number, person.Height)},
             {FieldBioForMlSortTest, MaybeMakeMlBio(multiLanguage, person.IsMale)}
         };
-        return dataBuilder.CreateEntityTac(appId: 0, entityId: person.Id, contentType: dataBuilder.ContentType.Transient(PersonTypeName), values: dic,
+        return dataAssembler.CreateEntityTac(appId: 0, entityId: person.Id, contentType: typeAssembler.Type.Transient(PersonTypeName), values: dic,
             titleField: FieldFullName, modified: person.Modified);
     }
 
     // todo: should be non-static some day, when the test-code isn't static anymore
     private static ILanguage Clone(ILanguage orig, bool readOnly)
-        => new DimensionBuilder().CreateFrom(orig, readOnly);
+        => new LanguageAssembler().CreateFrom(orig, readOnly);
 
     private object MaybeMakeMl(bool convert, string name, string original)
     {
         if (!convert)
             return original;
 
-        var attribute = dataBuilder.Attribute.CreateTypedAttributeTac(name,  ValueTypes.String, new List<IValue>
+        var attribute = dataAssembler.Attribute.CreateTypedAttributeTac(name,  ValueTypes.String, new List<IValue>
         {
-            dataBuilder.Value.BuildTac(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri}),
-            dataBuilder.Value.BuildTac(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn}),
-            dataBuilder.Value.BuildTac(ValueTypes.String, DeMult + original, new List<ILanguage>
+            dataAssembler.Value.BuildTac(ValueTypes.String, PriPrefix + original, new List<ILanguage> { LangPri}),
+            dataAssembler.Value.BuildTac(ValueTypes.String, EnPrefix + original, new List<ILanguage> { LangEn}),
+            dataAssembler.Value.BuildTac(ValueTypes.String, DeMult + original, new List<ILanguage>
             {
                 LangDeDe, 
                 Clone(LangDeCh, true)
             }),
-            dataBuilder.Value.BuildTac(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr })
+            dataAssembler.Value.BuildTac(ValueTypes.String, FrPrefix + original, new List<ILanguage> { LangFr })
         });
         return attribute;
     }
@@ -100,7 +101,7 @@ internal class PersonGenerator(DataBuilder dataBuilder)
                 ? BioMaleNoLangLast
                 : BioFemaleNoLangFirst;
 
-        var valueBioEn = dataBuilder.Value.BuildTac(
+        var valueBioEn = dataAssembler.Value.BuildTac(
             ValueTypes.String,
             isMale ? BioMaleEnLast : BioFemaleEnFirst,
             new List<ILanguage>
@@ -108,7 +109,7 @@ internal class PersonGenerator(DataBuilder dataBuilder)
                 LangEn
             }
         );
-        var valueBioDe = dataBuilder.Value.BuildTac(
+        var valueBioDe = dataAssembler.Value.BuildTac(
             ValueTypes.String,
             isMale ? BioMaleDeFirst : BioFemaleDeLast,
             new List<ILanguage>
@@ -116,7 +117,7 @@ internal class PersonGenerator(DataBuilder dataBuilder)
                 LangDeDe,
                 Clone(LangDeCh, true)
             });
-        var attribute = dataBuilder.Attribute.CreateTypedAttributeTac(
+        var attribute = dataAssembler.Attribute.CreateTypedAttributeTac(
             FieldBioForMlSortTest,
             ValueTypes.String, new List<IValue>
             {
@@ -129,8 +130,8 @@ internal class PersonGenerator(DataBuilder dataBuilder)
     private object MaybeMakeMlNonString<T>(bool convert, string name, ValueTypes type, T original) =>
         !convert
             ? original
-            : dataBuilder.Attribute.CreateTypedAttributeTac(name, type, new List<IValue>
+            : dataAssembler.Attribute.CreateTypedAttributeTac(name, type, new List<IValue>
             {
-                dataBuilder.Value.BuildTac(type, original, DataConstants.NoLanguages),
+                dataAssembler.Value.BuildTac(type, original, DataConstants.NoLanguages),
             });
 }

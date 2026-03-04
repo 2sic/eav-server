@@ -19,7 +19,10 @@ public interface IAppQueryController
     /// <param name="name">Query name - ideally without spaces or special characters (required)</param>
     /// <param name="appId">AppId to use in case we want to specify an app (optional)</param>
     /// <param name="stream">Stream names - leave empty or * for all. Comma separated if multiple. (optional)</param>
-    /// <param name="includeGuid">Include GUID IDs of the items retrieved (optional)</param>
+    /// <param name="includeGuid">
+    /// Include GUID IDs of the items retrieved (optional)
+    /// IMPORTANT: 2026-02-25 2dm - strangely in DNN it suddenly complains about the bool parameter when it's not nullable, even if it's optional - so made it nullable and set default to false
+    /// </param>
     /// <remarks>
     /// will check security internally, so assume the endpoint doesn't need to check security first
     /// </remarks>
@@ -27,7 +30,7 @@ public interface IAppQueryController
     IDictionary<string, IEnumerable<EavLightEntity>> Query(string name,
         int? appId = null,
         string? stream = null,
-        bool includeGuid = false);
+        bool? includeGuid = false);
 
     /// <summary>
     /// POST a public query by name, with some minimal options.
@@ -37,7 +40,10 @@ public interface IAppQueryController
     /// <param name="more">Additional parameters / filters etc. which would not fit into the url</param>
     /// <param name="appId">AppId to use in case we want to specify an app (optional)</param>
     /// <param name="stream">Stream names - leave empty or * for all. Comma separated if multiple. (optional)</param>
-    /// <param name="includeGuid">Include GUID IDs of the items retrieved (optional)</param>
+    /// <param name="includeGuid">
+    /// Include GUID IDs of the items retrieved (optional)
+    /// IMPORTANT: 2026-02-25 2dm - strangely in DNN it suddenly complains about the bool parameter when it's not nullable, even if it's optional - so made it nullable and set default to false
+    /// </param>
     /// <remarks>
     /// will check security internally, so assume the endpoint doesn't need to check security first
     /// </remarks>
@@ -46,7 +52,7 @@ public interface IAppQueryController
         QueryParametersDtoFromClient more,
         int? appId = null,
         string? stream = null,
-        bool includeGuid = false);
+        bool? includeGuid = false);
 
     /// <summary>
     /// GET a public query from an app in a specific path.

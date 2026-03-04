@@ -1,6 +1,8 @@
-﻿namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
+﻿using ToSic.Eav.Data.Build.Sys;
 
-internal class DbPublishing(DbStorage.DbStorage dbStore, DataBuilder builder) : DbPartBase(dbStore, "Db.Publ")
+namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
+
+internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssembler) : DbPartBase(dbStore, "Db.Publ")
 {
     /// <summary>
     /// Publish a Draft-Entity
@@ -52,7 +54,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataBuilder builder) : 
         {
             l.A($"Must convert back to entity, to then modify the EntityId. The json: {json}");
             // update the content-id
-            var cloneWithPublishedId = builder.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
+            var cloneWithPublishedId = dataAssembler.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
 
             var serializer = DbStore.JsonSerializerGenerator.New();
             json = serializer.Serialize(cloneWithPublishedId);

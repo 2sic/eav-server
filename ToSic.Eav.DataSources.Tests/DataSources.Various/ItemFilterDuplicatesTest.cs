@@ -72,7 +72,7 @@ public class ItemFilterDuplicatesTest(DataSourcesTstBuilder dsSvc, Generator<Dat
         var sf = dataSourcesService.CreateTac<StreamMerge>(appIdentity: new AppIdentity(0, 0), upstream: ds);
 
         for (int i = 1; i < attach; i++)
-            sf.Attach("another" + i, ds.Out.First().Value);
+            sf.AttachTac("another" + i, ds.Out.First().Value);
 
         var unique = dataSourcesService.CreateTac<ItemFilterDuplicates>(appIdentity: new AppIdentity(0, 0), upstream: sf);
         return unique;

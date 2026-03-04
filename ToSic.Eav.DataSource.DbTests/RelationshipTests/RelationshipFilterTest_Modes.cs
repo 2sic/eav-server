@@ -33,17 +33,17 @@ public partial class RelationshipFilterTest
 
     [Fact]
     public void CompanyCategory_Contains_Implicit() 
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb).Run(true);
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb).Run(true);
 
     [Fact]
     public void CompanyCategory_Contains_Explicit() 
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb, 
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, CatWeb, 
             compareMode: RelationshipFilter.CompareModeContains).Run(true);
 
 
     [Fact]
     public void CompanyCategory_ContainsAllWithoutOperatorOrSepartor_Empty()
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
                 $"{CatMny1}{DefSeparator}{CatMny2}")
             .Run(false);
 
@@ -54,7 +54,7 @@ public partial class RelationshipFilterTest
     /// </summary>
     /// <returns></returns>
     private RelationshipTestCase BuildContainsAll(bool useThree = false, bool repeat2 = false)
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-contains-all", RelationshipTestSpecs.Company, CompCat,
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-contains-all", RelationshipTestSpecs.Company, CompCat,
             $"{CatMny1}{DefSeparator}{CatMny2}"
             + (repeat2 ? $"{DefSeparator}{CatMny2}" : "") // optionally repeat the second value (shouldn't affect result)
             + (useThree ? $"{DefSeparator}{CatMny3}" : ""), // optionally add a third category (for other tests)
@@ -67,19 +67,19 @@ public partial class RelationshipFilterTest
 
     [Fact]
     public void CompanyCategory_ContainsAllWithoutSeparator_Empty()
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
                 $"{CatMny1}{DefSeparator}{CatMny2}")
             .Run(false);
 
     [Fact]
     public void CompanyCategory_ContainsCatHavingComma_Find()
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
                 $"{CatWithComma}")
             .Run(true, exactCount: CompsWithCatComma);
 
     [Fact]
     public void CompanyCategory_ContainsCatHavingComma_Empty()
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat,
                 $"{CatWithComma}",
                 separator:DefSeparator)
             .Run(false);
@@ -127,7 +127,7 @@ public partial class RelationshipFilterTest
 
     [Fact]
     public void CompanyCategory_ContainsAllBadSeparator() 
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, 
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title", RelationshipTestSpecs.Company, CompCat, 
                 $"{CatWeb}{AltSeparator}{CatGreen}", 
                 compareMode:RelationshipFilter.CompareModeContains
             )
@@ -136,7 +136,7 @@ public partial class RelationshipFilterTest
     [Fact]
     public void CompanyCategory_ContainsAllAltSeparator()
     {
-        new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title",
+        new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title",
                 RelationshipTestSpecs.Company, CompCat,
                 $"{CatWeb}{AltSeparator}{CatGreen}",
                 compareMode: RelationshipFilter.CompareModeContains,
@@ -147,7 +147,7 @@ public partial class RelationshipFilterTest
     [Fact]
     public void CompanyCategory_Contains2AndCommaCase()
     {
-        new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title",
+        new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title",
                 RelationshipTestSpecs.Company, CompCat,
                 $"{CatMny1}{AltSeparator}{CatMny2}{AltSeparator}{CatWithComma}",
                 compareMode: RelationshipFilter.CompareModeContains,
@@ -158,7 +158,7 @@ public partial class RelationshipFilterTest
     [Fact]
     public void CompanyCategory_Contains3AndCommaCase()
     {
-        new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-having-title",
+        new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-having-title",
                 RelationshipTestSpecs.Company, CompCat,
                 $"{CatMny1}{AltSeparator}{CatMny2}{AltSeparator}{CatMny3}{AltSeparator}{CatWithComma}",
                 compareMode: RelationshipFilter.CompareModeContains,
@@ -175,7 +175,7 @@ public partial class RelationshipFilterTest
     /// </summary>
     /// <returns></returns>
     private RelationshipTestCase BuildContainsAny(bool useThree = false)
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-contains-any",
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-contains-any",
             RelationshipTestSpecs.Company, CompCat,
             $"{CatMny1}{DefSeparator}{CatMny2}"
             + (useThree ? $"{DefSeparator}{CatMny3}" : ""), // optionally add a third category (for other tests)
@@ -204,7 +204,7 @@ public partial class RelationshipFilterTest
     /// </summary>
     /// <returns></returns>
     private RelationshipTestCase BuildContainsAnything()
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
             $"{CatMny1}{DefSeparator}{CatMny2}", // doesn't really matter hat's here, as we only want the none
             separator: DefSeparator,
             compareMode: RelationshipFilter.CompareModeAny);
@@ -222,7 +222,7 @@ public partial class RelationshipFilterTest
     /// </summary>
     /// <returns></returns>
     private RelationshipTestCase BuildContainsNotAnything()
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
             $"{CatMny1}{DefSeparator}{CatMny2}", // doesn't really matter hat's here, as we only want the none
             separator: DefSeparator,
             compareMode: "not-" + RelationshipFilter.CompareModeAny);
@@ -239,7 +239,7 @@ public partial class RelationshipFilterTest
     /// </summary>
     /// <returns></returns>
     private RelationshipTestCase BuildCount(bool useNot, string amount)
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
             $"{amount}", // doesn't really matter hat's here, as we only want the none
             compareMode: (useNot ? "not-" : "") + RelationshipFilter.CompareModeCount);
 
@@ -278,7 +278,7 @@ public partial class RelationshipFilterTest
     /// </summary>
     /// <returns></returns>
     private RelationshipTestCase BuildContainsFirst2(bool includeTheAny)
-        => new RelationshipTestCase(dsSvc, dataBuilder, "basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
+        => new RelationshipTestCase(dsSvc, dataAssembler, typeAssembler, "basic-cat-contains-any", RelationshipTestSpecs.Company, CompCat,
             $"{CatMny2}"
             + (includeTheAny ? $"{DefSeparator}{CatForAnyTest3}":""),
             separator: DefSeparator,

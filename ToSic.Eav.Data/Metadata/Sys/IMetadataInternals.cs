@@ -26,10 +26,6 @@ public interface IMetadataInternals
     /// <returns></returns>
     IAppIdentity? Context(string type);
 
-    // #CleanUpMetadataVarieties 2025-09-05 2dm
-    //[ShowApiWhenReleased(ShowApiMode.Never)]
-    //(int TargetType, MetadataSourceWipOld source, ICollection<IEntity>? list, IHasMetadataSourceAndExpiring? appSource, Func<IHasMetadataSourceAndExpiring>? deferredSource) GetCloneSpecs();
-
     internal int TargetType { get; }
 
     internal IMetadataProvider Source { get; }

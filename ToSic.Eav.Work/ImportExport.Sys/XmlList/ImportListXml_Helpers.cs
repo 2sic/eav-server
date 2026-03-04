@@ -67,8 +67,8 @@ partial class ImportListXml
             l.A("Add entity: will stop listing each one...");
         if (_appendEntityCount % 100 == 0)
             l.A("Add entity: Current count:" + _appendEntityCount);
-        var entity = DataBuilder.Entity.Create(appId: appId, guid: entityGuid, contentType: contentType,
-            attributes: DataBuilder.Attribute.Create(values));
+        var entity = DataAssembler.Entity.Create(appId: appId, guid: entityGuid, contentType: contentType,
+            attributes: DataAssembler.AttributeList.Finalize(values));
         ImportEntities.Add(entity);
         return l.Return(entity);
     }

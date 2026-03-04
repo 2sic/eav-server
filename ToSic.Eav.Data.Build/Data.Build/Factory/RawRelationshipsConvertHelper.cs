@@ -1,11 +1,12 @@
-﻿using ToSic.Eav.Data.Raw;
+﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.EntityPair;
 
 namespace ToSic.Eav.Data.Build;
 
-internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog) : HelperBase(parentLog, "Eav.RawRel")
+internal class RawRelationshipsConvertHelper(DataAssembler dataAssembler, ILog parentLog) : HelperBase(parentLog, "Eav.RawRel")
 {
     [field: AllowNull, MaybeNull]
     private LogFilter RelationshipsToAttributesLogFilter => field
@@ -21,7 +22,7 @@ internal class RawRelationshipsConvertHelper(DataBuilder builder, ILog parentLog
                 if (v.Value is not RawRelationship rawRelationship) return v.Value;
                 var lookupSource =
                     new LookUpEntitiesSource<object>(rawRelationship.Keys, relationships);
-                var relAttr = builder.Attribute.Relationship(v.Key, lookupSource);
+                var relAttr = dataAssembler.Attribute.Relationship(v.Key, lookupSource);
                 return relAttr;
             }, StringComparer.InvariantCultureIgnoreCase);
         return l.Return(valuesWithRelationships, $"{valuesWithRelationships.Count}");

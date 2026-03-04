@@ -7,25 +7,25 @@ public static class TestEntities
 {
     public const int AppId = -1;
 
-    extension(DataBuilder builder)
+    extension(ContentTypeAssembler dataAssembler)
     {
-        private IContentType CtTestType() => builder.ContentType.CreateContentTypeTac(appId: AppId, name: "TestType", attributes: new List<IContentTypeAttribute>
+        private IContentType CtTestType() => dataAssembler.Type.CreateContentTypeTac(appId: AppId, name: "TestType", attributes: new List<IContentTypeAttribute>
             {
-                builder.ContentTypeAttributeTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
-                builder.ContentTypeAttributeTac(AppId, "LastName", DataTypes.String, false, 0, 0),
-                builder.ContentTypeAttributeTac(AppId, "Phone", DataTypes.String, false, 0, 0),
-                builder.ContentTypeAttributeTac(AppId, "Age", DataTypes.Number, false, 0,0),
-                builder.ContentTypeAttributeTac(AppId, "AnyDate", DataTypes.DateTime, false, 0,0)
+                dataAssembler.ContentTypeAttributeTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
+                dataAssembler.ContentTypeAttributeTac(AppId, "LastName", DataTypes.String, false, 0, 0),
+                dataAssembler.ContentTypeAttributeTac(AppId, "Phone", DataTypes.String, false, 0, 0),
+                dataAssembler.ContentTypeAttributeTac(AppId, "Age", DataTypes.Number, false, 0,0),
+                dataAssembler.ContentTypeAttributeTac(AppId, "AnyDate", DataTypes.DateTime, false, 0,0)
             }
         );
 
-        private IContentType CtPet() => builder.ContentType.CreateContentTypeTac(appId: AppId, name: "Pet", attributes: new List<IContentTypeAttribute>
+        private IContentType CtPet() => dataAssembler.Type.CreateContentTypeTac(appId: AppId, name: "Pet", attributes: new List<IContentTypeAttribute>
             {
-                builder.ContentTypeAttributeTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
-                builder.ContentTypeAttributeTac(AppId, "LastName", DataTypes.String, false, 0, 0),
+                dataAssembler.ContentTypeAttributeTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
+                dataAssembler.ContentTypeAttributeTac(AppId, "LastName", DataTypes.String, false, 0, 0),
                 //ContentTypeAttribute(AppId, "Birthday", "DateTime", true, 0, 0),
-                builder.ContentTypeAttributeTac(AppId, "Phone", DataTypes.String, false, 0, 0),
-                builder.ContentTypeAttributeTac(AppId, "Age", DataTypes.Number, false, 0,0)
+                dataAssembler.ContentTypeAttributeTac(AppId, "Phone", DataTypes.String, false, 0, 0),
+                dataAssembler.ContentTypeAttributeTac(AppId, "Age", DataTypes.Number, false, 0,0)
             }
         );
     }
@@ -34,9 +34,9 @@ public static class TestEntities
     public const string AnyDateKey = "AnyDate";
     public const string AnyDateString = "2019-11-06T01:00:05Z";
 
-    extension(DataBuilder builder)
+    extension(DataAssembler dataAssembler)
     {
-        public IEntity TestEntityDaniel()
+        public IEntity TestEntityDaniel(ContentTypeAssembler typeAssembler)
         {
             var valDaniel = new Dictionary<string, object>
             {
@@ -46,11 +46,11 @@ public static class TestEntities
                 { "Age", 37 },
                 { AnyDateKey, DateTime.Parse(AnyDateString) }
             };
-            var entDaniel = builder.CreateEntityTac(appId: AppId, entityId: 1, contentType: builder.CtTestType(), values: valDaniel, titleField: "FirstName");
+            var entDaniel = dataAssembler.CreateEntityTac(appId: AppId, entityId: 1, contentType: typeAssembler.CtTestType(), values: valDaniel, titleField: "FirstName");
             return entDaniel;
         }
 
-        public IEntity TestEntityLeonie()
+        public IEntity TestEntityLeonie(ContentTypeAssembler typeAssembler)
         {
             var valLeonie = new Dictionary<string, object>
             {
@@ -60,11 +60,11 @@ public static class TestEntities
                 { "Age", 6 }
             };
 
-            var entLeonie = builder.CreateEntityTac(appId: AppId, entityId: 2, contentType: builder.CtTestType(), values: valLeonie, titleField: "FirstName");
+            var entLeonie = dataAssembler.CreateEntityTac(appId: AppId, entityId: 2, contentType: typeAssembler.CtTestType(), values: valLeonie, titleField: "FirstName");
             return entLeonie;
         }
 
-        public IEntity TestEntityPet(int petNumber)
+        public IEntity TestEntityPet(ContentTypeAssembler typeAssembler, int petNumber)
         {
             var valsPet = new Dictionary<string, object>
             {
@@ -74,7 +74,7 @@ public static class TestEntities
                 { "Age", petNumber }
             };
 
-            var entPet = builder.CreateEntityTac(appId: AppId, entityId: 1000 + petNumber, contentType: builder.CtPet(), values: valsPet, titleField: "FirstName");
+            var entPet = dataAssembler.CreateEntityTac(appId: AppId, entityId: 1000 + petNumber, contentType: typeAssembler.CtPet(), values: valsPet, titleField: "FirstName");
             return entPet;
         }
     }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
@@ -10,8 +10,13 @@ namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilder, Generator<IDataFactory, DataFactoryOptions> selfGenerator, LazySvc<ContentTypeFactory> ctFactoryLazy)
-    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataBuilder, selfGenerator, ctFactoryLazy]), IDataFactory
+internal class DataFactory(
+    Generator<DataAssembler, DataAssemblerOptions> dataAssembler,
+    LazySvc<ContentTypeTypeAssembler> typeAssembler,
+
+    Generator<IDataFactory, DataFactoryOptions> selfGenerator,
+    LazySvc<CodeContentTypesManager> ctFactoryLazy)
+    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, ctFactoryLazy]), IDataFactory
 {
 
     #region Properties to configure Builder / Defaults
@@ -19,7 +24,7 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
     /// <inheritdoc />
     public int IdCounter
     {
-        get => _idCounter ??= Options.IdSeed;
+        get => _idCounter ??= MyOptions.IdSeed;
         private set => _idCounter = value;
     }
     private int? _idCounter;
@@ -31,9 +36,9 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
     public IContentType ContentType => field
-        ??= Options.Type != null
-            ? ctFactoryLazy.Value.Create(Options.Type)
-            : DataBuilder.ContentType.Transient(Options.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
+        ??= MyOptions.Type != null
+            ? ctFactoryLazy.Value.Get(MyOptions.Type)
+            : typeAssembler.Value.Transient(MyOptions.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
 
     /// <summary>
     /// The DataBuilder used for this DataFactory.
@@ -43,8 +48,8 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
     /// So once it's accessed, options cannot be updated anymore.
     /// </remarks>
     [field: AllowNull, MaybeNull]
-    private DataBuilder DataBuilder => field ??= dataBuilder.New(new() {
-        AllowUnknownValueTypes = Options.AllowUnknownValueTypes
+    private DataAssembler DataAssembler => field ??= dataAssembler.New(new() {
+        AllowUnknownValueTypes = MyOptions.AllowUnknownValueTypes
     });
 
 
@@ -55,11 +60,11 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
     /// </summary>
     [field: AllowNull, MaybeNull]
     public ILookup<object, IEntity> Relationships => field
-        ??= Options.Relationships ?? new LazyLookup<object, IEntity>();
+        ??= MyOptions.Relationships ?? new LazyLookup<object, IEntity>();
 
     [field: AllowNull, MaybeNull]
     private RawRelationshipsConvertHelper RelsConvertHelper => field
-        ??= new(DataBuilder, Log);
+        ??= new(DataAssembler, Log);
 
     #endregion
 
@@ -77,7 +82,7 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
         // Pre-process relationship keys, so they are added to the lookup
         var list = rawList.ToListOpt();
         if (Relationships is LazyLookup<object, IEntity> lazyRelationships)
-            RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, Options.RawConvertOptions);
+            RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, MyOptions.RawConvertOptions);
 
         // Return entities as Immutable list
         return l.Return(list.Select(set => set.Entity).ToImmutableOpt());
@@ -160,17 +165,17 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
         // 2. If the ID was 0 / not specified, and the options say to auto-count...
         // 2a. ...the increment from the last count
         // 2b. ...unless the current count is negative, then decrement
-        var entityId = id == 0 && Options.AutoId
+        var entityId = id == 0 && MyOptions.AutoId
             ? (IdCounter < 0 ? IdCounter-- : IdCounter++) // negative means we're counting down
             : id;
 
-        var attributes = DataBuilder.Attribute.Create(valuesWithRelationships);
-        var ent = DataBuilder.Entity.Create(
-            appId: Options.AppId,
+        var attributes = DataAssembler.AttributeList.Finalize(valuesWithRelationships);
+        var ent = DataAssembler.Entity.Create(
+            appId: MyOptions.AppId,
             entityId: entityId,
             contentType: ContentType,
             attributes: attributes,
-            titleField: Options.TitleField,
+            titleField: MyOptions.TitleField,
             guid: guid,
             created: created == default ? Created : created,
             modified: modified == default ? Modified : modified,
@@ -187,11 +192,11 @@ internal class DataFactory(Generator<DataBuilder, DataBuilderOptions> dataBuilde
     /// <returns></returns>
     public IEntity Create(IRawEntity rawEntity)
     {
-        var partsBuilder = Options.WithMetadata && rawEntity is RawEntity { Metadata: not null } typed
+        var partsBuilder = MyOptions.WithMetadata && rawEntity is RawEntity { Metadata: not null } typed
             ? new EntityPartsLazy(null, (_, _) => typed.Metadata)
             : null;
         return Create(
-            rawEntity.Attributes(Options.RawConvertOptions),
+            rawEntity.Attributes(MyOptions.RawConvertOptions),
             id: rawEntity.Id,
             guid: rawEntity.Guid,
             created: rawEntity.Created,

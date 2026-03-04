@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.DataSource.Sys;
 
 namespace ToSic.Eav.DataSources;
@@ -42,13 +43,13 @@ public sealed class LanguageModeler : DataSourceBase
     /// Initializes this data source
     /// </summary>
     [PrivateApi]
-    public LanguageModeler(DataBuilder dataBuilder, Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.LngMod", connect: [dataBuilder])
+    public LanguageModeler(DataAssembler dataAssembler, Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.LngMod", connect: [dataAssembler])
     {
-        _dataBuilder = dataBuilder;
+        _dataAssembler = dataAssembler;
         ProvideOut(MapLanguagesIntoValues);
     }
 
-    private readonly DataBuilder _dataBuilder;
+    private readonly DataAssembler _dataAssembler;
 
 
     /// <summary>
@@ -85,11 +86,12 @@ public sealed class LanguageModeler : DataSourceBase
         if (source is null)
             return l.ReturnAsError(Error.TryGetInFailed());
 
-        var atBld = _dataBuilder.Attribute;
+        var atBld = _dataAssembler.Attribute;
+        var atListAss = _dataAssembler.AttributeList;
         var result = new List<IEntity>();
         foreach (var entity in source)
         {
-            var attributes = atBld.Mutable(entity.Attributes);
+            var attributes = atListAss.ConvertToMutable(entity.Attributes);
 
             foreach (var map in fieldMap)
             {
@@ -146,7 +148,7 @@ public sealed class LanguageModeler : DataSourceBase
                 }
             }
 
-            var modifiedEntity = _dataBuilder.Entity.CreateFrom(entity, attributes: atBld.Create(attributes));
+            var modifiedEntity = _dataAssembler.Entity.CreateFrom(entity, attributes: atListAss.Finalize(attributes));
 
             result.Add(modifiedEntity);
         }

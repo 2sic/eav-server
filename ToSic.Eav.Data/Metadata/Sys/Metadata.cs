@@ -36,24 +36,6 @@ public partial class Metadata<T> : IMetadata, IMetadataInternals, ITimestamped
         Source = source;
     }
 
-    ///// <summary>
-    ///// Constructor that can take both a direct App-Source and a deferred source.
-    ///// Note that both sources can be null!
-    ///// </summary>
-    ///// <param name="targetType"></param>
-    ///// <param name="key"></param>
-    ///// <param name="title">Title of the target we're describing - for further automating when using or creating more Metadata</param>
-    ///// <param name="items">A direct list of items to use as metadata - instead of lazy-loading from a source. If specified, auto-sync will be disabled.</param>
-    ///// <param name="appSource"></param>
-    ///// <param name="deferredSource"></param>
-    //public Metadata(int targetType, T key, string title, IEnumerable<IEntity>? items = default, IHasMetadataSourceAndExpiring? appSource = default, Func<IHasMetadataSourceAndExpiring>? deferredSource = default)
-    //{
-    //    _targetType = targetType;
-    //    Key = key;
-    //    _metadataTitle = title;
-    //    Source = new MetadataSourceWipOld(items == null ? null : new ImmutableEntitiesSource(items.ToImmutableOpt()), appSource, deferredSource);
-    //}
-
     protected IMetadataProvider Source { get; }
 
     IMetadataProvider IMetadataInternals.Source => Source;
@@ -109,10 +91,6 @@ public partial class Metadata<T> : IMetadata, IMetadataInternals, ITimestamped
     #region Context for data to be created
 
     public IAppIdentity? Context(string type) => GetMetadataSource();
-
-    // #CleanUpMetadataVarieties 2025-09-05 2dm
-    //public (int TargetType, MetadataSourceWipOld source, ICollection<IEntity>? list, IHasMetadataSourceAndExpiring? appSource, Func<IHasMetadataSourceAndExpiring>? deferredSource) GetCloneSpecs() 
-    //    => (_targetType, Source, Source.SourceDirect?.List?.ToListOpt(), Source.SourceApp, Source.SourceDeferred);
 
     #endregion
 }

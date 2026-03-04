@@ -4,16 +4,14 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Sys;
 
-
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
 /// This is a helper environment to build entities based on different needs
-/// It's basically different kinds of constructors, just to keep the primary 
-/// Entity object lean and clean
 /// </summary>
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class EntityBuilder(AttributeBuilder attributeBuilder)
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[method: PrivateApi]
+public class EntityAssembler(AttributeListAssembler attributeListAssembler)
 {
     public Entity Create(
         int appId,
@@ -40,7 +38,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             EntityGuid = guid,
             Type = contentType,
             TitleFieldName = titleField,
-            Attributes = attributes ?? AttributeBuilder.EmptyList,
+            Attributes = attributes ?? AttributeListAssembler.EmptyList,
 
             Created = created ?? default,
             Modified = modified ?? default,
@@ -68,7 +66,7 @@ public class EntityBuilder(AttributeBuilder attributeBuilder)
             entityId: entityId,
             guid: entityGuid,
             contentType: type,
-            attributes: attributeBuilder.Create(type, null),
+            attributes: attributeListAssembler.CreateListForType(type, null),
             created: DateTime.MinValue,
             modified: DateTime.Now, 
             owner: "");

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Global;
 using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.Metadata.Targets;
@@ -16,9 +17,10 @@ partial class JsonSerializer(JsonSerializer.Dependencies services, string logNam
     public new record Dependencies(
         ITargetTypeService MetadataTargets,
         IGlobalDataService GlobalData,
-        DataBuilder DataBuilder,
+        DataAssembler DataAssembler,
+        ContentTypeAssembler TypeAssembler,
         LazySvc<IValueConverter> ValueConverter)
-        : SerializerBase.Dependencies(MetadataTargets, DataBuilder, GlobalData, Connect: [ValueConverter]);
+        : SerializerBase.Dependencies(MetadataTargets, DataAssembler, TypeAssembler, GlobalData, Connect: [ValueConverter]);
 
     #endregion
 

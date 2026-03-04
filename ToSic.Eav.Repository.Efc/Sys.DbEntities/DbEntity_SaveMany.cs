@@ -24,7 +24,7 @@ partial class DbEntity
         if (entityOptionPairs.Count == 0)
             return l.Return([], "Entities to save are empty, skip");
 
-        var saveProcess = new SaveEntityProcess(DbStore, builder, entityOptionPairs, Log);
+        var saveProcess = new SaveEntityProcess(DbStore, dataAssembler, entityOptionPairs, Log);
 
         var ids = useParallel
             ? SaveEntitiesParallel(saveProcess, entityOptionPairs)

@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.Relationships;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Persistence.Efc.Sys.TempModels;
@@ -11,7 +12,12 @@ using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
-internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeserializer> dataDeserializer, DataBuilder dataBuilder, ISysFeaturesService featuresSvc)
+internal class EntityLoader(
+    EfcAppLoaderService appLoader,
+    Generator<IDataDeserializer> dataDeserializer,
+    DataAssembler dataAssembler,
+    ContentTypeAssembler typeAssembler,
+    ISysFeaturesService featuresSvc)
     : HelperBase(appLoader.Log, "Efc.EntLdr")
 {
     /// <summary>
@@ -83,7 +89,7 @@ internal class EntityLoader(EfcAppLoaderService appLoader, Generator<IDataDeseri
 
         var logDetails = appLoader.LogSettings is { Enabled: true, Details: true };
 
-        var buildHelper = new EntityBuildHelper(dataBuilder, builder.Reader, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, Log);
+        var buildHelper = new EntityBuildHelper(dataAssembler, typeAssembler, builder.Reader, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, Log);
 
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)

@@ -9,7 +9,7 @@ public class StreamFallbackTst(DataSourcesTstBuilder DsSvc, Generator<DataTableP
     public void StreamWhereDefaultIsReturned()
     {
         var stmf = AssembleTestFallbackStream();
-        stmf.Attach(StreamDefaultName, stmf.InTac()["1"]);
+        stmf.AttachTac(StreamDefaultName, stmf.InTac()["1"]);
 
         Equal(1, stmf.ListTac().Count()); //, "should have found 1");
     }
@@ -27,11 +27,11 @@ public class StreamFallbackTst(DataSourcesTstBuilder DsSvc, Generator<DataTableP
         var stmf = AssembleTestFallbackStream(addStream1: false);
         //stmf.InForTests().Remove("1");
         var inDefaultStream = stmf.InTac()[StreamDefaultName];
-        stmf.Attach("Fallback1", inDefaultStream);
-        stmf.Attach("Fallback2", inDefaultStream);
-        stmf.Attach("Fallback3", inDefaultStream);
-        stmf.Attach("Fallback4", inDefaultStream);
-        stmf.Attach("Fallback5", inDefaultStream);
+        stmf.AttachTac("Fallback1", inDefaultStream);
+        stmf.AttachTac("Fallback2", inDefaultStream);
+        stmf.AttachTac("Fallback3", inDefaultStream);
+        stmf.AttachTac("Fallback4", inDefaultStream);
+        stmf.AttachTac("Fallback5", inDefaultStream);
 
         Equal(45, stmf.ListTac().Count()); //, "Should have looped through many and found the 45");
         Equal("ZMany", stmf.DebugReturnedStreamName);
@@ -42,11 +42,11 @@ public class StreamFallbackTst(DataSourcesTstBuilder DsSvc, Generator<DataTableP
     {
         var sourceForStream1 = AssembleTestFallbackStream(addStream1: true);
         var stmf = AssembleTestFallbackStream(addStream1: false);
-        stmf.Attach("ZZZ", sourceForStream1.InTac()["1"]); // should be after the "ZMany" so it should not return anything
-        stmf.Attach("1", stmf.InTac()[StreamDefaultName]);
-        stmf.Attach("2", stmf.InTac()[StreamDefaultName]);
-        stmf.Attach("3", stmf.InTac()[StreamDefaultName]);
-        stmf.Attach("Fallback5", stmf.InTac()[StreamDefaultName]);
+        stmf.AttachTac("ZZZ", sourceForStream1.InTac()["1"]); // should be after the "ZMany" so it should not return anything
+        stmf.AttachTac("1", stmf.InTac()[StreamDefaultName]);
+        stmf.AttachTac("2", stmf.InTac()[StreamDefaultName]);
+        stmf.AttachTac("3", stmf.InTac()[StreamDefaultName]);
+        stmf.AttachTac("Fallback5", stmf.InTac()[StreamDefaultName]);
         Equal(45, stmf.ListTac().Count()); //, "Should have looped through many and found the 45");
         Equal("ZMany", stmf.DebugReturnedStreamName);
     }
@@ -55,9 +55,9 @@ public class StreamFallbackTst(DataSourcesTstBuilder DsSvc, Generator<DataTableP
     public void FindNothing()
     {
         var stmf = AssembleTestFallbackStream(addStream1: false, addStreamZMany: false);
-        stmf.Attach("1", stmf.InTac()[StreamDefaultName]);
-        stmf.Attach("2", stmf.InTac()[StreamDefaultName]);
-        stmf.Attach("3", stmf.InTac()[StreamDefaultName]);
+        stmf.AttachTac("1", stmf.InTac()[StreamDefaultName]);
+        stmf.AttachTac("2", stmf.InTac()[StreamDefaultName]);
+        stmf.AttachTac("3", stmf.InTac()[StreamDefaultName]);
         Equal(0, stmf.ListTac().Count()); //, "Should find none");
     }
 

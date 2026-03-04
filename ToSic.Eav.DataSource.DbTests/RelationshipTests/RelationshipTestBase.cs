@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.LookUp;
@@ -6,7 +7,7 @@ using ToSic.Eav.LookUp.Sys.Engines;
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
-public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
+public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
 {
     #region Const Values for testing
 
@@ -115,7 +116,7 @@ public class RelationshipTestBase(DataSourcesTstBuilder dsSvc, DataBuilder dataB
 
     protected LookUpEngine BuildConfigurationProvider(Dictionary<string, object> vals)
     {
-        var testData = new LookUpTestData(dataBuilder);
+        var testData = new LookUpTestData(dataAssembler, typeAssembler);
         var lookup = testData.BuildLookUpEntity(DataSourceConstants.MyConfigurationSourceName, vals);
         var vc = testData.AppSetAndRes(sources: [lookup]);
         return vc;

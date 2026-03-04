@@ -1,5 +1,4 @@
-﻿
-using ToSic.Eav.Data.Sys.Entities;
+﻿using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Sys;
 
@@ -8,7 +7,7 @@ namespace ToSic.Eav.Data.Build;
 public static class BuildTestAccessors
 {
     public static Entity CreateEntityTac(
-        this DataBuilder dataBuilder,
+        this DataAssembler dataAssembler,
         int appId,
         IContentType contentType,
         NoParamOrder npo = default,
@@ -27,12 +26,12 @@ public static class BuildTestAccessors
         EntityPartsLazy? partsBuilder = default
     )
     {
-        return dataBuilder.Entity.Create(appId: appId,
+        return dataAssembler.Entity.Create(appId: appId,
             contentType: contentType,
             attributes: typedValues != null
-                ? dataBuilder.Attribute.Create(typedValues)
+                ? dataAssembler.AttributeList.Finalize(typedValues)
                 : values != null
-                    ? dataBuilder.Attribute.Create(values)
+                    ? dataAssembler.AttributeList.Finalize(values)
                     : null,
             entityId: entityId,
             repositoryId: repositoryId,

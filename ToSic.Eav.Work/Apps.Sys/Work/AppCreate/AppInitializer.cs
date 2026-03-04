@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.EntityPair;
@@ -23,7 +24,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppInitializer(
-    LazySvc<DataBuilder> builder,
+    LazySvc<DataAssembler> builder,
     Generator<IAppsAndZonesLoaderWithRaw> repoLoader,
     GenWorkDb<WorkEntitySave> entitySave,
     GenWorkDb<WorkContentTypesMod> contentTypesMod,
@@ -157,7 +158,7 @@ public class AppInitializer(
         }
 
         var values = cTypeAndOrEntity.Values ?? [];
-        var attrs = builder.Value.Attribute.Create(values!);
+        var attrs = builder.Value.AttributeList.Finalize(values!);
         var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appReader.AppId);
         var newEnt = builder.Value.Entity
             .Create(appId: appReader.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);

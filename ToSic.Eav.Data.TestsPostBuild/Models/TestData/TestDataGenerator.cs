@@ -6,31 +6,31 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Models.TestData;
 
-public class TestDataGenerator(DataBuilder builder, ContentTypeFactory ctFactory)
+public class TestDataGenerator(DataAssembler dataAssembler, CodeContentTypesManager ctDefFactory, ContentTypeAssembler typeAssembler)
 {
     public IEntity EntityWithMetadataForDecorator(int amount)
     {
-        var original = builder.TestEntityDaniel();
+        var original = dataAssembler.TestEntityDaniel(typeAssembler);
 
         var decorators = CreateMdForDecorators(amount);
 
-        var lazyPartsBuilder = builder.EntityConnection.UseMetadata(decorators);
+        var lazyPartsBuilder = dataAssembler.EntityConnection.UseMetadata(decorators);
 
-        var entity = builder.Entity.CreateFrom(original, partsBuilder: lazyPartsBuilder);
+        var entity = dataAssembler.Entity.CreateFrom(original, partsBuilder: lazyPartsBuilder);
         return entity;
     }
 
     public IEntity CreateWithMixedMetadata(int amountMdFor, int amountOther)
     {
-        var original = builder.TestEntityDaniel();
+        var original = dataAssembler.TestEntityDaniel(typeAssembler);
 
         var decorators = CreateMdForDecorators(amountMdFor);
 
         var newDecorators = CreateMdEmpty(amountOther);
 
-        var lazyPartsBuilder = builder.EntityConnection.UseMetadata(decorators.Concat(newDecorators));
+        var lazyPartsBuilder = dataAssembler.EntityConnection.UseMetadata(decorators.Concat(newDecorators));
 
-        var entity = builder.Entity.CreateFrom(original, partsBuilder: lazyPartsBuilder);
+        var entity = dataAssembler.Entity.CreateFrom(original, partsBuilder: lazyPartsBuilder);
         return entity;
     }
 
@@ -57,9 +57,9 @@ public class TestDataGenerator(DataBuilder builder, ContentTypeFactory ctFactory
 
     public IEntity CreateMetadataForDecorator()
     {
-        var ct = ctFactory.CreateTac<TestModelMetadataForDecorator>();
+        var ct = ctDefFactory.CreateTac<TestModelMetadataForDecorator>();
 
-        return builder.CreateEntityTac(0, ct, values: new()
+        return dataAssembler.CreateEntityTac(0, ct, values: new()
         {
             { nameof(TestModelMetadataForDecorator.Amount), 1 },
             { nameof(TestModelMetadataForDecorator.TargetName), nameof(TargetTypes.Entity) },
@@ -70,9 +70,9 @@ public class TestDataGenerator(DataBuilder builder, ContentTypeFactory ctFactory
 
     public IEntity CreateEntityForNoSpecs()
     {
-        var ct = ctFactory.CreateTac<CodeTypeNoSpecs>();
+        var ct = ctDefFactory.CreateTac<CodeTypeNoSpecs>();
 
-        return builder.CreateEntityTac(0, ct, values: new()
+        return dataAssembler.CreateEntityTac(0, ct, values: new()
         {
             { nameof(CodeTypeNoSpecs.Id), 1 },
             { nameof(CodeTypeNoSpecs.Name), "Test" },

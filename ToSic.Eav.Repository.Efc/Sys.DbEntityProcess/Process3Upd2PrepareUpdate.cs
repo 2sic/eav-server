@@ -53,7 +53,7 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
             // increase version
             dbEnt.Version++;
             //newEnt = _factory.Entity.ResetIdentifiers(newEnt, version: dbEnt.Version);
-            newEnt = services.Builder.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
+            newEnt = services.DataAssembler.Entity.CreateFrom(newEnt, id: resetId, version: dbEnt.Version);
 
             headerNeedsUpdate = true;
         }

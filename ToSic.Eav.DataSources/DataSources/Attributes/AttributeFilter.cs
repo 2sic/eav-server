@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.DataSource.Sys;
 using static System.StringComparer;
 using static ToSic.Eav.DataSource.DataSourceConstants;
@@ -61,13 +62,13 @@ public class AttributeFilter : DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public AttributeFilter(EntityBuilder entityBuilder, Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtribF")
+    public AttributeFilter(EntityAssembler entityAssembler, Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtribF")
     {
-        _entityBuilder = entityBuilder;
+        _entityAssembler = entityAssembler;
         ProvideOut(GetList);
     }
 
-    private readonly EntityBuilder _entityBuilder;
+    private readonly EntityAssembler _entityAssembler;
 
 
     /// <summary>
@@ -110,13 +111,13 @@ public class AttributeFilter : DataSourceBase
             {
                 // Case 2: Check if we should take none at all
                 if (noFieldNames && modeIsKeepAttributes)
-                    return _entityBuilder.CreateFrom(e, attributes: AttributeBuilder.EmptyList);
+                    return _entityAssembler.CreateFrom(e, attributes: AttributeListAssembler.EmptyList);
 
                 // Case 3 - not all fields, keep/drop the ones we don't want
                 var attributes = e.Attributes
                     .Where(aPair => attributeNames.Contains(aPair.Key) == modeIsKeepAttributes)
                     .ToImmutableDictionary(pair => pair.Key, pair => pair.Value, InvariantCultureIgnoreCase);
-                return _entityBuilder.CreateFrom(e, attributes: attributes);
+                return _entityAssembler.CreateFrom(e, attributes: attributes);
             })
             .ToImmutableOpt();
 

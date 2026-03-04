@@ -5,12 +5,14 @@ using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
-using ToSic.Eav.Metadata.Sys;
 
-namespace ToSic.Eav.Data.Build;
+namespace ToSic.Eav.Data.Build.Sys;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeBuilder
+/// <summary>
+/// Internal assembler for ContentTypes. The name is a bit strange, to differentiate it from <see cref="ContentTypeAssembler"/>.
+/// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+public class ContentTypeTypeAssembler
 {
     public const int DynTypeId = 1;
 
@@ -39,9 +41,6 @@ public class ContentTypeBuilder
 
         // Metadata (2)
         ContentTypeMetadata? metadata = default,                 // for clone
-        // #CleanUpMetadataVarieties 2025-09-05 2dm
-        //IEnumerable<IEntity>? metadataItems = default,
-        //Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = default,    // for find-it-yourself
 
         // Save Specs (2) Older stuff, should be removed some day
         bool? onSaveSortAttributes = default,
@@ -56,7 +55,6 @@ public class ContentTypeBuilder
                 parentTypeId.Value));
 
         // Prepare metadata retrieval
-        //metadata ??= new ContentTypeMetadata(typeId: nameId, items: metadataItems, deferredSource: metaSourceFinder, title: name);
         metadata ??= new ContentTypeMetadata(typeId: nameId, title: name, source: new MetadataProviderEmpty());
 
         attributes ??= new List<IContentTypeAttribute>();
@@ -111,12 +109,6 @@ public class ContentTypeBuilder
         // Metadata (2)
         ContentTypeMetadata? metadata = default,                 // for clone
         IEnumerable<IEntity>? metadataItems = default
-        //Func<IHasMetadataSource> metaSourceFinder = default
-
-        // Save Specs (2) Older stuff, should be removed some day - ATM not supported
-        //bool? onSaveSortAttributes = default,
-        //string onSaveUseParentStaticName = default
-
     )
     {
         if (original == null)
@@ -161,10 +153,6 @@ public class ContentTypeBuilder
 
             // Metadata
             metadata: metadata
-            //metaSourceFinder: metaSourceFinder ?? original.Metadata.SourceForClone
-
-            // Save Specs not implemented
-            // onSaveSortAttributes: onSaveSortAttributes ?? original
         );
     }
 

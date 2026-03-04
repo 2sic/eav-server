@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.DataSource.Sys.Catalog;
-using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSource.VisualQuery.Sys;
 using ToSic.Sys.Users;
 

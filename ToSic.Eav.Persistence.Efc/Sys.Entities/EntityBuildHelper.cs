@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Persistence.Efc.Sys.TempModels;
@@ -11,7 +12,8 @@ using static System.StringComparer;
 namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityBuildHelper(
-    DataBuilder dataBuilder,
+    DataAssembler dataAssembler,
+    ContentTypeAssembler typeAssembler,
     IAppReader appReader,
     IDataDeserializer serializer,
     Dictionary<int, ICollection<TempRelationshipList>> relatedEntities,
@@ -31,7 +33,7 @@ internal class EntityBuildHelper(
             var fromJson = serializer.Deserialize(rawEntity.Json, false, true);
             // add properties which are not in the json
             // ReSharper disable once PossibleNullReferenceException
-            var clonedExtended = dataBuilder.Entity.CreateFrom(fromJson,
+            var clonedExtended = dataAssembler.Entity.CreateFrom(fromJson,
                 isPublished: rawEntity.IsPublished,
                 created: rawEntity.Created,
                 modified: rawEntity.Modified,
@@ -61,8 +63,12 @@ internal class EntityBuildHelper(
         // Prepare relationships to add to AttributeGenerator
         var emptyValueList = new List<(string StaticName, IValue)>();
         var stateCache = appReader.GetCache();
+        var valAss = dataAssembler.Value;
+        var relAss = dataAssembler.Relationship;
         var preparedRelationships = relatedEntities.TryGetValue(rawEntity.EntityId, out var rawRels)
-            ? rawRels.Select(r => (r.StaticName, dataBuilder.Value.Relationship(r.Children, stateCache))).ToList()
+            ? rawRels
+                .Select(r => (r.StaticName, relAss.Relationship(relAss.ToSource(r.Children, stateCache))))
+                .ToList()
             : emptyValueList;
 
         var attributeValuesLookup = !attributes.TryGetValue(rawEntity.EntityId, out var attribValues)
@@ -78,7 +84,7 @@ internal class EntityBuildHelper(
                 .SelectMany(a =>
                 {
                     var results = a.Values
-                        .Select(v => dataBuilder.Value.Build(a.CtAttribute!.Type, v.Value, v.Languages))
+                        .Select(v => valAss.Create(a.CtAttribute!.Type, v.Value, v.Languages))
                         .ToList();
                     var final = ValueLanguageRepairHelper.FixIncorrectLanguageDefinitions(results, primaryLanguage);
                     return final.Select(r => (a.Name, r));
@@ -100,9 +106,9 @@ internal class EntityBuildHelper(
         }
 
         // Get all Attributes of that Content-Type
-        var newAttributes = dataBuilder.Attribute.Create(contentType, mergedValueLookups);
-        var partsBuilder = dataBuilder.EntityConnection.UseApp(stateCache);
-        var newEntity = dataBuilder.Entity.Create(
+        var newAttributes = dataAssembler.AttributeList.CreateListForType(contentType, mergedValueLookups);
+        var partsBuilder = dataAssembler.EntityConnection.UseApp(stateCache);
+        var newEntity = dataAssembler.Entity.Create(
             appId: appReader.AppId,
             guid: rawEntity.EntityGuid,
             entityId: entityId, // rawEntity.EntityId,
@@ -139,16 +145,16 @@ internal class EntityBuildHelper(
         // Don't use the default data builder here, as it needs DI and this object
         // will often be created late when DI is already destroyed
         var id = _errorId--;
-        var errorEntity = dataBuilder.Entity.Create(
+        var errorEntity = dataAssembler.Entity.Create(
             appId: appReader.AppId,
             entityId: id,
             repositoryId: id,
             contentType: ErrorContentType,
-            attributes: dataBuilder.Attribute.Create(values),
+            attributes: dataAssembler.AttributeList.Finalize(values),
             titleField: DataConstants.ErrorFieldTitle
         );
         return errorEntity;
     }
 
-    private IContentType ErrorContentType => field ??= dataBuilder.ContentType.Transient(DataConstants.ErrorTypeName);
+    private IContentType ErrorContentType => field ??= typeAssembler.Type.Transient(DataConstants.ErrorTypeName);
 }

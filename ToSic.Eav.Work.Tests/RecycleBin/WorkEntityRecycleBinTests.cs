@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
@@ -21,7 +20,7 @@ public class WorkEntityRecycleBinTests(
     Generator<DbStorage, StorageOptions> dbDataGenerator,
     GenWorkDb<WorkEntityRecycleBin> workEntityRecycleBin,
     ImportService importService,
-    DataBuilder dataBuilder)
+    DataAssembler dataAssembler)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private sealed class Specs : IAppIdentity
@@ -44,10 +43,10 @@ public class WorkEntityRecycleBinTests(
         var now = DateTime.UtcNow;
 
         var newGuid = Guid.NewGuid();
-        var newChild = dataBuilder.Entity.Create(
+        var newChild = dataAssembler.Entity.Create(
             appId: TestSpecs.AppId,
             contentType: templateEntity.Type,
-            attributes: dataBuilder.Attribute.Create(templateEntity.Type, preparedValues: null),
+            attributes: dataAssembler.AttributeList.CreateListForType(templateEntity.Type, preparedValues: null),
             entityId: 0,
             repositoryId: 0,
             guid: newGuid,

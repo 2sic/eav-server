@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
@@ -27,7 +28,8 @@ internal class RelationshipTestCase : RelationshipTestBase
 
     internal RelationshipTestCase(
         DataSourcesTstBuilder dsSvc,
-        DataBuilder dataBuilder,
+        DataAssembler dataAssembler,
+        ContentTypeAssembler typeAssembler,
         string name, 
         string type, 
         string? relationship = null, 
@@ -36,7 +38,7 @@ internal class RelationshipTestCase : RelationshipTestBase
         string? compareMode = null,
         string? separator = null,
         string? direction = null)
-    : base(dsSvc, dataBuilder)
+    : base(dsSvc, dataAssembler, typeAssembler)
     {
         Name = name;
         Type = type;

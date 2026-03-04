@@ -128,8 +128,9 @@ partial class DataSourceBase
 
 
     #region various Attach-In commands
+
     /// <inheritdoc />
-    [PublicApi]
+    [PrivateApi("IDataTarget has been marked obsolete since 15.04 to be removed ca. v17, but DataSourceBase.Attach has only been marked private since v21")]
     public void Attach(IDataSource dataSource)
     {
         foreach (var dataStream in dataSource.Out) 
@@ -168,12 +169,12 @@ partial class DataSourceBase
 
 
     /// <inheritdoc />
-    [PublicApi]
+    [PrivateApi("IDataTarget has been marked obsolete since 15.04 to be removed ca. v17, but DataSourceBase.Attach has only been marked private since v21")]
     public void Attach(string streamName, IDataSource dataSource, string sourceName = DataSourceConstants.StreamDefaultName) 
         => Attach(new DataSourceConnection(dataSource, sourceName, this, streamName));
 
     /// <inheritdoc />
-    [PublicApi]
+    [PrivateApi("IDataTarget has been marked obsolete since 15.04 to be removed ca. v17, but DataSourceBase.Attach has only been marked private since v21")]
     public void Attach(string streamName, IDataStream dataStream)
     {
         if (dataStream == null!)

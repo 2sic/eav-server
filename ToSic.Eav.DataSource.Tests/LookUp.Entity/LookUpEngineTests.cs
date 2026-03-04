@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sys;
@@ -7,8 +7,8 @@ using ToSic.Eav.LookUp.TestHelpers;
 
 namespace ToSic.Eav.LookUp.Entity;
 
-[Startup(typeof(StartupTestsEavDataBuild))]
-public class LookUpEngineTests(DataBuilder dataBuilder)
+[Startup(typeof(StartupTestsEavDataBuildWithTestData))]
+public class LookUpEngineTests(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler, LookUpTestData lookUpTestData)
 {
     #region Constants
 
@@ -21,7 +21,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     [Fact]
     public void LookUpEngine_SourcesWork()
     {
-        var lookUpEngine = new LookUpTestData(dataBuilder).AppSetAndRes();
+        var lookUpEngine = lookUpTestData.AppSetAndRes();
         AssertLookUpEngineHasSourcesOfOriginal(lookUpEngine);
     }
 
@@ -37,7 +37,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     [Fact]
     public void LookUpEngine_DontModifyThingsWithoutTokens()
     {
-        var vc = new LookUpTestData(dataBuilder).AppSetAndRes();
+        var vc = lookUpTestData.AppSetAndRes();
         var settings = Settings();
         settings = vc.LookUp(settings);
         Equal(ResolvedSettingDefaultCat, settings["DefaultCategory"]); //, "Default should be all");
@@ -47,7 +47,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     [Fact]
     public void BasicLookupsWork()
     {
-        var mainEngine = new LookUpTestData(dataBuilder).AppSetAndRes(-1);
+        var mainEngine = lookUpTestData.AppSetAndRes(-1);
         var settings = mainEngine.LookUp(TestTokens());
         foreach (var setting in settings)
             Equal(setting.Key, setting.Value); //, $"expected '{setting.Key}', got '{setting.Value}'");
@@ -56,7 +56,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     [Fact]
     public void BasicLookupsWithTweaks()
     {
-        var mainEngine = new LookUpTestData(dataBuilder).AppSetAndRes(-1);
+        var mainEngine = lookUpTestData.AppSetAndRes(-1);
         var settings = mainEngine.LookUp(TestTokens("-tweaked"), tweak: t => t.PostProcess(v => v + "-tweaked"));
         foreach (var setting in settings)
             Equal(setting.Key, setting.Value); //, $"expected '{setting.Key}', got '{setting.Value}'");
@@ -65,7 +65,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     [Fact]
     public void OverrideLookUps()
     {
-        var mainEngine = new LookUpTestData(dataBuilder).AppSetAndRes(-1);
+        var mainEngine = lookUpTestData.AppSetAndRes(-1);
         const string overridenTitle = "overriden Title";
         var overrideDic = new Dictionary<string, string>
         {
@@ -80,7 +80,7 @@ public class LookUpEngineTests(DataBuilder dataBuilder)
     [Fact]
     public void InheritEngine()
     {
-        var original = new LookUpTestData(dataBuilder).AppSetAndRes();
+        var original = lookUpTestData.AppSetAndRes();
         var cloned = new LookUpEngine(original, null);
         Empty(cloned.Sources);
         AssertLookUpEngineHasSourcesOfOriginal(cloned.Downstream);

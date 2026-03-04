@@ -2,8 +2,10 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.ImportExport.Sys.ImportHelpers;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.Xml;
@@ -17,11 +19,12 @@ namespace ToSic.Eav.ImportExport.Sys.XmlList;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class ImportListXml(
     LazySvc<ImportService> importerLazy,
-    Generator<DataBuilder, DataBuilderOptions> builderGenerator,
+    Generator<DataAssembler, DataAssemblerOptions> builderGenerator,
+    LazySvc<IValueConverter> valueConverter,
     GenWorkDb<WorkEntityDelete> entDelete)
-    : ServiceBase("App.ImpVtT", connect: [builderGenerator, importerLazy, entDelete])
+    : ServiceBase("App.ImpVtT", connect: [builderGenerator, valueConverter, importerLazy, entDelete])
 {
-    private DataBuilder DataBuilder { get; set; } = null!;
+    private DataAssembler DataAssembler { get; set; } = null!;
 
     #region Init
 
@@ -68,7 +71,7 @@ public partial class ImportListXml(
         ErrorLog = new(Log);
 
         LogSettings = logSettings;
-        DataBuilder = builderGenerator.New(new() { LogSettings = logSettings });
+        DataAssembler = builderGenerator.New(new() { LogSettings = logSettings });
         AppReader = appReader;
         _deleteSetting = deleteSetting;
         ResolveLinks = resolveLinkMode == ImportResolveReferenceMode.Resolve;
@@ -166,7 +169,7 @@ public partial class ImportListXml(
 
             var entityGuid = entityGuidManager.GetGuid(xEntity, ImportConfig.DocLangPrimary);
             var entityInImportQueue = GetImportEntity(entityGuid);
-            var entityAttributes = DataBuilder.Attribute.Mutable(entityInImportQueue?.Attributes);
+            var entityAttributes = DataAssembler.AttributeList.ConvertToMutable(entityInImportQueue?.Attributes);
 
             foreach (var ctAttribute in contentType.Attributes)
             {
@@ -182,8 +185,8 @@ public partial class ImportListXml(
                 if (value == XmlConstants.EmptyMarker)
                 {
                     entityAttributes.TryGetValue(valName, out var existingAttr);
-                    var emptyAttribute = DataBuilder.Attribute.CreateOrUpdate(originalOrNull: existingAttr, name: valName, value: "", type: ctAttribute.Type, language: nodeLang);
-                    entityAttributes = DataBuilder.Attribute.Replace(entityAttributes, emptyAttribute);
+                    var emptyAttribute = DataAssembler.Attribute.CreateOrUpdate(originalOrNull: existingAttr, name: valName, value: "", type: ctAttribute.Type, language: nodeLang);
+                    entityAttributes = DataAssembler.AttributeList.Replace(entityAttributes, emptyAttribute);
                     continue;
                 }
 
@@ -197,9 +200,9 @@ public partial class ImportListXml(
                     try
                     {
                         entityAttributes.TryGetValue(valName, out var existingAttr2);
-                        var preConverted = DataBuilder.Value.PreConvertReferences(value, ctAttribute.Type, ResolveLinks);
-                        var valRefAttribute = DataBuilder.Attribute.CreateOrUpdate(originalOrNull: existingAttr2, name: valName, value: preConverted, type: valType, language: nodeLang);
-                        entityAttributes = DataBuilder.Attribute.Replace(entityAttributes, valRefAttribute);
+                        var preConverted = valueConverter.Value.PreConvertReferences(value, ctAttribute.Type, ResolveLinks);
+                        var valRefAttribute = DataAssembler.Attribute.CreateOrUpdate(originalOrNull: existingAttr2, name: valName, value: preConverted, type: valType, language: nodeLang);
+                        entityAttributes = DataAssembler.AttributeList.Replace(entityAttributes, valRefAttribute);
 
                     }
                     catch (FormatException)
@@ -235,10 +238,10 @@ public partial class ImportListXml(
                         entityValue.Value.Languages.ToImmutableOpt()
                             .Add(new Language(nodeLang, valueReadOnly))
                     );
-                    var newValues = DataBuilder.Value.Replace(entityValue.Attribute!.Values,
+                    var newValues = DataAssembler.ValueList.Replace(entityValue.Attribute!.Values,
                         entityValue.Value, updatedValue);
-                    var newAttribute = DataBuilder.Attribute.CreateFrom(entityValue.Attribute, newValues);
-                    entityAttributes = DataBuilder.Attribute.Replace(entityAttributes, newAttribute);
+                    var newAttribute = DataAssembler.Attribute.CreateFrom(entityValue.Attribute, newValues);
+                    entityAttributes = DataAssembler.AttributeList.Replace(entityAttributes, newAttribute);
                     continue;
                 }
 
@@ -278,16 +281,16 @@ public partial class ImportListXml(
                 // Just add the value. Note 2023-02-28 2dm - not exactly sure how/why, assume it's the final-no-errors case
                 var langShouldBeReadOnly = valExisting.Languages
                     .FirstOrDefault(lang => lang.Key == valueReferenceLanguage)?.ReadOnly ?? false;
-                var valueLanguages = DataBuilder.Language.GetBestValueLanguages(valueReferenceLanguage, langShouldBeReadOnly)
+                var valueLanguages = DataAssembler.Language.GetBestValueLanguages(valueReferenceLanguage, langShouldBeReadOnly)
                                      ?? [];
                 valueLanguages.Add(new Language(nodeLang, valueReadOnly));
                 // update languages on valExisting
-                var updatedValue2 = DataBuilder.Value.CreateFrom(valExisting, languages: DataBuilder.Language.Merge(valExisting.Languages, valueLanguages));
+                var updatedValue2 = DataAssembler.Value.CreateFrom(valExisting, languages: DataAssembler.Language.Merge(valExisting.Languages, valueLanguages));
                 //var updatedValue2 = AttributeBuilder.Value.UpdateLanguages(valExisting, valueLanguages);
                 // TODO: update/replace value in existingEnt[attribute.Name]
-                var values2 = DataBuilder.Value.Replace(attrExisting.Values, valExisting, updatedValue2);
-                var attribute2 = DataBuilder.Attribute.CreateFrom(attrExisting, values2);
-                entityAttributes = DataBuilder.Attribute.Replace(entityAttributes, attribute2);
+                var values2 = DataAssembler.ValueList.Replace(attrExisting.Values, valExisting, updatedValue2);
+                var attribute2 = DataAssembler.Attribute.CreateFrom(attrExisting, values2);
+                entityAttributes = DataAssembler.AttributeList.Replace(entityAttributes, attribute2);
 
 
                 #endregion
@@ -302,7 +305,7 @@ public partial class ImportListXml(
                 // note: I'm not sure if this should ever happen, if the same entity already exists
                 // in the ImportEntities list. But because there is a check if it's already in there
                 // which was from 2017 or before, I'll leave it in for now
-                var entityClone = DataBuilder.Entity.CreateFrom(entityInImportQueue, attributes: DataBuilder.Attribute.Create(entityAttributes));
+                var entityClone = DataAssembler.Entity.CreateFrom(entityInImportQueue, attributes: DataAssembler.AttributeList.Finalize(entityAttributes));
                 ImportEntities.Remove(entityInImportQueue);
                 ImportEntities.Add((Entity)entityClone);
             }

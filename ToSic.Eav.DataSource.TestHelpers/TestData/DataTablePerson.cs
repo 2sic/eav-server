@@ -1,12 +1,11 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
 using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.TestData;
 
-public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilder)
+public class DataTablePerson(DataSourcesTstBuilder dsSvc, LookUpTestData lookUpTestData, PersonGenerator personGenerator)
 {
 
     private static readonly Dictionary<int, DataTable> CachedDs = new();
@@ -33,7 +32,7 @@ public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilde
             new(PersonSpecs.FieldModifiedInternal, typeof(DateTime))
         ]);
 
-        new PersonGenerator(dataBuilder)
+        personGenerator
             .GetSemiRandomList(itemsToGenerate: itemsToGenerate, firstId: firstId, specs)
             .ForEach(person => dataTable.Rows.Add(
                     person.Id,
@@ -51,7 +50,7 @@ public class DataTablePerson(DataSourcesTstBuilder dsSvc, DataBuilder dataBuilde
             );
 
         var source = dsSvc
-            .CreateDataSource<DataTable>(new LookUpTestData(dataBuilder).AppSetAndRes())
+            .CreateDataSource<DataTable>(lookUpTestData.AppSetAndRes())
             .Setup(dataTable,
                 PersonSpecs.PersonTypeName,
                 titleField: PersonSpecs.FieldFullName,

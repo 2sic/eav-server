@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.LogSettings;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Json.Sys;
@@ -27,11 +28,11 @@ public class DbStorage(
     Generator<JsonSerializer> jsonSerializerGenerator,
     ILogStore logStore,
     LazySvc<Compressor> compressor,
-    DataBuilder builder,
+    DataAssembler dataAssembler,
     DataImportLogSettings importLogSettings,
     ISysFeaturesService features)
     : ServiceBase("Db.Data",
-        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, builder, importLogSettings, features]
+        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, dataAssembler, importLogSettings, features]
     ), IStorage, IAppIdentity
 {
 
@@ -92,7 +93,7 @@ public class DbStorage(
     [field: AllowNull, MaybeNull]
     internal DbVersioning Versioning => field ??= new(this, compressor);
     [field: AllowNull, MaybeNull]
-    internal DbEntity Entities => field ??= new(this, builder);
+    internal DbEntity Entities => field ??= new(this, dataAssembler);
     [field: AllowNull, MaybeNull]
     internal DbValue Values => field ??= new(this);
     [field: AllowNull, MaybeNull]
@@ -102,7 +103,7 @@ public class DbStorage(
     [field: AllowNull, MaybeNull]
     internal DbContentTypes.DbContentTypes ContentTypes => field ??= new(this);
     [field: AllowNull, MaybeNull]
-    internal DbPublishing Publishing => field ??= new(this, builder);
+    internal DbPublishing Publishing => field ??= new(this, dataAssembler);
     [field: AllowNull, MaybeNull]
     internal DbDimensions Dimensions => field ??= new(this);
     [field: AllowNull, MaybeNull]
