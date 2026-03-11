@@ -5,6 +5,7 @@ namespace ToSic.Sys.Capabilities.Features;
 public partial class BuiltInFeatures
 {
     internal static List<FeatureLicenseRule> ForPatronSuperAdminAutoEnabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronSuperAdmin, true);
+    internal static List<FeatureLicenseRule> ForPatronSuperAdminAutoDisabled = BuiltInLicenseRules.BuildRule(BuiltInLicenses.PatronSuperAdmin, false);
 
     public static readonly Feature AppSyncWithSiteFiles = new() {
         NameId = nameof(AppSyncWithSiteFiles),
@@ -53,4 +54,24 @@ public partial class BuiltInFeatures
         LicenseRules = ForPatronSuperAdminAutoEnabled
     };
 
+    public static readonly Feature AppStateSyncSaveDisabled = new(){
+        NameId = nameof(AppStateSyncSaveDisabled),
+        Guid = new("831b0f94-a90a-493e-b9a8-c7d19d341339"),
+        Name = "Disable App-State sync / save to drive - for example to prevent data leakage.",
+        IsPublic = false,
+        Ui = false,
+        Description = "todo",
+        Security = FeaturesCatalogRules.Security0Neutral,
+        LicenseRules = ForPatronSuperAdminAutoDisabled
+    };
+    public static readonly Feature AppStateSyncRestoreDisabled = new(){
+        NameId = nameof(AppStateSyncRestoreDisabled),
+        Guid = new("0afd3ff2-2b4d-438d-aa6b-c5d78137647b"),
+        Name = "Disable App-State sync / restore - for example to prevent source-systems from importing app by accident.",
+        IsPublic = false,
+        Ui = false,
+        Description = "todo",
+        Security = FeaturesCatalogRules.Security0Neutral,
+        LicenseRules = ForPatronSuperAdminAutoDisabled
+    };
 }

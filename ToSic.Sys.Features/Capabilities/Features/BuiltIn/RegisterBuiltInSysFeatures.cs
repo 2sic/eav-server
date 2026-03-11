@@ -47,6 +47,8 @@ internal class RegisterBuiltInSysFeatures
             AppAutoInstallerConfigurable, // v15
             DataExportImportBundles, // v15.01
             AppExportAssetsAdvanced, // v18
+            AppStateSyncSaveDisabled, // v21
+            AppStateSyncRestoreDisabled, // v21
 
             // Patron Performance
             LinqListOptimizations, // v20
