@@ -21,7 +21,7 @@ public interface IAppController
 
     THttpResponseType Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite, bool assetAdamDeleted);
 
-    bool SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool withPortalFiles);
+    Task<bool> SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool withPortalFiles);
 
     /// <summary>
     /// Get a stack of values from settings or resources
@@ -37,7 +37,7 @@ public interface IAppController
     /// Reset an App to the last xml state
     /// </summary>
     /// <returns></returns>
-    ImportResultDto Reset(int zoneId, int appId, bool withPortalFiles);
+    Task<ImportResultDto> Reset(int zoneId, int appId, bool withPortalFiles);
 
     ImportResultDto Import(int zoneId);
 
