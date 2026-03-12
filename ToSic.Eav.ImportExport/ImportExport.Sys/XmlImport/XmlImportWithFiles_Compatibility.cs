@@ -9,7 +9,7 @@ namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 
 partial class XmlImportWithFiles
 {
-    public string? IsCompatible(XDocument doc)
+    public string? IsCompatible(XDocument doc, bool skipSxcVersionCheck)
     {
         var l = Log.Fn<string>();
         var rootNodeList = doc.Elements(XmlConstants.RootNode);
@@ -25,6 +25,13 @@ partial class XmlImportWithFiles
         );
         if (!isEnvOk)
             return l.ReturnAndLog("Environment version check failed");
+
+        // 2026-03-12 2dm - introduced this, because all the exported files have the version of the exporting 2sxc
+        // but often that doesn't actually matter.
+        // Before this would prevent the import
+        // Now it will just log that the check was skipped, and continue with the import.
+        if (skipSxcVersionCheck)
+            return l.ReturnNull("skipped 2sxc version check");
 
         var isSxcOk = IsCompatibleSingleVersion(rootNode,
             XmlConstants.MinModVersion,

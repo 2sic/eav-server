@@ -18,9 +18,9 @@ public class ImportXmlReader: HelperBase
         FileContents = File.ReadAllText(xmlPath);
         XmlDoc = XDocument.Parse(FileContents);
 
-        var errMsg = importer.IsCompatible(XmlDoc);
+        var errMsg = importer.IsCompatible(XmlDoc, skipSxcVersionCheck: true);
         if (errMsg != null)
-            throw new($"The app / package is not compatible with this version of eav and the 2sxc-host. See Insights for further details. {errMsg}");
+            throw new($"The app / package appears to be incompatible. See Insights for further details. {errMsg}");
 
 
         Root = XmlDoc.Element(XmlConstants.RootNode)

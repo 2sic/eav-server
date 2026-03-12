@@ -207,7 +207,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
             l.A("will do content import");
             appId = _initialAppId ?? Services.AppsCatalog.DefaultAppIdentity(_zoneId).AppId;
 
-            var errMsg = importer.IsCompatible(imp.XmlDoc);
+            var errMsg = importer.IsCompatible(imp.XmlDoc, skipSxcVersionCheck: true);
             if (errMsg == null)
                 HandlePortalFilesFolder(appDirectory, pendingApp);
 
