@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Xml;
 
@@ -11,12 +12,12 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
         var l = Log.Fn();
         var reqVersionNode = appConfig
             .Elements(XmlConstants.ValueNode)
-            .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredVersion")
+            .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == AppConfigurationFields.FieldRequiredSxcVersion)
             ?.Attribute(XmlConstants.ValueAttr)
             ?.Value;
         var reqVersionNodeDnn = appConfig
             .Elements(XmlConstants.ValueNode)
-            .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == "RequiredDnnVersion")
+            .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == AppConfigurationFields.FieldRequiredDnnVersion)
             ?.Attribute(XmlConstants.ValueAttr)
             ?.Value;
 
