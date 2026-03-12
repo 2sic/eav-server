@@ -9,37 +9,37 @@ namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 
 partial class XmlImportWithFiles
 {
-    public bool IsCompatible(XDocument doc)
+    public string? IsCompatible(XDocument doc)
     {
-        var l = Log.Fn<bool>("is compatible check");
+        var l = Log.Fn<string>();
         var rootNodeList = doc.Elements(XmlConstants.RootNode);
         var rootNode = doc.Element(XmlConstants.RootNode);
         // Return if no Root Node "SexyContent"
         if (!rootNodeList.Any() || rootNode == null)
-        {
-            LogError("The XML file you specified does not seem to be a 2sxc/EAV Export.");
-            return l.ReturnFalse("XML seems invalid");
-        }
+            return l.ReturnAndLog(LogError("The XML file you specified does not seem to be a 2sxc/EAV Export."));
 
         var isEnvOk = IsCompatibleSingleVersion(rootNode,
             XmlConstants.MinEnvVersion,
-            Services.Environment.TenantVersion
+            Services.Environment.TenantVersion,
+            "Environment Version"
         );
         if (!isEnvOk)
-            return l.ReturnFalse("Environment version check failed");
+            return l.ReturnAndLog("Environment version check failed");
 
         var isSxcOk = IsCompatibleSingleVersion(rootNode,
             XmlConstants.MinModVersion,
-            new(Services.Environment.ModuleVersion)
+            new(Services.Environment.ModuleVersion),
+            "2sxc Version"
         );
-        if (!isSxcOk)
-            return l.ReturnFalse("2sxc version check failed");
-        return l.ReturnTrue("all ok");
+
+        return !isSxcOk
+            ? l.ReturnAndLog("2sxc version check failed")
+            : l.ReturnNull("all ok");
     }
 
-    private bool IsCompatibleSingleVersion(XElement rootNode, string versionNodeName, Version currentVersion)
+    private bool IsCompatibleSingleVersion(XElement rootNode, string versionNodeName, Version currentVersion, string versionInfo)
     {
-        var l = Log.Fn<bool>();
+        var l = Log.Fn<bool>($"version to check: {versionInfo}");
         // Return if Version does not match
         var hasNoMinEnvVersionInXml = rootNode
             .Attributes()
@@ -54,7 +54,7 @@ partial class XmlImportWithFiles
         if (minVersionInXml <= currentVersion)
             return l.ReturnTrue("is compatible completed");
 
-        LogError($"This template / app requires version {minVersionString}. You have version {currentVersion.ToString()} installed.");
-        return l.ReturnFalse("XML version check failed");
+        var msg = $"This template / app requires v{minVersionString} for {versionInfo}. You have v{currentVersion}.";
+        return l.ReturnFalse($"XML version check failed. {LogError(msg)}");
     }
 }

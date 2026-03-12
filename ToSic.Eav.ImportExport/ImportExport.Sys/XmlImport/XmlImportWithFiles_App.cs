@@ -22,8 +22,9 @@ partial class XmlImportWithFiles
         appId = 0;
         int? parentAppId = null;
 
-        if (!IsCompatible(doc))
-            return l.ReturnFalse(LogError("The import file is not compatible with the installed version of 2sxc."));
+        var errMsg = IsCompatible(doc);
+        if (errMsg != null)
+            return l.ReturnFalse(LogError($"The import file is not compatible with the installed version of 2sxc. {errMsg}"));
 
         // Get root node "SexyContent"
         var xmlSource = doc

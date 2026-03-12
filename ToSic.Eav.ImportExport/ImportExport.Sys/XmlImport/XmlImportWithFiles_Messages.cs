@@ -14,7 +14,7 @@ partial class XmlImportWithFiles
     {
         Log.E(message);
         Messages.Add(new(message, Message.MessageTypes.Error));
-        return "error";
+        return message;
     }
     
 }

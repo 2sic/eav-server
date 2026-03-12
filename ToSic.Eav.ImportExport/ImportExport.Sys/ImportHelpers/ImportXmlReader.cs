@@ -18,8 +18,9 @@ public class ImportXmlReader: HelperBase
         FileContents = File.ReadAllText(xmlPath);
         XmlDoc = XDocument.Parse(FileContents);
 
-        if (!importer.IsCompatible(XmlDoc))
-            throw new("The app / package is not compatible with this version of eav and the 2sxc-host. See Insights for further details.");
+        var errMsg = importer.IsCompatible(XmlDoc);
+        if (errMsg != null)
+            throw new($"The app / package is not compatible with this version of eav and the 2sxc-host. See Insights for further details. {errMsg}");
 
 
         Root = XmlDoc.Element(XmlConstants.RootNode)
@@ -28,8 +29,9 @@ public class ImportXmlReader: HelperBase
                  ?? throw new NullReferenceException("xml header node couldn't be found");
 
         IsAppImport = Header.Elements(XmlConstants.App).Any()
-                      && Header.Element(XmlConstants.App)?.Attribute(XmlConstants.Guid)?.Value !=
-                      XmlConstants.AppContentGuid;
+                      && Header.Element(XmlConstants.App)
+                          ?.Attribute(XmlConstants.Guid)
+                          ?.Value != XmlConstants.AppContentGuid;
 
     }
 
