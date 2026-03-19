@@ -8,6 +8,6 @@ public static class SysFeaturesServiceExtensions
     {
         if (featSer.IsEnabled(featureGuid, message, out var exception))
             return;
-        throw exception!;
+        throw exception;
     }
 }
