@@ -70,6 +70,9 @@ public class EntitySerializationDecoratorCreator(ICollection<string>? rawFields,
         {
             SerializeId = addId,
             SerializeGuid = addGuid,
+            // A strict $select must not inherit the serializer default of adding Title.
+            // Title is still re-added explicitly through SerializeTitleForce when requested.
+            SerializeTitle = false,
             SerializeModified = addModified,
             SerializeCreated = addCreated,
             SerializeTitleForce = forceAddTitle,
