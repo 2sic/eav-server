@@ -9,12 +9,42 @@ namespace ToSic.Sys.OData;
 /// </summary>
 public class QueryODataParams
 {
-    public static Dictionary<string, ODataOptions> CreateMany(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string[] streamNames)
+    public static Dictionary<string, ODataOptions> CreateMany(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string[] streamNames, string? selectedStream = default)
     {
         streamNames = streamNames.Any()
             ? streamNames
             : ["Default"];
-        return streamNames.ToDictionary(n => n, n => Create(parseFunc, n), OrdinalIgnoreCase);
+
+        var result = streamNames.ToDictionary(n => n, n => Create(parseFunc, n), OrdinalIgnoreCase);
+
+        // If the caller explicitly selected exactly one stream, a bare $select should target that stream.
+        // This preserves the old Default-stream behavior for multi-stream requests, while letting
+        // /QueryName/Books?$select=... and ?stream=Books&$select=... behave intuitively.
+        var fallbackStream = GetSingleSelectedStreamOrNull(streamNames, selectedStream);
+        if (fallbackStream.IsEmpty())
+            return result;
+
+        var unprefixed = Create(parseFunc);
+        if (!unprefixed.Select.Any())
+            return result;
+
+        var current = result[fallbackStream];
+
+        // Explicit stream-prefixed selects such as Books$select keep precedence over the bare fallback.
+        if (current.Select.Any())
+            return result;
+
+        var mergedRaw = current.AllRaw
+            .ToDictionary(pair => pair.Key, pair => pair.Value, OrdinalIgnoreCase);
+        mergedRaw[ODataConstants.SelectParamName] = unprefixed.AllRaw[ODataConstants.SelectParamName];
+
+        result[fallbackStream] = current with
+        {
+            AllRaw = new ReadOnlyDictionary<string, string>(mergedRaw),
+            Select = unprefixed.Select
+        };
+
+        return result;
     }
 
     public static ODataOptions Create(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string? streamName = default) =>
@@ -69,6 +99,25 @@ public class QueryODataParams
                 kvp => kvp.Key,
                 kvp => kvp.Value.Replace(":", $":{streamName}")
             );
+    }
+
+    private static string? GetSingleSelectedStreamOrNull(IReadOnlyList<string> streamNames, string? selectedStream)
+    {
+        if (streamNames.Count != 1 || selectedStream.IsEmpty())
+            return null;
+
+        var selectedStreams = selectedStream
+            .Split(',')
+            .Select(s => s.Trim())
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .ToArray();
+
+        if (selectedStreams.Length != 1)
+            return null;
+
+        return streamNames.Single().EqualsInsensitive(selectedStreams[0])
+            ? streamNames.Single()
+            : null;
     }
 
     internal static readonly Dictionary<string, string> ODataParams =
