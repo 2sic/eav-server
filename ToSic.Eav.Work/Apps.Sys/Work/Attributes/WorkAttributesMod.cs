@@ -269,7 +269,8 @@ public class WorkAttributesMod(
 
     private void TriggerPostSaveForContentType(int contentTypeId)
     {
-        // Schema updates should trigger data processors for the affected content-type.
+        // Field schema updates currently use the standard IDataProcessor pipeline
+        // and mark the source so the configured handler can distinguish the process.
         // Runner is intentionally best-effort so editor save is never blocked by generation issues.
         contentTypeDataProcessorRunner.Value.RunFor(
             AppWorkCtx.AppId,
