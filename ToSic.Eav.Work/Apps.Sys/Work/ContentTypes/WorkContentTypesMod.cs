@@ -1,5 +1,5 @@
+using ToSic.Eav.Data.Processing;
 using ToSic.Sys.Utils;
-using static ToSic.Eav.Data.Processing.DataProcessingEvents;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -25,15 +25,13 @@ public class WorkContentTypesMod(
         if (name.IsEmptyOrWs())
             return l.ReturnFalse("name was empty, will cancel");
 
-        // Snapshot state before save so we can emit the most specific content-type action.
-        var beforeSave = ResolveSavedContentType(staticName, scope: default, name: default);
         AppWorkCtx.DbStorage.ContentType.AddOrUpdate(staticName, scope, name, usesConfigurationOfOtherSet, alwaysShareConfig);
         // Schema changes on the type itself should immediately re-evaluate code-generation handlers.
-        ProcessContentTypePostSave(staticName, scope, name, beforeSave);
+        ProcessContentTypePostSave(staticName, scope, name);
         return l.ReturnTrue();
     }
 
-    private void ProcessContentTypePostSave(string staticName, string scope, string name, IContentType? beforeSave)
+    private void ProcessContentTypePostSave(string staticName, string scope, string name)
     {
         // Always evaluate post-save for schema updates; handler selection happens in the runner.
         var afterSave = ResolveSavedContentType(staticName, scope, name);
@@ -43,8 +41,10 @@ public class WorkContentTypesMod(
             return;
         }
 
-        var action = DeterminePostSaveAction(beforeSave, afterSave);
-        dataProcessorRunner.Value.RunFor(afterSave, action, reason: "content-type-add-or-update");
+        dataProcessorRunner.Value.RunFor(afterSave, context: new()
+        {
+            Source = DataProcessingContextSources.ContentType
+        });
     }
 
     private IContentType? ResolveSavedContentType(string? staticName, string? scope, string? name)
@@ -66,21 +66,6 @@ public class WorkContentTypesMod(
             .Where(ct => NormalizeScope(ct.Scope).EqualsInsensitive(normalizedScope))
             .OrderByDescending(ct => ct.Id)
             .FirstOrDefault();
-    }
-
-    private static string DeterminePostSaveAction(IContentType? beforeSave, IContentType afterSave)
-    {
-        if (beforeSave == null)
-            return PostSaveContentTypeCreate;
-
-        if (!beforeSave.Name.EqualsInsensitive(afterSave.Name))
-            return PostSaveContentTypeRename;
-
-        if (!NormalizeScope(beforeSave.Scope).EqualsInsensitive(NormalizeScope(afterSave.Scope)))
-            return PostSaveContentTypeScopeChange;
-
-        // Fallback for same-name/scope saves (or future AddOrUpdate expansions).
-        return PostSaveContentTypeUpdate;
     }
 
     private static string NormalizeScope(string? scope)

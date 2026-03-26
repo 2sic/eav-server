@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Metadata;
@@ -6,7 +7,6 @@ using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 using static ToSic.Sys.Capabilities.Features.BuiltInFeatures;
-using static ToSic.Eav.Data.Processing.DataProcessingEvents;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -53,7 +53,7 @@ public class WorkAttributesMod(
         var id = AddFieldToDbAndInitGeneralMetadata(contentTypeId, attDef, inputType);
         if (triggerPostSave)
             // Field definition changed => generated models may have new/removed properties.
-            TriggerPostSaveForContentType(contentTypeId, reason: "field-add");
+            TriggerPostSaveForContentType(contentTypeId);
         return l.Return(id);
     }
 
@@ -102,7 +102,7 @@ public class WorkAttributesMod(
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
         workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
         if (contentTypeId.HasValue)
-            TriggerPostSaveForContentType(contentTypeId.Value, reason: "field-input-type");
+            TriggerPostSaveForContentType(contentTypeId.Value);
         return l.ReturnTrue();
     }
 
@@ -110,7 +110,7 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
         AppWorkCtx.DbStorage.Attributes.RenameAttribute(attributeId, contentTypeId, newName);
-        TriggerPostSaveForContentType(contentTypeId, reason: "field-rename");
+        TriggerPostSaveForContentType(contentTypeId);
         return l.ReturnTrue();
     }
 
@@ -119,7 +119,7 @@ public class WorkAttributesMod(
         var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{orderCsv}");
         var sortOrderList = orderCsv.Split(',').Select(int.Parse).ToList();
         AppWorkCtx.DbStorage.ContentType.SortAttributes(contentTypeId, sortOrderList);
-        TriggerPostSaveForContentType(contentTypeId, reason: "field-reorder");
+        TriggerPostSaveForContentType(contentTypeId);
         return l.ReturnTrue();
     }
 
@@ -130,7 +130,7 @@ public class WorkAttributesMod(
         var success = AppWorkCtx.DbStorage.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
         // Trigger only when delete succeeded; failed delete should not cause code regeneration.
         if (success)
-            TriggerPostSaveForContentType(contentTypeId, reason: "field-delete");
+            TriggerPostSaveForContentType(contentTypeId);
         return l.Return(success);
     }
 
@@ -171,7 +171,7 @@ public class WorkAttributesMod(
 
         if (contentTypeId > 0)
             // Sharing alters effective schema behavior and should re-run generators.
-            TriggerPostSaveForContentType(contentTypeId, reason: "field-share");
+            TriggerPostSaveForContentType(contentTypeId);
         return l.ReturnTrue();
     }
 
@@ -207,7 +207,7 @@ public class WorkAttributesMod(
 
         if (triggerPostSave && contentTypeId > 0)
             // Allow caller to suppress trigger when this method is part of a larger multi-step operation.
-            TriggerPostSaveForContentType(contentTypeId, reason: "field-inherit");
+            TriggerPostSaveForContentType(contentTypeId);
         return l.ReturnTrue();
     }
 
@@ -259,7 +259,7 @@ public class WorkAttributesMod(
         FieldInherit(newAttributeId, inheritMetadataOf: sourceField, triggerPostSave: false);
 
         // AddInheritedField is one logical schema operation, so trigger generation once.
-        TriggerPostSaveForContentType(contentTypeId, reason: "field-add-inherited");
+        TriggerPostSaveForContentType(contentTypeId);
 
         return l.ReturnTrue();
     }
@@ -267,15 +267,17 @@ public class WorkAttributesMod(
     private int? TryResolveContentTypeIdByAttribute(int attributeId)
         => AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)?.ContentTypeId;
 
-    private void TriggerPostSaveForContentType(int contentTypeId, string reason)
+    private void TriggerPostSaveForContentType(int contentTypeId)
     {
         // Schema updates should trigger data processors for the affected content-type.
         // Runner is intentionally best-effort so editor save is never blocked by generation issues.
         contentTypeDataProcessorRunner.Value.RunFor(
             AppWorkCtx.AppId,
             contentTypeId,
-            PostSaveContentTypeFieldChange,
-            reason);
+            context: new()
+            {
+                Source = DataProcessingContextSources.ContentTypeField
+            });
     }
 
     #endregion
