@@ -5,14 +5,17 @@
 /// </summary>
 /// <remarks>
 /// * Added in v14.04 as class, changed to interface in v17
+/// * Updated to use long in v21.06, as some data can be larger than 2GB, which is the limit of int.
+/// * Added ToString() in v21.06 to show the best size and unit in a human-readable format, e.g. "1.23 MB"
 /// </remarks>
 [PublicApi]
 public interface ISizeInfo
 {
     /// <summary>
-    /// Size in bytes
+    /// Size in bytes.
     /// </summary>
-    int Bytes { get; }
+    /// <remarks>Type changed from `int` to `long` in v21.06</remarks>
+    long Bytes { get; }
 
     /// <summary>
     /// Size in KB
@@ -44,4 +47,10 @@ public interface ISizeInfo
     /// </summary>
     /// <returns></returns>
     string BestUnit { get; }
+
+    /// <summary>
+    /// Show the best size and best unit in a human-readable format, e.g. "1.23 MB"
+    /// </summary>
+    /// <remarks>Added v21.06</remarks>
+    string ToString();
 }

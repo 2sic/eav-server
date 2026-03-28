@@ -126,7 +126,7 @@ internal class InsightsMemoryCache()
                     SpecialField.Right(sizeInfo.Bytes > 0
                         ? $"{sizeInfo.Mb:N} MB"
                         : "-",
-                        tooltip: $"{sizeInfo.BestSize} {sizeInfo.BestUnit}"
+                        tooltip: sizeInfo.ToString()
                     ),
                     InsightsHtmlBase.HtmlEncode(estimate.Icon),
                     SpecialField.Left(tsAge, tooltip: tsTooltip),
@@ -153,7 +153,7 @@ internal class InsightsMemoryCache()
                 SpecialField.Right(totSizeInfo.Bytes > 0
                         ? $"{totSizeInfo.Mb:N} MB"
                         : "-",
-                    tooltip: $"{totSizeInfo.BestSize} {totSizeInfo.BestUnit}"
+                    tooltip: totSizeInfo.ToString()
                 ),
                 InsightsHtmlBase.HtmlEncode(totalSize.Icon)
             ]);
