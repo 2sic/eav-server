@@ -3,18 +3,20 @@ namespace ToSic.Sys.OData.Tests;
 public class SystemQueryOptionsParserTests
 {
     private static Uri U(string queryNoQuestion) => new($"https://example.test/app/data/BlogPost?{queryNoQuestion}");
+    private static ODataOptions Parse(string queryNoQuestion) => U(queryNoQuestion).ParseTac();
+    private static ODataOptions Parse(Uri uri) => uri.ParseTac();
 
     [Fact]
     public void Select_SimpleList()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$select=Id,Title,Content"));
-        Equal(["Id", "Title", "Content"], r.Select);
-        Null(r.Filter);
-        Null(r.OrderBy);
-        Null(r.Top);
-        Null(r.Skip);
-        Null(r.Count);
-        Null(r.Expand);
+        var r = Parse("$select=Id,Title,Content");
+        Equal(["Id", "Title", "Content"], r.SelectTac);
+        Null(r.FilterTac);
+        Null(r.OrderByTac);
+        Null(r.TopTac);
+        Null(r.SkipTac);
+        Null(r.CountTac);
+        Null(r.ExpandTac);
         Single(r.AllRawTac);
         Empty(r.CustomTac);
     }
@@ -22,23 +24,23 @@ public class SystemQueryOptionsParserTests
     [Fact]
     public void Select_Missing_ReturnsEmpty()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$filter=Title%20eq%20'X'"));
-        Empty(r.Select);
-        NotNull(r.Filter);
+        var r = Parse("$filter=Title%20eq%20'X'");
+        Empty(r.SelectTac);
+        NotNull(r.FilterTac);
     }
 
     [Fact]
     public void Select_NestedParentheses_NotSplitInside()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$select=Id,Categories(Name,Key),Author/FullName"));
-        Equal(["Id", "Categories(Name,Key)", "Author/FullName"], r.Select);
+        var r = Parse("$select=Id,Categories(Name,Key),Author/FullName");
+        Equal(["Id", "Categories(Name,Key)", "Author/FullName"], r.SelectTac);
     }
 
     [Fact]
     public void Select_PercentEncodedKey()
     {
-        var r = SystemQueryOptionsParser.Parse(U("%24select=Id,Title"));
-        Equal(["Id", "Title"], r.Select);
+        var r = Parse("%24select=Id,Title");
+        Equal(["Id", "Title"], r.SelectTac);
         // implementation unescapes keys, so the stored key is "$select"
         True(r.AllRawTac.ContainsKey("$select"));
     }
@@ -46,16 +48,16 @@ public class SystemQueryOptionsParserTests
     [Fact]
     public void Select_CaseInsensitiveKey()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$SeLeCt=Id,Title"));
-        Equal(["Id", "Title"], r.Select);
+        var r = Parse("$SeLeCt=Id,Title");
+        Equal(["Id", "Title"], r.SelectTac);
     }
 
     [Fact]
     public void Select_PrefersDollarWhenBothDollarAndEncoded()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$select=Id,Title&%24select=Id,Overridden"));
+        var r = Parse("$select=Id,Title&%24select=Id,Overridden");
         // Implementation unescapes keys and last-value-wins, so the later %24select overwrites $select
-        Equal(["Id", "Overridden"], r.Select);
+        Equal(["Id", "Overridden"], r.SelectTac);
         // Keys are unescaped, so only one entry exists ("$select") and it contains the final value
         Single(r.AllRawTac);
         True(r.AllRawTac.ContainsKey("$select"));
@@ -64,46 +66,46 @@ public class SystemQueryOptionsParserTests
     [Fact]
     public void Expand_Parses()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$expand=Author,Categories"));
-        Equal("Author,Categories", r.Expand);
+        var r = Parse("$expand=Author,Categories");
+        Equal("Author,Categories", r.ExpandTac);
     }
 
     [Fact]
     public void Filter_ParsesWithEncoding()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$filter=Title%20eq%20'Hello%20World'"));
-        Equal("Title eq 'Hello World'", r.Filter);
+        var r = Parse("$filter=Title%20eq%20'Hello%20World'");
+        Equal("Title eq 'Hello World'", r.FilterTac);
     }
 
     [Fact]
     public void OrderBy_Parses()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$orderby=PublicationMoment%20desc"));
-        Equal("PublicationMoment desc", r.OrderBy);
+        var r = Parse("$orderby=PublicationMoment%20desc");
+        Equal("PublicationMoment desc", r.OrderByTac);
     }
 
     [Fact]
     public void TopSkip_ParsesValid()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$top=10&$skip=5"));
-        Equal(10, r.Top);
-        Equal(5, r.Skip);
+        var r = Parse("$top=10&$skip=5");
+        Equal(10, r.TopTac);
+        Equal(5, r.SkipTac);
     }
 
     [Fact]
     public void TopSkip_InvalidTop()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$top=ten&$skip=2"));
-        Null(r.Top);
-        Equal(2, r.Skip);
+        var r = Parse("$top=ten&$skip=2");
+        Null(r.TopTac);
+        Equal(2, r.SkipTac);
     }
 
     [Fact]
     public void TopSkip_NegativeNumbersAreAcceptedAsInt()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$top=-1&$skip=-5"));
-        Equal(-1, r.Top);
-        Equal(-5, r.Skip);
+        var r = Parse("$top=-1&$skip=-5");
+        Equal(-1, r.TopTac);
+        Equal(-5, r.SkipTac);
     }
 
     [Theory]
@@ -114,8 +116,8 @@ public class SystemQueryOptionsParserTests
     [InlineData("$count=Yes", null)]
     public void Count_VariousForms(string fragment, bool? expected)
     {
-        var r = SystemQueryOptionsParser.Parse(U(fragment));
-        Equal(expected, r.Count);
+        var r = Parse(fragment);
+        Equal(expected, r.CountTac);
     }
 
     [Fact]
@@ -123,15 +125,15 @@ public class SystemQueryOptionsParserTests
     {
         var uri = U("$select=Id,Title&$expand=Author,Categories&$filter=ShowOnStartPage%20eq%20true" +
                     "&$orderby=PublicationMoment%20desc&$top=25&$skip=50&$count=true&PageId=123&ModuleId=456");
-        var r = SystemQueryOptionsParser.Parse(uri);
+        var r = Parse(uri);
 
-        Equal(["Id", "Title"], r.Select);
-        Equal("Author,Categories", r.Expand);
-        Equal("ShowOnStartPage eq true", r.Filter);
-        Equal("PublicationMoment desc", r.OrderBy);
-        Equal(25, r.Top);
-        Equal(50, r.Skip);
-        True(r.Count);
+        Equal(["Id", "Title"], r.SelectTac);
+        Equal("Author,Categories", r.ExpandTac);
+        Equal("ShowOnStartPage eq true", r.FilterTac);
+        Equal("PublicationMoment desc", r.OrderByTac);
+        Equal(25, r.TopTac);
+        Equal(50, r.SkipTac);
+        True(r.CountTac);
         Equal("123", r.CustomTac["PageId"]);
         Equal("456", r.CustomTac["ModuleId"]);
         Equal(7, r.AllRawTac.Count); // $select,$expand,$filter,$orderby,$top,$skip,$count
@@ -140,8 +142,8 @@ public class SystemQueryOptionsParserTests
     [Fact]
     public void CustomParams_AreSeparated()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$select=Id&foo=bar&baz=qux"));
-        Equal(["Id"], r.Select);
+        var r = Parse("$select=Id&foo=bar&baz=qux");
+        Equal(["Id"], r.SelectTac);
         Equal(2, r.CustomTac.Count);
         True(r.CustomTac.ContainsKey("foo"));
         True(r.CustomTac.ContainsKey("baz"));
@@ -150,8 +152,8 @@ public class SystemQueryOptionsParserTests
     [Fact]
     public void NoSystemParams_AllCustom()
     {
-        var r = SystemQueryOptionsParser.Parse(U("alpha=1&beta=2"));
-        Empty(r.Select);
+        var r = Parse("alpha=1&beta=2");
+        Empty(r.SelectTac);
         Empty(r.AllRawTac);
         Equal(2, r.CustomTac.Count);
     }
@@ -159,8 +161,8 @@ public class SystemQueryOptionsParserTests
     [Fact]
     public void EmptyQuery()
     {
-        var r = SystemQueryOptionsParser.Parse(new Uri("https://example.test/app/data/BlogPost"));
-        Empty(r.Select);
+        var r = Parse(new Uri("https://example.test/app/data/BlogPost"));
+        Empty(r.SelectTac);
         Empty(r.AllRawTac);
         Empty(r.CustomTac);
     }
@@ -168,45 +170,45 @@ public class SystemQueryOptionsParserTests
     [Fact]
     public void Select_TrimSegments()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$select= Id , Title ,  Content "));
-        Equal(["Id", "Title", "Content"], r.Select);
+        var r = Parse("$select= Id , Title ,  Content ");
+        Equal(["Id", "Title", "Content"], r.SelectTac);
     }
 
     [Fact]
     public void Select_WithParenthesesAndTrailingComma()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$select=Categories(Name,Key),"));
-        Equal(["Categories(Name,Key)"], r.Select);
+        var r = Parse("$select=Categories(Name,Key),");
+        Equal(["Categories(Name,Key)"], r.SelectTac);
     }
 
     [Fact]
     public void Count_InvalidValue()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$count=maybe"));
-        Null(r.Count);
+        var r = Parse("$count=maybe");
+        Null(r.CountTac);
     }
 
     [Fact]
     public void Select_EmptyValue_YieldsEmptyListButKeyPresent()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$select="));
-        Empty(r.Select);
+        var r = Parse("$select=");
+        Empty(r.SelectTac);
         Equal(string.Empty, r.AllRawTac["$select"]);
     }
 
     [Fact]
     public void Select_KeyWithLeadingSpaces_IsTrimmed()
     {
-        var r = SystemQueryOptionsParser.Parse(U("   %24select=Id"));
-        Equal(["Id"], r.Select);
+        var r = Parse("   %24select=Id");
+        Equal(["Id"], r.SelectTac);
         True(r.AllRawTac.ContainsKey("$select"));
     }
 
     [Fact]
     public void Select_IgnoresEmptySegments()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$select=Id,,Title"));
-        Equal(["Id", "Title"], r.Select);
+        var r = Parse("$select=Id,,Title");
+        Equal(["Id", "Title"], r.SelectTac);
     }
 
     [Fact]
@@ -218,7 +220,7 @@ public class SystemQueryOptionsParserTests
             if (i > 0) sb.Append('&');
             sb.Append("p").Append(i).Append('=').Append(i);
         }
-        var r = SystemQueryOptionsParser.Parse(U(sb.ToString()));
+        var r = Parse(sb.ToString());
         Equal(500, r.CustomTac.Count);
         True(r.CustomTac.ContainsKey("p0"));
         True(r.CustomTac.ContainsKey("p499"));
@@ -228,23 +230,23 @@ public class SystemQueryOptionsParserTests
     public void ValueLength_AtLimit_NotTruncated()
     {
         var atLimit = new string('b', 8192);
-        var r = SystemQueryOptionsParser.Parse(U("$filter=" + atLimit));
-        NotNull(r.Filter);
-        Equal(8192, r.Filter!.Length);
+        var r = Parse("$filter=" + atLimit);
+        NotNull(r.FilterTac);
+        Equal(8192, r.FilterTac!.Length);
     }
 
     [Fact]
     public void Count_UpperCaseTrue()
     {
-        var r = SystemQueryOptionsParser.Parse(U("$count=TRUE"));
-        True(r.Count);
+        var r = Parse("$count=TRUE");
+        True(r.CountTac);
     }
 
     [Fact]
     public void Select_DuplicateEncodedThenPlain_LastWins()
     {
-        var r = SystemQueryOptionsParser.Parse(U("%24select=Id,Original&$select=Id,Final"));
-        Equal(["Id", "Final"], new[] { r.Select[0], r.Select[1] });
+        var r = Parse("%24select=Id,Original&$select=Id,Final");
+        Equal(["Id", "Final"], new[] { r.SelectTac[0], r.SelectTac[1] });
         Equal("Id,Final", r.AllRawTac["$select"]);
     }
 
@@ -252,12 +254,12 @@ public class SystemQueryOptionsParserTests
     public void InvalidPercentEncoding_DoesNotThrowAndFallsBackToRaw()
     {
         // "%ZZselect" is invalid percent encoding so key stays raw and becomes a custom param.
-        var r = SystemQueryOptionsParser.Parse(U("%ZZselect=Id&$filter=Title%2")); // value has dangling %2
+        var r = Parse("%ZZselect=Id&$filter=Title%2"); // value has dangling %2
         // Custom should contain the invalid key literally
         True(r.CustomTac.ContainsKey("%ZZselect"));
         Equal("Id", r.CustomTac["%ZZselect"]);
         // $filter should be captured; its value invalid escape remains raw "Title%2"
-        Equal("Title%2", r.Filter);
+        Equal("Title%2", r.FilterTac);
     }
 
     [Fact]
@@ -270,7 +272,7 @@ public class SystemQueryOptionsParserTests
             if (i > 0) sb.Append('&');
             sb.Append("p").Append(i).Append('=').Append(i);
         }
-        var r = SystemQueryOptionsParser.Parse(U(sb.ToString()));
+        var r = Parse(sb.ToString());
         // All are custom (no $) so count should be capped at 500
         Equal(500, r.CustomTac.Count);
     }
@@ -281,10 +283,10 @@ public class SystemQueryOptionsParserTests
         // Limit is 8192 characters; create a longer value that should be truncated.
         var over = 9000;
         var longVal = new string('a', over);
-        var r = SystemQueryOptionsParser.Parse(U("$filter=" + longVal));
-        NotNull(r.Filter);
+        var r = Parse("$filter=" + longVal);
+        NotNull(r.FilterTac);
         // Expect truncated length == 8192 (knowledge of current constant; adjust if constant changes)
-        Equal(8192, r.Filter!.Length);
+        Equal(8192, r.FilterTac!.Length);
     }
 
     [Fact]
@@ -298,9 +300,9 @@ public class SystemQueryOptionsParserTests
             if (i > 0) sb.Append(',');
             sb.Append("F").Append(i);
         }
-        var r = SystemQueryOptionsParser.Parse(U(sb.ToString()));
-        Equal(200, r.Select.Count);
-        Equal("F0", r.Select[0]);
+        var r = Parse(sb.ToString());
+        Equal(200, r.SelectTac.Count);
+        Equal("F0", r.SelectTac[0]);
     }
 
     [Fact]
@@ -308,9 +310,9 @@ public class SystemQueryOptionsParserTests
     {
         // Build a deeply nested parentheses segment exceeding depth cap (64) then another item
         var nested = new string('(', 150) + "Deep" + new string(')', 150);
-        var r = SystemQueryOptionsParser.Parse(U("$select=" + nested + ",Title"));
-        Equal(2, r.Select.Count);
-        Equal(nested, r.Select[0]);
-        Equal("Title", r.Select[1]);
+        var r = Parse("$select=" + nested + ",Title");
+        Equal(2, r.SelectTac.Count);
+        Equal(nested, r.SelectTac[0]);
+        Equal("Title", r.SelectTac[1]);
     }
 }
