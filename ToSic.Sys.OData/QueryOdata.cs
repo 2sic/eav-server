@@ -17,32 +17,38 @@ public class QueryODataParams
 
         var result = streamNames.ToDictionary(n => n, n => Create(parseFunc, n), OrdinalIgnoreCase);
 
-        // If the caller explicitly selected exactly one stream, a bare $select should target that stream.
+        // If the caller explicitly selected exactly one stream, bare OData options should target that stream.
         // This preserves the old Default-stream behavior for multi-stream requests, while letting
-        // /QueryName/Books?$select=... and ?stream=Books&$select=... behave intuitively.
+        // /QueryName/Books?$filter=... and ?stream=Books&$top=... behave intuitively.
         var fallbackStream = GetSingleSelectedStreamOrNull(streamNames, selectedStream);
         if (fallbackStream.IsEmpty())
             return result;
 
         var unprefixed = Create(parseFunc);
-        if (!unprefixed.Select.Any())
+        if (unprefixed.IsEmpty())
             return result;
 
         var current = result[fallbackStream];
-
-        // Explicit stream-prefixed selects such as Books$select keep precedence over the bare fallback.
-        if (current.Select.Any())
-            return result;
-
         var mergedRaw = current.AllRaw
             .ToDictionary(pair => pair.Key, pair => pair.Value, OrdinalIgnoreCase);
-        mergedRaw[ODataConstants.SelectParamName] = unprefixed.AllRaw[ODataConstants.SelectParamName];
 
-        result[fallbackStream] = current with
+        var mergedAny = false;
+        foreach (var pair in unprefixed.AllRaw)
         {
-            AllRaw = new ReadOnlyDictionary<string, string>(mergedRaw),
-            Select = unprefixed.Select
-        };
+            // Stream-prefixed parameters such as Books$filter keep precedence over the bare fallback,
+            // but other bare parameters should still fill in independently.
+            var key = pair.Key;
+            if (mergedRaw.ContainsKey(key))
+                continue;
+
+            mergedRaw[key] = pair.Value;
+            mergedAny = true;
+        }
+
+        if (!mergedAny)
+            return result;
+
+        result[fallbackStream] = CreateFromRaw(mergedRaw);
 
         return result;
     }
@@ -63,7 +69,13 @@ public class QueryODataParams
             .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Value))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        // Construct the options
+        return CreateFromRaw(odataDic);
+    }
+
+    private static ODataOptions CreateFromRaw(IDictionary<string, string> odataDic)
+    {
+        // Construct the options from raw values so parsed requests and merged stream fallbacks
+        // always populate the typed OData fields in exactly the same way.
         return new()
         {
             AllRaw = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(odataDic, OrdinalIgnoreCase)),
