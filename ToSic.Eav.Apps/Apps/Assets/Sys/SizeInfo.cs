@@ -45,4 +45,6 @@ public class SizeInfo(long bytes) : ISizeInfo
     private readonly GetOnce<(decimal, string)> _bestSizeCache = new();
 
     public override string ToString() => $"{BestSize} {BestUnit}";
+
+    public string ToString(string format) => $"{BestSize.ToString(format)} {BestUnit}";
 }
