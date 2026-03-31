@@ -4,12 +4,12 @@
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
-public class SizeInfo(int bytes) : ISizeInfo
+public class SizeInfo(long bytes) : ISizeInfo
 {
     private const int Factor = 1024;
 
     /// <inheritdoc />
-    public int Bytes { get; } = bytes;
+    public long Bytes { get; } = bytes;
 
     /// <inheritdoc />
     public decimal Kb => Rounded((decimal)Bytes / Factor);
@@ -36,11 +36,15 @@ public class SizeInfo(int bytes) : ISizeInfo
     private decimal Rounded(decimal number) => Math.Round(number, Decimals);
 
 
-    private (decimal Size, string Unit) BestSizeCache => _bestSizeCache.Get(() =>
+    private (decimal Size, string Unit) BestSizeCache => _bestSizeCache.Get(() => Bytes switch
     {
-        if (Bytes < Factor * Factor) return (Kb, "KB");
-        if (Bytes < Factor * Factor * Factor) return (Mb, "MB");
-        return (Gb, "GB");
+        < Factor * Factor => (Kb, "KB"),
+        < Factor * Factor * Factor => (Mb, "MB"),
+        _ => (Gb, "GB")
     });
     private readonly GetOnce<(decimal, string)> _bestSizeCache = new();
+
+    public override string ToString() => $"{BestSize} {BestUnit}";
+
+    public string ToString(string format) => $"{BestSize.ToString(format)} {BestUnit}";
 }

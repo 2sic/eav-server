@@ -17,7 +17,7 @@ public class MemorySizeEstimator(ILog? parentLog) : HelperBase(parentLog, "Eav.M
         if (value == null)
             return new();
         if (recursion <= 0)
-            return new(Error: true);
+            return new(IsError: true);
 
         var type = value.GetType();
         if (type.IsValueType)
@@ -29,14 +29,14 @@ public class MemorySizeEstimator(ILog? parentLog) : HelperBase(parentLog, "Eav.M
         {
             ICanEstimateSize canEstimate => canEstimate.EstimateSize(Log),
             IEnumerable => SizeOfEnumerable(value, recursion),
-            _ => new(Unknown: true)
+            _ => new(IsUnknown: true)
         };
     }
 
     private SizeEstimate SizeOfEnumerable(object value, int recursion)
     {
         if (value is not IEnumerable enumerable)
-            return new(Unknown: true);
+            return new(IsUnknown: true);
 
         try
         {
@@ -46,7 +46,7 @@ public class MemorySizeEstimator(ILog? parentLog) : HelperBase(parentLog, "Eav.M
         }
         catch (Exception)
         {
-            return new(Error: true);
+            return new(IsError: true);
         }
     }
 

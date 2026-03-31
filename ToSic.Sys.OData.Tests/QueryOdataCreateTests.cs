@@ -4,18 +4,18 @@ public class QueryOdataCreateTests
 {
     private static ODataOptions CreateWithAllValues(string? name = null)
     {
-        return QueryODataParams.Create(v => v, name);
+        return QueryODataParamsTestAccessors.CreateTac(v => v, name);
     }
 
     private static ODataOptions CreateWithNoValues() =>
-        QueryODataParams.Create(v => v.ToDictionary(
+        QueryODataParamsTestAccessors.CreateTac(v => v.ToDictionary(
                 pair => pair.Key,
                 pair => ""),
             null
         );
 
     private static ODataOptions CreateSelectOnly() =>
-        QueryODataParams.Create(v => v.ToDictionary(
+        QueryODataParamsTestAccessors.CreateTac(v => v.ToDictionary(
                 pair => pair.Key,
                 pair => pair.Key == ODataConstants.SelectParamName ? "test" : ""),
             null

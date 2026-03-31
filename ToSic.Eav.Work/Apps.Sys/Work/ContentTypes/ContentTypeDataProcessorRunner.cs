@@ -21,11 +21,12 @@ public class ContentTypeDataProcessorRunner(
     : ServiceBase("Wrk.CtProc", connect: [dataFactory, appReaders])
 {
     /// <summary>
-    /// Execute a content-type post-save handler for a known content-type.
+    /// Execute a data processor action for a known content-type using the standard
+    /// action verbs and optional schema context.
     /// </summary>
-    public void RunFor(IContentType contentType, string action, string? reason = default)
+    public void RunFor(IContentType contentType, string action = PostSave, DataProcessingContext? context = default)
     {
-        var l = Log.Fn($"type:{contentType.NameId}, app:{contentType.AppId}, action:{action}, reason:{reason}");
+        var l = Log.Fn($"type:{contentType.NameId}, app:{contentType.AppId}, action:{action}, source:{context?.Source}");
 
         // Always re-resolve from a fresh app reader so metadata/decorators reflect committed DB state.
         var freshReader = appReaders.Get(contentType.AppId);
@@ -38,16 +39,16 @@ public class ContentTypeDataProcessorRunner(
             return;
         }
 
-        RunForResolvedContentType(freshType, action, reason);
+        RunForResolvedContentType(freshType, action, context);
         l.Done();
     }
 
     /// <summary>
-    /// Execute a content-type post-save handler for a content-type identified by app and numeric id.
+    /// Execute a data processor action for a content-type identified by app and numeric id.
     /// </summary>
-    public void RunFor(int appId, int contentTypeId, string action, string? reason = default)
+    public void RunFor(int appId, int contentTypeId, string action = PostSave, DataProcessingContext? context = default)
     {
-        var l = Log.Fn($"app:{appId}, typeId:{contentTypeId}, action:{action}, reason:{reason}");
+        var l = Log.Fn($"app:{appId}, typeId:{contentTypeId}, action:{action}, source:{context?.Source}");
         // Some callers only know numeric ids (field mutations), so this overload is the central bridge.
         var contentType = appReaders.Get(appId).GetContentTypeOptional(contentTypeId);
         if (contentType == null)
@@ -57,13 +58,13 @@ public class ContentTypeDataProcessorRunner(
             return;
         }
 
-        RunForResolvedContentType(contentType, action, reason);
+        RunForResolvedContentType(contentType, action, context);
         l.Done();
     }
 
-    private void RunForResolvedContentType(IContentType contentType, string action, string? reason)
+    private void RunForResolvedContentType(IContentType contentType, string action, DataProcessingContext? context)
     {
-        var l = Log.Fn($"type:{contentType.NameId}, app:{contentType.AppId}, action:{action}, reason:{reason}");
+        var l = Log.Fn($"type:{contentType.NameId}, app:{contentType.AppId}, action:{action}, source:{context?.Source}");
 
         if (action.IsEmptyOrWs())
         {
@@ -107,10 +108,10 @@ public class ContentTypeDataProcessorRunner(
         try
         {
             var triggerEntity = CreateSyntheticTriggerEntity(contentType);
-            // Use the standard IDataProcessor contract with content-type specific action + IEntity payload.
-            // This ensures schema processors only run on schema operations, not on normal entity saves.
+            // Use the standard IDataProcessor contract with the shared action verb plus
+            // explicit context so processors can distinguish schema triggers from entity saves.
             var result = processor
-                .Process(action, new DataProcessorResult<IEntity?> { Data = triggerEntity })
+                .Process(action, new DataProcessorResult<IEntity?> { Data = triggerEntity, Context = context })
                 .GetAwaiter()
                 .GetResult();
 

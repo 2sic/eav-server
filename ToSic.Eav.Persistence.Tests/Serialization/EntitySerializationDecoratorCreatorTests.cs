@@ -74,5 +74,27 @@ public class EntitySerializationDecoratorCreatorTests
     public void FieldListIsExpected(string[] fields, string[] expected)
         => Equal(expected, FromFieldListTac([..fields]).FilterFields);
 
+    [Fact]
+    public void NonTitleFieldSelectionDisablesDefaultTitle()
+        => False(FromFieldListTac(["LastName"]).SerializeTitle);
+
+    [Fact]
+    public void TitleSelectionStillForcesTitleInclusion()
+    {
+        var decorator = FromFieldListTac(["Title"]);
+        False(decorator.SerializeTitle);
+        True(decorator.SerializeTitleForce);
+        Null(decorator.CustomTitleName);
+    }
+
+    [Fact]
+    public void EntityTitleSelectionKeepsCustomTitleBehavior()
+    {
+        var decorator = FromFieldListTac(["EntityTitle"]);
+        False(decorator.SerializeTitle);
+        True(decorator.SerializeTitleForce);
+        Equal("EntityTitle", decorator.CustomTitleName);
+    }
+
 }
 
