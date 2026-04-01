@@ -16,7 +16,7 @@
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Caching" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
