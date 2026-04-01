@@ -15,12 +15,14 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [ContentTypeSpecs(
     Guid = "e405beb3-9097-4790-b7b0-0e6d37502bef",
-    Name = "ContentType",
+    Name = TypeName,
     Scope = "System",
     Description = "A ContentType (Schema) describing Entities."
 )]
 public partial record ContentType : IContentType, IContentTypeShared, IHasDecorators<IContentType>, IHasPiggyBack
 {
+    public const string TypeName = "ContentType";
+
     #region simple properties - all are #immutable
 
     /// <inheritdoc />
