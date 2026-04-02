@@ -1,7 +1,5 @@
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Processing;
-using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Models;
 using ToSic.Sys.Utils;
 using ToSic.Sys.Utils.Assemblies;
@@ -16,9 +14,8 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeDataProcessorRunner(
     IServiceProvider serviceProvider,
-    Generator<IDataFactory, DataFactoryOptions> dataFactory,
     IAppReaderFactory appReaders)
-    : ServiceBase("Wrk.CtProc", connect: [dataFactory, appReaders])
+    : ServiceBase("Wrk.CtProc", connect: [appReaders])
 {
     /// <summary>
     /// Execute a data processor action for a known content-type using the standard
@@ -107,11 +104,18 @@ public class ContentTypeDataProcessorRunner(
 
         try
         {
-            var triggerEntity = CreateSyntheticTriggerEntity(contentType);
+            // The resolved content-type is the source of truth for schema processors.
+            var enrichedContext = (context ?? new DataProcessingContext()) with
+            {
+                AppId = contentType.AppId,
+                ContentTypeId = contentType.Id,
+                ContentTypeNameId = contentType.NameId
+            };
+
             // Use the standard IDataProcessor contract with the shared action verb plus
             // explicit context so processors can distinguish schema triggers from entity saves.
             var result = processor
-                .Process(action, new DataProcessorResult<IEntity?> { Data = triggerEntity, Context = context })
+                .Process(action, new DataProcessorResult<IEntity?> { Data = null, Context = enrichedContext })
                 .GetAwaiter()
                 .GetResult();
 
@@ -126,17 +130,4 @@ public class ContentTypeDataProcessorRunner(
 
         l.Done();
     }
-
-    private IEntity CreateSyntheticTriggerEntity(IContentType contentType)
-        => dataFactory.New(new DataFactoryOptions
-            {
-                // The synthetic entity is only used as context carrier, not persisted.
-                AppId = contentType.AppId,
-                TypeName = contentType.NameId
-            })
-            .Create(new Dictionary<string, object?>
-            {
-                // Keep title present so generated entity shape is predictable in all runtimes.
-                { AttributeNames.TitleNiceName, contentType.Name }
-            });
 }
