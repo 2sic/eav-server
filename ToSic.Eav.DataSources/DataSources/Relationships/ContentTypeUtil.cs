@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Data.Sys.ContentTypes;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys;
@@ -7,12 +8,14 @@ namespace ToSic.Eav.DataSources.Sys;
 // TODO: THIS should be moved to the right place, using the new IRawEntity setup
 internal class ContentTypeUtil
 {
-    private const string ContentTypeTypeName = "ContentType";
-
+    /// <summary>
+    /// Options to generate data - can't be placed in the ContentType class,
+    /// because the DataFactoryOptions doesn't exist at that level.
+    /// </summary>
     public static DataFactoryOptions Options = new()
     {
         TitleField = nameof(IContentType.Name),
-        TypeName = ContentTypeTypeName,
+        Type = typeof(ContentType)
     };
 
 
