@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace ToSic.Sys.Utils.TypeFactoryTests;
+﻿namespace ToSic.Sys.Utils.TypeFactoryTests;
 
 public class TypeFactoryTests
 {

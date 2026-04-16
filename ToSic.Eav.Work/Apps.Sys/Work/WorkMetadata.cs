@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Build.Sys;
-using ToSic.Eav.Data.Sys.Entities;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 

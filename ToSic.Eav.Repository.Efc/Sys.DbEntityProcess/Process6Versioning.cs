@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.Repository.Efc.Sys.DbParts;
+﻿using ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 

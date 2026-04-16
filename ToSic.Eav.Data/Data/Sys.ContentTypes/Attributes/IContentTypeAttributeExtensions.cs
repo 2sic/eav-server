@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
-using static ToSic.Eav.Data.Sys.Attributes.AttributeMetadataConstants;
+﻿using static ToSic.Eav.Data.Sys.Attributes.AttributeMetadataConstants;
 
 namespace ToSic.Eav.Data.Sys.ContentTypes;
 

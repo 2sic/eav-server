@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Persistence.Sys.Logging;
 
