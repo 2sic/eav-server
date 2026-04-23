@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 public class SiteLanguages : CustomDataSource
 {
     public SiteLanguages(Dependencies services, LanguagesBackend languagesBackend)
-        : base(services, logName: "Sxc.SiteLangs", connect: [languagesBackend])
+        : base(services, logName: "Sxc.SitLng", connect: [languagesBackend])
     {
         ProvideOutRaw(
             () => GetLanguages(languagesBackend),
@@ -37,14 +37,14 @@ public class SiteLanguages : CustomDataSource
 
         var list = languagesBackend
             .GetLanguages()
-            .Select(language => new RawEntity(new()
+            .Select(IRawEntity (language) => new RawEntity(new()
             {
                 { nameof(SiteLanguageDto.Code), language.Code },
                 { nameof(SiteLanguageDto.Culture), language.Culture },
                 { nameof(SiteLanguageDto.IsEnabled), language.IsEnabled },
                 { nameof(SiteLanguageDto.NameId), language.NameId },
             }))
-            .ToList<IRawEntity>();
+            .ToList();
 
         return l.Return(list, $"{list.Count}");
     }
