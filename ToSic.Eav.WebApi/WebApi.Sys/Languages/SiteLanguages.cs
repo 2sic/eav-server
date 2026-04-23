@@ -37,14 +37,14 @@ public class SiteLanguages : CustomDataSource
 
         var list = languagesBackend
             .GetLanguages()
-            .Select(language => new RawEntity(new()
+            .Select(IRawEntity (language) => new RawEntity(new()
             {
                 { nameof(SiteLanguageDto.Code), language.Code },
                 { nameof(SiteLanguageDto.Culture), language.Culture },
                 { nameof(SiteLanguageDto.IsEnabled), language.IsEnabled },
                 { nameof(SiteLanguageDto.NameId), language.NameId },
             }))
-            .ToList<IRawEntity>();
+            .ToList();
 
         return l.Return(list, $"{list.Count}");
     }
