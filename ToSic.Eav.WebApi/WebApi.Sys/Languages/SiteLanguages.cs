@@ -8,9 +8,9 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 
 [PrivateApi]
 [VisualQuery(
-    NiceName = "Site Languages",
+    NiceName = "Zone Languages",
     NameId = "9981db56-6d4e-4b29-914c-4a223c063eb4",
-    NameIds = ["System.SiteLanguages"], // Internal name for the system, used in some entity-pickers. Can change at any time.
+    NameIds = ["System.ZoneLanguages"], // Internal name for the system, used in some entity-pickers. Can change at any time.
     Type = DataSourceType.System,
     Audience = Audience.System,
     DataConfidentiality = DataConfidentiality.Confidential,
@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 public class SiteLanguages : CustomDataSource
 {
     public SiteLanguages(Dependencies services, LanguagesBackend languagesBackend)
-        : base(services, logName: "Sxc.SiteLangs", connect: [languagesBackend])
+        : base(services, logName: "Sxc.ZoneLangs", connect: [languagesBackend])
     {
         ProvideOutRaw(
             () => GetLanguages(languagesBackend),
@@ -27,7 +27,7 @@ public class SiteLanguages : CustomDataSource
             {
                 AutoId = true,
                 TitleField = nameof(SiteLanguageDto.Culture),
-                TypeName = "SiteLanguage",
+                TypeName = "ZoneLanguages",
             });
     }
 

@@ -15,8 +15,8 @@ public class ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend, Lazy
 {
     public const string LogSuffix = "Zone";
 
-    /// <inheritdoc />
-    public IList<SiteLanguageDto> GetLanguages() => languagesBackend.Value.GetLanguages();
+    ///// <inheritdoc />
+    //public IList<SiteLanguageDto> GetLanguages() => languagesBackend.Value.GetLanguages();
 
     /// <inheritdoc />
     public void SwitchLanguage(string cultureCode, bool enable) 
