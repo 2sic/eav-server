@@ -8,11 +8,11 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 /// </summary>
 public interface IZoneController
 {
-    /// <summary>
-    /// Get all languages of the current zone, with activation info
-    /// </summary>
-    /// <returns></returns>
-    IList<SiteLanguageDto> GetLanguages();
+    ///// <summary>
+    ///// Get all languages of the current zone, with activation info
+    ///// </summary>
+    ///// <returns></returns>
+    //IList<SiteLanguageDto> GetLanguages();
 
     /// <summary>
     /// Enable / disable a language in the EAV
