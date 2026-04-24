@@ -1,4 +1,6 @@
 ﻿
+using ToSic.Eav.Context;
+using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -18,11 +20,11 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 )]
 public class ZoneLanguages : CustomDataSource
 {
-    public ZoneLanguages(Dependencies services, LanguagesBackend languagesBackend)
-        : base(services, logName: "Sxc.ZoneLangs", connect: [languagesBackend])
+    public ZoneLanguages(Dependencies services, LazySvc<IZoneMapper> zoneMapper, ISite site)
+        : base(services, logName: "Sxc.ZoneLangs", connect: [zoneMapper, site])
     {
         ProvideOutRaw(
-            () => GetLanguages(languagesBackend),
+            () => GetLanguages(zoneMapper.Value, site),
             options: () => new()
             {
                 AutoId = true,
@@ -31,20 +33,29 @@ public class ZoneLanguages : CustomDataSource
             });
     }
 
-    private IEnumerable<IRawEntity> GetLanguages(LanguagesBackend languagesBackend)
+    private IEnumerable<IRawEntity> GetLanguages(IZoneMapper zoneMapper, ISite site)
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<IRawEntity>>($"{site.Id}");
 
-        var list = languagesBackend
-            .GetLanguages()
-            .Select(IRawEntity (language) => new RawEntity(new()
+        // ReSharper disable once PossibleInvalidOperationException
+        var cultures = zoneMapper.CulturesWithState(site)
+            .Select(c => new SiteLanguageDto
+            {
+                Code = c.Code,
+                Culture = c.Culture,
+                IsEnabled = c.IsEnabled,
+            })
+            .ToList();
+
+        var list = cultures
+            .Select(language => new RawEntity(new()
             {
                 { nameof(SiteLanguageDto.Code), language.Code },
                 { nameof(SiteLanguageDto.Culture), language.Culture },
                 { nameof(SiteLanguageDto.IsEnabled), language.IsEnabled },
                 { nameof(SiteLanguageDto.NameId), language.NameId },
             }))
-            .ToList();
+            .ToList<IRawEntity>();
 
         return l.Return(list, $"{list.Count}");
     }
