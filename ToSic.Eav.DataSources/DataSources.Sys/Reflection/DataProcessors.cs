@@ -5,7 +5,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     NiceName = "Data Processors",
     NameId = "717d9406-08e9-48de-b985-a0f40905dc65",
-    NameIds = ["System.DataProcessors"], // Internal name for the system, used in some entity-pickers. Can change at any time.
+    NameIds = ["System.DataProcessors"], // Internal name for the system, used in some entity-pickers (to configure Content-Type processing). Can change at any time.
     Type = DataSourceType.System,
     Audience = Audience.System,
     DataConfidentiality = DataConfidentiality.System,

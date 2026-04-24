@@ -10,7 +10,7 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 [VisualQuery(
     NiceName = "Zone Languages",
     NameId = "9981db56-6d4e-4b29-914c-4a223c063eb4",
-    NameIds = ["System.ZoneLanguages"], // Internal name for the system, used in some entity-pickers. Can change at any time.
+    NameIds = ["System.ZoneLanguages"], // Internal name for the system, used in the Admin-UI.
     Type = DataSourceType.System,
     Audience = Audience.System,
     DataConfidentiality = DataConfidentiality.Confidential,
