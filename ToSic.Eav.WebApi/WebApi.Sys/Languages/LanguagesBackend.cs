@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys;
-using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.WebApi.Sys.Dto;
 using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 
@@ -8,11 +7,10 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LanguagesBackend(
-    LazySvc<IZoneMapper> zoneMapper,
     LazySvc<ZoneManager> zoneManager,
     ISite site,
     LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy)
-    : Services_ServiceBase("Bck.Admin", connect: [zoneManager, site, appUserLanguageCheckLazy, zoneMapper])
+    : Services_ServiceBase("Bck.Admin", connect: [zoneManager, site, appUserLanguageCheckLazy])
 {
     public List<SiteLanguageDto> GetLanguagesOfApp(IAppReader? appReaderOrNull, bool withCount = false)
     {
