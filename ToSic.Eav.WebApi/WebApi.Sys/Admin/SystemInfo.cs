@@ -13,7 +13,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
     NameIds = ["System.SystemInfo"], // Internal name for the system, used in some entity-pickers. Can change at any time.
     Type = DataSourceType.System,
     Audience = Audience.System,
-    DataConfidentiality = DataConfidentiality.Confidential,
+    DataConfidentiality = DataConfidentiality.Internal,
     UiHint = "System information about the current portal and environment"
 )]
 
