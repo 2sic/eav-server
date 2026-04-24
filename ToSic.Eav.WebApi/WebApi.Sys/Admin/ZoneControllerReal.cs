@@ -1,8 +1,6 @@
 ﻿using System.Globalization;
-using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Eav.WebApi.Sys.Languages;
 using ToSic.Eav.WebApi.Sys.Zone;
-using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -11,7 +9,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend, LazySvc<ZoneBackend> zoneBackend)
-    : Services_ServiceBase("Api.ZoneRl", connect: [languagesBackend, zoneBackend]), IZoneController
+    : ServiceBase("Api.ZoneRl", connect: [languagesBackend, zoneBackend]), IZoneController
 {
     public const string LogSuffix = "Zone";
 

@@ -16,9 +16,9 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
     DataConfidentiality = DataConfidentiality.Confidential,
     UiHint = "Languages of the current site"
 )]
-public class SiteLanguages : CustomDataSource
+public class ZoneLanguages : CustomDataSource
 {
-    public SiteLanguages(Dependencies services, LanguagesBackend languagesBackend)
+    public ZoneLanguages(Dependencies services, LanguagesBackend languagesBackend)
         : base(services, logName: "Sxc.ZoneLangs", connect: [languagesBackend])
     {
         ProvideOutRaw(
