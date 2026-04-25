@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
     NameIds = ["System.AppLanguages"], // Internal name for the system, used in some entity-pickers. Can change at any time.
     Type = DataSourceType.System,
     Audience = Audience.System,
-    DataConfidentiality = DataConfidentiality.Confidential,
+    DataConfidentiality = DataConfidentiality.Internal,
     UiHint = "Languages of the current app"
 )]
 public class AppLanguages : CustomDataSource
