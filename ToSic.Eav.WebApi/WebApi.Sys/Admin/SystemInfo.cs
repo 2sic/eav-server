@@ -19,11 +19,19 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 
 public class SystemInfo : CustomDataSource
 {
+    private readonly ZoneBackend zoneBackend;
+    private SystemInfoSetDto? systemInfo;
+
+    private SystemInfoSetDto SystemInfoSet
+        => systemInfo ??= zoneBackend.GetSystemInfo();
+
     public SystemInfo(Dependencies services, ZoneBackend zoneBackend)
         : base(services, logName: "Sxc.SysInfo", connect: [zoneBackend])
     {
+        this.zoneBackend = zoneBackend;
+
         ProvideOutRaw(
-            () => GetSite(zoneBackend),
+            GetSite,
             name: "Site",
             options: () => new()
             {
@@ -33,7 +41,7 @@ public class SystemInfo : CustomDataSource
             });
 
         ProvideOutRaw(
-            () => GetSystem(zoneBackend),
+            GetSystem,
             name: "System",
             options: () => new()
             {
@@ -43,7 +51,7 @@ public class SystemInfo : CustomDataSource
             });
 
         ProvideOutRaw(
-            () => GetLicense(zoneBackend),
+            GetLicense,
             name: "License",
             options: () => new()
             {
@@ -53,7 +61,7 @@ public class SystemInfo : CustomDataSource
             });
 
         ProvideOutRaw(
-            () => GetMessages(zoneBackend),
+            GetMessages,
             name: "Messages",
             options: () => new()
             {
@@ -62,11 +70,10 @@ public class SystemInfo : CustomDataSource
             });
     }
 
-    private IEnumerable<IRawEntity> GetSite(ZoneBackend zoneBackend)
+    private IEnumerable<IRawEntity> GetSite()
     {
         var l = Log.Fn<IEnumerable<IRawEntity>>();
-        var info = zoneBackend.GetSystemInfo();
-        var site = info.Site;
+        var site = SystemInfoSet.Site;
 
         var entity = new RawEntity(new()
         {
@@ -79,11 +86,10 @@ public class SystemInfo : CustomDataSource
         return l.Return([entity], "1");
     }
 
-    private IEnumerable<IRawEntity> GetSystem(ZoneBackend zoneBackend)
+    private IEnumerable<IRawEntity> GetSystem()
     {
         var l = Log.Fn<IEnumerable<IRawEntity>>();
-        var info = zoneBackend.GetSystemInfo();
-        var system = info.System;
+        var system = SystemInfoSet.System;
 
         var entity = new RawEntity(new()
         {
@@ -97,11 +103,10 @@ public class SystemInfo : CustomDataSource
         return l.Return([entity], "1");
     }
 
-    private IEnumerable<IRawEntity> GetLicense(ZoneBackend zoneBackend)
+    private IEnumerable<IRawEntity> GetLicense()
     {
         var l = Log.Fn<IEnumerable<IRawEntity>>();
-        var info = zoneBackend.GetSystemInfo();
-        var license = info.License;
+        var license = SystemInfoSet.License;
 
         var entity = new RawEntity(new()
         {
@@ -113,11 +118,10 @@ public class SystemInfo : CustomDataSource
         return l.Return([entity], "1");
     }
 
-    private IEnumerable<IRawEntity> GetMessages(ZoneBackend zoneBackend)
+    private IEnumerable<IRawEntity> GetMessages()
     {
         var l = Log.Fn<IEnumerable<IRawEntity>>();
-        var info = zoneBackend.GetSystemInfo();
-        var messages = info.Messages;
+        var messages = SystemInfoSet.Messages;
 
         var entity = new RawEntity(new()
         {
