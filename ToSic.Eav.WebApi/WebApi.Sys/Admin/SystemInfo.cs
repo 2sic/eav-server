@@ -18,15 +18,16 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 )]
 public class SystemInfo : CustomDataSource
 {
-    private readonly ZoneBackend _zoneBackend;
+    private readonly ZoneBackend zoneBackend;
+    private SystemInfoSetDto? systemInfo;
 
-    private SystemInfoSetDto SystemInfoSet => field
-        ??= GetSystemInfo();
+    private SystemInfoSetDto SystemInfoSet
+        => systemInfo ??= zoneBackend.GetSystemInfo();
 
     public SystemInfo(Dependencies services, ZoneBackend zoneBackend)
         : base(services, logName: "Sxc.SysInfo", connect: [zoneBackend])
     {
-        _zoneBackend = zoneBackend;
+        this.zoneBackend = zoneBackend;
 
         ProvideOutRaw(
             GetSite,
