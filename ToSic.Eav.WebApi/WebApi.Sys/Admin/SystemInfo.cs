@@ -20,8 +20,8 @@ public class SystemInfo : CustomDataSource
 {
     private readonly ZoneBackend _zoneBackend;
 
-    private SystemInfoSetDto SystemInfoSet
-        => field ??= _zoneBackend.GetSystemInfo();
+    private SystemInfoSetDto SystemInfoSet => field
+        ??= GetSystemInfo();
 
     public SystemInfo(Dependencies services, ZoneBackend zoneBackend)
         : base(services, logName: "Sxc.SysInfo", connect: [zoneBackend])
@@ -33,7 +33,6 @@ public class SystemInfo : CustomDataSource
             name: "Site",
             options: () => new()
             {
-                AutoId = true,
                 TitleField = nameof(SiteStatsDto.SiteId),
                 TypeName = "SiteStats",
             });
@@ -43,7 +42,6 @@ public class SystemInfo : CustomDataSource
             name: "System",
             options: () => new()
             {
-                AutoId = true,
                 TitleField = nameof(SystemInfoDto.Platform),
                 TypeName = "SystemInfo",
             });
@@ -53,7 +51,6 @@ public class SystemInfo : CustomDataSource
             name: "License",
             options: () => new()
             {
-                AutoId = true,
                 TitleField = nameof(LicenseInfoDto.Main),
                 TypeName = "LicenseInfo",
             });
@@ -63,7 +60,6 @@ public class SystemInfo : CustomDataSource
             name: "Messages",
             options: () => new()
             {
-                AutoId = true,
                 TypeName = "Messages",
             });
     }
@@ -129,4 +125,11 @@ public class SystemInfo : CustomDataSource
 
         return l.Return([entity], "1");
     }
+
+    // TODO: @2rb - here you will put the code from the ZoneBackend, since it will be more complex
+    private SystemInfoSetDto GetSystemInfo()
+    {
+        return _zoneBackend.GetSystemInfo();
+    }
+
 }
