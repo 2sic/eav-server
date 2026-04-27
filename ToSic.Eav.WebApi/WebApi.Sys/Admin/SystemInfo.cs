@@ -16,19 +16,17 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
     DataConfidentiality = DataConfidentiality.Internal,
     UiHint = "System information about the current portal and environment"
 )]
-
 public class SystemInfo : CustomDataSource
 {
-    private readonly ZoneBackend zoneBackend;
-    private SystemInfoSetDto? systemInfo;
+    private readonly ZoneBackend _zoneBackend;
 
     private SystemInfoSetDto SystemInfoSet
-        => systemInfo ??= zoneBackend.GetSystemInfo();
+        => field ??= _zoneBackend.GetSystemInfo();
 
     public SystemInfo(Dependencies services, ZoneBackend zoneBackend)
         : base(services, logName: "Sxc.SysInfo", connect: [zoneBackend])
     {
-        this.zoneBackend = zoneBackend;
+        _zoneBackend = zoneBackend;
 
         ProvideOutRaw(
             GetSite,
