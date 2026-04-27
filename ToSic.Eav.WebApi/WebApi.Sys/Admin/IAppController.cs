@@ -13,7 +13,8 @@ public interface IAppController
 
     void App(int zoneId, string name, int? inheritAppId = null);
 
-    ICollection<SiteLanguageDto> Languages(int appId);
+    // Replaced by DataSource System.AppLanguages
+    //ICollection<SiteLanguageDto> Languages(int appId);
 
     AppExportInfoDto Statistics(int zoneId, int appId);
 
