@@ -24,5 +24,6 @@ public interface IZoneController
     /// Get a bunch of system-info to show in the Apps Management
     /// </summary>
     /// <returns></returns>
-    SystemInfoSetDto GetSystemInfo();
+    /// Moved to SystemInfo Datasource
+    //SystemInfoSetDto GetSystemInfo();
 }
