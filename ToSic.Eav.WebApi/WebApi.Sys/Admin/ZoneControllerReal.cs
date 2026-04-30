@@ -8,8 +8,8 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 /// This one supplies portal-wide (or cross-portal) settings / configuration
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend, LazySvc<ZoneBackend> zoneBackend)
-    : ServiceBase("Api.ZoneRl", connect: [languagesBackend, zoneBackend]), IZoneController
+public class ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend)
+    : ServiceBase("Api.ZoneRl", connect: [languagesBackend]), IZoneController
 {
     public const string LogSuffix = "Zone";
 
@@ -21,6 +21,6 @@ public class ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend, Lazy
         => languagesBackend.Value.Toggle(cultureCode, enable, CultureInfo.GetCultureInfo(cultureCode).EnglishName);
 
     /// <inheritdoc />
-    public SystemInfoSetDto GetSystemInfo() => zoneBackend.Value.GetSystemInfo();
+    //public SystemInfoSetDto GetSystemInfo() => zoneBackend.Value.GetSystemInfo();
 
 }

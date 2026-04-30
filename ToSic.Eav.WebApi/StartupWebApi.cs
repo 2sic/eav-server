@@ -36,7 +36,6 @@ public static class StartupWebApi
 
         // Various Backends
         services.TryAddTransient<LanguagesBackend>();
-        services.TryAddTransient<ZoneBackend>();
         services.TryAddTransient<SaveEntities>();
 
         // APIs
