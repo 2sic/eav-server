@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.WebApi.Sys.Dto;
-using ToSic.Eav.WebApi.Sys.Zone;
-
-namespace ToSic.Eav.WebApi.Sys.Admin;
+﻿namespace ToSic.Eav.WebApi.Sys.Admin;
 
 /// <summary>
 /// This one supplies portal-wide (or cross-portal) settings / configuration
