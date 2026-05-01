@@ -5,7 +5,8 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 
 public interface IAppController
 {
-    ICollection<AppDto> List(int zoneId);
+    // Replaced by DataSource System.Apps
+    //ICollection<AppDto> List(int zoneId);
 
     ICollection<AppDto> InheritableApps();
 
