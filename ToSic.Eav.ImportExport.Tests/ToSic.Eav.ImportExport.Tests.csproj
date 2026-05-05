@@ -20,6 +20,15 @@
     <ProjectReference Include="..\ToSic.Sys.TestHelpers\ToSic.Sys.TestHelpers.csproj" />
   </ItemGroup>
 
+  <!--
+    The new ZIP tests create archives directly so they can reproduce long-path and path-traversal
+    cases without going through the higher-level app export pipeline. net472 does not inherit the
+    ZipArchive reference transitively here, so keep the explicit framework-only reference.
+  -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <Reference Include="System.IO.Compression" />
+  </ItemGroup>
+
   <!-- Copy ScenarioData to bin folder for reviewing during tests -->
   <ItemGroup>
     <None Include="Json\Scenarios\**" CopyToOutputDirectory="PreserveNewest" />
