@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data;
+﻿using static ToSic.Eav.Data.Sys.Attributes.AttributeMetadataConstants;
+
+namespace ToSic.Eav.Data;
 
 /// <summary>
 /// Extension methods for data-related operations.
@@ -67,4 +69,17 @@ public static partial class ContentTypeExtensions
     /// </summary>
     /// <returns></returns>
     public static bool IsMessage(this IContentTypeAttribute attribute) => attribute.InputType.StartsWith("empty-message");
+
+    /// <summary>
+    /// Ephemeral attributes are not stored in the database and are mainly used for formulas or temporary data.
+    /// </summary>
+    /// <param name="attribute"></param>
+    /// <returns></returns>
+    /// <remarks>
+    /// Ephemeral attributes are not stored in the database and are mainly used for formulas or temporary data.
+    /// 
+    /// Added a bit later in v21.08.
+    /// </remarks>
+    public static bool IsEphemeral(this IContentTypeAttribute attribute) =>
+        attribute.Metadata.Get<bool>(MetadataFieldAllIsEphemeral, typeName: TypeGeneral);
 }
