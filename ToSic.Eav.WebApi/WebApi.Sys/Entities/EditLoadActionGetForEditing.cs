@@ -75,8 +75,8 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
         // Update header with ContentTypeName in case it wasn't there before
         list = list
             .Select(bundle => bundle.Header!.ContentTypeName == null && bundle.Entity != null
-                ? bundle
-                : bundle with { Header = bundle.Header! with { ContentTypeName = bundle.Entity!.Type.NameId } }
+                ? bundle with { Header = bundle.Header! with { ContentTypeName = bundle.Entity!.Type.NameId } }
+                : bundle
             )
             .ToList();
         //foreach (var itm in list.Where(i => i.Header!.ContentTypeName == null && i.Entity != null))
