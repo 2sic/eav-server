@@ -9,11 +9,12 @@ namespace ToSic.Eav.WebApi.Sys.Entities;
 public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, EntityAssembler entityAssembler)
     : ServiceBase("Api.Entity", connect: [appWorkCtxSvc, entityAssembler])
 {
-    public List<BundleWithHeaderOptional<IEntity>> Run(LowCodeActionContext actionCtx, /*IAppWorkCtxPlus appWorkCtxPlus,*/ List<ItemIdentifier> items)
+    // Note: reworked this 2026-05-15 2dm to make the objects immutable, hope no side effects #ImmutableIsTheNewBlack
+    public List<BundleWithHeaderOptional<IEntity>> Run(LowCodeActionContext actionCtx, List<ItemIdentifier> items)
     {
         var appWorkCtxPlus = actionCtx.Get<IAppWorkCtxPlus>(EditLoadContextConstants.AppCtxWork);
 
-        ReplaceSimpleTypeNames(appWorkCtxPlus, items);
+        items = ReplaceSimpleTypeNames(appWorkCtxPlus, items);
 
         var list = items
             .Select(p =>
@@ -31,28 +32,62 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
 
         // make sure the header has the right "new" guid as well - as this is the primary one to work with
         // it is really important to use the header guid, because sometimes the entity does not exist - so it doesn't have a guid either
-        var itemsWithEmptyHeaderGuid = list
-            .Where(i => i.Header!.Guid == default)
-            .ToArray(); // must do toArray, to prevent re-checking after setting the guid
+        list = list
+            .Select(bundle =>
+            {
+                // Skip these, they are ok
+                if (bundle.Header!.Guid != default)
+                    return bundle;
+                
+                var hasEntity = bundle.Entity != null;
+                var useEntityGuid = hasEntity && bundle.Entity!.EntityGuid != default;
+                var newGuid = useEntityGuid
+                    ? bundle.Entity!.EntityGuid
+                    : Guid.NewGuid();
+                return new()
+                {
+                    Header = bundle.Header! with { Guid = newGuid },
+                    Entity = hasEntity && !useEntityGuid
+                        ? entityAssembler.CreateFrom(bundle.Entity!, guid: newGuid)
+                        : bundle.Entity
+                };
+            })
+            .ToList();
+        
+        //var itemsWithEmptyHeaderGuid = list
+        //    .Where(i => i.Header!.Guid == default)
+        //    .ToArray(); // must do toArray, to prevent re-checking after setting the guid
 
-        foreach (var bundle in itemsWithEmptyHeaderGuid)
-        {
-            var hasEntity = bundle.Entity != null;
-            var useEntityGuid = hasEntity && bundle.Entity!.EntityGuid != default;
-            bundle.Header!.Guid = useEntityGuid
-                ? bundle.Entity!.EntityGuid
-                : Guid.NewGuid();
-            if (hasEntity && !useEntityGuid)
-                bundle.Entity = entityAssembler.CreateFrom(bundle.Entity!, guid: bundle.Header.Guid);
-        }
+        //foreach (var bundle in itemsWithEmptyHeaderGuid)
+        //{
+        //    var hasEntity = bundle.Entity != null;
+        //    var useEntityGuid = hasEntity && bundle.Entity!.EntityGuid != default;
+        //    bundle.Header = bundle.Header! with
+        //    {
+        //        Guid = useEntityGuid
+        //            ? bundle.Entity!.EntityGuid
+        //            : Guid.NewGuid()
+        //    };
+        //    if (hasEntity && !useEntityGuid)
+        //        bundle.Entity = entityAssembler.CreateFrom(bundle.Entity!, guid: bundle.Header.Guid);
+        //}
 
         // Update header with ContentTypeName in case it wasn't there before
-        foreach (var itm in list.Where(i => i.Header!.ContentTypeName == null && i.Entity != null))
-            itm.Header!.ContentTypeName = itm.Entity!.Type.NameId;
+        list = list
+            .Select(bundle => bundle.Header!.ContentTypeName == null && bundle.Entity != null
+                ? bundle
+                : bundle with { Header = bundle.Header! with { ContentTypeName = bundle.Entity!.Type.NameId } }
+            )
+            .ToList();
+        //foreach (var itm in list.Where(i => i.Header!.ContentTypeName == null && i.Entity != null))
+        //    itm.Header = itm.Header! with { ContentTypeName = itm.Entity!.Type.NameId }; 
 
         // Add EditInfo for read-only data
-        foreach (var bundle in list) 
-            bundle.Header!.EditInfo = new(bundle.Entity);
+        list = list
+            .Select(bundle => bundle with { Header = bundle.Header! with { EditInfo = new(bundle.Entity) } })
+            .ToList();
+        //foreach (var bundle in list)
+        //    bundle.Header = bundle.Header! with { EditInfo = new(bundle.Entity) };
 
         return list;
     }
@@ -77,21 +112,43 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
     /// <summary>
     /// clean up content-type names in case it's using the nice-name instead of the static name...
     /// </summary>
-    private void ReplaceSimpleTypeNames(IAppWorkCtxPlus appWorkCtxPlus, List<ItemIdentifier> items)
+    private List<ItemIdentifier> ReplaceSimpleTypeNames(IAppWorkCtxPlus appWorkCtxPlus, List<ItemIdentifier> items)
     {
-        foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
-        {
-            var ct = appWorkCtxPlus.AppReader.TryGetContentType(itm.ContentTypeName!);
-            if (ct == null)
+        var result = items
+            .Select(itm =>
             {
-                if (!itm.ContentTypeName!.StartsWith("@"))
-                    throw new("Can't find content type " + itm.ContentTypeName);
-                items.Remove(itm);
-                continue;
-            }
-            if (ct.NameId != itm.ContentTypeName) // not using the static name...fix
-                itm.ContentTypeName = ct.NameId;
-        }
+                if (string.IsNullOrEmpty(itm.ContentTypeName))
+                    return itm;
+                
+                var ct = appWorkCtxPlus.AppReader.TryGetContentType(itm.ContentTypeName!);
+                if (ct == null)
+                {
+                    return !itm.ContentTypeName!.StartsWith("@")
+                        ? throw new("Can't find content type " + itm.ContentTypeName)
+                        : null;
+                }
+                if (ct.NameId != itm.ContentTypeName) // not using the static name...fix
+                    return itm with {ContentTypeName = ct.NameId};
+                return itm;
+            })
+            .Where(itm => itm != null!)
+            .ToList();
+        
+        //foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())
+        //{
+        //    var ct = appWorkCtxPlus.AppReader.TryGetContentType(itm.ContentTypeName!);
+        //    if (ct == null)
+        //    {
+        //        if (!itm.ContentTypeName!.StartsWith("@"))
+        //            throw new("Can't find content type " + itm.ContentTypeName);
+        //        items.Remove(itm);
+        //        continue;
+        //    }
+        //    if (ct.NameId != itm.ContentTypeName) // not using the static name...fix
+        //        itm.ContentTypeName = ct.NameId;
+        //}
+
+        return result;
     }
 
 }
