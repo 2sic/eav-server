@@ -67,6 +67,8 @@ public class AttributeNames
     public const string EntityFieldId = "entityid";
     public const string EntityFieldAutoSelect = "entity-title-id"; // Special code used in a data-source to auto-check title or id
     public const string EntityFieldGuid = "entityguid";
+    
+    // This one is used on entity-fields to find out the type of data they contain.
     public const string EntityFieldType = "entitytype";
     public const string EntityFieldIsPublished = "ispublished";
     public const string EntityFieldCreated = "created";
@@ -100,6 +102,7 @@ public class AttributeNames
 
     public static string PickerDataSourceCreateTypes = "CreateTypes";
 
+    public static string EntityFieldAllowMulti = "AllowMultiValue";
     #endregion
 
     /// <summary>

@@ -37,7 +37,7 @@ public class SourceEntityTests(DataAssembler dataAssembler, ContentTypeAssembler
     public void EntityGuidIsEmpty() => Equal(Guid.Empty, Guid.Parse(_person.GetTac(AttributeNames.EntityGuidPascalCase)));
 
     [Fact]
-    public void EntityTypeIsTestType() => Equal("TestType", _person.GetTac("EntityType"));
+    public void EntityTypeIsTestType() => Equal("TestType", _person.GetTac(AttributeNames.EntityFieldType));
 
     [Fact]
     public void AnyDate() => Equal(DateTime.Parse(TestEntities.AnyDateString), DateTime.Parse(_person.GetTac(TestEntities.AnyDateKey)));
