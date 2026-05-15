@@ -85,6 +85,23 @@ public class AttributeNames
 
     #endregion
 
+    #region Picker Stuff - moved here v21.08
+
+    public static string[] PickerNames =
+    [
+        "entity-picker",
+        "number-picker",
+        "string-picker",
+    ];
+
+    public static string PickerFieldDataSources = "DataSources";
+    
+    public static string PickerDataSourceDataTypes = "ContentTypeNames";
+
+    public static string PickerDataSourceCreateTypes = "CreateTypes";
+
+    #endregion
+
     /// <summary>
     /// Reserved field names - the UI should prevent creating fields with this name
     /// </summary>
@@ -119,20 +136,16 @@ public class AttributeNames
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static (bool isSpecial, ValueTypes fieldType) InternalOnlyIsSpecialEntityProperty(string name)
-    {
-        return name.ToLowerInvariant() switch
+    public static (bool isSpecial, ValueTypes fieldType) InternalOnlyIsSpecialEntityProperty(string name) =>
+        name.ToLowerInvariant() switch
         {
             EntityFieldTitle => (true, ValueTypes.String),
             EntityFieldId => (true, ValueTypes.Number),
-            EntityFieldGuid => (true, ValueTypes.Undefined),
-            EntityFieldType => (true, ValueTypes.Undefined),
+            EntityFieldGuid or EntityFieldType => (true, ValueTypes.Undefined),
             EntityFieldIsPublished => (true, ValueTypes.Boolean),
-            EntityFieldCreated => (true, ValueTypes.DateTime),
-            EntityFieldModified => (true, ValueTypes.DateTime),
+            EntityFieldCreated or EntityFieldModified => (true, ValueTypes.DateTime),
             _ => (false, ValueTypes.Undefined)
         };
-    }
 
     #region DB Field / Names Constants
 

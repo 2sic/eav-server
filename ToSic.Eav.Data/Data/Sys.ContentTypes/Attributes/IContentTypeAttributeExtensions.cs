@@ -37,13 +37,6 @@ public static class IContentTypeAttributeExtensions
             return definition.Type.ToString().ToLowerInvariant() + "-default";
         }
 
-        public string EntityFieldItemTypePrimary()
-        {
-            var itemTypeName = definition.Metadata.Get<string>(AttributeNames.EntityFieldType) ?? "";
-            var typeName = itemTypeName.Split(',').First().Trim();
-            return typeName;
-        }
-
         /// <summary>
         /// Check if an attribute has formulas.
         /// </summary>
