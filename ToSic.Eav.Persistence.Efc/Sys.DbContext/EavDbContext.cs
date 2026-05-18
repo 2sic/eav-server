@@ -39,8 +39,13 @@ public partial class EavDbContext(DbContextOptions<EavDbContext> options, IGloba
         var l = Log.Fn("starting with options builder", timer: true);
 
         var connectionString = globalConfig.ConnectionString(); // dbConfig.ConnectionString;
-        if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this is needed to allow querying data while preparing new data on the same DbContext
-            connectionString += ";MultipleActiveResultSets=True";
+
+        // 2026-05-18 stv: we used to add "MultipleActiveResultSets=True" here, but we probably do not need it for our use cases, so we removed it.
+        // disabling MARS looks safe in the current eav-server / 2sxc code paths reviewed, including the .NET Framework EF Core 2.1.1.
+        // In case of "There is already an open DataReader..." failures enable MARS again.
+        //if (!connectionString.ToLowerInvariant().Contains("multipleactiveresultsets")) // this was needed to allow querying data while preparing new data on the same DbContext
+        //    connectionString += ";MultipleActiveResultSets=True";
+        
 #if NETFRAMEWORK
         optionsBuilder
             .UseSqlServer(
