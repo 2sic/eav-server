@@ -17,9 +17,9 @@ public class WorkAttributesMod(
     ContentTypeAttributeAssembler attributeAssembler,
     Generator<IDataDeserializer> dataDeserializer,
     LazySvc<ISysFeaturesService> features,
-    LazySvc<ContentTypeDataProcessorRunner> contentTypeDataProcessorRunner)
+    LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions)
     : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.AttMod",
-        connect: [attributeAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeDataProcessorRunner])
+        connect: [attributeAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeChangeActions])
 {
     #region Getters which don't modify, but need the DB
 
@@ -269,16 +269,11 @@ public class WorkAttributesMod(
 
     private void TriggerPostSaveForContentType(int contentTypeId)
     {
-        // Field schema updates currently use the standard IDataProcessor pipeline
-        // and mark the source so the configured handler can distinguish the process.
-        // Runner is intentionally best-effort so editor save is never blocked by generation issues.
-        contentTypeDataProcessorRunner.Value.RunFor(
+        // Runner is intentionally best-effort so editor save is never blocked by optional generation issues.
+        contentTypeChangeActions.Value.RunFor(
             AppWorkCtx.AppId,
             contentTypeId,
-            context: new()
-            {
-                Source = DataProcessingContextSources.ContentTypeField
-            });
+            source: ContentTypeChangeSources.ContentTypeField);
     }
 
     #endregion

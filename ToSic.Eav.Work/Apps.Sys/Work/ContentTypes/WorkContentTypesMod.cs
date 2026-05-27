@@ -5,9 +5,9 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkContentTypesMod(
-    LazySvc<ContentTypeDataProcessorRunner> dataProcessorRunner,
+    LazySvc<ContentTypeChangeActionRunner> changeActions,
     IAppReaderFactory appReaders)
-    : WorkUnitBase<IAppWorkCtxWithDb>("ApS.InpGet", connect: [dataProcessorRunner, appReaders])
+    : WorkUnitBase<IAppWorkCtxWithDb>("ApS.InpGet", connect: [changeActions, appReaders])
 {
     public void Create(string nameId, string scope)
     {
@@ -41,10 +41,7 @@ public class WorkContentTypesMod(
             return;
         }
 
-        dataProcessorRunner.Value.RunFor(afterSave, context: new()
-        {
-            Source = DataProcessingContextSources.ContentType
-        });
+        changeActions.Value.RunFor(afterSave, source: ContentTypeChangeSources.ContentType);
     }
 
     private IContentType? ResolveSavedContentType(string? staticName, string? scope, string? name)

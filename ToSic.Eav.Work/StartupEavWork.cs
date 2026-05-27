@@ -54,8 +54,8 @@ public static class StartupEavWork
         services.TryAddTransient<AppInitializedChecker>();
         services.TryAddTransient<AppInitializer>();
 
-        // v21.04 - processing content type data, a bit more complex, needs to be able to run in different contexts
-        services.TryAddTransient<ContentTypeDataProcessorRunner>();
+        // v21.04 - low-code actions for content-type schema changes
+        services.TryAddTransient<ContentTypeChangeActionRunner>();
 
         // export import stuff
         services.TryAddScoped<ExportListXml>();

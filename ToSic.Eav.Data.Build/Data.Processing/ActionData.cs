@@ -4,8 +4,6 @@ public abstract record ActionData
 {
     public virtual object? DataUntyped { get; init; }
 
-    public DataProcessingContext? Context { get; init; }
-
     public DataPreprocessorDecision Decision
     {
         get => Exceptions.Any() ? DataPreprocessorDecision.Error : field;
