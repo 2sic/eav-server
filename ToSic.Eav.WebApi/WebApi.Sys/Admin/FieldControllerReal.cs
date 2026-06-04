@@ -18,8 +18,9 @@ public class FieldControllerReal(
 
     #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 
-    public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName)
-        => ctApiLazy.Value.GetFields(appId, staticName);
+    // 2rb: Replaced by ContentTypeDetails DataSource.
+    //public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName)
+    //    => ctApiLazy.Value.GetFields(appId, staticName);
 
     public string[] DataTypes(int appId)
         => attributesMod.New(appId).DataTypes();

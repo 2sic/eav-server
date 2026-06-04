@@ -41,7 +41,8 @@ public interface IFieldController
     /// <param name="appId"></param>
     /// <param name="staticName"></param>
     /// <returns></returns>
-    IEnumerable<ContentTypeFieldDto> All(int appId, string staticName);
+    // 2rb: Replaced by ContentTypeDetails DataSource.
+    //IEnumerable<ContentTypeFieldDto> All(int appId, string staticName);
 
 
     /// <summary>
