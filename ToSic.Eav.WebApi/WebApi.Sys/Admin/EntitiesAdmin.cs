@@ -1,11 +1,11 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Context;
-using ToSic.Eav.Data.Raw.Sys;
+﻿using ToSic.Eav.Context;
+using ToSic.Eav.Data.EntityDecorators.Sys;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.Serialization.Sys.Options;
 using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Sys.Security.Permissions;
-using static ToSic.Eav.DataSource.CustomDataSource;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -46,17 +46,12 @@ public class EntitiesAdmin : CustomDataSource
         _appsCatalog = appsCatalog;
         _entityApi = entityApi;
 
-        ProvideOutRaw(GetEntities, options: () => new()
-        {
-            TitleField = "Title",
-            TypeName = "Entity",
-            AllowUnknownValueTypes = true,
-        });
+        ProvideOut(GetEntities);
     }
 
-    private IEnumerable<IRawEntity> GetEntities()
+    private IEnumerable<IEntity> GetEntities()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<IEntity>>();
 
         if (string.IsNullOrWhiteSpace(ContentType))
             return l.Return([], "no content type");
@@ -65,10 +60,31 @@ public class EntitiesAdmin : CustomDataSource
 
         var entities = _entityApi.Value
             .InitOrThrowBasedOnGrants(_context.Value, app, ContentType, GrantSets.ReadSomething)
-            .GetEntitiesForAdmin(ContentType)
-            .Select(entity => new RawEntity(entity))
-            .ToList();
+            .GetEntitiesForAdminStep1(ContentType);
 
-        return l.Return(entities, $"{entities.Count}");
+        // Attach serializationMetadata
+        // This matches the ConvertToEavLight.ConfigureForAdminUse()
+        var decorator = new EntitySerializationDecorator
+        {
+            SerializeGuid = true,
+            WithPublishing = true,
+            SerializeMetadataFor = new() { Serialize = true },
+            SerializeMetadata = new SubEntitySerialization
+            {
+                Serialize = true,
+                SerializeId = true,
+                SerializeTitle = true,
+                SerializeGuid = true
+            },
+            WithEditInfos = true,
+            LinksWithBothValues = true,
+        };
+
+        var result = entities
+            .Select(IEntity (e) => new EntityWithDecorator<EntitySerializationDecorator>(e, decorator))
+            .ToImmutableOpt();
+
+
+        return l.Return(result);
     }
 }

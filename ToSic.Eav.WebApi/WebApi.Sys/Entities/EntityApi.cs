@@ -83,9 +83,9 @@ public class EntityApi(
         return Init(app.AppId);
     }
 
-    public List<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)
+    public List<IEntity> GetEntitiesForAdminStep1(string contentType, bool excludeAncestor = false)
     {
-        var l = Log.Fn<List<Dictionary<string, object>>>(timer: true);
+        var l = Log.Fn<List<IEntity>>(timer: true);
 
         var ofType = workEntities.New(_appWorkCtxPlus)
             .Get(contentType)
@@ -98,6 +98,15 @@ public class EntityApi(
                 .Where(e => !e.HasAncestor())
                 .ToList()
             : ofType;
+
+        return l.Return(afterAncestorFilter, afterAncestorFilter.Count.ToString());
+    }
+
+    public List<Dictionary<string, object>> GetEntitiesForAdmin(string contentType, bool excludeAncestor = false)
+    {
+        var l = Log.Fn<List<Dictionary<string, object>>>(timer: true);
+
+        var afterAncestorFilter = GetEntitiesForAdminStep1(contentType, excludeAncestor);
 
         // Convert all to dictionary
         var entityToDic = entitiesToDicLazy.New();

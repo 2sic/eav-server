@@ -68,7 +68,13 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
         WithGuid = true;
         WithPublishing = true;
         MetadataFor = new() { Serialize = true };
-        Metadata = new SubEntitySerialization { Serialize = true, SerializeId = true, SerializeTitle = true, SerializeGuid = true };
+        Metadata = new SubEntitySerialization
+        {
+            Serialize = true,
+            SerializeId = true,
+            SerializeTitle = true,
+            SerializeGuid = true
+        };
         WithEditInfos = true;
         LinksWithBothValues = true;
     }
@@ -151,6 +157,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
                 .Where(a => rules.FilterFields!.Any(ff => ff.EqualsInsensitive(a.Name)))
                 .ToListOpt();
 
+        var useLinkWithBothValues = LinksWithBothValues || rules.LinksWithBothValues == true;
         var entityValues = attributes
             .ToEavLight(
                 attribute => attribute.Name,
@@ -163,7 +170,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
                         // Special Case 1: Hyperlink Field which must be resolved
                         ValueTypes.Hyperlink when rawValue is string stringValue
                                                   && ValueConverterBase.CouldBeReference(stringValue)
-                            => (LinksWithBothValues
+                            => (useLinkWithBothValues
                                    ? stringValue + "|"
                                    : "") // Optionally prefix with original value, but only in admin-mode new 17.02+
                                + Services.ValueConverter.ToValue(stringValue, entity.EntityGuid),
@@ -188,7 +195,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
         // Add Id, Guid, AppId - according to rules
         AddAllIds(entity, entityValues, rules, withGuidFallback: WithGuid);
 
-        if (WithPublishing)
+        if (WithPublishing || rules.WithPublishing == true)
         {
             var appState = Services.AppReaders.Value.Get(entity.AppId);
             AddPublishingInformation(entity, entityValues, appState);
@@ -196,12 +203,15 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
 
         AddMetadataAndFor(entity, entityValues, rules);
 
+        // #SysData WIP
+        var useEditInfos = WithEditInfos || rules.WithEditInfos == true;
+
         // Special edit infos - _Title (old, maybe not needed), Stats, EditInfo for read-only etc.
         // 2024-03-05 2dm - basically when the $select is applied, don't add these anymore
-        if (rules.FilterFieldsEnabled != true && WithEditInfos)
+        if (rules.FilterFieldsEnabled != true && useEditInfos)
         {
             // this internal _Title field is probably not used much anymore, so there is no rule for it
-            // Probably remove at some time in near future, once verified it's not used in the admin-front-end
+            // Probably remove at some time in near future, once verified it's not used in the admin-front-end ⚠️
             try { entityValues.Add(InternalTitleField, entity.GetBestTitle(Languages)); }
             catch { /* ignore */ }
 
@@ -286,7 +296,6 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
 
     private void OptimizeRemoveEmptyValues(EntitySerializationDecorator rules, EavLightEntity entityValues)
     {
-        if (rules == null) return;
         var dropNulls = rules.RemoveNullValues;
         var dropZeros = rules.RemoveZeroValues;
         var dropEmptyStrings = rules.RemoveEmptyStringValues;
