@@ -50,6 +50,7 @@ public class EntitiesAdmin : CustomDataSource
         {
             TitleField = "Title",
             TypeName = "Entity",
+            AllowUnknownValueTypes = true,
         });
     }
 
