@@ -21,7 +21,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 )]
 public class EntitiesAdmin : CustomDataSource
 {
-    private readonly LazySvc<IContextOfSite> _context;
+    private readonly LazySvc<IContextOfSite> _siteContext;
     private readonly LazySvc<IAppsCatalog> _appsCatalog;
     private readonly LazySvc<EntityApi> _entityApi;
 
@@ -37,12 +37,12 @@ public class EntitiesAdmin : CustomDataSource
 
     public EntitiesAdmin(
         Dependencies services,
-        LazySvc<IContextOfSite> context,
+        LazySvc<IContextOfSite> siteContext,
         LazySvc<IAppsCatalog> appsCatalog,
         LazySvc<EntityApi> entityApi)
-        : base(services, logName: "Eav.EntitiesAdmin", connect: [context, appsCatalog, entityApi])
+        : base(services, logName: "Eav.EntitiesAdmin", connect: [siteContext, appsCatalog, entityApi])
     {
-        _context = context;
+        _siteContext = siteContext;
         _appsCatalog = appsCatalog;
         _entityApi = entityApi;
 
@@ -59,7 +59,7 @@ public class EntitiesAdmin : CustomDataSource
         var app = _appsCatalog.Value.AppIdentity(AppId);
 
         var entities = _entityApi.Value
-            .InitOrThrowBasedOnGrants(_context.Value, app, ContentType, GrantSets.ReadSomething)
+            .InitOrThrowBasedOnGrants(_siteContext.Value, app, ContentType, GrantSets.ReadSomething)
             .GetEntitiesForAdminStep1(ContentType);
 
         // Attach serializationMetadata
