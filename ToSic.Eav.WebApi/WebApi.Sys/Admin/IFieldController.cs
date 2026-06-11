@@ -22,7 +22,9 @@ public interface IFieldController
     /// </summary>
     /// <param name="appId"></param>
     /// <returns></returns>
-    string[] DataTypes(int appId);
+
+    // 2rb: Replaced by InputTypes DataSource.
+    //string[] DataTypes(int appId);
 
 
     /// <summary>
@@ -52,15 +54,19 @@ public interface IFieldController
     /// <returns></returns>
     /// <remarks>
     /// It's important to note that each app could have its own additional input types.
-    /// </remarks>
-    ICollection<InputTypeInfo> InputTypes(int appId);
+    /// </remarks>$
+
+    // 2rb: Replaced by InputTypes DataSource.
+    //ICollection<InputTypeInfo> InputTypes(int appId);
 
     /// <summary>
     /// Reserved field names which shouldn't be used in content-type fields. Also contains information why a name is reserved.
     /// </summary>
     /// <returns></returns>
-    Dictionary<string, string> ReservedNames();
-        
+
+    // 2rb: Replaced by InputTypes DataSource.
+    //Dictionary<string, string> ReservedNames();
+
     /// <summary>
     /// Rename an field
     /// </summary>
