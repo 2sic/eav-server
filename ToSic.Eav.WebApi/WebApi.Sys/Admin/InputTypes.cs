@@ -38,15 +38,13 @@ public class InputTypes : CustomDataSource
 
         ProvideOutRaw(GetDataTypes, name: "DataTypes", options: () => new()
         {
-            TitleField = nameof(DataTypeRaw.Name),
-            TypeName = nameof(DataTypeRaw),
+            TitleField = nameof(NameValuePair.Name),
             AllowUnknownValueTypes = true,
         });
 
         ProvideOutRaw(GetReservedNames, name: "ReservedNames", options: () => new()
         {
-            TitleField = nameof(ReservedNameRaw.Name),
-            TypeName = nameof(ReservedNameRaw),
+            TitleField = nameof(NameValuePair.Name),
             AllowUnknownValueTypes = true,
         });
     }
@@ -84,8 +82,8 @@ public class InputTypes : CustomDataSource
             .DataTypes()
             .Select(dataType => new RawEntity(new()
             {
-                { nameof(DataTypeRaw.Name), dataType },
-                { nameof(DataTypeRaw.Value), dataType },
+                { nameof(NameValuePair.Name), dataType },
+                //{ nameof(NameValuePair.Value), dataType },
             }));
 
         return l.Return(entities, "ok");
@@ -98,22 +96,22 @@ public class InputTypes : CustomDataSource
         var entities = AttributeNames.ReservedNames
             .Select(reservedName => new RawEntity(new()
             {
-                { nameof(ReservedNameRaw.Name), reservedName.Key },
-                { nameof(ReservedNameRaw.Value), reservedName.Value },
+                { nameof(NameValuePair.Name), reservedName.Key },
+                { nameof(NameValuePair.Value), reservedName.Value },
             }));
 
         return l.Return(entities, "ok");
     }
 
-    private class DataTypeRaw
+    private class NameValuePair
     {
-        public string Name { get; init; } = null!;
-        public string Value { get; init; } = null!;
+        public required string Name { get; init; }
+        public required string Value { get; init; }
     }
 
-    private class ReservedNameRaw
-    {
-        public string Name { get; init; } = null!;
-        public string Value { get; init; } = null!;
-    }
+    //private class ReservedNameRaw
+    //{
+    //    public string Name { get; init; } = null!;
+    //    public string Value { get; init; } = null!;
+    //}
 }
