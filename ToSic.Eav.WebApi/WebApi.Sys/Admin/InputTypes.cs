@@ -57,18 +57,18 @@ public class InputTypes : CustomDataSource
             .GetInputTypes()
             .Select(inputType => new RawEntity(new()
             {
-            { nameof(InputTypeInfo.Type), inputType.Type },
-            { nameof(InputTypeInfo.Label), inputType.Label },
-            { nameof(InputTypeInfo.Description), inputType.Description },
-            { nameof(InputTypeInfo.DisableI18n), inputType.DisableI18n },
-            { nameof(InputTypeInfo.UiAssets), inputType.UiAssets },
-            { nameof(InputTypeInfo.UseAdam), inputType.UseAdam },
-            { nameof(InputTypeInfo.IsObsolete), inputType.IsObsolete },
-            { nameof(InputTypeInfo.ObsoleteMessage), inputType.ObsoleteMessage },
-            { nameof(InputTypeInfo.IsRecommended), inputType.IsRecommended },
-            { nameof(InputTypeInfo.IsDefault), inputType.IsDefault },
-            { nameof(InputTypeInfo.Source), inputType.Source },
-            { nameof(InputTypeInfo.ConfigTypes), inputType.ConfigTypes },
+                { nameof(InputTypeInfo.Type), inputType.Type },
+                { nameof(InputTypeInfo.Label), inputType.Label },
+                { nameof(InputTypeInfo.Description), inputType.Description },
+                { nameof(InputTypeInfo.DisableI18n), inputType.DisableI18n },
+                { nameof(InputTypeInfo.UiAssets), inputType.UiAssets },
+                { nameof(InputTypeInfo.UseAdam), inputType.UseAdam },
+                { nameof(InputTypeInfo.IsObsolete), inputType.IsObsolete },
+                { nameof(InputTypeInfo.ObsoleteMessage), inputType.ObsoleteMessage },
+                { nameof(InputTypeInfo.IsRecommended), inputType.IsRecommended },
+                { nameof(InputTypeInfo.IsDefault), inputType.IsDefault },
+                { nameof(InputTypeInfo.Source), inputType.Source },
+                { nameof(InputTypeInfo.ConfigTypes), inputType.ConfigTypes },
             }));
 
         return l.Return(entities, "ok");
@@ -83,7 +83,6 @@ public class InputTypes : CustomDataSource
             .Select(dataType => new RawEntity(new()
             {
                 { nameof(NameValuePair.Name), dataType },
-                //{ nameof(NameValuePair.Value), dataType },
             }));
 
         return l.Return(entities, "ok");
@@ -103,15 +102,12 @@ public class InputTypes : CustomDataSource
         return l.Return(entities, "ok");
     }
 
+    /// <summary>
+    /// Dummy class, actually just for the constant field names
+    /// </summary>
     private class NameValuePair
     {
         public required string Name { get; init; }
         public required string Value { get; init; }
     }
-
-    //private class ReservedNameRaw
-    //{
-    //    public string Name { get; init; } = null!;
-    //    public string Value { get; init; } = null!;
-    //}
 }
