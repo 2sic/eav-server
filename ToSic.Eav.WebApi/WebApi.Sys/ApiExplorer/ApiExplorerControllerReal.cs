@@ -1,14 +1,12 @@
 ﻿using System.Reflection;
 using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
-using ToSic.Sys.Users;
 
 namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IResponseMaker responseMaker, LazySvc<IAppExplorerControllerDependency> appFileController)
-    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [inspector, responseMaker, appFileController])
+public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker responseMaker)
+    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [inspector, responseMaker])
 {
     public const string LogSuffix = "ApiExp";
 
@@ -145,37 +143,37 @@ public class ApiExplorerControllerReal(IUser user, IApiInspector inspector, IRes
         };
         return l.ReturnAsOk(result);
     }
+    // 2rb: 2026-06-12: Replaced by AppWebApiControllers Datasource
+    //public AllApiFilesDto AppApiFiles(int appId)
+    //{
+    //    var l = Log.Fn<AllApiFilesDto>($"list all api files a#{appId}");
 
-    public AllApiFilesDto AppApiFiles(int appId)
-    {
-        var l = Log.Fn<AllApiFilesDto>($"list all api files a#{appId}");
+    //    var mask = $"*{EavConstants.ApiControllerSuffix}.cs";
 
-        var mask = $"*{EavConstants.ApiControllerSuffix}.cs";
+    //    var localFiles =
+    //        AppFileController.All(appId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
+    //            .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) })
+    //            .ToArray();
+    //    l.A($"local files:{localFiles.Length}");
 
-        var localFiles =
-            AppFileController.All(appId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
-                .Select(f => new AllApiFileDto { Path = f, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) })
-                .ToArray();
-        l.A($"local files:{localFiles.Length}");
+    //    var globalFiles = user.IsSystemAdmin
+    //        ? AppFileController.All(appId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
+    //            .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) })
+    //            .ToArray()
+    //        : [];
+    //    l.A($"global files:{globalFiles.Length}");
 
-        var globalFiles = user.IsSystemAdmin
-            ? AppFileController.All(appId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
-                .Select(f => new AllApiFileDto { Path = f, Shared = true, EndpointPath = ApiFileEndpointPath(f), Edition = GetEdition(appId, f) })
-                .ToArray()
-            : [];
-        l.A($"global files:{globalFiles.Length}");
+    //    // only for api controller files
+    //    var allInAppCode = AppFileController.AllApiFilesInAppCodeForAllEditions(appId)
+    //        .ToArray();
+    //    l.A($"all in AppCode:{allInAppCode.Length}");
 
-        // only for api controller files
-        var allInAppCode = AppFileController.AllApiFilesInAppCodeForAllEditions(appId)
-            .ToArray();
-        l.A($"all in AppCode:{allInAppCode.Length}");
+    //    return l.ReturnAsOk(new() { Files = localFiles.Union(globalFiles).Union(allInAppCode) });
+    //}
+    //private IAppExplorerControllerDependency AppFileController => appFileController.Value;
 
-        return l.ReturnAsOk(new() { Files = localFiles.Union(globalFiles).Union(allInAppCode) });
-    }
-    private IAppExplorerControllerDependency AppFileController => appFileController.Value;
-
-    private static string ApiFileEndpointPath(string relativePath)
-        => AdjustControllerName(relativePath, $"{EavConstants.ApiControllerSuffix}.cs").ForwardSlash();
+    //private static string ApiFileEndpointPath(string relativePath)
+    //    => AdjustControllerName(relativePath, $"{EavConstants.ApiControllerSuffix}.cs").ForwardSlash();
 
     public static string AppCodeEndpointPath(string edition, string controller)
         => Path.Combine(edition, EavConstants.Api, AdjustControllerName(controller, EavConstants.ApiControllerSuffix)).ForwardSlash();

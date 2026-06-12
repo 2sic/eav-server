@@ -4,5 +4,6 @@ public interface IApiExplorerController
 {
     THttpResponseType Inspect(string path);
 
-    AllApiFilesDto AppApiFiles(int appId);
+    // 2rb: 2026-06-12: Replaced by AppWebApiControllers Datasource
+    //AllApiFilesDto AppApiFiles(int appId);
 }
