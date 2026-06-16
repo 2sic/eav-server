@@ -5,7 +5,7 @@ public class ConvertTestBase
     /// <summary>
     /// Convert Test Basic/Numeric - Test basic conversion and numeric conversion
     /// </summary>
-    protected void ConvT<T>(object value, T exp, T expNumeric)
+    protected void RunConvTest<T>(object value, T exp, T expNumeric)
     {
         var resultDefault = value.ConvertOrDefaultTac<T>();
         Equal(exp, resultDefault); //, $"Tested '{value}', expected def: '{exp}'");
@@ -21,9 +21,9 @@ public class ConvertTestBase
     /// <summary>
     /// Convert Test Basic/Numeric/Truthy - Test basic, numeric and truthy
     /// </summary>
-    protected void ConvT<T>(object value, T exp, T expNumeric, T expTruthy)
+    protected void RunConvTest<T>(object value, T exp, T expNumeric, T expTruthy)
     {
-        ConvT(value, exp, expNumeric);
+        RunConvTest(value, exp, expNumeric);
         var resultTruthy = value.ConvertOrDefaultTac<T>(truthy: true);
         Equal(expTruthy, resultTruthy); //, $"Tested '{value}', expected tru: '{expTruthy}'");
         if (resultTruthy != null)

@@ -10,33 +10,33 @@ public class ConvertToBool: ConvertTestBase
     [Fact]
     public void NumberToBool()
     {
-        ConvT(null, false, false, false);
-        ConvT(0, false, false, false);
-        ConvT(0.1, true, true, true);
-        ConvT(-0.1, true, true, true);
-        ConvT(1, true, true, true);
-        ConvT(-1, true, true, true);
-        ConvT(2, true, true, true);
-        ConvT(2.5, true, true, true);
-        ConvT(-3.7, true, true, true);
+        RunConvTest(null, false, false, false);
+        RunConvTest(0, false, false, false);
+        RunConvTest(0.1, true, true, true);
+        RunConvTest(-0.1, true, true, true);
+        RunConvTest(1, true, true, true);
+        RunConvTest(-1, true, true, true);
+        RunConvTest(2, true, true, true);
+        RunConvTest(2.5, true, true, true);
+        RunConvTest(-3.7, true, true, true);
     }
 
     [Fact]
     public void StringToBool()
     {
-        ConvT(null, false, false, false);
-        ConvT("", false, false, false);
-        ConvT("0", false, false, false);
-        ConvT("1", false, false, true);
-        ConvT("-1", false, false, true);
-        ConvT("5", false, false, true);
-        ConvT("5.2", false, false, true);
-        ConvT("true", true, true, true);
-        ConvT("True", true, true, true);
-        ConvT("TRUE", true, true, true);
-        ConvT("false", false, false, false);
-        ConvT("False", false, false, false);
-        ConvT("FALSE", false, false, false);
+        RunConvTest(null, false, false, false);
+        RunConvTest("", false, false, false);
+        RunConvTest("0", false, false, false);
+        RunConvTest("1", false, false, true);
+        RunConvTest("-1", false, false, true);
+        RunConvTest("5", false, false, true);
+        RunConvTest("5.2", false, false, true);
+        RunConvTest("true", true, true, true);
+        RunConvTest("True", true, true, true);
+        RunConvTest("TRUE", true, true, true);
+        RunConvTest("false", false, false, false);
+        RunConvTest("False", false, false, false);
+        RunConvTest("FALSE", false, false, false);
     }
 
     [Fact]
@@ -45,18 +45,18 @@ public class ConvertToBool: ConvertTestBase
         True(0.ConvertOrDefaultTac<bool?>().HasValue);
         True("true".ConvertOrDefaultTac<bool?>().HasValue);
 
-        ConvT<bool?>(null, null, null, null);
-        ConvT<bool?>("", null, null, null);
-        ConvT<bool?>("0", null, null, false);
-        ConvT<bool?>("1", null, null, true);
-        ConvT<bool?>("-1", null, null, true);
-        ConvT<bool?>("5", null, null, true);
-        ConvT<bool?>("5.2", null, null, true);
-        ConvT<bool?>("true", true, true, true);
-        ConvT<bool?>("True", true, true, true);
-        ConvT<bool?>("TRUE", true, true, true);
-        ConvT<bool?>("false", false, false, false);
-        ConvT<bool?>("False", false, false, false);
-        ConvT<bool?>("FALSE", false, false, false);
+        RunConvTest<bool?>(null, null, null, null);
+        RunConvTest<bool?>("", null, null, null);
+        RunConvTest<bool?>("0", null, null, false);
+        RunConvTest<bool?>("1", null, null, true);
+        RunConvTest<bool?>("-1", null, null, true);
+        RunConvTest<bool?>("5", null, null, true);
+        RunConvTest<bool?>("5.2", null, null, true);
+        RunConvTest<bool?>("true", true, true, true);
+        RunConvTest<bool?>("True", true, true, true);
+        RunConvTest<bool?>("TRUE", true, true, true);
+        RunConvTest<bool?>("false", false, false, false);
+        RunConvTest<bool?>("False", false, false, false);
+        RunConvTest<bool?>("FALSE", false, false, false);
     }
 }

@@ -8,13 +8,13 @@ public static partial class ObjectExtensions
     // https://stackoverflow.com/questions/6553183/check-to-see-if-a-given-object-reference-or-value-type-is-equal-to-its-default
     // //Adapted from https://stackoverflow.com/a/6553276/1889720
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static bool IsNullOrDefault<TObject>(this TObject argument, bool boolIsNeverDefault = true)
+    public static bool IsNullOrDefault<TObject>(this TObject value, bool boolIsNeverDefault = true)
     {
         // deal with normal scenarios
         // todo: check if == is ok, or if we should use "is"
-        if (argument == null)
+        if (value == null)
             return true;
-        if (object.Equals(argument, default(TObject)))
+        if (object.Equals(value, default(TObject)))
             return true;
 
         // deal with non-null nullables
@@ -23,15 +23,15 @@ public static partial class ObjectExtensions
             return false;
 
         // 2dm: Treat boolean false as a valid value, not as default
-        if (boolIsNeverDefault && argument is bool) 
+        if (boolIsNeverDefault && value is bool) 
             return false;
             
         // deal with boxed value types
-        var argumentType = argument.GetType();
+        var argumentType = value.GetType();
         if (argumentType.IsValueType && argumentType != methodType)
         {
-            var obj = Activator.CreateInstance(argument.GetType());
-            return obj == null || obj.Equals(argument);
+            var obj = Activator.CreateInstance(value.GetType());
+            return obj == null || obj.Equals(value);
         }
 
         return false;
@@ -115,7 +115,7 @@ public static partial class ObjectExtensions
             // Null should always fallback, default not always
             if (!result.Success || result.Value == null)
                 return fallback;
-            if (fallbackOnDefault && IsNullOrDefault(result))
+            if (fallbackOnDefault && result.IsNullOrDefault())
                 return fallback;
             return result.Value;
         }

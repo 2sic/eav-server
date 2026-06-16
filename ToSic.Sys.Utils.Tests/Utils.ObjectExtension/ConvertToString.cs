@@ -8,7 +8,7 @@ public class ConvertToString: ConvertTestBase
     [Fact (Skip = "ATM not ready, won't do what we would like but not sure if this is even relevant")]
     public void DateTimeToString()
     {
-        ConvT(new DateTime(2021,09,29), "2021-09-29", "2021-09-29");
+        RunConvTest(new DateTime(2021,09,29), "2021-09-29", "2021-09-29");
     }
 
     [Fact]
@@ -23,18 +23,18 @@ public class ConvertToString: ConvertTestBase
     [Fact]
     public void NumberToString()
     {
-        ConvT(null, null as string, null);
-        ConvT("", "", "");
-        ConvT("5", "5", "5");
-        ConvT(5.2, "5.2", "5.2");
-        ConvT(5.299, "5.299", "5.299");
-        ConvT(-5.2, "-5.2", "-5.2");
+        RunConvTest(null, null as string, null);
+        RunConvTest("", "", "");
+        RunConvTest("5", "5", "5");
+        RunConvTest(5.2, "5.2", "5.2");
+        RunConvTest(5.299, "5.299", "5.299");
+        RunConvTest(-5.2, "-5.2", "-5.2");
 
         // Now change threading culture
         Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("de-DE");
-        ConvT(5.2, "5.2", "5.2");
-        ConvT(5.299, "5.299", "5.299");
-        ConvT(-5.2, "-5.2", "-5.2");
+        RunConvTest(5.2, "5.2", "5.2");
+        RunConvTest(5.299, "5.299", "5.299");
+        RunConvTest(-5.2, "-5.2", "-5.2");
     }
 
 }
