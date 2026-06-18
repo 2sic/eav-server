@@ -57,7 +57,8 @@ public static partial class ObjectExtensions
         if (value is null)
             return (false, default);
         // 2023-08-18 2dm: Added minor optimization; remove comment by EOY if no problems
-        if (value is T alreadyTyped) return (true, alreadyTyped);
+        if (value is T alreadyTyped)
+            return (true, alreadyTyped);
 
         var t = typeof(T);
         var unboxedT = t.UnboxIfNullable();
@@ -72,15 +73,17 @@ public static partial class ObjectExtensions
         if (value is string s)
         {
             // Short circuit string-to-string
-            if (unboxedT == typeof(string)) return (true, (T)(object)s);
+            if (unboxedT == typeof(string))
+                return (true, (T)(object)s);
 
             // Catch empty strings early for very common use cases
             if (string.IsNullOrWhiteSpace(s) && (toBool || toNumber)) 
                 return (false, default);
 
-            if (numeric && toNumber || truthy && toBool)
+            if ((numeric && toNumber) || (truthy && toBool))
             {
-                if (s.IndexOf(',') > -1) s = s.Replace(',', '.');
+                if (s.IndexOf(',') > -1)
+                    s = s.Replace(',', '.');
                 if (decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var dec))
                     value = dec;
             }
