@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 
@@ -13,22 +13,23 @@ public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker r
     public IApiInspector Inspector { get; } = inspector;
     public IResponseMaker ResponseMaker { get; } = responseMaker;
 
-    public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly)
-    {
-        var l = Log.Fn<THttpResponseType>();
-        if (PreCheckAndCleanPath(ref path, out var error))
-            return l.Return(error, "error");
-
-        try
-        {
-            return l.ReturnAsOk(AnalyzeClassAndCreateDto(path, getAssembly(path)));
-        }
-        catch (Exception exc)
-        {
-            l.Ex(exc);
-            return l.Return(ResponseMaker.InternalServerError(exc), $"Error: {exc.Message}.");
-        }
-    }
+    // @2rb 2026-06-19: Replaced by System.AppWebApiControllerDetails and System.AppWebApiControllerEndpoints DataSources.
+    //public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly)
+    //{
+    //    var l = Log.Fn<THttpResponseType>();
+    //    if (PreCheckAndCleanPath(ref path, out var error))
+    //        return l.Return(error, "error");
+//
+    //    try
+    //    {
+    //        return l.ReturnAsOk(AnalyzeClassAndCreateDto(path, getAssembly(path)));
+    //    }
+    //    catch (Exception exc)
+    //    {
+    //        l.Ex(exc);
+    //        return l.Return(ResponseMaker.InternalServerError(exc), $"Error: {exc.Message}.");
+    //    }
+    //}
 
     private bool PreCheckAndCleanPath(ref string path, [NotNullWhen(true)] out THttpResponseType? error)
     {
