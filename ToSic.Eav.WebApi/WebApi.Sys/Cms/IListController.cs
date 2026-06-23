@@ -19,7 +19,7 @@ public interface IListController
     /// <param name="index"></param>
     void Delete(Guid? parent, string fields, int index);
 
-    // TODO: MOVE TO 2SXC
-    // ReplacementListDto Replace(Guid guid, string part, int index);
+    void Replace(Guid parent, string part, int index, int entityId, bool add = false);
+    ReplacementListDto ReplaceOptions(Guid parent, string part, int index);
 
 }
