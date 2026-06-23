@@ -64,6 +64,7 @@ public class AppWebApiControllerEndpoints : CustomDataSource
                 { nameof(ApiActionDto.parameters), action.parameters },
 
                 // Final merged security flat on endpoint item
+                // TODO: @2rb deduplicate
                 { nameof(ApiSecurityDto.ignoreSecurity), mergedSecurity.ignoreSecurity },
                 { nameof(ApiSecurityDto.allowAnonymous), mergedSecurity.allowAnonymous },
                 { nameof(ApiSecurityDto.requireVerificationToken), mergedSecurity.requireVerificationToken },
@@ -81,6 +82,7 @@ public class AppWebApiControllerEndpoints : CustomDataSource
         return l.Return(entities, $"{entities.Count}");
     }
 
+    // TODO: @2rb deduplicate - use this as foundation, make internal
     private static Dictionary<string, object> SecurityValues(ApiSecurityDto security) => new()
     {
         { nameof(ApiSecurityDto.ignoreSecurity), security.ignoreSecurity },

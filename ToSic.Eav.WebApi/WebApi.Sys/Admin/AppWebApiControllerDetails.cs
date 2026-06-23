@@ -55,6 +55,7 @@ public class AppWebApiControllerDetails : CustomDataSource
         {
             { nameof(ApiControllerDto.controller), dto.controller },
 
+            // TODO: @2rb deduplicate
             { nameof(ApiSecurityDto.ignoreSecurity), security.ignoreSecurity },
             { nameof(ApiSecurityDto.allowAnonymous), security.allowAnonymous },
             { nameof(ApiSecurityDto.requireVerificationToken), security.requireVerificationToken },

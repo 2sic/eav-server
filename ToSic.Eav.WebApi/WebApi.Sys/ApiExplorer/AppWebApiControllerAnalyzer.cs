@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
 using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Sys.Helpers.Http;
-using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
