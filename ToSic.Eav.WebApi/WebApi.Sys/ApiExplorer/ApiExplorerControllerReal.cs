@@ -10,8 +10,8 @@ public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker r
 {
     public const string LogSuffix = "ApiExp";
 
-    public IApiInspector Inspector { get; } = inspector;
-    public IResponseMaker ResponseMaker { get; } = responseMaker;
+    //public IApiInspector Inspector { get; } = inspector;
+    //public IResponseMaker ResponseMaker { get; } = responseMaker;
 
     // @2rb 2026-06-19: Replaced by System.AppWebApiControllerDetails and System.AppWebApiControllerEndpoints DataSources.
     //public THttpResponseType Inspect(string path, Func<string, Assembly> getAssembly)
@@ -31,119 +31,121 @@ public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker r
     //    }
     //}
 
-    private bool PreCheckAndCleanPath(ref string path, [NotNullWhen(true)] out THttpResponseType? error)
-    {
-        var l = Log.Fn<bool>();
+    //private bool PreCheckAndCleanPath(ref string path, [NotNullWhen(true)] out THttpResponseType? error)
+    //{
+    //    var l = Log.Fn<bool>();
 
-        l.A($"Controller Path from appRoot: {path}");
+    //    l.A($"Controller Path from appRoot: {path}");
 
-        if (string.IsNullOrWhiteSpace(path) || path.Contains(".."))
-        {
-            var msg = $"Error: bad parameter {path}";
-            {
-                error = ResponseMaker.InternalServerError(msg);
-                return l.ReturnTrue(msg);
-            }
-        }
+    //    if (string.IsNullOrWhiteSpace(path) || path.Contains(".."))
+    //    {
+    //        var msg = $"Error: bad parameter {path}";
+    //        {
+    //            error = ResponseMaker.InternalServerError(msg);
+    //            return l.ReturnTrue(msg);
+    //        }
+    //    }
 
-        // Ensure make windows path slashes to make later work easier
-        path = path.Backslash();
-        error = default; // null
-        return l.ReturnFalse();
-    }
+    //    // Ensure make windows path slashes to make later work easier
+    //    path = path.Backslash();
+    //    error = default; // null
+    //    return l.ReturnFalse();
+    //}
 
-    private THttpResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
-    {
-        var l = Log.Fn<THttpResponseType>();
-        var controllerName = path.Substring(path.LastIndexOf('\\') + 1);
-        controllerName = controllerName.Substring(0, controllerName.IndexOf('.'));
-        var controller =
-            assembly.DefinedTypes.FirstOrDefault(a =>
-                controllerName.Equals(a.Name, StringComparison.InvariantCultureIgnoreCase));
-        if (controller == null)
-        {
-            var msg =
-                $"Error: can't find controller class: {controllerName} in file {Path.GetFileNameWithoutExtension(path)}. " +
-                $"This can happen if the controller class does not have the same name as the file.";
-                return l.Return(ResponseMaker.InternalServerError(msg), "error");
-        }
+    //private THttpResponseType AnalyzeClassAndCreateDto(string path, Assembly assembly)
+    //{
+    //    var l = Log.Fn<THttpResponseType>();
+    //    var controllerName = path.Substring(path.LastIndexOf('\\') + 1);
+    //    controllerName = controllerName.Substring(0, controllerName.IndexOf('.'));
+    //    var controller =
+    //        assembly.DefinedTypes.FirstOrDefault(a =>
+    //            controllerName.Equals(a.Name, StringComparison.InvariantCultureIgnoreCase));
+    //    if (controller == null)
+    //    {
+    //        var msg =
+    //            $"Error: can't find controller class: {controllerName} in file {Path.GetFileNameWithoutExtension(path)}. " +
+    //            $"This can happen if the controller class does not have the same name as the file.";
+    //            return l.Return(ResponseMaker.InternalServerError(msg), "error");
+    //    }
 
-        var controllerDto = BuildApiControllerDto(controller);
+    //    var controllerDto = BuildApiControllerDto(controller);
 
-        var responseMessage = ResponseMaker.Json(controllerDto);
-        return l.ReturnAsOk(responseMessage);
-    }
+    //    var responseMessage = ResponseMaker.Json(controllerDto);
+    //    return l.ReturnAsOk(responseMessage);
+    //}
 
-    private ApiControllerDto BuildApiControllerDto(Type controller)
-    {
-        var l = Log.Fn<ApiControllerDto>();
-        var controllerSecurity = Inspector.GetSecurity(controller);
-        var controllerDto = new ApiControllerDto
-        {
-            controller = controller.Name,
-            actions = controller.GetMethods()
-                .Where(methodInfo => methodInfo.IsPublic
-                                     && !methodInfo.IsSpecialName
-                                     && Inspector.GetHttpVerbs(methodInfo).Count > 0
-                                     )
-                .Select(methodInfo =>
-                {
-                    var methodSecurity = Inspector.GetSecurity(methodInfo);
-                    var mergedSecurity = MergeSecurity(controllerSecurity, methodSecurity);
-                    return new ApiActionDto
-                    {
-                        name = methodInfo.Name,
-                        verbs = Inspector.GetHttpVerbs(methodInfo).Select(m => m.ToUpperInvariant()),
-                        parameters = methodInfo.GetParameters()
-                            .Select(p => new ApiActionParamDto
-                            {
-                                name = p.Name!,
-                                type = ApiExplorerJs.JsTypeName(p.ParameterType),
-                                defaultValue = p.DefaultValue,
-                                isOptional = p.IsOptional,
-                                isBody = Inspector.IsBody(p),
-                            })
-                            .ToArray(),
-                        security = methodSecurity,
-                        mergedSecurity = mergedSecurity,
-                        returns = ApiExplorerJs.JsTypeName(methodInfo.ReturnType),
-                    };
-                }),
-            security = controllerSecurity
-        };
-        return l.ReturnAsOk(controllerDto);
-    }
+    //private ApiControllerDto BuildApiControllerDto(Type controller)
+    //{
+    //    var l = Log.Fn<ApiControllerDto>();
+    //    var controllerSecurity = Inspector.GetSecurity(controller);
+    //    var controllerDto = new ApiControllerDto
+    //    {
+    //        controller = controller.Name,
+    //        actions = controller.GetMethods()
+    //            .Where(methodInfo => methodInfo.IsPublic
+    //                                 && !methodInfo.IsSpecialName
+    //                                 && Inspector.GetHttpVerbs(methodInfo).Count > 0
+    //                                 )
+    //            .Select(methodInfo =>
+    //            {
+    //                var methodSecurity = Inspector.GetSecurity(methodInfo);
+    //                var mergedSecurity = MergeSecurity(controllerSecurity, methodSecurity);
+    //                return new ApiActionDto
+    //                {
+    //                    name = methodInfo.Name,
+    //                    verbs = Inspector.GetHttpVerbs(methodInfo).Select(m => m.ToUpperInvariant()),
+    //                    parameters = methodInfo.GetParameters()
+    //                        .Select(p => new ApiActionParamDto
+    //                        {
+    //                            name = p.Name!,
+    //                            type = ApiExplorerJs.JsTypeName(p.ParameterType),
+    //                            defaultValue = p.DefaultValue,
+    //                            isOptional = p.IsOptional,
+    //                            isBody = Inspector.IsBody(p),
+    //                        })
+    //                        .ToArray(),
+    //                    security = methodSecurity,
+    //                    mergedSecurity = mergedSecurity,
+    //                    returns = ApiExplorerJs.JsTypeName(methodInfo.ReturnType),
+    //                };
+    //            }),
+    //        security = controllerSecurity
+    //    };
+    //    return l.ReturnAsOk(controllerDto);
+    //}
 
-    private ApiSecurityDto MergeSecurity(ApiSecurityDto contSec, ApiSecurityDto methSec)
-    {
-        var l = Log.Fn<ApiSecurityDto>();
-        var ignoreSecurity = contSec.ignoreSecurity || methSec.ignoreSecurity;
-        var allowAnonymous = contSec.allowAnonymous || methSec.allowAnonymous;
-        var view = contSec.view || methSec.view;
-        var edit = contSec.edit || methSec.edit;
-        var admin = contSec.admin || methSec.admin;
-        var superUser = contSec.superUser || methSec.superUser;
-        var requireContext = contSec.requireContext || methSec.requireContext;
-        // AntiForgeryToken attributes on method prevails over attributes on class (last attribute wins)
-        var requireVerificationToken =
-            (methSec._validateAntiForgeryToken || methSec._autoValidateAntiforgeryToken ||
-             methSec._ignoreAntiforgeryToken)
-                ? methSec.requireVerificationToken
-                : contSec.requireVerificationToken;
+    //private ApiSecurityDto MergeSecurity(ApiSecurityDto contSec, ApiSecurityDto methSec)
+    //{
+    //    var l = Log.Fn<ApiSecurityDto>();
+    //    var ignoreSecurity = contSec.ignoreSecurity || methSec.ignoreSecurity;
+    //    var allowAnonymous = contSec.allowAnonymous || methSec.allowAnonymous;
+    //    var view = contSec.view || methSec.view;
+    //    var edit = contSec.edit || methSec.edit;
+    //    var admin = contSec.admin || methSec.admin;
+    //    var superUser = contSec.superUser || methSec.superUser;
+    //    var requireContext = contSec.requireContext || methSec.requireContext;
+    //    // AntiForgeryToken attributes on method prevails over attributes on class (last attribute wins)
+    //    var requireVerificationToken =
+    //        (methSec._validateAntiForgeryToken || methSec._autoValidateAntiforgeryToken ||
+    //         methSec._ignoreAntiforgeryToken)
+    //            ? methSec.requireVerificationToken
+    //            : contSec.requireVerificationToken;
 
-        var result = new ApiSecurityDto
-        {
-            ignoreSecurity = ignoreSecurity,
-            allowAnonymous = ignoreSecurity || allowAnonymous && !view && !edit && !admin && !superUser,
-            view = ignoreSecurity || (allowAnonymous || view) && !edit && !admin && !superUser,
-            edit = ignoreSecurity || (allowAnonymous || view || edit) && !admin && !superUser,
-            admin = ignoreSecurity || (allowAnonymous || view || edit || admin) && !superUser,
-            superUser = ignoreSecurity || allowAnonymous || view || edit || admin || superUser,
-            requireContext = !ignoreSecurity && requireContext,
-            requireVerificationToken = !ignoreSecurity && requireVerificationToken,
-        };
-        return l.ReturnAsOk(result);
-    }
+    //    var result = new ApiSecurityDto
+    //    {
+    //        ignoreSecurity = ignoreSecurity,
+    //        allowAnonymous = ignoreSecurity || allowAnonymous && !view && !edit && !admin && !superUser,
+    //        view = ignoreSecurity || (allowAnonymous || view) && !edit && !admin && !superUser,
+    //        edit = ignoreSecurity || (allowAnonymous || view || edit) && !admin && !superUser,
+    //        admin = ignoreSecurity || (allowAnonymous || view || edit || admin) && !superUser,
+    //        superUser = ignoreSecurity || allowAnonymous || view || edit || admin || superUser,
+    //        requireContext = !ignoreSecurity && requireContext,
+    //        requireVerificationToken = !ignoreSecurity && requireVerificationToken,
+    //    };
+    //    return l.ReturnAsOk(result);
+    //}
+
+
     // 2rb: 2026-06-12: Replaced by AppWebApiControllers Datasource
     //public AllApiFilesDto AppApiFiles(int appId)
     //{
@@ -184,22 +186,22 @@ public class ApiExplorerControllerReal(IApiInspector inspector, IResponseMaker r
             ? controllerName.Substring(0, controllerName.Length - suffix.Length)
             : controllerName;
 
-    public string GetEdition(int appId, string path)
-    {
-        var l = Log.Fn<string>($"{nameof(path)}:'{path}'");
+    //public string GetEdition(int appId, string path)
+    //{
+    //    var l = Log.Fn<string>($"{nameof(path)}:'{path}'");
 
-        // extract bottom folder from path
-        var edition = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries)[0];
+    //    // extract bottom folder from path
+    //    var edition = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries)[0];
 
-        return IsRootEdition(path, edition)
-            ? l.Return(string.Empty, "edition: <root>")
-            : l.Return(edition, $"ok, edition:'{edition}'");
-    }
+    //    return IsRootEdition(path, edition)
+    //        ? l.Return(string.Empty, "edition: <root>")
+    //        : l.Return(edition, $"ok, edition:'{edition}'");
+    //}
 
-    private static bool IsRootEdition(string path, string edition)
-        => edition.Equals(EavConstants.Api, StringComparison.OrdinalIgnoreCase) // <root>/api/
-           || edition.Equals(FolderConstants.AppCodeFolder, StringComparison.OrdinalIgnoreCase) // <root>/AppCode/
-           || edition.Equals(FolderConstants.DataFolderProtected, StringComparison.OrdinalIgnoreCase) // <root>/App_Data/
-           || edition.Equals(path, StringComparison.OrdinalIgnoreCase); // path is only file without folder
+    //private static bool IsRootEdition(string path, string edition)
+    //    => edition.Equals(EavConstants.Api, StringComparison.OrdinalIgnoreCase) // <root>/api/
+    //       || edition.Equals(FolderConstants.AppCodeFolder, StringComparison.OrdinalIgnoreCase) // <root>/AppCode/
+    //       || edition.Equals(FolderConstants.DataFolderProtected, StringComparison.OrdinalIgnoreCase) // <root>/App_Data/
+    //       || edition.Equals(path, StringComparison.OrdinalIgnoreCase); // path is only file without folder
 }
 
