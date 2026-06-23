@@ -54,44 +54,17 @@ public class AppWebApiControllerEndpoints : CustomDataSource
         {
             var mergedSecurity = action.mergedSecurity;
 
-            return new RawEntity(new()
-            {
-                { nameof(ApiActionDto.name), action.name },
-                { nameof(ApiActionDto.returns), action.returns },
-                { nameof(ApiActionDto.verbs), string.Join(", ", action.verbs) },
+            var values = AppWebApiControllerSecurityValues.ToDictionary(mergedSecurity);
+            values.Add(nameof(ApiActionDto.name), action.name);
+            values.Add(nameof(ApiActionDto.returns), action.returns);
+            values.Add(nameof(ApiActionDto.verbs), string.Join(", ", action.verbs));
+            values.Add(nameof(ApiActionDto.parameters), action.parameters);
+            values.Add(nameof(ApiActionDto.security), AppWebApiControllerSecurityValues.ToDictionary(action.security));
 
-                // Hacky sub-object
-                { nameof(ApiActionDto.parameters), action.parameters },
-
-                // Final merged security flat on endpoint item
-                // TODO: @2rb deduplicate
-                { nameof(ApiSecurityDto.ignoreSecurity), mergedSecurity.ignoreSecurity },
-                { nameof(ApiSecurityDto.allowAnonymous), mergedSecurity.allowAnonymous },
-                { nameof(ApiSecurityDto.requireVerificationToken), mergedSecurity.requireVerificationToken },
-                { nameof(ApiSecurityDto.requireContext), mergedSecurity.requireContext },
-                { nameof(ApiSecurityDto.view), mergedSecurity.view },
-                { nameof(ApiSecurityDto.edit), mergedSecurity.edit },
-                { nameof(ApiSecurityDto.admin), mergedSecurity.admin },
-                { nameof(ApiSecurityDto.superUser), mergedSecurity.superUser },
-
-                // Explicit endpoint security object
-                { nameof(ApiActionDto.security), SecurityValues(action.security) },
-            });
+            return new RawEntity(values);
         }).ToList();
 
         return l.Return(entities, $"{entities.Count}");
     }
 
-    // TODO: @2rb deduplicate - use this as foundation, make internal
-    private static Dictionary<string, object> SecurityValues(ApiSecurityDto security) => new()
-    {
-        { nameof(ApiSecurityDto.ignoreSecurity), security.ignoreSecurity },
-        { nameof(ApiSecurityDto.allowAnonymous), security.allowAnonymous },
-        { nameof(ApiSecurityDto.requireVerificationToken), security.requireVerificationToken },
-        { nameof(ApiSecurityDto.requireContext), security.requireContext },
-        { nameof(ApiSecurityDto.view), security.view },
-        { nameof(ApiSecurityDto.edit), security.edit },
-        { nameof(ApiSecurityDto.admin), security.admin },
-        { nameof(ApiSecurityDto.superUser), security.superUser },
-    };
 }

@@ -51,20 +51,9 @@ public class AppWebApiControllerDetails : CustomDataSource
         var dto = _analyzer.Analyze(Path, assembly);
         var security = dto.security;
 
-        var entity = new RawEntity(new()
-        {
-            { nameof(ApiControllerDto.controller), dto.controller },
-
-            // TODO: @2rb deduplicate
-            { nameof(ApiSecurityDto.ignoreSecurity), security.ignoreSecurity },
-            { nameof(ApiSecurityDto.allowAnonymous), security.allowAnonymous },
-            { nameof(ApiSecurityDto.requireVerificationToken), security.requireVerificationToken },
-            { nameof(ApiSecurityDto.requireContext), security.requireContext },
-            { nameof(ApiSecurityDto.view), security.view },
-            { nameof(ApiSecurityDto.edit), security.edit },
-            { nameof(ApiSecurityDto.admin), security.admin },
-            { nameof(ApiSecurityDto.superUser), security.superUser },
-        });
+        var values = AppWebApiControllerSecurityValues.ToDictionary(security);
+        values.Add(nameof(ApiControllerDto.controller), dto.controller);
+        var entity = new RawEntity(values);
 
         return l.Return([entity], "ok");
     }
