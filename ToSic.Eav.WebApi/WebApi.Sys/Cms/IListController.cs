@@ -20,7 +20,7 @@ public interface IListController
     void Delete(Guid? parent, string part, int index);
 
     void Replace(Guid parent, string part, int index, int entityId, bool add = false);
-    ReplacementListDto ReplaceOptions(Guid parent, string part, int index);
+    ReplacementListDto ReplaceOptions(Guid parent, string part, int index, string? contentType = null);
 
     List<EntityInListDto> Items(Guid parent, string part);
     bool Items(Guid parent, List<EntityInListDto> list, string part);

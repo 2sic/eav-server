@@ -1,5 +1,8 @@
 ﻿namespace ToSic.Eav.WebApi.Sys.Cms;
 
+/// <summary>
+/// Important: Empty constructor is needed for JSON serialization.
+/// </summary>
 public record EntityInListDto()
 {
     public int Index { get; init; }
@@ -7,17 +10,16 @@ public record EntityInListDto()
     public Guid Guid { get; init; }
     public string? Title { get; init; }
     public string? Type { get; init; }
-    // 2026-06-22 2dm - seems unused
-    //public JsonType? TypeWip;
 
-    public EntityInListDto(IEntity? c, int index): this()
+    /// <summary>
+    /// Quick constructor to create from an entity.
+    /// </summary>
+    public EntityInListDto(IEntity? entity, int index): this()
     {
         Index = index;
-        Id = c?.EntityId ?? 0;
-        Guid = c?.EntityGuid ?? Guid.Empty;
-        Title = c?.GetBestTitle() ?? "";
-        Type = c?.Type.NameId;
-        // 2026-06-22 2dm - seems unused
-        //TypeWip = c?.Type.NameId == null ? null : new JsonType(c)
+        Id = entity?.EntityId ?? 0;
+        Guid = entity?.EntityGuid ?? Guid.Empty;
+        Title = entity?.GetBestTitle() ?? "";
+        Type = entity?.Type.NameId;
     }
 }
