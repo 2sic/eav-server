@@ -1,26 +1,25 @@
-﻿// ReSharper disable InconsistentNaming
+// ReSharper disable InconsistentNaming
 
 namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 public class ApiSecurityDto
 {
-    // TODO: @2rb - change call to use camelCase, and change this to normal PascalCase
-    public bool ignoreSecurity { get; set; }
+    public bool IgnoreSecurity { get; set; }
         
-    public bool allowAnonymous { get; set; }
+    public bool AllowAnonymous { get; set; }
 
-    public bool requireVerificationToken { get; set; }
+    public bool RequireVerificationToken { get; set; }
 
-    // TODO: @2rb - why underscore? find out if there is a reason, otherwise neutralize
-    public bool _validateAntiForgeryToken { get; set; }
-    public bool _autoValidateAntiforgeryToken { get; set; }
-    public bool _ignoreAntiforgeryToken { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool ValidateAntiForgeryToken { get; set; }
+    public bool AutoValidateAntiforgeryToken { get; set; }
+    public bool IgnoreAntiforgeryToken { get; set; }
 
-    public bool view { get; set; }
-    public bool edit { get; set; }
-    public bool admin { get; set; }
-    public bool superUser { get; set; }
+    public bool View { get; set; }
+    public bool Edit { get; set; }
+    public bool Admin { get; set; }
+    public bool SuperUser { get; set; }
 
 
-    public bool requireContext { get; set; }
+    public bool RequireContext { get; set; }
 }

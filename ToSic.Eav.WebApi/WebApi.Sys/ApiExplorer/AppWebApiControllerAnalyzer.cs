@@ -95,31 +95,31 @@ public class AppWebApiControllerAnalyzer(IApiInspector inspector)
     {
         var l = Log.Fn<ApiSecurityDto>();
 
-        var ignoreSecurity = controllerSecurity.ignoreSecurity || methodSecurity.ignoreSecurity;
-        var allowAnonymous = controllerSecurity.allowAnonymous || methodSecurity.allowAnonymous;
-        var view = controllerSecurity.view || methodSecurity.view;
-        var edit = controllerSecurity.edit || methodSecurity.edit;
-        var admin = controllerSecurity.admin || methodSecurity.admin;
-        var superUser = controllerSecurity.superUser || methodSecurity.superUser;
-        var requireContext = controllerSecurity.requireContext || methodSecurity.requireContext;
+        var ignoreSecurity = controllerSecurity.IgnoreSecurity || methodSecurity.IgnoreSecurity;
+        var allowAnonymous = controllerSecurity.AllowAnonymous || methodSecurity.AllowAnonymous;
+        var view = controllerSecurity.View || methodSecurity.View;
+        var edit = controllerSecurity.Edit || methodSecurity.Edit;
+        var admin = controllerSecurity.Admin || methodSecurity.Admin;
+        var superUser = controllerSecurity.SuperUser || methodSecurity.SuperUser;
+        var requireContext = controllerSecurity.RequireContext || methodSecurity.RequireContext;
 
         var requireVerificationToken =
-            methodSecurity._validateAntiForgeryToken ||
-            methodSecurity._autoValidateAntiforgeryToken ||
-            methodSecurity._ignoreAntiforgeryToken
-                ? methodSecurity.requireVerificationToken
-                : controllerSecurity.requireVerificationToken;
+            methodSecurity.ValidateAntiForgeryToken ||
+            methodSecurity.AutoValidateAntiforgeryToken ||
+            methodSecurity.IgnoreAntiforgeryToken
+                ? methodSecurity.RequireVerificationToken
+                : controllerSecurity.RequireVerificationToken;
 
         var result = new ApiSecurityDto
         {
-            ignoreSecurity = ignoreSecurity,
-            allowAnonymous = ignoreSecurity || allowAnonymous && !view && !edit && !admin && !superUser,
-            view = ignoreSecurity || (allowAnonymous || view) && !edit && !admin && !superUser,
-            edit = ignoreSecurity || (allowAnonymous || view || edit) && !admin && !superUser,
-            admin = ignoreSecurity || (allowAnonymous || view || edit || admin) && !superUser,
-            superUser = ignoreSecurity || allowAnonymous || view || edit || admin || superUser,
-            requireContext = !ignoreSecurity && requireContext,
-            requireVerificationToken = !ignoreSecurity && requireVerificationToken,
+            IgnoreSecurity = ignoreSecurity,
+            AllowAnonymous = ignoreSecurity || allowAnonymous && !view && !edit && !admin && !superUser,
+            View = ignoreSecurity || (allowAnonymous || view) && !edit && !admin && !superUser,
+            Edit = ignoreSecurity || (allowAnonymous || view || edit) && !admin && !superUser,
+            Admin = ignoreSecurity || (allowAnonymous || view || edit || admin) && !superUser,
+            SuperUser = ignoreSecurity || allowAnonymous || view || edit || admin || superUser,
+            RequireContext = !ignoreSecurity && requireContext,
+            RequireVerificationToken = !ignoreSecurity && requireVerificationToken,
         };
 
         return l.ReturnAsOk(result);
