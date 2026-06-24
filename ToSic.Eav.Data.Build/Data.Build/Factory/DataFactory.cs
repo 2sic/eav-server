@@ -104,6 +104,7 @@ internal class DataFactory(
     /// <inheritdoc />
     public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : IRawEntity
     {
+        var l = Log.Fn<IList<EntityPair<TNewEntity>>>();
         var all = list
             .Select(raw =>
             {
@@ -121,25 +122,25 @@ internal class DataFactory(
             })
             .ToListOpt();
 
-        // if we have any nulls, take them out and remember the indexes
-        if (all.Any(p => p == null))
-        {
-            var indexes = all
-                .Select((pair, index) => (pair, index))
-                .Where(p => p.pair == null)
-                .Select(p => p.index)
-                .ToListOpt();
-            var msg = string.Join(",", indexes);
-            Log.A($"Error preparing: {indexes.Count} items failed to create, indexes: {msg}");
-            return all
+        var cleaned = all
                 .Where(p => p != null)
                 .Cast<EntityPair<TNewEntity>>()
                 .ToListOpt();
-        }
+        
+        // Verify we don't have nulls (errors)
+        if (all.Count == cleaned.Count)
+            return l.Return(cleaned);
 
-        return all
-            .Cast<EntityPair<TNewEntity>>()
+        // if we have any nulls, take them out and remember the indexes for reporting
+        var nullIndexes = all
+            .Select((pair, index) => (pair, index))
+            .Where(p => p.pair == null)
+            .Select(p => p.index)
             .ToListOpt();
+            
+        return l.Return(cleaned,
+            $"Error preparing: {nullIndexes.Count} items failed to create, indexes: {string.Join(",", nullIndexes)}");
+
     }
 
     #endregion

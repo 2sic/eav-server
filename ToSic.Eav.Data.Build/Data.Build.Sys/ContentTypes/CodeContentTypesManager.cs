@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public class CodeContentTypesManager(ContentTypeAssembler ctAssembler, EntityAssembler entityAssembler, AttributeListAssembler attributeListAssembler)
+public class CodeContentTypesManager(LazySvc<ContentTypeAssembler> ctAssembler, LazySvc<EntityAssembler> entityAssembler, LazySvc<AttributeListAssembler> attributeListAssembler)
     : ServiceBase("Eav.CtFact")
 {
     // TODO: Should probably be something different...?
@@ -25,23 +25,24 @@ public class CodeContentTypesManager(ContentTypeAssembler ctAssembler, EntityAss
     {
         if (Cache.TryGetValue(type, out var contentType))
             return contentType;
-        var created = Get(type,  name: null, nameId: null, scope: null);
+        var created = Generate(type,  name: null, nameId: null, scope: null);
         Cache[type] = created;
         return created;
     }
 
     private static readonly Dictionary<Type, IContentType> Cache = new();
 
-    // ReSharper disable once MethodOverloadWithOptionalParameter
-    private IContentType Get(Type type, string? name = default, string? nameId = default, string? scope = default, int appId = NoAppId)
+    private IContentType Generate(Type type, string? name = default, string? nameId = default, string? scope = default, int appId = NoAppId)
     {
         var l = Log.Fn<IContentType>(timer: true);
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
         var ctName = name ?? ctSpecs?.Name ?? type.Name;
         var ctNameId = nameId
-                       ?? ctSpecs?.Guid.NullOrGetWith(g => Guid.TryParse(g, out var guid) ? guid.ToString() : null!)
+                       ?? ctSpecs?.Guid.NullOrGetWith(g => Guid.TryParse(g, out var guid) ? guid.ToString() : null)
                        ?? Guid.Empty.ToString();
-        var ctScope = scope ?? ctSpecs?.Scope.NullIfNoValue() ?? ScopeConstants.Default;
+        var ctScope = scope
+                      ?? ctSpecs?.Scope.NullIfNoValue()
+                      ?? ScopeConstants.Default;
 
         // Must be null if no metadata, so that it would then assume empty list...?
         var ctMdItems = CreateContentTypeDetails(ctSpecs?.Description).ToListOfOneOrNull();
@@ -54,14 +55,13 @@ public class CodeContentTypesManager(ContentTypeAssembler ctAssembler, EntityAss
             ? null
             : new ContentTypeVirtualAttributes(vAttributes.ToDictionary(va => va.Name, va => va));
 
-        var contentType = ctAssembler.Type.Create(
+        var contentType = ctAssembler.Value.Type.Create(
             appId,
             name: ctName,
             nameId: ctNameId,
             scope: ctScope,
             id: 0,
             metadata: ctMetadata,
-            //metadataItems: ctMdItems,
             isDynamic: true,
             attributes: attributes,
             decorators: vAttributeDecorator.ToListOfOneOrNull()
@@ -82,12 +82,12 @@ public class CodeContentTypesManager(ContentTypeAssembler ctAssembler, EntityAss
 
         // All props
         var dic = new Dictionary<string, object?> { { nameof(ContentTypeDetails.Description), description } };
-        var attributes = attributeListAssembler.Finalize(dic);
+        var attributes = attributeListAssembler.Value.Finalize(dic);
 
         // Create a Description entity
-        var entity = entityAssembler.Create(
+        var entity = entityAssembler.Value.Create(
             NoAppId,
-            ctAssembler.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName, ContentTypeDetails.ContentTypeName),
+            ctAssembler.Value.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName, ContentTypeDetails.ContentTypeName),
             attributes: attributes
         );
         return l.Return(entity, "created");
@@ -148,7 +148,7 @@ public class CodeContentTypesManager(ContentTypeAssembler ctAssembler, EntityAss
         var attributes = pairs
             .Select(pair =>
             {
-                var specs = pair.Specs; //.GetCustomAttributes<ContentTypeAttributeSpecsAttribute>().FirstOrDefault();
+                var specs = pair.Specs;
                 var props = pair.Property;
                 var attrName = specs?.Name ?? props.Name;
                 var attrType = specs == null || specs.Type == ValueTypes.Undefined
@@ -160,7 +160,7 @@ public class CodeContentTypesManager(ContentTypeAssembler ctAssembler, EntityAss
                 var attrMetadata = ContentTypeAttributeDetails(specs?.Description, specs?.InputTypeWIP)
                     .ToListOfOneOrNull();
 
-                return ctAssembler.Attribute.Create(
+                return ctAssembler.Value.Attribute.Create(
                     NoAppId,
                     name: attrName,
                     type: attrType,
@@ -190,12 +190,12 @@ public class CodeContentTypesManager(ContentTypeAssembler ctAssembler, EntityAss
         if (inputType != null)
             dic.Add(AttributeMetadataConstants.GeneralFieldInputType, inputType);
 
-        var attributes = attributeListAssembler.Finalize(dic);
+        var attributes = attributeListAssembler.Value.Finalize(dic);
 
         // Create a Description entity
-        var entity = entityAssembler.Create(
+        var entity = entityAssembler.Value.Create(
             NoAppId,
-            ctAssembler.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral, AttributeMetadataConstants.TypeGeneral),
+            ctAssembler.Value.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral, AttributeMetadataConstants.TypeGeneral),
             attributes: attributes);
         return l.Return(entity, "created");
     }
