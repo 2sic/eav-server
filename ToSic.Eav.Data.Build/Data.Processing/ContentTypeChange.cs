@@ -7,7 +7,6 @@ namespace ToSic.Eav.Data.Processing;
 public record ContentTypeChange(
     int AppId,
     int ContentTypeId,
-    string ContentTypeNameId,
     string Source);
 
 public static class ContentTypeChangeSources

@@ -7,50 +7,15 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeChangeActionRunner(
-    IAppReaderFactory appReaders,
     IEnumerable<ILowCodeAction<ContentTypeChange, ContentTypeChange>> actions)
-    : ServiceBase("Wrk.CtAct", connect: [appReaders])
+    : ServiceBase("Wrk.CtAct")
 {
-    public void RunFor(IContentType contentType, string source = ContentTypeChangeSources.ContentType)
-    {
-        var l = Log.Fn($"type:{contentType.NameId}, app:{contentType.AppId}, source:{source}");
-
-        // Always re-resolve from a fresh app reader so actions see committed DB state.
-        var freshReader = appReaders.Get(contentType.AppId);
-        var freshType = freshReader.TryGetContentType(contentType.NameId)
-                        ?? freshReader.GetContentTypeOptional(contentType.Id);
-        if (freshType == null)
-        {
-            l.A("Skip - content-type could not be resolved from app state.");
-            l.Done();
-            return;
-        }
-
-        RunForResolvedContentType(freshType, source);
-        l.Done();
-    }
-
     public void RunFor(int appId, int contentTypeId, string source = ContentTypeChangeSources.ContentTypeField)
     {
-        var l = Log.Fn($"app:{appId}, typeId:{contentTypeId}, source:{source}");
-        var contentType = appReaders.Get(appId).GetContentTypeOptional(contentTypeId);
-        if (contentType == null)
-        {
-            l.A("Skip - content-type id could not be resolved.");
-            l.Done();
-            return;
-        }
-
-        RunForResolvedContentType(contentType, source);
-        l.Done();
-    }
-
-    private void RunForResolvedContentType(IContentType contentType, string source)
-    {
         var activeActions = actions.ToList();
-        var l = Log.Fn($"type:{contentType.NameId}, app:{contentType.AppId}, source:{source}, actions:{activeActions.Count}");
+        var l = Log.Fn($"app:{appId}, typeId:{contentTypeId}, source:{source}, actions:{activeActions.Count}");
 
-        if (!activeActions.Any())
+        if (activeActions.Count == 0)
         {
             l.Done("no actions");
             return;
@@ -58,9 +23,8 @@ public class ContentTypeChangeActionRunner(
 
         var actionContext = new LowCodeActionContext();
         var result = ActionData.Create(new ContentTypeChange(
-            AppId: contentType.AppId,
-            ContentTypeId: contentType.Id,
-            ContentTypeNameId: contentType.NameId,
+            AppId: appId,
+            ContentTypeId: contentTypeId,
             Source: source));
 
         foreach (var action in activeActions)
