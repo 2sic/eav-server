@@ -28,18 +28,11 @@ public static class FeaturesToRawEntity
         if (!minimal)
             values = new(values)
             {
-                //{ nameof(state.NameId), state.NameId },
-                //{ AttributeNames.TitleNiceName, state.Aspect.Name },
-                //{ nameof(Aspect.Description), state.Aspect.Description },
-                //{ nameof(state.IsEnabled), state.IsEnabled },
                 { nameof(state.EnabledByDefault), state.EnabledByDefault },
                 { nameof(state.EnabledInConfiguration), state.EnabledInConfiguration },
                 { nameof(state.Expiration), state.Expiration },
                 { nameof(state.IsForEditUi), state.IsForEditUi },
-                //{ $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? EavConstants.NullNameId },
-                //{ $"{nameof(state.License)}{nameof(state.License.Guid)}", state.License?.Guid ?? Guid.Empty },
                 { nameof(state.AllowedByLicense), state.AllowedByLicense },
-                //{ nameof(state.Aspect.Link), state.Aspect.Link },
                 { nameof(state.IsPublic), state.IsPublic },
             };
 
@@ -55,17 +48,6 @@ public static class FeaturesToRawEntity
                 { "SecurityMessage", state.Security?.Message },
             };
 
-        //if (detailed)
-        //{
-        //    values.Add(nameof(state.EnabledReason), state.EnabledReason);
-        //    values.Add(nameof(state.EnabledReasonDetailed), state.EnabledReasonDetailed);
-        //    values.Add(nameof(state.Aspect.IsConfigurable), state.Aspect.IsConfigurable);
-        //    values.Add(nameof(state.Configuration), JsonSerializer.Serialize(state.Configuration));
-        //    values.Add(nameof(state.Aspect.ConfigurationContentType), state.Aspect.ConfigurationContentType);
-        //    values.Add("SecurityImpact", state.Security?.Impact);
-        //    values.Add("SecurityMessage", state.Security?.Message);
-        //}
-
         return new RawEntity
         {
             Guid = state.Aspect.Guid,
@@ -80,7 +62,6 @@ public static class FeaturesToRawEntity
     /// root definition does.
     /// But basically it should be the License + State information.
     /// </summary>
-
     public static IRawEntity ToRawEntity(this FeatureSetState state)
         => new RawEntity
         {

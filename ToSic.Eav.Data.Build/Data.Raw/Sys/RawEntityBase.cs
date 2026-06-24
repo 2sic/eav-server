@@ -56,5 +56,5 @@ public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
 
     public abstract IDictionary<string, object?> Attributes(RawConvertOptions options);
 
-    public virtual IEnumerable<object> RelationshipKeys(RawConvertOptions options) => new List<object>();
+    public virtual IEnumerable<object> RelationshipKeys(RawConvertOptions options) => [];
 }
