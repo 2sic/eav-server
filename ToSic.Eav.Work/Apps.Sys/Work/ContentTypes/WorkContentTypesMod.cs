@@ -5,9 +5,8 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkContentTypesMod(
-    LazySvc<ContentTypeChangeActionRunner> changeActions,
-    IAppReaderFactory appReaders)
-    : WorkUnitBase<IAppWorkCtxWithDb>("ApS.InpGet", connect: [changeActions, appReaders])
+    LazySvc<ContentTypeChangeActionRunner> changeActions)
+    : WorkUnitBase<IAppWorkCtxWithDb>("ApS.InpGet", connect: [changeActions])
 {
     public void Create(string nameId, string scope)
     {
@@ -25,48 +24,19 @@ public class WorkContentTypesMod(
         if (name.IsEmptyOrWs())
             return l.ReturnFalse("name was empty, will cancel");
 
-        AppWorkCtx.DbStorage.ContentType.AddOrUpdate(staticName, scope, name, usesConfigurationOfOtherSet, alwaysShareConfig);
+        var contentTypeId = AppWorkCtx.DbStorage.ContentType.AddOrUpdate(
+            staticName,
+            scope,
+            name,
+            usesConfigurationOfOtherSet,
+            alwaysShareConfig);
         // Schema changes on the type itself should immediately re-evaluate code-generation handlers.
-        ProcessContentTypePostSave(staticName, scope, name);
+        changeActions.Value.RunFor(
+            AppWorkCtx.AppId,
+            contentTypeId,
+            source: ContentTypeChangeSources.ContentType);
         return l.ReturnTrue();
     }
-
-    private void ProcessContentTypePostSave(string staticName, string scope, string name)
-    {
-        // Always evaluate post-save for schema updates; handler selection happens in the runner.
-        var afterSave = ResolveSavedContentType(staticName, scope, name);
-        if (afterSave == null)
-        {
-            Log.A("Skipping content-type post-save processors because saved type could not be resolved.");
-            return;
-        }
-
-        changeActions.Value.RunFor(afterSave, source: ContentTypeChangeSources.ContentType);
-    }
-
-    private IContentType? ResolveSavedContentType(string? staticName, string? scope, string? name)
-    {
-        var freshReader = appReaders.Get(AppWorkCtx.AppId);
-
-        // StaticName is the strongest identifier and remains stable in normal rename scenarios.
-        if (staticName.HasValue() && freshReader.TryGetContentType(staticName) is { } byStaticName)
-            return byStaticName;
-
-        // For pre-save snapshot calls we may only have staticName and don't want fallback matching.
-        if (scope is null || name is null)
-            return null;
-
-        // Fallback by (Name + Scope) to recover edge cases where the static name changed or was not provided.
-        var normalizedScope = NormalizeScope(scope);
-        return freshReader.ContentTypes
-            .Where(ct => ct.Name.EqualsInsensitive(name))
-            .Where(ct => NormalizeScope(ct.Scope).EqualsInsensitive(normalizedScope))
-            .OrderByDescending(ct => ct.Id)
-            .FirstOrDefault();
-    }
-
-    private static string NormalizeScope(string? scope)
-        => scope?.Trim() ?? "";
 
     public bool CreateGhost(string sourceStaticName)
     {
