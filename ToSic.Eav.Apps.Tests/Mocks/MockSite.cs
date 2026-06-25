@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Apps.Tests.Mocks;
 
+// not good, should be unified, there are to similar MockSite, and ideally they should have properties which can be set as needed, similar to UserMock
 public class MockSite : ISite
 {
     public ISite Init(int siteId, ILog? parentLogOrNull)
