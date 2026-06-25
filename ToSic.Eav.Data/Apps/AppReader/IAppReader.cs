@@ -41,5 +41,7 @@ public interface IAppReader:
     internal IAppStateCache AppState { get; }
 
     IContentType? GetContentTypeOptional(int contentTypeId);
-    IContentType GetContentTypeRequired(int contentTypeId);
+
+    // 2026-06-25 2dm disabled, not in use any more; may reactivate some day if relevant
+    //IContentType GetContentTypeRequired(int contentTypeId);
 }
