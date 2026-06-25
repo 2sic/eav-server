@@ -45,9 +45,9 @@ public sealed class EntityInspectRelationships : CustomDataSource
     {
         // Main stream
         ProvideOutRaw(
-            () => GetRelationships(appReaders, featuresForDs.Features),
+            () => GetRelationships(appReaders, featuresForDs.Features)//,
             // WIP - ideally adding the type would not be necessary, but ATM not yet perfect
-            options: () => new() { Type = typeof(EntityRelationship), AutoId = false }
+            //options: () => new() { Type = typeof(EntityRelationship), AutoId = false }
         );
 
         // Feature State / Status
@@ -109,35 +109,21 @@ public sealed class EntityInspectRelationships : CustomDataSource
         bool IsChild,
         [property: ContentTypeAttributeIgnore]
         bool FeatEnabled
-    ) : IRawEntity
+    ) : RawEntityRecordBase
     {
         private const string MyContentTypeName = "EntityRelationship";
-        
-        //public RawEntity ToRawEntity() =>
-        //    new()
-        //    {
-        //        Guid = FeatEnabled ? Entity.EntityGuid : Guid.Empty,
-        //        Id = FeatEnabled ? Entity.EntityId : 0,
-        //        Values = new Dictionary<string, object?>
-        //        {
-        //            { AttributeNames.TitleNiceName, FeatEnabled ? Entity.GetBestTitle() ?? "unknown" : FeatureNotEnabledMessage },
-        //            { nameof(Field), Field },
-        //            { nameof(IsChild), IsChild },
-        //            { "ContentTypeName", FeatEnabled ? Entity.Type.Name : "must enable feature" },
-        //            { "ContentTypeNameId", FeatEnabled ? Entity.Type.NameId : "must enable feature" }
-        //        }
-        //    };
 
-        public int Id => FeatEnabled ? Entity.EntityId : 0;
-        public Guid Guid => FeatEnabled ? Entity.EntityGuid : Guid.Empty;
-        public DateTime Created => DateTime.Now;
-        public DateTime Modified => DateTime.Now;
+        public override int Id => FeatEnabled ? Entity.EntityId : 0;
         
+        public override Guid Guid => FeatEnabled ? Entity.EntityGuid : Guid.Empty;
+
         public string Title => FeatEnabled ? Entity.GetBestTitle() ?? "unknown" : FeatureNotEnabledMessage;
+        
         public string ContentTypeName => FeatEnabled ? Entity.Type.Name : MustEnableFeature;
+        
         public string ContentTypeNameId => FeatEnabled ? Entity.Type.NameId : MustEnableFeature;
 
-        public IDictionary<string, object?> Attributes(RawConvertOptions options) =>
+        public override IDictionary<string, object?> Attributes(RawConvertOptions options) =>
             new Dictionary<string, object?>
             {
                 { AttributeNames.TitleNiceName, Title },
