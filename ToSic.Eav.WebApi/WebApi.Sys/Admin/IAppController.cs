@@ -25,15 +25,17 @@ public interface IAppController
 
     Task<bool> SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool withPortalFiles);
 
-    /// <summary>
-    /// Get a stack of values from settings or resources
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <param name="part">Name of the part - "settings" or "resources"</param>
-    /// <param name="key">Optional key like "Settings.Images.Content.Width"</param>
-    /// <param name="view">Optional guid of a view to merge with the settings</param>
-    /// <returns></returns>
-    List<AppStackDataRaw> GetStack(int appId, string part, string? key = null, Guid? view = null);
+    // Replaced by DataSource System.SystemStack through query System.SysData.
+    // Use app/auto/query/System.SysData/Default with SysDataSource=System.SystemStack.
+    ///// <summary>
+    ///// Get a stack of values from settings or resources
+    ///// </summary>
+    ///// <param name="appId"></param>
+    ///// <param name="part">Name of the part - "settings" or "resources"</param>
+    ///// <param name="key">Optional key like "Settings.Images.Content.Width"</param>
+    ///// <param name="view">Optional guid of a view to merge with the settings</param>
+    ///// <returns></returns>
+    //List<AppStackDataRaw> GetStack(int appId, string part, string? key = null, Guid? view = null);
 
     /// <summary>
     /// Reset an App to the last xml state
