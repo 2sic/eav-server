@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data.Processing;
 [PrivateApi("WIP v21")]
 public record ContentTypeChange(
     int AppId,
-    int ContentTypeId,
+    string ContentTypeNameId,
     string Source);
 
 public static class ContentTypeChangeSources

@@ -24,7 +24,7 @@ public class WorkContentTypesMod(
         if (name.IsEmptyOrWs())
             return l.ReturnFalse("name was empty, will cancel");
 
-        var contentTypeId = AppWorkCtx.DbStorage.ContentType.AddOrUpdate(
+        AppWorkCtx.DbStorage.ContentType.AddOrUpdate(
             staticName,
             scope,
             name,
@@ -33,7 +33,7 @@ public class WorkContentTypesMod(
         // Schema changes on the type itself should immediately re-evaluate code-generation handlers.
         changeActions.Value.RunFor(
             AppWorkCtx.AppId,
-            contentTypeId,
+            staticName,
             source: ContentTypeChangeSources.ContentType);
         return l.ReturnTrue();
     }

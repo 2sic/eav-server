@@ -7,9 +7,8 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 
 partial class DbContentType
 {
-    public int AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
+    public void AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
     {
-        TsDynDataContentType? saved = null;
         DbStore.DoAndSaveTracked(() =>
         {
             var ct = TryGetTypeByStaticTracked(staticName);
@@ -20,16 +19,12 @@ partial class DbContentType
                 ct.Name = name;
                 ct.Scope = scope;
                 ct.TransCreatedId = DbStore.Versioning.GetTransactionId();
-                saved = ct;
                 return;
             }
 
             // If not exists, create new
-            saved = PrepareNew(name, scope, usesConfigurationOfOtherSet, alwaysShareConfig);
-            DbStore.SqlDb.Add(saved);
+            DbStore.SqlDb.Add(PrepareNew(name, scope, usesConfigurationOfOtherSet, alwaysShareConfig));
         });
-        return saved?.ContentTypeId
-               ?? throw new InvalidOperationException($"Could not save Content-Type '{name}'.");
     }
 
     private TsDynDataContentType PrepareNew(string name, string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)

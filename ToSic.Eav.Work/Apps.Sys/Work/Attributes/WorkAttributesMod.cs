@@ -96,13 +96,16 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
         // Capture content-type before mutation because this path only receives attribute id.
-        var contentTypeId = TryResolveContentTypeIdByAttribute(attributeId);
+
+        var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
+                        ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+        var contentTypeId = attribute.ContentTypeId;
+
         var newValues = new Dictionary<string, object> { { AttributeMetadataConstants.GeneralFieldInputType, inputType } };
 
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
         workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
-        if (contentTypeId.HasValue)
-            TriggerPostSaveForContentType(contentTypeId.Value);
+        TriggerPostSaveForContentType(contentTypeId);
         return l.ReturnTrue();
     }
 
@@ -264,15 +267,16 @@ public class WorkAttributesMod(
         return l.ReturnTrue();
     }
 
-    private int? TryResolveContentTypeIdByAttribute(int attributeId)
-        => AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)?.ContentTypeId;
-
     private void TriggerPostSaveForContentType(int contentTypeId)
     {
+        var contentType = AppWorkCtx.AppReader.GetContentTypeOptional(contentTypeId);
+        if (contentType == null)
+            return;
+
         // Runner is intentionally best-effort so editor save is never blocked by optional generation issues.
         contentTypeChangeActions.Value.RunFor(
             AppWorkCtx.AppId,
-            contentTypeId,
+            contentType.NameId,
             source: ContentTypeChangeSources.ContentTypeField);
     }
 

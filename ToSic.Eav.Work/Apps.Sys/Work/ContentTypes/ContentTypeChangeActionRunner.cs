@@ -10,10 +10,10 @@ public class ContentTypeChangeActionRunner(
     IEnumerable<ILowCodeAction<ContentTypeChange, ContentTypeChange>> actions)
     : ServiceBase("Wrk.CtAct")
 {
-    public void RunFor(int appId, int contentTypeId, string source = ContentTypeChangeSources.ContentTypeField)
+    public void RunFor(int appId, string contentTypeNameId, string source = ContentTypeChangeSources.ContentTypeField)
     {
         var activeActions = actions.ToList();
-        var l = Log.Fn($"app:{appId}, typeId:{contentTypeId}, source:{source}, actions:{activeActions.Count}");
+        var l = Log.Fn($"app:{appId}, type:{contentTypeNameId}, source:{source}, actions:{activeActions.Count}");
 
         if (activeActions.Count == 0)
         {
@@ -24,7 +24,7 @@ public class ContentTypeChangeActionRunner(
         var actionContext = new LowCodeActionContext();
         var result = ActionData.Create(new ContentTypeChange(
             AppId: appId,
-            ContentTypeId: contentTypeId,
+            ContentTypeNameId: contentTypeNameId,
             Source: source));
 
         foreach (var action in activeActions)
