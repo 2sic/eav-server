@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource.Sys;
+﻿using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -20,7 +19,6 @@ namespace ToSic.Eav.DataSources;
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
     HelpLink = "https://go.2sxc.org/DsPaging")]
-
 public sealed class Paging: CustomDataSourceAdvanced
 {
     #region Configuration-properties
@@ -74,11 +72,11 @@ public sealed class Paging: CustomDataSourceAdvanced
     private IImmutableList<IEntity> GetList()
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
         var itemsToSkip = (PageNumber - 1) * PageSize;
 
         var source = TryGetIn();
-        if (source is null) return l.ReturnAsError(Error.TryGetInFailed());
+        if (source is null)
+            return l.ReturnAsError(Error.TryGetInFailed());
 
         var result = source
             .Skip(itemsToSkip)
@@ -90,33 +88,21 @@ public sealed class Paging: CustomDataSourceAdvanced
     private IImmutableList<IEntity> GetPaging()
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
 
         // Calculate any additional stuff
         var source = TryGetIn();
         if (source is null)
             return l.ReturnAsError(Error.TryGetInFailed());
 
-        var itemCount = source.Count;
-        var pageCount = Math.Ceiling((decimal)itemCount / PageSize);
-
-        // Assemble the entity
-        var paging = new Dictionary<string, object?>
-        {
-            { AttributeNames.TitleNiceName, "Paging Information" },
-            { nameof(PageSize), PageSize },
-            { nameof(PageNumber), PageNumber },
-            { "ItemCount", itemCount },
-            { "PageCount", pageCount }
-        };
-
-        var entity = DataFactory
-            .SpawnNew(options: new() { TypeName = "Paging" })
-            .Create(paging, id: PageNumber);
+        var rawEntity = new PagingModel(
+            PageSize: PageSize,
+            PageNumber: PageNumber,
+            ItemCount: source.Count,
+            PageCount: (int)Math.Ceiling((decimal)source.Count / PageSize)
+        );
 
         // Assemble list of this for the stream
-        var list = new List<IEntity> { entity };
+        List<IEntity> list = [DataFactory.Create(rawEntity)];
         return l.ReturnAsOk(list.ToImmutableOpt());
     }
-
 }
