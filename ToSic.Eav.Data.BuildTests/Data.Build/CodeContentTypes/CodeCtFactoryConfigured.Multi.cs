@@ -7,13 +7,13 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 // ReSharper disable once UnusedMember.Global
-public class CodeCtFactoryConfiguredClass(CodeContentTypesManager ctDefMan)
-    : CodeCtFactoryConfigured<CodeTypeWithSpecs>(ctDefMan);
+public class CodeCtFactoryConfiguredClass(CodeContentTypesManager ctDefManager)
+    : CodeCtFactoryConfigured<CodeTypeWithSpecs>(ctDefManager);
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 // ReSharper disable once UnusedMember.Global
-public class CodeCtFactoryConfiguredRecord(CodeContentTypesManager ctDefMan)
-    : CodeCtFactoryConfigured<CodeTypeWithSpecsRecord>(ctDefMan);
+public class CodeCtFactoryConfiguredRecord(CodeContentTypesManager ctDefManager)
+    : CodeCtFactoryConfigured<CodeTypeWithSpecsRecord>(ctDefManager);
 
 
 /// <summary>

@@ -5,15 +5,15 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 /// <summary>
 /// Tests for configured classes (with attributes)
 /// </summary>
-/// <param name="ctDefFactory"></param>
+/// <param name="ctDefManager"></param>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class ContentTypeFactoryAttributesSpecial(CodeContentTypesManager ctDefFactory)
+public class ContentTypeFactoryAttributesSpecial(CodeContentTypesManager ctDefManager)
 {
 
     [Fact]
     public void Attributes_InternalFields()
     {
-        var x = ctDefFactory.CreateTac<CodeTypeInternalFields>();
+        var x = ctDefManager.CreateTac<CodeTypeInternalFields>();
         Single(x.Attributes);
     }
 

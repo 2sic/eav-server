@@ -27,7 +27,11 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// The generated ContentType.
     /// This will only be generated once, for better performance.
     /// </summary>
-    IContentType? ContentType { get; }
+    /// <remarks>
+    /// Set to internal v22 as the first access could change what happens,
+    /// and should not be done before the first IRawEntity conversion.
+    /// </remarks>
+    internal IContentType? ContentType { get; }
 
     /// <summary>
     /// TODO:

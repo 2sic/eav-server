@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.EntityPair;
@@ -13,10 +12,9 @@ namespace ToSic.Eav.Data.Build;
 internal class DataFactory(
     Generator<DataAssembler, DataAssemblerOptions> dataAssembler,
     LazySvc<ContentTypeTypeAssembler> typeAssembler,
-
     Generator<IDataFactory, DataFactoryOptions> selfGenerator,
-    LazySvc<CodeContentTypesManager> ctFactoryLazy)
-    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, ctFactoryLazy]), IDataFactory
+    LazySvc<CodeContentTypesManager> ctFactory)
+    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, ctFactory]), IDataFactory
 {
 
     #region Properties to configure Builder / Defaults
@@ -35,11 +33,10 @@ internal class DataFactory(
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
-    public IContentType ContentType => field
-        ??= MyOptions.Type != null
-            ? ctFactoryLazy.Value.Get(MyOptions.Type)
-            : typeAssembler.Value.Transient(MyOptions.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
+    public IContentType ContentType => field ??= PctHelper.GetPreferredContentType(MyOptions, ctFactory.Value, typeAssembler.Value);
 
+    private DataFactoryPreferredContentType PctHelper => field ??= new(Log);
+    
     /// <summary>
     /// The DataBuilder used for this DataFactory.
     /// </summary>
@@ -196,6 +193,10 @@ internal class DataFactory(
         var partsBuilder = MyOptions.WithMetadata && rawEntity is RawEntity { Metadata: not null } typed
             ? new EntityPartsLazy(null, (_, _) => typed.Metadata)
             : null;
+
+        // Set this the first time it's used, in case it should override the fallback content-type
+        PctHelper.TypeFallbackIfNotSet ??= rawEntity.GetType();
+        
         return Create(
             rawEntity.Attributes(MyOptions.RawConvertOptions),
             id: rawEntity.Id,
