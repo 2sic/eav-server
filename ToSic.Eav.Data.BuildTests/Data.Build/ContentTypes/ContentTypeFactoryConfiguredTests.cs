@@ -6,8 +6,12 @@ using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.Data.Build.ContentTypes;
 
+/// <summary>
+/// Tests for configured classes (with attributes)
+/// </summary>
+/// <param name="ctDefFactory"></param>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class ContentTypeFactoryAttributesTests(CodeContentTypesManager ctDefFactory)
+public class ContentTypeFactoryConfiguredTests(CodeContentTypesManager ctDefFactory)
 {
     private void AssertAttribute(IContentType ct, string name, ValueTypes type, bool isTitle = false, string? description = default)
     {
@@ -20,16 +24,22 @@ public class ContentTypeFactoryAttributesTests(CodeContentTypesManager ctDefFact
             Equal(description, attribute.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)); //, $"{name} Description check");
     }
 
+    private T GetPropNoSpecs<T>(Func<IContentType, T> getFunc)
+        => getFunc(ctDefFactory.CreateTac<CodeTypeNoSpecs>());
+    private T GetPropNoSpecsRecord<T>(Func<IContentType, T> getFunc)
+        => getFunc(ctDefFactory.CreateTac<CodeTypeNoSpecsRecord>());
+
+
     private ContentTypeVirtualAttributes GetVAttribDecorator(Type t)
         => ctDefFactory.CreateTac(t).GetDecorator<ContentTypeVirtualAttributes>()!;
         
     [Fact]
     public void Attributes_NoSpec_Count()
-        => Equal(4, ctDefFactory.CreateTac<CodeTypeNoSpecs>().Attributes.Count());
+        => Equal(4, GetPropNoSpecs(x => x.Attributes.Count()));
 
     [Fact]
     public void Attributes_NoSpec_CountRecord() =>
-        Equal(4, ctDefFactory.CreateTac<CodeTypeNoSpecsRecord>().Attributes.Count());
+        Equal(4, GetPropNoSpecsRecord(x => x.Attributes.Count()));
     
     
     [Fact]

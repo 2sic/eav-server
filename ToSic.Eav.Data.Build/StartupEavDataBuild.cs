@@ -23,6 +23,7 @@ public static class StartupEavDataBuild
         services.TryAddTransient<ContentTypeAttributeAssembler>();
         services.TryAddTransient<ContentTypeAssembler>();
         services.TryAddTransient<CodeContentTypesManager>();
+        services.TryAddTransient<CodeContentTypeBuilder>(); // new v22, split concerns
 
         // Entities
         services.TryAddTransient<LanguageAssembler>();
