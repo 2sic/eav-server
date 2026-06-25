@@ -39,7 +39,7 @@ public record DataFactoryOptions
     /// </summary>
     public string? TypeName
     {
-        get => field ?? DataConstants.DataFactoryDefaultTypeName;
+        get;
 #if NETFRAMEWORK
         set;
 #else
