@@ -40,6 +40,7 @@ public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
         var attributes = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase)
         {
             { AttributeNames.TitleNiceName, Path },
+            { nameof(Path), Path },
             { nameof(Source), Source },
             { nameof(Priority), Priority },
             { nameof(Type), Type },
