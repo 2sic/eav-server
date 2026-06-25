@@ -53,7 +53,7 @@ public class WorkAttributesMod(
         var id = AddFieldToDbAndInitGeneralMetadata(contentTypeId, attDef, inputType);
         if (triggerPostSave)
             // Field definition changed => generated models may have new/removed properties.
-            TriggerPostSaveForContentType(contentTypeId);
+            TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.Return(id);
     }
 
@@ -105,7 +105,7 @@ public class WorkAttributesMod(
 
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
         workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
-        TriggerPostSaveForContentType(contentTypeId);
+        TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
@@ -113,7 +113,7 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
         AppWorkCtx.DbStorage.Attributes.RenameAttribute(attributeId, contentTypeId, newName);
-        TriggerPostSaveForContentType(contentTypeId);
+        TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
@@ -122,7 +122,7 @@ public class WorkAttributesMod(
         var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{orderCsv}");
         var sortOrderList = orderCsv.Split(',').Select(int.Parse).ToList();
         AppWorkCtx.DbStorage.ContentType.SortAttributes(contentTypeId, sortOrderList);
-        TriggerPostSaveForContentType(contentTypeId);
+        TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
@@ -133,7 +133,7 @@ public class WorkAttributesMod(
         var success = AppWorkCtx.DbStorage.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
         // Trigger only when delete succeeded; failed delete should not cause code regeneration.
         if (success)
-            TriggerPostSaveForContentType(contentTypeId);
+            TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.Return(success);
     }
 
@@ -174,7 +174,7 @@ public class WorkAttributesMod(
 
         if (contentTypeId > 0)
             // Sharing alters effective schema behavior and should re-run generators.
-            TriggerPostSaveForContentType(contentTypeId);
+            TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
@@ -210,7 +210,7 @@ public class WorkAttributesMod(
 
         if (triggerPostSave && contentTypeId > 0)
             // Allow caller to suppress trigger when this method is part of a larger multi-step operation.
-            TriggerPostSaveForContentType(contentTypeId);
+            TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
@@ -262,14 +262,16 @@ public class WorkAttributesMod(
         FieldInherit(newAttributeId, inheritMetadataOf: sourceField, triggerPostSave: false);
 
         // AddInheritedField is one logical schema operation, so trigger generation once.
-        TriggerPostSaveForContentType(contentTypeId);
+        TriggerPostSaveForContentType(contentType);
 
         return l.ReturnTrue();
     }
 
-    private void TriggerPostSaveForContentType(int contentTypeId)
+    private IContentType? GetContentType(int contentTypeId)
+        => AppWorkCtx.AppReader.GetContentTypeOptional(contentTypeId);
+
+    private void TriggerPostSaveForContentType(IContentType? contentType)
     {
-        var contentType = AppWorkCtx.AppReader.GetContentTypeOptional(contentTypeId);
         if (contentType == null)
             return;
 
