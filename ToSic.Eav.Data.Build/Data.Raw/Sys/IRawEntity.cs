@@ -8,7 +8,7 @@
 /// <remarks>
 /// Added in 15.04
 /// </remarks>
-[PrivateApi("Was public till 16.09")]
+[PrivateApi("Was public till 16.09, but needed to be reworked, currently should be unknown to the public")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IRawEntity
 {
