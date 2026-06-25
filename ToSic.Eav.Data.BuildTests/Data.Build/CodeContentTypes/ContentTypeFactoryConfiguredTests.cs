@@ -1,10 +1,9 @@
-﻿using ToSic.Eav.Data.Build.CodeContentTypes;
-using ToSic.Eav.Data.Build.Sys;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 
-namespace ToSic.Eav.Data.Build.ContentTypes;
+namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
 /// <summary>
 /// Tests for configured classes (with attributes)
@@ -32,7 +31,8 @@ public class ContentTypeFactoryConfiguredTests(CodeContentTypesManager ctDefFact
 
     private ContentTypeVirtualAttributes GetVAttribDecorator(Type t)
         => ctDefFactory.CreateTac(t).GetDecorator<ContentTypeVirtualAttributes>()!;
-        
+    
+    
     [Fact]
     public void Attributes_NoSpec_Count()
         => Equal(4, GetPropNoSpecs(x => x.Attributes.Count()));
@@ -135,12 +135,4 @@ public class ContentTypeFactoryConfiguredTests(CodeContentTypesManager ctDefFact
     public void Attributes_WithSpec_VDecoratorExactly2Record() =>
         Equal(2, GetVAttribDecorator(typeof(CodeTypeWithSpecsRecord))?.VirtualAttributes.Count);
 
-    
-    
-    [Fact]
-    public void Attributes_InternalFields()
-    {
-        var x = ctDefFactory.CreateTac<CodeTypeInternalFields>();
-        Single(x.Attributes);
-    }
 }

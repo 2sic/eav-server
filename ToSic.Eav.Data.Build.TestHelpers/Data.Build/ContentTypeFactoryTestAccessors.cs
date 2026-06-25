@@ -7,6 +7,9 @@ public static class ContentTypeFactoryTestAccessors
         public IContentType CreateTac(Type t)
             => ctDefFactory.Get(t);
 
+        public bool IsConfiguredTac(Type t)
+            => ctDefFactory.IsConfigured(t);
+
         public IContentType CreateTac<T>()
             => ctDefFactory.Get<T>();
     }

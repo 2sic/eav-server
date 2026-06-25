@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.Data.Build.Sys;
+﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.ContentTypes;
+
+namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
 /// Special system to manage and to convert c# classes with their definitions/attributes into content types.
@@ -11,18 +14,46 @@ public class CodeContentTypesManager(LazySvc<CodeContentTypeBuilder> ctBuilder)
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
 
+    /// <summary>
+    /// Get the ContentType for a given class. If it doesn't exist yet, it will be created and cached.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public IContentType Get<T>()
-        => Get(typeof(T));
+        => CtCache.TryGetValue(typeof(T), out var ct) ? ct : CreateAndAddToCache(typeof(T));
 
+    /// <summary>
+    /// Get the ContentType for a given class. If it doesn't exist yet, it will be created and cached.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public IContentType Get(Type type)
+        => CtCache.TryGetValue(type, out var ct) ? ct : CreateAndAddToCache(type);
+
+    /// <summary>
+    /// Pre-flight check if this type has configuration or not.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public bool IsConfigured(Type type)
     {
-        if (Cache.TryGetValue(type, out var contentType))
-            return contentType;
+        if (IsConfiguredCache.TryGetValue(type, out var ct))
+            return ct;
+        var isConfig = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>() != null;
+        IsConfiguredCache[type] = isConfig;
+        return isConfig;
+    }
+
+    private IContentType CreateAndAddToCache(Type type)
+    {
         var created = ctBuilder.Value.Generate(type,  name: null, nameId: null, scope: null);
-        Cache[type] = created;
+        CtCache[type] = created;
+        IsConfiguredCache[type] = created.RepositoryType == RepositoryTypes.CodeConfiguration;
         return created;
     }
 
-    private static readonly Dictionary<Type, IContentType> Cache = new();
+    private static readonly Dictionary<Type, IContentType> CtCache = new();
+
+    private static readonly Dictionary<Type, bool> IsConfiguredCache = new();
 
 }
