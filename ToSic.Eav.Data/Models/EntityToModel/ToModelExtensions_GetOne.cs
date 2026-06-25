@@ -18,7 +18,7 @@ public static partial class ToModelExtensions
         NoParamOrder npo = default,
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
-    ) where TModel : class, IModelFromEntity, new() =>
+    ) where TModel : class, IModelFromEntity =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         (list?.GetOne(id)).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
 
