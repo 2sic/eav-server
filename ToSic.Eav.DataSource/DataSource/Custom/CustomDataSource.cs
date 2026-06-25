@@ -46,13 +46,6 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// </summary>
     public override bool Immutable => true;
 
-    [field: AllowNull, MaybeNull]
-    private DataFactoryOptions Options
-    {
-        get => field ??= new() { TypeName = "Custom" };
-        set;
-    }
-
     protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 
     /// <summary>
@@ -156,7 +149,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     }
 
     private DataFactoryOptions GetBest(Func<DataFactoryOptions>? options)
-        => options?.Invoke() ?? Options;
+        => options?.Invoke() ?? new();
 
     private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>>? source, Func<DataFactoryOptions>? options)
         where T: IRawEntity
