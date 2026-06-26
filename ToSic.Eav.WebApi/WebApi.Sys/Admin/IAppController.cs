@@ -8,7 +8,8 @@ public interface IAppController
     // Replaced by DataSource System.Apps
     //ICollection<AppDto> List(int zoneId);
 
-    ICollection<AppDto> InheritableApps();
+    // Replaced by DataSource System.InheritableApps
+    //ICollection<AppDto> InheritableApps();
 
     void App(int zoneId, int appId, bool fullDelete = true);
 
