@@ -14,6 +14,8 @@
 /// </remarks>
 /// <typeparam name="TService"></typeparam>
 /// <typeparam name="TOptions"></typeparam>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IServiceRespawn<out TService, in TOptions>
     // : IServiceWithSetup<TOptions>
         // where TService : class, IServiceRespawn<TService, TOptions>

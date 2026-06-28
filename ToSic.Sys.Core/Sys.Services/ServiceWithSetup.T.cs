@@ -2,6 +2,7 @@
 
 // #NoEditorBrowsableBecauseOfInheritance
 //[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP as of v22")]
 public abstract class ServiceWithSetup<TServices, TOptions> : ServiceBase,
     IHasOptions<TOptions>,
     IServiceWithSetup<TOptions>

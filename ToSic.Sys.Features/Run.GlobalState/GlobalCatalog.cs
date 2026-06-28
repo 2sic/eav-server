@@ -8,6 +8,8 @@ namespace ToSic.Sys.Run.GlobalState;
 /// Goal is that it should be implemented by a specific class, 
 /// </summary>
 /// <typeparam name="T"></typeparam>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect where T : IHasIdentityNameId
 {
 #pragma warning disable CS8618, CS9264

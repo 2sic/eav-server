@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.GetByName;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ObjectWrapperCanGetByName(object? source): ICanGetByName
 {
     private readonly IDictionary<string, object?>? _source = source == null

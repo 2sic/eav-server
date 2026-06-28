@@ -19,6 +19,7 @@ using static ToSic.Sys.Capabilities.LicenseConstants;
 
 namespace ToSic.Sys.Capabilities.Licenses;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class BuiltInLicenses
 {
     // IMPORTANT

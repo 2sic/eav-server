@@ -1,7 +1,7 @@
-﻿
-namespace ToSic.Sys.Capabilities.Features;
+﻿namespace ToSic.Sys.Capabilities.Features;
 
 [PrivateApi("Internal stuff only")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ILibFeaturesService
 {
     bool IsEnabled(string nameIds);

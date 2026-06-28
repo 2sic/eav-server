@@ -3,7 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace ToSic.Sys.Security.Encryption;
 
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class Sha256
 {
@@ -16,15 +16,12 @@ public class Sha256
     /// * In v15.01 we changed this to use the CryptoServiceProvider which is FIPS compliant
     /// * In v19.03.03 we changed `new SHA256CryptoServiceProvider()` to be `SHA256.Create()` because of obsolete warnings
     /// </remarks>
-    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string Hash(string value) 
         => Hasher.Hash(SHA256.Create(), value);
 
-    [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string Hash(byte[] data) 
         => Hasher.Hash(SHA256.Create(), data);
 
-    [ShowApiWhenReleased(ShowApiMode.Never)]
     public string SignBase64(string certificateBase64, byte[] data)
     {
         if (certificateBase64 == null) throw new ArgumentNullException(nameof(certificateBase64));

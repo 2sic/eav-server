@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Sys.Utils;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ListExtensions
 {
     [ShowApiWhenReleased(ShowApiMode.Never)]

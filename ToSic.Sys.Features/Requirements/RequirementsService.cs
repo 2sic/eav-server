@@ -3,6 +3,7 @@
 /// <summary>
 /// Internal service to check if a requirement has been met
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class RequirementsService(LazySvc<ServiceSwitcher<IRequirementCheck>> checkers)
     : ServiceBase("Lib.ReqSvc", connect: [checkers])
 {

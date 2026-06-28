@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Capabilities.SysFeatures;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class SysFeatureSuggestions
 {
     // Only DNN will ever need to install Cs8, so we'll keep this link here

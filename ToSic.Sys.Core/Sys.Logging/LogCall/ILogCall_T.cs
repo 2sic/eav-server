@@ -11,6 +11,6 @@
 /// Type of data to return at the end of the call.
 /// Note that you cannot use `dynamic` for T, so if your result is dynamic, use `object`
 /// </typeparam>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ILogCall<T>: ILogCall;

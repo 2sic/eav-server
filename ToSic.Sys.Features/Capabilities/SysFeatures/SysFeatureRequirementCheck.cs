@@ -3,6 +3,7 @@ using ToSic.Sys.Requirements;
 
 namespace ToSic.Sys.Capabilities.SysFeatures;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SysFeatureRequirementCheck(LazySvc<SysFeaturesService> sysFeatsSvc) : RequirementCheckBase
 {
     public override string NameId => FeatureConstants.RequirementSysCapability;

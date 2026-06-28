@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Sys.Requirements;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IRequirementCheck: ISwitchableService
 {
     bool IsOk(Requirement requirement);

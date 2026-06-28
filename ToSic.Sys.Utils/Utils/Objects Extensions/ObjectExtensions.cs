@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace ToSic.Sys.Utils;
+﻿namespace ToSic.Sys.Utils;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static partial class ObjectExtensions

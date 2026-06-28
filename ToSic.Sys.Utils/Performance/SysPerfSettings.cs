@@ -1,4 +1,6 @@
 ﻿namespace ToSic.Sys.Performance;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class SysPerfSettings
 {
     public static bool PreferArray = false;

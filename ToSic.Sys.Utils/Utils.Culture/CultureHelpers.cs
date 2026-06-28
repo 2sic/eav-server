@@ -1,7 +1,6 @@
-﻿using System.Globalization;
+﻿namespace ToSic.Sys.Utils.Culture;
 
-namespace ToSic.Sys.Utils.Culture;
-
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class CultureHelpers
 {
     public static CultureInfo SafeCultureInfo(string?[]? dimensions)

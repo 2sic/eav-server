@@ -20,6 +20,7 @@ using ToSic.Sys.Capabilities.FeatureSet;
 
 namespace ToSic.Sys.Capabilities.Licenses;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LicenseService : ILicenseService
 {
     #region Public APIs

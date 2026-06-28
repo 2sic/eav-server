@@ -4,6 +4,7 @@ using ToSic.Sys.Caching;
 namespace ToSic.Sys.Capabilities.Features;
 
 [PrivateApi("Internal stuff only")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ISysFeaturesService: ICacheExpiring, ICanBeCacheDependency
 {
     #region WIP trying to remove the old IFeaturesService from our used API - this is temporary - should rename later as is better

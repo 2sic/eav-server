@@ -3,6 +3,8 @@
 /// <summary>
 /// Special structure for encrypted form data - for example when submitting from Mobius.
 /// </summary>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EncryptedData
 {
     /// <summary>

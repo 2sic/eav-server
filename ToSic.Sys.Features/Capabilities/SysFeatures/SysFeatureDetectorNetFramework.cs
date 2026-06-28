@@ -4,6 +4,7 @@
 
 namespace ToSic.Sys.Capabilities.SysFeatures;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SysFeatureDetectorNetFramework : SysFeatureDetector
 {
     /// <summary>

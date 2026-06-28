@@ -5,6 +5,8 @@ namespace ToSic.Sys.Logging;
 /// <summary>
 /// WIP - special class to reduce logging noise
 /// </summary>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LogFilter(
     ILog log,
     int? logFirstMax = LogFilter.LogFirstMaxDefault,

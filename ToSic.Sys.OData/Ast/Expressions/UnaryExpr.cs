@@ -1,5 +1,6 @@
 namespace ToSic.Sys.OData.Ast;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class UnaryExpr(string op, Expr operand) : Expr
 {
     public const string Not = "not";

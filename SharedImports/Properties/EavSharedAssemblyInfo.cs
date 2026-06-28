@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using ToSic.Sys.Documentation;
 using static ToSic.Sys.Assembly.SharedAssemblyInfo;
 
 // Use the globally defined assembly version information in all projects
@@ -21,6 +22,8 @@ namespace ToSic.Sys.Assembly;
 /// <summary>
 /// Contains information for all assemblies to use
 /// </summary>
+[PrivateApi]
+[System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
 public static class SharedAssemblyInfo
 {
     // Important: These must be constants!

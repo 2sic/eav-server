@@ -4,6 +4,7 @@ using ToSic.Sys.Utils.Assemblies;
 
 namespace ToSic.Sys.Capabilities.SysFeatures;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SysFeaturesService(IServiceProvider sp)
     : ServiceBase("Eav.SysCap", connect: [/* never! sp*/ ])
 {

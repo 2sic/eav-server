@@ -5,6 +5,7 @@ using ToSic.Sys.Utils;
 
 namespace ToSic.Sys.OData;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class UriQueryParser
 {
     // Entry: dictionary with keys like $filter, $orderby, etc.

@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Utils;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StringArrayExtensions
 {
     /// <summary>

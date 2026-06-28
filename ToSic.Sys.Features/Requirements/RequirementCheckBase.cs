@@ -6,6 +6,7 @@ namespace ToSic.Sys.Requirements;
 /// Base class for requirements checkers.
 /// Just so we fully support the ISwitchable interface without having to code it in each checker
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class RequirementCheckBase: IRequirementCheck
 {
     public abstract string NameId { get; }

@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Sys.Capabilities;
 
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureConstants
 {
     //internal const bool AllowUnsignedFeatures = true; // testing mode!

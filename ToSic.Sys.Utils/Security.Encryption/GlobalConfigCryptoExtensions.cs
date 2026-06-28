@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Security.Encryption;
 
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class GlobalConfigCryptoExtensions
 {
     /// <summary>

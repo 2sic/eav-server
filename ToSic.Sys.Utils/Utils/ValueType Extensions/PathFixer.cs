@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Utils;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PathFixer
 {
     public const string PathTraversal = "..";

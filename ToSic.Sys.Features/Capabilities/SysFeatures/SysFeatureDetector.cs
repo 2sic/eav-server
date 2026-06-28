@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Capabilities.SysFeatures;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class SysFeatureDetector(SysFeature definition, bool isEnabled = default) : ISysFeatureDetector
 {
     public SysFeature Definition { get; } = definition;

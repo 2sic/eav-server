@@ -1,4 +1,6 @@
 ﻿namespace ToSic.Sys.Performance;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ToListExtensions
 {
     public static IList<T> ToListOpt<T>(this IEnumerable<T> source)

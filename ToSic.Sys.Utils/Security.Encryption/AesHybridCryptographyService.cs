@@ -10,6 +10,7 @@ namespace ToSic.Sys.Security.Encryption;
 /// In v19.03.03 we changed `new AesCryptoServiceProvider()` to be `Aes.Create()` because of obsolete warnings
 /// Since it's only used in the SecureEndpoint, it's maybe wrong in the Sys.Security namespace, but it was the only place where it was used.
 /// </remarks>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AesHybridCryptographyService(RsaCryptographyService rsa)
 {
     public string Decrypt(EncryptedData encryptedData)

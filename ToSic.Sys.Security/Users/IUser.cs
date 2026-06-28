@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Sys.Users;
 
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IUser: ILogShouldNeverConnect
 {
 

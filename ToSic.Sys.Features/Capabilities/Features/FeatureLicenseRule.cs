@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Sys.Capabilities.Features;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureLicenseRule
 {
     public FeatureLicenseRule(FeatureSet.FeatureSet featureSet, bool enabled)

@@ -1,8 +1,8 @@
-﻿
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace ToSic.Sys;
 
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SysConstants
 {
     public const string Unknown = "unknown";

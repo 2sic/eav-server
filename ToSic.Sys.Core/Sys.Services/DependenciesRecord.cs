@@ -29,7 +29,7 @@ public abstract record DependenciesRecord : IDependencies
     internal DependenciesLogHelper LogHelper { get; } = new();
 
     /// <summary>
-    /// Add objects to various queues to be auto-initialized when <see cref="ServiceDependenciesExtensions.ConnectServices{TDependencies}"/> is called later on
+    /// Add objects to various queues to be auto-initialized when <see cref="DependenciesExtensions.ConnectServices{TDependencies}"/> is called later on
     /// </summary>
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
     protected void ConnectLogs(object[] services)
@@ -45,18 +45,3 @@ public abstract record DependenciesRecord : IDependencies
         InitDone = true;
     }
 }
-
-//[PrivateApi]
-//public static partial class ServiceDependenciesExtensions
-//{
-//    /// <summary>
-//    /// Auto-initialize the log on all dependencies.
-//    /// Special format to allow command chaining, so it returns itself.
-//    /// </summary>
-//    public static TMyServices ConnectServices<TMyServices>(this TMyServices parent, ILog log)
-//        where TMyServices : IDependencies, ILazyInitLog
-//    {
-//        (parent as ILazyInitLog).SetLog(log);
-//        return parent;
-//    }
-//}

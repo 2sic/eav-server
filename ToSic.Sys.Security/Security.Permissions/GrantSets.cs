@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Security.Permissions;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class GrantSets
 {
     /// <summary>

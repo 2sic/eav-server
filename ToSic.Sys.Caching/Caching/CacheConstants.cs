@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Sys.Caching;
 
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class CacheConstants
 {
     private const int Duration1Hour = 60 * 60;

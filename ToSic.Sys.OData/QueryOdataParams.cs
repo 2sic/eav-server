@@ -7,6 +7,7 @@ namespace ToSic.Sys.OData;
 /// <summary>
 /// Helper to retrieve all OData parameters from the query string, and parse them into a ODataOptions object.
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryODataParams
 {
     public static Dictionary<string, ODataOptions> CreateMany(Func<IDictionary<string, string>, IDictionary<string, string>> parseFunc, string[] streamNames, string? selectedStream = default)
