@@ -4,6 +4,7 @@ using ToSic.Eav.Metadata.Sys;
 
 namespace ToSic.Eav.Apps.AppReader.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppReader() : ServiceBase("App.Reader"), IAppReader
 {
     internal AppReader Init(AppState appState, ILog? parentLog)

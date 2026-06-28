@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Apps.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IParentAppState
 {
     /// <summary>

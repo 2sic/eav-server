@@ -6,6 +6,7 @@ namespace ToSic.Eav.Data.Sys.Entities.Sources;
 /// This marks something which can give a list of entities. Usually used for lazy-loading data, where the source is attached, but the data isn't loaded yet. 
 /// </summary>
 [PrivateApi("this is just fyi")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IEntitiesSource: ICacheExpiring
 {
     IEnumerable<IEntity> List { get; }  

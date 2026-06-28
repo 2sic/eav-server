@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS9113 // Parameter is unread.
 namespace ToSic.Eav.Environment.Sys.ServerPaths;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class ServerPathsUnknown(WarnUseOfUnknown<ServerPathsUnknown> _): ServerPathsBase, IIsUnknown
 {
     public override string FullAppPath(string virtualPath)

@@ -3,6 +3,7 @@ using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ZoneMapperExtensions
 {
     /// <summary>

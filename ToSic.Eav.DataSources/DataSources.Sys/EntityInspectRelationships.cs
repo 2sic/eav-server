@@ -17,6 +17,7 @@ namespace ToSic.Eav.DataSources.Sys;
 /// </remarks>
 /// <inheritdoc />
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [VisualQuery(
     NiceName = "Entity inspect Relationships",
     UiHint = "List all entity relationships",

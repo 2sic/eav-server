@@ -9,6 +9,7 @@ namespace ToSic.Eav.DataSource.OData;
 /// Translates OData system query options into an EAV data-source pipeline using the existing ValueFilter / ValueSort components.
 /// The result contains both the filtered <see cref="IEntity"/> list and a lightweight projection honouring the select option.
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
 {
     private readonly DataSourceOptionConverter _optionConverter = new();
@@ -266,6 +267,7 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
 /// </summary>
 /// <param name="Items"></param>
 /// <param name="Projection"></param>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record QueryExecutionResult(IReadOnlyList<IEntity> Items, IReadOnlyList<IDictionary<string, object?>> Projection);
 
 

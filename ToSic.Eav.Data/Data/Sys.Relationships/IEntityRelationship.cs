@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Sys.Relationships;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IEntityRelationship
 {
     /// <summary>

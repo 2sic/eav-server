@@ -11,6 +11,7 @@ namespace ToSic.Eav.DataSources;
 /// It parses a raw OData query string and builds the corresponding ValueFilter/ValueSort pipeline.
 /// </summary>
 [PrivateApi("Internal only, probably not used for real, as it's now a standard feature of any query")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [VisualQuery(
     NiceName = "OData",
     UiHint = "Filter and sort using OData options like $filter, $orderby, $top, $skip",

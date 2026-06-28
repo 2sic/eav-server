@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Processing;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract record ActionData
 {
     public virtual object? DataUntyped { get; init; }
@@ -23,6 +24,8 @@ public abstract record ActionData
     public static ActionData<TNewData> Create<TNewData>(TNewData data) => new() { Data = data };
 
 }
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record ActionData<TData>() : ActionData
 {
 

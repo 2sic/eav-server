@@ -8,6 +8,7 @@ namespace ToSic.Eav.DataSources;
 
 [ModelSpecs(Use = typeof(PagingModelOfEntity))]
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IPagingModel : IModelFromData
 {
     string Title { get; }

@@ -8,6 +8,7 @@ namespace ToSic.Eav.Apps;
 /// It's primarily used so helper functions can tell us more about the App
 /// by receiving a TODO object which has this hidden somewhere.
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppSpecs : IAppIdentity, IHasIdentityNameId
 {
     string Name { get; }

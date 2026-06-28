@@ -2,6 +2,7 @@
 
 // Must keep private for now, as it somehow ends up on every object in the docs
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ModelSetupExtensions
 {
     /// <summary>

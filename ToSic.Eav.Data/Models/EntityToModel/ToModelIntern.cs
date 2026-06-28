@@ -4,6 +4,7 @@ using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Models;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ToModelIntern
 {
     /// <summary>

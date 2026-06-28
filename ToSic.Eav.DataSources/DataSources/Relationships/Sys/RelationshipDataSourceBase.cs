@@ -8,6 +8,7 @@ namespace ToSic.Eav.DataSources.Sys;
 /// <remarks>
 /// * in v18.00 we optimized it to also check draft-permissions of the returned data - previously this was not checked
 /// </remarks>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class RelationshipDataSourceBase : DataSourceBase
 {
     /// <summary>

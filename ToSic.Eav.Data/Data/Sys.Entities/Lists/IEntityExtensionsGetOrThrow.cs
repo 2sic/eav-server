@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Sys.Entities;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class IEntityExtensionsGetOrThrow
 {
     [ShowApiWhenReleased(ShowApiMode.Never)]

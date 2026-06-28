@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Processing;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataProcessingEvents
 {
     public const string PreSave = "pre-save";

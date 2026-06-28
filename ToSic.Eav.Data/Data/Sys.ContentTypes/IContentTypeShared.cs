@@ -4,6 +4,7 @@
 /// Represents a Content Type which is available somewhere, but is defined elsewhere
 /// </summary>
 [PrivateApi("not yet ready to publish, names will probably change some day")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IContentTypeShared
 {
     /// <summary>

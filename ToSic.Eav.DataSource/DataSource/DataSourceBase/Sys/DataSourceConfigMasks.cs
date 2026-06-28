@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.DataSource.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class DataSourceConfigMasks
 {
     /// <summary>

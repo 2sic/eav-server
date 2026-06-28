@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Environment.Sys.ServerPaths;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class ServerPathsBase: IServerPaths
 {
     public abstract string FullAppPath(string virtualPath);

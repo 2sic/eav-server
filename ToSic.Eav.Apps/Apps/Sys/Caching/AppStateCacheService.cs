@@ -8,6 +8,7 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// The names of the Get etc. will probably change a few more times
 /// </summary>
 [PrivateApi("internal")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppStateCacheService(AppsCacheSwitch appsCacheSwitch) : IAppStateCacheService
 {
     internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;

@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSource.Sys.Streams;
 /// <param name="listDelegate">Function which gets Entities</param>
 /// <param name="enableAutoCaching"></param>
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataStream(
     LazySvc<IDataSourceCacheService> cache,
     IDataSource source,

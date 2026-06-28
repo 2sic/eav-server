@@ -3,6 +3,7 @@ using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Build.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class DataAssemblerExtensions
 {
     /// <summary>

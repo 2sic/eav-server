@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Models.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataModelNames
 {
 

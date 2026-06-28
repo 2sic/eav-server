@@ -9,6 +9,7 @@ namespace ToSic.Eav.DataSources.Sys;
 /// </summary>
 /// <param name="featureSvc"></param>
 /// <param name="dataFactory"></param>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeaturesForDataSources(ISysFeaturesService featureSvc, IDataFactory dataFactory)
 {
     /// <summary>

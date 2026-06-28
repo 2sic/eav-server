@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Data;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class AttributeExtensions
 {
     public static bool IsEntity(this IAttribute attribute) => attribute.Type == ValueTypes.Entity;

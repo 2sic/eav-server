@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Eav.Data.Sys.ContentTypes;
 
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming
 public static class IContentTypeAttributePickerExtensions
 {

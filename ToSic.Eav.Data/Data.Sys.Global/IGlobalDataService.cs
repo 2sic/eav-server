@@ -9,6 +9,7 @@ namespace ToSic.Eav.Data.Sys.Global;
 /// Since there are cases during boot where the global content types are not yet available,
 /// there is both an allow-null and strict mode for this service.
 /// </remarks>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IGlobalDataService
 {
     /// <summary>

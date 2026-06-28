@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Metadata.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IMetadataOfSource
 {
     /// <summary>

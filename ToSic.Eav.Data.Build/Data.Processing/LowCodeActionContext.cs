@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Processing;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record LowCodeActionContext
 {
     public Dictionary<string, object?> Context { get; init; } = new(StringComparer.OrdinalIgnoreCase);

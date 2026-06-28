@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Sys.ValueConverter;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ValueConverterExtensions
 {
     public static object PreConvertReferences(this IValueConverter valueConverter, object value, ValueTypes valueType, bool resolveHyperlink)

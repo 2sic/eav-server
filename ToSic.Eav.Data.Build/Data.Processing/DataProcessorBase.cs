@@ -4,6 +4,7 @@
 /// WIP - idea is to have objects which can process data - like before/after saving.
 /// Specs still very unclear; 2dm.
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class DataProcessorBase: IDataProcessor
 {
     /// <summary>

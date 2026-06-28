@@ -8,6 +8,7 @@ public interface IAppDataSourcesLoader
     AppLocalDataSources CompileDynamicDataSources(int appId);
 }
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record AppLocalDataSources(
     List<DataSourceInfo> Data,
     TimeSpan SlidingExpiration,

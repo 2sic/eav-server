@@ -8,6 +8,7 @@ using ToSic.Sys.Capabilities.FeatureSet;
 
 namespace ToSic.Eav.DataSources.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class FeaturesToRawEntity
 {
     public const string FeatureStateTypeName = "FeatureState";

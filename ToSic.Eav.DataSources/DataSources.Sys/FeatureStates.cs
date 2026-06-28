@@ -12,6 +12,7 @@ namespace ToSic.Eav.DataSources.Sys;
 /// </remarks>
 /// <inheritdoc />
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [VisualQuery(
     NiceName = "Feature States",
     UiHint = "List all features states",

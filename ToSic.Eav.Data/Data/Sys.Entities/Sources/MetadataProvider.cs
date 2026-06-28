@@ -1,6 +1,8 @@
 ﻿using ToSic.Eav.Metadata.Sys;
 
 namespace ToSic.Eav.Data.Sys.Entities.Sources;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class MetadataProvider
 {
     public static IMetadataProvider Create(IEnumerable<IEntity>? items = null, IHasMetadataSourceAndExpiring? source = null, Func<IHasMetadataSourceAndExpiring>? sourceDeferred = null)

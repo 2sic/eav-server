@@ -6,6 +6,7 @@
 /// so that a simple wrapper helper can detect and warn about this.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IModelFactoryRequired;
 
 /// <summary>
@@ -29,6 +30,7 @@ public interface IModelFactoryRequired;
 /// The data type which can be accepted.
 /// Must be <see cref="IEntity"/> or <see cref="ITypedItem"/> (other types not supported for now).
 /// </typeparam>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IModelSetupWithFactory<in TSource> : IModelFactoryRequired, IModelFromData
 {
     /// <summary>

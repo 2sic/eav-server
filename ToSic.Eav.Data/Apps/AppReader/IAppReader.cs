@@ -10,6 +10,7 @@ namespace ToSic.Eav.Apps;
 ///
 /// To get an app Reader, use the ??? TODO
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppReader:
     IAppIdentity,
     IAppReadEntities,

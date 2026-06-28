@@ -1,4 +1,6 @@
 ﻿namespace ToSic.Eav.Apps.Sys;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class KnownAppsConstants
 {
     /// <summary>

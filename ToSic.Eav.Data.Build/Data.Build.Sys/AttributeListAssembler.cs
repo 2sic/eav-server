@@ -4,6 +4,7 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Build.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AttributeListAssembler(AttributeAssembler attributeAssembler, ValueAssembler valueAssembler)
     : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld", connect: [attributeAssembler, valueAssembler])
 {

@@ -24,6 +24,7 @@ namespace ToSic.Eav.DataSources.Sys;
 /// </remarks>
 /// <inheritdoc />
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [VisualQuery(
     NiceName = "System Data",
     NameId = "37cf83f7-5e57-4c4a-9798-a7e1440f99b3",

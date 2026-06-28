@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Processing;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public enum DataPreprocessorDecision
 {
     /// <summary>

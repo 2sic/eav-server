@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Eav.Models;
 
 [Flags]
+[WorkInProgressApi("WIP v22")]
 public enum ModelNullHandling
 {
     /// <summary>

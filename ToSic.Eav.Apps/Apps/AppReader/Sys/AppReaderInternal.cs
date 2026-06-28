@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.Sys.State.Managers;
 
 namespace ToSic.Eav.Apps.AppReader.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class AppReaderInternal
 {
     public static IImmutableList<IEntity> GetListPublished(this IAppReader reader)
