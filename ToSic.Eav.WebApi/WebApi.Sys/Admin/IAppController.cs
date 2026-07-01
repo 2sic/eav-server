@@ -18,7 +18,9 @@ public interface IAppController
     // Replaced by DataSource System.AppLanguages
     //ICollection<SiteLanguageDto> Languages(int appId);
 
-    AppExportInfoDto Statistics(int zoneId, int appId);
+    // Replaced by DataSource System.AppStatistics through query System.SysData.
+    // Use app/auto/query/System.SysData/Default with SysDataSource=System.AppStatistics.
+    //AppExportInfoDto Statistics(int zoneId, int appId);
 
     bool FlushCache(int zoneId, int appId);
 
