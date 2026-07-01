@@ -1,4 +1,6 @@
-﻿using System.Xml.XPath;
+﻿using System.Collections;
+using System.Runtime.CompilerServices;
+using System.Xml.XPath;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Sys.Ancestors;
@@ -21,53 +23,42 @@ public class ZipExport(
     IGlobalConfiguration globalConfiguration,
     ISysFeaturesService features
     )
-    : ServiceBase(EavLogs.Eav + ".ZipExp",
+    : ServiceWithSetup<ZipExport.Options>(EavLogs.Eav + ".ZipExp",
         connect: [appReaders, xmlExporter, globalConfiguration, fileManagerGenerator, features])
 {
-    private int _appId;
-    private int _zoneId;
+    public record Options : IAppIdentity
+    {
+        public int ZoneId { get; init; }
+        public int AppId { get; init; }
+        public string AppFolder { get; init; } = "";
+        public string PhysicalAppPath { get; init; } = "";
+        public string PhysicalPathGlobal { get; init; } = "";
+    }
+
     private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
     private const string SourceControlDataFolder = FolderConstants.DataFolderProtected;
     private const string SourceControlDataFile = FolderConstants.AppDataFile;
-    private readonly string _blankGuid = Guid.Empty.ToString();
 
-    public AppFileManager AppFileManager = null!;
-    private string _physicalAppPath = null!;
-    private string _appFolder = null!;
+    private AppFileManager AppFileManager => field
+        ??= fileManagerGenerator.New().SetFolder(MyOptions.AppId, MyOptions.PhysicalAppPath);
 
-    public AppFileManager AppFileManagerGlobal = null!;
-    private string _physicalPathGlobal = null!;
+    private AppFileManager AppFileManagerGlobal => field
+        ??= fileManagerGenerator.New().SetFolder(MyOptions.AppId, MyOptions.PhysicalPathGlobal);
 
-    #region DI Constructor
-
-    public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal)
+    public int CountFiles(bool withGlobal, Func<AppFileManager, IEnumerable<string>> countFn)
     {
-        _appId = appId;
-        _zoneId = zoneId;
-        _appFolder = appFolder;
-        _physicalAppPath = physicalAppPath;
-        _physicalPathGlobal = physicalPathGlobal;
-
-        AppFileManager = fileManagerGenerator.New().SetFolder(appId, _physicalAppPath);
-        AppFileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal);
-        
-        var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appReader = appReaders.Get(appIdentity);
-        return this;
+        return countFn(AppFileManager).Count() + (withGlobal ? countFn(AppFileManagerGlobal).Count() : 0);
     }
-
-    private IAppReader _appReader = null!;
-    #endregion
 
     public void ExportForSourceControl(AppExportSpecs specs)
     {
         var l = Log.Fn(specs.Dump());
-        var appDataPath = Path.Combine(_physicalAppPath, SourceControlDataFolder);
+        var appDataPath = Path.Combine(MyOptions.PhysicalAppPath, SourceControlDataFolder);
         l.A($"Target Path: {appDataPath}");
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
-        ZipImport.MigrateOldAppDataFile(_physicalAppPath);
+        ZipImport.MigrateOldAppDataFile(MyOptions.PhysicalAppPath);
 
         // create App_Data unless exists
         Directory.CreateDirectory(appDataPath);
@@ -81,7 +72,7 @@ public class ZipExport(
             var appDataDirectory = new DirectoryInfo(appDataPath);
 
             // 1. Copy app global templates folder for version control
-            if (Directory.Exists(_physicalPathGlobal))
+            if (Directory.Exists(MyOptions.PhysicalPathGlobal))
             {
                 // Sometimes delete is locked by external process
                 try
@@ -138,7 +129,7 @@ public class ZipExport(
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
-        ZipImport.MigrateOldAppDataFile(_physicalAppPath);
+        ZipImport.MigrateOldAppDataFile(MyOptions.PhysicalAppPath);
 
         #region Copy needed files to temporary directory
 
@@ -152,20 +143,20 @@ public class ZipExport(
         AddInstructionsToPackageFolder(temporaryDirectoryPath);
 
         var tempDirectory = new DirectoryInfo(temporaryDirectoryPath);
-        var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + _appFolder + "/");
+        var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + MyOptions.AppFolder + "/");
 
         var sexyDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForAppStuff);
         var globalSexyDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForGlobalAppStuff);
         var siteFilesDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForPortalFiles);
 
         // Copy app folder
-        if (Directory.Exists(_physicalAppPath))
+        if (Directory.Exists(MyOptions.PhysicalAppPath))
             AppFileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
 
         // Copy global app folder only for ParentApp
         var parentAppGuid = xmlExport.AppReader.GetParentCache()?.NameId;
         if (parentAppGuid == null || AppStateExtensions.AppGuidIsAPreset(parentAppGuid))
-            if (Directory.Exists(_physicalPathGlobal))
+            if (Directory.Exists(MyOptions.PhysicalPathGlobal))
                 AppFileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
         // Copy SiteFiles
@@ -222,8 +213,8 @@ public class ZipExport(
 
     private XmlExporter GenerateExportXml(AppExportSpecs specs)
     {
-            // Get Export XML
-        var appIdentity = new AppIdentity(_zoneId, _appId);
+        var _appReader = appReaders.Get(MyOptions);
+        // Get Export XML
         var contentTypes = _appReader.ContentTypes.OfScope(includeAttributeTypes: true);
         contentTypes = contentTypes
             .Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
@@ -276,7 +267,7 @@ public class ZipExport(
         // Reset the AppGuid in the xml export, so it can be used for a new app which will also have a new guid on import
         var root = xmlExport.ExportXDocument; //.Root;
         var appGuid = root.XPathSelectElement("/SexyContent/Header/App")!.Attribute(XmlConstants.Guid)!;
-        appGuid.Value = _blankGuid;
+        appGuid.Value = Guid.Empty.ToString();
         return xmlExport;
         #endregion
     }
