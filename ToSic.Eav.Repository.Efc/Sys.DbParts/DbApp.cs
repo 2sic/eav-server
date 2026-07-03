@@ -24,15 +24,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
         try
         {
             if (inheritAppId > 0)
-            {
-                var sysSettings = new AppSysSettingsJsonInDb
-                {
-                    Inherit = true,
-                    AncestorAppId = inheritAppId.Value
-                };
-                var asJson = JsonSerializer.Serialize(sysSettings, JsonOptions.SafeJsonForHtmlAttributes);
-                newApp.SysSettings = asJson;
-            }
+                newApp.SysSettings = InheritanceSettingsJson(inheritAppId.Value);
         }
         catch { /* ignore */ }
 
@@ -42,6 +34,19 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
         return (newApp.AppId, newApp.Name);
     }
 
+    private static string InheritanceSettingsJson(int inheritAppId)
+        => JsonSerializer.Serialize(new AppSysSettingsJsonInDb
+        {
+            Inherit = true,
+            AncestorAppId = inheritAppId
+        }, JsonOptions.SafeJsonForHtmlAttributes);
+
+    internal void SetInheritanceAndSave(int appId, int inheritAppId)
+    {
+        var app = DbStore.SqlDb.TsDynDataApps.First(a => a.AppId == appId);
+        app.SysSettings = InheritanceSettingsJson(inheritAppId);
+        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Update(app));
+    }
 
     /// <summary>
     /// Delete an existing App with any Values and Attributes
@@ -91,7 +96,6 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
             }
         );
     }
-
 
     /// <summary>
     /// Replacement for SQL call to ToSIC_EAV_DeleteApp
