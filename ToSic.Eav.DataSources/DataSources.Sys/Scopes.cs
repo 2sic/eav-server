@@ -31,12 +31,11 @@ public sealed class Scopes : CustomDataSource
     [PrivateApi]
     public Scopes(Dependencies services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes", connect: [appReadFac])
     {
-        _appReadFac = appReadFac;
-        ProvideOutRaw(() => _appReadFac.Get(AppId).ContentTypes
+        ProvideOutRaw(() => appReadFac.Get(AppId).ContentTypes
             .GetAllScopesWithLabels()
             .Select(s =>
             {
-                var types = _appReadFac.Get(AppId).ContentTypes.OfScope(s.Key).ToList();
+                var types = appReadFac.Get(AppId).ContentTypes.OfScope(s.Key).ToList();
                 var inherited = types.Count(t => t.HasAncestor());
                 return new ScopeModel
                 {
@@ -48,5 +47,4 @@ public sealed class Scopes : CustomDataSource
                 };
             }));
     }
-    private readonly IAppReaderFactory _appReadFac;
 }
