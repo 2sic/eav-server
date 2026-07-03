@@ -18,7 +18,8 @@ namespace ToSic.Eav.DataSources.Sys;
     NiceName = "Data Scopes",
     Type = DataSourceType.System,
     UiHint = "Data Scopes group Content-Types by topic",
-    Audience = Audience.Advanced
+    Audience = Audience.Advanced,
+    DataConfidentiality = DataConfidentiality.Confidential
 )]
 // ReSharper disable once UnusedMember.Global
 public sealed class Scopes : CustomDataSource
@@ -31,12 +32,21 @@ public sealed class Scopes : CustomDataSource
     public Scopes(Dependencies services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes", connect: [appReadFac])
     {
         _appReadFac = appReadFac;
-        ProvideOutRaw(() => _appReadFac.Get(AppId).ContentTypes.GetAllScopesWithLabels().Select(s =>
-        {
-            var types = _appReadFac.Get(AppId).ContentTypes.OfScope(s.Key).ToList();
-            var inherited = types.Count(t => t.HasAncestor());
-            return new ScopeModel { NameId = s.Key, Name = s.Value, TypesTotal = types.Count, TypesInherited = inherited, TypesOfApp = types.Count - inherited };
-        }));
+        ProvideOutRaw(() => _appReadFac.Get(AppId).ContentTypes
+            .GetAllScopesWithLabels()
+            .Select(s =>
+            {
+                var types = _appReadFac.Get(AppId).ContentTypes.OfScope(s.Key).ToList();
+                var inherited = types.Count(t => t.HasAncestor());
+                return new ScopeModel
+                {
+                    NameId = s.Key,
+                    Name = s.Value,
+                    TypesTotal = types.Count,
+                    TypesInherited = inherited,
+                    TypesOfApp = types.Count - inherited,
+                };
+            }));
     }
     private readonly IAppReaderFactory _appReadFac;
 }
