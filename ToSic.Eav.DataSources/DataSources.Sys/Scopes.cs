@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.DataSource.Sys;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -14,6 +13,7 @@ namespace ToSic.Eav.DataSources.Sys;
 [VisualQuery(
     ConfigurationType = "",
     NameId = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
+    NameIds = ["System.Scopes"],
     Icon = DataSourceIcons.Scopes,
     NiceName = "Data Scopes",
     Type = DataSourceType.System,
@@ -31,27 +31,12 @@ public sealed class Scopes : CustomDataSource
     public Scopes(Dependencies services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes", connect: [appReadFac])
     {
         _appReadFac = appReadFac;
-        ProvideOutRaw(GetList, options: () => new()
+        ProvideOutRaw(() => _appReadFac.Get(AppId).ContentTypes.GetAllScopesWithLabels().Select(s =>
         {
-            AutoId = false,
-            TitleField = "Name",
-            TypeName = "Scope",
-        });
+            var types = _appReadFac.Get(AppId).ContentTypes.OfScope(s.Key).ToList();
+            var inherited = types.Count(t => t.HasAncestor());
+            return new ScopeModel { NameId = s.Key, Name = s.Value, TypesTotal = types.Count, TypesInherited = inherited, TypesOfApp = types.Count - inherited };
+        }));
     }
     private readonly IAppReaderFactory _appReadFac;
-
-    private IEnumerable<IRawEntity> GetList()
-    {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
-        var scopes = _appReadFac.Get(AppId).ContentTypes.GetAllScopesWithLabels();
-        var list = scopes
-            .Select(s => new RawEntity(new()
-            {
-                { AttributeNames.NameIdNiceName, s.Key },
-                { "Name", s.Value }
-            }))
-            .ToList();
-
-        return l.Return(list, $"{list.Count}");
-    }
 }
