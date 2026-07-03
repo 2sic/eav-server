@@ -90,7 +90,6 @@ public static class StartupWebApi
     public static IServiceCollection AddEavWebApiTypedAfterEav(this IServiceCollection services)
     {
         // APIs
-        services.TryAddTransient<ApiExplorerControllerReal>();
         services.TryAddTransient<AppWebApiControllerAnalyzer>();
         services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
         services.TryAddTransient<IAppExplorerControllerDependency, AppExplorerControllerDependencyUnknown>();
