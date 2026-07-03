@@ -18,8 +18,8 @@ public static class DictionaryExtensions
     /// </remarks>
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsIgnoreCase<T>(this IDictionary<string, T> original)
-        => original is Dictionary<string, T> dic && dic.Comparer.IsIgnoreCase()
-        || original is ImmutableDictionary<string, T> dicIm && dicIm.KeyComparer.IsIgnoreCase();
+        => (original is Dictionary<string, T> dic && dic.Comparer.IsIgnoreCase())
+        || (original is ImmutableDictionary<string, T> dicIm && dicIm.KeyComparer.IsIgnoreCase());
 
     private static bool IsIgnoreCase(this IEqualityComparer<string> comparer)
         => Equals(comparer, InvariantCultureIgnoreCase) || Equals(comparer, OrdinalIgnoreCase);
@@ -103,4 +103,8 @@ public static class DictionaryExtensions
         dict[key] = val;
         return val;
     }
+    
+    public static string GetValueOrKey(this IDictionary<string, string> dic, string key)
+        => dic.TryGetValue(key, out var value) && value != null ? value : key;
+            
 }

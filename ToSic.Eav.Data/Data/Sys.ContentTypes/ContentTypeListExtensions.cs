@@ -53,9 +53,12 @@ public static class ContentTypeListExtensions
         public IDictionary<string, string> GetAllScopesWithLabels()
         {
             var scopes = list.GetAllScopesInclDefault();
-            var lookup = ScopeConstants.ScopesWithNames;
             var results = scopes
-                .Select(s => new { value = s, name = lookup.TryGetValue(s, out var label) ? label : s })
+                .Select(s => new
+                {
+                    value = s,
+                    name = ScopeConstants.ScopesWithNames.GetValueOrKey(s)
+                })
                 .OrderByDescending(s => s.name == ScopeConstants.Default)
                 .ThenBy(s => s.name)
                 .ToDictionary(s => s.value, s => s.name);

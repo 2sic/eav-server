@@ -1,6 +1,5 @@
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -11,20 +10,23 @@ namespace ToSic.Eav.DataSources.Sys;
     Description = "Data Scope",
     Scope = "System"
 )]
-public class ScopeModel : RawEntity
+public class ScopeModel : RawEntity, IHasIdentityNameId
 {
     public required string NameId { get; init; }
 
     [ContentTypeAttributeSpecs(IsTitle = true)]
     public required string Name { get; init; }
+    
     public required int TypesTotal { get; init; }
+    
     public required int TypesInherited { get; init; }
+    
     public required int TypesOfApp { get; init; }
 
     public override IDictionary<string, object?> Attributes(RawConvertOptions options) =>
         new Dictionary<string, object?>
         {
-            { AttributeNames.NameIdNiceName, NameId },
+            { nameof(NameId), NameId },
             { nameof(Name), Name },
             { nameof(TypesTotal), TypesTotal },
             { nameof(TypesInherited), TypesInherited },

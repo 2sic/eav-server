@@ -31,20 +31,31 @@ public sealed class Scopes : CustomDataSource
     [PrivateApi]
     public Scopes(Dependencies services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes", connect: [appReadFac])
     {
-        ProvideOutRaw(() => appReadFac.Get(AppId).ContentTypes
-            .GetAllScopesWithLabels()
-            .Select(s =>
-            {
-                var types = appReadFac.Get(AppId).ContentTypes.OfScope(s.Key).ToList();
-                var inherited = types.Count(t => t.HasAncestor());
-                return new ScopeModel
+        ProvideOutRaw(() =>
+        {
+            var contentTypes = appReadFac
+                .Get(AppId).ContentTypes
+                .ToListOpt();
+            
+            return contentTypes
+                .GetAllScopesWithLabels()
+                .Select(s =>
                 {
-                    NameId = s.Key,
-                    Name = s.Value,
-                    TypesTotal = types.Count,
-                    TypesInherited = inherited,
-                    TypesOfApp = types.Count - inherited,
-                };
-            }));
+                    var types = contentTypes
+                        .OfScope(s.Key)
+                        .ToListOpt();
+
+                    var inheritCount = types.Count(t => t.HasAncestor());
+
+                    return new ScopeModel
+                    {
+                        NameId = s.Key,
+                        Name = s.Value,
+                        TypesTotal = types.Count,
+                        TypesInherited = inheritCount,
+                        TypesOfApp = types.Count - inheritCount,
+                    };
+                });
+        });
     }
 }
