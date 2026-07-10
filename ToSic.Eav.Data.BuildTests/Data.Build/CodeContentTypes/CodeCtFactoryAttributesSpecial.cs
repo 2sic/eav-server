@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 /// </summary>
 /// <param name="ctDefManager"></param>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class ContentTypeFactoryAttributesSpecial(CodeContentTypesManager ctDefManager)
+public class CodeCtFactoryAttributesSpecial(CodeContentTypesManager ctDefManager)
 {
 
     [Fact]
