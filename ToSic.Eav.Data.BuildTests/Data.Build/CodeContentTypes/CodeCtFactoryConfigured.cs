@@ -1,43 +1,25 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
-using ToSic.Eav.Data.Sys.Attributes;
-using ToSic.Eav.Data.Sys.ContentTypes;
-using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
+// ReSharper disable UnusedMember.Global
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-// ReSharper disable once UnusedMember.Global
 public class CodeCtFactoryConfiguredClass(CodeContentTypesManager ctDefManager)
     : CodeCtFactoryConfigured<CodeTypeWithSpecs>(ctDefManager);
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-// ReSharper disable once UnusedMember.Global
 public class CodeCtFactoryConfiguredRecord(CodeContentTypesManager ctDefManager)
     : CodeCtFactoryConfigured<CodeTypeWithSpecsRecord>(ctDefManager);
 
+// ReSharper restore UnusedMember.Global
 
 /// <summary>
-/// Tests for configured classes (with attributes)
+/// Shared Tests for configured classes/records (with attributes).
+/// Both test samples (class and record) must have the same attributes, so we can use the same tests for both of them.
 /// </summary>
 /// <param name="ctDefManager"></param>
 public abstract class CodeCtFactoryConfigured<TRawEntity>(CodeContentTypesManager ctDefManager)
 {
-    private void AssertAttribute(IContentType ct, string name, ValueTypes type, bool isTitle = false, string? description = default)
-    {
-        var attribute = ct.Attributes.FirstOrDefault(a => a.Name == name);
-        NotNull(attribute); //, $"{name} null check");
-        Equal(name, attribute.Name); //, $"{name} Name check");
-        Equal(type, attribute.Type); //, $"{name} type check");
-        Equal(isTitle, attribute.IsTitle); //, $"{name} IsTitle check");
-        if (description != default)
-            Equal(description, attribute.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)); //, $"{name} Description check");
-    }
-
-    private ContentTypeVirtualAttributes GetVAttribDecorator(Type t)
-        => ctDefManager.CreateTac(t).GetDecorator<ContentTypeVirtualAttributes>()!;
-    
-    
-    
     [Fact]
     public void Attributes_WithSpec_Count()
         => Equal(5, ctDefManager.CreateTac<TRawEntity>().Attributes.Count());
@@ -50,7 +32,7 @@ public abstract class CodeCtFactoryConfigured<TRawEntity>(CodeContentTypesManage
     [InlineData(nameof(CodeTypeWithSpecs.BirthDate), ValueTypes.DateTime)]
     [InlineData(nameof(CodeTypeWithSpecs.IsAlive), ValueTypes.Boolean, false, CodeTypeWithSpecs.IsAliveDescription)]
     public void AssertAttributeWithSpec(string name, ValueTypes type, bool isTitle = false, string? description = default)
-        => AssertAttribute(ctDefManager.CreateTac<TRawEntity>(), name, type, isTitle, description);
+        => ctDefManager.CreateTac<TRawEntity>().AssertAttribute(name, type, isTitle, description);
     
     /// <summary>
     /// Don't use properties which are private, internal or have the Ignore attribute
@@ -67,11 +49,11 @@ public abstract class CodeCtFactoryConfigured<TRawEntity>(CodeContentTypesManage
     
     [Fact]
     public void Attributes_WithSpec_VDecoratorHas() =>
-        NotNull(GetVAttribDecorator(typeof(TRawEntity)));
+        NotNull(ctDefManager.GetVirtualAttribDecorator(typeof(TRawEntity)));
     
     
     [Fact]
     public void Attributes_WithSpec_VDecoratorExactly2() =>
-        Equal(2, GetVAttribDecorator(typeof(TRawEntity))?.VirtualAttributes.Count);
+        Equal(2, ctDefManager.GetVirtualAttribDecorator(typeof(TRawEntity)).VirtualAttributes.Count);
 
 }

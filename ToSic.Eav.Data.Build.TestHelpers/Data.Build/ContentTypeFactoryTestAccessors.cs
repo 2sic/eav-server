@@ -1,16 +1,22 @@
-﻿namespace ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.Sys.Entities;
+
+namespace ToSic.Eav.Data.Build;
 
 public static class ContentTypeFactoryTestAccessors
 {
-    extension(CodeContentTypesManager ctDefFactory)
+    extension(CodeContentTypesManager ctDefManager)
     {
         public IContentType CreateTac(Type t)
-            => ctDefFactory.Get(t);
+            => ctDefManager.Get(t);
 
         public bool IsConfiguredTac(Type t)
-            => ctDefFactory.IsConfigured(t);
+            => ctDefManager.IsConfigured(t);
 
         public IContentType CreateTac<T>()
-            => ctDefFactory.Get<T>();
+            => ctDefManager.Get<T>();
+
+        public ContentTypeVirtualAttributes GetVirtualAttribDecorator(Type t)
+            => ctDefManager.CreateTac(t).GetDecorator<ContentTypeVirtualAttributes>()!;
     }
 }
