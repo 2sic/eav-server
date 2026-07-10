@@ -5,15 +5,15 @@ using ToSic.Sys.TestHelpers.Assembly;
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class ContentTypeFactoryIsConfigured(CodeContentTypesManager ctDefFactory)
+public class CodeCtFactoryIsConfiguredSpecs(CodeContentTypesManager ctDefManager)
 {
     [Fact]
     public void NoSpecsIsNotConfigured()
-        => False(ctDefFactory.IsConfiguredTac(typeof(CodeTypeNoSpecsEmpty)));
+        => False(ctDefManager.IsConfiguredTac(typeof(CodeTypeNoSpecsEmpty)));
 
     [Fact]
     public void SpecsIsConfigured()
-        => True(ctDefFactory.IsConfiguredTac(typeof(CodeTypeWithSpecsEmpty)));
+        => True(ctDefManager.IsConfiguredTac(typeof(CodeTypeWithSpecsEmpty)));
 
     /// <summary>
     /// Configured types have a repositoryType of CodeConfiguration, while non-configured types have a repositoryType of CodeReflection.
@@ -24,6 +24,6 @@ public class ContentTypeFactoryIsConfigured(CodeContentTypesManager ctDefFactory
     [InlineData(RepositoryTypes.CodeReflection, nameof(CodeTypeNoSpecsEmpty))]
     [InlineData(RepositoryTypes.CodeConfiguration, nameof(CodeTypeWithSpecsEmpty))]
     public void Create_NoSpecs_RepositoryType(RepositoryTypes expected, string typeName)
-        => Equal(expected, ctDefFactory.CreateTac(typeof(CodeTypeNoSpecsEmpty).Assembly.GetTypeFromName(typeName)).RepositoryType);
+        => Equal(expected, ctDefManager.CreateTac(typeof(CodeTypeNoSpecsEmpty).Assembly.GetTypeFromName(typeName)).RepositoryType);
 
 }

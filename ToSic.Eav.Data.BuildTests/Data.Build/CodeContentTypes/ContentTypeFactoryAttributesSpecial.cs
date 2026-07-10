@@ -11,7 +11,7 @@ public class ContentTypeFactoryAttributesSpecial(CodeContentTypesManager ctDefMa
 {
 
     [Fact]
-    public void Attributes_InternalFields()
+    public void Attributes_OnlyOneInternalFields()
     {
         var x = ctDefManager.CreateTac<CodeTypeInternalFields>();
         Single(x.Attributes);
