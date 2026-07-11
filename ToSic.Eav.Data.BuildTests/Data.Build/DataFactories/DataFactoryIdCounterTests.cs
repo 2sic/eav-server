@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Data.Build.DataFactories;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class DataFactoryOptionTests(IDataFactory dataFactory)
+public class DataFactoryIdCounterTests(IDataFactory dataFactory)
 {
     [Fact]
     public void DefaultFactoryInitialHasIdSeed1()

@@ -11,7 +11,7 @@
 /// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IRawEntity: IGetRawConverter
+public interface IRawEntity: IConvertibleToRawEntity
 {
     /// <summary>
     /// The ID to use.

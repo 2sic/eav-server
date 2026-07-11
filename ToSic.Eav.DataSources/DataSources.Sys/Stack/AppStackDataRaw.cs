@@ -42,9 +42,9 @@ public class AppStackDataRaw(PropertyDumpItem original) : IGetRawConverter
                                             ?? 0; // do not count "duplicate" by SourceName
 
 
-    IConvertToRawEntity IGetRawConverter.GetConverter() => Converter;
+    IRawEntityConverter IGetRawConverter.GetConverter() => Converter;
 
-    private static IConvertToRawEntity Converter { get; } = new ConvertToRawFactory<AppStackDataRaw>((source, options) =>
+    private static IRawEntityConverter Converter { get; } = new ConvertToRawWithFactory<AppStackDataRaw>((source, options) =>
         new RawEntityRecord
         {
             Values = GetValues(source, options)

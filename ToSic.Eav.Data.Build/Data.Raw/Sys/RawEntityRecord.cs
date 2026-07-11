@@ -53,5 +53,4 @@ public sealed record RawEntityRecord: IRawEntity
 
     public required IDictionary<string, object?> Values { get; init; }
 
-    IConvertToRawEntity IGetRawConverter.GetConverter() => ConvertToRawSelf.Instance;
 }

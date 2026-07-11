@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data.Raw.Sys;
 /// </remarks>
 [PrivateApi("was public till 16.09")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class RawEntity: RawEntityBase
+public class RawEntity: RawEntityBase, IHasMetadata
 {
     public RawEntity()
     {
@@ -31,5 +31,5 @@ public class RawEntity: RawEntityBase
     /// <summary>
     /// WIP experimental v18.02 - trying to get content-type metadata into the raw entity
     /// </summary>
-    public IMetadata? Metadata { get; set; }
+    public IMetadata? Metadata { get; init; }
 }

@@ -140,10 +140,10 @@ public sealed class EntityInspectRelationships : CustomDataSource
         private static readonly string FeatureNotEnabledMessage =
             $"hidden, feature {BuiltInFeatures.EntityInspectRelationships.NameId} not enabled";
 
-        IConvertToRawEntity IGetRawConverter.GetConverter() => Converter;
+        IRawEntityConverter IGetRawConverter.GetConverter() => Converter;
 
-        private static IConvertToRawEntity Converter { get; } =
-            new ConvertToRawFactory<EntityRelationship>((source, options) =>
+        private static IRawEntityConverter Converter { get; } =
+            new ConvertToRawWithFactory<EntityRelationship>((source, _) =>
                 new RawEntityRecord
                 {
                     Id = source.Id,

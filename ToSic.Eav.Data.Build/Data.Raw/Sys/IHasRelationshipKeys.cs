@@ -6,9 +6,10 @@
 /// This is important to automatically create relationships between newly created <see cref="IEntity"/>s
 /// </summary>
 /// <remarks>
-/// Added in 15.04
+/// * Added in 15.04, accidentally public
+/// * Was public till 16.09, but needed to be reworked, made private
 /// </remarks>
-[PrivateApi("Was public till 16.09")]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IHasRelationshipKeys
 {
@@ -26,7 +27,5 @@ public interface IHasRelationshipKeys
     /// Then it will ask all other <see cref="IRawEntity"/> of <see cref="IHasRelationshipKeys"/>
     /// if they have a `/abcd/efg` in their `RelationshipKeys`.
     /// </summary>
-    //IEnumerable<object> RelationshipKeysOld(RawConvertOptions options);
-    
     IEnumerable<object> RelationshipKeys { get; }
 }

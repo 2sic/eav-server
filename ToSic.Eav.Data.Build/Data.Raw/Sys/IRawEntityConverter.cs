@@ -5,8 +5,8 @@
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IConvertToRawEntity
+public interface IRawEntityConverter
 {
-    IRawEntity? TryRawEntity<TSource>(TSource source, RawConvertOptions options)
+    IRawEntity TryRawEntity<TSource>(TSource source, RawConvertOptions options)
         where TSource : class;
 }

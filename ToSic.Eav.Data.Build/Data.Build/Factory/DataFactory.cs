@@ -4,6 +4,7 @@ using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.EntityPair;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -83,7 +84,7 @@ internal class DataFactory(
     /// <summary>
     /// Finalize the work of building something, using prepared materials.
     /// </summary>
-    /// <param name="list"></param>
+    /// <param name="rawList"></param>
     /// <returns></returns>
     private IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList)
     {
@@ -153,8 +154,7 @@ internal class DataFactory(
         if (!listed.Any())
             return [];
         var toBeConverted = listed.First();
-        var converter = toBeConverted.GetConverter()
-                        ?? ConvertToRawSelf.Instance;
+        var converter = toBeConverted.GetConverter();
         //var raw = converter.TryRawEntity(toBeConverted, MyOptions.RawConvertOptions)
         //          ?? throw new InvalidOperationException("Failed to convert to raw entity.");
 
@@ -245,26 +245,25 @@ internal class DataFactory(
         return ent;
     }
 
-    /// <summary>
-    /// Internal create from raw
-    /// </summary>
-    /// <param name="rawEntity"></param>
-    /// <returns></returns>
-    public IEntity Create(IRawEntity rawEntity) =>
-        CreateInternal(rawEntity, rawEntity);
+    ///// <summary>
+    ///// Internal create from raw
+    ///// </summary>
+    ///// <param name="rawEntity"></param>
+    ///// <returns></returns>
+    //public IEntity Create(IRawEntity rawEntity) =>
+    //    CreateInternal(rawEntity, rawEntity);
 
-    public IEntity Create(IGetRawConverter toBeConverted)
+    /// <inheritdoc/>
+    public IEntity Create(IConvertibleToRawEntity toBeConverted)
     {
-        var converter = toBeConverted.GetConverter()
-            ?? ConvertToRawSelf.Instance;
-        var raw = converter.TryRawEntity(toBeConverted, MyOptions.RawConvertOptions)
-            ?? throw new InvalidOperationException("Failed to convert to raw entity.");
+        var raw = toBeConverted.GetRawEntity(MyOptions.RawConvertOptions);
         return CreateInternal(raw, toBeConverted);
     }
 
     private IEntity CreateInternal(IRawEntity rawEntity, object typeGiver)
     {
-        var partsBuilder = MyOptions.WithMetadata && rawEntity is RawEntity { Metadata: not null } typed
+        // ReSharper disable once RedundantAlwaysMatchSubpattern
+        var partsBuilder = MyOptions.WithMetadata && rawEntity is IHasMetadata { Metadata: not null } typed
             ? new EntityPartsLazy(null, (_, _) => typed.Metadata)
             : null;
 

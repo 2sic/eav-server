@@ -57,9 +57,10 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// </summary>
     /// <param name="rawEntity"></param>
     /// <returns></returns>
-    IEntity Create(IRawEntity rawEntity);
-    
-    
+    //IEntity Create(IRawEntity rawEntity);
+
+    IEntity Create(IConvertibleToRawEntity toBeConverted);
+
 
     #endregion
 
@@ -120,5 +121,4 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
 
     //#endregion
 
-    IEntity Create(IGetRawConverter toBeConverted);
 }

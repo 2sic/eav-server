@@ -48,9 +48,9 @@ internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int Pag
 
     //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => Values;
 
-    IConvertToRawEntity IGetRawConverter.GetConverter() => Converter;
+    IRawEntityConverter IGetRawConverter.GetConverter() => Converter;
 
-    private static IConvertToRawEntity Converter { get; } = new ConvertToRawFactory<PagingModel>((source, options) =>
+    private static IRawEntityConverter Converter { get; } = new ConvertToRawWithFactory<PagingModel>((source, _) =>
         new RawEntityRecord
         {
             Id = source.PageNumber,
