@@ -26,5 +26,7 @@ public interface IHasRelationshipKeys
     /// Then it will ask all other <see cref="IRawEntity"/> of <see cref="IHasRelationshipKeys"/>
     /// if they have a `/abcd/efg` in their `RelationshipKeys`.
     /// </summary>
-    IEnumerable<object> RelationshipKeys(RawConvertOptions options);
+    //IEnumerable<object> RelationshipKeysOld(RawConvertOptions options);
+    
+    IEnumerable<object> RelationshipKeys { get; }
 }

@@ -40,17 +40,9 @@ public interface IRawEntity: IGetRawConverter
     /// Dictionary of all values to be added.
     /// </summary>
     /// <remarks>
-    /// * Please ensure it doesn't have duplicate keys. Also not keys which are only different in casing.
+    /// * Please ensure it doesn't have duplicate keys.
+    /// * ...and also not keys which are only different in casing.
     /// * Also ensure you don't use spaces, dots or special characters in keys
     /// </remarks>
-    IDictionary<string, object?> AttributesWip { get; }
-    
-    /// <summary>
-    /// Dictionary of all values to be added.
-    /// </summary>
-    /// <remarks>
-    /// * Please ensure it doesn't have duplicate keys. Also not keys which are only different in casing.
-    /// * Also ensure you don't use spaces, dots or special characters in keys
-    /// </remarks>
-    IDictionary<string, object?> Attributes(RawConvertOptions options);
+    IDictionary<string, object?> Values { get; }
 }

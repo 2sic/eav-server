@@ -37,7 +37,7 @@ internal class RawRelationshipsConvertHelper(DataAssembler dataAssembler, ILog p
             .Select(pair =>
             {
                 var partner = pair.Partner as IHasRelationshipKeys;
-                var relKeys = partner?.RelationshipKeys(options)?.ToListOpt();
+                var relKeys = partner?.RelationshipKeys?.ToListOpt();
                 return relKeys.SafeAny()
                     ? new EntityPair<IList<object>>(pair.Entity, relKeys)
                     : null;

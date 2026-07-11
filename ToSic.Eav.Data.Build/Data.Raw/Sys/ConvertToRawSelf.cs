@@ -13,9 +13,11 @@ public class ConvertToRawSelf: IConvertToRawEntity
     public static ConvertToRawSelf Instance { get; } = new();
 }
 
-public class ConvertToRawFactory<TFactorySource>(Func<TFactorySource, RawConvertOptions, IRawEntity> factory): IConvertToRawEntity
+public class ConvertToRawFactory<TFactorySource>(Func<TFactorySource, RawConvertOptions, IRawEntity> factory)
+    : IConvertToRawEntity
+    where TFactorySource : class
 {
     public IRawEntity? TryRawEntity<TSource>(TSource source, RawConvertOptions options)
-        where TSource : class, TFactorySource =>
-        factory(source, options);
+        where TSource : class =>
+        factory(source as TFactorySource ?? throw new InvalidOperationException(), options);
 }

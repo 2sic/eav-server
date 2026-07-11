@@ -3,7 +3,8 @@ using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Build;
 
-internal class DataFactoryPreferredContentType(ILog parentLog): HelperBase(parentLog, "DaF.PctHlp")
+internal class DataFactoryPreferredContentType(DataFactoryOptions options, CodeContentTypesManager ctFactory, ContentTypeTypeAssembler typeAssembler, ILog parentLog)
+    : HelperBase(parentLog, "DaF.PctHlp")
 {
     /// <summary>
     /// The type of the source object which was used to create the entity.
@@ -16,7 +17,7 @@ internal class DataFactoryPreferredContentType(ILog parentLog): HelperBase(paren
     /// Get the best possible ContentType definition in the current scenario.
     /// </summary>
     /// <returns></returns>
-    internal IContentType GetPreferredContentType(DataFactoryOptions options, CodeContentTypesManager ctFactory, ContentTypeTypeAssembler typeAssembler)
+    internal IContentType GetPreferredContentType()
     {
         var l = Log.Fn<IContentType>();
         // Priority 1: If the options have a type, use that

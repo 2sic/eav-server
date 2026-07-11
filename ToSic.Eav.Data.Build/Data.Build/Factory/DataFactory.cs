@@ -27,16 +27,20 @@ internal class DataFactory(
     }
     private int? _idCounter;
 
-
-    private DateTime Created { get; } = DateTime.Now;
-    private DateTime Modified { get; } = DateTime.Now;
+    /// <summary>
+    /// Fixed date time so all data which receives a default date will have the same value.
+    /// </summary>
+    private DateTime FixedDateTime { get; } = DateTime.Now;
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
-    public IContentType ContentType => field ??= PctHelper.GetPreferredContentType(MyOptions, ctFactory.Value, typeAssembler.Value);
-
-    private DataFactoryPreferredContentType PctHelper => field ??= new(Log);
+    public IContentType ContentType => field
+        ??= PctHelper.GetPreferredContentType();
     
+    [field: AllowNull, MaybeNull]
+    private DataFactoryPreferredContentType PctHelper => field
+        ??= new(MyOptions, ctFactory.Value, typeAssembler.Value, Log);
+
     /// <summary>
     /// The DataBuilder used for this DataFactory.
     /// </summary>
@@ -45,9 +49,11 @@ internal class DataFactory(
     /// So once it's accessed, options cannot be updated anymore.
     /// </remarks>
     [field: AllowNull, MaybeNull]
-    private DataAssembler DataAssembler => field ??= dataAssembler.New(new() {
-        AllowUnknownValueTypes = MyOptions.AllowUnknownValueTypes
-    });
+    private DataAssembler DataAssembler => field
+        ??= dataAssembler.New(new()
+        {
+            AllowUnknownValueTypes = MyOptions.AllowUnknownValueTypes
+        });
 
 
 
@@ -69,10 +75,17 @@ internal class DataFactory(
 
     /// <inheritdoc />
     public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity
-        => WrapUp(Prepare(list));
+        => WrapUp(PrepareRaw(list));
 
-    /// <inheritdoc />
-    public IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList)
+     public IImmutableList<IEntity> CreateFromConvertWip<T>(IEnumerable<T> list) where T : class, IGetRawConverter
+        => WrapUp(PrepareGetRawConverter(list));
+     
+    /// <summary>
+    /// Finalize the work of building something, using prepared materials.
+    /// </summary>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    private IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
 
@@ -82,32 +95,44 @@ internal class DataFactory(
             RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, MyOptions.RawConvertOptions);
 
         // Return entities as Immutable list
-        return l.Return(list.Select(set => set.Entity).ToImmutableOpt());
+        var result = list
+            .Select(set => set.Entity)
+            .ToImmutableOpt();
+        return l.Return(result);
     }
 
     #endregion
 
     #region Prepare One
 
-    /// <inheritdoc />
-    public EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity
-        => new(Create(rawEntity), rawEntity);
+    ///// <inheritdoc />
+    //public EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity
+    //    => new(CreateInternal(rawEntity, rawEntity), rawEntity);
 
     #endregion
 
 
     #region Prepare Many
 
-    /// <inheritdoc />
-    public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : IRawEntity
+    /// <summary>
+    /// This will create IEntity but return it in a dictionary mapped to the original.
+    /// This is useful when you intend to do further processing and need to know which original matches the generated entity.
+    ///
+    /// IMPORTANT: WIP
+    /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
+    /// </summary>
+    /// <typeparam name="TNewEntity"></typeparam>
+    /// <param name="list"></param>
+    /// <returns></returns>
+    public IList<EntityPair<TNewEntity>> PrepareRaw<TNewEntity>(IEnumerable<TNewEntity> list)
+        where TNewEntity : IRawEntity
     {
-        var l = Log.Fn<IList<EntityPair<TNewEntity>>>();
         var all = list
             .Select(raw =>
             {
                 try
                 {
-                    var newEntity = Create(raw);
+                    var newEntity = CreateInternal(raw, raw);
                     return new EntityPair<TNewEntity>(newEntity, raw);
                 }
                 catch
@@ -115,15 +140,54 @@ internal class DataFactory(
                     // Add null to filter out later and report the indexes
                     return null;
                 }
+            })
+            .ToListOpt();
+        
+        return PrepareFinish(all);
+    }
 
+    public IList<EntityPair<TNewEntity>> PrepareGetRawConverter<TNewEntity>(IEnumerable<TNewEntity> list)
+        where TNewEntity : class, IGetRawConverter
+    {
+        var listed = list.ToListOpt();
+        if (!listed.Any())
+            return [];
+        var toBeConverted = listed.First();
+        var converter = toBeConverted.GetConverter()
+                        ?? ConvertToRawSelf.Instance;
+        //var raw = converter.TryRawEntity(toBeConverted, MyOptions.RawConvertOptions)
+        //          ?? throw new InvalidOperationException("Failed to convert to raw entity.");
+
+        var all = listed
+            .Select(toBeRaw =>
+            {
+                try
+                {
+                    var reallyRaw = converter.TryRawEntity(toBeRaw, MyOptions.RawConvertOptions);
+                    var newEntity = CreateInternal(reallyRaw, toBeRaw);
+                    return new EntityPair<TNewEntity>(newEntity, toBeRaw);
+                }
+                catch
+                {
+                    // Add null to filter out later and report the indexes
+                    return null;
+                }
             })
             .ToListOpt();
 
+        return PrepareFinish(all);
+    }
+
+
+    private IList<EntityPair<TNewEntity>> PrepareFinish<TNewEntity>(IList<EntityPair<TNewEntity>?> all)
+    {
+        var l = Log.Fn<IList<EntityPair<TNewEntity>>>();
+
         var cleaned = all
-                .Where(p => p != null)
-                .Cast<EntityPair<TNewEntity>>()
-                .ToListOpt();
-        
+            .Where(p => p != null)
+            .Cast<EntityPair<TNewEntity>>()
+            .ToListOpt();
+
         // Verify we don't have nulls (errors)
         if (all.Count == cleaned.Count)
             return l.Return(cleaned);
@@ -134,10 +198,9 @@ internal class DataFactory(
             .Where(p => p.pair == null)
             .Select(p => p.index)
             .ToListOpt();
-            
+
         return l.Return(cleaned,
             $"Error preparing: {nullIndexes.Count} items failed to create, indexes: {string.Join(",", nullIndexes)}");
-
     }
 
     #endregion
@@ -175,30 +238,41 @@ internal class DataFactory(
             attributes: attributes,
             titleField: MyOptions.TitleField,
             guid: guid,
-            created: created == default ? Created : created,
-            modified: modified == default ? Modified : modified,
+            created: created == default ? FixedDateTime : created,
+            modified: modified == default ? FixedDateTime : modified,
             partsBuilder: partsBuilder
         );
         return ent;
     }
-
 
     /// <summary>
     /// Internal create from raw
     /// </summary>
     /// <param name="rawEntity"></param>
     /// <returns></returns>
-    public IEntity Create(IRawEntity rawEntity)
+    public IEntity Create(IRawEntity rawEntity) =>
+        CreateInternal(rawEntity, rawEntity);
+
+    public IEntity Create(IGetRawConverter toBeConverted)
+    {
+        var converter = toBeConverted.GetConverter()
+            ?? ConvertToRawSelf.Instance;
+        var raw = converter.TryRawEntity(toBeConverted, MyOptions.RawConvertOptions)
+            ?? throw new InvalidOperationException("Failed to convert to raw entity.");
+        return CreateInternal(raw, toBeConverted);
+    }
+
+    private IEntity CreateInternal(IRawEntity rawEntity, object typeGiver)
     {
         var partsBuilder = MyOptions.WithMetadata && rawEntity is RawEntity { Metadata: not null } typed
             ? new EntityPartsLazy(null, (_, _) => typed.Metadata)
             : null;
 
         // Set this the first time it's used, in case it should override the fallback content-type
-        PctHelper.TypeFallbackIfNotSet ??= rawEntity.GetType();
+        PctHelper.TypeFallbackIfNotSet ??= typeGiver.GetType();
         
         return Create(
-            rawEntity.Attributes(MyOptions.RawConvertOptions),
+            rawEntity.Values,
             id: rawEntity.Id,
             guid: rawEntity.Guid,
             created: rawEntity.Created,
@@ -209,6 +283,7 @@ internal class DataFactory(
 
     #endregion
 
+    // #TODO: @2dm #RawEntity - #SpawnNewBadPattern
     public IDataFactory SpawnNew(DataFactoryOptions options)
         => selfGenerator.New(options);
 }

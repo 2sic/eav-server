@@ -23,13 +23,12 @@ public class ScopeModel : RawEntity, IHasIdentityNameId
     
     public required int TypesOfApp { get; init; }
 
-    public override IDictionary<string, object?> Attributes(RawConvertOptions options) =>
-        new Dictionary<string, object?>
-        {
-            { nameof(NameId), NameId },
-            { nameof(Name), Name },
-            { nameof(TypesTotal), TypesTotal },
-            { nameof(TypesInherited), TypesInherited },
-            { nameof(TypesOfApp), TypesOfApp },
-        };
+    public override IDictionary<string, object?> Values => field ??= new Dictionary<string, object?>
+    {
+        { nameof(NameId), NameId },
+        { nameof(Name), Name },
+        { nameof(TypesTotal), TypesTotal },
+        { nameof(TypesInherited), TypesInherited },
+        { nameof(TypesOfApp), TypesOfApp },
+    };
 }

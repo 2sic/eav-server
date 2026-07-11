@@ -54,11 +54,9 @@ public abstract record RawEntityRecordBase : IRawEntity, IHasRelationshipKeys
 #endif
     } = DateTime.Now;
 
-    public abstract IDictionary<string, object?> AttributesWip { get; }
+    public abstract IDictionary<string, object?> Values { get; }
 
-    public abstract IDictionary<string, object?> Attributes(RawConvertOptions options);
-
-    public virtual IEnumerable<object> RelationshipKeys(RawConvertOptions options) => [];
+    public virtual IEnumerable<object> RelationshipKeys => [];
 
     IConvertToRawEntity IGetRawConverter.GetConverter() => ConvertToRawSelf.Instance;
 

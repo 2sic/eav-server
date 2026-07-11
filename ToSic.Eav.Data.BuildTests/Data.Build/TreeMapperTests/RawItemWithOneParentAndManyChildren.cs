@@ -1,30 +1,23 @@
-﻿using ToSic.Eav.Data.Raw;
-using ToSic.Eav.Data.Raw.Sys;
+﻿using ToSic.Eav.Data.Raw.Sys;
 
 namespace ToSic.Eav.Data.Build.TreeMapperTests;
 
-internal class RawItemWithOneParentAndManyChildren(int id, Guid guid, int parentId, List<int>? childrenIds)
+internal record RawItemWithOneParentAndManyChildren(int Id, Guid Guid, int ParentId, List<int>? ChildrenIds)
     : IRawEntity, IHasRelationshipKeys
 {
-    public int Id { get; } = id;
-    public Guid Guid { get; } = guid;
     public DateTime Created { get; } = DateTime.Now;
     public DateTime Modified { get; } = DateTime.Now;
 
     public string Title => $"Auto-Title {Id} / {Guid}";
 
-    public int ParentId { get; } = parentId;
-
-    public List<int>? ChildrenIds { get; } = childrenIds;
-
-    public IDictionary<string, object> Attributes(RawConvertOptions options) => new Dictionary<string, object>
+    IDictionary<string, object?> IRawEntity.Values => field ??= new Dictionary<string, object?>
     {
         { nameof(Title), Title },
-        { "Children", new RawRelationship(keys: ChildrenIds?.Cast<object>() ?? new List<object>())},
+        { "Children", new RawRelationship(keys: ChildrenIds?.Cast<object>() ?? new List<object>()) },
     };
 
-    public IEnumerable<object> RelationshipKeys(RawConvertOptions options) => new List<object> { Id };
+    public IEnumerable<object> RelationshipKeys => new List<object> { Id };
 
-    IConvertToRawEntity IGetRawConverter.GetConverter() => ConvertToRawSelf.Instance;
+    IConvertToRawEntity? IGetRawConverter.GetConverter() => null;
 
 }

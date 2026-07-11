@@ -92,7 +92,7 @@ public class SystemStack: CustomDataSourceAdvanced
         // Note: must use configure here, because AppId and AddValues are properties that's not set in the constructor
         var options = new RawConvertOptions(addKeys: AddValues ? new[] { "Value" } : null);
         var stackFactory = DataFactory.SpawnNew(options: AppStackDataRaw.Options with { AppId = AppId, RawConvertOptions = options });
-        var converted = stackFactory.Create(asRaw);
+        var converted = stackFactory.CreateFromConvertWip(asRaw);
 
         return converted;
     }

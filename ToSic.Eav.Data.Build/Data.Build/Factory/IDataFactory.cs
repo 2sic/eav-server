@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.Data.Sys.EntityPair;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -59,6 +58,8 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// <param name="rawEntity"></param>
     /// <returns></returns>
     IEntity Create(IRawEntity rawEntity);
+    
+    
 
     #endregion
 
@@ -76,45 +77,48 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// <returns></returns>
     IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity;
 
+    IImmutableList<IEntity> CreateFromConvertWip<T>(IEnumerable<T> list) where T : class, IGetRawConverter;
+
     #endregion
 
 
     #region Prepare One
 
-    /// <summary>
-    /// For objects which themselves are <see cref="IRawEntity"/>
-    /// </summary>
-    /// <param name="rawEntity"></param>
-    /// <returns></returns>
-    EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity;
+    ///// <summary>
+    ///// For objects which themselves are <see cref="IRawEntity"/>
+    ///// </summary>
+    ///// <param name="rawEntity"></param>
+    ///// <returns></returns>
+    //EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity;
 
     #endregion
 
     #region Prepare Many
 
-    /// <summary>
-    /// This will create IEntity but return it in a dictionary mapped to the original.
-    /// This is useful when you intend to do further processing and need to know which original matches the generated entity.
-    ///
-    /// IMPORTANT: WIP
-    /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <returns></returns>
-    IList<EntityPair<T>> Prepare<T>(IEnumerable<T> list) where T: IRawEntity;
+    ///// <summary>
+    ///// This will create IEntity but return it in a dictionary mapped to the original.
+    ///// This is useful when you intend to do further processing and need to know which original matches the generated entity.
+    /////
+    ///// IMPORTANT: WIP
+    ///// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
+    ///// </summary>
+    ///// <typeparam name="T"></typeparam>
+    ///// <param name="list"></param>
+    ///// <returns></returns>
+    //IList<EntityPair<T>> Prepare<T>(IEnumerable<T> list) where T: IRawEntity;
 
     #endregion
 
-    #region WrapUp
+    //#region WrapUp
 
-    /// <summary>
-    /// Finalize the work of building something, using prepared materials.
-    /// </summary>
-    /// <param name="rawList"></param>
-    /// <returns></returns>
-    IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList);
+    ///// <summary>
+    ///// Finalize the work of building something, using prepared materials.
+    ///// </summary>
+    ///// <param name="rawList"></param>
+    ///// <returns></returns>
+    //IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList);
 
-    #endregion
+    //#endregion
 
+    IEntity Create(IGetRawConverter toBeConverted);
 }

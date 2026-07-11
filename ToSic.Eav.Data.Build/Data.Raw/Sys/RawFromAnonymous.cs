@@ -8,49 +8,48 @@ public sealed class RawFromAnonymous: RawEntity
     public RawFromAnonymous(object original, ILog log)
     {
         var dic = original.ToDicInvariantInsensitive(mutable: true);
-            
-        if (dic.ContainsKey(nameof(Id)))
+
+        #region Extract known keys from dictionary
+
+        if (dic.TryGetValue(nameof(Id), out var id))
         {
-            Id = dic[nameof(Id)].ConvertOrDefault<int>();
+            Id = id.ConvertOrDefault<int>();
             dic.Remove(nameof(Id));
         }
 
-        if (dic.ContainsKey(nameof(Guid)))
+        if (dic.TryGetValue(nameof(Guid), out var guid))
         {
-            Guid = dic[nameof(Guid)].ConvertOrDefault<Guid>();
+            Guid = guid.ConvertOrDefault<Guid>();
             dic.Remove(nameof(Guid));
         }
 
-        if (dic.ContainsKey(nameof(Created)))
+        if (dic.TryGetValue(nameof(Created), out var created))
         {
-            Created = dic[nameof(Created)].ConvertOrDefault<DateTime>();
+            Created = created.ConvertOrDefault<DateTime>();
             dic.Remove(nameof(Created));
         }
 
-        if (dic.ContainsKey(nameof(Modified)))
+        if (dic.TryGetValue(nameof(Modified), out var modified))
         {
-            Modified = dic[nameof(Modified)].ConvertOrDefault<DateTime>();
+            Modified = modified.ConvertOrDefault<DateTime>();
             dic.Remove(nameof(Modified));
         }
 
-        if (dic.ContainsKey(nameof(RelationshipKeys)))
-        {
-            var maybeRels = dic[nameof(RelationshipKeys)];
-            if (maybeRels is IEnumerable rels and not string)
-                try
-                {
-                    _relationshipKeys = rels.Cast<object>().ToList();
-                    // only remove if everything worked - so it stays in if something is wrong
-                    // this will make it easier to spot issues
-                    dic.Remove(nameof(RelationshipKeys));
-                }
-                catch
-                {
-                    log.E($"Error in {nameof(RawFromAnonymous)} trying to convert {nameof(RelationshipKeys)}");
-                }
-        }
-        else
-            _relationshipKeys = [];
+        #endregion
+
+
+        if (dic.TryGetValue(nameof(RelationshipKeys), out var maybeRels) && maybeRels is IEnumerable rels and not string)
+            try
+            {
+                _relationshipKeys = rels.Cast<object>().ToList();
+                // only remove if everything worked - so it stays in if something is wrong
+                // this will make it easier to spot issues
+                dic.Remove(nameof(RelationshipKeys));
+            }
+            catch
+            {
+                log.E($"Error in {nameof(RawFromAnonymous)} trying to convert {nameof(RelationshipKeys)}");
+            }
 
         _relationshipKeys.Add(Id);
 
@@ -74,10 +73,15 @@ public sealed class RawFromAnonymous: RawEntity
         }
 
         Values = dic;
+        
+        
     }
 
+    public override IDictionary<string, object?> Values => field
+        ??= new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
 
-    public override IEnumerable<object> RelationshipKeys(RawConvertOptions options)
-        => _relationshipKeys;
+
+    public override IEnumerable<object> RelationshipKeys => _relationshipKeys;
+
     private readonly IList<object> _relationshipKeys = [];
 }

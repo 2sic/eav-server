@@ -124,7 +124,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
         
         public string ContentTypeNameId => FeatEnabled ? Entity.Type.NameId : MustEnableFeature;
 
-        //public override IDictionary<string, object?> AttributesWip => new Dictionary<string, object?>
+        //public override IDictionary<string, object?> Values => new Dictionary<string, object?>
         //    {
         //        { AttributeNames.TitleNiceName, Title },
         //        { nameof(Field), Field },
@@ -133,7 +133,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
         //        { nameof(ContentTypeNameId), ContentTypeNameId }
         //    };
 
-        //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => AttributesWip;
+        //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => Values;
             
         
         private const string MustEnableFeature = "must enable feature";
@@ -147,7 +147,8 @@ public sealed class EntityInspectRelationships : CustomDataSource
                 new RawEntityRecord
                 {
                     Id = source.Id,
-                    AttributesWip = new Dictionary<string, object?>
+                    Guid = source.Guid,
+                    Values = new Dictionary<string, object?>
                     {
                         { AttributeNames.TitleNiceName, source.Title },
                         { nameof(Field), source.Field },

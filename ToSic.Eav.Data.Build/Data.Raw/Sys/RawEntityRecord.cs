@@ -51,9 +51,7 @@ public sealed record RawEntityRecord: IRawEntity
 #endif
     } = DateTime.Now;
 
-    public required IDictionary<string, object?> AttributesWip { get; init; }
-
-    public IDictionary<string, object?> Attributes(RawConvertOptions options) => AttributesWip;
+    public required IDictionary<string, object?> Values { get; init; }
 
     IConvertToRawEntity IGetRawConverter.GetConverter() => ConvertToRawSelf.Instance;
 }

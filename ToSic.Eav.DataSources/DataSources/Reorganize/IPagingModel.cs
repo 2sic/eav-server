@@ -37,7 +37,7 @@ internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int Pag
     public string Title => "Paging Information";
     //public override int Id => PageNumber;
 
-    //private IDictionary<string, object?> AttributesWip => new Dictionary<string, object?>
+    //private IDictionary<string, object?> Values => new Dictionary<string, object?>
     //{
     //    { AttributeNames.TitleNiceName, Title },
     //    { nameof(PageSize), PageSize },
@@ -46,7 +46,7 @@ internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int Pag
     //    { nameof(PageCount), PageCount }
     //};
 
-    //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => AttributesWip;
+    //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => Values;
 
     IConvertToRawEntity IGetRawConverter.GetConverter() => Converter;
 
@@ -54,7 +54,7 @@ internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int Pag
         new RawEntityRecord
         {
             Id = source.PageNumber,
-            AttributesWip = new Dictionary<string, object?>
+            Values = new Dictionary<string, object?>
             {
                 { AttributeNames.TitleNiceName, source.Title },
                 { nameof(PageSize), source.PageSize },
