@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
-using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.EntityPair;
@@ -15,25 +14,27 @@ internal class RawRelationshipsConvertHelper(DataAssembler dataAssembler, ILog p
     internal Dictionary<string, object?> RelationshipsToAttributes(IDictionary<string, object?> values, ILookup<object, IEntity> relationships)
     {
         var l = RelationshipsToAttributesLogFilter.FnOrNull<Dictionary<string, object?>>();
-        var valuesWithRelationships = values.ToDictionary(
-            v => v.Key,
-            v =>
-            {
-                if (v.Value is not RawRelationship rawRelationship) return v.Value;
-                var lookupSource =
-                    new LookUpEntitiesSource<object>(rawRelationship.Keys, relationships);
-                var relAttr = dataAssembler.Attribute.Relationship(v.Key, lookupSource);
-                return relAttr;
-            }, StringComparer.InvariantCultureIgnoreCase);
+        var valuesWithRelationships = values
+            .ToDictionary(
+                v => v.Key,
+                v =>
+                {
+                    if (v.Value is not RawRelationship rawRelationship)
+                        return v.Value;
+                    var lookupSource = new LookUpEntitiesSource<object>(rawRelationship.Keys, relationships);
+                    var relAttr = dataAssembler.Attribute.Relationship(v.Key, lookupSource);
+                    return relAttr;
+                },
+                StringComparer.InvariantCultureIgnoreCase
+            );
         return l.Return(valuesWithRelationships, $"{valuesWithRelationships.Count}");
     }
 
-    internal void AddRelationshipsToLookup(IList<ICanBeEntity> list, LazyLookup<object, IEntity> lazyRelationships, RawConvertOptions options)
+    internal void AddRelationshipsToLookup(IList<ICanBeEntity> list, LazyLookup<object, IEntity> lazyRelationships)
     {
         var l = Log.Fn();
         var itemsWithKeys = list
-            .Where(item => item is IEntityPair<IRawEntity>)
-            .Cast<IEntityPair<IRawEntity>>()
+            .OfType<IEntityPair<IRawEntity>>()
             .Select(pair =>
             {
                 var partner = pair.Partner as IHasRelationshipKeys;

@@ -76,7 +76,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         NoParamOrder npo = default,
         string name = StreamDefaultName,
         Func<DataFactoryOptions>? options = default
-    ) where T : IRawEntity
+    ) where T : class, IConvertibleToRawEntity
         => base.ProvideOut(() => GetRaw(data, options), name);
 
     private IImmutableList<IEntity> GetAny(Func<object>? source, Func<DataFactoryOptions>? options)
@@ -152,7 +152,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         => options?.Invoke() ?? new();
 
     private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>>? source, Func<DataFactoryOptions>? options)
-        where T: IRawEntity
+        where T: class, IConvertibleToRawEntity
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();

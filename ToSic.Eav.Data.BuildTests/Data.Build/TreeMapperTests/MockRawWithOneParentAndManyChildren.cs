@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Build.TreeMapperTests;
 
-internal record RawItemWithOneParentAndManyChildren(int Id, Guid Guid, int ParentId, List<int>? ChildrenIds)
+internal record MockRawWithOneParentAndManyChildren(int Id, Guid Guid, int ParentId, List<int>? ChildrenIds)
     : IRawEntity, IHasRelationshipKeys
 {
     public DateTime Created { get; } = DateTime.Now;

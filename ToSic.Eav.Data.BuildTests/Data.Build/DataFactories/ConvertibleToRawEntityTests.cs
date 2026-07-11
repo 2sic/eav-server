@@ -7,8 +7,6 @@ namespace ToSic.Eav.Data.Build.DataFactories;
 /// </summary>
 public class ConvertibleToRawEntityTests
 {
-
-
     [Fact]
     public void RawEntityIsConverted()
     {

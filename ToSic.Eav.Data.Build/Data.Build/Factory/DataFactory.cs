@@ -75,12 +75,9 @@ internal class DataFactory(
     #region Create IRawEntity / WrapUp
 
     /// <inheritdoc />
-    public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity
-        => WrapUp(PrepareRaw(list));
+    public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : class, IConvertibleToRawEntity
+        => WrapUp(Prepare(list));
 
-     public IImmutableList<IEntity> CreateFromConvertWip<T>(IEnumerable<T> list) where T : class, IGetRawConverter
-        => WrapUp(PrepareGetRawConverter(list));
-     
     /// <summary>
     /// Finalize the work of building something, using prepared materials.
     /// </summary>
@@ -93,7 +90,7 @@ internal class DataFactory(
         // Pre-process relationship keys, so they are added to the lookup
         var list = rawList.ToListOpt();
         if (Relationships is LazyLookup<object, IEntity> lazyRelationships)
-            RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, MyOptions.RawConvertOptions);
+            RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships);
 
         // Return entities as Immutable list
         var result = list
@@ -125,45 +122,39 @@ internal class DataFactory(
     /// <typeparam name="TNewEntity"></typeparam>
     /// <param name="list"></param>
     /// <returns></returns>
-    public IList<EntityPair<TNewEntity>> PrepareRaw<TNewEntity>(IEnumerable<TNewEntity> list)
-        where TNewEntity : IRawEntity
-    {
-        var all = list
-            .Select(raw =>
-            {
-                try
-                {
-                    var newEntity = CreateInternal(raw, raw);
-                    return new EntityPair<TNewEntity>(newEntity, raw);
-                }
-                catch
-                {
-                    // Add null to filter out later and report the indexes
-                    return null;
-                }
-            })
-            .ToListOpt();
+    //public IList<EntityPair<TNewEntity>> PrepareRaw<TNewEntity>(IEnumerable<TNewEntity> list)
+    //    where TNewEntity : IRawEntity
+    //{
+    //    var all = list
+    //        .Select(raw =>
+    //        {
+    //            try
+    //            {
+    //                var newEntity = CreateInternal(raw, raw);
+    //                return new EntityPair<TNewEntity>(newEntity, raw);
+    //            }
+    //            catch
+    //            {
+    //                // Add null to filter out later and report the indexes
+    //                return null;
+    //            }
+    //        })
+    //        .ToListOpt();
         
-        return PrepareFinish(all);
-    }
+    //    return PrepareFinish(all);
+    //}
 
-    public IList<EntityPair<TNewEntity>> PrepareGetRawConverter<TNewEntity>(IEnumerable<TNewEntity> list)
-        where TNewEntity : class, IGetRawConverter
+    public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list)
+        where TNewEntity : class, IConvertibleToRawEntity
     {
-        var listed = list.ToListOpt();
-        if (!listed.Any())
-            return [];
-        var toBeConverted = listed.First();
-        var converter = toBeConverted.GetConverter();
-        //var raw = converter.TryRawEntity(toBeConverted, MyOptions.RawConvertOptions)
-        //          ?? throw new InvalidOperationException("Failed to convert to raw entity.");
+        var l = Log.Fn<IList<EntityPair<TNewEntity>>>();
 
-        var all = listed
+        var all = list
             .Select(toBeRaw =>
             {
                 try
                 {
-                    var reallyRaw = converter.TryRawEntity(toBeRaw, MyOptions.RawConvertOptions);
+                    var reallyRaw = toBeRaw.GetRawEntity(MyOptions.RawConvertOptions);
                     var newEntity = CreateInternal(reallyRaw, toBeRaw);
                     return new EntityPair<TNewEntity>(newEntity, toBeRaw);
                 }
@@ -174,14 +165,6 @@ internal class DataFactory(
                 }
             })
             .ToListOpt();
-
-        return PrepareFinish(all);
-    }
-
-
-    private IList<EntityPair<TNewEntity>> PrepareFinish<TNewEntity>(IList<EntityPair<TNewEntity>?> all)
-    {
-        var l = Log.Fn<IList<EntityPair<TNewEntity>>>();
 
         var cleaned = all
             .Where(p => p != null)
@@ -254,10 +237,10 @@ internal class DataFactory(
     //    CreateInternal(rawEntity, rawEntity);
 
     /// <inheritdoc/>
-    public IEntity Create(IConvertibleToRawEntity toBeConverted)
+    public IEntity Create(IConvertibleToRawEntity item)
     {
-        var raw = toBeConverted.GetRawEntity(MyOptions.RawConvertOptions);
-        return CreateInternal(raw, toBeConverted);
+        var raw = item.GetRawEntity(MyOptions.RawConvertOptions);
+        return CreateInternal(raw, item);
     }
 
     private IEntity CreateInternal(IRawEntity rawEntity, object typeGiver)
