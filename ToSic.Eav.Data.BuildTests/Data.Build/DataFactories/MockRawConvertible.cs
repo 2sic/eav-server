@@ -7,7 +7,7 @@ internal record MockRawConvertible : IGetRawConverter
     public const int DefaultId = 92;
     public IRawEntityConverter GetConverter() =>
         new ConvertToRawWithFactory<MockRawConvertible>((_, _) =>
-            new MockRawEntityRecord(new Dictionary<string, object?>())
+            new MockRawEntityRecord
             {
                 Id = DefaultId,
             }

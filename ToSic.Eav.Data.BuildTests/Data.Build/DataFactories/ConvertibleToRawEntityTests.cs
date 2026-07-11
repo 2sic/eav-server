@@ -10,7 +10,7 @@ public class ConvertibleToRawEntityTests
     [Fact]
     public void RawEntityIsConverted()
     {
-        IConvertibleToRawEntity x = new MockRawEntityRecord(new Dictionary<string, object?>());
+        IConvertibleToRawEntity x = new MockRawEntityRecord();
         var y = x.GetRawEntity(new());
         NotNull(y);
         Equal(MockRawEntityRecord.DefaultId, y.Id);
