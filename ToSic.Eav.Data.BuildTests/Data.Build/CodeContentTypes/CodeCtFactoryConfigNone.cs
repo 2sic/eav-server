@@ -23,16 +23,16 @@ public class CodeCtFactoryConfigNoneRecord(CodeContentTypesManager ctDefManager)
 /// <summary>
 /// Shared (abstract) tests for classes or records which are not configured (no attributes)
 /// </summary>
-public abstract class CodeCtFactoryConfigNone<TRawEntity>(CodeContentTypesManager ctDefManager)
+public abstract class CodeCtFactoryConfigNone<TCodeTypeNoSpecs>(CodeContentTypesManager ctDefManager)
 {
     [Fact]
     public void Attributes_NoSpec_Count()
-        => Equal(4, ctDefManager.CreateTac<TRawEntity>().Attributes.Count());
+        => Equal(4, ctDefManager.CreateTac<TCodeTypeNoSpecs>().Attributes.Count());
    
     
     [Fact]
     public void Attributes_NoSpec_NoVDecorator()
-        => Null(ctDefManager.GetVirtualAttribDecorator(typeof(TRawEntity)));
+        => Null(ctDefManager.GetVirtualAttribDecorator(typeof(TCodeTypeNoSpecs)));
     
     
     [Theory]
@@ -41,6 +41,6 @@ public abstract class CodeCtFactoryConfigNone<TRawEntity>(CodeContentTypesManage
     [InlineData(nameof(CodeTypeNoSpecs.BirthDate), ValueTypes.DateTime)]
     [InlineData(nameof(CodeTypeNoSpecs.IsAlive), ValueTypes.Boolean)]
     public void AssertAttributeNoSpec(string name, ValueTypes type)
-        => ctDefManager.CreateTac<TRawEntity>().AssertAttribute(name, type);
+        => ctDefManager.CreateTac<TCodeTypeNoSpecs>().AssertAttribute(name, type);
     
 }

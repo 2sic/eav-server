@@ -1,20 +1,17 @@
 ﻿namespace ToSic.Eav.Data.Raw.Sys;
 
 /// <summary>
-/// Base class for raw entities which makes implementations a bit simpler when not much is needed.
-/// For example, the dates default to now.
-///
-/// You can inherit this class, but you can also just re-implement the interface yourself.
-/// Whatever works better for you.
+/// Record to provide a raw entity. It should never be inherited, as it's purpose is to bridge the gap between
+/// PoCos and raw entity converters.
 /// </summary>
 /// <remarks>
-/// Added in 15.04
+/// Added in v22
 /// </remarks>
-[PrivateApi("was public till 16.09")]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
+public sealed record RawEntityRecord: IRawEntity
 {
-    public virtual int Id
+    public int Id
     {
         get;
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
@@ -24,7 +21,7 @@ public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
 #endif
     }
 
-    public virtual Guid Guid
+    public Guid Guid
     {
         get;
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
@@ -34,7 +31,7 @@ public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
 #endif
     } = Guid.Empty;
 
-    public virtual DateTime Created
+    public DateTime Created
     {
         get;
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
@@ -44,7 +41,7 @@ public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
 #endif
     } = DateTime.Now;
 
-    public virtual DateTime Modified
+    public DateTime Modified
     {
         get;
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
@@ -54,8 +51,9 @@ public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
 #endif
     } = DateTime.Now;
 
-    public abstract IDictionary<string, object?> Attributes(RawConvertOptions options);
+    public required IDictionary<string, object?> AttributesWip { get; init; }
 
-    public virtual IEnumerable<object> RelationshipKeys(RawConvertOptions options) => [];
+    public IDictionary<string, object?> Attributes(RawConvertOptions options) => AttributesWip;
+
     IConvertToRawEntity IGetRawConverter.GetConverter() => ConvertToRawSelf.Instance;
 }

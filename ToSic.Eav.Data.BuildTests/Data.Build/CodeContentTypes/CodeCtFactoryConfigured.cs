@@ -18,11 +18,11 @@ public class CodeCtFactoryConfiguredRecord(CodeContentTypesManager ctDefManager)
 /// Both test samples (class and record) must have the same attributes, so we can use the same tests for both of them.
 /// </summary>
 /// <param name="ctDefManager"></param>
-public abstract class CodeCtFactoryConfigured<TRawEntity>(CodeContentTypesManager ctDefManager)
+public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTypesManager ctDefManager)
 {
     [Fact]
     public void Attributes_WithSpec_Count()
-        => Equal(5, ctDefManager.CreateTac<TRawEntity>().Attributes.Count());
+        => Equal(5, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Attributes.Count());
     
     
     [Theory]
@@ -32,7 +32,7 @@ public abstract class CodeCtFactoryConfigured<TRawEntity>(CodeContentTypesManage
     [InlineData(nameof(CodeTypeWithSpecs.BirthDate), ValueTypes.DateTime)]
     [InlineData(nameof(CodeTypeWithSpecs.IsAlive), ValueTypes.Boolean, false, CodeTypeWithSpecs.IsAliveDescription)]
     public void AssertAttributeWithSpec(string name, ValueTypes type, bool isTitle = false, string? description = default)
-        => ctDefManager.CreateTac<TRawEntity>().AssertAttribute(name, type, isTitle, description);
+        => ctDefManager.CreateTac<TCodeTypeWithSpecs>().AssertAttribute(name, type, isTitle, description);
     
     /// <summary>
     /// Don't use properties which are private, internal or have the Ignore attribute
@@ -43,17 +43,17 @@ public abstract class CodeCtFactoryConfigured<TRawEntity>(CodeContentTypesManage
     [InlineData(nameof(CodeTypeWithSpecs.InternalProperty))]
     [InlineData("PrivateProperty")]
     public void Attributes_WithSpec_SkipIgnores(string name)
-        => DoesNotContain(name, ctDefManager.CreateTac<TRawEntity>().Attributes.Select(a => a.Name));
+        => DoesNotContain(name, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Attributes.Select(a => a.Name));
     
    
     
     [Fact]
     public void Attributes_WithSpec_VDecoratorHas() =>
-        NotNull(ctDefManager.GetVirtualAttribDecorator(typeof(TRawEntity)));
+        NotNull(ctDefManager.GetVirtualAttribDecorator(typeof(TCodeTypeWithSpecs)));
     
     
     [Fact]
     public void Attributes_WithSpec_VDecoratorExactly2() =>
-        Equal(2, ctDefManager.GetVirtualAttribDecorator(typeof(TRawEntity)).VirtualAttributes.Count);
+        Equal(2, ctDefManager.GetVirtualAttribDecorator(typeof(TCodeTypeWithSpecs)).VirtualAttributes.Count);
 
 }

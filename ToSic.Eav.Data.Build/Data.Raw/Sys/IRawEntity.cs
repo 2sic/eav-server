@@ -6,11 +6,12 @@
 /// Typically used for external data DataSources which get something and pass it to an Entity Builder.
 /// </summary>
 /// <remarks>
-/// Added in 15.04
+/// * Added in 15.04 accidentally as public
+/// * Was public till 16.09, but needed to be reworked, currently should be unknown to the public
 /// </remarks>
-[PrivateApi("Was public till 16.09, but needed to be reworked, currently should be unknown to the public")]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IRawEntity
+public interface IRawEntity: IGetRawConverter
 {
     /// <summary>
     /// The ID to use.
@@ -35,6 +36,15 @@ public interface IRawEntity
     /// </summary>
     public DateTime Modified { get; }
 
+    /// <summary>
+    /// Dictionary of all values to be added.
+    /// </summary>
+    /// <remarks>
+    /// * Please ensure it doesn't have duplicate keys. Also not keys which are only different in casing.
+    /// * Also ensure you don't use spaces, dots or special characters in keys
+    /// </remarks>
+    IDictionary<string, object?> AttributesWip { get; }
+    
     /// <summary>
     /// Dictionary of all values to be added.
     /// </summary>

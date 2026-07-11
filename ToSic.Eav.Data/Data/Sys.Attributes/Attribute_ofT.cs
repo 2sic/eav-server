@@ -6,12 +6,13 @@ namespace ToSic.Eav.Data.Sys.Attributes;
 /// Represents an Attribute / Property of an Entity with Values of a Generic Type.
 /// </summary>
 /// <remarks>
+/// * Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute{T}
 /// * completely #immutable since v15.04
 /// * We recommend you read about the [](xref:Basics.Data.Index)
 /// * Changed to be a record in v19.01
 /// </remarks>
 /// <typeparam name="T">Type of the Value</typeparam>
-[PrivateApi("Hidden in 12.04 2021-09 because people should only use the interface - previously InternalApi, this is just fyi, use interface IAttribute<T>")]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal record Attribute<T> : IAttribute<T>
 {

@@ -24,4 +24,7 @@ internal class RawItemWithOneParentAndManyChildren(int id, Guid guid, int parent
     };
 
     public IEnumerable<object> RelationshipKeys(RawConvertOptions options) => new List<object> { Id };
+
+    IConvertToRawEntity IGetRawConverter.GetConverter() => ConvertToRawSelf.Instance;
+
 }

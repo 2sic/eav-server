@@ -1,0 +1,12 @@
+﻿namespace ToSic.Eav.Data.Raw.Sys;
+
+/// <summary>
+/// WIP v22 2dm
+/// </summary>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public interface IConvertToRawEntity
+{
+    IRawEntity? TryRawEntity<TSource>(TSource source, RawConvertOptions options)
+        where TSource : class;
+}

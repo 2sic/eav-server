@@ -32,20 +32,37 @@ internal record PagingModelOfEntity : ModelFromEntityBasic, IPagingModel
     Description = "Paging Information",
     Name = "Paging"
 )]
-internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int PageCount) : RawEntityRecordBase, IPagingModel
+internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int PageCount) : /*RawEntityRecordBase,*/ IPagingModel, IGetRawConverter
 {
     public string Title => "Paging Information";
-    public override int Id => PageNumber;
+    //public override int Id => PageNumber;
 
-    public override IDictionary<string, object?> Attributes(RawConvertOptions options) =>
-        new Dictionary<string, object?>
+    //private IDictionary<string, object?> AttributesWip => new Dictionary<string, object?>
+    //{
+    //    { AttributeNames.TitleNiceName, Title },
+    //    { nameof(PageSize), PageSize },
+    //    { nameof(PageNumber), PageNumber },
+    //    { nameof(ItemCount), ItemCount },
+    //    { nameof(PageCount), PageCount }
+    //};
+
+    //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => AttributesWip;
+
+    IConvertToRawEntity IGetRawConverter.GetConverter() => Converter;
+
+    private static IConvertToRawEntity Converter { get; } = new ConvertToRawFactory<PagingModel>((source, options) =>
+        new RawEntityRecord
         {
-            { AttributeNames.TitleNiceName, Title },
-            { nameof(PageSize), PageSize },
-            { nameof(PageNumber), PageNumber },
-            { nameof(ItemCount), ItemCount },
-            { nameof(PageCount), PageCount }
-        };
+            Id = source.PageNumber,
+            AttributesWip = new Dictionary<string, object?>
+            {
+                { AttributeNames.TitleNiceName, source.Title },
+                { nameof(PageSize), source.PageSize },
+                { nameof(PageNumber), source.PageNumber },
+                { nameof(ItemCount), source.ItemCount },
+                { nameof(PageCount), source.PageCount }
+            },
+        });
 }
 
 

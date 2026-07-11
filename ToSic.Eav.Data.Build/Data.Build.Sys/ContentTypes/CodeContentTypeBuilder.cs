@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using ToSic.Eav.Data.AttributeDefinition.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
@@ -70,7 +71,10 @@ public class CodeContentTypeBuilder(ContentTypeAssembler ctAssembler, EntityAsse
             return l.ReturnNull("no description");
 
         // All props
-        var dic = new Dictionary<string, object?> { { nameof(ContentTypeDetails.Description), description } };
+        var dic = new Dictionary<string, object?>
+        {
+            { nameof(ContentTypeDetails.Description), description }
+        };
         var attributes = attributeListAssembler.Finalize(dic);
 
         // Create a Description entity
@@ -146,7 +150,7 @@ public class CodeContentTypeBuilder(ContentTypeAssembler ctAssembler, EntityAsse
                 var attrIsTitle = specs?.IsTitle ?? false;
 
                 // Must be null if no metadata
-                var attrMetadata = ContentTypeAttributeDetails(specs?.Description, specs?.InputTypeWIP)
+                var attrMetadata = ContentTypeAttributeDetails(ContentTypeAttributeAll.FromCodeAttributeOrNull(specs), specs?.Description, specs?.InputTypeWIP)
                     .ToListOfOneOrNull();
 
                 return ctAssembler.Attribute.Create(
@@ -165,12 +169,13 @@ public class CodeContentTypeBuilder(ContentTypeAssembler ctAssembler, EntityAsse
     /// Generate a details entity for an attribute of a content type.
     /// Most properties like icon etc. are not important, so ATM it only does:
     /// - Description
+    /// - InputType
     /// </summary>
-    private IEntity? ContentTypeAttributeDetails(string? description, string? inputType)
+    private IEntity? ContentTypeAttributeDetails(ContentTypeAttributeAll? ctattrAll, string? description, string? inputType)
     {
         var l = Log.Fn<IEntity>();
-        if (description == null && inputType == null)
-            return l.ReturnNull("no description");
+        if (ctattrAll == null || ( description == null && inputType == null))
+            return l.ReturnNull("no details");
 
         // All props
         var dic = new Dictionary<string, object?>();

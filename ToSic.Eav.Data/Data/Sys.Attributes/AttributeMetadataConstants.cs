@@ -10,7 +10,7 @@ public class AttributeMetadataConstants
     /// <summary>
     /// The content-type which describes general settings of an attribute
     /// </summary>
-    public static string TypeGeneral = "@All";
+    public static string TypeGeneral = "@All";  // TODO: WIP moving to ContentTypeAttributeAll
     public static string TypeString = "@String";
     public static string GeneralFieldInputType = "InputType";
 

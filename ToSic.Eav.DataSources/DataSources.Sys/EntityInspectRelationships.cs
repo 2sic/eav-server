@@ -110,13 +110,13 @@ public sealed class EntityInspectRelationships : CustomDataSource
         bool IsChild,
         [property: ContentTypeAttributeIgnore]
         bool FeatEnabled
-    ) : RawEntityRecordBase
+    ) : /*RawEntityRecordBase,*/ IGetRawConverter
     {
         private const string MyContentTypeName = "EntityRelationship";
 
-        public override int Id => FeatEnabled ? Entity.EntityId : 0;
+        public int Id => FeatEnabled ? Entity.EntityId : 0;
         
-        public override Guid Guid => FeatEnabled ? Entity.EntityGuid : Guid.Empty;
+        public Guid Guid => FeatEnabled ? Entity.EntityGuid : Guid.Empty;
 
         public string Title => FeatEnabled ? Entity.GetBestTitle() ?? "unknown" : FeatureNotEnabledMessage;
         
@@ -124,19 +124,38 @@ public sealed class EntityInspectRelationships : CustomDataSource
         
         public string ContentTypeNameId => FeatEnabled ? Entity.Type.NameId : MustEnableFeature;
 
-        public override IDictionary<string, object?> Attributes(RawConvertOptions options) =>
-            new Dictionary<string, object?>
-            {
-                { AttributeNames.TitleNiceName, Title },
-                { nameof(Field), Field },
-                { nameof(IsChild), IsChild },
-                { nameof(ContentTypeName), ContentTypeName },
-                { nameof(ContentTypeNameId), ContentTypeNameId }
-            };
+        //public override IDictionary<string, object?> AttributesWip => new Dictionary<string, object?>
+        //    {
+        //        { AttributeNames.TitleNiceName, Title },
+        //        { nameof(Field), Field },
+        //        { nameof(IsChild), IsChild },
+        //        { nameof(ContentTypeName), ContentTypeName },
+        //        { nameof(ContentTypeNameId), ContentTypeNameId }
+        //    };
+
+        //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => AttributesWip;
+            
         
         private const string MustEnableFeature = "must enable feature";
         private static readonly string FeatureNotEnabledMessage =
             $"hidden, feature {BuiltInFeatures.EntityInspectRelationships.NameId} not enabled";
+
+        IConvertToRawEntity IGetRawConverter.GetConverter() => Converter;
+
+        private static IConvertToRawEntity Converter { get; } =
+            new ConvertToRawFactory<EntityRelationship>((source, options) =>
+                new RawEntityRecord
+                {
+                    Id = source.Id,
+                    AttributesWip = new Dictionary<string, object?>
+                    {
+                        { AttributeNames.TitleNiceName, source.Title },
+                        { nameof(Field), source.Field },
+                        { nameof(IsChild), source.IsChild },
+                        { nameof(ContentTypeName), source.ContentTypeName },
+                        { nameof(ContentTypeNameId), source.ContentTypeNameId }
+                    },
+                });
 
     }
 }
