@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
 
 namespace ToSic.Eav.Data.Build.DataFactories;
+// ReSharper disable UnusedMember.Global
 
 /// <summary>
 /// Test the basic case where the data factory will try to auto-convert from raw directly.
@@ -14,7 +15,7 @@ public class DataFactoryItemPropertyConversionsFromRaw(IDataFactory dataFactory)
 }
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class DataFactoryItemPropertyConversionsFromGetConverter(IDataFactory dataFactory)
+public class DataFactoryItemPropertyConversionsFromConverter(IDataFactory dataFactory)
     : DataFactoryItemPropertyConversions
 {
     protected override IEntity CreateProcess(IConvertibleToRawEntity source)
@@ -26,8 +27,10 @@ public class DataFactoryItemPropertyConversionsFromGetConverter(IDataFactory dat
     }
 }
 
+// ReSharper restore UnusedMember.Global
 
-public abstract class DataFactoryItemPropertyConversions()
+
+public abstract class DataFactoryItemPropertyConversions
 {
     protected abstract IEntity CreateProcess(IConvertibleToRawEntity source);
     
@@ -79,7 +82,7 @@ public abstract class DataFactoryItemPropertyConversions()
     [Fact]
     public void CheckValuesOne()
     {
-        var x = new MockRawEntityRecord() { Values = new Dictionary<string, object?>()
+        var x = new MockRawEntityRecord { Values = new Dictionary<string, object?>
         {
             { "Key", "Value" },
         }};
@@ -90,7 +93,7 @@ public abstract class DataFactoryItemPropertyConversions()
     [Fact]
     public void CheckValuesThree()
     {
-        var x = new MockRawEntityRecord() { Values = new Dictionary<string, object?>()
+        var x = new MockRawEntityRecord { Values = new Dictionary<string, object?>
         {
             { "Key", "Value" },
             { "Key2", "Value" },

@@ -14,9 +14,8 @@
 public interface IHasRelationshipKeys
 {
     /// <summary>
-    /// The keys this object provides.
+    /// The keys this object provides - meaning a reference to such a key should point to this object.
     /// Keys can be `int`, `string` or something else.
-    /// Note that the keys listed here are keys to which the current object will be returned.
     ///
     /// Example
     /// 

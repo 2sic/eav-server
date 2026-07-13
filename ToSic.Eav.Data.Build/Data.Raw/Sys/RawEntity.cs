@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Values;
-using ToSic.Eav.Metadata;
-using static System.StringComparer;
+﻿using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data.Raw.Sys;
 
@@ -26,7 +24,7 @@ public class RawEntity: RawEntityBase, IHasMetadata
     }
 
     public override IDictionary<string, object?> Values => field
-        ??= new Dictionary<string, object?>(InvariantCultureIgnoreCase);
+        ??= new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// WIP experimental v18.02 - trying to get content-type metadata into the raw entity

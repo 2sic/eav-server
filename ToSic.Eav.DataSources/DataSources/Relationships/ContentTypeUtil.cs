@@ -19,7 +19,7 @@ internal class ContentTypeUtil
     };
 
 
-    internal static Dictionary<string, object?> BuildDictionary(IContentType t) => new()
+    private static Dictionary<string, object?> BuildDictionary(IContentType t) => new()
     {
         { nameof(IContentType.Name), t.Name },
         // 2024-10-29 v18.03 2dm disabled, as deprecated, must see if something breaks, but don't really expect it...
@@ -44,7 +44,7 @@ internal class ContentTypeUtil
             Metadata = t.Metadata,
         };
 
-    public static Guid? SafeConvertGuid(IContentType t)
+    private static Guid? SafeConvertGuid(IContentType t)
     {
         try
         {

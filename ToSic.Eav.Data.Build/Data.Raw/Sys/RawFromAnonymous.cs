@@ -37,21 +37,22 @@ public sealed class RawFromAnonymous: RawEntity
 
         #endregion
 
+        IList<object> relationshipKeys = [];
 
-        if (dic.TryGetValue(nameof(RelationshipKeys), out var maybeRels) && maybeRels is IEnumerable rels and not string)
+        if (dic.TryGetValue(nameof(IHasRelationshipKeys.RelationshipKeys), out var maybeRels) && maybeRels is IEnumerable rels and not string)
             try
             {
-                _relationshipKeys = rels.Cast<object>().ToList();
+                relationshipKeys = rels.Cast<object>().ToList();
                 // only remove if everything worked - so it stays in if something is wrong
                 // this will make it easier to spot issues
-                dic.Remove(nameof(RelationshipKeys));
+                dic.Remove(nameof(IHasRelationshipKeys.RelationshipKeys));
             }
             catch
             {
-                log.E($"Error in {nameof(RawFromAnonymous)} trying to convert {nameof(RelationshipKeys)}");
+                log.E($"Error in {nameof(RawFromAnonymous)} trying to convert {nameof(IHasRelationshipKeys.RelationshipKeys)}");
             }
 
-        _relationshipKeys.Add(Id);
+        relationshipKeys.Add(Id);
 
         // Scan relationships in dic...
         foreach (var key in dic.Keys.ToList() /* must copy the keys as we plan to change the dic */)
@@ -74,14 +75,12 @@ public sealed class RawFromAnonymous: RawEntity
 
         Values = dic;
         
-        
+        RelationshipKeys = relationshipKeys;
     }
 
     public override IDictionary<string, object?> Values => field
         ??= new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
 
 
-    public override IEnumerable<object> RelationshipKeys => _relationshipKeys;
-
-    private readonly IList<object> _relationshipKeys = [];
+    public override IEnumerable<object> RelationshipKeys { get; }
 }

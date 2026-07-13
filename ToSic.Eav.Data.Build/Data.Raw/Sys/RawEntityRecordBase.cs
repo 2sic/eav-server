@@ -1,14 +1,10 @@
 ﻿namespace ToSic.Eav.Data.Raw.Sys;
 
 /// <summary>
-/// Base class for raw entities which makes implementations a bit simpler when not much is needed.
-/// For example, the dates default to now.
-///
-/// You can inherit this class, but you can also just re-implement the interface yourself.
-/// Whatever works better for you.
+/// new, not in use yet
 /// </summary>
 /// <remarks>
-/// Added in 15.04
+/// wip v22
 /// </remarks>
 [PrivateApi("was public till 16.09")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

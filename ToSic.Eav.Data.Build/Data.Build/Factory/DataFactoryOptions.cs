@@ -90,6 +90,11 @@ public record DataFactoryOptions
 #endif
     } = 1;
 
+    /// <summary>
+    /// Special Flag (could be WIP) to determine if special data is allowed, such as object etc. which are not
+    /// a standard value type on an entity.
+    /// Default is `false` to ensure that only standard value types are used, which is the safest option.
+    /// </summary>
     public bool AllowUnknownValueTypes
     {
         get;
