@@ -1,17 +1,16 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Data.Build.DataFactories;
 
 public class RawFromAnonymousExtractRelationshipKeys
 {
-    private void NoNewKeys(Dictionary<string, object?> dic)
+    private static void NoNewKeys(Dictionary<string, object?> dic, int expectedValueCount = 0)
     {
-        var extracted = new RawFromAnonymousHelper(null!)
-            .ExtractRelationshipKeys(27, dic);
-        var keys = extracted.relationshipKeys;
-        Single(keys);
-        Contains(27, keys);
+        var (values, relKeys) = new RawFromAnonymousHelper(null!)
+            .ExtractRelationshipKeysTac(27, dic);
+        Single(relKeys);
+        Contains(27, relKeys);
+        Equal(expectedValueCount, values.Count);
     }
     
     [Fact]
@@ -19,23 +18,28 @@ public class RawFromAnonymousExtractRelationshipKeys
         NoNewKeys(new());
 
     [Fact]
-    public void ExtractRelationshipKeysNoKeys() =>
-        NoNewKeys(new() { { "NotKey", "" }});
+    public void ExtractRelationshipKeysOnlyOtherKeys() =>
+        NoNewKeys(new() { { "NotKey", "" }, { "Other", "" }}, 2);
     
     [Fact]
     public void ExtractRelationshipKeysNull() =>
-        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), null }});
+        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), null }}, 1);
     
     [Fact]
     public void ExtractRelationshipKeysNoKeyData() =>
-        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), "" }});
+        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), "" }}, 1);
+
+    [Fact]
+    public void ExtractRelationshipKeysStringIgnored() =>
+        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), "Something" }}, 1);
+
     [Fact]
     public void ExtractRelationshipKeysUnexpectedObject() =>
-        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), new() } });
+        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), new() } }, 1);
 
     [Fact]
     public void ExtractRelationshipKeysAnonWrongType() =>
-        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), new { Something = 12 } } });
+        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), new { Something = 12 } } }, 1);
     
     
     [Fact]
@@ -43,10 +47,10 @@ public class RawFromAnonymousExtractRelationshipKeys
     {
         var data = new Dictionary<string, object?>()
         {
-            { nameof(IHasRelationshipKeys.RelationshipKeys), new[] {"20","30"} }
+            { nameof(IHasRelationshipKeys.RelationshipKeys), new[] { "20", "30" } }
         };
         var extracted = new RawFromAnonymousHelper(null!)
-            .ExtractRelationshipKeys(27, data);
+            .ExtractRelationshipKeysTac(27, data);
         var keys = extracted.relationshipKeys;
         Equal(3, keys.Count);
         Contains(27, keys);
@@ -59,10 +63,10 @@ public class RawFromAnonymousExtractRelationshipKeys
     {
         var data = new Dictionary<string, object?>()
         {
-            { nameof(IHasRelationshipKeys.RelationshipKeys), new[] {20,30} }
+            { nameof(IHasRelationshipKeys.RelationshipKeys), new[] { 20, 30 } }
         };
         var extracted = new RawFromAnonymousHelper(null!)
-            .ExtractRelationshipKeys(27, data);
+            .ExtractRelationshipKeysTac(27, data);
         var keys = extracted.relationshipKeys;
         Equal(3, keys.Count);
         Contains(27, keys);

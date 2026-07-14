@@ -9,7 +9,7 @@
 /// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public sealed record RawEntityRecord: IRawEntity
+public record RawEntityRecord: IRawEntity
 {
     public int Id
     {
@@ -53,4 +53,9 @@ public sealed record RawEntityRecord: IRawEntity
 
     public required IDictionary<string, object?> Values { get; init; }
 
+}
+
+public record RawEntityRecordWithRelationships : RawEntityRecord, IHasRelationshipKeys
+{
+    public required IEnumerable<object> RelationshipKeys { get; init; }
 }

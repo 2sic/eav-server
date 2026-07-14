@@ -13,13 +13,24 @@ internal class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Ra
 
         var dic = original.ToDicInvariantInsensitive(mutable: true);
         
-        var basic = new RawEntityRecord
+        var basic = new RawEntityRecordWithRelationships
         {
             Id = ExtractConvert<int>(nameof(IRawEntity.Id)),
             Guid = ExtractConvert<Guid>(nameof(IRawEntity.Guid)),
             Created = ExtractConvert<DateTime>(nameof(IRawEntity.Created)),
             Modified = ExtractConvert<DateTime>(nameof(IRawEntity.Modified)),
-            Values = dic,
+            Values = null!,   // this is just temp
+            RelationshipKeys = null!, // this is just temp
+        };
+
+        var extractKeys = ExtractRelationshipKeys(basic.Id, dic);
+        
+        var typedRelationships = StrongTypeRelationships(extractKeys.values);
+
+        basic = basic with
+        {
+            Values = typedRelationships,
+            RelationshipKeys = extractKeys.relationshipKeys
         };
 
         return l.Return(basic);
@@ -41,9 +52,9 @@ internal class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Ra
     /// <param name="id">The main ID which will always be listed as a relationship key.</param>
     /// <param name="dic">The dictionary of values to extract relationship keys from.</param>
     /// <returns>A tuple containing the remaining values and the list of relationship keys.</returns>
-    internal (Dictionary<string, object?> values, IList<object> relationshipKeys) ExtractRelationshipKeys(int id, Dictionary<string, object?> dic)
+    internal (IDictionary<string, object?> values, IList<object> relationshipKeys) ExtractRelationshipKeys(int id, IDictionary<string, object?> dic)
     {
-        var l = Log.Fn<(Dictionary<string, object?> values, IList<object> relationshipKeys)>($"{id}");
+        var l = Log.Fn<(IDictionary<string, object?> values, IList<object> relationshipKeys)>($"{id}");
 
         const string relKeysField = nameof(IHasRelationshipKeys.RelationshipKeys);
         
@@ -72,9 +83,14 @@ internal class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Ra
 
     }
 
-    internal Dictionary<string, object?> StrongTypeRelationships(Dictionary<string, object?> dic)
+    /// <summary>
+    /// Strongly type any relationships found in the dictionary of values, replacing them with typed RawRelationship objects.
+    /// </summary>
+    /// <param name="dic">The dictionary of values to process.</param>
+    /// <returns>A dictionary with strongly typed relationships.</returns>
+    internal IDictionary<string, object?> StrongTypeRelationships(IDictionary<string, object?> dic)
     {
-        var l = Log.Fn<Dictionary<string, object?>>();
+        var l = Log.Fn<IDictionary<string, object?>>();
         var replacements = ExtractRelationships(dic);
         if (replacements.Count == 0)
             return l.Return(dic, "no relationships");
@@ -87,9 +103,14 @@ internal class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Ra
 
     }
     
-    internal Dictionary<string, RawRelationship> ExtractRelationships(Dictionary<string, object?> dic)
+    /// <summary>
+    /// Extract all objects / properties which contain relationships, and correctly type them.
+    /// </summary>
+    /// <param name="dic">The dictionary of values to extract relationships from.</param>
+    /// <returns>A dictionary of typed relationships.</returns>
+    internal IDictionary<string, RawRelationship> ExtractRelationships(IDictionary<string, object?> dic)
     {
-        var l = Log.Fn<Dictionary<string, RawRelationship>>();
+        var l = Log.Fn<IDictionary<string, RawRelationship>>();
 
         // Scan relationships in values dictionary
         var replacements = dic
@@ -101,7 +122,7 @@ internal class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Ra
                 // Try to parse and see if it has a "Relationships" property, which is how relationships are passed in
                 // otherwise skip this key, as it is not a relationship
                 relsTemp = pair.Value!.ObjectToDictionary(caseInsensitive: false)
-                    .TryGetValue("Relationships", out var relsTemp)
+                    .TryGetValue(RawRelationship.RelationshipsKey, out var relsTemp)
                     ? relsTemp
                     : null
             })
