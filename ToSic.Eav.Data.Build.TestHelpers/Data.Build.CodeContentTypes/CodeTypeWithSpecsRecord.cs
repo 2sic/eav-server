@@ -13,19 +13,28 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 /// <param name="IgnoreThis"></param>
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
 public record CodeTypeWithSpecsRecord(
+    
     [property: ContentTypeAttributeSpecs(Description = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
     int Id,
+    
     [property: ContentTypeAttributeSpecs(Description = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
     Guid Guid,
+    
     DateTime Created,
+    
     [property: ContentTypeAttributeSpecs(Name = "NameMod", IsTitle = true)]
     string Name,
+    
     [property: ContentTypeAttributeSpecs(Type = ValueTypes.Hyperlink)]
     string Url,
+    
     int Age,
+    
     DateTime BirthDate,
+    
     [property: ContentTypeAttributeSpecs(Description = CodeTypeWithSpecs.IsAliveDescription)]
     bool IsAlive,
+    
     [property: ContentTypeAttributeIgnore]
     string IgnoreThis
     )

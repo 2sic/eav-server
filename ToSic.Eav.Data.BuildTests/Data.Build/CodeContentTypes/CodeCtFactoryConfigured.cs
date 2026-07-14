@@ -1,5 +1,7 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
 // ReSharper disable UnusedMember.Global
@@ -57,6 +59,7 @@ public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTyp
     public void Attributes_WithSpec_VDecoratorExactly2() =>
         Equal(2, ctDefManager.GetVirtualAttribDecorator(typeof(TCodeTypeWithSpecs)).VirtualAttributes.Count);
 
+    #region Inspect ContentType of generated data
 
     [Fact]
     public void ContentType_IsNotNull()
@@ -77,5 +80,27 @@ public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTyp
     [Fact]
     public void ContentType_HasNullSysSettings()
         => Null(ctDefManager.CreateTac<TCodeTypeWithSpecs>().SysSettings);
+
+    #endregion
+
+    #region ContentType Specs match what is expected
+
+    [Fact]
+    public void ContentType_NameIsPreconfigured()
+        => Equal(CodeTypeWithSpecsEmpty.SpecName, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Name);
+
+    [Fact]
+    public void ContentType_HasNameId() =>
+        Equal(CodeTypeWithSpecsEmpty.SpecGuid, ctDefManager.CreateTac<TCodeTypeWithSpecs>().NameId);
+
+    [Fact]
+    public void ContentType_HasScope() =>
+        Equal(CodeTypeWithSpecsEmpty.SpecScope, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Scope);
+
+    [Fact]
+    public void ContentType_HasDescription() =>
+        Equal(CodeTypeWithSpecsEmpty.SpecDescription, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Metadata.FirstModel<ContentTypeDetails>()!.Description);
+
+    #endregion
 
 }
