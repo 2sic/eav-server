@@ -15,8 +15,7 @@ namespace ToSic.Eav.Data.Raw.Sys;
 public class RawEntity: RawEntityBase, IHasMetadata
 {
     public RawEntity()
-    {
-    }
+    { }
 
     public RawEntity(Dictionary<string, object?> values)
     {

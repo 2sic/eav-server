@@ -15,7 +15,7 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
 
         var dic = original.ToDicInvariantInsensitive(mutable: true);
         
-        var basic = new RawEntityRecordWithRelationships
+        var basic = new RawEntityRecord
         {
             Id = ExtractConvert<int>(nameof(IRawEntity.Id)),
             Guid = ExtractConvert<Guid>(nameof(IRawEntity.Guid)),

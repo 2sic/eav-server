@@ -9,7 +9,7 @@
 /// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record RawEntityRecord: IRawEntity
+public record RawEntityRecord: IRawEntity, IHasRelationshipKeys
 {
     public int Id
     {
@@ -51,11 +51,13 @@ public record RawEntityRecord: IRawEntity
 #endif
     } = DateTime.Now;
 
-    public required IDictionary<string, object?> Values { get; init; }
-
-}
-
-public record RawEntityRecordWithRelationships : RawEntityRecord, IHasRelationshipKeys
-{
-    public required IEnumerable<object> RelationshipKeys { get; init; }
+    /// <inheritdoc/>
+    public IDictionary<string, object?> Values
+    {
+        get => field ??= new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        init => field = value?.ToInvariant();
+    }
+    
+    /// <inheritdoc/>
+    public IEnumerable<object>? RelationshipKeys { get; init; }
 }
