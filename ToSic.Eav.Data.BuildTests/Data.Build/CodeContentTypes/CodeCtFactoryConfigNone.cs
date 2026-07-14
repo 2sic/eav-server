@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
 // ReSharper disable UnusedMember.Global
@@ -42,5 +43,26 @@ public abstract class CodeCtFactoryConfigNone<TCodeTypeNoSpecs>(CodeContentTypes
     [InlineData(nameof(CodeTypeNoSpecs.IsAlive), ValueTypes.Boolean)]
     public void AssertAttributeNoSpec(string name, ValueTypes type)
         => ctDefManager.CreateTac<TCodeTypeNoSpecs>().AssertAttribute(name, type);
+
+
+    [Fact] 
+    public void ContentType_IsNotNull()
+        => NotNull(ctDefManager.CreateTac<TCodeTypeNoSpecs>());
     
+    [Fact]
+    public void ContentType_IsNotDynamic()
+        => False(ctDefManager.CreateTac<TCodeTypeNoSpecs>().IsDynamic);
+    
+    [Fact]
+    public void ContentType_HasRepositoryTypeCodeReflection() 
+        => Equal(RepositoryTypes.CodeReflection, ctDefManager.CreateTac<TCodeTypeNoSpecs>().RepositoryType);
+    
+    [Fact]
+    public void ContentType_DoesNotAlwaysShareConfiguration() 
+        => False(ctDefManager.CreateTac<TCodeTypeNoSpecs>().AlwaysShareConfiguration);
+    
+    [Fact]
+    public void ContentType_HasNullSysSettings() 
+        => Null(ctDefManager.CreateTac<TCodeTypeNoSpecs>().SysSettings);
+
 }

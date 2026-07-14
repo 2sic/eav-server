@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
 // ReSharper disable UnusedMember.Global
@@ -55,5 +56,26 @@ public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTyp
     [Fact]
     public void Attributes_WithSpec_VDecoratorExactly2() =>
         Equal(2, ctDefManager.GetVirtualAttribDecorator(typeof(TCodeTypeWithSpecs)).VirtualAttributes.Count);
+
+
+    [Fact]
+    public void ContentType_IsNotNull()
+        => NotNull(ctDefManager.CreateTac<TCodeTypeWithSpecs>());
+
+    [Fact]
+    public void ContentType_IsNotDynamic()
+        => False(ctDefManager.CreateTac<TCodeTypeWithSpecs>().IsDynamic);
+
+    [Fact]
+    public void ContentType_HasRepositoryTypeCodeConfiguration()
+        => Equal(RepositoryTypes.CodeConfiguration, ctDefManager.CreateTac<TCodeTypeWithSpecs>().RepositoryType);
+
+    [Fact]
+    public void ContentType_DoesNotAlwaysShareConfiguration()
+        => False(ctDefManager.CreateTac<TCodeTypeWithSpecs>().AlwaysShareConfiguration);
+
+    [Fact]
+    public void ContentType_HasNullSysSettings()
+        => Null(ctDefManager.CreateTac<TCodeTypeWithSpecs>().SysSettings);
 
 }

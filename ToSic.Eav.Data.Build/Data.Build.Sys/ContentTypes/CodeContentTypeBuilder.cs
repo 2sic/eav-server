@@ -40,7 +40,12 @@ public class CodeContentTypeBuilder(ContentTypeAssembler ctAssembler, EntityAsse
 
         IDecorator<IContentType>? vAttributeDecorator = vAttributes == null || vAttributes.Count == 0
             ? null
-            : new ContentTypeVirtualAttributes(vAttributes.ToDictionary(va => va.Name, va => va));
+            : new ContentTypeVirtualAttributes(vAttributes
+                .ToDictionary(
+                    va => va.Name,
+                    va => va
+                )
+            );
 
         var contentType = ctAssembler.Type.Create(
             appId,
@@ -49,7 +54,7 @@ public class CodeContentTypeBuilder(ContentTypeAssembler ctAssembler, EntityAsse
             scope: ctScope,
             id: 0,
             metadata: ctMetadata,
-            isDynamic: true,
+            isDynamic: false, // set dynamic to false, as the attributes are known, this type can only have these attributes
             attributes: attributes,
             decorators: vAttributeDecorator.ToListOfOneOrNull(),
             repositoryType: ctSpecs == null

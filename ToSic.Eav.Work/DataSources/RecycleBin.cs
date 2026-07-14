@@ -85,7 +85,7 @@ public class RecycleBin : CustomDataSource
                 { nameof(r.DeletedBy), r.DeletedBy },
                 { nameof(r.ParentRef), r.ParentRef },
                 { nameof(r.Json), r.Json },
-                { AttributeNames.TitleNiceName, $"{r.TypeName}({r.Id})" },
+                { AttributeNames.TitleNiceName, $"{r.TypeName} ({r.Id})" },
             })
             {
                 Id = r.Id,
