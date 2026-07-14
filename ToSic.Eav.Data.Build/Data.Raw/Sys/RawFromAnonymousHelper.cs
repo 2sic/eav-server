@@ -2,7 +2,9 @@
 
 namespace ToSic.Eav.Data.Raw.Sys;
 
-internal class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.FrAnon")
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.FrAnon")
 {
     public IRawEntity Convert(object? original)
     {
