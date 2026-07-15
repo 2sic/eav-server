@@ -34,6 +34,15 @@ public static class PathFixer
     // could break https:// links etc.
     // .Replace("//", "/").Replace("//", "/");
 
+    /// <summary>
+    /// Convert a logical or serialized path to the current operating system's directory separator.
+    /// Use only at filesystem boundaries; URLs and persisted paths should remain forward-slash normalized.
+    /// </summary>
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    [return: NotNullIfNotNull(nameof(original))]
+    public static string? ToSystemPath(this string? original)
+        => Path.DirectorySeparatorChar == '/' ? original.ForwardSlash() : original.Backslash();
+
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static string PrefixSlash(this string? original)
     {

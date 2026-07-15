@@ -115,9 +115,9 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
 
     [field: AllowNull, MaybeNull]
     public string RelativePath => field ??= GetInternal(nameof(RelativePath),
-        () => Combine(Site.AppsRootPhysical, AppFolder).Backslash());
+        () => Combine(Site.AppsRootPhysical, AppFolder).ToSystemPath());
 
     [field: AllowNull, MaybeNull]
     public string RelativePathShared => field ??= GetInternal(nameof(RelativePathShared),
-        () => Combine(config.Value.SharedAppsFolder(), AppFolder).ToAbsolutePathForwardSlash());
+        () => Combine(config.Value.SharedAppsFolder(), AppFolder).ToAbsolutePathForwardSlash().ToSystemPath());
 }

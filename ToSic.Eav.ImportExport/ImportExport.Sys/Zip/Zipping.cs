@@ -8,6 +8,7 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 {
     public MemoryStream ZipDirectoryIntoStream(string zipDirectory)
     {
+        zipDirectory = zipDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         // Create the memory stream and keep it open until we return it to the caller
         var stream = new MemoryStream();
         using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true))
@@ -25,7 +26,11 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
         foreach (var folder in subFolders)
             AddFolder(archive, rootFolder, folder);
 
-        var relativePath = currentFolder.Substring(rootFolder.Length) + "\\";
+        var relativePath = currentFolder.Substring(rootFolder.Length)
+            .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+            .ForwardSlash();
+        if (relativePath.Length > 0)
+            relativePath += "/";
         foreach (var file in Directory.GetFiles(currentFolder))
             AddFile(archive, file, relativePath);
     }

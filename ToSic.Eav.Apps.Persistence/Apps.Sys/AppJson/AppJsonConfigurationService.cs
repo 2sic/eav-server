@@ -175,13 +175,13 @@ public class AppJsonConfigurationService(
         try
         {
             var excludeList = appJson.Export.Exclude
-                .Select(e => e.ToString().Trim().Backslash())
+                .Select(e => e.ToString().Trim().ForwardSlash())
                 .Where(e => !string.IsNullOrEmpty(e)
                             && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
                 .Select(e =>
-                    e.StartsWith(@"\")
-                        ? Path.Combine(sourceFolder, e.Substring(1))
-                        : e) // handle case with starting slash
+                    e.StartsWith("/")
+                        ? Path.Combine(sourceFolder, e.TrimStart('/').ToSystemPath())
+                        : e.ToSystemPath()) // handle case with starting slash
                 .Select(e => e.ToLowerInvariant())
                 .ToListOpt();
             return l.Return(excludeList, $"Found: {excludeList.Count}");

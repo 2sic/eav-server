@@ -6,6 +6,27 @@ namespace ToSic.Eav.ImportExport.Tests.Zip;
 
 public class ZippingTests
 {
+    [Fact]
+    public void ZipDirectoryIntoStream_UsesPortableEntrySeparators()
+    {
+        var root = CreateTempFolder();
+        var folder = Path.Combine(root, "nested");
+        Directory.CreateDirectory(folder);
+        File.WriteAllText(Path.Combine(folder, "file.txt"), "ok");
+
+        try
+        {
+            using var stream = new Zipping(null).ZipDirectoryIntoStream(root);
+            using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
+
+            Equal("nested/file.txt", Single(archive.Entries).FullName);
+        }
+        finally
+        {
+            Zipping.TryToDeleteDirectory(root, null);
+        }
+    }
+
     [Theory]
     [InlineData("../evil.txt")]
     [InlineData("folder/../../evil.txt")]

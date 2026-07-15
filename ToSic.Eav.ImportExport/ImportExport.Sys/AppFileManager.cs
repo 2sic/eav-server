@@ -46,7 +46,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
         foreach (var file in filteredFiles)
         {
             var relativeFilePath = file.Replace(_root, "").TrimPrefixSlash();
-            var destinationFilePath = $"{destinationFolder}{Path.DirectorySeparatorChar}{relativeFilePath}";
+            var destinationFilePath = Path.Combine(destinationFolder, relativeFilePath.ToSystemPath());
             l.A($"relFilePath:{relativeFilePath},destFilePath:{destinationFilePath}");
 
             Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath) ?? string.Empty);

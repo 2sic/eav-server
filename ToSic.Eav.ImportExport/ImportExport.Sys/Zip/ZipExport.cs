@@ -1,8 +1,10 @@
-﻿using System.Xml.XPath;
+﻿using System.Collections;
+using System.Runtime.CompilerServices;
+using System.Xml.XPath;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State;
-using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
+using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.ImportExport.Sys.XmlExport;
 using ToSic.Eav.Persistence.Sys.Logging;
@@ -32,10 +34,6 @@ public class ZipExport(
         public string PhysicalAppPath { get; init; } = "";
         public string PhysicalPathGlobal { get; init; } = "";
     }
-    
-    // 2026-08-07 2dm - believe that options are always required
-    //protected override Options GetDefaultOptions() => new();
-
 
     private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
     private const string SourceControlDataFolder = FolderConstants.DataFolderProtected;
@@ -174,7 +172,7 @@ public class ZipExport(
         File.WriteAllText(Path.Combine(tmpAppDataProtectedFolder, FolderConstants.AppDataFile), xml);
 
         // Zip directory and return as stream
-        var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
+        var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName);
 
         Zipping.TryToDeleteDirectory(temporaryDirectoryPath, Log);
 
@@ -190,14 +188,15 @@ public class ZipExport(
         foreach (var file in xmlExport.ReferencedFiles)
         {
             var relPath = file.RelativePath ?? throw new NullReferenceException("File relative path is null, this should not happen in export.");
-            var portalFilePath = Path.Combine(siteFilesDirectory.FullName, Path.GetDirectoryName(relPath)!);
+            var physicalRelativePath = relPath.ToSystemPath();
+            var portalFilePath = Path.Combine(siteFilesDirectory.FullName, Path.GetDirectoryName(physicalRelativePath) ?? string.Empty);
 
             Directory.CreateDirectory(portalFilePath);
 
             if (!File.Exists(file.Path))
                 continue;
 
-            var fullPath = Path.Combine(siteFilesDirectory.FullName, relPath);
+            var fullPath = Path.Combine(siteFilesDirectory.FullName, physicalRelativePath);
             try
             {
                 var pathStartWithAdam = relPath.StartsWith("adam");
@@ -286,5 +285,4 @@ public class ZipExport(
         foreach (var file in Directory.GetFiles(srcPath))
             File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
     }
-
 }
