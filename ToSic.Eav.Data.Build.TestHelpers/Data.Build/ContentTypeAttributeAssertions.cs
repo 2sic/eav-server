@@ -4,7 +4,15 @@ namespace ToSic.Eav.Data.Build;
 
 public static class ContentTypeAttributeAssertions
 {
-    public static void AssertAttribute(this IContentType ct, string name, ValueTypes type, bool isTitle = false, string? description = default)
+    /// <summary>
+    /// Retrieve an attribute-definition on a content type and verify its type, title-ness, and description
+    /// </summary>
+    /// <param name="ct"></param>
+    /// <param name="name"></param>
+    /// <param name="type"></param>
+    /// <param name="isTitle"></param>
+    /// <param name="description"></param>
+    public static void AssertAttributeDefinition(this IContentType ct, string name, ValueTypes type, bool isTitle = false, string? description = default)
     {
         var attribute = ct.Attributes.FirstOrDefault(a => a.Name == name);
         NotNull(attribute);

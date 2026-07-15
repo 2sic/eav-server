@@ -9,6 +9,10 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// <summary>
 /// Internal helper to assemble <see cref="IContentTypeAttribute"/> definitions.
 /// </summary>
+/// <remarks>
+/// Technically this could all be done with static methods,
+/// but because we want to be able to inject dependencies in the future, this is a class.
+/// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
 public class ContentTypeAttributeAssembler() : ServiceBase("Eav.CtAtBl")
