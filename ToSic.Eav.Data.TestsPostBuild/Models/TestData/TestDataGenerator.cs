@@ -70,15 +70,15 @@ public class TestDataGenerator(DataAssembler dataAssembler, CodeContentTypesMana
 
     public IEntity CreateEntityForNoSpecs()
     {
-        var ct = ctDefFactory.CreateTac<CodeTypeNoSpecs>();
+        var ct = ctDefFactory.CreateTac<CodeTypeNoSpecsClass>();
 
         return dataAssembler.CreateEntityTac(0, ct, values: new()
         {
-            { nameof(CodeTypeNoSpecs.Id), 1 },
-            { nameof(CodeTypeNoSpecs.Name), "Test" },
-            { nameof(CodeTypeNoSpecs.Age), 30 },
-            { nameof(CodeTypeNoSpecs.BirthDate), new DateTime(1990, 1, 1) },
-            { nameof(CodeTypeNoSpecs.IsAlive), true }
+            { nameof(CodeTypeNoSpecsClass.Id), 1 },
+            { nameof(CodeTypeNoSpecsClass.Name), "Test" },
+            { nameof(CodeTypeNoSpecsClass.Age), 30 },
+            { nameof(CodeTypeNoSpecsClass.BirthDate), new DateTime(1990, 1, 1) },
+            { nameof(CodeTypeNoSpecsClass.IsAlive), true }
         });
     }
 

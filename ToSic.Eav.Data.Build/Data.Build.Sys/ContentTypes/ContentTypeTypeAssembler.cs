@@ -5,6 +5,7 @@ using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
+#pragma warning disable CA1822
 
 namespace ToSic.Eav.Data.Build.Sys;
 

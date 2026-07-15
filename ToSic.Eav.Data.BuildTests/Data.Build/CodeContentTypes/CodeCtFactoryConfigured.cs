@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class CodeCtFactoryConfiguredClass(CodeContentTypesManager ctDefManager)
-    : CodeCtFactoryConfigured<CodeTypeWithSpecs>(ctDefManager);
+    : CodeCtFactoryConfigured<CodeTypeWithSpecsClass>(ctDefManager);
 
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class CodeCtFactoryConfiguredRecord(CodeContentTypesManager ctDefManager)
@@ -29,21 +29,21 @@ public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTyp
     
     
     [Theory]
-    [InlineData(nameof(CodeTypeWithSpecs.Name) + "Mod", ValueTypes.String, true)]
-    [InlineData(nameof(CodeTypeWithSpecs.Url), ValueTypes.Hyperlink)]
-    [InlineData(nameof(CodeTypeWithSpecs.Age), ValueTypes.Number)]
-    [InlineData(nameof(CodeTypeWithSpecs.BirthDate), ValueTypes.DateTime)]
-    [InlineData(nameof(CodeTypeWithSpecs.IsAlive), ValueTypes.Boolean, false, CodeTypeWithSpecs.IsAliveDescription)]
+    [InlineData(nameof(CodeTypeWithSpecsClass.Name) + "Mod", ValueTypes.String, true)]
+    [InlineData(nameof(CodeTypeWithSpecsClass.Url), ValueTypes.Hyperlink)]
+    [InlineData(nameof(CodeTypeWithSpecsClass.Age), ValueTypes.Number)]
+    [InlineData(nameof(CodeTypeWithSpecsClass.BirthDate), ValueTypes.DateTime)]
+    [InlineData(nameof(CodeTypeWithSpecsClass.IsAlive), ValueTypes.Boolean, false, CodeTypeWithSpecsClass.IsAliveDescription)]
     public void AssertAttributeWithSpec(string name, ValueTypes type, bool isTitle = false, string? description = default)
-        => ctDefManager.CreateTac<TCodeTypeWithSpecs>().AssertAttribute(name, type, isTitle, description);
+        => ctDefManager.CreateTac<TCodeTypeWithSpecs>().AssertAttributeDefinition(name, type, isTitle, description);
     
     /// <summary>
     /// Don't use properties which are private, internal or have the Ignore attribute
     /// </summary>
     /// <param name="name"></param>
     [Theory]
-    [InlineData(nameof(CodeTypeWithSpecs.IgnoreThis))]
-    [InlineData(nameof(CodeTypeWithSpecs.InternalProperty))]
+    [InlineData(nameof(CodeTypeWithSpecsClass.IgnoreThis))]
+    [InlineData(nameof(CodeTypeWithSpecsClass.InternalProperty))]
     [InlineData("PrivateProperty")]
     public void Attributes_WithSpec_SkipIgnores(string name)
         => DoesNotContain(name, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Attributes.Select(a => a.Name));

@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
 
-namespace ToSic.Eav.Data.Build.DataFactories;
+namespace ToSic.Eav.Data.Build;
 
 internal static class RawFromAnonymousTestAccessors
 {

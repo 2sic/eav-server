@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 /// </summary>
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class CodeCtFactoryConfigNoneClass(CodeContentTypesManager ctDefManager)
-    : CodeCtFactoryConfigNone<CodeTypeNoSpecs>(ctDefManager);
+    : CodeCtFactoryConfigNone<CodeTypeNoSpecsClass>(ctDefManager);
 
 /// <summary>
 /// Test conversion of a type to a ContentType Definition - with a **Record** having no configuration.
@@ -39,12 +39,12 @@ public abstract class CodeCtFactoryConfigNone<TCodeTypeNoSpecs>(CodeContentTypes
     
     
     [Theory]
-    [InlineData(nameof(CodeTypeNoSpecs.Name), ValueTypes.String)]
-    [InlineData(nameof(CodeTypeNoSpecs.Age), ValueTypes.Number)]
-    [InlineData(nameof(CodeTypeNoSpecs.BirthDate), ValueTypes.DateTime)]
-    [InlineData(nameof(CodeTypeNoSpecs.IsAlive), ValueTypes.Boolean)]
+    [InlineData(nameof(CodeTypeNoSpecsClass.Name), ValueTypes.String)]
+    [InlineData(nameof(CodeTypeNoSpecsClass.Age), ValueTypes.Number)]
+    [InlineData(nameof(CodeTypeNoSpecsClass.BirthDate), ValueTypes.DateTime)]
+    [InlineData(nameof(CodeTypeNoSpecsClass.IsAlive), ValueTypes.Boolean)]
     public void AssertAttributeNoSpec(string name, ValueTypes type)
-        => ctDefManager.CreateTac<TCodeTypeNoSpecs>().AssertAttribute(name, type);
+        => ctDefManager.CreateTac<TCodeTypeNoSpecs>().AssertAttributeDefinition(name, type);
 
     #region Inspect ContentType of generated data
 

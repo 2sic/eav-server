@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
-public class CodeTypeNoSpecs
+public class CodeTypeNoSpecsClass
 {
     public int Id { get; set; }
 

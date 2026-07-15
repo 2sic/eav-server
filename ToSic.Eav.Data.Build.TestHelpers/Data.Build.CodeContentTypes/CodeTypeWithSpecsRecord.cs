@@ -5,7 +5,7 @@ using static ToSic.Eav.Data.Build.CodeContentTypes.CodeTypeWithSpecsEmpty;
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
 /// <summary>
-/// This is a record version of the CodeTypeWithSpecs class, which is used to define a content type with specific attributes and specifications.
+/// This is a record version of the <see cref="CodeTypeWithSpecsClass"/> class, which is used to define a content type with specific attributes and specifications.
 /// </summary>
 /// <param name="Id"></param>
 /// <param name="Guid"></param>
@@ -32,7 +32,7 @@ public record CodeTypeWithSpecsRecord(
     
     DateTime BirthDate,
     
-    [property: ContentTypeAttributeSpecs(Description = CodeTypeWithSpecs.IsAliveDescription)]
+    [property: ContentTypeAttributeSpecs(Description = CodeTypeWithSpecsClass.IsAliveDescription)]
     bool IsAlive,
     
     [property: ContentTypeAttributeIgnore]

@@ -4,7 +4,7 @@
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
-public class CodeTypeWithSpecs: CodeTypeWithSpecsEmpty
+public class CodeTypeWithSpecsClass: CodeTypeWithSpecsEmpty
 {
     [ContentTypeAttributeSpecs(Description = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
     public int Id { get; set; }

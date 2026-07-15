@@ -4,6 +4,8 @@ using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
+#pragma warning disable CA1822 // Don't use static methods for public APIs as some day it may need DI.
+
 namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
