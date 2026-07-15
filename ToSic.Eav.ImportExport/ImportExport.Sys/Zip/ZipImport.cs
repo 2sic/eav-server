@@ -168,6 +168,19 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
             l
         );
 
+        // Informational only: a failed audit must never prevent an import.
+        try
+        {
+            var validator = new PathCasePreflightValidator(l);
+            var result = validator.ValidateImportPackage(appDirectory, imp.XmlDoc, pendingApp);
+            _ = validator.LogResult(result);
+        }
+        catch (Exception e)
+        {
+            l.W("Path case preflight failed; import will continue");
+            l.Ex(e);
+        }
+
         if (imp.IsAppImport)
         {
             l.A("will do app-import");

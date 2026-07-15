@@ -117,7 +117,7 @@ public class ImportApp(
             try
             {
                 var importer = xmlImpExpFiles.New().Init(null, false);
-                var importXmlReader = new ImportXmlReader(appXml, importer, Log);
+                var importXmlReader = new ImportXmlReader(appXml, importer, l);
                 var pendingAppDto = new PendingAppDto
                 {
                     ServerFolder = folderName,

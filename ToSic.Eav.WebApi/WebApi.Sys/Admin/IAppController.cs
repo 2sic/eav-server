@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.DataSources.Sys;
+using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
@@ -25,6 +26,11 @@ public interface IAppController
     bool FlushCache(int zoneId, int appId);
 
     THttpResponseType Export(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool assetsAdam, bool assetsSite, bool assetAdamDeleted);
+
+    /// <summary>
+    /// Read-only report of path casing risks before cross-platform migration.
+    /// </summary>
+    PathCasePreflightResult PathCasePreflight(int zoneId, int appId);
 
     Task<bool> SaveData(int zoneId, int appId, bool includeContentGroups, bool resetAppGuid, bool withPortalFiles);
 

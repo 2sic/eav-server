@@ -51,6 +51,20 @@ public class LogCreate: LogTestBase
         Equal(2, child.Entries.Count);
     }
 
+    [Fact]
+    public void LinkToLogCall_UsesUnderlyingLog()
+    {
+        var parent = new Log("Tst.Parent");
+        var call = parent.Fn();
+        var child = new Log("Tst.Child", call);
+
+        child.W("child warning");
+
+        Same(parent, child.Parent);
+        Contains(parent.Entries, entry => entry.Message == LogConstants.WarningPrefix + "child warning");
+        call.Done();
+    }
+
 
     private static void VerifyNameAndEmpty(string testName, Log log, string scope, string name, string nameId)
     {

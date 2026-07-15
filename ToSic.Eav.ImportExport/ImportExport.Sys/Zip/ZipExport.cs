@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Runtime.CompilerServices;
-using System.Xml.XPath;
+﻿using System.Xml.XPath;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Sys.Ancestors;
@@ -48,6 +46,48 @@ public class ZipExport(
     public int CountFiles(bool withGlobal, Func<AppFileManager, IEnumerable<string>> countFn)
     {
         return countFn(AppFileManager).Count() + (withGlobal ? countFn(AppFileManagerGlobal).Count() : 0);
+    }
+
+    public PathCasePreflightResult PathCasePreflight(
+        AppExportSpecs specs,
+        IEnumerable<PathCaseItem> appReferences,
+        IEnumerable<PathCaseItem> sharedAppReferences)
+    {
+        var l = Log.Fn<PathCasePreflightResult>(specs.Dump());
+        var result = PathCasePreflight(GenerateExportXml(specs), appReferences, sharedAppReferences);
+        return l.Return(result, $"{result.Issues.Count} issues");
+    }
+
+    private PathCasePreflightResult PathCasePreflight(
+        XmlExporter xmlExport,
+        IEnumerable<PathCaseItem> appReferences,
+        IEnumerable<PathCaseItem> sharedAppReferences)
+    {
+        var l = Log.Fn<PathCasePreflightResult>();
+        var validator = new PathCasePreflightValidator(l);
+        var results = new List<PathCasePreflightResult>();
+
+        results.Add(validator.Validate(
+            PathCasePreflightValidator.ScopeAppFiles,
+            appReferences,
+            ActualAppPathsOrEmpty(AppFileManager, MyOptions.PhysicalAppPath)));
+
+        results.Add(validator.Validate(
+            PathCasePreflightValidator.ScopeSharedAppFiles,
+            sharedAppReferences,
+            ActualAppPathsOrEmpty(AppFileManagerGlobal, MyOptions.PhysicalPathGlobal)));
+
+        var referencedFiles = xmlExport.ReferencedFiles
+            .Where(file => file.RelativePath.HasValue())
+            .ToList();
+        results.Add(validator.Validate(
+            PathCasePreflightValidator.ScopeDatabaseAssets,
+            referencedFiles.Select(file => new PathCaseItem(file.RelativePath!)),
+            referencedFiles.SelectMany(ActualReferencedFiles)));
+
+        var result = new PathCasePreflightResult(results.SelectMany(item => item.Issues).ToList());
+        result = validator.LogResult(result);
+        return l.Return(result, $"{result.Issues.Count} issues");
     }
 
     public void ExportForSourceControl(AppExportSpecs specs)
@@ -122,10 +162,26 @@ public class ZipExport(
         l.Done();
     }
 
-    public MemoryStream ExportApp(AppExportSpecs specs)
+    public MemoryStream ExportApp(
+        AppExportSpecs specs,
+        IEnumerable<PathCaseItem> appReferences,
+        IEnumerable<PathCaseItem> sharedAppReferences)
     {
+        var l = Log.Fn<MemoryStream>(specs.Dump());
+
         // generate the XML
         var xmlExport = GenerateExportXml(specs);
+
+        // This audit is informational and must never prevent an export.
+        try
+        {
+            _ = PathCasePreflight(xmlExport, appReferences, sharedAppReferences);
+        }
+        catch (Exception e)
+        {
+            l.W("Path case preflight failed; export will continue");
+            l.Ex(e);
+        }
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
@@ -176,7 +232,7 @@ public class ZipExport(
 
         Zipping.TryToDeleteDirectory(temporaryDirectoryPath, Log);
 
-        return stream;
+        return l.Return(stream, $"{stream.Length} bytes");
     }
 
     private void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo siteFilesDirectory, bool assetsAdam, bool assetsSite)
@@ -211,12 +267,39 @@ public class ZipExport(
         }
     }
 
+    private static IEnumerable<PathCaseItem> ActualAppPathsOrEmpty(AppFileManager fileManager, string root)
+        => !Directory.Exists(root)
+            ? []
+            : fileManager.GetAllTransferableFiles()
+                .Select(path => new PathCaseItem(RelativeToRoot(root, path)))
+                .Concat(fileManager.GetAllTransferableFolders()
+                    .Select(path => new PathCaseItem(RelativeToRoot(root, path), IsFolder: true)));
+
+    private static IEnumerable<PathCaseItem> ActualReferencedFiles(TenantFileItem file)
+    {
+        if (file.RelativePath == null)
+            return [];
+
+        var relativeParts = file.RelativePath.ForwardSlash()
+            .Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+        return PathCasePreflightValidator.FindActualPaths(file.Path)
+            .Select(actualPath => actualPath.ForwardSlash().Split(['/'], StringSplitOptions.RemoveEmptyEntries))
+            .Where(actualParts => actualParts.Length >= relativeParts.Length)
+            .Select(actualParts => new PathCaseItem(
+                string.Join("/", actualParts.Skip(actualParts.Length - relativeParts.Length))));
+    }
+
+    private static string RelativeToRoot(string root, string path)
+        => path.Substring(root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Length)
+            .TrimPrefixSlash()
+            .ForwardSlash();
+
 
     private XmlExporter GenerateExportXml(AppExportSpecs specs)
     {
-        var _appReader = appReaders.Get(MyOptions);
+        var appReader = appReaders.Get(MyOptions);
         // Get Export XML
-        var contentTypes = _appReader.ContentTypes.OfScope(includeAttributeTypes: true);
+        var contentTypes = appReader.ContentTypes.OfScope(includeAttributeTypes: true);
         contentTypes = contentTypes
             .Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
@@ -238,7 +321,7 @@ public class ZipExport(
             //    AppIdentityOrReader = appIdentity,
             //    ShowDrafts = true,
             //})
-            _appReader
+            appReader
             .List
             .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute)
             .ToList();
@@ -258,7 +341,7 @@ public class ZipExport(
             .Select(e => e.EntityId.ToString())
             .ToArray();
 
-        var xmlExport = xmlExporter.Init(specs, _appReader, true, contentTypeNames, entityIds);
+        var xmlExport = xmlExporter.Init(specs, appReader, true, contentTypeNames, entityIds);
 
         #region reset App Guid if necessary
 

@@ -11,7 +11,7 @@ namespace ToSic.Eav.ImportExport.Sys.ImportHelpers;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportXmlReader: HelperBase
 {
-    public ImportXmlReader(string xmlPath, XmlImportWithFiles importer, ILog parentLog) : base(parentLog, "Imp.XmlPrt")
+    public ImportXmlReader(string xmlPath, XmlImportWithFiles importer, ILog? parentLog) : base(parentLog, "Imp.XmlPrt")
     {
         XmlPath = xmlPath;
 
