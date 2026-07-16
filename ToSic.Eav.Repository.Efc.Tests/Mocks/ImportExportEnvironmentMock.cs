@@ -9,7 +9,7 @@ public class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
     : ServiceBase("Mck.ImpExp", connect: [appsCatalog]), IImportExportEnvironment
 {
     // This should point to a subfolder in the bin, so that temp data is created there
-    private string BasePath => TestFiles.GetTestPath("") + "\\";
+    private string BasePath => TestFiles.GetTestPath("");
 
 
     public virtual List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
@@ -25,11 +25,11 @@ public class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
 
     public string DefaultLanguage => "en-US";
 
-    public string TemplatesRoot(int zoneId, int appId) => BasePath + @"Destination\" + appId + @"Views";
+    public string TemplatesRoot(int zoneId, int appId) => Path.Combine(BasePath, "Destination", appId.ToString(), "Views");
 
-    public string GlobalTemplatesRoot(int zoneId, int appId) => BasePath + @"DestinationGlobal\" + appId + @"Views";
+    public string GlobalTemplatesRoot(int zoneId, int appId) => Path.Combine(BasePath, "DestinationGlobal", appId.ToString(), "Views");
 
-    public string TargetPath(string folder) => BasePath + @"Destination\" + folder;
+    public string TargetPath(string folder) => Path.Combine(BasePath, "Destination", folder);
 
 
     public void MapExistingFilesToImportSet(Dictionary<int, string> filesAndPaths, Dictionary<int, int> fileIdMap)

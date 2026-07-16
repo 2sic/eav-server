@@ -9,7 +9,7 @@ public class FileSystemLoaderOptions
     public required string Path
     {
         get;
-        init => field = value + (value.EndsWith("\\") ? "" : "\\");
+        init => field = value.ToSystemPath().TrimEnd('\\', '/') + System.IO.Path.DirectorySeparatorChar;
     }
     public required RepositoryTypes RepoType { get; init; }
     public bool IgnoreMissing { get; init; }
