@@ -1,8 +1,3 @@
-﻿#if NETFRAMEWORK
-using SqlParameter = System.Data.SqlClient.SqlParameter;
-#else
-using SqlParameter = Microsoft.Data.SqlClient.SqlParameter;
-#endif
 using System.Data;
 using Microsoft.EntityFrameworkCore.Storage;
 using ToSic.Eav.ImportExport.Json.V1;
@@ -101,30 +96,57 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
     /// <summary>
     /// Creates a TransactionId immediately
     /// </summary>
-    /// <remarks>Also opens the SQL Connection to ensure this TransactionId is used for Auditing on this SQL Connection</remarks>
     internal int GetTransactionId()
     {
         var userName = DbStore.UserIdentityToken;
         if (_mainTransactionId != 0)
             return _mainTransactionId;
 
-        var con = DbStore.SqlDb.Database.GetDbConnection();
-        if (con.State != ConnectionState.Open)
-            con.Open(); // make sure same connection is used later
+        var provider = DbStore.SqlDb.Database.ProviderName;
+        var (insertSql, identitySql) = provider switch
+        {
+            "Microsoft.EntityFrameworkCore.SqlServer" =>
+                ("INSERT INTO [TsDynDataTransaction] ([Timestamp], [User]) OUTPUT inserted.[TransactionId] VALUES (@timestamp, @userName);", null),
+            "Npgsql.EntityFrameworkCore.PostgreSQL" =>
+                ("INSERT INTO \"ts_dyn_data_transaction\" (\"timestamp\", \"user\") VALUES (@timestamp, @userName) RETURNING \"transaction_id\";", null),
+            "Microsoft.EntityFrameworkCore.Sqlite" =>
+                ("INSERT INTO \"TsDynDataTransaction\" (\"Timestamp\", \"User\") VALUES (@timestamp, @userName) RETURNING \"TransactionId\";", null),
+            "MySql.EntityFrameworkCore" =>
+                ("INSERT INTO `TsDynDataTransaction` (`Timestamp`, `User`) VALUES (@timestamp, @userName);", "SELECT LAST_INSERT_ID();"),
+            _ => throw new NotSupportedException($"Unsupported EF Core database provider '{provider}'.")
+        };
 
-        // insert and get TransactionId in one trip – parameterised
-        const string sql = "INSERT INTO [dbo].[TsDynDataTransaction] ([Timestamp],[User]) OUTPUT inserted.TransactionId VALUES (GETUTCDATE(), @userName);";
+        var connection = DbStore.SqlDb.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+            connection.Open();
 
-        using var cmd = con.CreateCommand();
-        cmd.CommandText = sql;
-        cmd.Parameters.Add(new SqlParameter("@userName", userName));
+        using var command = connection.CreateCommand();
+        command.CommandText = insertSql;
+        var timestamp = command.CreateParameter();
+        timestamp.ParameterName = "@timestamp";
+        timestamp.Value = DateTime.UtcNow;
+        command.Parameters.Add(timestamp);
+        var user = command.CreateParameter();
+        user.ParameterName = "@userName";
+        user.Value = userName ?? (object)DBNull.Value;
+        command.Parameters.Add(user);
 
-        // enlist in any transaction EF is already using
-        var curTx = DbStore.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
-        if (curTx != null)
-            cmd.Transaction = curTx;
+        var currentTransaction = DbStore.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
+        if (currentTransaction != null)
+            command.Transaction = currentTransaction;
 
-        _mainTransactionId = Convert.ToInt32(cmd.ExecuteScalar()); // returns the new TransactionId
+        object result;
+        if (identitySql == null)
+            result = command.ExecuteScalar()!;
+        else
+        {
+            command.ExecuteNonQuery();
+            command.CommandText = identitySql;
+            command.Parameters.Clear();
+            result = command.ExecuteScalar()!;
+        }
+
+        _mainTransactionId = Convert.ToInt32(result);
         return _mainTransactionId;
     }
 

@@ -68,15 +68,14 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
                 // Between these steps, the command must be sent to the DB, so it actually allows doing the next step
 
                 // 0. Find all json-entities, as these are the ones we treat specially
-                var jsonEntitiesInAppSql = $@"SELECT e.EntityId FROM TsDynDataEntity e WHERE e.ContentTypeId = @p0 AND e.AppId = @p1";
+#if NETFRAMEWORK
+                var jsonEntitiesInAppSql = "SELECT e.EntityId FROM TsDynDataEntity e WHERE e.ContentTypeId = @p0 AND e.AppId = @p1";
 
                 // If we plan to rebuild the app from the App.xml, then the config item shouldn't be deleted
                 if (!fullDelete)
-                    jsonEntitiesInAppSql = $@"SELECT e.EntityId FROM TsDynDataEntity e WHERE e.ContentTypeId = @p0 AND e.AppId = @p1 AND e.ContentType != @p2";
+                    jsonEntitiesInAppSql = "SELECT e.EntityId FROM TsDynDataEntity e WHERE e.ContentTypeId = @p0 AND e.AppId = @p1 AND e.ContentType != @p2";
 
                 // 1. remove all relationships to/from these json entities
-                // note that actually there can only be relationships TO json entities, as all from will be in the json, 
-                // but just to be sure (maybe there's historic data that's off) we'll do both
                 ExecuteSqlCommand($@"
                     DELETE r
                     FROM TsDynDataRelationship r
@@ -90,6 +89,19 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
                     FROM TsDynDataEntity e
                     WHERE e.EntityId IN ({jsonEntitiesInAppSql})"
                     , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig);
+#else
+                var jsonEntitiesInApp = DbStore.SqlDb.TsDynDataEntities
+                    .Where(e => e.ContentTypeId == DbConstant.RepoIdForJsonEntities && e.AppId == appId);
+                if (!fullDelete)
+                    jsonEntitiesInApp = jsonEntitiesInApp
+                        .Where(e => e.ContentType != AppLoadConstants.TypeAppConfig);
+
+                var jsonEntityIds = jsonEntitiesInApp.Select(e => e.EntityId);
+                DbStore.SqlDb.TsDynDataRelationships
+                    .Where(r => jsonEntityIds.Contains(r.ChildEntityId ?? 0) || jsonEntityIds.Contains(r.ParentEntityId))
+                    .ExecuteDelete();
+                jsonEntitiesInApp.ExecuteDelete();
+#endif
 
                 // Now let do the remaining clean-up
                 DeleteAppWithoutStoredProcedure(appId, fullDelete);
@@ -109,6 +121,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// </remarks>
     private void DeleteAppWithoutStoredProcedure(int appId, bool alsoDeleteAppEntry)
     {
+#if NETFRAMEWORK
         // Use raw SQL for each delete to ensure server-side execution and efficiency
 
         // Delete Value-Dimensions
@@ -171,14 +184,45 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
             ExecuteSqlCommand(@"
                 DELETE FROM TsDynDataApp WHERE AppId = @p0
             ", appId);
-    }
-
-    private void ExecuteSqlCommand(string sql, params object[] parameters)
-    {
-#if NETFRAMEWORK
-        DbStore.SqlDb.Database.ExecuteSqlCommand(sql, parameters);
 #else
-        DbStore.SqlDb.Database.ExecuteSqlRaw(sql, parameters);
+        var entities = DbStore.SqlDb.TsDynDataEntities
+            .Where(e => e.AppId == appId);
+        var entityIds = entities.Select(e => e.EntityId);
+        var values = DbStore.SqlDb.TsDynDataValues
+            .Where(v => entityIds.Contains(v.EntityId));
+        var valueIds = values.Select(v => v.ValueId);
+
+        DbStore.SqlDb.TsDynDataValueDimensions
+            .Where(vd => valueIds.Contains(vd.ValueId))
+            .ExecuteDelete();
+        values.ExecuteDelete();
+        DbStore.SqlDb.TsDynDataRelationships
+            .Where(r => entityIds.Contains(r.ParentEntityId))
+            .ExecuteDelete();
+        DbStore.SqlDb.TsDynDataRelationships
+            .Where(r => entityIds.Contains(r.ChildEntityId ?? 0))
+            .ExecuteDelete();
+        entities.ExecuteDelete();
+
+        var contentTypes = DbStore.SqlDb.TsDynDataContentTypes
+            .Where(ct => ct.AppId == appId);
+        var contentTypeIds = contentTypes.Select(ct => ct.ContentTypeId);
+        DbStore.SqlDb.TsDynDataAttributes
+            .Where(a => contentTypeIds.Contains(a.ContentTypeId))
+            .ExecuteDelete();
+        contentTypes.ExecuteDelete();
+
+        if (alsoDeleteAppEntry)
+            DbStore.SqlDb.TsDynDataApps
+                .Where(a => a.AppId == appId)
+                .ExecuteDelete();
 #endif
     }
+
+#if NETFRAMEWORK
+    private void ExecuteSqlCommand(string sql, params object[] parameters)
+    {
+        DbStore.SqlDb.Database.ExecuteSqlCommand(sql, parameters);
+    }
+#endif
 }
