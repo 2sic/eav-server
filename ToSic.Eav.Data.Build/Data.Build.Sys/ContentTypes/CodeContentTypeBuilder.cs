@@ -18,12 +18,15 @@ public class CodeContentTypeBuilder(ContentTypeAssembler ctAssembler, EntityAsse
 {
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
+    public const string AnonymousTypeName = "AnonymousType";
 
     internal IContentType Generate(Type type, string? name = default, string? nameId = default, string? scope = default, int appId = NoAppId)
     {
         var l = Log.Fn<IContentType>(timer: true);
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
-        var ctName = name ?? ctSpecs?.Name ?? type.Name;
+        var ctName = name
+                     ?? ctSpecs?.Name
+                     ?? (type.IsAnonymous() ? AnonymousTypeName : type.Name);
         var ctNameId = nameId
                        ?? ctSpecs?.Guid.NullOrGetWith(g => Guid.TryParse(g, out var guid) ? guid.ToString() : null)
                        ?? Guid.Empty.ToString();

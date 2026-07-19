@@ -21,16 +21,45 @@ public class CodeCtFactoryConfigNoneClass(CodeContentTypesManager ctDefManager)
 public class CodeCtFactoryConfigNoneRecord(CodeContentTypesManager ctDefManager)
     : CodeCtFactoryConfigNone<CodeTypeNoSpecsRecord>(ctDefManager);
 
+/// <summary>
+/// Test conversion of a type to a ContentType Definition - with a **Record** having no configuration.
+/// </summary>
+/// <param name="ctDefManager"></param>
+[Startup(typeof(StartupTestsEavDataBuild))]
+public class CodeCtFactoryConfigNoneAnonymous(CodeContentTypesManager ctDefManager)
+    : CodeCtFactoryConfigNone<object>(ctDefManager, useAnonymous: true);
+
 // ReSharper restore UnusedMember.Global
 
 /// <summary>
 /// Shared (abstract) tests for classes or records which are not configured (no attributes)
 /// </summary>
-public abstract class CodeCtFactoryConfigNone<TCodeTypeNoSpecs>(CodeContentTypesManager ctDefManager)
+public abstract class CodeCtFactoryConfigNone<TCodeTypeNoSpecs>(CodeContentTypesManager ctDefManager, bool useAnonymous = false)
 {
+    /// <summary>
+    /// Central place to get/create the content type.
+    /// Must be centralized, as we also have a test scenario with anonymous
+    /// </summary>
+    /// <returns></returns>
+    private IContentType GetCurrentContentType()
+    {
+        if (!useAnonymous)
+            return ctDefManager.CreateTac<TCodeTypeNoSpecs>();
+
+        var anonWithSimilarSignature = new
+        {
+            Id = 0,
+            Name = "",
+            Age = 0,
+            BirthDate = new DateTime(),
+            IsAlive = false,
+        };
+        return ctDefManager.CreateTac(anonWithSimilarSignature.GetType());
+    }
+
     [Fact]
     public void Attributes_NoSpec_Count()
-        => Equal(4, ctDefManager.CreateTac<TCodeTypeNoSpecs>().Attributes.Count());
+        => Equal(4, GetCurrentContentType().Attributes.Count());
    
     
     [Fact]
@@ -44,29 +73,29 @@ public abstract class CodeCtFactoryConfigNone<TCodeTypeNoSpecs>(CodeContentTypes
     [InlineData(nameof(CodeTypeNoSpecsClass.BirthDate), ValueTypes.DateTime)]
     [InlineData(nameof(CodeTypeNoSpecsClass.IsAlive), ValueTypes.Boolean)]
     public void AssertAttributeNoSpec(string name, ValueTypes type)
-        => ctDefManager.CreateTac<TCodeTypeNoSpecs>().AssertAttributeDefinition(name, type);
+        => GetCurrentContentType().AssertAttributeDefinition(name, type);
 
     #region Inspect ContentType of generated data
 
     [Fact] 
     public void ContentType_IsNotNull()
-        => NotNull(ctDefManager.CreateTac<TCodeTypeNoSpecs>());
+        => NotNull(GetCurrentContentType());
     
     [Fact]
     public void ContentType_IsNotDynamic()
-        => False(ctDefManager.CreateTac<TCodeTypeNoSpecs>().IsDynamic);
+        => False(GetCurrentContentType().IsDynamic);
     
     [Fact]
     public void ContentType_HasRepositoryTypeCodeReflection() 
-        => Equal(RepositoryTypes.CodeReflection, ctDefManager.CreateTac<TCodeTypeNoSpecs>().RepositoryType);
+        => Equal(RepositoryTypes.CodeReflection, GetCurrentContentType().RepositoryType);
     
     [Fact]
     public void ContentType_DoesNotAlwaysShareConfiguration() 
-        => False(ctDefManager.CreateTac<TCodeTypeNoSpecs>().AlwaysShareConfiguration);
+        => False(GetCurrentContentType().AlwaysShareConfiguration);
     
     [Fact]
     public void ContentType_HasNullSysSettings() 
-        => Null(ctDefManager.CreateTac<TCodeTypeNoSpecs>().SysSettings);
+        => Null(GetCurrentContentType().SysSettings);
 
     #endregion
 
@@ -74,19 +103,24 @@ public abstract class CodeCtFactoryConfigNone<TCodeTypeNoSpecs>(CodeContentTypes
 
     [Fact]
     public void ContentType_NameIsFromClass()
-        => Equal(typeof(TCodeTypeNoSpecs).Name, ctDefManager.CreateTac<TCodeTypeNoSpecs>().Name);
+    {
+        var expected = useAnonymous
+            ? CodeContentTypeBuilder.AnonymousTypeName
+            : typeof(TCodeTypeNoSpecs).Name;
+        Equal(expected, GetCurrentContentType().Name);
+    }
 
     [Fact]
     public void ContentType_HasNameId() =>
-        Equal(Guid.Empty.ToString(), ctDefManager.CreateTac<TCodeTypeNoSpecs>().NameId);
+        Equal(Guid.Empty.ToString(), GetCurrentContentType().NameId);
 
     [Fact]
     public void ContentType_HasScope() =>
-        Equal(ScopeConstants.Default, ctDefManager.CreateTac<TCodeTypeNoSpecs>().Scope);
+        Equal(ScopeConstants.Default, GetCurrentContentType().Scope);
 
     [Fact]
     public void ContentType_NoDetailsMetadata() =>
-        Null(ctDefManager.CreateTac<TCodeTypeNoSpecs>().Metadata.FirstModel<ContentTypeDetails>());
+        Null(GetCurrentContentType().Metadata.FirstModel<ContentTypeDetails>());
 
     #endregion
 
