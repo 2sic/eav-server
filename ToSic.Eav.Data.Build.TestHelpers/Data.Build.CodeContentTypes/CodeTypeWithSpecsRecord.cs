@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Data.Sys.ContentTypes;
 using static ToSic.Eav.Data.Build.CodeContentTypes.CodeTypeWithSpecsEmpty;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -13,31 +14,34 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 /// <param name="IgnoreThis"></param>
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
 public record CodeTypeWithSpecsRecord(
-    
-    [property: ContentTypeAttributeSpecs(Description = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
+
+    [property:
+        ContentTypeAttributeSpecs(Description =
+            "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
     int Id,
-    
-    [property: ContentTypeAttributeSpecs(Description = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
+
+    [property:
+        ContentTypeAttributeSpecs(Description =
+            "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
     Guid Guid,
-    
+
     DateTime Created,
-    
+
     [property: ContentTypeAttributeSpecs(Name = "NameMod", IsTitle = true)]
     string Name,
-    
+
     [property: ContentTypeAttributeSpecs(Type = ValueTypes.Hyperlink)]
     string Url,
-    
+
     int Age,
-    
+
     DateTime BirthDate,
-    
+
     [property: ContentTypeAttributeSpecs(Description = CodeTypeWithSpecsClass.IsAliveDescription)]
     bool IsAlive,
-    
-    [property: ContentTypeAttributeIgnore]
-    string IgnoreThis
-    )
+
+    [property: ContentTypeAttributeIgnore] string IgnoreThis
+): IConvertibleToRawEntity
 {
     private string PrivateProperty { get; set; }
 

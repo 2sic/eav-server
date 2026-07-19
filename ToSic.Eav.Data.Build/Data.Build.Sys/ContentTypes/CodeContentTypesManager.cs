@@ -35,7 +35,9 @@ public class CodeContentTypesManager(LazySvc<CodeContentTypeBuilder> ctBuilder)
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
+#pragma warning disable CA1822
     public bool IsConfigured(Type type)
+#pragma warning restore CA1822
     {
         if (IsConfiguredCache.TryGetValue(type, out var ct))
             return ct;
