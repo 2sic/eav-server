@@ -9,5 +9,8 @@ public class ConvertToRawWithFactory<TFactorySource>(Func<TFactorySource, RawCon
 {
     public IRawEntity TryRawEntity<TSource>(TSource source, RawConvertOptions options)
         where TSource : class =>
-        factory(source as TFactorySource ?? throw new InvalidOperationException(), options);
+        factory(source as TFactorySource
+                ?? throw new InvalidOperationException($"Invalid source type: {source?.GetType().Name}, could not convert to {typeof(TFactorySource).Name}"),
+            options
+        );
 }
