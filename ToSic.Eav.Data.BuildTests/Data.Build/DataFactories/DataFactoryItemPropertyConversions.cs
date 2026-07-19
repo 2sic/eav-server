@@ -11,7 +11,7 @@ public class DataFactoryItemPropertyConversionsFromRaw(IDataFactory dataFactory)
     : DataFactoryItemPropertyConversions
 {
     protected override IEntity CreateProcess(IConvertibleToRawEntity source)
-        => dataFactory.Create(source);
+        => dataFactory.CreateTac(source);
 }
 
 [Startup(typeof(StartupTestsEavDataBuild))]
@@ -23,7 +23,7 @@ public class DataFactoryItemPropertyConversionsFromConverter(IDataFactory dataFa
         // Create a fake raw, which doesn't have relevant properties, but would provide the source
         // in the GetConverter...
         var fakeEntity = new MockRawEntityProvidingConversion((IRawEntity)source);
-        return dataFactory.Create(fakeEntity);
+        return dataFactory.CreateTac(fakeEntity);
     }
 }
 

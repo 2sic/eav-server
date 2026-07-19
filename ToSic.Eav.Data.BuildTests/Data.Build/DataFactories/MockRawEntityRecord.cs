@@ -16,11 +16,12 @@ internal record MockRawEntityRecord : IRawEntity
 /// <summary>
 /// This is a RawEntity, but if things work correctly, it will not provide its own data, but instead the test-raw-entity in the constructor.
 /// </summary>
-/// <param name="dataToProvideInConverter"></param>
-internal record MockRawEntityProvidingConversion(IRawEntity dataToProvideInConverter) : MockRawEntityRecord, IGetRawConverter
+/// <param name="_dataToProvideInConverter"></param>
+// ReSharper disable once InconsistentNaming
+internal record MockRawEntityProvidingConversion(IRawEntity _dataToProvideInConverter) : MockRawEntityRecord, IGetRawConverter
 {
     public IRawEntityConverter GetConverter() =>
         new ConvertToRawWithFactory<MockRawEntityProvidingConversion>((_, _) =>
-            dataToProvideInConverter
+            _dataToProvideInConverter
         );
 }

@@ -8,6 +8,8 @@
 /// These include:
 /// * <see cref="IGetRawConverter"/> - for objects which can provide a converter for themselves
 /// * <see cref="IRawEntity"/> - for objects which are already a raw entity
+///
+/// This interface should usually not be assigned directly, since it would be missing the converter or raw entity implementation.
 /// </remarks>
 [PrivateApi]
 public interface IConvertibleToRawEntity;

@@ -29,7 +29,7 @@ public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTyp
     
     
     [Theory]
-    [InlineData(nameof(CodeTypeWithSpecsClass.Name) + "Mod", ValueTypes.String, true)]
+    [InlineData(CodeTypeWithSpecsClass.NameSpecsName, ValueTypes.String, true)]
     [InlineData(nameof(CodeTypeWithSpecsClass.Url), ValueTypes.Hyperlink)]
     [InlineData(nameof(CodeTypeWithSpecsClass.Age), ValueTypes.Number)]
     [InlineData(nameof(CodeTypeWithSpecsClass.BirthDate), ValueTypes.DateTime)]

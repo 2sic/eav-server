@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Data.Sys.ContentTypes;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
@@ -6,10 +7,13 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
 public class CodeTypeWithSpecsClass: CodeTypeWithSpecsEmpty
 {
-    [ContentTypeAttributeSpecs(Description = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
+    public const string NameSpecsName = "NameMod"; // test that the name was changed
+    public const string IdAndGuidDescription = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.";
+    
+    [ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
     public int Id { get; set; }
 
-    [ContentTypeAttributeSpecs(Description = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.")]
+    [ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
     public Guid Guid { get; set; } = Guid.NewGuid();
 
     /// <summary>
@@ -17,8 +21,9 @@ public class CodeTypeWithSpecsClass: CodeTypeWithSpecsEmpty
     /// </summary>
     public DateTime Created { get; set; }
 
-    [ContentTypeAttributeSpecs(Name = "NameMod", IsTitle = true)]
+    [ContentTypeAttributeSpecs(Name = NameSpecsName, IsTitle = true)]
     public string Name { get; set; }
+
 
     [ContentTypeAttributeSpecs(Type = ValueTypes.Hyperlink)]
     public string Url { get; set; }
@@ -42,3 +47,4 @@ public class CodeTypeWithSpecsClass: CodeTypeWithSpecsEmpty
 
     internal string InternalProperty { get; set; }
 }
+
