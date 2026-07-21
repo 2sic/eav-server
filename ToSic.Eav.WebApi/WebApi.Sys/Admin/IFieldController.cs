@@ -96,8 +96,6 @@ public interface IFieldController
 
     #region Shared Field Definitions
 
-    IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId = default);
-
     /// <summary>
     /// Configure field sharing settings WIP #SharedFieldDefinition
     /// </summary>
@@ -116,10 +114,6 @@ public interface IFieldController
     bool Inherit(int appId, int attributeId, Guid inheritMetadataOf);
 
     bool AddInheritedField(int appId, int contentTypeId, string sourceType, Guid sourceField, string name);
-
-    IEnumerable<ContentTypeFieldDto> GetAncestors(int appId, int attributeId);
-
-    IEnumerable<ContentTypeFieldDto> GetDescendants(int appId, int attributeId);
 
     #endregion
 }
