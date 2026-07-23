@@ -11,40 +11,38 @@ namespace ToSic.Eav.Data.Build.DataFactories;
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class ConvertibleKeepsContentType(IDataFactory dataFactory)
 {
-    // TODO: 2dm continue here 2026-07-19
-    [Fact]
-    public void WithoutNewSpecsRawIsNotSet()
+    private void NameNotSetUsesDefault<TType>() where TType: IConvertibleToRawEntity, new()
     {
-        var x = new CodeTypeWithSpecsClassConvertibleNoSpecs();
+        var x = new TType();
         var y = dataFactory.CreateTac(x);
         NotNull(y);
         Equal(DataConstants.DataFactoryDefaultTypeName, y.Type.Name);
-        
+    }
+    
+    private void NameIsSet<T>(string expectedName) where T : IConvertibleToRawEntity, new()
+    {
+        var x = new T();
+        var y = dataFactory.CreateTac(x);
+        NotNull(y);
+        Equal(expectedName, y.Type.Name);
     }
     
     [Fact]
-    public void WithoutNewSpecsConvertibleIsNotSet()
-    {
-        var x = new CodeTypeWithSpecsClassConvertibleNoSpecsConverter();
-        var y = dataFactory.CreateTac(x);
-        NotNull(y);
-        Equal(DataConstants.DataFactoryDefaultTypeName, y.Type.Name);
-    }
+    public void WithoutNewSpecsRawIsNotSet() =>
+        NameNotSetUsesDefault<CodeTypeWithSpecsClassConvertibleNoSpecs>();
 
     [Fact]
-    public void WithNewSpecsRawIsSet()
-    {
-        var x = new CodeTypeWithSpecsClassConvertibleWithSpecs();
-        var y = dataFactory.CreateTac(x);
-        Equal(CodeTypeWithSpecsEmpty.SpecName, y.Type.Name);
-    }
+    public void WithoutNewSpecsConvertibleIsNotSet() =>
+        NameNotSetUsesDefault<CodeTypeWithSpecsClassConvertibleNoSpecsConverter>();
+
     [Fact]
-    public void WithNewSpecsConvertibleIsSet()
-    {
-        var x = new CodeTypeWithSpecsClassConvertibleWithSpecsConvertible();
-        var y = dataFactory.CreateTac(x);
-        Equal(CodeTypeWithSpecsEmpty.SpecName, y.Type.Name);
-    }
+    public void WithNewSpecsRawIsSet() =>
+        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecs>(CodeTypeWithSpecsEmpty.SpecName);
+    
+
+    [Fact]
+    public void WithNewSpecsConvertibleIsSet() =>
+        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecsConvertible>(CodeTypeWithSpecsEmpty.SpecName);
     
 }
 
