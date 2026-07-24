@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Build.CodeContentTypes;
 using ToSic.Eav.Data.TestData;
 using ToSic.Eav.Metadata;
 
@@ -34,7 +33,7 @@ public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCode
         return entity;
     }
 
-    public IEnumerable<IEntity> CreateMdEmpty(int amountOther)
+    private IEnumerable<IEntity> CreateMdEmpty(int amountOther)
     {
         var mdEmptyDecorator = CreateEntityForNoSpecs();
         var newDecorators = Enumerable
@@ -68,20 +67,32 @@ public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCode
         });
     }
 
-    public IEntity CreateEntityForNoSpecs()
+    private IEntity CreateEntityForNoSpecs()
     {
-        var ct = ctDefFactory.CreateTac<CodeTypeNoSpecsClass>();
+        var ct = ctDefFactory.CreateTac<MockEntityType>();
 
         return dataAssembler.CreateEntityTac(0, ct, values: new()
         {
-            { nameof(CodeTypeNoSpecsClass.Id), 1 },
-            { nameof(CodeTypeNoSpecsClass.Name), "Test" },
-            { nameof(CodeTypeNoSpecsClass.Age), 30 },
-            { nameof(CodeTypeNoSpecsClass.BirthDate), new DateTime(1990, 1, 1) },
-            { nameof(CodeTypeNoSpecsClass.IsAlive), true }
+            { nameof(MockEntityType.Id), 1 },
+            { nameof(MockEntityType.Name), "Test" },
+            { nameof(MockEntityType.Age), 30 },
+            { nameof(MockEntityType.BirthDate), new DateTime(1990, 1, 1) },
+            { nameof(MockEntityType.IsAlive), true }
         });
     }
 
+    private class MockEntityType
+    {
+        public int Id { get; set; }
+
+        public string? Name { get; set; }
+
+        public int Age { get; set; }
+
+        public DateTime BirthDate { get; set; }
+
+        public bool IsAlive { get; set; }
+    }
 
     #endregion
 }
