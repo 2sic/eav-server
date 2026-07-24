@@ -58,7 +58,7 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
     {
         var l = Log.Fn<(IDictionary<string, object?> values, IList<object> relationshipKeys)>($"{id}");
 
-        const string relKeysField = nameof(IHasRelationshipKeys.RelationshipKeys);
+        const string relKeysField = nameof(IRelationshipKeys.RelationshipKeys);
         
         // Start with keys containing the ID, as this is a key for establishing relationships, and will be used if no other keys are found
         IList<object> relationshipsDefault = [id];
@@ -124,20 +124,19 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
                 // Try to parse and see if it has a "Relationships" property, which is how relationships are passed in
                 // otherwise skip this key, as it is not a relationship
                 relsTemp = pair.Value!.ObjectToDictionary(caseInsensitive: false)
-                    .TryGetValue(RawRelationship.RelationshipsKey, out var relsTemp)
-                    ? relsTemp
-                    : null
+                    .TryGetValue(RawRelationship.RelationshipsKey, out var relsTemp) ? relsTemp : null
             })
             .Where(pair => pair.relsTemp != null)
             .ToDictionary(
                 pair => pair.Key,
-                pair => new RawRelationship(
+                pair => new RawRelationship
+                {
                     // If we only have on object / string, use it as key
                     // if we have an IEnumerable use the list as the keys
-                    keys: pair.relsTemp is IEnumerable relsList and not string
-                        ? relsList.Cast<object>().ToListOpt()
-                        : [pair.relsTemp]
-                )
+                    Keys = pair.relsTemp is IEnumerable relsList and not string
+                        ? relsList.Cast<object>().ToList()
+                        : new() { pair.relsTemp! }
+                }
             );
 
         return l.Return(replacements, $"Typed {replacements.Count} relationships");

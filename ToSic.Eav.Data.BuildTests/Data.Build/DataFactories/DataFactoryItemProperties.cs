@@ -7,16 +7,16 @@ namespace ToSic.Eav.Data.Build.DataFactories;
 /// Test the basic case where the data factory will try to auto-convert from raw directly.
 /// </summary>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class DataFactoryItemPropertyConversionsFromRaw(IDataFactory dataFactory)
-    : DataFactoryItemPropertyConversions
+public class DataFactoryItemPropertiesFromRaw(IDataFactory dataFactory)
+    : DataFactoryItemProperties
 {
     protected override IEntity CreateTestEntity(IRawEntitySource source)
         => dataFactory.CreateTac(source);
 }
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class DataFactoryItemPropertyConversionsFromConverter(IDataFactory dataFactory)
-    : DataFactoryItemPropertyConversions
+public class DataFactoryItemPropertiesFromConverter(IDataFactory dataFactory)
+    : DataFactoryItemProperties
 {
     protected override IEntity CreateTestEntity(IRawEntitySource source)
     {
@@ -30,7 +30,7 @@ public class DataFactoryItemPropertyConversionsFromConverter(IDataFactory dataFa
 // ReSharper restore UnusedMember.Global
 
 
-public abstract class DataFactoryItemPropertyConversions
+public abstract class DataFactoryItemProperties
 {
     /// <summary>
     /// Abstract factory of the test-entity, which is implemented by the final test class.

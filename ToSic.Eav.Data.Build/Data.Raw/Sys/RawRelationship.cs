@@ -11,7 +11,7 @@
 /// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class RawRelationship : IRawRelationship
+public record RawRelationship : IRawRelationship
 {
     /// <summary>
     /// This is the property name used on anonymous objects to designate a relationship.
@@ -21,23 +21,7 @@ public class RawRelationship : IRawRelationship
     public const string RelationshipsKey = "Relationships";
 
     /// <summary>
-    /// Create a raw relationship.
-    /// </summary>
-    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="key">A single key - if it's just a simple `string`, `int`, etc.</param>
-    /// <param name="keys">A list of keys, if you have many.</param>
-    public RawRelationship(
-        NoParamOrder npo = default,
-        object? key = default,
-        IEnumerable<object>? keys = default)
-    {
-        Keys = keys?.ToList()
-               ?? (key == null ? null : new List<object> { key })
-               ?? [];
-    }
-
-    /// <summary>
     /// The keys which will be used to find the related items.
     /// </summary>
-    public List<object> Keys { get; }
+    public List<object> Keys { get; init; } = [];
 }

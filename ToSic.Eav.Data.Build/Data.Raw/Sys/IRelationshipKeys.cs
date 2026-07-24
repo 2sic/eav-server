@@ -7,12 +7,13 @@
 /// </summary>
 /// <remarks>
 /// * Added in 15.04, accidentally public
-/// * Was public till 16.09, but needed to be reworked, made private
+/// * Was public till 16.09 as `IHasRelationshipKeys`, but needed to be reworked, made private
 /// * v22 made the property nullable, so it can be null if no keys are provided
+/// * v22 renaming `IHasRelationshipKeys` to `IRelationshipKeys`
 /// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IHasRelationshipKeys
+public interface IRelationshipKeys
 {
     /// <summary>
     /// Optional relationship keys - can also be `null` if never specified.
@@ -26,7 +27,7 @@ public interface IHasRelationshipKeys
     /// 1. of type <see cref="IRawRelationship"/>/<see cref="RawRelationship"/>
     /// 1. which lists the key `/abcd/efg`
     ///
-    /// Then it will ask all other <see cref="IRawEntity"/> of <see cref="IHasRelationshipKeys"/>
+    /// Then it will ask all other <see cref="IRawEntity"/> of <see cref="IRelationshipKeys"/>
     /// if they have a `/abcd/efg` in their `RelationshipKeys`.
     /// </summary>
     IEnumerable<object>? RelationshipKeys { get; }

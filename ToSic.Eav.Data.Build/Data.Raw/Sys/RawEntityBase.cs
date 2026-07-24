@@ -12,7 +12,7 @@
 /// </remarks>
 [PrivateApi("was public till 16.09")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class RawEntityBase: IRawEntity, IHasRelationshipKeys
+public abstract class RawEntityBase: IRawEntity, IRelationshipKeys
 {
     public virtual int Id
     {

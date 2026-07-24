@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data.Build.DataFactories;
 /// <summary>
 /// Test all known combinations of <see cref="IRawEntitySource"/>
 /// </summary>
-public class ConvertibleToRawEntityTests
+public class RawEntitySourceVariants
 {
     [Fact]
     public void RawEntityIsConverted()

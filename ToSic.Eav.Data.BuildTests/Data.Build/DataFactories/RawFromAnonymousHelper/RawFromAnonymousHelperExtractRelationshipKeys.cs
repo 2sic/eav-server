@@ -23,23 +23,23 @@ public class RawFromAnonymousHelperExtractRelationshipKeys
     
     [Fact]
     public void ExtractRelationshipKeysNull() =>
-        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), null }}, 1);
+        NoNewKeys(new() { { nameof(IRelationshipKeys.RelationshipKeys), null }}, 1);
     
     [Fact]
     public void ExtractRelationshipKeysNoKeyData() =>
-        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), "" }}, 1);
+        NoNewKeys(new() { { nameof(IRelationshipKeys.RelationshipKeys), "" }}, 1);
 
     [Fact]
     public void ExtractRelationshipKeysStringIgnored() =>
-        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), "Something" }}, 1);
+        NoNewKeys(new() { { nameof(IRelationshipKeys.RelationshipKeys), "Something" }}, 1);
 
     [Fact]
     public void ExtractRelationshipKeysUnexpectedObject() =>
-        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), new() } }, 1);
+        NoNewKeys(new() { { nameof(IRelationshipKeys.RelationshipKeys), new() } }, 1);
 
     [Fact]
     public void ExtractRelationshipKeysAnonWrongType() =>
-        NoNewKeys(new() { { nameof(IHasRelationshipKeys.RelationshipKeys), new { Something = 12 } } }, 1);
+        NoNewKeys(new() { { nameof(IRelationshipKeys.RelationshipKeys), new { Something = 12 } } }, 1);
     
     
     [Fact]
@@ -47,7 +47,7 @@ public class RawFromAnonymousHelperExtractRelationshipKeys
     {
         var data = new Dictionary<string, object?>()
         {
-            { nameof(IHasRelationshipKeys.RelationshipKeys), new[] { "20", "30" } }
+            { nameof(IRelationshipKeys.RelationshipKeys), new[] { "20", "30" } }
         };
         var extracted = new Raw.Sys.RawFromAnonymousHelper(null!)
             .ExtractRelationshipKeysTac(27, data);
@@ -63,7 +63,7 @@ public class RawFromAnonymousHelperExtractRelationshipKeys
     {
         var data = new Dictionary<string, object?>()
         {
-            { nameof(IHasRelationshipKeys.RelationshipKeys), new[] { 20, 30 } }
+            { nameof(IRelationshipKeys.RelationshipKeys), new[] { 20, 30 } }
         };
         var extracted = new Raw.Sys.RawFromAnonymousHelper(null!)
             .ExtractRelationshipKeysTac(27, data);

@@ -22,28 +22,6 @@ public class EntityPartsLazy
     private static IMetadata EmptyGetMetadataOf(Guid guid, string title)
         => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: new MetadataProviderEmpty());
 
-    ///// <summary>
-    ///// Will generate a Parts-Builder for entities which belong to an App.
-    ///// Like entities being loaded into the App-State
-    ///// or entities which are JSON loaded and will be placed in an App state.
-    ///// </summary>
-    ///// <param name="source"></param>
-    ///// <param name="metadata"></param>
-    ///// <returns></returns>
-    //public static EntityPartsLazy ForAppAndOptionalMetadata(IAppStateCache? source = default, IEnumerable<IEntity>? metadata = default)
-    //    => new(
-    //        entity => new EntityRelationships(entity, source),
-    //        getMetadataOf: metadata != default
-    //            ? CreateMetadataOfItems(metadata)
-    //            : CreateMetadataOfAppSources(source)
-    //    );
-
-    //private static Func<Guid, string, IMetadata> CreateMetadataOfAppSources(IHasMetadataSourceAndExpiring? appSource)
-    //    => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: MetadataProvider.Create(source: appSource));
-
-    //private static Func<Guid, string, IMetadata> CreateMetadataOfItems(IEnumerable<IEntity> items)
-    //    => (guid, title) => new Metadata<Guid>(targetType: (int)TargetTypes.Entity, key: guid, title: title, source: MetadataProvider.Create(items));
-
     internal static Func<TKey, string, IMetadata> ReUseMetadataFunc<TKey>(IMetadata original) 
         => (_, _) => original;
 
@@ -64,24 +42,4 @@ public class EntityPartsLazy
             title: title,
             source: MetadataProvider.Create(items));
     }
-
-    //public static Func<TKey, string, IMetadata> CloneMetadataFunc<TKey>(
-    //    IMetadata original,
-    //    List<IEntity>? items = default,
-    //    IHasMetadataSourceAndExpiring? appSource = default,
-    //    Func<IHasMetadataSourceAndExpiring>? deferredSource = default
-    //)
-    //{
-    //    var asInternal = (IMetadataInternals)original;
-    //    var specs = asInternal.GetCloneSpecs();
-    //    return (key, title) => new Metadata<TKey>(
-    //        targetType: asInternal.TargetType,
-    //        key: key,
-    //        title: title,
-    //        // source: asInternal.Source,
-    //        items: items ?? specs.list,
-    //        appSource: appSource ?? specs.appSource,
-    //        deferredSource: deferredSource ?? specs.deferredSource);
-    //}
-
 }

@@ -9,7 +9,7 @@
 /// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record RawEntityRecord: IRawEntity, IHasRelationshipKeys
+public record RawEntityRecord: IRawEntity, IRelationshipKeys
 {
     public int Id
     {

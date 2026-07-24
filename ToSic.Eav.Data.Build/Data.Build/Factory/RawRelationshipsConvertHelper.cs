@@ -68,7 +68,7 @@ internal class RawRelationshipsConvertHelper(AttributeAssembler attributeAssembl
             .Select(pair =>
             {
                 // Check if it has relationship keys
-                var relKeys = (pair.Partner as IHasRelationshipKeys)?.RelationshipKeys?.ToListOpt();
+                var relKeys = (pair.Partner as IRelationshipKeys)?.RelationshipKeys?.ToListOpt();
 
                 // If it has relationship keys, return a new EntityPair with the entity and the relationship keys
                 return relKeys.SafeAny()
