@@ -1,12 +1,12 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
 
-namespace ToSic.Eav.Data.Build.DataFactories;
+namespace ToSic.Eav.Data.Build.DataFactories.RawFromAnonymousHelper;
 
-public class RawFromAnonymousExtractRelationshipKeys
+public class RawFromAnonymousHelperExtractRelationshipKeys
 {
     private static void NoNewKeys(Dictionary<string, object?> dic, int expectedValueCount = 0)
     {
-        var (values, relKeys) = new RawFromAnonymousHelper(null!)
+        var (values, relKeys) = new Raw.Sys.RawFromAnonymousHelper(null!)
             .ExtractRelationshipKeysTac(27, dic);
         Single(relKeys);
         Contains(27, relKeys);
@@ -49,7 +49,7 @@ public class RawFromAnonymousExtractRelationshipKeys
         {
             { nameof(IHasRelationshipKeys.RelationshipKeys), new[] { "20", "30" } }
         };
-        var extracted = new RawFromAnonymousHelper(null!)
+        var extracted = new Raw.Sys.RawFromAnonymousHelper(null!)
             .ExtractRelationshipKeysTac(27, data);
         var keys = extracted.relationshipKeys;
         Equal(3, keys.Count);
@@ -65,7 +65,7 @@ public class RawFromAnonymousExtractRelationshipKeys
         {
             { nameof(IHasRelationshipKeys.RelationshipKeys), new[] { 20, 30 } }
         };
-        var extracted = new RawFromAnonymousHelper(null!)
+        var extracted = new Raw.Sys.RawFromAnonymousHelper(null!)
             .ExtractRelationshipKeysTac(27, data);
         var keys = extracted.relationshipKeys;
         Equal(3, keys.Count);

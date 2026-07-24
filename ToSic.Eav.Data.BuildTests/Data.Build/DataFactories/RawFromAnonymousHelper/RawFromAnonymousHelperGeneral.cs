@@ -1,12 +1,12 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
 
-namespace ToSic.Eav.Data.Build.DataFactories;
+namespace ToSic.Eav.Data.Build.DataFactories.RawFromAnonymousHelper;
 
-public class RawFromAnonymousTests
+public class RawFromAnonymousHelperGeneral
 {
     #region Empty Anonymous
 
-    private static IRawEntity RawFromEmpty => new RawFromAnonymousHelper(null!).ConvertTac(new { });
+    private static IRawEntity RawFromEmpty => new Raw.Sys.RawFromAnonymousHelper(null!).ConvertTac(new { });
         
     [Fact]
     public void RawFromEmpty_Id_ShouldBeZero() => Equal(0, RawFromEmpty.Id);
@@ -32,7 +32,7 @@ public class RawFromAnonymousTests
     #region Ids Only
 
     // Static converted data
-    private static IRawEntity RawWithIds => new RawFromAnonymousHelper(null!).ConvertTac(new
+    private static IRawEntity RawWithIds => new Raw.Sys.RawFromAnonymousHelper(null!).ConvertTac(new
     {
         Id = ExpectedId,
         Guid = ExpectedGuid,
@@ -63,7 +63,7 @@ public class RawFromAnonymousTests
     #region Raw with only Props
 
     // Static data
-    private static IRawEntity RawWithOnlyProps => new RawFromAnonymousHelper(null!).ConvertTac(new
+    private static IRawEntity RawWithOnlyProps => new Raw.Sys.RawFromAnonymousHelper(null!).ConvertTac(new
     {
         Id = ExpectedId,
         Guid = ExpectedGuid,
@@ -88,7 +88,7 @@ public class RawFromAnonymousTests
     #region Raw with all core props and one extra
 
     // Static data
-    private static IRawEntity RawWithAllPropsAndOneExtra => new RawFromAnonymousHelper(null!).ConvertTac(new
+    private static IRawEntity RawWithAllPropsAndOneExtra => new Raw.Sys.RawFromAnonymousHelper(null!).ConvertTac(new
     {
         Id = ExpectedId,
         Guid = ExpectedGuid,
@@ -120,7 +120,7 @@ public class RawFromAnonymousTests
     #region Raw with only extra
 
     // Static data
-    private static IRawEntity RawWithOnlyExtra => new RawFromAnonymousHelper(null!).ConvertTac(new
+    private static IRawEntity RawWithOnlyExtra => new Raw.Sys.RawFromAnonymousHelper(null!).ConvertTac(new
     {
         SomethingElse = ExpectedExtraProperty.Value
     });

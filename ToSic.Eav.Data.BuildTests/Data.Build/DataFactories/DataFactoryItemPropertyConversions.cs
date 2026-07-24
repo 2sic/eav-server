@@ -10,7 +10,7 @@ namespace ToSic.Eav.Data.Build.DataFactories;
 public class DataFactoryItemPropertyConversionsFromRaw(IDataFactory dataFactory)
     : DataFactoryItemPropertyConversions
 {
-    protected override IEntity CreateProcess(IConvertibleToRawEntity source)
+    protected override IEntity CreateTestEntity(IConvertibleToRawEntity source)
         => dataFactory.CreateTac(source);
 }
 
@@ -18,7 +18,7 @@ public class DataFactoryItemPropertyConversionsFromRaw(IDataFactory dataFactory)
 public class DataFactoryItemPropertyConversionsFromConverter(IDataFactory dataFactory)
     : DataFactoryItemPropertyConversions
 {
-    protected override IEntity CreateProcess(IConvertibleToRawEntity source)
+    protected override IEntity CreateTestEntity(IConvertibleToRawEntity source)
     {
         // Create a fake raw, which doesn't have relevant properties, but would provide the source
         // in the GetConverter...
@@ -32,13 +32,18 @@ public class DataFactoryItemPropertyConversionsFromConverter(IDataFactory dataFa
 
 public abstract class DataFactoryItemPropertyConversions
 {
-    protected abstract IEntity CreateProcess(IConvertibleToRawEntity source);
+    /// <summary>
+    /// Abstract factory of the test-entity, which is implemented by the final test class.
+    /// This is because we'll have some tests which will return the entity generated from raw,
+    /// while others return the entity generated from a converter.
+    /// </summary>
+    protected abstract IEntity CreateTestEntity(IConvertibleToRawEntity source);
     
     [Fact]
     public void CheckId()
     {
         var x = new MockRawEntityRecord { Id = 17 };
-        var y = CreateProcess(x);
+        var y = CreateTestEntity(x);
         Equal(17, y.EntityId);
     }
 
@@ -47,7 +52,7 @@ public abstract class DataFactoryItemPropertyConversions
     {
         var guid = Guid.NewGuid();
         var x = new MockRawEntityRecord { Guid = guid };
-        var y = CreateProcess(x);
+        var y = CreateTestEntity(x);
         Equal(guid, y.EntityGuid);
     }
 
@@ -56,7 +61,7 @@ public abstract class DataFactoryItemPropertyConversions
     {
         var date = new DateTime(2001, 4, 2);
         var x = new MockRawEntityRecord { Created = date };
-        var y = CreateProcess(x);
+        var y = CreateTestEntity(x);
         Equal(date, y.Created);
         NotEqual(date, y.Modified);
     }
@@ -66,7 +71,7 @@ public abstract class DataFactoryItemPropertyConversions
     {
         var date = new DateTime(2001, 4, 2);
         var x = new MockRawEntityRecord { Modified = date };
-        var y = CreateProcess(x);
+        var y = CreateTestEntity(x);
         Equal(date, y.Modified);
         NotEqual(date, y.Created);
     }
@@ -75,7 +80,7 @@ public abstract class DataFactoryItemPropertyConversions
     public void CheckValuesNone()
     {
         var x = new MockRawEntityRecord();
-        var y = CreateProcess(x);
+        var y = CreateTestEntity(x);
         Empty(y.Attributes);
     }
     
@@ -86,7 +91,7 @@ public abstract class DataFactoryItemPropertyConversions
         {
             { "Key", "Value" },
         }};
-        var y = CreateProcess(x);
+        var y = CreateTestEntity(x);
         Single(y.Attributes);
     }
     
@@ -99,7 +104,7 @@ public abstract class DataFactoryItemPropertyConversions
             { "Key2", "Value" },
             { "Key3", "Value" },
         }};
-        var y = CreateProcess(x);
+        var y = CreateTestEntity(x);
         Equal(3, y.Attributes.Count);
     }
 }

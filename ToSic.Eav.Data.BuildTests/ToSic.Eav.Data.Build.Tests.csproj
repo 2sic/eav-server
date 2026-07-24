@@ -9,4 +9,8 @@
     <ProjectReference Include="..\ToSic.Sys.TestHelpers\ToSic.Sys.TestHelpers.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data.Build\DataFactories\RawEntity\" />
+  </ItemGroup>
+
 </Project>

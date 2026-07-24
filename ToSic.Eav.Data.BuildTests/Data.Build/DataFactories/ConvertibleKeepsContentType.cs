@@ -12,14 +12,9 @@ namespace ToSic.Eav.Data.Build.DataFactories;
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class ConvertibleKeepsContentType(IDataFactory dataFactory)
 {
-    private void NameNotSetUsesDefault<TType>() where TType: IConvertibleToRawEntity, new()
-    {
-        var x = new TType();
-        var y = dataFactory.CreateTac(x);
-        NotNull(y);
-        Equal(DataConstants.DataFactoryDefaultTypeName, y.Type.Name);
-    }
-    
+    private void NameNotSetUsesDefault<T>() where T: IConvertibleToRawEntity, new() =>
+        NameIsSet<T>(DataConstants.DataFactoryDefaultTypeName);
+
     private void NameIsSet<T>(string expectedName) where T : IConvertibleToRawEntity, new()
     {
         var x = new T();
@@ -38,12 +33,12 @@ public class ConvertibleKeepsContentType(IDataFactory dataFactory)
 
     [Fact]
     public void WithNewSpecsRawIsSet() =>
-        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecs>(CodeTypeSpecsConstants.SpecName);
+        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecs>(SpecName);
     
 
     [Fact]
     public void WithNewSpecsConvertibleIsSet() =>
-        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecsConvertible>(CodeTypeSpecsConstants.SpecName);
+        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecsConvertible>(SpecName);
     
 }
 

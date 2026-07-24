@@ -1,14 +1,14 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
 
-namespace ToSic.Eav.Data.Build.DataFactories;
+namespace ToSic.Eav.Data.Build.DataFactories.RawFromAnonymousHelper;
 
-public class RawFromAnonymousExtractRelationships
+public class RawFromAnonymousHelperExtractRelationships
 {
     public static IDictionary<string, RawRelationship> JustExtractRelationships(Dictionary<string, object?> dic)
-        => new RawFromAnonymousHelper(null!).ExtractRelationshipsTac(dic);
+        => new Raw.Sys.RawFromAnonymousHelper(null!).ExtractRelationshipsTac(dic);
 
     public static IDictionary<string, object?> JustStrongTypeRelationships(Dictionary<string, object?> dic)
-        => new RawFromAnonymousHelper(null!).StrongTypeRelationshipsTac(dic);
+        => new Raw.Sys.RawFromAnonymousHelper(null!).StrongTypeRelationshipsTac(dic);
     
     #region No Relationships to Extract
 
