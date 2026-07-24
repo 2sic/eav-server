@@ -4,7 +4,7 @@
 /// Internal data assembler to create entities, relationships, attributes and values.
 /// </summary>
 /// <param name="entityBuilder"></param>
-/// <param name="entityRelationshipBuilder"></param>
+/// <param name="entityConnectionBuilder"></param>
 /// <param name="attributeAssembler"></param>
 /// <param name="valueBuilder"></param>
 /// <param name="languageAssembler"></param>
@@ -12,21 +12,21 @@
 [method: PrivateApi]
 public class DataAssembler(
     LazySvc<EntityAssembler> entityBuilder,
-    LazySvc<EntityConnectionBuilder> entityRelationshipBuilder,
+    LazySvc<EntityConnectionBuilder> entityConnectionBuilder,
     Generator<AttributeAssembler, DataAssemblerOptions> attributeAssembler,
     Generator<AttributeListAssembler, DataAssemblerOptions> attributeListAssembler,
     Generator<ValueAssembler, DataAssemblerOptions> valueBuilder,
     LanguageAssembler languageAssembler)
     : ServiceWithSetup<DataAssemblerOptions>("DaB.MltBld", connect:
         [
-            entityBuilder, entityRelationshipBuilder, attributeAssembler, attributeListAssembler, valueBuilder, languageAssembler
+            entityBuilder, entityConnectionBuilder, attributeAssembler, attributeListAssembler, valueBuilder, languageAssembler
         ])
 {
 
     public EntityAssembler Entity => entityBuilder.Value;
 
 
-    public EntityConnectionBuilder EntityConnection => entityRelationshipBuilder.Value;
+    public EntityConnectionBuilder EntityConnection => entityConnectionBuilder.Value;
 
     [field: AllowNull, MaybeNull]
     public AttributeAssembler Attribute => field

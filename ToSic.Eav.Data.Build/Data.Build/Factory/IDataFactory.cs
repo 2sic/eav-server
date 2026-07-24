@@ -18,7 +18,8 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
 {
     /// <summary>
     /// A counter for the ID in case the data provided doesn't have an ID to use.
-    /// Default is `1`
+    /// Default is `1`.
+    /// Negative numbers are possible.
     /// </summary>
     int IdCounter { get; }
 
