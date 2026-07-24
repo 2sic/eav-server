@@ -15,15 +15,15 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
 public record CodeTypeWithSpecsRecord(
 
-    [property: ContentTypeAttributeSpecs(Description = CodeTypeWithSpecsClass.IdAndGuidDescription)]
+    [property: ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
     int Id,
 
-    [property: ContentTypeAttributeSpecs(Description = CodeTypeWithSpecsClass.IdAndGuidDescription)]
+    [property: ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
     Guid Guid,
 
     DateTime Created,
 
-    [property: ContentTypeAttributeSpecs(Name = CodeTypeWithSpecsClass.NameSpecsName, IsTitle = true)]
+    [property: ContentTypeAttributeSpecs(Name = NameAttrSpecsNameModified, IsTitle = true)]
     string Name,
 
     [property: ContentTypeAttributeSpecs(Type = ValueTypes.Hyperlink)]
@@ -33,7 +33,7 @@ public record CodeTypeWithSpecsRecord(
 
     DateTime BirthDate,
 
-    [property: ContentTypeAttributeSpecs(Description = CodeTypeWithSpecsClass.IsAliveDescription)]
+    [property: ContentTypeAttributeSpecs(Description = IsAliveDescription)]
     bool IsAlive,
 
     [property: ContentTypeAttributeIgnore] string IgnoreThis

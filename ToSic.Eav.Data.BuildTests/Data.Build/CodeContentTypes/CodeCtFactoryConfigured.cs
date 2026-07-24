@@ -20,6 +20,8 @@ public class CodeCtFactoryConfiguredRecord(CodeContentTypesManager ctDefManager)
 
 // ReSharper restore UnusedMember.Global
 
+
+
 /// <summary>
 /// Shared Tests for configured classes/records (with attributes).
 /// Both test samples (class and record) must have the same attributes, so we can use the same tests for both of them.
@@ -33,11 +35,11 @@ public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTyp
     
     
     [Theory]
-    [InlineData(CodeTypeWithSpecsClass.NameSpecsName, ValueTypes.String, true)]
-    [InlineData(nameof(CodeTypeWithSpecsClass.Url), ValueTypes.Hyperlink)]
-    [InlineData(nameof(CodeTypeWithSpecsClass.Age), ValueTypes.Number)]
-    [InlineData(nameof(CodeTypeWithSpecsClass.BirthDate), ValueTypes.DateTime)]
-    [InlineData(nameof(CodeTypeWithSpecsClass.IsAlive), ValueTypes.Boolean, false, CodeTypeWithSpecsClass.IsAliveDescription)]
+    [InlineData(CodeTypeSpecsConstants.NameAttrSpecsNameModified, ValueTypes.String, true)]
+    [InlineData(nameof(CodeTypeSpecsConstants.Url), ValueTypes.Hyperlink)]
+    [InlineData(nameof(CodeTypeSpecsConstants.Age), ValueTypes.Number)]
+    [InlineData(nameof(CodeTypeSpecsConstants.BirthDate), ValueTypes.DateTime)]
+    [InlineData(nameof(CodeTypeSpecsConstants.IsAlive), ValueTypes.Boolean, false, CodeTypeSpecsConstants.IsAliveDescription)]
     public void AssertAttributeWithSpec(string name, ValueTypes type, bool isTitle = false, string? description = default)
         => ctDefManager.CreateTac<TCodeTypeWithSpecs>().AssertAttributeDefinition(name, type, isTitle, description);
     
@@ -46,8 +48,8 @@ public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTyp
     /// </summary>
     /// <param name="name"></param>
     [Theory]
-    [InlineData(nameof(CodeTypeWithSpecsClass.IgnoreThis))]
-    [InlineData(nameof(CodeTypeWithSpecsClass.InternalProperty))]
+    [InlineData(nameof(CodeTypeSpecsConstants.IgnoreThis))]
+    [InlineData(nameof(CodeTypeSpecsConstants.InternalProperty))]
     [InlineData("PrivateProperty")]
     public void Attributes_WithSpec_SkipIgnores(string name)
         => DoesNotContain(name, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Attributes.Select(a => a.Name));

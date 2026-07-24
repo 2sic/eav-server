@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.Sys.ContentTypes;
 using static ToSic.Eav.Data.Build.CodeContentTypes.CodeTypeSpecsConstants;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
@@ -7,23 +6,21 @@ using static ToSic.Eav.Data.Build.CodeContentTypes.CodeTypeSpecsConstants;
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
-public class CodeTypeWithSpecsClass
+public interface ICodeTypeWithSpecsInterface
 {
-    public const string NameSpecsName = "NameMod"; // test that the name was changed
-    public const string IdAndGuidDescription = "DO NOT USE. This is a temporary, random ID calculated at runtime and will return different values all the time.";
-    
+   
     [ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
     public int Id { get; set; }
 
     [ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
-    public Guid Guid { get; set; } = Guid.NewGuid();
+    public Guid Guid { get; set; }
 
     /// <summary>
     /// System property, but without additional specs
     /// </summary>
     public DateTime Created { get; set; }
 
-    [ContentTypeAttributeSpecs(Name = NameSpecsName, IsTitle = true)]
+    [ContentTypeAttributeSpecs(Name = NameAttrSpecsNameModified, IsTitle = true)]
     public string Name { get; set; }
 
 
@@ -37,7 +34,6 @@ public class CodeTypeWithSpecsClass
     /// <summary>
     /// The description is usually not public, but public here since the tests is elsewhere
     /// </summary>
-    public const string IsAliveDescription = "This is to ensure the user is alive";
     [ContentTypeAttributeSpecs(Description = IsAliveDescription)]
     public bool IsAlive { get; set; }
 
@@ -45,7 +41,7 @@ public class CodeTypeWithSpecsClass
     [ContentTypeAttributeIgnore]
     public string IgnoreThis { get; set; }
 
-    private string PrivateProperty { get; set; }
+    //private string PrivateProperty { get; set; }
 
     internal string InternalProperty { get; set; }
 }
