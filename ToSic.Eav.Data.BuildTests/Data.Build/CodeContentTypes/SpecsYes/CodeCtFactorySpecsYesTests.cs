@@ -3,20 +3,21 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Models;
 
-namespace ToSic.Eav.Data.Build.CodeContentTypes;
+namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
+
 // ReSharper disable UnusedMember.Global
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactoryConfiguredInterface(CodeContentTypesManager ctDefManager)
-    : CodeCtFactoryConfigured<ICodeTypeWithSpecsInterface>(ctDefManager);
+public class CodeCtFactorySpecsYesTestsInterface(CodeContentTypesManager ctDefManager)
+    : CodeCtFactorySpecsYesTests<ICodeTypeSpecsYesInterface>(ctDefManager);
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactoryConfiguredClass(CodeContentTypesManager ctDefManager)
-    : CodeCtFactoryConfigured<CodeTypeWithSpecsClass>(ctDefManager);
+public class CodeCtFactorySpecsYesTestsClass(CodeContentTypesManager ctDefManager)
+    : CodeCtFactorySpecsYesTests<CodeTypeSpecsYesClass>(ctDefManager);
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactoryConfiguredRecord(CodeContentTypesManager ctDefManager)
-    : CodeCtFactoryConfigured<CodeTypeWithSpecsRecord>(ctDefManager);
+public class CodeCtFactorySpecsYesTestsRecord(CodeContentTypesManager ctDefManager)
+    : CodeCtFactorySpecsYesTests<CodeTypeSpecsYesRecord>(ctDefManager);
 
 // ReSharper restore UnusedMember.Global
 
@@ -27,7 +28,7 @@ public class CodeCtFactoryConfiguredRecord(CodeContentTypesManager ctDefManager)
 /// Both test samples (class and record) must have the same attributes, so we can use the same tests for both of them.
 /// </summary>
 /// <param name="ctDefManager"></param>
-public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTypesManager ctDefManager)
+public abstract class CodeCtFactorySpecsYesTests<TCodeTypeWithSpecs>(CodeContentTypesManager ctDefManager)
 {
     [Fact]
     public void Attributes_WithSpec_Count()

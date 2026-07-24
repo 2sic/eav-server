@@ -1,8 +1,9 @@
 ﻿using ToSic.Eav.Data.Build.CodeContentTypes;
+using ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
-using static ToSic.Eav.Data.Build.CodeContentTypes.CodeTypeSpecsConstants;
+using static ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes.CodeTypeSpecsConstants;
 
 namespace ToSic.Eav.Data.Build.DataFactories;
 
@@ -47,14 +48,14 @@ public class ConvertibleKeepsContentType(IDataFactory dataFactory)
     
 }
 
-public class CodeTypeWithSpecsClassConvertibleNoSpecs : CodeTypeWithSpecsClass, IRawEntity
+public class CodeTypeWithSpecsClassConvertibleNoSpecs : CodeTypeSpecsYesClass, IRawEntity
 {
     public DateTime Modified { get; }
     public IDictionary<string, object?> Values { get; }
 }
 
 
-public class CodeTypeWithSpecsClassConvertibleNoSpecsConverter : CodeTypeWithSpecsClass, IGetRawConverter
+public class CodeTypeWithSpecsClassConvertibleNoSpecsConverter : CodeTypeSpecsYesClass, IGetRawConverter
 {
     public DateTime Modified { get; }
     public IDictionary<string, object?> Values { get; }
@@ -69,14 +70,14 @@ public class CodeTypeWithSpecsClassConvertibleNoSpecsConverter : CodeTypeWithSpe
 }
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
-public class CodeTypeWithSpecsClassConvertibleWithSpecs : CodeTypeWithSpecsClass, IRawEntity
+public class CodeTypeWithSpecsClassConvertibleWithSpecs : CodeTypeSpecsYesClass, IRawEntity
 {
     public DateTime Modified { get; }
     public IDictionary<string, object?> Values { get; }
 }
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
-public class CodeTypeWithSpecsClassConvertibleWithSpecsConvertible : CodeTypeWithSpecsClass, IGetRawConverter
+public class CodeTypeWithSpecsClassConvertibleWithSpecsConvertible : CodeTypeSpecsYesClass, IGetRawConverter
 {
     public DateTime Modified { get; }
     public IDictionary<string, object?> Values { get; }

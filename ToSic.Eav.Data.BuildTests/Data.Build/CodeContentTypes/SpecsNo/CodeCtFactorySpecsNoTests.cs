@@ -3,39 +3,39 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Models;
 
-namespace ToSic.Eav.Data.Build.CodeContentTypes;
+namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsNo;
 // ReSharper disable UnusedMember.Global
 
 /// <summary>
 /// Test conversion of a type to a ContentType Definition - with a **Class** having no configuration.
 /// </summary>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactoryConfigNoneInterface(CodeContentTypesManager ctDefManager)
-    : CodeCtFactoryConfigNone<ICodeTypeNoSpecsInterface>(ctDefManager);
+public class CodeCtFactorySpecsNoTestsInterface(CodeContentTypesManager ctDefManager)
+    : CodeCtFactorySpecsNoTests<ICodeTypeSpecsNoInterface>(ctDefManager);
 
 
 /// <summary>
 /// Test conversion of a type to a ContentType Definition - with a **Class** having no configuration.
 /// </summary>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactoryConfigNoneClass(CodeContentTypesManager ctDefManager)
-    : CodeCtFactoryConfigNone<CodeTypeNoSpecsClass>(ctDefManager);
+public class CodeCtFactorySpecsNoTestsClass(CodeContentTypesManager ctDefManager)
+    : CodeCtFactorySpecsNoTests<CodeTypeSpecsNoClass>(ctDefManager);
 
 /// <summary>
 /// Test conversion of a type to a ContentType Definition - with a **Record** having no configuration.
 /// </summary>
 /// <param name="ctDefManager"></param>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactoryConfigNoneRecord(CodeContentTypesManager ctDefManager)
-    : CodeCtFactoryConfigNone<CodeTypeNoSpecsRecord>(ctDefManager);
+public class CodeCtFactorySpecsNoTestsRecord(CodeContentTypesManager ctDefManager)
+    : CodeCtFactorySpecsNoTests<CodeTypeSpecsNoRecord>(ctDefManager);
 
 /// <summary>
 /// Test conversion of a type to a ContentType Definition - with a **Record** having no configuration.
 /// </summary>
 /// <param name="ctDefManager"></param>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactoryConfigNoneAnonymous(CodeContentTypesManager ctDefManager)
-    : CodeCtFactoryConfigNone<object>(ctDefManager, useAnonymous: true);
+public class CodeCtFactorySpecsNoTestsAnonymous(CodeContentTypesManager ctDefManager)
+    : CodeCtFactorySpecsNoTests<object>(ctDefManager, useAnonymous: true);
 
 // ReSharper restore UnusedMember.Global
 
@@ -45,7 +45,7 @@ public class CodeCtFactoryConfigNoneAnonymous(CodeContentTypesManager ctDefManag
 /// <summary>
 /// Shared (abstract) tests for classes or records which are not configured (no attributes)
 /// </summary>
-public abstract class CodeCtFactoryConfigNone<TCodeTypeNoSpecs>(CodeContentTypesManager ctDefManager, bool useAnonymous = false)
+public abstract class CodeCtFactorySpecsNoTests<TCodeTypeNoSpecs>(CodeContentTypesManager ctDefManager, bool useAnonymous = false)
 {
     /// <summary>
     /// Central place to get/create the content type.
@@ -79,10 +79,10 @@ public abstract class CodeCtFactoryConfigNone<TCodeTypeNoSpecs>(CodeContentTypes
     
     
     [Theory]
-    [InlineData(nameof(CodeTypeNoSpecsClass.Name), ValueTypes.String)]
-    [InlineData(nameof(CodeTypeNoSpecsClass.Age), ValueTypes.Number)]
-    [InlineData(nameof(CodeTypeNoSpecsClass.BirthDate), ValueTypes.DateTime)]
-    [InlineData(nameof(CodeTypeNoSpecsClass.IsAlive), ValueTypes.Boolean)]
+    [InlineData(nameof(CodeTypeSpecsNoClass.Name), ValueTypes.String)]
+    [InlineData(nameof(CodeTypeSpecsNoClass.Age), ValueTypes.Number)]
+    [InlineData(nameof(CodeTypeSpecsNoClass.BirthDate), ValueTypes.DateTime)]
+    [InlineData(nameof(CodeTypeSpecsNoClass.IsAlive), ValueTypes.Boolean)]
     public void AssertAttributeNoSpec(string name, ValueTypes type)
         => GetCurrentContentType().AssertAttributeDefinition(name, type);
 

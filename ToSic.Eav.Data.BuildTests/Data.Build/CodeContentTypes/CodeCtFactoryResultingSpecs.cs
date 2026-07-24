@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+﻿using ToSic.Eav.Data.Build.CodeContentTypes.SpecsNo;
+using ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Sys.TestHelpers.Assembly;
 
@@ -12,37 +14,37 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 public class CodeCtFactoryResultingSpecs(CodeContentTypesManager ctDefManager)
 {
     [Theory]
-    [InlineData(false, typeof(CodeTypeNoSpecsEmpty))]
-    [InlineData(true, typeof(CodeTypeWithSpecsEmpty))]
+    [InlineData(false, typeof(CodeTypeSpecsNoEmpty))]
+    [InlineData(true, typeof(CodeTypeSpecsYesEmpty))]
     public void IsConfigured(bool expected, Type type)
         => Equal(expected, ctDefManager.IsConfiguredTac(type));
 
 
     [Theory]
-    [InlineData(nameof(CodeTypeNoSpecsEmpty), typeof(CodeTypeNoSpecsEmpty))]
-    [InlineData(CodeTypeSpecsConstants.SpecName, typeof(CodeTypeWithSpecsEmpty))]
+    [InlineData(nameof(CodeTypeSpecsNoEmpty), typeof(CodeTypeSpecsNoEmpty))]
+    [InlineData(CodeTypeSpecsConstants.SpecName, typeof(CodeTypeSpecsYesEmpty))]
     public void Name(string expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).Name);
     
     
 
     [Theory]
-    [InlineData(ScopeConstants.Default, typeof(CodeTypeNoSpecsEmpty))]
-    [InlineData(CodeTypeSpecsConstants.SpecScope, typeof(CodeTypeWithSpecsEmpty))]
+    [InlineData(ScopeConstants.Default, typeof(CodeTypeSpecsNoEmpty))]
+    [InlineData(CodeTypeSpecsConstants.SpecScope, typeof(CodeTypeSpecsYesEmpty))]
     public void Scope(string expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).Scope);
     
     
     [Theory]
-    [InlineData("00000000-0000-0000-0000-000000000000", typeof(CodeTypeNoSpecsEmpty))]
-    [InlineData(CodeTypeSpecsConstants.SpecGuid, typeof(CodeTypeWithSpecsEmpty))]
+    [InlineData("00000000-0000-0000-0000-000000000000", typeof(CodeTypeSpecsNoEmpty))]
+    [InlineData(CodeTypeSpecsConstants.SpecGuid, typeof(CodeTypeSpecsYesEmpty))]
     public void NameId(string expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).NameId);
 
     
     [Theory]
-    [InlineData(CodeContentTypesManager.NoAppId, typeof(CodeTypeNoSpecsEmpty))]
-    [InlineData(CodeContentTypesManager.NoAppId, typeof(CodeTypeWithSpecsEmpty))]
+    [InlineData(CodeContentTypesManager.NoAppId, typeof(CodeTypeSpecsNoEmpty))]
+    [InlineData(CodeContentTypesManager.NoAppId, typeof(CodeTypeSpecsYesEmpty))]
     public void AppId(int expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).AppId);
 
@@ -52,10 +54,10 @@ public class CodeCtFactoryResultingSpecs(CodeContentTypesManager ctDefManager)
     /// <param name="expected"></param>
     /// <param name="typeName"></param>
     [Theory]
-    [InlineData(RepositoryTypes.CodeReflection, nameof(CodeTypeNoSpecsEmpty))]
-    [InlineData(RepositoryTypes.CodeConfiguration, nameof(CodeTypeWithSpecsEmpty))]
+    [InlineData(RepositoryTypes.CodeReflection, nameof(CodeTypeSpecsNoEmpty))]
+    [InlineData(RepositoryTypes.CodeConfiguration, nameof(CodeTypeSpecsYesEmpty))]
     public void RepositoryType(RepositoryTypes expected, string typeName)
-        => Equal(expected, ctDefManager.CreateTac(typeof(CodeTypeNoSpecsEmpty).Assembly.GetTypeFromName(typeName)).RepositoryType);
+        => Equal(expected, ctDefManager.CreateTac(typeof(CodeTypeSpecsNoEmpty).Assembly.GetTypeFromName(typeName)).RepositoryType);
 
 
 }

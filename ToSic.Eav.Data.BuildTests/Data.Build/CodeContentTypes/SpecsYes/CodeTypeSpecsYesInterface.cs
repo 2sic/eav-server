@@ -1,12 +1,12 @@
 ﻿using ToSic.Eav.Data.Sys.ContentTypes;
-using static ToSic.Eav.Data.Build.CodeContentTypes.CodeTypeSpecsConstants;
+using static ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes.CodeTypeSpecsConstants;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-namespace ToSic.Eav.Data.Build.CodeContentTypes;
+namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
-public interface ICodeTypeWithSpecsInterface
+public interface ICodeTypeSpecsYesInterface
 {
    
     [ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]

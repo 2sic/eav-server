@@ -1,6 +1,6 @@
-﻿namespace ToSic.Eav.Data.Build.CodeContentTypes;
+﻿namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsNo;
 
-public interface ICodeTypeNoSpecsInterface
+public class CodeTypeSpecsNoClass
 {
     public int Id { get; set; }
 

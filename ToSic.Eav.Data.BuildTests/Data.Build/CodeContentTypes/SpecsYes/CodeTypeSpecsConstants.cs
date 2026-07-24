@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Build.CodeContentTypes;
+﻿namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
 
 public class CodeTypeSpecsConstants
 {
