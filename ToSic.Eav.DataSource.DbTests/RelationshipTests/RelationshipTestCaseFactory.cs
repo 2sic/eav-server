@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.DataSource.DbTests.RelationshipTests;
 
-internal class RelationshipTestCaseFactory(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
+internal class RelationshipTestCaseFactory(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
 {
     public RelationshipTestCase New(string name,
         string type,
@@ -12,6 +12,6 @@ internal class RelationshipTestCaseFactory(DataSourcesTstBuilder dsSvc, DataAsse
         string? compareMode = null,
         string? separator = null,
         string? direction = null) =>
-        new(dsSvc, dataAssembler, typeAssembler, name, type, relationship, filter, relAttribute, compareMode,
+        new(dsSvc, dataAssembler, ctAssemblyKit, name, type, relationship, filter, relAttribute, compareMode,
             separator, direction);
 }

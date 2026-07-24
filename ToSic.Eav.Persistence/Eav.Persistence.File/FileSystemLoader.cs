@@ -13,8 +13,8 @@ using static ToSic.Eav.ImportExport.Sys.ImpExpConstants;
 namespace ToSic.Eav.Persistence.File;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
-    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataAssembler, typeAssembler]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
+public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
+    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataAssembler, ctAssemblyKit]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
 {
     private FileSystemLoaderOptions Options { get; set; } = null!;
 
@@ -212,7 +212,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
             infoIfError = "couldn't set source/parent";
             TypeIdSeed += TypeIdDirection;
-            ct = typeAssembler.Type.CreateFrom(ct, id: TypeIdSeed, repoType: Options.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
+            ct = ctAssemblyKit.Type.CreateFrom(ct, id: TypeIdSeed, repoType: Options.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
             return l.Return(ct, $"file size was: {json.Length}");
         }
 #pragma warning disable CS0162 // Unreachable code detected

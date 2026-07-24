@@ -7,15 +7,15 @@ namespace ToSic.Eav.TestData;
 
 public class PersonsDataSource: DataSourceBase
 {
-    public PersonsDataSource(Dependencies services, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler): base(services, "TST.Person")
+    public PersonsDataSource(Dependencies services, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit): base(services, "TST.Person")
     {
         _dataAssembler = dataAssembler;
-        _typeAssembler = typeAssembler;
+        _ctAssemblyKit = ctAssemblyKit;
         ProvideOut(GetPersons);
     }
 
     private readonly DataAssembler _dataAssembler;
-    private readonly ContentTypeAssembler _typeAssembler;
+    private readonly ContentTypeAssemblyKit _ctAssemblyKit;
 
     public PersonsDataSource Init(int itemsToGenerate = 10, int firstId = 1001, bool multiLanguage = false)
     {
@@ -30,9 +30,9 @@ public class PersonsDataSource: DataSourceBase
 
     private IImmutableList<IEntity> GetPersons()
     {
-        var persons = new PersonGenerator(_dataAssembler, _typeAssembler)
+        var persons = new PersonGenerator(_dataAssembler, _ctAssemblyKit)
             .GetSemiRandomList(_itemsToGenerate, _firstId, new PersonSpecs());
-        var list = new PersonGenerator(_dataAssembler, _typeAssembler).Person2Entity(persons, _multiLanguage);
+        var list = new PersonGenerator(_dataAssembler, _ctAssemblyKit).Person2Entity(persons, _multiLanguage);
         return list.ToImmutableOpt();
     }
 }

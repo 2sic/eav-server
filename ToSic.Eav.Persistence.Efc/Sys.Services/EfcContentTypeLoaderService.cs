@@ -17,7 +17,7 @@ internal class EfcContentTypeLoaderService(
     EfcAppLoaderService efcAppLoader,
     Generator<IAppContentTypesLoader> appFileContentTypesLoader,
     Generator<IDataDeserializer> dataDeserializer,
-    ContentTypeAssembler typeAssembler,
+    ContentTypeAssemblyKit ctAssemblyKit,
     IAppStateCacheService appStates,
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
@@ -120,7 +120,7 @@ internal class EfcContentTypeLoaderService(
                 Attributes = set.TsDynDataAttributes
                     .Where(a => a.TransDeletedId == null) // only not-deleted attributes!
                     .OrderBy(a => a.SortOrder)
-                    .Select(a => typeAssembler.Attribute.Create(
+                    .Select(a => ctAssemblyKit.Attribute.Create(
                         appId: appId,
                         name: a.StaticName,
                         type: ValueTypeHelpers.Get(a.Type),
@@ -169,7 +169,7 @@ internal class EfcContentTypeLoaderService(
                 .ToDictionary(
                     s => s.ContentTypeId,
                     s => s.TsDynDataAttributes
-                        .Select(a => typeAssembler
+                        .Select(a => ctAssemblyKit
                             .Attribute.Create(
                                 appId: appId,
                                 name: a.StaticName,
@@ -211,7 +211,7 @@ internal class EfcContentTypeLoaderService(
                 var metaSource = MetadataProvider.Create(metaSourceFinder);
                 var metaData = new ContentTypeMetadata(set.StaticName, title: set.Name, source: metaSource);
 
-                return typeAssembler.Type.Create(
+                return ctAssemblyKit.Type.Create(
                     appId: appId,
                     name: set.Name,
                     nameId: set.StaticName,

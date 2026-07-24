@@ -16,7 +16,7 @@ public static class DataAssemblerExtensions
     public static IImmutableList<IValue> ToValueList(this IValue value)
         => new List<IValue> { value }.ToImmutableOpt();
 
-    public static IEntity FakeEntity(this DataAssembler dataAssembler, ContentTypeTypeAssembler typeAssembler, int appId)
+    public static IEntity FakeEntity(this DataAssembler dataAssembler, ContentTypeAssembler typeAssembler, int appId)
         => dataAssembler.Entity.Create(
             appId: appId,
             attributes: dataAssembler.AttributeList.Finalize(new Dictionary<string, object?> { { AttributeNames.TitleNiceName, "" } }),

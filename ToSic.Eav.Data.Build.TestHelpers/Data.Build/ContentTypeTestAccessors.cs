@@ -7,14 +7,14 @@ public static class ContentTypeTestAccessors
 
     //public static IContentTypeAttribute ContentTypeAttributeTac(this DataAssembler dataAssembler, int appId, string name, string dataType, bool isTitle = false, int attId = 0, int index = 0)
     //    => dataAssembler.ContentTypeAttribute.Create(appId: appId, name: name, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
-    public static IContentTypeAttribute ContentTypeAttributeTac(this ContentTypeAssembler typeAssembler, int appId, string name, string dataType, bool isTitle = false, int attId = 0, int index = 0)
-        => typeAssembler.Attribute.Create(appId: appId, name: name, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
+    public static IContentTypeAttribute ContentTypeAttributeTac(this ContentTypeAssemblyKit ctAssemblyKit, int appId, string name, string dataType, bool isTitle = false, int attId = 0, int index = 0)
+        => ctAssemblyKit.Attribute.Create(appId: appId, name: name, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
 
     //public static IContentTypeAttribute ContentTypeAttributeTac(this DataBuilder builder, int appId, string firstName, string dataType, bool isTitle, int attId, int index) =>
     //    builder.TypeAttributeBuilder.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
 
 
-    public static IContentType CreateContentTypeTac(this ContentTypeTypeAssembler assembler,
+    public static IContentType CreateContentTypeTac(this ContentTypeAssembler assembler,
         int appId,
         string name,
         int? id = default,

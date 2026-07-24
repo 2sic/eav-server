@@ -64,15 +64,15 @@ public class AttributeRename : DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public AttributeRename(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen", connect: [dataAssembler])
+    public AttributeRename(DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen", connect: [dataAssembler])
     {
         _dataAssembler = dataAssembler;
-        _typeAssembler = typeAssembler;
+        _ctAssemblyKit = ctAssemblyKit;
         ProvideOut(GetList);
     }
 
     private readonly DataAssembler _dataAssembler;
-    private readonly ContentTypeAssembler _typeAssembler;
+    private readonly ContentTypeAssemblyKit _ctAssemblyKit;
 
 
     /// <summary>
@@ -138,7 +138,7 @@ public class AttributeRename : DataSourceBase
         var typeName = TypeName;
         IContentType? newType = null;
         if (!string.IsNullOrEmpty(typeName))
-            newType = _typeAssembler.Type.Transient(AppId, typeName!, typeName!);
+            newType = _ctAssemblyKit.Type.Transient(AppId, typeName!, typeName!);
 
         var source = TryGetIn();
         if (source is null)

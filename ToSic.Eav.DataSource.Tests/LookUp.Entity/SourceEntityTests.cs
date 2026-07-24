@@ -8,9 +8,9 @@ using ToSic.Eav.LookUp.TestHelpers;
 namespace ToSic.Eav.LookUp.Entity;
 
 [Startup(typeof(StartupTestsEavDataBuildWithTestData))]
-public class SourceEntityTests(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
+public class SourceEntityTests(DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
 {
-    private readonly LookUpInEntity _person = new("no-name", dataAssembler.TestEntityDaniel(typeAssembler), null);
+    private readonly LookUpInEntity _person = new("no-name", dataAssembler.TestEntityDaniel(ctAssemblyKit), null);
 
     [Fact]
     public void FirstNameNotEmpty() => NotEqual(string.Empty, _person.GetTac("FirstName"));
@@ -49,16 +49,16 @@ public class SourceEntityTests(DataAssembler dataAssembler, ContentTypeAssembler
     [Fact]
     public void SubPropertyTODO() // not quite done yet!
     {
-        var dan = dataAssembler.TestEntityDaniel(typeAssembler);
+        var dan = dataAssembler.TestEntityDaniel(ctAssemblyKit);
 
         var relationshipList = new List<EntityRelationship>
         {
-            new(dan, dataAssembler.TestEntityLeonie(typeAssembler))
+            new(dan, dataAssembler.TestEntityLeonie(ctAssemblyKit))
         };
 
         for (var p = 0; p < 15; p++)
         {
-            var relPet = new EntityRelationship(dan, dataAssembler.TestEntityPet(typeAssembler, p));
+            var relPet = new EntityRelationship(dan, dataAssembler.TestEntityPet(ctAssemblyKit, p));
             relationshipList.Add(relPet);
         }
 

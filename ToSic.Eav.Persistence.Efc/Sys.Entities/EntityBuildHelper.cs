@@ -11,7 +11,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityBuildHelper(
     DataAssembler dataAssembler,
-    ContentTypeAssembler typeAssembler,
+    ContentTypeAssemblyKit ctAssemblyKit,
     IAppReader appReader,
     IDataDeserializer serializer,
     Dictionary<int, ICollection<TempRelationshipList>> relatedEntities,
@@ -154,5 +154,5 @@ internal class EntityBuildHelper(
         return errorEntity;
     }
 
-    private IContentType ErrorContentType => field ??= typeAssembler.Type.Transient(DataConstants.ErrorTypeName);
+    private IContentType ErrorContentType => field ??= ctAssemblyKit.Type.Transient(DataConstants.ErrorTypeName);
 }

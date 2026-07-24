@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public class ContentTypesFromCodeBuilder(ContentTypeAssembler ctAssembler, EntityAssembler entityAssembler, AttributeListAssembler attributeListAssembler)
+public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, EntityAssembler entityAssembler, AttributeListAssembler attributeListAssembler)
     : ServiceBase("Eav.CtFact")
 {
     // TODO: Should probably be something different...?
@@ -50,7 +50,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssembler ctAssembler, Entit
                 )
             );
 
-        var contentType = ctAssembler.Type.Create(
+        var contentType = ctAssemblyKit.Type.Create(
             appId,
             name: ctName,
             nameId: ctNameId,
@@ -88,7 +88,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssembler ctAssembler, Entit
         // Create a Description entity
         var entity = entityAssembler.Create(
             NoAppId,
-            ctAssembler.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName, ContentTypeDetails.ContentTypeName),
+            ctAssemblyKit.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName, ContentTypeDetails.ContentTypeName),
             attributes: attributes
         );
         return l.Return(entity, "created");
@@ -170,7 +170,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssembler ctAssembler, Entit
                 var attrMetadata = ContentTypeAttributeDetails(ContentTypeAttributeAll.FromCodeAttributeOrNull(specs), specs?.Description, specs?.InputTypeWIP)
                     .ToListOfOneOrNull();
 
-                return ctAssembler.Attribute.Create(
+                return ctAssemblyKit.Attribute.Create(
                     NoAppId,
                     name: attrName,
                     type: attrType,
@@ -206,7 +206,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssembler ctAssembler, Entit
         // Create a Description entity
         var entity = entityAssembler.Create(
             NoAppId,
-            ctAssembler.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral, AttributeMetadataConstants.TypeGeneral),
+            ctAssemblyKit.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral, AttributeMetadataConstants.TypeGeneral),
             attributes: attributes);
         return l.Return(entity, "created");
     }

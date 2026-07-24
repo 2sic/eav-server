@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSource;
 /// Constructor - to find out if it's used anywhere
 /// </remarks>
 [PublicApi]
-public class DataSourceErrorHelper(DataAssembler dataAssembler, LazySvc<ContentTypeAssembler> typeAssembler)
+public class DataSourceErrorHelper(DataAssembler dataAssembler, LazySvc<ContentTypeAssemblyKit> typeAssembler)
 {
     [PrivateApi]
     internal DataSourceErrorHelper ConnectToParent(IDataSource source)

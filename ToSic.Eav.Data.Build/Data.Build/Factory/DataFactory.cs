@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.Build;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal class DataFactory(
     Generator<DataAssembler, DataAssemblerOptions> dataAssembler,
-    LazySvc<ContentTypeTypeAssembler> typeAssembler,
+    LazySvc<ContentTypeAssembler> typeAssembler,
     Generator<IDataFactory, DataFactoryOptions> selfGenerator,
     LazySvc<ContentTypesFromCodeManager> codeCtManager)
     : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, codeCtManager]), IDataFactory

@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Data.Build.ContentTypes;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class ContentType_Test(ContentTypeTypeAssembler ctAssembler)
+public class ContentType_Test(ContentTypeAssembler ctAssembler)
 {
     [Fact]
     public void ContentType_GeneralTest()

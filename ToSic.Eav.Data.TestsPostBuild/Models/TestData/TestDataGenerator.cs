@@ -5,11 +5,11 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Models.TestData;
 
-public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCodeManager ctDefFactory, ContentTypeAssembler typeAssembler)
+public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCodeManager ctDefFactory, ContentTypeAssemblyKit ctAssemblyKit)
 {
     public IEntity EntityWithMetadataForDecorator(int amount)
     {
-        var original = dataAssembler.TestEntityDaniel(typeAssembler);
+        var original = dataAssembler.TestEntityDaniel(ctAssemblyKit);
 
         var decorators = CreateMdForDecorators(amount);
 
@@ -21,7 +21,7 @@ public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCode
 
     public IEntity CreateWithMixedMetadata(int amountMdFor, int amountOther)
     {
-        var original = dataAssembler.TestEntityDaniel(typeAssembler);
+        var original = dataAssembler.TestEntityDaniel(ctAssemblyKit);
 
         var decorators = CreateMdForDecorators(amountMdFor);
 

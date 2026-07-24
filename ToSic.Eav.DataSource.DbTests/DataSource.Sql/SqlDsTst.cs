@@ -5,7 +5,7 @@ using ToSic.Eav.LookUp.TestHelpers;
 namespace ToSic.Eav.DataSource.DbTests.DataSource.Sql;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class SqlDsTst(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler, LookUpTestData lookUpTestData): IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class SqlDsTst(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit, LookUpTestData lookUpTestData): IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     private const string ConnectionDummy = "";
     private const string ContentTypeName = "SqlData";

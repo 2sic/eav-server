@@ -8,7 +8,7 @@ using ToSic.Eav.LookUp.TestHelpers;
 namespace ToSic.Eav.LookUp;
 
 
-public class LookUpTestData(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
+public class LookUpTestData(DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
 {
     private static LookUpEngine EmptyLookupEngine(List<ILookUp>? sources = null)
         => new(null, sources: sources);
@@ -27,7 +27,7 @@ public class LookUpTestData(DataAssembler dataAssembler, ContentTypeAssembler ty
 
     public LookUpInEntity BuildLookUpEntity(string name, Dictionary<string, object> values, int appId = LookUpTestConstants.AppIdUnknown)
     {
-        var ent = dataAssembler.CreateEntityTac(appId: appId, contentType: typeAssembler.Type.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
+        var ent = dataAssembler.CreateEntityTac(appId: appId, contentType: ctAssemblyKit.Type.Transient(name), values: values, titleField: values.FirstOrDefault().Key);
         return new(name, ent, null);
     }
 
