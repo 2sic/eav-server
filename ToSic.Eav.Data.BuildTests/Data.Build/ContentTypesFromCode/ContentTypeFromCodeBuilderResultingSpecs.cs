@@ -1,17 +1,17 @@
-﻿using ToSic.Eav.Data.Build.CodeContentTypes.SpecsNone;
-using ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
+﻿using ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsNone;
+using ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Sys.TestHelpers.Assembly;
 
-namespace ToSic.Eav.Data.Build.CodeContentTypes;
+namespace ToSic.Eav.Data.Build.ContentTypesFromCode;
 
 /// <summary>
 /// Verify that the specs given to a PoCo without an attribute match what is expected.
 /// </summary>
 /// <param name="ctDefManager"></param>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactoryResultingSpecs(ContentTypesFromCodeManager ctDefManager)
+public class ContentTypeFromCodeBuilderResultingSpecs(ContentTypesFromCodeManager ctDefManager)
 {
     [Theory]
     [InlineData(false, typeof(CodeTypeSpecsNoEmpty))]

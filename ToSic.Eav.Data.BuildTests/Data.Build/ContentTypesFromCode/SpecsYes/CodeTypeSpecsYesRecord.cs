@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Data.Sys.ContentTypes;
-using static ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes.CodeTypeSpecsConstants;
+using static ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes.CodeTypeSpecsConstants;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
+namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 
 /// <summary>
 /// This is a record version of the <see cref="CodeTypeSpecsYesClass"/> class, which is used to define a content type with specific attributes and specifications.

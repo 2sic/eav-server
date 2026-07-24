@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Data.Build.CodeContentTypes;
-using ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
+﻿using ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
-using static ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes.CodeTypeSpecsConstants;
+using static ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes.CodeTypeSpecsConstants;
 
 namespace ToSic.Eav.Data.Build.DataFactories;
 

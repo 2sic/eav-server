@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsNone;
+﻿namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsNone;
 
 /// <summary>
 /// Very basic test type, without additional decoration.

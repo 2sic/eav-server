@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
 
-namespace ToSic.Eav.Data.Build.CodeContentTypes.SystemProperties;
+namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SystemProperties;
 
 /// <summary>
 /// Tests for configured classes (with attributes)

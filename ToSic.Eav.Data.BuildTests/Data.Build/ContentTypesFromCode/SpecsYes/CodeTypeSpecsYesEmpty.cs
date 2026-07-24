@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Sys.ContentTypes;
-using static ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes.CodeTypeSpecsConstants;
+using static ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes.CodeTypeSpecsConstants;
 
-namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
+namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 
 /// <summary>
 /// Just an empty content type with specs.

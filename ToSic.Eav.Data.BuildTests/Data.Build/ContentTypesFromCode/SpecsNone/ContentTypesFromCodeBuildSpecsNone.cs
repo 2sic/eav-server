@@ -3,7 +3,7 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Models;
 
-namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsNone;
+namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsNone;
 // ReSharper disable UnusedMember.Global
 
 /// <summary>
