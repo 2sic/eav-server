@@ -68,14 +68,14 @@ internal class DataFactory(
 
     [field: AllowNull, MaybeNull]
     private RawRelationshipsConvertHelper RelsConvertHelper => field
-        ??= new(EntityAssemblyKit, Log);
+        ??= new(EntityAssemblyKit.Attribute, Log);
 
     #endregion
 
     #region Create IRawEntity / WrapUp
 
     /// <inheritdoc />
-    public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : class, IConvertibleToRawEntity
+    public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : class, IRawEntitySource
         => WrapUp(Prepare(list));
 
     /// <summary>
@@ -83,17 +83,19 @@ internal class DataFactory(
     /// </summary>
     /// <param name="rawList"></param>
     /// <returns></returns>
-    private IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList)
+    private IImmutableList<IEntity> WrapUp(IEnumerable<EntityPair<IRawEntity>> rawList)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
 
         // Pre-process relationship keys, so they are added to the lookup
-        var list = rawList.ToListOpt();
+        var entityPairs = rawList.ToListOpt();
+
+        // If the relationships are a lazy lookup, add all relationships to it
         if (Relationships is LazyLookup<object, IEntity> lazyRelationships)
-            RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships);
+            RelsConvertHelper.AddRelationshipsToLookup(entityPairs, lazyRelationships);
 
         // Return entities as Immutable list
-        var result = list
+        var result = entityPairs
             .Select(set => set.Entity)
             .ToImmutableOpt();
         return l.Return(result);
@@ -103,19 +105,19 @@ internal class DataFactory(
 
     #region Prepare Convertibles to Pairs with raw entities
 
-    private IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list)
-        where TNewEntity : class, IConvertibleToRawEntity
+    private IList<EntityPair<IRawEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list)
+        where TNewEntity : class, IRawEntitySource
     {
-        var l = Log.Fn<IList<EntityPair<TNewEntity>>>();
+        var l = Log.Fn<IList<EntityPair<IRawEntity>>>();
 
         var all = list
             .Select(toBeRaw =>
             {
                 try
                 {
-                    var reallyRaw = toBeRaw.GetRawEntity(MyOptions.RawConvertOptions);
+                    var reallyRaw = toBeRaw.GetRawFromConverterOrDirectCast(MyOptions.RawConvertOptions);
                     var newEntity = CreateInternal(reallyRaw, toBeRaw);
-                    return new EntityPair<TNewEntity>(newEntity, toBeRaw);
+                    return new EntityPair<IRawEntity>(newEntity, reallyRaw);
                 }
                 catch
                 {
@@ -126,8 +128,7 @@ internal class DataFactory(
             .ToListOpt();
 
         var cleaned = all
-            .Where(p => p != null)
-            .Cast<EntityPair<TNewEntity>>()
+            .OfType<EntityPair<IRawEntity>>()
             .ToListOpt();
 
         // Verify we don't have nulls (errors)
@@ -159,10 +160,6 @@ internal class DataFactory(
         // experimental
         EntityPartsLazy? partsBuilder = default)
     {
-        // pre-process RawRelationships
-        values ??= new Dictionary<string, object?>();
-        var valuesWithRelationships = RelsConvertHelper.RelationshipsToAttributes(values, Relationships);
-
         // ID can be created in 3 ways
         // 1. An ID was specified, use that
         // 2. If the ID was 0 / not specified, and the options say to auto-count...
@@ -172,7 +169,15 @@ internal class DataFactory(
             ? (IdCounter < 0 ? IdCounter-- : IdCounter++) // negative means we're counting down
             : id;
 
+        // Extra safety check to ensure we don't run into null-issues.
+        // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+        values ??= new Dictionary<string, object?>();
+        
+        // Process possible RawRelationships
+        var valuesWithRelationships = RelsConvertHelper.RelationshipsToAttributes(values, Relationships);
         var attributes = EntityAssemblyKit.AttributeList.Finalize(valuesWithRelationships);
+
+        // Create final entity with all the data
         var ent = EntityAssemblyKit.Entity.Create(
             appId: MyOptions.AppId,
             entityId: entityId,
@@ -188,10 +193,11 @@ internal class DataFactory(
     }
 
     /// <inheritdoc/>
-    public IEntity Create(IConvertibleToRawEntity item)
+    public IEntity Create(IRawEntitySource item)
     {
-        var raw = item.GetRawEntity(MyOptions.RawConvertOptions);
-        return CreateInternal(raw, item);
+        // Get the raw entity using the extension which checks if it uses a converter or not.
+        var raw = item.GetRawFromConverterOrDirectCast(MyOptions.RawConvertOptions);
+        return CreateInternal(raw, typeGiver: item);
     }
 
     private IEntity CreateInternal(IRawEntity rawEntity, object typeGiver)

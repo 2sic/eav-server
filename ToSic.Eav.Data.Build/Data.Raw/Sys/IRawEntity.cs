@@ -11,7 +11,7 @@
 /// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IRawEntity: IConvertibleToRawEntity
+public interface IRawEntity: IRawEntitySource
 {
     /// <summary>
     /// The ID to use.

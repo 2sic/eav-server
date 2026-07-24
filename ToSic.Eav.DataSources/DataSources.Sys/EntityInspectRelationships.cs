@@ -110,7 +110,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
         bool IsChild,
         [property: ContentTypeAttributeIgnore]
         bool FeatEnabled
-    ) : /*RawEntityRecordBase,*/ IGetRawConverter
+    ) : /*RawEntityRecordBase,*/ IRawEntityConvertible
     {
         private const string MyContentTypeName = "EntityRelationship";
 
@@ -140,10 +140,10 @@ public sealed class EntityInspectRelationships : CustomDataSource
         private static readonly string FeatureNotEnabledMessage =
             $"hidden, feature {BuiltInFeatures.EntityInspectRelationships.NameId} not enabled";
 
-        IRawEntityConverter IGetRawConverter.GetConverter() => Converter;
+        IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
 
         private static IRawEntityConverter Converter { get; } =
-            new ConvertToRawWithFactory<EntityRelationship>((source, _) =>
+            new RawEntityConverterFactory<EntityRelationship>((source, _) =>
                 new RawEntityRecord
                 {
                     Id = source.Id,

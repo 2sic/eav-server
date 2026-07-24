@@ -14,12 +14,14 @@ namespace ToSic.Eav.DataSource;
 public class CustomDataSource: CustomDataSourceAdvanced
 {
     /// <summary>
-    /// The Services of CustomDataSource.
+    /// The Services of <see cref="CustomDataSource"/> - explicitly implemented for API stability.
+    /// </summary>
+    /// <remarks>
     /// Note that it is the same as the base MyServices,
     /// but it's still important to have an own class.
     /// This is in case some day it will need more dependencies.
     /// Otherwise, compiled code would break when we need additional dependencies just for the CustomDataSource.
-    /// </summary>
+    /// </remarks>
     [PrivateApi]
     public new class Dependencies(
         IDataSourceConfiguration configuration,
@@ -78,13 +80,12 @@ public class CustomDataSource: CustomDataSourceAdvanced
         NoParamOrder npo = default,
         string name = StreamDefaultName,
         Func<DataFactoryOptions>? options = default
-    ) where T : class, IConvertibleToRawEntity
+    ) where T : class, IRawEntitySource
         => base.ProvideOut(() => GetRaw(data, options), name);
 
     private IImmutableList<IEntity> GetAny(Func<object>? source, Func<DataFactoryOptions>? options)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
 
         // Call the Generator and handle errors/null
         object? funcResult;
@@ -162,10 +163,9 @@ public class CustomDataSource: CustomDataSourceAdvanced
         => options?.Invoke() ?? new();
 
     private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>>? source, Func<DataFactoryOptions>? options)
-        where T: class, IConvertibleToRawEntity
+        where T: class, IRawEntitySource
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
 
         // Get raw entities - from _source or from override method
         var raw = source?.Invoke()?.ToList();

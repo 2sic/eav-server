@@ -16,7 +16,7 @@ namespace ToSic.Eav.DataSources.Sys;
     Description = "App Stack Value Information",
     Name = TypeName
 )]
-public class AppStackDataRaw(PropertyDumpItem original) : IGetRawConverter
+public class AppStackDataRaw(PropertyDumpItem original) : IRawEntityConvertible
 {
     public const string TypeName = "AppStack";
 
@@ -42,9 +42,9 @@ public class AppStackDataRaw(PropertyDumpItem original) : IGetRawConverter
                                             ?? 0; // do not count "duplicate" by SourceName
 
 
-    IRawEntityConverter IGetRawConverter.GetConverter() => Converter;
+    IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
 
-    private static IRawEntityConverter Converter { get; } = new ConvertToRawWithFactory<AppStackDataRaw>((source, options) =>
+    private static IRawEntityConverter Converter { get; } = new RawEntityConverterFactory<AppStackDataRaw>((source, options) =>
         new RawEntityRecord
         {
             Values = GetValues(source, options)

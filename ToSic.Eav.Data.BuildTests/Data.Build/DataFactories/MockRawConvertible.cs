@@ -2,11 +2,11 @@
 
 namespace ToSic.Eav.Data.Build.DataFactories;
 
-internal record MockRawConvertible : IGetRawConverter
+internal record MockRawConvertible : IRawEntityConvertible
 {
     public const int DefaultId = 92;
     public IRawEntityConverter GetConverter() =>
-        new ConvertToRawWithFactory<MockRawConvertible>((_, _) =>
+        new RawEntityConverterFactory<MockRawConvertible>((_, _) =>
             new MockRawEntityRecord
             {
                 Id = DefaultId,

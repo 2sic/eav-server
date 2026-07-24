@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Raw;
-using ToSic.Eav.Data.Raw.Sys;
+﻿using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Models;
@@ -32,25 +31,13 @@ internal record PagingModelOfEntity : ModelFromEntityBasic, IPagingModel
     Description = "Paging Information",
     Name = "Paging"
 )]
-internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int PageCount) : /*RawEntityRecordBase,*/ IPagingModel, IGetRawConverter
+internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int PageCount) : IPagingModel, IRawEntityConvertible
 {
     public string Title => "Paging Information";
-    //public override int Id => PageNumber;
 
-    //private IDictionary<string, object?> Values => new Dictionary<string, object?>
-    //{
-    //    { AttributeNames.TitleNiceName, Title },
-    //    { nameof(PageSize), PageSize },
-    //    { nameof(PageNumber), PageNumber },
-    //    { nameof(ItemCount), ItemCount },
-    //    { nameof(PageCount), PageCount }
-    //};
+    IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
 
-    //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => Values;
-
-    IRawEntityConverter IGetRawConverter.GetConverter() => Converter;
-
-    private static IRawEntityConverter Converter { get; } = new ConvertToRawWithFactory<PagingModel>((source, _) =>
+    private static IRawEntityConverter Converter { get; } = new RawEntityConverterFactory<PagingModel>((source, _) =>
         new RawEntityRecord
         {
             Id = source.PageNumber,

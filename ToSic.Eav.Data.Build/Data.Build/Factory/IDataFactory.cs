@@ -60,7 +60,7 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    IEntity Create(IConvertibleToRawEntity item);
+    IEntity Create(IRawEntitySource item);
 
 
     #endregion
@@ -77,7 +77,7 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <returns></returns>
-    IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : class, IConvertibleToRawEntity;
+    IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : class, IRawEntitySource;
 
     #endregion
     

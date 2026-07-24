@@ -12,10 +12,10 @@ namespace ToSic.Eav.Data.Build.DataFactories;
 [Startup(typeof(StartupTestsEavDataBuild))]
 public class ConvertibleKeepsContentType(IDataFactory dataFactory)
 {
-    private void NameNotSetUsesDefault<T>() where T: IConvertibleToRawEntity, new() =>
+    private void NameNotSetUsesDefault<T>() where T: IRawEntitySource, new() =>
         NameIsSet<T>(DataConstants.DataFactoryDefaultTypeName);
 
-    private void NameIsSet<T>(string expectedName) where T : IConvertibleToRawEntity, new()
+    private void NameIsSet<T>(string expectedName) where T : IRawEntitySource, new()
     {
         var x = new T();
         var y = dataFactory.CreateTac(x);
@@ -49,13 +49,13 @@ public class CodeTypeWithSpecsClassConvertibleNoSpecs : CodeTypeSpecsYesClass, I
 }
 
 
-public class CodeTypeWithSpecsClassConvertibleNoSpecsConverter : CodeTypeSpecsYesClass, IGetRawConverter
+public class CodeTypeWithSpecsClassConvertibleNoSpecsConverter : CodeTypeSpecsYesClass, IRawEntityConvertible
 {
     public DateTime Modified { get; }
     public IDictionary<string, object?> Values { get; }
 
     public IRawEntityConverter GetConverter() =>
-        new ConvertToRawWithFactory<CodeTypeWithSpecsClassConvertibleNoSpecsConverter>((_, _) =>
+        new RawEntityConverterFactory<CodeTypeWithSpecsClassConvertibleNoSpecsConverter>((_, _) =>
             new MockRawEntityRecord
             {
                 Id = 0,
@@ -71,12 +71,12 @@ public class CodeTypeWithSpecsClassConvertibleWithSpecs : CodeTypeSpecsYesClass,
 }
 
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
-public class CodeTypeWithSpecsClassConvertibleWithSpecsConvertible : CodeTypeSpecsYesClass, IGetRawConverter
+public class CodeTypeWithSpecsClassConvertibleWithSpecsConvertible : CodeTypeSpecsYesClass, IRawEntityConvertible
 {
     public DateTime Modified { get; }
     public IDictionary<string, object?> Values { get; }
     public IRawEntityConverter GetConverter() =>
-        new ConvertToRawWithFactory<CodeTypeWithSpecsClassConvertibleWithSpecsConvertible>((_, _) =>
+        new RawEntityConverterFactory<CodeTypeWithSpecsClassConvertibleWithSpecsConvertible>((_, _) =>
             new MockRawEntityRecord
             {
                 Id = 0,

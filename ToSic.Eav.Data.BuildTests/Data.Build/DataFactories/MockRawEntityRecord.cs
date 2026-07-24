@@ -18,10 +18,10 @@ internal record MockRawEntityRecord : IRawEntity
 /// </summary>
 /// <param name="_dataToProvideInConverter"></param>
 // ReSharper disable once InconsistentNaming
-internal record MockRawEntityProvidingConversion(IRawEntity _dataToProvideInConverter) : MockRawEntityRecord, IGetRawConverter
+internal record MockRawEntityProvidingConversion(IRawEntity _dataToProvideInConverter) : MockRawEntityRecord, IRawEntityConvertible
 {
     public IRawEntityConverter GetConverter() =>
-        new ConvertToRawWithFactory<MockRawEntityProvidingConversion>((_, _) =>
+        new RawEntityConverterFactory<MockRawEntityProvidingConversion>((_, _) =>
             _dataToProvideInConverter
         );
 }

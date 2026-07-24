@@ -7,6 +7,6 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IRawEntityConverter
 {
-    IRawEntity TryRawEntity<TSource>(TSource source, RawConvertOptions options)
+    IRawEntity Convert<TSource>(TSource source, RawConvertOptions options)
         where TSource : class;
 }
