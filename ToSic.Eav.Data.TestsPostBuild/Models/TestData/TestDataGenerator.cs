@@ -6,7 +6,7 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Models.TestData;
 
-public class TestDataGenerator(DataAssembler dataAssembler, CodeContentTypesManager ctDefFactory, ContentTypeAssembler typeAssembler)
+public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCodeManager ctDefFactory, ContentTypeAssembler typeAssembler)
 {
     public IEntity EntityWithMetadataForDecorator(int amount)
     {

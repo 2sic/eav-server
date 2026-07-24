@@ -3,39 +3,39 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Models;
 
-namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsNo;
+namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsNone;
 // ReSharper disable UnusedMember.Global
 
 /// <summary>
 /// Test conversion of a type to a ContentType Definition - with a **Class** having no configuration.
 /// </summary>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactorySpecsNoTestsInterface(CodeContentTypesManager ctDefManager)
-    : CodeCtFactorySpecsNoTests<ICodeTypeSpecsNoInterface>(ctDefManager);
+public class ContentTypesFromCodeBuildSpecsNoneInterface(ContentTypesFromCodeManager ctDefManager)
+    : ContentTypesFromCodeBuildSpecsNone<ICodeTypeSpecsNoInterface>(ctDefManager);
 
 
 /// <summary>
 /// Test conversion of a type to a ContentType Definition - with a **Class** having no configuration.
 /// </summary>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactorySpecsNoTestsClass(CodeContentTypesManager ctDefManager)
-    : CodeCtFactorySpecsNoTests<CodeTypeSpecsNoClass>(ctDefManager);
+public class ContentTypesFromCodeBuildSpecsNoneClass(ContentTypesFromCodeManager ctDefManager)
+    : ContentTypesFromCodeBuildSpecsNone<CodeTypeSpecsNoClass>(ctDefManager);
 
 /// <summary>
 /// Test conversion of a type to a ContentType Definition - with a **Record** having no configuration.
 /// </summary>
 /// <param name="ctDefManager"></param>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactorySpecsNoTestsRecord(CodeContentTypesManager ctDefManager)
-    : CodeCtFactorySpecsNoTests<CodeTypeSpecsNoRecord>(ctDefManager);
+public class ContentTypesFromCodeBuildSpecsNoneRecord(ContentTypesFromCodeManager ctDefManager)
+    : ContentTypesFromCodeBuildSpecsNone<CodeTypeSpecsNoRecord>(ctDefManager);
 
 /// <summary>
 /// Test conversion of a type to a ContentType Definition - with a **Record** having no configuration.
 /// </summary>
 /// <param name="ctDefManager"></param>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactorySpecsNoTestsAnonymous(CodeContentTypesManager ctDefManager)
-    : CodeCtFactorySpecsNoTests<object>(ctDefManager, useAnonymous: true);
+public class ContentTypesFromCodeBuildSpecsNoneAnonymous(ContentTypesFromCodeManager ctDefManager)
+    : ContentTypesFromCodeBuildSpecsNone<object>(ctDefManager, useAnonymous: true);
 
 // ReSharper restore UnusedMember.Global
 
@@ -45,7 +45,7 @@ public class CodeCtFactorySpecsNoTestsAnonymous(CodeContentTypesManager ctDefMan
 /// <summary>
 /// Shared (abstract) tests for classes or records which are not configured (no attributes)
 /// </summary>
-public abstract class CodeCtFactorySpecsNoTests<TCodeTypeNoSpecs>(CodeContentTypesManager ctDefManager, bool useAnonymous = false)
+public abstract class ContentTypesFromCodeBuildSpecsNone<TCodeTypeNoSpecs>(ContentTypesFromCodeManager ctDefManager, bool useAnonymous = false)
 {
     /// <summary>
     /// Central place to get/create the content type.
@@ -116,7 +116,7 @@ public abstract class CodeCtFactorySpecsNoTests<TCodeTypeNoSpecs>(CodeContentTyp
     public void ContentType_NameIsFromClass()
     {
         var expected = useAnonymous
-            ? CodeContentTypeBuilder.AnonymousTypeName
+            ? ContentTypesFromCodeBuilder.AnonymousTypeName
             : typeof(TCodeTypeNoSpecs).Name;
         Equal(expected, GetCurrentContentType().Name);
     }

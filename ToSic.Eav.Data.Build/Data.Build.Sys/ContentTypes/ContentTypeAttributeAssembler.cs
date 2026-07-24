@@ -30,8 +30,8 @@ public class ContentTypeAttributeAssembler() : ServiceBase("Eav.CtAtBl")
     /// <param name="isTitle"></param>
     /// <param name="id"></param>
     /// <param name="sortOrder"></param>
-    /// <param name="guid"></param>
-    /// <param name="sysSettings"></param>
+    /// <param name="guid">The Attribute-Guid is relevant when sharing field definitions.</param>
+    /// <param name="sysSettings">The system settings for the attribute, relevant when sharing field definitions.</param>
     /// <param name="metadata"></param>
     /// <param name="metadataItems"></param>
     /// <param name="metaSourceFinder"></param>

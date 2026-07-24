@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data.Build;
 
 internal class DataFactoryPreferredContentType(
     DataFactoryOptions options,
-    LazySvc<CodeContentTypesManager> codeCtManager,
+    LazySvc<ContentTypesFromCodeManager> codeCtManager,
     LazySvc<ContentTypeTypeAssembler> typeAssembler,
     ILog parentLog)
     : HelperBase(parentLog, "DaF.PctHlp")

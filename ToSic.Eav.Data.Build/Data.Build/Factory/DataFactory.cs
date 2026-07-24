@@ -14,7 +14,7 @@ internal class DataFactory(
     Generator<DataAssembler, DataAssemblerOptions> dataAssembler,
     LazySvc<ContentTypeTypeAssembler> typeAssembler,
     Generator<IDataFactory, DataFactoryOptions> selfGenerator,
-    LazySvc<CodeContentTypesManager> codeCtManager)
+    LazySvc<ContentTypesFromCodeManager> codeCtManager)
     : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, codeCtManager]), IDataFactory
 {
 

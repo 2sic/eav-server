@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data.Build;
 
 public static class ContentTypeFactoryTestAccessors
 {
-    extension(CodeContentTypesManager ctDefManager)
+    extension(ContentTypesFromCodeManager ctDefManager)
     {
         public IContentType CreateTac(Type t)
             => ctDefManager.Get(t);

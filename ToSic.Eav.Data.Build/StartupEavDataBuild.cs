@@ -61,11 +61,16 @@ public static class StartupEavDataBuild
     /// <returns></returns>
     public static IServiceCollection AddDataBuildContentTypes(this IServiceCollection services)
     {
+        // Basic Assembly of the parts
         services.TryAddTransient<ContentTypeTypeAssembler>();
         services.TryAddTransient<ContentTypeAttributeAssembler>();
+        
+        // Joint Kit to assemble content-types
         services.TryAddTransient<ContentTypeAssembler>();
-        services.TryAddTransient<CodeContentTypesManager>();
-        services.TryAddTransient<CodeContentTypeBuilder>(); // new v22, split concerns
+        
+        // Content Types From Code Build and Manage
+        services.TryAddTransient<ContentTypesFromCodeBuilder>();
+        services.TryAddTransient<ContentTypesFromCodeManager>();
 
         return services;
     }

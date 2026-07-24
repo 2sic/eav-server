@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys;
+﻿using System.Collections.Concurrent;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.Data.Build.Sys;
@@ -8,10 +9,10 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public class CodeContentTypesManager(LazySvc<CodeContentTypeBuilder> ctBuilder)
+public class ContentTypesFromCodeManager(LazySvc<ContentTypesFromCodeBuilder> ctBuilder)
     : ServiceBase("Eav.CtFact")
 {
-    // TODO: Should probably be something different...?
+    [PrivateApi("TODO: Should probably be something different...?")]
     public const int NoAppId = -1;
 
     /// <summary>
@@ -20,7 +21,7 @@ public class CodeContentTypesManager(LazySvc<CodeContentTypeBuilder> ctBuilder)
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     public IContentType Get<T>()
-        => CtCache.TryGetValue(typeof(T), out var ct) ? ct : CreateAndAddToCache(typeof(T));
+        => Get(typeof(T));
 
     /// <summary>
     /// Get the ContentType for a given class. If it doesn't exist yet, it will be created and cached.
@@ -28,7 +29,7 @@ public class CodeContentTypesManager(LazySvc<CodeContentTypeBuilder> ctBuilder)
     /// <param name="type"></param>
     /// <returns></returns>
     public IContentType Get(Type type)
-        => CtCache.TryGetValue(type, out var ct) ? ct : CreateAndAddToCache(type);
+        => CtCache.GetOrAdd(type, CreateAndAddToCache);
 
     /// <summary>
     /// Pre-flight check if this type has configuration or not.
@@ -54,8 +55,8 @@ public class CodeContentTypesManager(LazySvc<CodeContentTypeBuilder> ctBuilder)
         return created;
     }
 
-    private static readonly Dictionary<Type, IContentType> CtCache = new();
+    private static readonly ConcurrentDictionary<Type, IContentType> CtCache = new();
 
-    private static readonly Dictionary<Type, bool> IsConfiguredCache = new();
+    private static readonly ConcurrentDictionary<Type, bool> IsConfiguredCache = new();
 
 }

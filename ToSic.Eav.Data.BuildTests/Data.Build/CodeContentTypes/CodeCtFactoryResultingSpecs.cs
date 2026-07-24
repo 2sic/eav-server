@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.CodeContentTypes.SpecsNo;
+﻿using ToSic.Eav.Data.Build.CodeContentTypes.SpecsNone;
 using ToSic.Eav.Data.Build.CodeContentTypes.SpecsYes;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 /// </summary>
 /// <param name="ctDefManager"></param>
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class CodeCtFactoryResultingSpecs(CodeContentTypesManager ctDefManager)
+public class CodeCtFactoryResultingSpecs(ContentTypesFromCodeManager ctDefManager)
 {
     [Theory]
     [InlineData(false, typeof(CodeTypeSpecsNoEmpty))]
@@ -43,8 +43,8 @@ public class CodeCtFactoryResultingSpecs(CodeContentTypesManager ctDefManager)
 
     
     [Theory]
-    [InlineData(CodeContentTypesManager.NoAppId, typeof(CodeTypeSpecsNoEmpty))]
-    [InlineData(CodeContentTypesManager.NoAppId, typeof(CodeTypeSpecsYesEmpty))]
+    [InlineData(ContentTypesFromCodeManager.NoAppId, typeof(CodeTypeSpecsNoEmpty))]
+    [InlineData(ContentTypesFromCodeManager.NoAppId, typeof(CodeTypeSpecsYesEmpty))]
     public void AppId(int expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).AppId);
 

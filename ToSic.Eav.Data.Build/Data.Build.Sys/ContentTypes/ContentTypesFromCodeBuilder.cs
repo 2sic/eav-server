@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public class CodeContentTypeBuilder(ContentTypeAssembler ctAssembler, EntityAssembler entityAssembler, AttributeListAssembler attributeListAssembler)
+public class ContentTypesFromCodeBuilder(ContentTypeAssembler ctAssembler, EntityAssembler entityAssembler, AttributeListAssembler attributeListAssembler)
     : ServiceBase("Eav.CtFact")
 {
     // TODO: Should probably be something different...?

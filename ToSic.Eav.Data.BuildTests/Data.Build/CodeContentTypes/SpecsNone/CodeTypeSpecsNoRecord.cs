@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsNo;
+﻿namespace ToSic.Eav.Data.Build.CodeContentTypes.SpecsNone;
 
 public record CodeTypeSpecsNoRecord(
     int Id,
