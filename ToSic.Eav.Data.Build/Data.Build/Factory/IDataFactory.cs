@@ -37,6 +37,7 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// <summary>
     /// TODO:
     /// </summary>
+    [PrivateApi]
     ILookup<object, IEntity> Relationships { get; }
 
     #region Simple Create

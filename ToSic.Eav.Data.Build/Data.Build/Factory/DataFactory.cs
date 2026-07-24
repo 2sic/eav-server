@@ -50,7 +50,7 @@ internal class DataFactory(
     /// So once it's accessed, options cannot be updated anymore.
     /// </remarks>
     [field: AllowNull, MaybeNull]
-    private DataAssembler DataAssembler => field
+    private DataAssembler EntityAssemblyKit => field
         ??= dataAssembler.New(new()
         {
             AllowUnknownValueTypes = MyOptions.AllowUnknownValueTypes
@@ -68,7 +68,7 @@ internal class DataFactory(
 
     [field: AllowNull, MaybeNull]
     private RawRelationshipsConvertHelper RelsConvertHelper => field
-        ??= new(DataAssembler, Log);
+        ??= new(EntityAssemblyKit, Log);
 
     #endregion
 
@@ -101,50 +101,9 @@ internal class DataFactory(
 
     #endregion
 
-    #region Prepare One
+    #region Prepare Convertibles to Pairs with raw entities
 
-    ///// <inheritdoc />
-    //public EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity
-    //    => new(CreateInternal(rawEntity, rawEntity), rawEntity);
-
-    #endregion
-
-
-    #region Prepare Many
-
-    /// <summary>
-    /// This will create IEntity but return it in a dictionary mapped to the original.
-    /// This is useful when you intend to do further processing and need to know which original matches the generated entity.
-    ///
-    /// IMPORTANT: WIP
-    /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
-    /// </summary>
-    /// <typeparam name="TNewEntity"></typeparam>
-    /// <param name="list"></param>
-    /// <returns></returns>
-    //public IList<EntityPair<TNewEntity>> PrepareRaw<TNewEntity>(IEnumerable<TNewEntity> list)
-    //    where TNewEntity : IRawEntity
-    //{
-    //    var all = list
-    //        .Select(raw =>
-    //        {
-    //            try
-    //            {
-    //                var newEntity = CreateInternal(raw, raw);
-    //                return new EntityPair<TNewEntity>(newEntity, raw);
-    //            }
-    //            catch
-    //            {
-    //                // Add null to filter out later and report the indexes
-    //                return null;
-    //            }
-    //        })
-    //        .ToListOpt();
-        
-    //    return PrepareFinish(all);
-    //}
-
-    public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list)
+    private IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list)
         where TNewEntity : class, IConvertibleToRawEntity
     {
         var l = Log.Fn<IList<EntityPair<TNewEntity>>>();
@@ -213,8 +172,8 @@ internal class DataFactory(
             ? (IdCounter < 0 ? IdCounter-- : IdCounter++) // negative means we're counting down
             : id;
 
-        var attributes = DataAssembler.AttributeList.Finalize(valuesWithRelationships);
-        var ent = DataAssembler.Entity.Create(
+        var attributes = EntityAssemblyKit.AttributeList.Finalize(valuesWithRelationships);
+        var ent = EntityAssemblyKit.Entity.Create(
             appId: MyOptions.AppId,
             entityId: entityId,
             contentType: ContentType,
@@ -227,14 +186,6 @@ internal class DataFactory(
         );
         return ent;
     }
-
-    ///// <summary>
-    ///// Internal create from raw
-    ///// </summary>
-    ///// <param name="rawEntity"></param>
-    ///// <returns></returns>
-    //public IEntity Create(IRawEntity rawEntity) =>
-    //    CreateInternal(rawEntity, rawEntity);
 
     /// <inheritdoc/>
     public IEntity Create(IConvertibleToRawEntity item)
