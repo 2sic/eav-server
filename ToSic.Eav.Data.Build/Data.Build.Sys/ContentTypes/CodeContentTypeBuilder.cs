@@ -97,41 +97,50 @@ public class CodeContentTypeBuilder(ContentTypeAssembler ctAssembler, EntityAsse
     private (IList<IContentTypeAttribute> attributes, IList<IContentTypeAttribute>? vAttributes) GenerateAttributes(Type type)
     {
         var l = Log.Fn<(IList<IContentTypeAttribute>, IList<IContentTypeAttribute>?)>(timer: true);
-        // Get all properties of the type
+        
+        // 1. Get all properties of the type; exit early if none
         var properties = type.GetProperties();
 
         if (properties.Length == 0)
             return l.Return(([], null), "no properties");
 
+        // 2. Group by how it should be processed afterward
         var propsGrouped = properties
             .GroupBy(p =>
                 p.Name is (AttributeNames.IdNiceName or AttributeNames.GuidNiceName or AttributeNames.CreatedNiceName or AttributeNames.ModifiedNiceName)
-                    ? "system"
-                    : p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() == null
-                        ? "default"
-                        : "ignore"
+                    ? TempCategory.System
+                    : p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() != null
+                        ? TempCategory.Ignore
+                        : TempCategory.General
             )
             .ToListOpt();
 
+        // 3. Handle normal / general properties
         var gDefault = propsGrouped
-            .FirstOrDefault(g => g.Key == "default")
+            .FirstOrDefault(g => g.Key == TempCategory.General)
             ?.ToListOpt();
 
-        // Generate list of attributes
         var attributes = gDefault == null || !gDefault.Any()
             ? []
             : PropertiesToAttributes(gDefault, false);
 
-        // Generate list of virtual attributes
+        // 4. Generate list of virtual attributes
         var gSystem = propsGrouped
-            .FirstOrDefault(g => g.Key == "system")
+            .FirstOrDefault(g => g.Key == TempCategory.System)
             ?.ToListOpt();
         var vAttributes = gSystem == null || !gSystem.Any()
             ? null
             : PropertiesToAttributes(gSystem, true);
 
-
+        // Return everything
         return l.Return((attributes, vAttributes), $"real: {attributes.Count}, virtual: {vAttributes?.Count}");
+    }
+
+    private enum TempCategory
+    {
+        General,
+        System,
+        Ignore
     }
 
     private IList<IContentTypeAttribute> PropertiesToAttributes(IList<PropertyInfo> propsFiltered, bool skipNoMetadata)
@@ -179,10 +188,10 @@ public class CodeContentTypeBuilder(ContentTypeAssembler ctAssembler, EntityAsse
     /// - Description
     /// - InputType
     /// </summary>
-    private IEntity? ContentTypeAttributeDetails(ContentTypeAttributeAll? ctattrAll, string? description, string? inputType)
+    private IEntity? ContentTypeAttributeDetails(ContentTypeAttributeAll? attrAll, string? description, string? inputType)
     {
         var l = Log.Fn<IEntity>();
-        if (ctattrAll == null || ( description == null && inputType == null))
+        if (attrAll == null || (description == null && inputType == null))
             return l.ReturnNull("no details");
 
         // All props

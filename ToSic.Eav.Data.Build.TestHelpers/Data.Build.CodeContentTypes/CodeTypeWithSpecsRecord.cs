@@ -1,6 +1,6 @@
-﻿using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
-using static ToSic.Eav.Data.Build.CodeContentTypes.CodeTypeWithSpecsEmpty;
+﻿using ToSic.Eav.Data.Sys.ContentTypes;
+using static ToSic.Eav.Data.Build.CodeContentTypes.CodeTypeSpecsConstants;
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 namespace ToSic.Eav.Data.Build.CodeContentTypes;
@@ -42,11 +42,4 @@ public record CodeTypeWithSpecsRecord(
     private string PrivateProperty { get; set; }
 
     internal string InternalProperty { get; set; }
-}
-
-public record CodeTypeWithSpecsRecordConvertible(int Id, Guid Guid, DateTime Created, string Name, string Url, int Age, DateTime BirthDate, bool IsAlive, string IgnoreThis)
-    : CodeTypeWithSpecsRecord(Id, Guid, Created, Name, Url, Age, BirthDate, IsAlive, IgnoreThis),
-        IConvertibleToRawEntity
-{
-    
 }

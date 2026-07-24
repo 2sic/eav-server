@@ -13,7 +13,7 @@ public class CodeCtFactoryAttributesSpecial(CodeContentTypesManager ctDefManager
     [Fact]
     public void Attributes_OnlyOneInternalFields()
     {
-        var x = ctDefManager.CreateTac<CodeTypeInternalFields>();
+        var x = ctDefManager.CreateTac<CodeTypeWithSystemProperties>();
         Single(x.Attributes);
     }
 

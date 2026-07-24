@@ -55,7 +55,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// This is a very generic version which takes any function that generates a list of something.
     /// Internally it will try to detect what the data was and convert it to the final format.
     ///
-    /// Note that the `source` must create a list (`IEnumerable`) of any of the following (all items must have the same type):
+    /// Note that the `source` must create a list (`IEnumerable`) of the following (all items must have the same type):
     /// * <see cref="IEntity"/>
     /// * <see cref="IRawEntity"/>
     ///

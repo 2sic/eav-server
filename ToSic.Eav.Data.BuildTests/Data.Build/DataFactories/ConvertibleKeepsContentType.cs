@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
+using static ToSic.Eav.Data.Build.CodeContentTypes.CodeTypeSpecsConstants;
 
 namespace ToSic.Eav.Data.Build.DataFactories;
 
@@ -37,12 +38,12 @@ public class ConvertibleKeepsContentType(IDataFactory dataFactory)
 
     [Fact]
     public void WithNewSpecsRawIsSet() =>
-        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecs>(CodeTypeWithSpecsEmpty.SpecName);
+        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecs>(CodeTypeSpecsConstants.SpecName);
     
 
     [Fact]
     public void WithNewSpecsConvertibleIsSet() =>
-        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecsConvertible>(CodeTypeWithSpecsEmpty.SpecName);
+        NameIsSet<CodeTypeWithSpecsClassConvertibleWithSpecsConvertible>(CodeTypeSpecsConstants.SpecName);
     
 }
 

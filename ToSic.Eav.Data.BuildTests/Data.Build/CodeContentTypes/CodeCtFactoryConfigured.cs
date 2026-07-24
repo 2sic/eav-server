@@ -7,6 +7,10 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 // ReSharper disable UnusedMember.Global
 
 [Startup(typeof(StartupTestsEavDataBuild))]
+public class CodeCtFactoryConfiguredInterface(CodeContentTypesManager ctDefManager)
+    : CodeCtFactoryConfigured<ICodeTypeWithSpecsInterface>(ctDefManager);
+
+[Startup(typeof(StartupTestsEavDataBuild))]
 public class CodeCtFactoryConfiguredClass(CodeContentTypesManager ctDefManager)
     : CodeCtFactoryConfigured<CodeTypeWithSpecsClass>(ctDefManager);
 
@@ -87,19 +91,19 @@ public abstract class CodeCtFactoryConfigured<TCodeTypeWithSpecs>(CodeContentTyp
 
     [Fact]
     public void ContentType_NameIsPreconfigured()
-        => Equal(CodeTypeWithSpecsEmpty.SpecName, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Name);
+        => Equal(CodeTypeSpecsConstants.SpecName, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Name);
 
     [Fact]
     public void ContentType_HasNameId() =>
-        Equal(CodeTypeWithSpecsEmpty.SpecGuid, ctDefManager.CreateTac<TCodeTypeWithSpecs>().NameId);
+        Equal(CodeTypeSpecsConstants.SpecGuid, ctDefManager.CreateTac<TCodeTypeWithSpecs>().NameId);
 
     [Fact]
     public void ContentType_HasScope() =>
-        Equal(CodeTypeWithSpecsEmpty.SpecScope, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Scope);
+        Equal(CodeTypeSpecsConstants.SpecScope, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Scope);
 
     [Fact]
     public void ContentType_HasDescription() =>
-        Equal(CodeTypeWithSpecsEmpty.SpecDescription, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Metadata.FirstModel<ContentTypeDetails>()!.Description);
+        Equal(CodeTypeSpecsConstants.SpecDescription, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Metadata.FirstModel<ContentTypeDetails>()!.Description);
 
     #endregion
 

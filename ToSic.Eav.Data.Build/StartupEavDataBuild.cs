@@ -13,19 +13,74 @@ namespace ToSic.Eav.Run.Startup;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEavDataBuild
 {
+    /// <summary>
+    /// Overall add-everything-to-build-data services.
+    /// </summary>
+    /// <remarks>
+    /// Includes
+    /// 1. Factories (for raw data)
+    /// 1. Content Types
+    /// 1. Entities
+    ///
+    /// Note: ATM also adds EavDataProcessors, but this should be moved elsewhere
+    /// </remarks>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddEavDataBuild(this IServiceCollection services)
     {
-        services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
-        services.TryAddTransient<DataAssembler>();
+        // Factories
+        services.AddDataBuildFactories();
 
         // Content Type
+        services.AddDataBuildContentTypes();
+
+        // Entities
+        services.AddDataBuildEntities();
+
+        services.AddEavDataProcessors();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Add services for building **Data**, mainly factories.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddDataBuildFactories(this IServiceCollection services)
+    {
+        services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
+
+        return services;
+    }
+    
+    /// <summary>
+    /// Add services for building **Content Types**, including assemblers and managers.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddDataBuildContentTypes(this IServiceCollection services)
+    {
         services.TryAddTransient<ContentTypeTypeAssembler>();
         services.TryAddTransient<ContentTypeAttributeAssembler>();
         services.TryAddTransient<ContentTypeAssembler>();
         services.TryAddTransient<CodeContentTypesManager>();
         services.TryAddTransient<CodeContentTypeBuilder>(); // new v22, split concerns
 
-        // Entities
+        return services;
+    }
+
+    /// <summary>
+    /// Add services for building **Entities**, including assemblers and connection builders.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddDataBuildEntities(this IServiceCollection services)
+    {
+        // Overall assembler / builder (naming not final/ideal)
+        services.TryAddTransient<DataAssembler>();
+
+        // Parts Assemblers
         services.TryAddTransient<LanguageAssembler>();
         services.TryAddTransient<AttributeAssembler>();
         services.TryAddTransient<AttributeListAssembler>();
@@ -34,8 +89,6 @@ public static class StartupEavDataBuild
         services.TryAddTransient<ValueAssembler>();
         services.TryAddTransient<ValueListAssembler>();
         services.TryAddTransient<RelationshipAssembler>();
-
-        services.AddEavDataProcessors();
 
         return services;
     }

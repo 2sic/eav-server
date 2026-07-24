@@ -20,7 +20,7 @@ public class CodeCtFactoryResultingSpecs(CodeContentTypesManager ctDefManager)
 
     [Theory]
     [InlineData(nameof(CodeTypeNoSpecsEmpty), typeof(CodeTypeNoSpecsEmpty))]
-    [InlineData(CodeTypeWithSpecsEmpty.SpecName, typeof(CodeTypeWithSpecsEmpty))]
+    [InlineData(CodeTypeSpecsConstants.SpecName, typeof(CodeTypeWithSpecsEmpty))]
     public void Name(string expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).Name);
     
@@ -28,14 +28,14 @@ public class CodeCtFactoryResultingSpecs(CodeContentTypesManager ctDefManager)
 
     [Theory]
     [InlineData(ScopeConstants.Default, typeof(CodeTypeNoSpecsEmpty))]
-    [InlineData(CodeTypeWithSpecsEmpty.SpecScope, typeof(CodeTypeWithSpecsEmpty))]
+    [InlineData(CodeTypeSpecsConstants.SpecScope, typeof(CodeTypeWithSpecsEmpty))]
     public void Scope(string expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).Scope);
     
     
     [Theory]
     [InlineData("00000000-0000-0000-0000-000000000000", typeof(CodeTypeNoSpecsEmpty))]
-    [InlineData(CodeTypeWithSpecsEmpty.SpecGuid, typeof(CodeTypeWithSpecsEmpty))]
+    [InlineData(CodeTypeSpecsConstants.SpecGuid, typeof(CodeTypeWithSpecsEmpty))]
     public void NameId(string expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).NameId);
 

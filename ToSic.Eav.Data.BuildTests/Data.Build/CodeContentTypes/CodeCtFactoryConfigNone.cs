@@ -10,6 +10,14 @@ namespace ToSic.Eav.Data.Build.CodeContentTypes;
 /// Test conversion of a type to a ContentType Definition - with a **Class** having no configuration.
 /// </summary>
 [Startup(typeof(StartupTestsEavDataBuild))]
+public class CodeCtFactoryConfigNoneInterface(CodeContentTypesManager ctDefManager)
+    : CodeCtFactoryConfigNone<ICodeTypeNoSpecsInterface>(ctDefManager);
+
+
+/// <summary>
+/// Test conversion of a type to a ContentType Definition - with a **Class** having no configuration.
+/// </summary>
+[Startup(typeof(StartupTestsEavDataBuild))]
 public class CodeCtFactoryConfigNoneClass(CodeContentTypesManager ctDefManager)
     : CodeCtFactoryConfigNone<CodeTypeNoSpecsClass>(ctDefManager);
 
@@ -30,6 +38,9 @@ public class CodeCtFactoryConfigNoneAnonymous(CodeContentTypesManager ctDefManag
     : CodeCtFactoryConfigNone<object>(ctDefManager, useAnonymous: true);
 
 // ReSharper restore UnusedMember.Global
+
+
+
 
 /// <summary>
 /// Shared (abstract) tests for classes or records which are not configured (no attributes)

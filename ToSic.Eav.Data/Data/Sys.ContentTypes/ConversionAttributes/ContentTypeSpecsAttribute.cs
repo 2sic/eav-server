@@ -5,7 +5,7 @@
 /// </summary>
 [PrivateApi("WIP")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 public class ContentTypeSpecsAttribute: Attribute
 {
     /// <summary>

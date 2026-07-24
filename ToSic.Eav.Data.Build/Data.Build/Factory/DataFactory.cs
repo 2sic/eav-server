@@ -14,8 +14,8 @@ internal class DataFactory(
     Generator<DataAssembler, DataAssemblerOptions> dataAssembler,
     LazySvc<ContentTypeTypeAssembler> typeAssembler,
     Generator<IDataFactory, DataFactoryOptions> selfGenerator,
-    LazySvc<CodeContentTypesManager> ctFactory)
-    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, ctFactory]), IDataFactory
+    LazySvc<CodeContentTypesManager> codeCtManager)
+    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, codeCtManager]), IDataFactory
 {
 
     #region Properties to configure Builder / Defaults
@@ -40,7 +40,7 @@ internal class DataFactory(
     
     [field: AllowNull, MaybeNull]
     private DataFactoryPreferredContentType PctHelper => field
-        ??= new(MyOptions, ctFactory.Value, typeAssembler.Value, Log);
+        ??= new(MyOptions, codeCtManager, typeAssembler, Log);
 
     /// <summary>
     /// The DataBuilder used for this DataFactory.

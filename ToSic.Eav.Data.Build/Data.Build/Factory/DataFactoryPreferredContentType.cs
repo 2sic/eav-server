@@ -3,7 +3,11 @@ using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Build;
 
-internal class DataFactoryPreferredContentType(DataFactoryOptions options, CodeContentTypesManager ctFactory, ContentTypeTypeAssembler typeAssembler, ILog parentLog)
+internal class DataFactoryPreferredContentType(
+    DataFactoryOptions options,
+    LazySvc<CodeContentTypesManager> codeCtManager,
+    LazySvc<ContentTypeTypeAssembler> typeAssembler,
+    ILog parentLog)
     : HelperBase(parentLog, "DaF.PctHlp")
 {
     /// <summary>
@@ -22,23 +26,23 @@ internal class DataFactoryPreferredContentType(DataFactoryOptions options, CodeC
         var l = Log.Fn<IContentType>();
         // Priority 1: If the options have a type, use that
         if (options.Type != null)
-            return l.Return(ctFactory.Get(options.Type), $"Options.Type: {options.Type.Name}");
+            return l.Return(codeCtManager.Value.Get(options.Type), $"Options.Type: {options.Type.Name}");
 
         // Priority 2: If the options have a TypeName, use that to create a transient type
         if (options.TypeName != null)
-            return l.Return(typeAssembler.Transient(options.TypeName), $"Options.TypeName: {options.TypeName}");
+            return l.Return(typeAssembler.Value.Transient(options.TypeName), $"Options.TypeName: {options.TypeName}");
 
         // Priority 3: Try to find a type based on the source object
         // but only if the source object has an explicit Attribute-Defined type
         // ReSharper disable once InvertIf
-        if (TypeFallbackIfNotSet != null && ctFactory.IsConfigured(TypeFallbackIfNotSet))
+        if (TypeFallbackIfNotSet != null && codeCtManager.Value.IsConfigured(TypeFallbackIfNotSet))
         {
-            var generatedFromType = ctFactory.Get(TypeFallbackIfNotSet);
+            var generatedFromType = codeCtManager.Value.Get(TypeFallbackIfNotSet);
             return l.Return(generatedFromType, $"Generated from type: {generatedFromType.Name}");
         }
 
         // Priority 9: Use a fallback / auto-generated type
-        return l.Return(typeAssembler.Transient(DataConstants.DataFactoryDefaultTypeName), "Fallback type");
+        return l.Return(typeAssembler.Value.Transient(DataConstants.DataFactoryDefaultTypeName), "Fallback type");
     }
 
 }
