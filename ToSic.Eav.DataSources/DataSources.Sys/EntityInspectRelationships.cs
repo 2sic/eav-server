@@ -144,7 +144,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
 
         private static IRawEntityConverter Converter { get; } =
             new RawEntityConverterFactory<EntityRelationship>((source, _) =>
-                new RawEntityRecord
+                new RawEntity
                 {
                     Id = source.Id,
                     Guid = source.Guid,

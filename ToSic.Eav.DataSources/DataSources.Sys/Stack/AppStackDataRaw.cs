@@ -45,7 +45,7 @@ public class AppStackDataRaw(PropertyDumpItem original) : IRawEntityConvertible
     IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
 
     private static IRawEntityConverter Converter { get; } = new RawEntityConverterFactory<AppStackDataRaw>((source, options) =>
-        new RawEntityRecord
+        new RawEntity
         {
             Values = GetValues(source, options)
         });

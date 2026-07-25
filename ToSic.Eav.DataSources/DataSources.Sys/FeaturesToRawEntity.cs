@@ -49,9 +49,10 @@ public static class FeaturesToRawEntity
                 { "SecurityMessage", state.Security?.Message },
             };
 
-        return new RawEntity(values)
+        return new RawEntity
         {
             Guid = state.Aspect.Guid,
+            Values = values,
         };
     }
 
@@ -92,9 +93,10 @@ public static class FeaturesToRawEntity
             { nameof(state.Owner), state.Owner }
         };
         
-        return new RawEntity(values)
+        return new RawEntity
         {
             Guid = state.Aspect.Guid,
+            Values = values,
         };
     }
 }

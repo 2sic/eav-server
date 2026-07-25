@@ -48,13 +48,16 @@ public class ZoneLanguages : CustomDataSource
             .ToList();
 
         var list = cultures
-            .Select(language => new RawEntity(new()
+            .Select(language => new RawEntity
             {
-                { nameof(SiteLanguageDto.Code), language.Code },
-                { nameof(SiteLanguageDto.Culture), language.Culture },
-                { nameof(SiteLanguageDto.IsEnabled), language.IsEnabled },
-                { nameof(SiteLanguageDto.NameId), language.NameId },
-            }))
+                Values = new Dictionary<string, object?>
+                {
+                    { nameof(SiteLanguageDto.Code), language.Code },
+                    { nameof(SiteLanguageDto.Culture), language.Culture },
+                    { nameof(SiteLanguageDto.IsEnabled), language.IsEnabled },
+                    { nameof(SiteLanguageDto.NameId), language.NameId },
+                }
+            })
             .ToList<IRawEntity>();
 
         return l.Return(list, $"{list.Count}");

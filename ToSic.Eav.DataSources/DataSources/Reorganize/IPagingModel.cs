@@ -38,7 +38,7 @@ internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int Pag
     IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
 
     private static IRawEntityConverter Converter { get; } = new RawEntityConverterFactory<PagingModel>((source, _) =>
-        new RawEntityRecord
+        new RawEntity
         {
             Id = source.PageNumber,
             Values = new Dictionary<string, object?>

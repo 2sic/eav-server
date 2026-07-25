@@ -8,25 +8,15 @@ namespace ToSic.Eav.Data.Raw.Sys;
 /// Use this for scenarios where you don't want to create your own IRawEntity but wish to return this kind of typed object.
 /// </summary>
 /// <remarks>
-/// Added in 15.04
+/// * Added in 15.04 - was public for a while, but never quite stable, believe never used
+/// * Made private again in 16.09
+/// * Moved to .Sys ca. v20 - no complaints, so seems to be unused
+/// * Changed to be record instead of class v22 (WIP)
 /// </remarks>
-[PrivateApi("was public till 16.09")]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class RawEntity: IRawEntity, IRelationshipKeys, IHasMetadata
+public record RawEntity: IRawEntity, IRelationshipKeys, IHasMetadata
 {
-    #region Constructor Variants
-    
-    public RawEntity()
-    { }
-
-    public RawEntity(Dictionary<string, object?> values)
-    {
-        Values = values;
-    }
-
-    #endregion
-
-
     #region Core Properties Id, Guid, Created, Modified
 
     public virtual int Id
@@ -90,6 +80,8 @@ public class RawEntity: IRawEntity, IRelationshipKeys, IHasMetadata
     #endregion
 
 
+    #region Optional Relationships and Metadata
+
     public virtual IEnumerable<object> RelationshipKeys
     {
         get => [];
@@ -100,4 +92,7 @@ public class RawEntity: IRawEntity, IRelationshipKeys, IHasMetadata
     /// WIP experimental v18.02 - trying to get content-type metadata into the raw entity
     /// </summary>
     public IMetadata? Metadata { get; init; }
+
+    #endregion
+
 }

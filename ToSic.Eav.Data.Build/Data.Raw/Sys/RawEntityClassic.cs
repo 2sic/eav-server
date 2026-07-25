@@ -1,15 +1,17 @@
-﻿namespace ToSic.Eav.Data.Raw.Sys;
+﻿using ToSic.Eav.Metadata;
+
+namespace ToSic.Eav.Data.Raw.Sys;
 
 /// <summary>
 /// Record to provide a raw entity. It should never be inherited, as it's purpose is to bridge the gap between
 /// PoCos and raw entity converters.
 /// </summary>
 /// <remarks>
-/// Added in v22
+/// Added in v22 - not sure if relevant, may remove again
 /// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record RawEntityRecord: IRawEntity, IRelationshipKeys
+public class RawEntityClassic: IRawEntity, IRelationshipKeys
 {
     #region Core Properties Id, Guid, Created, Modified
     
@@ -75,4 +77,9 @@ public record RawEntityRecord: IRawEntity, IRelationshipKeys
 
     /// <inheritdoc/>
     public IEnumerable<object>? RelationshipKeys { get; init; }
+
+    /// <summary>
+    /// WIP experimental v18.02 - trying to get content-type metadata into the raw entity
+    /// </summary>
+    public IMetadata? Metadata { get; init; }
 }

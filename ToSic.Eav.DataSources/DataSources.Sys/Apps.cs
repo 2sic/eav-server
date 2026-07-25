@@ -110,10 +110,11 @@ public sealed class Apps: CustomDataSource
                 if (error != null)
                     appEnt["Error"] = error;
 
-                var raw = new RawEntity(appEnt)
+                var raw = new RawEntity
                 {
                     Id = app.Key,
                     Guid = guid ?? Guid.Empty,
+                    Values = appEnt,
                 };
                 return raw;
             })

@@ -11,7 +11,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "App Statistics Information",
     Scope = "System"
 )]
-public record AppExportInfoModel: RawEntityRecord
+public record AppExportInfoModel: RawEntity
 {
     [ContentTypeAttributeSpecs(IsTitle = true)]
     public required string Name { get; init; }

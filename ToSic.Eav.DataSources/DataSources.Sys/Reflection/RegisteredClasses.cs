@@ -34,15 +34,18 @@ public abstract class RegisteredClasses<TClassOrInterface>: CustomDataSource whe
         var list = fileGenerators
             .Select(g => g.GetType())
             .Where(type => !type.IsAbstract && !type.IsInterface)
-            .Select(type => new RawEntity(new()
+            .Select(type => new RawEntity
             {
-                //{ AttributeNames.NameIdNiceName, g.NameId },
-                { nameof(type.Name), type.Name },
-                { nameof(type.FullName), type.FullName },
-                { nameof(type.Assembly), type.Assembly },
-                { nameof(type.AssemblyQualifiedName), type.AssemblyQualifiedName },
-                { nameof(type.Namespace), type.Namespace },
-            }))
+                Values = new Dictionary<string, object?>
+                {
+                    //{ AttributeNames.NameIdNiceName, g.NameId },
+                    { nameof(type.Name), type.Name },
+                    { nameof(type.FullName), type.FullName },
+                    { nameof(type.Assembly), type.Assembly },
+                    { nameof(type.AssemblyQualifiedName), type.AssemblyQualifiedName },
+                    { nameof(type.Namespace), type.Namespace },
+                }
+            })
             .ToList();
 
         return l.Return(list, $"{list.Count}");

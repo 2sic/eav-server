@@ -61,7 +61,10 @@ public class AppWebApiControllerEndpoints : CustomDataSource
             values.Add(nameof(ApiActionDto.parameters), action.parameters);
             values.Add(nameof(ApiActionDto.security), AppWebApiControllerSecurityValues.ToDictionary(action.security));
 
-            return new RawEntity(values);
+            return new RawEntity
+            {
+                Values = values
+            };
         }).ToList();
 
         return l.Return(entities, $"{entities.Count}");

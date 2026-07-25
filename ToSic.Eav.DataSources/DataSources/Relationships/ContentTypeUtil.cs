@@ -37,10 +37,11 @@ internal class ContentTypeUtil
     };
 
     internal static RawEntity ToRaw(IContentType t) =>
-        new(BuildDictionary(t))
+        new()
         {
             Id = t.Id,
             Guid = SafeConvertGuid(t) ?? Guid.Empty,
+            Values = BuildDictionary(t),
             Metadata = t.Metadata,
         };
 

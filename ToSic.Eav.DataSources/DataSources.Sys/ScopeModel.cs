@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSources.Sys;
     Description = "Data Scope",
     Scope = "System"
 )]
-public record ScopeModel : RawEntityRecord, IHasIdentityNameId
+public record ScopeModel : RawEntity, IHasIdentityNameId
 {
     public required string NameId { get; init; }
 
