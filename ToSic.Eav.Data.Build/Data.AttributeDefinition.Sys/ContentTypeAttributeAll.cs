@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
-using ToSic.Eav.Models;
+﻿using ToSic.Eav.Data.Sys.Attributes;
+using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.Data.AttributeDefinition.Sys;
 
@@ -16,6 +16,16 @@ internal record ContentTypeAttributeAll
     public string Description { get; init; }
     
     public string InputType { get; init; }
+
+    public Dictionary<string, object?> BuildValues()
+    {
+        var dic = new Dictionary<string, object?>();
+        if (!Description.IsEmptyOrWs())
+            dic.Add(AttributeMetadataConstants.DescriptionField, Description);
+        if (!InputType.IsEmptyOrWs())
+            dic.Add(AttributeMetadataConstants.GeneralFieldInputType, InputType);
+        return dic;
+    }
 
     internal static ContentTypeAttributeAll? FromCodeAttributeOrNull(ContentTypeAttributeSpecsAttribute? attr)
         => attr == null || (attr.Description.IsEmptyOrWs() && attr.InputTypeWIP.IsEmptyOrWs())

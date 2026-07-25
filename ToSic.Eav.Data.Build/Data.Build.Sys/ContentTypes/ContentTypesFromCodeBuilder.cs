@@ -90,7 +90,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
         // Create a Description entity
         var entity = entityAssembler.Create(
             NoAppId,
-            ctAssemblyKit.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName, ContentTypeDetails.ContentTypeName),
+            ctAssemblyKit.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName),
             attributes: attributes
         );
         return l.Return(entity, "created");
@@ -193,9 +193,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
 
                 // Must be null if no metadata
                 var attrMetadata = ContentTypeAttributeDetails(
-                        ContentTypeAttributeAll.FromCodeAttributeOrNull(specs),
-                        specs?.Description,
-                        specs?.InputTypeWIP
+                        ContentTypeAttributeAll.FromCodeAttributeOrNull(specs)
                     )
                     .ToListOfOneOrNull();
 
@@ -217,26 +215,27 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
     /// - Description
     /// - InputType
     /// </summary>
-    private IEntity? ContentTypeAttributeDetails(ContentTypeAttributeAll? attrAll, string? description, string? inputType)
+    /// <remarks>
+    /// I guess we could use the DataFactory here, but as of 2026-07 we're careful to
+    /// not introduce that as a dependency here, since it could end up circling back.
+    /// </remarks>
+    private IEntity? ContentTypeAttributeDetails(ContentTypeAttributeAll? attrAll)
     {
         var l = Log.Fn<IEntity>();
-        if (attrAll == null || (description == null && inputType == null))
+
+        if (attrAll == null)
             return l.ReturnNull("no details");
 
         // All props
-        var dic = new Dictionary<string, object?>();
-        if (description != null)
-            dic.Add(AttributeMetadataConstants.DescriptionField, description);
-        if (inputType != null)
-            dic.Add(AttributeMetadataConstants.GeneralFieldInputType, inputType);
-
+        var dic = attrAll.BuildValues();
         var attributes = attributeListAssembler.Finalize(dic);
 
         // Create a Description entity
         var entity = entityAssembler.Create(
             NoAppId,
-            ctAssemblyKit.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral, AttributeMetadataConstants.TypeGeneral),
-            attributes: attributes);
+            ctAssemblyKit.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral),
+            attributes: attributes
+        );
         return l.Return(entity, "created");
     }
 

@@ -138,7 +138,7 @@ public class AttributeRename : DataSourceBase
         var typeName = TypeName;
         IContentType? newType = null;
         if (!string.IsNullOrEmpty(typeName))
-            newType = _ctAssemblyKit.Type.Transient(AppId, typeName!, typeName!);
+            newType = _ctAssemblyKit.Type.Transient(AppId, typeName!);
 
         var source = TryGetIn();
         if (source is null)
@@ -157,12 +157,6 @@ public class AttributeRename : DataSourceBase
 
 
 
-    private IAttribute CloneAttributeAndRename(IAttribute original, string newName)
-    {
-        var newAttrib = _dataAssembler.Attribute.Create(newName, original.Type, original.Values.ToList());
-        // #immutable
-        //newAttrib.Values = original.Values;
-        return newAttrib;
-    }
-
+    private IAttribute CloneAttributeAndRename(IAttribute original, string newName) =>
+        _dataAssembler.Attribute.Create(newName, original.Type, original.Values.ToList());
 }

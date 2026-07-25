@@ -158,11 +158,16 @@ public class ContentTypeAssembler
     }
 
     public IContentType Transient(string typeName)
-        => Transient(KnownAppsConstants.TransientAppId, typeName, typeName);
+        => Transient(KnownAppsConstants.TransientAppId, typeName);
 
-    public IContentType Transient(int appId, string typeName, string nameId, string? scope = null)
-        => Create(appId: appId, name: typeName, nameId: nameId, id: DynTypeId,
+    public IContentType Transient(int appId, string typeName, string? nameId = null, string? scope = null)
+        => Create(
+            appId: appId,
+            name: typeName,
+            nameId: nameId ?? typeName,
+            id: DynTypeId,
             scope: scope ?? ScopeConstants.System,
-            attributes: new List<IContentTypeAttribute>(), isDynamic: true);
+            attributes: new List<IContentTypeAttribute>(), isDynamic: true
+        );
 
 }
