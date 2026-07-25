@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.Build.DataFactories;
 public class DataFactoryItemTitleFromRaw(IDataFactory dataFactory)
     : DataFactoryItemTitle
 {
-    protected override IEntity CreateTestEntity(IRawEntitySource source)
+    protected override IEntity CreateTestEntity(IRawEntitySource source, bool withSpecs)
         => dataFactory.CreateTac(source);
 }
 
@@ -19,12 +19,15 @@ public class DataFactoryItemTitleFromRaw(IDataFactory dataFactory)
 public class DataFactoryItemTitleFromConverter(IDataFactory dataFactory)
     : DataFactoryItemTitle
 {
-    protected override IEntity CreateTestEntity(IRawEntitySource source)
+    protected override IEntity CreateTestEntity(IRawEntitySource source, bool withSpecs)
     {
         // Create a fake raw, which doesn't have relevant properties, but would provide the source
         // in the GetConverter...
-        var fakeEntity = new MockRawEntityProvidingConversion((IRawEntity)source);
-        return dataFactory.CreateTac(fakeEntity);
+        // Note that for tests withSpecs, we should use the wrapper which has specs for the Name property
+        IRawEntityConvertible fakeRawConvertible = withSpecs
+            ? new MockRawWithNameTitleProvidingConversion((IRawEntity)source)
+            : new MockRawEntityProvidingConversion((IRawEntity)source);
+        return dataFactory.CreateTac(fakeRawConvertible);
     }
 }
 
@@ -38,23 +41,24 @@ public abstract class DataFactoryItemTitle
     /// This is because we'll have some tests which will return the entity generated from raw,
     /// while others return the entity generated from a converter.
     /// </summary>
-    protected abstract IEntity CreateTestEntity(IRawEntitySource source);
+    protected abstract IEntity CreateTestEntity(IRawEntitySource source, bool withSpecs);
     
     [Fact]
     public void TitleOfSpecsNone_Empty_IsNull()
     {
-        var y = CreateTestEntity(new MockRawEntity());
+        var y = CreateTestEntity(new MockRawEntity(), false);
         Null(y.GetBestTitle());
     }
 
-    private IEntity CreateSpecsNone_WithSingleValue(string key, string value) =>
+    protected virtual IEntity CreateSpecsNone_WithSingleValue(string key, string value) =>
         CreateTestEntity(new MockRawEntity
         {
             Values = new Dictionary<string, object?>
             {
                 { key, value }
             }
-        });
+        }, false);
+
     private IEntity CreateSpecs_NameTitle_WithSingleValue(string key, string value) =>
         CreateTestEntity(new MockRawWithNameTitle
         {
@@ -62,7 +66,7 @@ public abstract class DataFactoryItemTitle
             {
                 { key, value }
             }
-        });
+        }, true);
 
     [Fact]
     public void TitleOfSpecsNone_WithTitleValue_IsExpected() =>

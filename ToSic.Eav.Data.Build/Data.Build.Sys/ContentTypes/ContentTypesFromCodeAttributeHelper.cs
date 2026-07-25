@@ -109,28 +109,6 @@ internal class ContentTypesFromCodeAttributeHelper(
                     ? TempCategory.Ignore
                     : TempCategory.General,
             };
-
-        static bool IsSystemProperty(PropertyInfo p) =>
-            p.Name is AttributeNames.IdNiceName
-                or AttributeNames.GuidNiceName
-                or AttributeNames.CreatedNiceName
-                or AttributeNames.ModifiedNiceName;
-
-        static bool IsIgnoreProperty(PropertyInfo p) =>
-            p.Name switch
-            {
-                // Standard built-in properties which are almost certainly never used otherwise
-                nameof(IHasMetadata.Metadata)
-                    or nameof(IRelationshipKeys.RelationshipKeys)
-                    => true,
-
-                // Values property. which could be used otherwise as well, so we'll only skip if it's the 
-                nameof(IRawEntity.Values)
-                    //when typeof(IDictionary<string, object?>).IsAssignableFrom(p.PropertyType)
-                    when typeof(IDictionary<string, object?>) == p.PropertyType
-                    => true,
-                _ => p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() != null
-            };
     }
 
     private enum TempCategory
