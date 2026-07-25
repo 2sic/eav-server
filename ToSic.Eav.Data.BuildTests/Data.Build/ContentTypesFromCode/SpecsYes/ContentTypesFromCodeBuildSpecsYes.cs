@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Models;
 
@@ -54,17 +55,38 @@ public abstract class ContentTypesFromCodeBuildSpecsYes<TCodeTypeWithSpecs>(Cont
     [InlineData("PrivateProperty")]
     public void Attributes_WithSpec_SkipIgnores(string name)
         => DoesNotContain(name, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Attributes.Select(a => a.Name));
-    
-   
-    
+
+
+    #region Verify that the Content Type knows about special descriptions on Id and Guid
+
     [Fact]
-    public void Attributes_WithSpec_VDecoratorHas() =>
-        NotNull(ctDefManager.GetVirtualAttribDecorator(typeof(TCodeTypeWithSpecs)));
-    
-    
+    public void Attributes_WithSpec_BuiltInDecoratorHas() =>
+        NotNull(ctDefManager.GetVirtualAttribDecoratorOf(typeof(TCodeTypeWithSpecs)));
+
+
     [Fact]
-    public void Attributes_WithSpec_VDecoratorExactly2() =>
-        Equal(2, ctDefManager.GetVirtualAttribDecorator(typeof(TCodeTypeWithSpecs)).VirtualAttributes.Count);
+    public void Attributes_WithSpec_BuiltInDecoratorExactly2() =>
+        Equal(2, ctDefManager.GetVirtualAttribDecoratorOf(typeof(TCodeTypeWithSpecs)).Attributes.Count);
+
+    /// <summary>
+    /// The ID and Guid both have an `[Attribute]` to provide them with special descriptions.
+    /// </summary>
+    /// <param name="key"></param>
+    [Theory]
+    [InlineData("Id")]
+    [InlineData("Guid")]
+    public void Attributes_WithSpec_BuiltInDecorator_Description(string key)
+    {
+        var forId = ctDefManager
+            .GetVirtualAttribDecoratorOf(typeof(TCodeTypeWithSpecs))
+            .Attributes
+            .FirstOrDefault(a => a.Key == key);
+
+        Equal(CodeTypeSpecsConstants.IdAndGuidDescription, forId.Value.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField));
+    }
+
+    #endregion
+
 
     #region Inspect ContentType of generated data
 

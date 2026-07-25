@@ -16,8 +16,8 @@ public static class ContentTypeFactoryTestAccessors
         public IContentType CreateTac<T>()
             => ctDefManager.Get<T>();
 
-        public ContentTypeVirtualAttributes GetVirtualAttribDecorator(Type t)
-            => ctDefManager.CreateTac(t).GetDecorator<ContentTypeVirtualAttributes>()!;
+        public ContentTypeBuiltInAttributesDecorator GetVirtualAttribDecoratorOf(Type t)
+            => ctDefManager.CreateTac(t).GetDecorator<ContentTypeBuiltInAttributesDecorator>()!;
 
     }
 }

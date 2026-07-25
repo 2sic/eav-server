@@ -25,6 +25,8 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
     internal IContentType Generate(Type type, string? name = default, string? nameId = default, string? scope = default, int appId = NoAppId)
     {
         var l = Log.Fn<IContentType>(timer: true);
+
+        // 1. Get the content type specs from the attribute, if any and process
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
         var ctName = name
                      ?? ctSpecs?.Name
@@ -37,7 +39,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
                       ?? ScopeConstants.Default;
 
         // Must be null if no metadata, so that it would then assume empty list...?
-        var ctMdItems = CreateContentTypeDetails(ctSpecs?.Description).ToListOfOneOrNull();
+        var ctMdItems = CreateCtDetailsMetadataEntity(ctSpecs?.Description).ToListOfOneOrNull();
         var ctMdSource = MetadataProvider.Create(ctMdItems);
         var ctMetadata = new ContentTypeMetadata(typeId: ctNameId, title: ctName, source: ctMdSource);
 
@@ -45,7 +47,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
 
         IDecorator<IContentType>? vAttributeDecorator = vAttributes == null || vAttributes.Count == 0
             ? null
-            : new ContentTypeVirtualAttributes(vAttributes
+            : new ContentTypeBuiltInAttributesDecorator(vAttributes
                 .ToDictionary(
                     va => va.Name,
                     va => va
@@ -74,7 +76,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
     /// Most properties like icon etc. are not important, so ATM it only does:
     /// - Description
     /// </summary>
-    private IEntity? CreateContentTypeDetails(string? description)
+    private IEntity? CreateCtDetailsMetadataEntity(string? description)
     {
         var l = Log.Fn<IEntity>();
         if (description == null)

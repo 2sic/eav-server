@@ -183,9 +183,9 @@ public sealed class Attributes: CustomDataSourceAdvanced
         // Find possible metadata for system fields.
         // This is mainly for system types like AppAssets which may want to tell the user that ID shouldn't be used
         var sysFieldAttributes = types
-            .Select(t => t.GetDecorator<ContentTypeVirtualAttributes>())
-            .Where(x => x != null)
-            .SelectMany(x => x!.VirtualAttributes)
+            .Select(t => t.GetDecorator<ContentTypeBuiltInAttributesDecorator>())
+            .OfType<ContentTypeBuiltInAttributesDecorator>()
+            .SelectMany(x => x.Attributes)
             .ToList();
 
         var additions = sysFieldsWhichWereNotAdded
@@ -233,7 +233,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
 
     /// <summary>
     /// Note: this could be done better with RazorBlade, but ATM we don't want to add dependencies just for this.
-    /// If we ever do add RazorBlade, then we should also correct &nbsp; etc.
+    /// If we ever do add RazorBlade, then we should also correct `&nbsp;` etc.
     /// </summary>
     /// <param name="html"></param>
     /// <returns></returns>

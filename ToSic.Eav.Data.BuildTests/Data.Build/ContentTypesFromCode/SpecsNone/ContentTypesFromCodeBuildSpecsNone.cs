@@ -75,7 +75,7 @@ public abstract class ContentTypesFromCodeBuildSpecsNone<TCodeTypeNoSpecs>(Conte
     
     [Fact]
     public void Attributes_NoSpec_NoVDecorator()
-        => Null(ctDefManager.GetVirtualAttribDecorator(typeof(TCodeTypeNoSpecs)));
+        => Null(ctDefManager.GetVirtualAttribDecoratorOf(typeof(TCodeTypeNoSpecs)));
     
     
     [Theory]
