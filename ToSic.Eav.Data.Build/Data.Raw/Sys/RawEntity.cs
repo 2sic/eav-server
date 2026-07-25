@@ -67,12 +67,20 @@ public record RawEntity: IRawEntity, IRelationshipKeys, IHasMetadata
     public IDictionary<string, object?> Values
     {
         get => field ??= GetValues();
+#if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
+        set => field = value?.ToInvariant();
+#else
         init => field = value?.ToInvariant();
+#endif
     }
 
     /// <summary>
     /// Override this method to provide the values for the entity. By default, it returns an empty dictionary.
     /// </summary>
+    /// <remarks>
+    /// This is needed because we don't want to make <see cref="Values"/> virtual, since any implementation
+    /// would also have to implement the init, defeating the purpose.
+    /// </remarks>
     /// <returns></returns>
     protected virtual IDictionary<string, object?> GetValues() =>
         new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
