@@ -82,16 +82,17 @@ public record RawEntity: IRawEntity, IRelationshipKeys, IHasMetadata
 
     #region Optional Relationships and Metadata
 
-    public virtual IEnumerable<object> RelationshipKeys
-    {
-        get => [];
-        set => throw new NotImplementedException();
-    }
+    public IEnumerable<object>? RelationshipKeys { get; init; }
 
     /// <summary>
     /// WIP experimental v18.02 - trying to get content-type metadata into the raw entity
     /// </summary>
+    /// <remarks>
+    /// Explicitly nullable, even if the IHasMetadata interface would not expect this.
+    /// </remarks>
+#pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
     public IMetadata? Metadata { get; init; }
+#pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 
     #endregion
 

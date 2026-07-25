@@ -29,15 +29,16 @@ internal partial class DataFactory(
     /// </summary>
     private DateTime FixedDateTime { get; } = DateTime.Now;
 
-    /// <inheritdoc />
-    [field: AllowNull, MaybeNull]
-    public IContentType ContentType => field
-        ??= PctHelper.GetPreferredContentType();
-    
     [field: AllowNull, MaybeNull]
     private DataFactoryPreferredContentType PctHelper => field
         ??= new(MyOptions, codeCtManager, typeAssembler, Log);
 
+    private string PreferredTitleFieldName => field ??= PctHelper.PreferredTitleFieldName;
+
+    /// <inheritdoc />
+    [field: AllowNull, MaybeNull]
+    public IContentType ContentType => field ??= PctHelper.PreferredContentType;
+    
     /// <summary>
     /// The DataBuilder used for this DataFactory.
     /// </summary>
@@ -103,7 +104,7 @@ internal partial class DataFactory(
             entityId: entityId,
             contentType: ContentType,
             attributes: attributes,
-            titleField: MyOptions.TitleField,
+            titleField: PreferredTitleFieldName,
             guid: guid,
             created: created == default ? FixedDateTime : created,
             modified: modified == default ? FixedDateTime : modified,

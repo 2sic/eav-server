@@ -17,6 +17,12 @@ internal class DataFactoryPreferredContentType(
     /// </summary>
     internal Type? TypeFallbackIfNotSet;
 
+    internal IContentType PreferredContentType => field
+        ??= GetPreferredContentType();
+
+    internal string PreferredTitleFieldName => field
+        ??= options.TitleField.UseFallbackIfNoValue(PreferredContentType.TitleFieldName ?? AttributeNames.TitleNiceName);
+
     /// <summary>
     /// Get the best possible ContentType definition in the current scenario.
     /// </summary>

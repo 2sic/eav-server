@@ -26,6 +26,7 @@ partial class DataFactory
 
     #endregion
 
+
     #region Create single (internal)
 
     private IEntity CreateInternal(IRawEntity rawEntity, object typeGiver)
@@ -95,6 +96,7 @@ partial class DataFactory
     }
 
     #endregion
+
 
     #region WrapUp
 
