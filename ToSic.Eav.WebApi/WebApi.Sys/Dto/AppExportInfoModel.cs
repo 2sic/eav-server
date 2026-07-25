@@ -1,6 +1,5 @@
 ﻿// ReSharper disable NotAccessedField.Global
 
-using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 
@@ -12,7 +11,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "App Statistics Information",
     Scope = "System"
 )]
-public class AppExportInfoModel: RawEntity
+public record AppExportInfoModel: RawEntityRecord
 {
     [ContentTypeAttributeSpecs(IsTitle = true)]
     public required string Name { get; init; }
@@ -28,7 +27,7 @@ public class AppExportInfoModel: RawEntity
     public required int FilesCount { get; init; }
     public required int TransferableFilesCount { get; init; }
 
-    public override IDictionary<string, object?> Values => field ??= new Dictionary<string, object?>
+    protected override IDictionary<string, object?> GetValues() => new Dictionary<string, object?>
     {
         { nameof(Name), Name },
         { nameof(NameId), NameId },

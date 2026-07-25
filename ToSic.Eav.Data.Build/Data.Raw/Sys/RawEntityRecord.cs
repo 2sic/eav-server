@@ -11,6 +11,8 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record RawEntityRecord: IRawEntity, IRelationshipKeys
 {
+    #region Core Properties Id, Guid, Created, Modified
+    
     public int Id
     {
         get;
@@ -51,13 +53,26 @@ public record RawEntityRecord: IRawEntity, IRelationshipKeys
 #endif
     } = DateTime.Now;
 
-    /// <inheritdoc/>
+    #endregion
+
+
+    #region Values
+
     public IDictionary<string, object?> Values
     {
-        get => field ??= new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        get => field ??= GetValues();
         init => field = value?.ToInvariant();
     }
-    
+
+    /// <summary>
+    /// Override this method to provide the values for the entity. By default, it returns an empty dictionary.
+    /// </summary>
+    /// <returns></returns>
+    protected virtual IDictionary<string, object?> GetValues() =>
+        new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+
+    #endregion
+
     /// <inheritdoc/>
     public IEnumerable<object>? RelationshipKeys { get; init; }
 }

@@ -1,4 +1,3 @@
-using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 
@@ -10,7 +9,7 @@ namespace ToSic.Eav.DataSources.Sys;
     Description = "Data Scope",
     Scope = "System"
 )]
-public class ScopeModel : RawEntity, IHasIdentityNameId
+public record ScopeModel : RawEntityRecord, IHasIdentityNameId
 {
     public required string NameId { get; init; }
 
@@ -23,7 +22,7 @@ public class ScopeModel : RawEntity, IHasIdentityNameId
     
     public required int TypesOfApp { get; init; }
 
-    public override IDictionary<string, object?> Values => field ??= new Dictionary<string, object?>
+    protected override IDictionary<string, object?> GetValues() => new Dictionary<string, object?>
     {
         { nameof(NameId), NameId },
         { nameof(Name), Name },
