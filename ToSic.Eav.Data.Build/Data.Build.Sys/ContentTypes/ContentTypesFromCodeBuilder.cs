@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
 using ToSic.Eav.Data.AttributeDefinition.Sys;
+using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Values;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data.Build.Sys;
 
@@ -106,12 +108,11 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
 
         // 2. Group by how it should be processed afterward
         var propsGrouped = properties
-            .GroupBy(p =>
-                p.Name is (AttributeNames.IdNiceName or AttributeNames.GuidNiceName or AttributeNames.CreatedNiceName or AttributeNames.ModifiedNiceName)
-                    ? TempCategory.System
-                    : p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() != null
-                        ? TempCategory.Ignore
-                        : TempCategory.General
+            .GroupBy(p => IsSystemProperty(p)
+                ? TempCategory.System
+                : IsIgnoreProperty(p)
+                    ? TempCategory.Ignore
+                    : TempCategory.General
             )
             .ToListOpt();
 
@@ -134,6 +135,30 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
 
         // Return everything
         return l.Return((attributes, vAttributes), $"real: {attributes.Count}, virtual: {vAttributes?.Count}");
+
+
+
+        static bool IsSystemProperty(PropertyInfo p) =>
+            p.Name is AttributeNames.IdNiceName
+                or AttributeNames.GuidNiceName
+                or AttributeNames.CreatedNiceName
+                or AttributeNames.ModifiedNiceName;
+
+        static bool IsIgnoreProperty(PropertyInfo p) =>
+            p.Name switch
+            {
+                // Standard built-in properties which are almost certainly never used otherwise
+                nameof(IHasMetadata.Metadata)
+                    or nameof(IRelationshipKeys.RelationshipKeys)
+                    => true,
+
+                // Values property. which could be used otherwise as well, so we'll only skip if it's the 
+                nameof(IRawEntity.Values)
+                    //when typeof(IDictionary<string, object?>).IsAssignableFrom(p.PropertyType)
+                    when typeof(IDictionary<string, object?>) == p.PropertyType
+                    => true,
+                _ => p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() != null
+            };
     }
 
     private enum TempCategory
@@ -159,15 +184,19 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
             .Select(pair =>
             {
                 var specs = pair.Specs;
-                var props = pair.Property;
-                var attrName = specs?.Name ?? props.Name;
+                var propertyInfo = pair.Property;
+                var attrName = specs?.Name ?? propertyInfo.Name;
                 var attrType = specs == null || specs.Type == ValueTypes.Undefined
-                    ? ValueTypeHelpers.Get(props.PropertyType)
+                    ? ValueTypeHelpers.Get(propertyInfo.PropertyType)
                     : specs.Type;
                 var attrIsTitle = specs?.IsTitle ?? false;
 
                 // Must be null if no metadata
-                var attrMetadata = ContentTypeAttributeDetails(ContentTypeAttributeAll.FromCodeAttributeOrNull(specs), specs?.Description, specs?.InputTypeWIP)
+                var attrMetadata = ContentTypeAttributeDetails(
+                        ContentTypeAttributeAll.FromCodeAttributeOrNull(specs),
+                        specs?.Description,
+                        specs?.InputTypeWIP
+                    )
                     .ToListOfOneOrNull();
 
                 return ctAssemblyKit.Attribute.Create(
