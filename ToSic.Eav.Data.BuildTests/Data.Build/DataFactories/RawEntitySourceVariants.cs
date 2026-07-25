@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Raw.Sys;
+﻿using ToSic.Eav.Data.Build.DataFactories.MockData;
+using ToSic.Eav.Data.Raw.Sys;
 
 namespace ToSic.Eav.Data.Build.DataFactories;
 
@@ -10,10 +11,10 @@ public class RawEntitySourceVariants
     [Fact]
     public void RawEntityIsConverted()
     {
-        IRawEntitySource x = new MockRawEntityRecord();
+        IRawEntitySource x = new MockRawEntity();
         var y = x.GetRawFromConverterOrDirectCast(new());
         NotNull(y);
-        Equal(MockRawEntityRecord.DefaultId, y.Id);
+        Equal(MockRawEntity.DefaultId, y.Id);
     }
 
     [Fact]

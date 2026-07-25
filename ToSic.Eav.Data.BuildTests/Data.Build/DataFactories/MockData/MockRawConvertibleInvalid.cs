@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
 
-namespace ToSic.Eav.Data.Build.DataFactories;
+namespace ToSic.Eav.Data.Build.DataFactories.MockData;
 
 /// <summary>
 /// This test record claims to be convertible, but does not implement anything.

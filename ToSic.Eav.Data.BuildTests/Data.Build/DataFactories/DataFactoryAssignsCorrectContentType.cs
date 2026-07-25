@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
+using ToSic.Eav.Data.Build.DataFactories.MockData;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
@@ -57,7 +58,7 @@ public class DataFactoryAssignsCorrectContentType(IDataFactory dataFactory)
 
         public IRawEntityConverter GetConverter() =>
             new RawEntityConverterFactory<SourceConvertibleSpecsNone>((_, _) =>
-                new MockRawEntityRecord { Id = 0, }
+                new MockRawEntity { Id = 0, }
             );
     }
 
@@ -94,7 +95,7 @@ public class DataFactoryAssignsCorrectContentType(IDataFactory dataFactory)
         public IDictionary<string, object?> Values { get; }
         public IRawEntityConverter GetConverter() =>
             new RawEntityConverterFactory<RawConvertibleWithSpecs>((_, _) =>
-                new MockRawEntityRecord { Id = 0, }
+                new MockRawEntity { Id = 0, }
             );
     }
     

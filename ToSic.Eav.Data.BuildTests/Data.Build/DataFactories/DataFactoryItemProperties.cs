@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Raw.Sys;
+﻿using ToSic.Eav.Data.Build.DataFactories.MockData;
+using ToSic.Eav.Data.Raw.Sys;
 
 namespace ToSic.Eav.Data.Build.DataFactories;
 // ReSharper disable UnusedMember.Global
@@ -42,7 +43,7 @@ public abstract class DataFactoryItemProperties
     [Fact]
     public void CheckId()
     {
-        var x = new MockRawEntityRecord { Id = 17 };
+        var x = new MockRawEntity { Id = 17 };
         var y = CreateTestEntity(x);
         Equal(17, y.EntityId);
     }
@@ -51,7 +52,7 @@ public abstract class DataFactoryItemProperties
     public void CheckGuid()
     {
         var guid = Guid.NewGuid();
-        var x = new MockRawEntityRecord { Guid = guid };
+        var x = new MockRawEntity { Guid = guid };
         var y = CreateTestEntity(x);
         Equal(guid, y.EntityGuid);
     }
@@ -60,7 +61,7 @@ public abstract class DataFactoryItemProperties
     public void CheckCreated()
     {
         var date = new DateTime(2001, 4, 2);
-        var x = new MockRawEntityRecord { Created = date };
+        var x = new MockRawEntity { Created = date };
         var y = CreateTestEntity(x);
         Equal(date, y.Created);
         NotEqual(date, y.Modified);
@@ -70,16 +71,26 @@ public abstract class DataFactoryItemProperties
     public void CheckModified()
     {
         var date = new DateTime(2001, 4, 2);
-        var x = new MockRawEntityRecord { Modified = date };
+        var x = new MockRawEntity { Modified = date };
         var y = CreateTestEntity(x);
         Equal(date, y.Modified);
         NotEqual(date, y.Created);
     }
     
     [Fact]
+    public void CheckTitleFieldName()
+    {
+        var x = new MockRawEntity();
+        var y = CreateTestEntity(x);
+        Equal(null, y.GetBestTitle());
+    }
+    
+
+
+    [Fact]
     public void CheckValuesNone()
     {
-        var x = new MockRawEntityRecord();
+        var x = new MockRawEntity();
         var y = CreateTestEntity(x);
         Empty(y.Attributes);
     }
@@ -87,7 +98,7 @@ public abstract class DataFactoryItemProperties
     [Fact]
     public void CheckValuesOne()
     {
-        var x = new MockRawEntityRecord { Values = new Dictionary<string, object?>
+        var x = new MockRawEntity { Values = new Dictionary<string, object?>
         {
             { "Key", "Value" },
         }};
@@ -98,7 +109,7 @@ public abstract class DataFactoryItemProperties
     [Fact]
     public void CheckValuesThree()
     {
-        var x = new MockRawEntityRecord { Values = new Dictionary<string, object?>
+        var x = new MockRawEntity { Values = new Dictionary<string, object?>
         {
             { "Key", "Value" },
             { "Key2", "Value" },

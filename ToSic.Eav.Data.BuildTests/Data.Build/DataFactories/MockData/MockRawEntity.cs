@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
 
-namespace ToSic.Eav.Data.Build.DataFactories;
+namespace ToSic.Eav.Data.Build.DataFactories.MockData;
 
-internal record MockRawEntityRecord : IRawEntity
+internal record MockRawEntity : IRawEntity
 {
     public const int DefaultId = 42;
 
@@ -18,7 +18,7 @@ internal record MockRawEntityRecord : IRawEntity
 /// </summary>
 /// <param name="_dataToProvideInConverter"></param>
 // ReSharper disable once InconsistentNaming
-internal record MockRawEntityProvidingConversion(IRawEntity _dataToProvideInConverter) : MockRawEntityRecord, IRawEntityConvertible
+internal record MockRawEntityProvidingConversion(IRawEntity _dataToProvideInConverter) : MockRawEntity, IRawEntityConvertible
 {
     public IRawEntityConverter GetConverter() =>
         new RawEntityConverterFactory<MockRawEntityProvidingConversion>((_, _) =>

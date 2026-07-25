@@ -1,13 +1,13 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
 
-namespace ToSic.Eav.Data.Build.DataFactories;
+namespace ToSic.Eav.Data.Build.DataFactories.MockData;
 
 internal record MockRawConvertible : IRawEntityConvertible
 {
     public const int DefaultId = 92;
     public IRawEntityConverter GetConverter() =>
         new RawEntityConverterFactory<MockRawConvertible>((_, _) =>
-            new MockRawEntityRecord
+            new MockRawEntity
             {
                 Id = DefaultId,
             }
