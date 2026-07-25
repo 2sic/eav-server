@@ -37,7 +37,7 @@ partial class DataFactory
             : null;
 
         // Set this the first time it's used, in case it should override the fallback content-type
-        PctHelper.TypeFallbackIfNotSet ??= typeGiver.GetType();
+        ContentTypeHelper.TypeFallbackIfNotSet ??= typeGiver.GetType();
 
         return Create(
             rawEntity.Values,

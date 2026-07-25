@@ -3,7 +3,14 @@ using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Build;
 
-internal class DataFactoryPreferredContentType(
+/// <summary>
+/// Handles complexity of determining / retrieving the correct content-type to apply to a Raw-Entity being converted into a real entity.
+/// </summary>
+/// <param name="options"></param>
+/// <param name="codeCtManager"></param>
+/// <param name="typeAssembler"></param>
+/// <param name="parentLog"></param>
+internal class DataFactoryContentTypeHelper(
     DataFactoryOptions options,
     LazySvc<ContentTypesFromCodeManager> codeCtManager,
     LazySvc<ContentTypeAssembler> typeAssembler,

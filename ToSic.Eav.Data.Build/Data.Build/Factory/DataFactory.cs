@@ -30,14 +30,14 @@ internal partial class DataFactory(
     private DateTime FixedDateTime { get; } = DateTime.Now;
 
     [field: AllowNull, MaybeNull]
-    private DataFactoryPreferredContentType PctHelper => field
+    private DataFactoryContentTypeHelper ContentTypeHelper => field
         ??= new(MyOptions, codeCtManager, typeAssembler, Log);
 
-    private string PreferredTitleFieldName => field ??= PctHelper.PreferredTitleFieldName;
+    private string PreferredTitleFieldName => field ??= ContentTypeHelper.PreferredTitleFieldName;
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
-    public IContentType ContentType => field ??= PctHelper.PreferredContentType;
+    public IContentType ContentType => field ??= ContentTypeHelper.PreferredContentType;
     
     /// <summary>
     /// The DataBuilder used for this DataFactory.
