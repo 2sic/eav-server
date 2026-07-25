@@ -50,7 +50,7 @@ public abstract class DataFactoryItemTitle
     private IEntity CreateSpecsNone_WithSingleValue(string key, string value) =>
         CreateTestEntity(new MockRawEntity
         {
-            Values = new Dictionary<string, object?>()
+            Values = new Dictionary<string, object?>
             {
                 { key, value }
             }
@@ -58,7 +58,7 @@ public abstract class DataFactoryItemTitle
     private IEntity CreateSpecs_NameTitle_WithSingleValue(string key, string value) =>
         CreateTestEntity(new MockRawWithNameTitle
         {
-            Values = new Dictionary<string, object?>()
+            Values = new Dictionary<string, object?>
             {
                 { key, value }
             }
