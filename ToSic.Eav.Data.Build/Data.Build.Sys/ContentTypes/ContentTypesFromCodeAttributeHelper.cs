@@ -133,7 +133,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
                 var attrIsTitle = specs?.IsTitle ?? false;
 
                 // Create list of metadata with description; must be null if no metadata
-                var mdItems = AttributeSpecsGeneral
+                var mdItems = AttributeSettingsGeneral
                     .FromCodeAttributeOrNull(specs)
                     .NullOrGetWith(mdRaw => services.DataFactory.Create([mdRaw]))
                     ?.ToListOpt();
