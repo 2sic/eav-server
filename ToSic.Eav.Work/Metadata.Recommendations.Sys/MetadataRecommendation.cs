@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Data.ContentTypes.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Sys.Utils;
 

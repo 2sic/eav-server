@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Sys.ContentTypes;
+﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IDeferredContentTypeProvider

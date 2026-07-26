@@ -2,7 +2,7 @@
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
-namespace ToSic.Eav.Data.Sys.ContentTypes;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 /// <summary>
 /// Provides metadata for a content type. This can be very special, because ContentTypes can be shared (ghosts),

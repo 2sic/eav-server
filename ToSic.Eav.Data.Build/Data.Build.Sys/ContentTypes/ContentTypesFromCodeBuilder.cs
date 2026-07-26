@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 
 namespace ToSic.Eav.Data.Build.Sys;

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Sys.ContentTypes;
+﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 /// <summary>
 /// todo

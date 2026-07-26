@@ -4,7 +4,6 @@
 
 using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 // ReSharper disable once CheckNamespace
-using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.ImportExport.Json.V1;
 
