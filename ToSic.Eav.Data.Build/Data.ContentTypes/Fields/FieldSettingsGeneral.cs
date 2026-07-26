@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys.Attributes;
 
 namespace ToSic.Eav.Data.ContentTypes.Fields;
 
@@ -8,22 +7,22 @@ namespace ToSic.Eav.Data.ContentTypes.Fields;
 /// </summary>
 [ContentType(
     Name = MyTypeNameId,
-    Guid = "0bab4be8-e795-4d9f-b50e-f7ec161ed8cb",  // must match DB Guid of @All
+    Guid = "0bab4be8-e795-4d9f-b50e-f7ec161ed8cb",  // made-up GUID, can't match DB Guid since it's currently `@All`
     Description = "General settings for every Attribute (field) on a Content-Type."
 )]
 internal record FieldSettingsGeneral: RawEntity
 {
     public const string MyTypeNameId = "@All";
 
-    public string Description { get; init; } = "";
+    public string Notes { get; init; } = "";
 
     public string InputType { get; init; } = "";
 
     protected override IDictionary<string, object?> GetValues() =>
         new Dictionary<string, object?>
         {
-            { AttributeMetadataConstants.DescriptionField, Description },
-            { AttributeMetadataConstants.GeneralFieldInputType, InputType }
+            { nameof(IFieldSettingsGeneral.Notes), Notes },
+            { nameof(IFieldSettingsGeneral.InputType), InputType }
         };
 
     internal static FieldSettingsGeneral? FromCodeAttributeOrNull(ContentTypeFieldAttribute? attr)
@@ -31,7 +30,7 @@ internal record FieldSettingsGeneral: RawEntity
             ? null
             : new()
             {
-                Description = attr.Description ?? "",
+                Notes = attr.Description ?? "",
                 InputType = attr.InputTypeWIP ?? ""
             };
 }

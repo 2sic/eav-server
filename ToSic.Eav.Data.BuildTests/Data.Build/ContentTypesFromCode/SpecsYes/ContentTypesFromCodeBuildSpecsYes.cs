@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
@@ -82,7 +82,7 @@ public abstract class ContentTypesFromCodeBuildSpecsYes<TCodeTypeWithSpecs>(Cont
             .Attributes
             .FirstOrDefault(a => a.Key == key);
 
-        Equal(CodeTypeSpecsConstants.IdAndGuidDescription, forId.Value.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField));
+        Equal(CodeTypeSpecsConstants.IdAndGuidDescription, forId.Value.Metadata.Get<string>(nameof(IFieldSettingsGeneral.Notes)));
     }
 
     #endregion

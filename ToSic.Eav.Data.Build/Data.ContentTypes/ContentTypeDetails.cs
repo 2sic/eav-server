@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Data.ContentTypes;
 
 [ContentType(
-    Name = ContentTypeConstants.ContentTypeName,
+    Name = IContentTypeDetails.Constants.ContentTypeName,
     Guid = "3ef2547d-8a6d-4cc4-91e0-a6396b96f7e7", // Made-up Guid!, real Guid is "ContentType" which would fail! should be fixed some day...
     Description = "Content-Type for the main properties which 'all' attributes have."
 )]

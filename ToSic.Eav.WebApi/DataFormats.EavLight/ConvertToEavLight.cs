@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using ToSic.Eav.Context.Sys.ZoneCulture;
+using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
@@ -275,7 +276,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
         excludeAttributes = entity.Type.Attributes
             ?.ToListOpt()
             .Where(a => a.Type == ValueTypes.Empty
-                        || a.Metadata.Get<bool>(AttributeMetadataConstants.MetadataFieldAllIsEphemeral))
+                        || a.Metadata.Get<bool>(nameof(IFieldSettingsGeneral.IsEphemeral)))
             .Select(a => a.Name)
             .ToListOpt()
             ?? [];

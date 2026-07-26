@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
@@ -9,12 +9,14 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
-using static ToSic.Eav.Data.Sys.Attributes.AttributeMetadataConstants;
-
 
 namespace ToSic.Eav.WebApi.Sys;
 
-public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes, IAppReaderFactory appReaders, LazySvc<RecommendedMetadataService> mdRead)
+public class ConvertAttributeToDto(
+    LazySvc<IConvertToEavLight> convertToLight,
+    GenWorkPlus<WorkInputTypes> inputTypes,
+    IAppReaderFactory appReaders,
+    LazySvc<RecommendedMetadataService> mdRead)
     : ServiceBase("Cnv.AtrDto", connect: [inputTypes, convertToLight, mdRead]),
         IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
 {
@@ -79,7 +81,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
             },
 
             // new in 12.01
-            IsEphemeral = a.Metadata.Get<bool>(MetadataFieldAllIsEphemeral, typeName: TypeGeneral),
+            IsEphemeral = a.Metadata.Get<bool>(nameof(IFieldSettingsGeneral.IsEphemeral), typeName: IFieldSettingsGeneral.Constants.ContentTypeName),
             HasFormulas = a.HasFormulas(Log),
 
             // Read-Only new in v13
@@ -194,7 +196,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
     /// </remarks>
     private static string FindInputTypeOrUnknownOld(IContentTypeAttribute attribute)
     {
-        var inputType = attribute.Metadata.Get<string>(GeneralFieldInputType, typeName: TypeGeneral);
+        var inputType = attribute.Metadata.Get<string>(nameof(IFieldSettingsGeneral.InputType), typeName: IFieldSettingsGeneral.Constants.ContentTypeName);
 
         // unknown will let the UI fallback on other mechanisms
         return inputType.IsEmpty()

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Values;
@@ -81,10 +82,10 @@ public class WorkAttributesMod(
         {
             { "VisibleInEditUI", true },
             { "Name", staticName },
-            { AttributeMetadataConstants.GeneralFieldInputType, inputType }
+            { nameof(IFieldSettingsGeneral.InputType), inputType }
         };
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
+        workMetadata.New(AppWorkCtx).SaveMetadata(meta, IFieldSettingsGeneral.Constants.ContentTypeName, newValues);
         l.Done();
     }
 
@@ -101,10 +102,10 @@ public class WorkAttributesMod(
                         ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
         var contentTypeId = attribute.ContentTypeId;
 
-        var newValues = new Dictionary<string, object> { { AttributeMetadataConstants.GeneralFieldInputType, inputType } };
+        var newValues = new Dictionary<string, object> { { nameof(IFieldSettingsGeneral.InputType), inputType } };
 
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
+        workMetadata.New(AppWorkCtx).SaveMetadata(meta, IFieldSettingsGeneral.Constants.ContentTypeName, newValues);
         TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }

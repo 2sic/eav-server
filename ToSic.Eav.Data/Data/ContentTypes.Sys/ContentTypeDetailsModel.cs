@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.ContentTypes.Sys;
 /// * Renamed from `ContentTypeDetails` to `ContentTypeDetailsModel` in v22
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[ModelSpecs(ContentType = ContentTypeConstants.ContentTypeName)]
+[ModelSpecs(ContentType = IContentTypeDetails.Constants.ContentTypeName)]
 internal record ContentTypeDetailsModel: ModelFromEntityBasic, IContentTypeDetails
 {
     public string? Notes => GetThis<string>(null);

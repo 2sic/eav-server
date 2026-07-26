@@ -18,7 +18,7 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 // TODO: 2dm - this looks wrong, this does not contain the data for a content-type.
 [ContentType(
     Guid = "e405beb3-9097-4790-b7b0-0e6d37502bef",
-    Name = ContentTypeConstants.ContentTypeName,
+    Name = IContentTypeDetails.Constants.ContentTypeName,
     Scope = "System",
     Description = "A ContentType (Schema) describing Entities."
 )]

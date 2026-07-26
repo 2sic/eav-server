@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Attributes;
+﻿using ToSic.Eav.Data.ContentTypes.Fields;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -20,7 +20,7 @@ public static class ContentTypeFieldAssertions
             .HasName(name)
             .IsType(type)
             .IsTitle(isTitle)
-            .HasDescription(description);
+            .HasNotesDescription(description);
     }
 
     extension(IContentTypeAttribute attr)
@@ -43,9 +43,9 @@ public static class ContentTypeFieldAssertions
             return attr;
         }
         
-        public IContentTypeAttribute HasDescription(string? description = null)
+        public IContentTypeAttribute HasNotesDescription(string? notes = null)
         {
-            Equal(description, attr.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField));
+            Equal(notes, attr.Metadata.Get<string>(nameof(IFieldSettingsGeneral.Notes)));
             return attr;
         }
     }

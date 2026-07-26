@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
@@ -120,7 +121,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
                     builtIn: false,
                     contentTypeName: at.Type.Name,
                     // TODO: FILTER html
-                    description: at.Attribute.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)
+                    description: at.Attribute.Metadata.Get<string>(nameof(IFieldSettingsGeneral.Notes))
                 )
             )
             .ToList();
@@ -194,7 +195,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
             {
                 var descriptionProvider = sysFieldAttributes
                     .FirstOrDefault(x => x.Key == sysField.Key).Value;
-                var description = descriptionProvider?.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)
+                var description = descriptionProvider?.Metadata.Get<string>(nameof(IFieldSettingsGeneral.Notes))
                                   ?? (AttributeNames.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
                                       ? desc
                                       : default);
