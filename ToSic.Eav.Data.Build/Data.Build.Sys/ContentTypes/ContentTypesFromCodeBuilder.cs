@@ -12,8 +12,8 @@ namespace ToSic.Eav.Data.Build.Sys;
 public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencies services)
     : ServiceBase<ContentTypesFromCodeBuilder.Dependencies>(services, "Eav.CtFact")
 {
-    public record Dependencies(ContentTypeAssemblyKit CtAssemblyKit, EntityAssembler EntityAssembler, AttributeListAssembler AttributeListAssembler)
-        : DependenciesRecord(connect: [CtAssemblyKit, EntityAssembler, AttributeListAssembler]);
+    public record Dependencies(ContentTypeAssemblyKit TypeAssemblyKit, EntityAssembler EntityAssembler, AttributeListAssembler AttrListAssembler, IDataFactory DataFactory)
+        : DependenciesRecord(connect: [TypeAssemblyKit, EntityAssembler, AttrListAssembler, DataFactory]);
 
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
@@ -45,7 +45,7 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
         var attributeHelper = new ContentTypesFromCodeAttributeHelper(Services, Log);
         var (attributes, builtInAttributeDecorator) = attributeHelper.Process(type);
 
-        var contentType = Services.CtAssemblyKit.Type.Create(
+        var contentType = Services.TypeAssemblyKit.Type.Create(
             appId,
             name: ctName,
             nameId: ctNameId,
@@ -78,12 +78,12 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
         {
             { nameof(ContentTypeDetails.Description), description }
         };
-        var attributes = Services.AttributeListAssembler.Finalize(dic);
+        var attributes = Services.AttrListAssembler.Finalize(dic);
 
         // Create a Description entity
         var entity = Services.EntityAssembler.Create(
             NoAppId,
-            Services.CtAssemblyKit.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName),
+            Services.TypeAssemblyKit.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName),
             attributes: attributes
         );
         return l.Return(entity, "created");

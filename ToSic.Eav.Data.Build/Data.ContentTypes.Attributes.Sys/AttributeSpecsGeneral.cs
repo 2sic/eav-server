@@ -1,7 +1,8 @@
-﻿using ToSic.Eav.Data.Sys.Attributes;
+﻿using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
 
-namespace ToSic.Eav.Data.AttributeDefinition.Sys;
+namespace ToSic.Eav.Data.ContentTypes.Attributes.Sys;
 
 /// <summary>
 /// WIP attribute model
@@ -11,7 +12,7 @@ namespace ToSic.Eav.Data.AttributeDefinition.Sys;
     Guid = "0bab4be8-e795-4d9f-b50e-f7ec161ed8cb",  // must match DB Guid of @All
     Description = "Content-Type for the main properties which 'all' attributes have."
 )]
-internal record ContentTypeAttributeAll
+internal record AttributeSpecsGeneral: RawEntity
 {
     public const string MyTypeNameId = "@All";
 
@@ -19,7 +20,7 @@ internal record ContentTypeAttributeAll
     
     public string InputType { get; init; }
 
-    public Dictionary<string, object?> BuildValues()
+    protected override IDictionary<string, object?> GetValues()
     {
         var dic = new Dictionary<string, object?>();
         if (!Description.IsEmptyOrWs())
@@ -32,7 +33,7 @@ internal record ContentTypeAttributeAll
     // ContentTypeAttributes
     // AttributeDefinitions
 
-    internal static ContentTypeAttributeAll? FromCodeAttributeOrNull(ContentTypeAttributeSpecsAttribute? attr)
+    internal static AttributeSpecsGeneral? FromCodeAttributeOrNull(ContentTypeAttributeSpecsAttribute? attr)
         => attr == null || (attr.Description.IsEmptyOrWs() && attr.InputTypeWIP.IsEmptyOrWs())
             ? null
             : new()

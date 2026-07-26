@@ -1,8 +1,7 @@
 ﻿using System.Reflection;
-using ToSic.Eav.Data.AttributeDefinition.Sys;
+using ToSic.Eav.Data.ContentTypes.Attributes.Sys;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Metadata;
@@ -117,7 +116,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
             .Select(p =>
                 new
                 {
-                    Property = p,
+                    PropertyInfo = p,
                     Specs = p.GetCustomAttributes<ContentTypeAttributeSpecsAttribute>().FirstOrDefault(),
                 })
             .Where(pair => !skipNoMetadata || pair.Specs != null)
@@ -127,59 +126,28 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
             .Select(pair =>
             {
                 var specs = pair.Specs;
-                var propertyInfo = pair.Property;
-                var attrName = specs?.Name ?? propertyInfo.Name;
-                var attrType = specs == null || specs.Type == ValueTypes.Undefined
-                    ? ValueTypeHelpers.Get(propertyInfo.PropertyType)
+                var attrName = specs?.Name ?? pair.PropertyInfo.Name;
+                var attrType = specs is null || specs.Type == ValueTypes.Undefined
+                    ? ValueTypeHelpers.Get(pair.PropertyInfo.PropertyType)
                     : specs.Type;
                 var attrIsTitle = specs?.IsTitle ?? false;
 
-                // Must be null if no metadata
-                var attrMetadata = ContentTypeAttributeDetails(
-                        ContentTypeAttributeAll.FromCodeAttributeOrNull(specs)
-                    )
-                    .ToListOfOneOrNull();
+                // Create list of metadata with description; must be null if no metadata
+                var mdItems = AttributeSpecsGeneral
+                    .FromCodeAttributeOrNull(specs)
+                    .NullOrGetWith(mdRaw => services.DataFactory.Create([mdRaw]))
+                    ?.ToListOpt();
 
-                return services.CtAssemblyKit.Attribute.Create(
+                return services.TypeAssemblyKit.Attribute.Create(
                     NoAppId,
                     name: attrName,
                     type: attrType,
                     isTitle: attrIsTitle,
-                    metadataItems: attrMetadata
+                    metadataItems: mdItems
                 );
             })
             .ToListOpt();
         return attributes;
-    }
-
-    /// <summary>
-    /// Generate a details entity for an attribute of a content type.
-    /// Most properties like icon etc. are not important, so ATM it only does:
-    /// - Description
-    /// - InputType
-    /// </summary>
-    /// <remarks>
-    /// I guess we could use the DataFactory here, but as of 2026-07 we're careful to
-    /// not introduce that as a dependency here, since it could end up circling back.
-    /// </remarks>
-    private IEntity? ContentTypeAttributeDetails(ContentTypeAttributeAll? attrAll)
-    {
-        var l = Log.Fn<IEntity>();
-
-        if (attrAll == null)
-            return l.ReturnNull("no details");
-
-        // All props
-        var dic = attrAll.BuildValues();
-        var attributes = services.AttributeListAssembler.Finalize(dic);
-
-        // Create a Description entity
-        var entity = services.EntityAssembler.Create(
-            NoAppId,
-            services.CtAssemblyKit.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral),
-            attributes: attributes
-        );
-        return l.Return(entity, "created");
     }
 
 }
