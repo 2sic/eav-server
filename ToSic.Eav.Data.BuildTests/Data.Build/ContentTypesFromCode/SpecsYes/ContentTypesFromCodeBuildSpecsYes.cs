@@ -1,9 +1,7 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.ContentTypes;
-using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;

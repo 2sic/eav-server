@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.ContentTypes;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using static ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes.CodeTypeSpecsConstants;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.

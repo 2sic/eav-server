@@ -3,7 +3,6 @@ using ToSic.Eav.Data.Build.DataFactories.MockData;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using static ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes.CodeTypeSpecsConstants;
 // ReSharper disable UnassignedGetOnlyAutoProperty
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
