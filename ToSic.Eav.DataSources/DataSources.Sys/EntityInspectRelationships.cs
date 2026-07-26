@@ -105,11 +105,11 @@ public sealed class EntityInspectRelationships : CustomDataSource
         Name = MyContentTypeName
     )]
     private record EntityRelationship(
-        [property: ContentTypeFieldIgnore]
+        [property: ContentTypeIgnore]
         IEntity Entity, 
         string Field,
         bool IsChild,
-        [property: ContentTypeFieldIgnore]
+        [property: ContentTypeIgnore]
         bool FeatEnabled
     ) : /*RawEntityRecordBase,*/ IRawEntityConvertible
     {

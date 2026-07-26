@@ -36,7 +36,7 @@ public record CodeTypeSpecsYesRecord(
     [property: ContentTypeField(Description = IsAliveDescription)]
     bool IsAlive,
 
-    [property: ContentTypeFieldIgnore] string IgnoreThis
+    [property: ContentTypeIgnore] string IgnoreThis
 )
 {
     private string PrivateProperty { get; set; }

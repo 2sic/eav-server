@@ -97,7 +97,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
                     when typeof(IDictionary<string, object?>) == p.PropertyType
                     => TempCategory.Ignore,
 
-                _ => p.GetCustomAttribute<ContentTypeFieldIgnoreAttribute>() != null
+                _ => p.GetCustomAttribute<ContentTypeIgnoreAttribute>() != null
                     ? TempCategory.Ignore
                     : TempCategory.General,
             };

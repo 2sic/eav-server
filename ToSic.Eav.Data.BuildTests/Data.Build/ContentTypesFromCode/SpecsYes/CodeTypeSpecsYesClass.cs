@@ -35,7 +35,7 @@ public class CodeTypeSpecsYesClass
     public bool IsAlive { get; set; }
 
 
-    [ContentTypeFieldIgnore]
+    [ContentTypeIgnore]
     public string IgnoreThis { get; set; }
 
     private string PrivateProperty { get; set; }

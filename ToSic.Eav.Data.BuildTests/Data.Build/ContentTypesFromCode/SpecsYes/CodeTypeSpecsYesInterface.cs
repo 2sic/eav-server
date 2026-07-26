@@ -38,7 +38,7 @@ public interface ICodeTypeSpecsYesInterface
     public bool IsAlive { get; set; }
 
 
-    [ContentTypeFieldIgnore]
+    [ContentTypeIgnore]
     public string IgnoreThis { get; set; }
 
     //private string PrivateProperty { get; set; }

@@ -43,7 +43,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     public required int Id { get; init; }
 
     /// <inheritdoc />
-    [ContentTypeFieldIgnore]
+    [ContentTypeIgnore]
     public IEnumerable<IContentTypeAttribute> Attributes => AttributesImmutable;
     public required IImmutableList<IContentTypeAttribute> AttributesImmutable { get; init; }
 
@@ -65,7 +65,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
 
     [JsonIgnore]
     [PrivateApi("new 15.04")]
-    [ContentTypeFieldIgnore]
+    [ContentTypeIgnore]
     public string? TitleFieldName
         => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
     private readonly GetOnce<string?> _titleFieldName = new();
@@ -74,7 +74,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     /// For future use, like if this type is SQL based etc.
     /// </summary>
     [PrivateApi]
-    [ContentTypeFieldIgnore]
+    [ContentTypeIgnore]
     public ContentTypeSysSettings? SysSettings { get; init; }
 
     /// <inheritdoc />
