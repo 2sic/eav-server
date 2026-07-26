@@ -3,7 +3,7 @@
 [PrivateApi("WIP")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class ContentTypeFieldAttribute: Attribute
+public class ContentTypeFieldAttribute : Attribute
 {
     /// <summary>
     /// Attribute name. Usually not set, as it's the name of the property

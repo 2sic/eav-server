@@ -16,6 +16,7 @@ public class ContentTypeFromCodeBuilderResultingSpecs(ContentTypesFromCodeManage
     [Theory]
     [InlineData(false, typeof(CodeTypeSpecsNoEmpty))]
     [InlineData(true, typeof(CodeTypeSpecsYesEmpty))]
+    [InlineData(true, typeof(CodeTypeSpecsYesAssigned))]
     public void IsConfigured(bool expected, Type type)
         => Equal(expected, ctDefManager.IsConfiguredTac(type));
 
@@ -23,6 +24,7 @@ public class ContentTypeFromCodeBuilderResultingSpecs(ContentTypesFromCodeManage
     [Theory]
     [InlineData(nameof(CodeTypeSpecsNoEmpty), typeof(CodeTypeSpecsNoEmpty))]
     [InlineData(CodeTypeSpecsConstants.SpecName, typeof(CodeTypeSpecsYesEmpty))]
+    [InlineData(CodeTypeSpecsConstants.SpecName, typeof(CodeTypeSpecsYesAssigned))]
     public void Name(string expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).Name);
     
@@ -31,6 +33,7 @@ public class ContentTypeFromCodeBuilderResultingSpecs(ContentTypesFromCodeManage
     [Theory]
     [InlineData(ScopeConstants.Default, typeof(CodeTypeSpecsNoEmpty))]
     [InlineData(CodeTypeSpecsConstants.SpecScope, typeof(CodeTypeSpecsYesEmpty))]
+    [InlineData(CodeTypeSpecsConstants.SpecScope, typeof(CodeTypeSpecsYesAssigned))]
     public void Scope(string expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).Scope);
     
@@ -38,6 +41,7 @@ public class ContentTypeFromCodeBuilderResultingSpecs(ContentTypesFromCodeManage
     [Theory]
     [InlineData("00000000-0000-0000-0000-000000000000", typeof(CodeTypeSpecsNoEmpty))]
     [InlineData(CodeTypeSpecsConstants.SpecGuid, typeof(CodeTypeSpecsYesEmpty))]
+    [InlineData(CodeTypeSpecsConstants.SpecGuid, typeof(CodeTypeSpecsYesAssigned))]
     public void NameId(string expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).NameId);
 
@@ -45,6 +49,7 @@ public class ContentTypeFromCodeBuilderResultingSpecs(ContentTypesFromCodeManage
     [Theory]
     [InlineData(ContentTypesFromCodeManager.NoAppId, typeof(CodeTypeSpecsNoEmpty))]
     [InlineData(ContentTypesFromCodeManager.NoAppId, typeof(CodeTypeSpecsYesEmpty))]
+    [InlineData(ContentTypesFromCodeManager.NoAppId, typeof(CodeTypeSpecsYesAssigned))]
     public void AppId(int expected, Type type)
         => Equal(expected, ctDefManager.CreateTac(type).AppId);
 
@@ -56,6 +61,7 @@ public class ContentTypeFromCodeBuilderResultingSpecs(ContentTypesFromCodeManage
     [Theory]
     [InlineData(RepositoryTypes.CodeReflection, nameof(CodeTypeSpecsNoEmpty))]
     [InlineData(RepositoryTypes.CodeConfiguration, nameof(CodeTypeSpecsYesEmpty))]
+    [InlineData(RepositoryTypes.CodeConfiguration, nameof(CodeTypeSpecsYesAssigned))]
     public void RepositoryType(RepositoryTypes expected, string typeName)
         => Equal(expected, ctDefManager.CreateTac(typeof(CodeTypeSpecsNoEmpty).Assembly.GetTypeFromName(typeName)).RepositoryType);
 

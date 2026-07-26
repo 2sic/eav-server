@@ -42,18 +42,48 @@ public class ContentTypesFromCodeManager(LazySvc<ContentTypesFromCodeBuilder> ct
     {
         if (IsConfiguredCache.TryGetValue(type, out var ct))
             return ct;
-        var isConfig = type.GetDirectlyAttachedAttribute<ContentTypeAttribute>() != null;
+
+        // Check if we have type redirection
+        var underlyingType = FindReassignedType(type);
+
+        // Check if this is configured
+        var isConfig = underlyingType.GetDirectlyAttachedAttribute<ContentTypeAttribute>() != null;
+
+        // Remember for future use
         IsConfiguredCache[type] = isConfig;
+
+        // if we had redirection, remember that too
+        if (underlyingType != type)
+            IsConfiguredCache[underlyingType] = isConfig;
+
         return isConfig;
     }
 
     private IContentType CreateAndAddToCache(Type type)
     {
-        var created = ctBuilder.Value.Generate(type,  name: null, nameId: null, scope: null);
+        // Check if we have type redirection
+        var underlyingType = FindReassignedType(type);
+
+        // Generate
+        var created = ctBuilder.Value.Generate(underlyingType,  name: null, nameId: null, scope: null);
+        var isConfigured = created.RepositoryType == RepositoryTypes.CodeConfiguration;
+
+        // Remember for future use
         CtCache[type] = created;
-        IsConfiguredCache[type] = created.RepositoryType == RepositoryTypes.CodeConfiguration;
+        IsConfiguredCache[type] = isConfigured;
+        
+        // if we had redirection, remember that too
+        if (underlyingType != type)
+        {
+            CtCache[underlyingType] = created;
+            IsConfiguredCache[underlyingType] = isConfigured;
+        }
+
         return created;
     }
+
+    private Type FindReassignedType(Type type) =>
+        type.GetDirectlyAttachedAttribute<ContentTypeAssignAttribute>()?.Type ?? type;
 
     private static readonly ConcurrentDictionary<Type, IContentType> CtCache = new();
 
