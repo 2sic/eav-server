@@ -31,7 +31,7 @@ partial class XmlImportWithFiles
         var ctElement = xmlContentType.Element(XmlConstants.Attributes);
         var typeName = xmlContentType.Attribute(XmlConstants.Name)!.Value;
 
-        var attributes = new List<IContentTypeAttribute>();
+        var attributes = new List<IContentTypeField>();
         var metadataCount = 0;
         if (ctElement != null)
         {

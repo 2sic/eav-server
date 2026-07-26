@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 /// * Changed to be a record in v19.01
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal record ContentTypeField : IContentTypeAttribute
+internal record ContentTypeField : IContentTypeField
 {
     /// <inheritdoc />
     public required string Name { get; init; }

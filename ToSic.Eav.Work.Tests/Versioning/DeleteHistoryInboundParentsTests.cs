@@ -32,7 +32,7 @@ public class DeleteHistoryInboundParentsTests(
         // Arrange
         var dc = dbDataGenerator.New(new(TestSpecs.ZoneId, TestSpecs.AppId));
 
-        // Pick an existing relationship to get a valid parent + attribute/field.
+        // Pick an existing relationship to get a valid parent + fieldDef/field.
         var templateRel = dc.SqlDb.TsDynDataRelationships
             .AsNoTracking()
             .Where(r => r.ChildEntityId != null)

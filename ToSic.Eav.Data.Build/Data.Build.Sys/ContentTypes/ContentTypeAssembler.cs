@@ -26,7 +26,7 @@ public class ContentTypeAssembler
         string scope,
 
         // Contents (1)
-        IList<IContentTypeAttribute>? attributes = default,
+        IList<IContentTypeField>? attributes = default,
 
         // Basic specs (2)
         bool isAlwaysShared = default,  // This is a shared type
@@ -58,7 +58,7 @@ public class ContentTypeAssembler
         // Prepare metadata retrieval
         metadata ??= new ContentTypeMetadata(typeId: nameId, title: name, source: new MetadataProviderEmpty());
 
-        attributes ??= new List<IContentTypeAttribute>();
+        attributes ??= new List<IContentTypeField>();
 
         scope = ScopeConstants.RenameOldScope(scope);
 
@@ -94,7 +94,7 @@ public class ContentTypeAssembler
         int? id = default,
         string? scope = default,
         // Contents (1)
-        IList<IContentTypeAttribute>? attributes = default,
+        IList<IContentTypeField>? attributes = default,
 
         // Basic specs (2)
         bool? isAlwaysShared = default,  // This is a shared type
@@ -167,7 +167,7 @@ public class ContentTypeAssembler
             nameId: nameId ?? typeName,
             id: DynTypeId,
             scope: scope ?? ScopeConstants.System,
-            attributes: new List<IContentTypeAttribute>(), isDynamic: true
+            attributes: new List<IContentTypeField>(), isDynamic: true
         );
 
 }

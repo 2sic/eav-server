@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkFieldEntityInspectType(): ServiceBase("Eav.AtInTy")
 {
-    public string PrimaryTypeName(IContentTypeAttribute definition, bool modeCreate, bool tryOtherModes = false)
+    public string PrimaryTypeName(IContentTypeField definition, bool modeCreate, bool tryOtherModes = false)
     {
         var l = Log.Fn<string>($"attribute: {definition.Name}; {nameof(modeCreate)}: {modeCreate}; {nameof(tryOtherModes)}: {tryOtherModes}");
         var name = PrimaryTypeNames(definition, modeCreate, tryOtherModes).FirstOrDefault() ?? "";
@@ -23,7 +23,7 @@ public class WorkFieldEntityInspectType(): ServiceBase("Eav.AtInTy")
     /// <param name="modeCreate">Should look in types for create-now (if false, only look in other modes).</param>
     /// <param name="tryOtherModes">Indicates if other modes should be tried if the primary mode fails.</param>
     /// <returns>A list of primary entity-type names.</returns>
-    public IList<string> PrimaryTypeNames(IContentTypeAttribute definition, bool modeCreate, bool tryOtherModes = false)
+    public IList<string> PrimaryTypeNames(IContentTypeField definition, bool modeCreate, bool tryOtherModes = false)
     {
         var l = Log.Fn<IList<string>>($"attribute: {definition.Name}; {nameof(modeCreate)}: {modeCreate}; {nameof(tryOtherModes)}: {tryOtherModes}");
         // Make sure it's the right initial type

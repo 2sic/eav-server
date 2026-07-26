@@ -36,12 +36,12 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
     private const int AppId = KnownAppsConstants.TransientAppId;
     //ContentType _ctNull = null;
 
-    private IContentTypeAttribute CreateField(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
+    private IContentTypeField CreateField(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
     {
         return ctAssemblyKit.Field.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
     }
 
-    IContentType _ctPerson => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "Person", attributes: new List<IContentTypeAttribute>
+    IContentType _ctPerson => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "Person", attributes: new List<IContentTypeField>
     {
         CreateField(AppId, "FullName", "String", true, 0, 0),
         CreateField(AppId, "FirstName", "String", true, 0, 0),
@@ -140,7 +140,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
 
     #region Test Data ML
 
-    IContentType _ctMlProduct => ctAssemblyKit.Type.CreateContentTypeTac(appId: -1, name: "Product", attributes: new List<IContentTypeAttribute>
+    IContentType _ctMlProduct => ctAssemblyKit.Type.CreateContentTypeTac(appId: -1, name: "Product", attributes: new List<IContentTypeField>
         {
             CreateField(AppId, AttributeNames.TitleNiceName, "String", true, 0, 0),
             CreateField(AppId, "Teaser", "String", false, 0, 0),

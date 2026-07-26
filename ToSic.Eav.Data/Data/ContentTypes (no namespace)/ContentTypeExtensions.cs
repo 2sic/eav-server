@@ -13,73 +13,73 @@ namespace ToSic.Eav.Data;
 public static partial class ContentTypeExtensions
 {
     /// <summary>
-    /// Detect if the attribute is of Boolean type.
+    /// Detect if the fieldDef is of Boolean type.
     /// </summary>
-    public static bool IsBoolean(this IContentTypeAttribute attribute) => attribute.Type == ValueTypes.Boolean;
+    public static bool IsBoolean(this IContentTypeField fieldDef) => fieldDef.Type == ValueTypes.Boolean;
 
     /// <summary>
-    /// Detect if the attribute is of DateTime type.
+    /// Detect if the fieldDef is of DateTime type.
     /// </summary>
-    public static bool IsDateTime(this IContentTypeAttribute attribute) => attribute.Type == ValueTypes.DateTime;
+    public static bool IsDateTime(this IContentTypeField fieldDef) => fieldDef.Type == ValueTypes.DateTime;
 
     /// <summary>
-    /// Detect if the attribute is of Entity type.
+    /// Detect if the fieldDef is of Entity type.
     /// </summary>
-    public static bool IsEntity(this IContentTypeAttribute attribute) => attribute.Type == ValueTypes.Entity;
+    public static bool IsEntity(this IContentTypeField fieldDef) => fieldDef.Type == ValueTypes.Entity;
 
     /// <summary>
-    /// Detect if the attribute is of Hyperlink type.
+    /// Detect if the fieldDef is of Hyperlink type.
     /// </summary>
-    public static bool IsHyperlink(this IContentTypeAttribute attribute) => attribute.Type == ValueTypes.Hyperlink;
+    public static bool IsHyperlink(this IContentTypeField fieldDef) => fieldDef.Type == ValueTypes.Hyperlink;
 
     /// <summary>
-    /// Detect if the attribute is of Number type.
+    /// Detect if the fieldDef is of Number type.
     /// </summary>
-    public static bool IsNumber(this IContentTypeAttribute attribute) => attribute.Type == ValueTypes.Number;
+    public static bool IsNumber(this IContentTypeField fieldDef) => fieldDef.Type == ValueTypes.Number;
 
     /// <summary>
-    /// Detect if the attribute is of String type.
+    /// Detect if the fieldDef is of String type.
     /// </summary>
-    public static bool IsString(this IContentTypeAttribute attribute) => attribute.Type == ValueTypes.String;
+    public static bool IsString(this IContentTypeField fieldDef) => fieldDef.Type == ValueTypes.String;
 
     /// <summary>
-    /// Detect if the attribute is of Empty type.
+    /// Detect if the fieldDef is of Empty type.
     /// This means it won't store any data and is mainly used for grouping or messages.
     /// </summary>
-    public static bool IsEmpty(this IContentTypeAttribute attribute) => attribute.Type == ValueTypes.Empty;
+    public static bool IsEmpty(this IContentTypeField fieldDef) => fieldDef.Type == ValueTypes.Empty;
 
     /// <summary>
-    /// Detect if the attribute is of Custom type.
+    /// Detect if the fieldDef is of Custom type.
     /// This is mainly used for GPS coordinates.
     /// </summary>
-    public static bool IsCustom(this IContentTypeAttribute attribute) => attribute.Type == ValueTypes.Custom;
+    public static bool IsCustom(this IContentTypeField fieldDef) => fieldDef.Type == ValueTypes.Custom;
 
     /// <summary>
     /// Empty fields can be group titles.
     /// </summary>
-    public static bool IsGroupTitle(this IContentTypeAttribute attribute) => attribute.InputType.StartsWith("empty-default");
+    public static bool IsGroupTitle(this IContentTypeField fieldDef) => fieldDef.InputType.StartsWith("empty-default");
 
     /// <summary>
     /// Empty fields can mark the end of a group.
     /// </summary>
-    public static bool IsGroupEnd(this IContentTypeAttribute attribute) => attribute.InputType.StartsWith("empty-end");
+    public static bool IsGroupEnd(this IContentTypeField fieldDef) => fieldDef.InputType.StartsWith("empty-end");
 
     /// <summary>
     /// Empty fields can be used as messages.
     /// </summary>
     /// <returns></returns>
-    public static bool IsMessage(this IContentTypeAttribute attribute) => attribute.InputType.StartsWith("empty-message");
+    public static bool IsMessage(this IContentTypeField fieldDef) => fieldDef.InputType.StartsWith("empty-message");
 
     /// <summary>
     /// Ephemeral attributes are not stored in the database and are mainly used for formulas or temporary data.
     /// </summary>
-    /// <param name="attribute"></param>
+    /// <param name="fieldDef"></param>
     /// <returns></returns>
     /// <remarks>
     /// Ephemeral attributes are not stored in the database and are mainly used for formulas or temporary data.
     /// 
     /// Added a bit later in v21.08.
     /// </remarks>
-    public static bool IsEphemeral(this IContentTypeAttribute attribute) =>
-        attribute.Metadata.Get<bool>(nameof(IFieldSettingsGeneral.IsEphemeral), typeName: IFieldSettingsGeneral.Constants.ContentTypeName);
+    public static bool IsEphemeral(this IContentTypeField fieldDef) =>
+        fieldDef.Metadata.Get<bool>(nameof(IFieldSettingsGeneral.IsEphemeral), typeName: IFieldSettingsGeneral.Constants.ContentTypeName);
 }

@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 public static class IContentTypeFieldExtensions
 {
     /// <param name="definition"></param>
-    extension(IContentTypeAttribute definition)
+    extension(IContentTypeField definition)
     {
         /// <summary>
         /// Will look up the input type name of an attribute. It uses a series of cascades, because historically this can be missing or written in a different way.

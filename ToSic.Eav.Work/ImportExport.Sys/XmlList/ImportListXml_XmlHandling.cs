@@ -76,7 +76,7 @@ partial class ImportListXml
             return l.ReturnFalse($"error {ImportErrorCode.InvalidDocument}");
         }
 
-        // #3 Check the content type of the document (it can be found on each element in the Type attribute)
+        // #3 Check the content type of the document (it can be found on each element in the Type fieldDef)
         var documentTypeAttribute = docNodes
             .First()
             .Attribute(XmlConstants.EntityTypeAttribute);

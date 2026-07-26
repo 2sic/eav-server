@@ -46,7 +46,7 @@ public class ConvertAttributeToDto(
         if (item == null)
             return l.ReturnNull("no item")!;
 
-        var a = item.Attribute;
+        var a = item.Field;
         var type = item.Type;
         var ancestorDecorator = type.GetDecorator<IAncestor>();
         var inputType = FindInputTypeOrUnknownOld(a);
@@ -109,7 +109,7 @@ public class ConvertAttributeToDto(
             .ToList();
 
     private (IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)
-        GetInputTypesAndMetadata(string inputType, IContentTypeAttribute a, IContentType type, IAncestor? ancestorDecorator, IReadOnlyCollection<InputTypeInfo> appInputTypes)
+        GetInputTypesAndMetadata(string inputType, IContentTypeField a, IContentType type, IAncestor? ancestorDecorator, IReadOnlyCollection<InputTypeInfo> appInputTypes)
     {
         var l = Log.Fn<(IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)>();
         var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
@@ -148,7 +148,7 @@ public class ConvertAttributeToDto(
     }
 
 
-    private static IDictionary<string, bool> KeepOnlyConfigTypesWhichAreNotInherited(IContentTypeAttribute a, IDictionary<string, bool> configTypes, ILog log)
+    private static IDictionary<string, bool> KeepOnlyConfigTypesWhichAreNotInherited(IContentTypeField a, IDictionary<string, bool> configTypes, ILog log)
     {
         var l = log.Fn<IDictionary<string, bool>>($"{nameof(configTypes)} {configTypes.Count}");
 
@@ -168,7 +168,7 @@ public class ConvertAttributeToDto(
         return l.Return(configTypes, $"{configTypes.Count}");
     }
 
-    private EavLightEntity InputMetadata(IContentType contentType, IContentTypeAttribute a, IEntity e, IAncestor? ancestor, IConvertToEavLight ser)
+    private EavLightEntity InputMetadata(IContentType contentType, IContentTypeField a, IEntity e, IAncestor? ancestor, IConvertToEavLight ser)
     {
         var result = ser.Convert(e);
         if (ancestor != null)
@@ -194,9 +194,9 @@ public class ConvertAttributeToDto(
     /// <remarks>
     /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
     /// </remarks>
-    private static string FindInputTypeOrUnknownOld(IContentTypeAttribute attribute)
+    private static string FindInputTypeOrUnknownOld(IContentTypeField fieldDef)
     {
-        var inputType = attribute.Metadata.Get<string>(nameof(IFieldSettingsGeneral.InputType), typeName: IFieldSettingsGeneral.Constants.ContentTypeName);
+        var inputType = fieldDef.Metadata.Get<string>(nameof(IFieldSettingsGeneral.InputType), typeName: IFieldSettingsGeneral.Constants.ContentTypeName);
 
         // unknown will let the UI fallback on other mechanisms
         return inputType.IsEmpty()

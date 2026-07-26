@@ -12,7 +12,7 @@ public class DataSourceDto
         Name = noError ? dsInfo.Type.Name : dsInfo.NameId; // will override further down if dsInfo is provided
         Identifier = dsInfo.NameId;
 
-        // If we don't have more information from the attribute, exit early
+        // If we don't have more information from the fieldDef, exit early
         var dsAttribute = dsInfo.VisualQuery;
         if (dsAttribute == null)
             return;

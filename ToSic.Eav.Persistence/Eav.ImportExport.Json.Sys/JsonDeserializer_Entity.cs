@@ -212,7 +212,7 @@ partial class JsonSerializer
         return l.ReturnAsOk(result);
     }
 
-    private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAttribs, IEntitiesSource? relationshipsSource)
+    private IList<IValue> GetValues(IContentTypeField a, JsonAttributes jAttribs, IEntitiesSource? relationshipsSource)
     {
         var relAssembler = Services.DataAssembler.Relationship;
         return a.Type switch
@@ -237,7 +237,7 @@ partial class JsonSerializer
         };
     }
 
-    private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>>? dic, IContentTypeAttribute attrDef)
+    private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>>? dic, IContentTypeField attrDef)
     {
         if (dic == null || !dic.ContainsKey(attrDef.Name))
             return new List<IValue>();

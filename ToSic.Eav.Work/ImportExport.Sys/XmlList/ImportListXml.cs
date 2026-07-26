@@ -286,7 +286,7 @@ public partial class ImportListXml(
                 // update languages on valExisting
                 var updatedValue2 = DataAssembler.Value.CreateFrom(valExisting, languages: DataAssembler.Language.Merge(valExisting.Languages, valueLanguages));
                 //var updatedValue2 = AttributeBuilder.Value.UpdateLanguages(valExisting, valueLanguages);
-                // TODO: update/replace value in existingEnt[attribute.Name]
+                // TODO: update/replace value in existingEnt[fieldDef.Name]
                 var values2 = DataAssembler.ValueList.Replace(attrExisting.Values, valExisting, updatedValue2);
                 var attribute2 = DataAssembler.Attribute.CreateFrom(attrExisting, values2);
                 entityAttributes = DataAssembler.AttributeList.Replace(entityAttributes, attribute2);

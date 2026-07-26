@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data.Build;
 public static class ContentTypeTestAccessors
 {
 
-    public static IContentTypeAttribute ContentTypeFieldTac(this ContentTypeAssemblyKit ctAssemblyKit, int appId, string name, string dataType, bool isTitle = false, int attId = 0, int index = 0)
+    public static IContentTypeField ContentTypeFieldTac(this ContentTypeAssemblyKit ctAssemblyKit, int appId, string name, string dataType, bool isTitle = false, int attId = 0, int index = 0)
         => ctAssemblyKit.Field.Create(appId: appId, name: name, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
 
 
@@ -15,7 +15,7 @@ public static class ContentTypeTestAccessors
         int? id = default,
         string nameId = default,
         string scope = default,
-        IList<IContentTypeAttribute> attributes = default)
+        IList<IContentTypeField> attributes = default)
     {
         return assembler.Create(appId: appId,
             id: id ?? 0,

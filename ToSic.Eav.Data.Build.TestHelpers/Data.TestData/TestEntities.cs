@@ -9,7 +9,7 @@ public static class TestEntities
 
     extension(ContentTypeAssemblyKit ctAssemblyKit)
     {
-        private IContentType CtTestType() => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "TestType", attributes: new List<IContentTypeAttribute>
+        private IContentType CtTestType() => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "TestType", attributes: new List<IContentTypeField>
             {
                 ctAssemblyKit.ContentTypeFieldTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
                 ctAssemblyKit.ContentTypeFieldTac(AppId, "LastName", DataTypes.String, false, 0, 0),
@@ -19,7 +19,7 @@ public static class TestEntities
             }
         );
 
-        private IContentType CtPet() => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "Pet", attributes: new List<IContentTypeAttribute>
+        private IContentType CtPet() => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "Pet", attributes: new List<IContentTypeField>
             {
                 ctAssemblyKit.ContentTypeFieldTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
                 ctAssemblyKit.ContentTypeFieldTac(AppId, "LastName", DataTypes.String, false, 0, 0),

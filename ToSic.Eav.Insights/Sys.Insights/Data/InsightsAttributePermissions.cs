@@ -4,7 +4,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsAttributePermissions(LazySvc<IAppReaderFactory> appReaders, IHttpExceptionMaker exceptionMaker)
-    : InsightsProvider(new() { Name = Link, Title = "Attribute Permissions"}, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, Title = "Field Permissions"}, connect: [appReaders])
 {
     public static string Link = "AttributePermissions";
 
@@ -16,9 +16,9 @@ internal class InsightsAttributePermissions(LazySvc<IAppReaderFactory> appReader
         Log.A($"debug app metadata for {AppId} and {Type}");
         var typ = appReaders.Value.Get(AppId.Value).GetContentType(Type);
         var att = typ.Attributes.First(a => a.Name == NameId)
-                  ?? throw exceptionMaker.BadRequest($"can't find attribute {NameId}");
+                  ?? throw exceptionMaker.BadRequest($"can't find fieldDef {NameId}");
 
-        var msg = H1($"Attribute Permissions for {typ.Name}.{NameId} in {AppId}\n").ToString();
+        var msg = H1($"Field Permissions for {typ.Name}.{NameId} in {AppId}\n").ToString();
         var metadata = att.Metadata.Permissions
             .Select(p => ((ICanBeEntity)p).Entity)
             .ToList();

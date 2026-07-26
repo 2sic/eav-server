@@ -54,7 +54,7 @@ public static class BuildTestAccessors
     //    int? id = default,
     //    string nameId = default,
     //    string scope = default,
-    //    IList<IContentTypeAttribute> attributes = default)
+    //    IList<IContentTypeField> attributes = default)
     //{
     //    return builder.Create(appId: appId,
     //        id: id ?? 0,

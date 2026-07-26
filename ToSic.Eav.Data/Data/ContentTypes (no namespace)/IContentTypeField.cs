@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data;
 /// * Probably will be renamed to `IContentTypeField` in v22 (breaking change)
 /// </remarks>
 [PublicApi]
-public interface IContentTypeAttribute: IHasPermissions, IAppIdentityLight, IHasMetadata
+public interface IContentTypeField: IHasPermissions, IAppIdentityLight, IHasMetadata
 {
     /// <summary>
     /// Name of the Attribute

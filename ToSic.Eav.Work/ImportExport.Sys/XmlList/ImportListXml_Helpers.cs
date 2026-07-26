@@ -86,12 +86,12 @@ partial class ImportListXml
 
 
     ///// <summary>
-    ///// Get the attribute names in the xml document.
+    ///// Get the fieldDef names in the xml document.
     ///// </summary>
     //public IEnumerable<string> GetInfo_AttributeNamesInDocument(IEnumerable<XElement> xmlEntities) =>
     //    xmlEntities
     //        .SelectMany(element => element.Elements())
-    //        .GroupBy(attribute => attribute.Name.LocalName)
+    //        .GroupBy(fieldDef => fieldDef.Name.LocalName)
     //        .Select(group => group.Key)
     //        .Where(name => name != XmlConstants.EntityGuid && name != XmlConstants.EntityLanguage)
     //        .ToList();

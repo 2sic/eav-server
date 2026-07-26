@@ -43,8 +43,8 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
 
     /// <inheritdoc />
     [ContentTypeIgnore]
-    public IEnumerable<IContentTypeAttribute> Attributes => AttributesImmutable;
-    public required IImmutableList<IContentTypeAttribute> AttributesImmutable { get; init; }
+    public IEnumerable<IContentTypeField> Attributes => AttributesImmutable;
+    public required IImmutableList<IContentTypeField> AttributesImmutable { get; init; }
 
     /// <inheritdoc />
     [ContentTypeField(Type = ValueTypes.String)]
@@ -77,7 +77,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     public ContentTypeSysSettings? SysSettings { get; init; }
 
     /// <inheritdoc />
-    public IContentTypeAttribute? this[string fieldName]
+    public IContentTypeField? this[string fieldName]
         => Attributes.FirstOrDefault(a => a.Name.EqualsInsensitive(fieldName));
 
 

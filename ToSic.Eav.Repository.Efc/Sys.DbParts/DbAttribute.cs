@@ -30,7 +30,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             }
         });
 
-    internal int GetOrCreateAttributeDefinition(int contentTypeId, IContentTypeAttribute newAtt)
+    internal int GetOrCreateAttributeDefinition(int contentTypeId, IContentTypeField newAtt)
     {
         // try to add new Attribute
         if (!AttributeExistsInSet(contentTypeId, newAtt.Name))
@@ -75,9 +75,9 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
     }
 
     /// <summary>
-    /// Append a new Attribute to a Content-Type
+    /// Append a new Field to a Content-Type
     /// </summary>
-    private int AppendToEndAndSave(int contentTypeId, IContentTypeAttribute contentTypeAttribute)
+    private int AppendToEndAndSave(int contentTypeId, IContentTypeField fieldDef)
     {
         var maxIndex = DbStore.SqlDb.TsDynDataAttributes
             .AsNoTracking()
@@ -85,19 +85,19 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             .ToListOpt() // important because it otherwise has problems with the next step...
             .Max(s => (int?) s.SortOrder);
 
-        return AddAttributeAndSave(contentTypeId, contentTypeAttribute, maxIndex + 1 ?? 0);
+        return AddAttributeAndSave(contentTypeId, fieldDef, maxIndex + 1 ?? 0);
     }
 
     /// <summary>
-    /// Append a new Attribute to a Content-Type
+    /// Append a new Field to a Content-Type
     /// </summary>
-    public int AddAttributeAndSave(int contentTypeId, IContentTypeAttribute contentTypeAttribute, int? newSortOrder = default)
+    public int AddAttributeAndSave(int contentTypeId, IContentTypeField fieldDef, int? newSortOrder = default)
     {
-        var nameId = contentTypeAttribute.Name;
-        var type = contentTypeAttribute.Type.ToString();
-        var isTitle = contentTypeAttribute.IsTitle;
-        var sortOrder = newSortOrder ?? contentTypeAttribute.SortOrder;
-        var sysSettings = Serializer.Serialize(contentTypeAttribute.SysSettings);
+        var nameId = fieldDef.Name;
+        var type = fieldDef.Type.ToString();
+        var isTitle = fieldDef.IsTitle;
+        var sortOrder = newSortOrder ?? fieldDef.SortOrder;
+        var sysSettings = Serializer.Serialize(fieldDef.SysSettings);
 
         var contentType = DbStore.ContentTypes
                               .GetDbContentTypeWithAttributesTracked(DbStore.AppId)
@@ -105,13 +105,13 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
                           ?? throw new($"Can't find {contentTypeId} in DB.");
 
         if (!AttributeNames.StaticNameValidation.IsMatch(nameId))
-            throw new($"Attribute static name \"{nameId}\" is invalid. {AttributeNames.StaticNameErrorMessage}");
+            throw new($"Field static name \"{nameId}\" is invalid. {AttributeNames.StaticNameErrorMessage}");
 
         // Prevent Duplicate Name
         if (AttributeExistsInSet(contentType.ContentTypeId, nameId))
-            throw new ArgumentException($@"An Attribute with the static name {nameId} already exists", nameof(nameId));
+            throw new ArgumentException($@"An Field with the static name {nameId} already exists", nameof(nameId));
 
-        // Set Attribute as Title if there's no title field in this set
+        // Set Field as Title if there's no title field in this set
         if (DbStore.ProcessOptions.TypeAttributeAutoSetTitle)
             if (!contentType.TsDynDataAttributes.Any(a => a.IsTitle))
                 isTitle = true;
@@ -122,7 +122,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             Type = type,
             StaticName = nameId,
             TransCreatedId = DbStore.Versioning.GetTransactionId(),
-            Guid = contentTypeAttribute.Guid,
+            Guid = fieldDef.Guid,
             SysSettings = sysSettings,
             ContentTypeId = contentType.ContentTypeId,
             SortOrder = sortOrder,

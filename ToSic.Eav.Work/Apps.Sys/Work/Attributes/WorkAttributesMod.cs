@@ -60,10 +60,10 @@ public class WorkAttributesMod(
 
 
     /// <summary>
-    /// Append a new Attribute to an ContentType
+    /// Append a new Field to an ContentType
     /// Simple overload returning int, so it can be used from outside
     /// </summary>
-    private int AddFieldToDbAndInitGeneralMetadata(int contentTypeId, IContentTypeAttribute attDef, string inputType)
+    private int AddFieldToDbAndInitGeneralMetadata(int contentTypeId, IContentTypeField attDef, string inputType)
     {
         var l = Log.Fn<int>($"type:{contentTypeId}, input:{inputType}");
         var newAttribute = AppWorkCtx.DbStorage.Attributes.AddAttributeAndSave(contentTypeId, attDef);
@@ -96,10 +96,10 @@ public class WorkAttributesMod(
     public bool SetInputType(int attributeId, string inputType)
     {
         var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
-        // Capture content-type before mutation because this path only receives attribute id.
+        // Capture content-type before mutation because this path only receives fieldDef id.
 
         var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
-                        ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+                        ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
         var contentTypeId = attribute.ContentTypeId;
 
         var newValues = new Dictionary<string, object> { { nameof(IFieldSettingsGeneral.InputType), inputType } };
@@ -112,7 +112,7 @@ public class WorkAttributesMod(
 
     public bool Rename(int contentTypeId, int attributeId, string newName)
     {
-        var l = Log.Fn<bool>($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
+        var l = Log.Fn<bool>($"rename fieldDef type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
         AppWorkCtx.DbStorage.Attributes.RenameAttribute(attributeId, contentTypeId, newName);
         TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
@@ -154,12 +154,12 @@ public class WorkAttributesMod(
         var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
-        // Update DB, and then flush the app-cache as necessary, same as any other attribute change
+        // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
         AppWorkCtx.DbStorage.DoAndSaveTracked(() =>
         {
             // get field attributeId
             var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
-                ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+                ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
             contentTypeId = attribute.ContentTypeId;
 
             // ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
@@ -191,12 +191,12 @@ public class WorkAttributesMod(
         var serializer = dataDeserializer.New();
         serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
 
-        // Update DB, and then flush the app-cache as necessary, same as any other attribute change
+        // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
         AppWorkCtx.DbStorage.DoAndSaveTracked(() =>
         {
             // get field attributeId
             var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
-                ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+                ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
             contentTypeId = attribute.ContentTypeId;
 
             // set InheritMetadataOf to the guid above(as string)
@@ -230,7 +230,7 @@ public class WorkAttributesMod(
         // - note that the content-type wouldn't be necessary, but we want to have it to prevent mistakes if for some reason the guid is duplicate
         // - verify that the source fields exist, and really belong to the content-types they claim to be from
         var fields = workAttributes.New(AppWorkCtx.AppId).GetSharedFields(attributeId: default)
-            .Where(f => f.Type.NameId == sourceType && f.Attribute.Guid == sourceField).ToList();
+            .Where(f => f.Type.NameId == sourceType && f.Field.Guid == sourceField).ToList();
 
         // 1.2 Find the source fields and only keep the ones that are valid
         if (fields.Count == 0)
@@ -247,15 +247,15 @@ public class WorkAttributesMod(
         var contentType = AppWorkCtx.AppReader.GetContentTypeOptional(contentTypeId);
         if (contentType == null)
             return l.ReturnFalse($"error: wrong contentTypeId {contentTypeId}");
-        // - make sure we have the attribute-count to add more fields
+        // - make sure we have the fieldDef-count to add more fields
 
         // 2.2 create the attributes based on the original data
         // - name is the key in the dictionary
         // - probably just call AddField code above
         // - of course increment the start-index for each field
         var newAttributeId = AddField(contentTypeId, name,
-            type: pairTypeWithAttribute.Attribute.Type.ToString(),
-            inputType: pairTypeWithAttribute.Attribute.InputType,
+            type: pairTypeWithAttribute.Field.Type.ToString(),
+            inputType: pairTypeWithAttribute.Field.InputType,
             sortOrder: contentType.Attributes.Count() + 1,
             triggerPostSave: false);
 

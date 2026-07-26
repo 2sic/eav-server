@@ -23,27 +23,27 @@ public static class ContentTypeFieldAssertions
             .HasNotesDescription(description);
     }
 
-    extension(IContentTypeAttribute attr)
+    extension(IContentTypeField attr)
     {
-        public IContentTypeAttribute HasName(string name)
+        public IContentTypeField HasName(string name)
         {
             Equal(name, attr.Name);
             return attr;
         }
 
-        public IContentTypeAttribute IsType(ValueTypes type)
+        public IContentTypeField IsType(ValueTypes type)
         {
             Equal(type, attr.Type);
             return attr;
         }
 
-        public IContentTypeAttribute IsTitle(bool isTitle = false)
+        public IContentTypeField IsTitle(bool isTitle = false)
         {
             Equal(isTitle, attr.IsTitle);
             return attr;
         }
         
-        public IContentTypeAttribute HasNotesDescription(string? notes = null)
+        public IContentTypeField HasNotesDescription(string? notes = null)
         {
             Equal(notes, attr.Metadata.Get<string>(nameof(IFieldSettingsGeneral.Notes)));
             return attr;

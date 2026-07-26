@@ -79,7 +79,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
 
         // 2.2 Ask the target if it knows of expected types using `MetadataExpected`
         // Check if this object-type has a specific list of Content-Types which it expects
-        // For example a attribute which says "I want this kind of Metadata"
+        // For example a fieldDef which says "I want this kind of Metadata"
         // Not fully worked out yet...
         // TODO #metadata
         var attachedRecommendations = GetTargetsExpectations(targetTypeId, key)
@@ -114,7 +114,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     private ICollection<RecommendationInfos> TypesWhichDeclareTheyAreForTheTarget(int targetType, string targetKey)
     {
         var l = Log.Fn<ICollection<RecommendationInfos>>();
-        // for type/attribute path comparisons, make sure we have the slashes cleaned
+        // for type/fieldDef path comparisons, make sure we have the slashes cleaned
         var keyForward = (targetKey ?? "").ForwardSlash().Trim();
 
         // Do this #StepByStep to better debug in case of issues
@@ -206,14 +206,14 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 return l.ReturnNull("no target");
             case TargetTypes.Attribute:
                 if (!int.TryParse(key, out var attributeId))
-                    return l.ReturnNull("attribute: key is not int");
+                    return l.ReturnNull("fieldDef: key is not int");
 
                 var attribute = AppReader.ContentTypes
                     .SelectMany(ct => ct.Attributes)
                     .FirstOrDefault(attr => attr.AttributeId == attributeId);
 
                 if (attribute == null)
-                    return l.ReturnNull($"attribute '{attributeId}' not found");
+                    return l.ReturnNull($"fieldDef '{attributeId}' not found");
 
                 // figure out what field input type it is
                 var inputType = attribute.InputType;
@@ -225,7 +225,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 if (inputTypeDef == null)
                     return l.ReturnNull($"input type '{inputType}' not found");
 
-                var attrMdOnField = GetMetadataExpectedDecorators(inputTypeDef.Metadata, TargetTypes.Attribute, "attached to Attribute", PrioHigh);
+                var attrMdOnField = GetMetadataExpectedDecorators(inputTypeDef.Metadata, TargetTypes.Attribute, "attached to Field", PrioHigh);
 
 
                 return l.Return(attrMdOnField);

@@ -37,7 +37,7 @@ public class WorkEntityRecycleTests(
         // Arrange
         var dc = dbDataGenerator.New(new(TestSpecs.ZoneId, TestSpecs.AppId));
 
-        // Pick an existing relationship to get a valid attribute and a valid child.
+        // Pick an existing relationship to get a valid fieldDef and a valid child.
         var templateRel = dc.SqlDb.TsDynDataRelationships
             .AsNoTracking()
             .Where(r => r.ChildEntityId != null)
@@ -205,7 +205,7 @@ public class WorkEntityRecycleTests(
         var appReader = dc.Loader.AppReaderRaw(TestSpecs.AppId, new());
         var templateEntity = appReader.List.First();
 
-        // Pick an existing relationship to get a valid parent + attribute.
+        // Pick an existing relationship to get a valid parent + fieldDef.
         var templateRel = dc.SqlDb.TsDynDataRelationships
             .AsNoTracking()
             .Where(r => r.ChildEntityId != null)
@@ -314,7 +314,7 @@ public class WorkEntityRecycleTests(
         var templateEntity = appReader.List.First();
 
         // Find a content-type in this app which definitely has attributes.
-        // We'll create a parent entity of that type and pick an attribute field from it.
+        // We'll create a parent entity of that type and pick an fieldDef field from it.
         var selectedType = templateEntity.Type;
         var selectedContentTypeId = 0;
 
@@ -460,7 +460,7 @@ public class WorkEntityRecycleTests(
 
         dc.SqlDb.SaveChanges();
 
-        // Ensure there is no relationship row for this (parent, attribute, sortOrder) yet.
+        // Ensure there is no relationship row for this (parent, fieldDef, sortOrder) yet.
         var preExisting = dc.SqlDb.TsDynDataRelationships
             .AsNoTracking()
             .IgnoreQueryFilters()

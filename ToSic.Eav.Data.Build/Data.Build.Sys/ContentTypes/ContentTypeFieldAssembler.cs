@@ -9,7 +9,7 @@ using ToSic.Eav.Metadata.Sys;
 namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
-/// Internal helper to assemble <see cref="IContentTypeAttribute"/> definitions.
+/// Internal helper to assemble <see cref="IContentTypeField"/> definitions.
 /// </summary>
 /// <remarks>
 /// Technically this could all be done with static methods,
@@ -36,7 +36,7 @@ public class ContentTypeFieldAssembler() : ServiceBase("Eav.CtAtBl")
     /// <param name="metadataItems"></param>
     /// <param name="metaSourceFinder"></param>
     /// <returns></returns>
-    public IContentTypeAttribute Create(
+    public IContentTypeField Create(
         int appId,
         string name,
         ValueTypes type,
@@ -71,8 +71,8 @@ public class ContentTypeFieldAssembler() : ServiceBase("Eav.CtAtBl")
     }
 
 
-    public IContentTypeAttribute CreateFrom(
-        IContentTypeAttribute original,
+    public IContentTypeField CreateFrom(
+        IContentTypeField original,
         int? appId = default,
         string? name = default,
         ValueTypes? type = default,

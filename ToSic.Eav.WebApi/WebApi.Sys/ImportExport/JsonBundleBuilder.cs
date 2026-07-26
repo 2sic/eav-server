@@ -18,7 +18,7 @@ internal class JsonBundleBuilder(IAppReader appReader, ILog parentLog) : HelperB
             CtAttributeIncludeInheritedMetadata = false
         };
 
-        // Content-Types contains the Content-Type as well entities referenced in CT-Attribute Metadata such as Formulas
+        // Content-Types contains the Content-Type as well entities referenced in CT-Field Metadata such as Formulas
         var bundleTypesRaw = export.ContentTypes
                 .Select(appReader.GetContentType)
                 .Select(ct => serializer.ToPackage(ct, serSettings))

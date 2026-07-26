@@ -105,7 +105,7 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
             entities = entities.Where(e => selectedIds.Contains(e.EntityId));
         var entList = entities.ToList();
 
-        // Get the attribute definitions
+        // Get the fieldDef definitions
         var attribsOfType = ContentType.Attributes.ToListOpt();
         Log.A($"will export {entList.Count} entities X {attribsOfType.Count} attribs");
 

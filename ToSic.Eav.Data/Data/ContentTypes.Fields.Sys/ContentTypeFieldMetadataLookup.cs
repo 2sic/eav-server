@@ -6,12 +6,12 @@ namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 internal class ContentTypeFieldMetadataLookup(ContentTypeFieldSysSettings SysSettings, IMetadataProvider Source, Func<IMetadataSource?> GetMetadataSource)
 {
     [field: AllowNull, MaybeNull]
-    ICollection<IContentTypeAttribute> SourceAttributes => field ??= GetSourceAttributes() ?? [];
+    ICollection<IContentTypeField> SourceAttributes => field ??= GetSourceAttributes() ?? [];
 
     /// <summary>
     /// The Source Attribute (if any) which would provide the real metadata
     /// </summary>
-    internal ICollection<IContentTypeAttribute>? GetSourceAttributes()
+    internal ICollection<IContentTypeField>? GetSourceAttributes()
     {
         // Check all the basics to ensure we can work
         if (!SysSettings.InheritMetadata)

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 public static class IContentTypeFieldPickerExtensions
 {
     /// <param name="definition"></param>
-    extension(IContentTypeAttribute definition)
+    extension(IContentTypeField definition)
     {
         /// <summary>
         /// Determine if it's a picker entity-type.

@@ -8,7 +8,7 @@
 /// <param name="vAttributes"></param>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeBuiltInAttributesDecorator(IDictionary<string, IContentTypeAttribute> vAttributes) : IDecorator<IContentType>
+public class ContentTypeBuiltInAttributesDecorator(IDictionary<string, IContentTypeField> vAttributes) : IDecorator<IContentType>
 {
-    public IDictionary<string, IContentTypeAttribute> Attributes => vAttributes;
+    public IDictionary<string, IContentTypeField> Attributes => vAttributes;
 }

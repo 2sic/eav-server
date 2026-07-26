@@ -53,9 +53,9 @@ public partial class ContentTypeWrapper: WrapperLazy<IContentType>, IContentType
 
     public int Id => GetContents()!.Id;
 
-    public IEnumerable<IContentTypeAttribute> Attributes => GetContents()!.Attributes;
+    public IEnumerable<IContentTypeField> Attributes => GetContents()!.Attributes;
 
-    public IContentTypeAttribute? this[string fieldName] => GetContents()![fieldName];
+    public IContentTypeField? this[string fieldName] => GetContents()![fieldName];
 
     public RepositoryTypes RepositoryType => GetContents()!.RepositoryType;
 

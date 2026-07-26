@@ -21,22 +21,22 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
     #region Helpers to assemble the xml
 
     /// <summary>
-    /// Append an element to this. If the attribute is named xxx and the value is 4711 in the language specified, 
+    /// Append an element to this. If the fieldDef is named xxx and the value is 4711 in the language specified, 
     /// the element appended will be <xxx>4711</xxx>. File and page references can be resolved optionally.
     /// </summary>
-    internal string ValueWithFullFallback(IEntity entity, IContentTypeAttribute attribute, string language, string languageFallback, bool resolveLinks)
+    internal string ValueWithFullFallback(IEntity entity, IContentTypeField fieldDef, string language, string languageFallback, bool resolveLinks)
     {
-        var value = entity.Get<string>(attribute.Name, languages: [language, languageFallback]);
-        return ResolveValue(entity, attribute.Type, value, resolveLinks);
+        var value = entity.Get<string>(fieldDef.Name, languages: [language, languageFallback]);
+        return ResolveValue(entity, fieldDef.Type, value, resolveLinks);
     }
 
     /// <summary>
-    /// Append an element to this. The element will get the name of the attribute, and if possible the value will 
+    /// Append an element to this. The element will get the name of the fieldDef, and if possible the value will 
     /// be referenced to another language (for example [ref(en-US,ro)].
     /// </summary>
-    internal string ValueOrLookupCode(IEntity entity, IContentTypeAttribute attribute, string language, string languageFallback, string[] sysLanguages, bool useRefToParentLanguage, bool resolveLinks)
+    internal string ValueOrLookupCode(IEntity entity, IContentTypeField fieldDef, string language, string languageFallback, string[] sysLanguages, bool useRefToParentLanguage, bool resolveLinks)
     {
-        var attrib = entity.Attributes[attribute.Name];
+        var attrib = entity.Attributes[fieldDef.Name];
 
         // Option 1: nothing (no value found at all)
         // create a special "null" entry, so the re-import will also null this
@@ -51,7 +51,7 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
 
         // Option 2: Exact match (non-shared) on no other languages
         if (!valueItem.Languages.Any() || valueItem.Languages.Count() == 1)
-            return ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks);
+            return ResolveValue(entity, fieldDef.Type, valueItem.Serialized, resolveLinks);
 
         // Option 4 - language is assigned - either shared or Read-only
         var sharedParentLanguages = valueItem.Languages
@@ -64,7 +64,7 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
 
         // Option 4a - no other parent languages assigned
         if (!sharedParentLanguages.Any()) 
-            return ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks);
+            return ResolveValue(entity, fieldDef.Type, valueItem.Serialized, resolveLinks);
 
         var langsOfValue = valueItem.Languages;
         string? primaryLanguageRef = null;
@@ -78,7 +78,7 @@ public class ExportImportValueConversion(IValueConverter valueConverter) : Servi
 
         return primaryLanguageRef != null 
             ? $"[ref({primaryLanguageRef},{(valueLanguageReadOnly ? XmlConstants.ReadOnly : XmlConstants.ReadWrite)})]" 
-            : ResolveValue(entity, attribute.Type, valueItem.Serialized, resolveLinks);
+            : ResolveValue(entity, fieldDef.Type, valueItem.Serialized, resolveLinks);
     }
 
     public static IValue? GetExactAssignedValue(IAttribute attrib, string language, string languageFallback)

@@ -21,7 +21,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
     /// <summary>
     /// Main code
     /// </summary>
-    internal (IList<IContentTypeAttribute> attributes, IDecorator<IContentType>? additionalDecorators) Process(Type type)
+    internal (IList<IContentTypeField> attributes, IDecorator<IContentType>? additionalDecorators) Process(Type type)
     {
         var (attributes, builtInAttributes) = GenerateAttributes(type);
 
@@ -39,9 +39,9 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
     }
 
 
-    private (IList<IContentTypeAttribute> attributes, IList<IContentTypeAttribute>? builtInAttributes) GenerateAttributes(Type type)
+    private (IList<IContentTypeField> attributes, IList<IContentTypeField>? builtInAttributes) GenerateAttributes(Type type)
     {
-        var l = Log.Fn<(IList<IContentTypeAttribute>, IList<IContentTypeAttribute>?)>(timer: true);
+        var l = Log.Fn<(IList<IContentTypeField>, IList<IContentTypeField>?)>(timer: true);
 
         // 1. Get all properties of the type; exit early if none
         var properties = type.GetProperties();
@@ -111,7 +111,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
     }
 
 
-    private IList<IContentTypeAttribute> PropertiesToAttributes(IList<PropertyInfo> propsFiltered, bool skipNoMetadata)
+    private IList<IContentTypeField> PropertiesToAttributes(IList<PropertyInfo> propsFiltered, bool skipNoMetadata)
     {
         var pairs = propsFiltered
             .Select(p =>
