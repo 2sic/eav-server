@@ -6,6 +6,7 @@ namespace ToSic.Eav.Data.ContentTypes;
 /// <summary>
 /// Content Type Settings as typically configured in the UI
 /// </summary>
+/// <remarks>Added v22</remarks>
 [ModelSpecs(
     ContentType = Constants.ContentTypeName,
     Use = typeof(ContentTypeDetailsModel)
@@ -13,10 +14,7 @@ namespace ToSic.Eav.Data.ContentTypes;
 public interface IContentTypeDetails: IModelFromEntity
 {
     [PrivateApi]
-    public class Constants
-    {
-        public const string ContentTypeName = "ContentType";
-    }
+    public class Constants { public const string ContentTypeName = "ContentType"; }
 
     /// <summary>
     /// The visible label / title of the content type, as it appears in the UI.
