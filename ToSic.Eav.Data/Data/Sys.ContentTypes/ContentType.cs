@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 // Otherwise docs won't generate cross-links as needed
 [PrivateApi("2021-09-30 hidden now, was internal_don't use Always use the interface, not this class")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[ContentTypeSpecs(
+[ContentType(
     Guid = "e405beb3-9097-4790-b7b0-0e6d37502bef",
     Name = TypeName,
     Scope = "System",

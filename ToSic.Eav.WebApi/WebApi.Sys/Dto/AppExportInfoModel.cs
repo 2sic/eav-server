@@ -6,7 +6,7 @@ using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-[ContentTypeSpecs(
+[ContentType(
     Name = "AppStatistics",
     Guid = "16753307-5d96-4ad8-adc3-a23b2c41edca",
     Description = "App Statistics Information",

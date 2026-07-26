@@ -72,7 +72,7 @@ public class DataFactoryAssignsCorrectContentType(IDataFactory dataFactory)
     public void WithNewSpecsRawIsSet() =>
         NameIsSet<SourceRawSpecsYes>(SpecName);
 
-    [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
+    [ContentType(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
     private class SourceRawSpecsYes : CodeTypeSpecsYesClass, IRawEntity
     {
         public DateTime Modified { get; }
@@ -89,7 +89,7 @@ public class DataFactoryAssignsCorrectContentType(IDataFactory dataFactory)
     public void WithNewSpecsConvertibleIsSet() =>
         NameIsSet<RawConvertibleWithSpecs>(SpecName);
 
-    [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
+    [ContentType(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
     private class RawConvertibleWithSpecs : CodeTypeSpecsYesClass, IRawEntityConvertible
     {
         public DateTime Modified { get; }

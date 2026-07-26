@@ -27,7 +27,7 @@ internal record PagingModelOfEntity : ModelFromEntityBasic, IPagingModel
     public int PageCount => GetThis(0);
 }
 
-[ContentTypeSpecs(
+[ContentType(
     Guid = "488386e8-004c-4bd3-848c-46897835e6b1",
     Description = "Paging Information",
     Name = "Paging"

@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.Data.Build.DataFactories.MockData;
 
-[ContentTypeSpecs(
+[ContentType(
     Name = nameof(MockRawWithNameTitle),
     Guid = "e38b4943-ceee-46a4-90fa-e89df35a3d5e",
     Description = "Mock Raw Entity with Name and Title"
@@ -20,7 +20,7 @@ internal record MockRawWithNameTitle : MockRawEntity
 /// </summary>
 /// <param name="_dataToProvideInConverter"></param>
 // ReSharper disable once InconsistentNaming
-[ContentTypeSpecs(
+[ContentType(
     Name = nameof(MockRawWithNameTitleProvidingConversion), // this must also have specs, otherwise the IsTitle won't be retrieved
     Guid = "5154061f-c028-4a5c-bd25-4e618c597ee1",
     Description = "Mock Raw Entity with Name and Title"

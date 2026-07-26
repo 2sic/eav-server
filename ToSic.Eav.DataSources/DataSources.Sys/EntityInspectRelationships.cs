@@ -99,7 +99,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
         return l.Return(merged);
     }
 
-    [ContentTypeSpecs(
+    [ContentType(
         Guid = "9878be6e-93d9-4d91-82a3-31ca4da436c3",
         Description = "Entity Relationship",
         Name = MyContentTypeName

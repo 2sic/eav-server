@@ -6,7 +6,7 @@ using static ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes.CodeTypeSpecsCon
 
 namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 
-[ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
+[ContentType(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
 public interface ICodeTypeSpecsYesInterface
 {
    

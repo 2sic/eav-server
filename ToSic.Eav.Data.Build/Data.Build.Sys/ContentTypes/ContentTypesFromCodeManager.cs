@@ -43,7 +43,7 @@ public class ContentTypesFromCodeManager(LazySvc<ContentTypesFromCodeBuilder> ct
     {
         if (IsConfiguredCache.TryGetValue(type, out var ct))
             return ct;
-        var isConfig = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>() != null;
+        var isConfig = type.GetDirectlyAttachedAttribute<ContentTypeAttribute>() != null;
         IsConfiguredCache[type] = isConfig;
         return isConfig;
     }

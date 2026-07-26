@@ -4,7 +4,7 @@ using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.DataSources.Sys;
 
-[ContentTypeSpecs(
+[ContentType(
     Name = "Scope",
     Guid = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
     Description = "Data Scope",

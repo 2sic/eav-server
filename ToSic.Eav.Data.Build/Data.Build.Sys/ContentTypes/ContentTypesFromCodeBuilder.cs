@@ -25,7 +25,7 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
         var l = Log.Fn<IContentType>(timer: true);
 
         // 1. Get the content type specs from the attribute (if any) and process
-        var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
+        var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeAttribute>();
         var ctName = name
                      ?? ctSpecs?.Name.NullIfNoValue()
                      ?? (type.IsAnonymous() ? AnonymousTypeName : type.Name);

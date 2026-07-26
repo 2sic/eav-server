@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources.Sys;
 // Note: ATM serves as Raw and as DTO, but should change soon.
 // once we adjust the front end to use the query
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[ContentTypeSpecs(
+[ContentType(
     Guid = "8b668008-c6f9-47e5-a5b7-cb9b521192c3",
     Description = "App Stack Value Information",
     Name = TypeName

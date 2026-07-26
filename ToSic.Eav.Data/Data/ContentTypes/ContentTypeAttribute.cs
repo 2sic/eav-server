@@ -6,7 +6,7 @@
 [PrivateApi("WIP")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-public class ContentTypeSpecsAttribute: Attribute
+public class ContentTypeAttribute: Attribute
 {
     /// <summary>
     /// Content Type Guid; required. Enter as a string, because GUIDs are not supported in C# attributes.

@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 /// <param name="Guid"></param>
 /// <param name="Created">System property, but without additional specs</param>
 /// <param name="IgnoreThis"></param>
-[ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
+[ContentType(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
 public record CodeTypeSpecsYesRecord(
 
     [property: ContentTypeField(Description = IdAndGuidDescription)]

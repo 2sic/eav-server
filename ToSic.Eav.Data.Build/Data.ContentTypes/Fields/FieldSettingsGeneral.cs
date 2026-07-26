@@ -6,7 +6,7 @@ namespace ToSic.Eav.Data.ContentTypes.Fields;
 /// <summary>
 /// Content-Type for ...WIP attribute model
 /// </summary>
-[ContentTypeSpecs(
+[ContentType(
     Name = MyTypeNameId,
     Guid = "0bab4be8-e795-4d9f-b50e-f7ec161ed8cb",  // must match DB Guid of @All
     Description = "General settings for every Attribute (field) on a Content-Type."
