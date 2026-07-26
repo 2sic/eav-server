@@ -1,5 +1,6 @@
 ﻿using System.Drawing.Printing;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
@@ -29,7 +30,7 @@ public class AppStackDataRaw(PropertyDumpItem original) : IRawEntityConvertible
 
     public int Priority { get; set; } = original.SourcePriority;
 
-    [ContentTypeAttributeSpecs(IsTitle = true)]
+    [ContentTypeField(IsTitle = true)]
     public string Path { get; set; } = original.Path;
 
     public object? Value { get; set; } = original.Property?.Result;

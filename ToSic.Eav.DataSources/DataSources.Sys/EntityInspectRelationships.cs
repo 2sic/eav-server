@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
@@ -104,11 +105,11 @@ public sealed class EntityInspectRelationships : CustomDataSource
         Name = MyContentTypeName
     )]
     private record EntityRelationship(
-        [property: ContentTypeAttributeIgnore]
+        [property: ContentTypeFieldIgnore]
         IEntity Entity, 
         string Field,
         bool IsChild,
-        [property: ContentTypeAttributeIgnore]
+        [property: ContentTypeFieldIgnore]
         bool FeatEnabled
     ) : /*RawEntityRecordBase,*/ IRawEntityConvertible
     {

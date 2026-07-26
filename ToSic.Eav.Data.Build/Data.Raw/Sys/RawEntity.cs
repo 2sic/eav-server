@@ -68,10 +68,11 @@ public record RawEntity: IRawEntity, IRelationshipKeys, IHasMetadata
     {
         get => field ??= GetValues();
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
-        set => field = value?.ToInvariant();
+        set
 #else
-        init => field = value?.ToInvariant();
+        init
 #endif
+            => field = value?.ToInvariant();
     }
 
     /// <summary>

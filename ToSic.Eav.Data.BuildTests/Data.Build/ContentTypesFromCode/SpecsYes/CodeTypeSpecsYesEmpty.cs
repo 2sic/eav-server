@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Sys.ContentTypes;
 using static ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes.CodeTypeSpecsConstants;
 
 namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;

@@ -1,5 +1,6 @@
 ﻿// ReSharper disable NotAccessedField.Global
 
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 
@@ -13,7 +14,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 )]
 public record AppExportInfoModel: RawEntity
 {
-    [ContentTypeAttributeSpecs(IsTitle = true)]
+    [ContentTypeField(IsTitle = true)]
     public required string Name { get; init; }
 
     public required string NameId { get; init; }

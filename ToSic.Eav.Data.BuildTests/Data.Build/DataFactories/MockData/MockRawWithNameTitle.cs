@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Raw.Sys;
+﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.Data.Build.DataFactories.MockData;
@@ -10,7 +11,7 @@ namespace ToSic.Eav.Data.Build.DataFactories.MockData;
 )]
 internal record MockRawWithNameTitle : MockRawEntity
 {
-    [ContentTypeAttributeSpecs(IsTitle = true)]
+    [ContentTypeField(IsTitle = true)]
     public string Name { get; init; }
 }
 
@@ -29,7 +30,7 @@ internal record MockRawWithNameTitleProvidingConversion(IRawEntity _dataToProvid
     // Title must be specified in this record, because it's the one used for
     // Schema lookup, not the final RawEntity returned by the converter.
     // So we need to make sure it has the correct attribute.
-    [ContentTypeAttributeSpecs(IsTitle = true)]
+    [ContentTypeField(IsTitle = true)]
     public string Name { get; init; }
 
     public IRawEntityConverter GetConverter() =>

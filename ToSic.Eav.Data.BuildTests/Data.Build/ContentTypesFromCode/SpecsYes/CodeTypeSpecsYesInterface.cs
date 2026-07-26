@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Sys.ContentTypes;
 using static ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes.CodeTypeSpecsConstants;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
@@ -9,10 +10,10 @@ namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 public interface ICodeTypeSpecsYesInterface
 {
    
-    [ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
+    [ContentTypeField(Description = IdAndGuidDescription)]
     public int Id { get; set; }
 
-    [ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
+    [ContentTypeField(Description = IdAndGuidDescription)]
     public Guid Guid { get; set; }
 
     /// <summary>
@@ -20,11 +21,11 @@ public interface ICodeTypeSpecsYesInterface
     /// </summary>
     public DateTime Created { get; set; }
 
-    [ContentTypeAttributeSpecs(Name = NameAttrSpecsNameModified, IsTitle = true)]
+    [ContentTypeField(Name = NameAttrSpecsNameModified, IsTitle = true)]
     public string Name { get; set; }
 
 
-    [ContentTypeAttributeSpecs(Type = ValueTypes.Hyperlink)]
+    [ContentTypeField(Type = ValueTypes.Hyperlink)]
     public string Url { get; set; }
 
     public int Age { get; set; }
@@ -34,11 +35,11 @@ public interface ICodeTypeSpecsYesInterface
     /// <summary>
     /// The description is usually not public, but public here since the tests is elsewhere
     /// </summary>
-    [ContentTypeAttributeSpecs(Description = IsAliveDescription)]
+    [ContentTypeField(Description = IsAliveDescription)]
     public bool IsAlive { get; set; }
 
 
-    [ContentTypeAttributeIgnore]
+    [ContentTypeFieldIgnore]
     public string IgnoreThis { get; set; }
 
     //private string PrivateProperty { get; set; }

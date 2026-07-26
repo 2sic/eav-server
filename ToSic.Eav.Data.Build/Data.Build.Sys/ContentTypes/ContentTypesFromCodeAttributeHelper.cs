@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
-using ToSic.Eav.Data.ContentTypes.Attributes.Sys;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Fields;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Metadata;
 
@@ -96,7 +97,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
                     when typeof(IDictionary<string, object?>) == p.PropertyType
                     => TempCategory.Ignore,
 
-                _ => p.GetCustomAttribute<ContentTypeAttributeIgnoreAttribute>() != null
+                _ => p.GetCustomAttribute<ContentTypeFieldIgnoreAttribute>() != null
                     ? TempCategory.Ignore
                     : TempCategory.General,
             };
@@ -117,7 +118,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
                 new
                 {
                     PropertyInfo = p,
-                    Specs = p.GetCustomAttributes<ContentTypeAttributeSpecsAttribute>().FirstOrDefault(),
+                    Specs = p.GetCustomAttributes<ContentTypeFieldAttribute>().FirstOrDefault(),
                 })
             .Where(pair => !skipNoMetadata || pair.Specs != null)
             .ToListOpt();
@@ -133,7 +134,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
                 var attrIsTitle = specs?.IsTitle ?? false;
 
                 // Create list of metadata with description; must be null if no metadata
-                var mdItems = AttributeSettingsGeneral
+                var mdItems = FieldSettingsGeneral
                     .FromCodeAttributeOrNull(specs)
                     .NullOrGetWith(mdRaw => services.DataFactory.Create([mdRaw]))
                     ?.ToListOpt();

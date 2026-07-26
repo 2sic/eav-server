@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Caching.PiggyBack;
 
@@ -29,7 +30,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     public required int AppId { get; init; }
 
     /// <inheritdoc />
-    [ContentTypeAttributeSpecs(IsTitle = true)]
+    [ContentTypeField(IsTitle = true)]
     public required string Name { get; init; }
 
     /// <inheritdoc />
@@ -42,12 +43,12 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     public required int Id { get; init; }
 
     /// <inheritdoc />
-    [ContentTypeAttributeIgnore]
+    [ContentTypeFieldIgnore]
     public IEnumerable<IContentTypeAttribute> Attributes => AttributesImmutable;
     public required IImmutableList<IContentTypeAttribute> AttributesImmutable { get; init; }
 
     /// <inheritdoc />
-    [ContentTypeAttributeSpecs(Type = ValueTypes.String)]
+    [ContentTypeField(Type = ValueTypes.String)]
     public required RepositoryTypes RepositoryType { get; init; }
 
     /// <inheritdoc />
@@ -64,7 +65,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
 
     [JsonIgnore]
     [PrivateApi("new 15.04")]
-    [ContentTypeAttributeIgnore]
+    [ContentTypeFieldIgnore]
     public string? TitleFieldName
         => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
     private readonly GetOnce<string?> _titleFieldName = new();
@@ -73,7 +74,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     /// For future use, like if this type is SQL based etc.
     /// </summary>
     [PrivateApi]
-    [ContentTypeAttributeIgnore]
+    [ContentTypeFieldIgnore]
     public ContentTypeSysSettings? SysSettings { get; init; }
 
     /// <inheritdoc />

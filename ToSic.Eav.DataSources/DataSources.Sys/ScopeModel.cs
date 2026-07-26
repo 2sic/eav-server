@@ -1,3 +1,4 @@
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 
@@ -13,7 +14,7 @@ public record ScopeModel : RawEntity, IHasIdentityNameId
 {
     public required string NameId { get; init; }
 
-    [ContentTypeAttributeSpecs(IsTitle = true)]
+    [ContentTypeField(IsTitle = true)]
     public required string Name { get; init; }
     
     public required int TypesTotal { get; init; }

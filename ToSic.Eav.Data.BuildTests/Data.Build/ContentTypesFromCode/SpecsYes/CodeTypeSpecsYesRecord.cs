@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Sys.ContentTypes;
 using static ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes.CodeTypeSpecsConstants;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
@@ -15,28 +16,28 @@ namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 [ContentTypeSpecs(Name = SpecName, Guid = SpecGuid, Scope = SpecScope, Description = SpecDescription)]
 public record CodeTypeSpecsYesRecord(
 
-    [property: ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
+    [property: ContentTypeField(Description = IdAndGuidDescription)]
     int Id,
 
-    [property: ContentTypeAttributeSpecs(Description = IdAndGuidDescription)]
+    [property: ContentTypeField(Description = IdAndGuidDescription)]
     Guid Guid,
 
     DateTime Created,
 
-    [property: ContentTypeAttributeSpecs(Name = NameAttrSpecsNameModified, IsTitle = true)]
+    [property: ContentTypeField(Name = NameAttrSpecsNameModified, IsTitle = true)]
     string Name,
 
-    [property: ContentTypeAttributeSpecs(Type = ValueTypes.Hyperlink)]
+    [property: ContentTypeField(Type = ValueTypes.Hyperlink)]
     string Url,
 
     int Age,
 
     DateTime BirthDate,
 
-    [property: ContentTypeAttributeSpecs(Description = IsAliveDescription)]
+    [property: ContentTypeField(Description = IsAliveDescription)]
     bool IsAlive,
 
-    [property: ContentTypeAttributeIgnore] string IgnoreThis
+    [property: ContentTypeFieldIgnore] string IgnoreThis
 )
 {
     private string PrivateProperty { get; set; }

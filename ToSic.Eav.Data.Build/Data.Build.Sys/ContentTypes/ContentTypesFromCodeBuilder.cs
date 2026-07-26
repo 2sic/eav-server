@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Attributes.Sys;
+﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities.Sources;
