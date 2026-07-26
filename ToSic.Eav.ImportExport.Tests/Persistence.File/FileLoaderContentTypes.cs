@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.Attributes;
+﻿using ToSic.Eav.Data.ContentTypes.Fields;
+using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Persistence.File;
 using Xunit.Abstractions;
 
@@ -42,7 +43,7 @@ public class FileLoaderContentTypes(ITestOutputHelper output, FileSystemLoader l
         var conMeta = conStr.Metadata;
         Equal(2, conMeta.Count());//, "constr should have 2 meta-items");
 
-        var conMetaAll = conMeta.FirstOrDefault(e => e.Type.Name == AttributeMetadataConstants.TypeGeneral);
+        var conMetaAll = conMeta.FirstOrDefault(e => e.Type.Name == IFieldSettingsGeneral.Constants.ContentTypeName);
         NotNull(conMetaAll);//, "should have @all metadata");
 
         var conMetaStr = conMeta.FirstOrDefault(e => e.Type.Name == "@string-default");

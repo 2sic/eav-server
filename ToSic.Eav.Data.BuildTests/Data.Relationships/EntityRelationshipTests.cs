@@ -5,22 +5,22 @@ using ToSic.Eav.Data.TestData;
 namespace ToSic.Eav.Data.Relationships;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class EntityRelationshipTests(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
+public class EntityRelationshipTests(DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
 {
 
     [Fact]
     public void Entity_EntityRelationship()
     {
-        var dan = dataAssembler.TestEntityDaniel(typeAssembler);
+        var dan = dataAssembler.TestEntityDaniel(ctAssemblyKit);
 
         var relationshipList = new List<EntityRelationship>
         {
-            new(dan, dataAssembler.TestEntityLeonie(typeAssembler))
+            new(dan, dataAssembler.TestEntityLeonie(ctAssemblyKit))
         };
 
         for (var p = 0; p < 15; p++)
         {
-            var relPet = new EntityRelationship(dan, dataAssembler.TestEntityPet(typeAssembler, p));
+            var relPet = new EntityRelationship(dan, dataAssembler.TestEntityPet(ctAssemblyKit, p));
             relationshipList.Add(relPet);
         }
 

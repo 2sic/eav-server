@@ -6,7 +6,7 @@ using static ToSic.Eav.TestData.PersonSpecs;
 
 namespace ToSic.Eav.TestData;
 
-public class PersonGenerator(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
+public class PersonGenerator(DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
 {
     private static Person SemiRandom(PersonSpecs specs, int i)
     {
@@ -68,7 +68,7 @@ public class PersonGenerator(DataAssembler dataAssembler, ContentTypeAssembler t
             {FieldHeight, MaybeMakeMlNonString(multiLanguage, FieldHeight, ValueTypes.Number, person.Height)},
             {FieldBioForMlSortTest, MaybeMakeMlBio(multiLanguage, person.IsMale)}
         };
-        return dataAssembler.CreateEntityTac(appId: 0, entityId: person.Id, contentType: typeAssembler.Type.Transient(PersonTypeName), values: dic,
+        return dataAssembler.CreateEntityTac(appId: 0, entityId: person.Id, contentType: ctAssemblyKit.Type.Transient(PersonTypeName), values: dic,
             titleField: FieldFullName, modified: person.Modified);
     }
 

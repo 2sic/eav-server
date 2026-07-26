@@ -14,7 +14,7 @@ namespace ToSic.Eav.ImportExport.Sys.Xml;
 /// Import EAV Data from XML Format
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler)
+public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
     : ServiceBase("Imp.XmlEnt", connect: [dataAssembler, globalData])
 {
 
@@ -254,7 +254,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
             var newTypeRepoType = xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True"
                 ? RepositoryTypes.Folder
                 : RepositoryTypes.Sql;
-            contentType = typeAssembler.Type.Create(appId: AppId, id: 0, name: typeName, nameId: null!, scope: null!, repositoryType: newTypeRepoType);
+            contentType = ctAssemblyKit.Type.Create(appId: AppId, id: 0, name: typeName, nameId: null!, scope: null!, repositoryType: newTypeRepoType);
         }
 
         var targetEntity = dataAssembler.Entity.Create(

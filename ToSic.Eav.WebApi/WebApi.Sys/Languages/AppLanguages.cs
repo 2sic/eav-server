@@ -38,15 +38,18 @@ public class AppLanguages : CustomDataSource
 
         var list = languagesBackend
             .GetLanguagesOfApp(appReader, true)
-            .Select(IRawEntity (language) => new RawEntity(new()
+            .Select(IRawEntity (language) => new RawEntity
             {
-                { nameof(SiteLanguageDto.Code), language.Code },
-                { nameof(SiteLanguageDto.Culture), language.Culture },
-                { nameof(SiteLanguageDto.IsEnabled), language.IsEnabled },
-                { nameof(SiteLanguageDto.IsAllowed), language.IsAllowed },
-                { nameof(SiteLanguageDto.NameId), language.NameId },
-                { nameof(SiteLanguageDto.Permissions), language.Permissions },
-            }))
+                Values = new Dictionary<string, object?>
+                {
+                    { nameof(SiteLanguageDto.Code), language.Code },
+                    { nameof(SiteLanguageDto.Culture), language.Culture },
+                    { nameof(SiteLanguageDto.IsEnabled), language.IsEnabled },
+                    { nameof(SiteLanguageDto.IsAllowed), language.IsAllowed },
+                    { nameof(SiteLanguageDto.NameId), language.NameId },
+                    { nameof(SiteLanguageDto.Permissions), language.Permissions },
+                }
+            })
             .ToList();
 
         return l.Return(list, $"{list.Count}");

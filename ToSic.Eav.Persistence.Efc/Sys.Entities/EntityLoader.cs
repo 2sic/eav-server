@@ -15,7 +15,7 @@ internal class EntityLoader(
     EfcAppLoaderService appLoader,
     Generator<IDataDeserializer> dataDeserializer,
     DataAssembler dataAssembler,
-    ContentTypeAssembler typeAssembler,
+    ContentTypeAssemblyKit ctAssemblyKit,
     ISysFeaturesService featuresSvc)
     : HelperBase(appLoader.Log, "Efc.EntLdr")
 {
@@ -88,7 +88,7 @@ internal class EntityLoader(
 
         var logDetails = appLoader.LogSettings is { Enabled: true, Details: true };
 
-        var buildHelper = new EntityBuildHelper(dataAssembler, typeAssembler, builder.Reader, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, Log);
+        var buildHelper = new EntityBuildHelper(dataAssembler, ctAssemblyKit, builder.Reader, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, Log);
 
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)

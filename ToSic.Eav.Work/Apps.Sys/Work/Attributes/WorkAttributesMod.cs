@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Values;
@@ -14,12 +15,12 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkAttributesMod(
     GenWorkDb<WorkMetadata> workMetadata,
     GenWorkBasic<WorkAttributes> workAttributes,
-    ContentTypeAttributeAssembler attributeAssembler,
+    ContentTypeFieldAssembler fieldAssembler,
     Generator<IDataDeserializer> dataDeserializer,
     LazySvc<ISysFeaturesService> features,
     LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions)
     : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.AttMod",
-        connect: [attributeAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeChangeActions])
+        connect: [fieldAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeChangeActions])
 {
     #region Getters which don't modify, but need the DB
 
@@ -42,7 +43,7 @@ public class WorkAttributesMod(
     public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder, bool triggerPostSave = true)
     {
         var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-        var attDef = attributeAssembler.Create(
+        var attDef = fieldAssembler.Create(
             appId: AppWorkCtx.AppId,
             name: staticName,
             type: ValueTypeHelpers.Get(type),
@@ -81,10 +82,10 @@ public class WorkAttributesMod(
         {
             { "VisibleInEditUI", true },
             { "Name", staticName },
-            { AttributeMetadataConstants.GeneralFieldInputType, inputType }
+            { nameof(IFieldSettingsGeneral.InputType), inputType }
         };
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
+        workMetadata.New(AppWorkCtx).SaveMetadata(meta, IFieldSettingsGeneral.Constants.ContentTypeName, newValues);
         l.Done();
     }
 
@@ -101,10 +102,10 @@ public class WorkAttributesMod(
                         ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
         var contentTypeId = attribute.ContentTypeId;
 
-        var newValues = new Dictionary<string, object> { { AttributeMetadataConstants.GeneralFieldInputType, inputType } };
+        var newValues = new Dictionary<string, object> { { nameof(IFieldSettingsGeneral.InputType), inputType } };
 
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
+        workMetadata.New(AppWorkCtx).SaveMetadata(meta, IFieldSettingsGeneral.Constants.ContentTypeName, newValues);
         TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }

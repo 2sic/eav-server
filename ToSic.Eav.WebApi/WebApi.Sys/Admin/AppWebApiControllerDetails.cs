@@ -53,7 +53,10 @@ public class AppWebApiControllerDetails : CustomDataSource
 
         var values = AppWebApiControllerSecurityValues.ToDictionary(security);
         values.Add(nameof(ApiControllerDto.controller), dto.controller);
-        var entity = new RawEntity(values);
+        var entity = new RawEntity
+        {
+            Values = values
+        };
 
         return l.Return([entity], "ok");
     }

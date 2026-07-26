@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.WebApi.Sys.Dto;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -16,17 +15,7 @@ public interface IFieldController
     /// <param name="index">position in the field-list</param>
     /// <returns></returns>
     int Add(int appId, int contentTypeId, string staticName, string type, string inputType, int index);
-
-    /// <summary>
-    /// Request available data-types in this app
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <returns></returns>
-
-    // 2rb: Replaced by InputTypes DataSource.
-    //string[] DataTypes(int appId);
-
-
+    
     /// <summary>
     /// Delete a field / attribute
     /// </summary>
@@ -35,37 +24,6 @@ public interface IFieldController
     /// <param name="attributeId"></param>
     /// <returns></returns>
     bool Delete(int appId, int contentTypeId, int attributeId);
-
-
-    /// <summary>
-    /// Get the fields of a content-type
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <param name="staticName"></param>
-    /// <returns></returns>
-    // 2rb: Replaced by ContentTypeDetails DataSource.
-    //IEnumerable<ContentTypeFieldDto> All(int appId, string staticName);
-
-
-    /// <summary>
-    /// Get a list of all known input types in this app.
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <returns></returns>
-    /// <remarks>
-    /// It's important to note that each app could have its own additional input types.
-    /// </remarks>$
-
-    // 2rb: Replaced by InputTypes DataSource.
-    //ICollection<InputTypeInfo> InputTypes(int appId);
-
-    /// <summary>
-    /// Reserved field names which shouldn't be used in content-type fields. Also contains information why a name is reserved.
-    /// </summary>
-    /// <returns></returns>
-
-    // 2rb: Replaced by InputTypes DataSource.
-    //Dictionary<string, string> ReservedNames();
 
     /// <summary>
     /// Rename an field

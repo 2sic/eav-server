@@ -114,7 +114,7 @@ public sealed class Apps: CustomDataSource
                 {
                     Id = app.Key,
                     Guid = guid ?? Guid.Empty,
-                    Values = appEnt
+                    Values = appEnt,
                 };
                 return raw;
             })

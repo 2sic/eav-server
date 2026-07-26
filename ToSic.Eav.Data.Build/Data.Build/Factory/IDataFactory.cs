@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.Data.Sys.EntityPair;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -12,30 +11,34 @@ namespace ToSic.Eav.Data.Build;
 /// </summary>
 /// <remarks>
 /// * Added in v15 to replace the previous IDataBuilder
+/// * v22 changed some internals to be more flexible, assume not intensively used so no issues expected
 /// </remarks>
 [PublicApi]
 public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>, IServiceWithSetup<DataFactoryOptions>
 {
     /// <summary>
     /// A counter for the ID in case the data provided doesn't have an ID to use.
-    /// Default is `1`
+    /// Default is `1`.
+    /// Negative numbers are possible.
     /// </summary>
     int IdCounter { get; }
 
 
     /// <summary>
     /// The generated ContentType.
-    /// This will only be generated once, for better performance.
+    /// This will only be prepared once, for better performance.
     /// </summary>
     /// <remarks>
-    /// Set to internal v22 as the first access could change what happens,
-    /// and should not be done before the first IRawEntity conversion.
+    /// * Set to internal v22 as the first access could change what happens,
+    ///   and should not be done before the first IRawEntity conversion.
+    /// * Will prioritize according to the internal logic of the <see cref="DataFactoryContentTypeHelper"/>
     /// </remarks>
     internal IContentType? ContentType { get; }
 
     /// <summary>
     /// TODO:
     /// </summary>
+    [PrivateApi]
     ILookup<object, IEntity> Relationships { get; }
 
     #region Simple Create
@@ -56,9 +59,10 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// <summary>
     /// Create an entity from a single <see cref="IRawEntity"/>
     /// </summary>
-    /// <param name="rawEntity"></param>
+    /// <param name="item"></param>
     /// <returns></returns>
-    IEntity Create(IRawEntity rawEntity);
+    IEntity Create(IRawEntitySource item);
+
 
     #endregion
 
@@ -74,47 +78,8 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     /// <typeparam name="T"></typeparam>
     /// <param name="list"></param>
     /// <returns></returns>
-    IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity;
+    IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : class, IRawEntitySource;
 
     #endregion
-
-
-    #region Prepare One
-
-    /// <summary>
-    /// For objects which themselves are <see cref="IRawEntity"/>
-    /// </summary>
-    /// <param name="rawEntity"></param>
-    /// <returns></returns>
-    EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity;
-
-    #endregion
-
-    #region Prepare Many
-
-    /// <summary>
-    /// This will create IEntity but return it in a dictionary mapped to the original.
-    /// This is useful when you intend to do further processing and need to know which original matches the generated entity.
-    ///
-    /// IMPORTANT: WIP
-    /// THIS ALREADY RUNS FullClone, so the resulting IEntities are properly modifiable and shouldn't be cloned again
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <returns></returns>
-    IList<EntityPair<T>> Prepare<T>(IEnumerable<T> list) where T: IRawEntity;
-
-    #endregion
-
-    #region WrapUp
-
-    /// <summary>
-    /// Finalize the work of building something, using prepared materials.
-    /// </summary>
-    /// <param name="rawList"></param>
-    /// <returns></returns>
-    IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList);
-
-    #endregion
-
+    
 }

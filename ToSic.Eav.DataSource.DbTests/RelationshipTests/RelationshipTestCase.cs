@@ -28,7 +28,7 @@ internal class RelationshipTestCase : RelationshipTestBase
     internal RelationshipTestCase(
         DataSourcesTstBuilder dsSvc,
         DataAssembler dataAssembler,
-        ContentTypeAssembler typeAssembler,
+        ContentTypeAssemblyKit ctAssemblyKit,
         string name, 
         string type, 
         string? relationship = null, 
@@ -37,7 +37,7 @@ internal class RelationshipTestCase : RelationshipTestBase
         string? compareMode = null,
         string? separator = null,
         string? direction = null)
-    : base(dsSvc, dataAssembler, typeAssembler)
+    : base(dsSvc, dataAssembler, ctAssemblyKit)
     {
         Name = name;
         Type = type;

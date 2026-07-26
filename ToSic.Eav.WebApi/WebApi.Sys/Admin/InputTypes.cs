@@ -55,21 +55,24 @@ public class InputTypes : CustomDataSource
 
         var entities = _inputTypes.New(AppId)
             .GetInputTypes()
-            .Select(inputType => new RawEntity(new()
+            .Select(inputType => new RawEntity
             {
-                { nameof(InputTypeInfo.Type), inputType.Type },
-                { nameof(InputTypeInfo.Label), inputType.Label },
-                { nameof(InputTypeInfo.Description), inputType.Description },
-                { nameof(InputTypeInfo.DisableI18n), inputType.DisableI18n },
-                { nameof(InputTypeInfo.UiAssets), inputType.UiAssets },
-                { nameof(InputTypeInfo.UseAdam), inputType.UseAdam },
-                { nameof(InputTypeInfo.IsObsolete), inputType.IsObsolete },
-                { nameof(InputTypeInfo.ObsoleteMessage), inputType.ObsoleteMessage },
-                { nameof(InputTypeInfo.IsRecommended), inputType.IsRecommended },
-                { nameof(InputTypeInfo.IsDefault), inputType.IsDefault },
-                { nameof(InputTypeInfo.Source), inputType.Source },
-                { nameof(InputTypeInfo.ConfigTypes), inputType.ConfigTypes },
-            }));
+                Values = new Dictionary<string, object?>
+                {
+                    { nameof(InputTypeInfo.Type), inputType.Type },
+                    { nameof(InputTypeInfo.Label), inputType.Label },
+                    { nameof(InputTypeInfo.Description), inputType.Description },
+                    { nameof(InputTypeInfo.DisableI18n), inputType.DisableI18n },
+                    { nameof(InputTypeInfo.UiAssets), inputType.UiAssets },
+                    { nameof(InputTypeInfo.UseAdam), inputType.UseAdam },
+                    { nameof(InputTypeInfo.IsObsolete), inputType.IsObsolete },
+                    { nameof(InputTypeInfo.ObsoleteMessage), inputType.ObsoleteMessage },
+                    { nameof(InputTypeInfo.IsRecommended), inputType.IsRecommended },
+                    { nameof(InputTypeInfo.IsDefault), inputType.IsDefault },
+                    { nameof(InputTypeInfo.Source), inputType.Source },
+                    { nameof(InputTypeInfo.ConfigTypes), inputType.ConfigTypes },
+                }
+            });
 
         return l.Return(entities, "ok");
     }
@@ -80,10 +83,13 @@ public class InputTypes : CustomDataSource
 
         var entities = _attributesMod.New(AppId)
             .DataTypes()
-            .Select(dataType => new RawEntity(new()
+            .Select(dataType => new RawEntity
             {
-                { nameof(NameValuePair.Name), dataType },
-            }));
+                Values = new Dictionary<string, object?>
+                {
+                    { nameof(NameValuePair.Name), dataType },
+                }
+            });
 
         return l.Return(entities, "ok");
     }
@@ -93,11 +99,14 @@ public class InputTypes : CustomDataSource
         var l = Log.Fn<IEnumerable<IRawEntity>>();
 
         var entities = AttributeNames.ReservedNames
-            .Select(reservedName => new RawEntity(new()
+            .Select(reservedName => new RawEntity
             {
-                { nameof(NameValuePair.Name), reservedName.Key },
-                { nameof(NameValuePair.Value), reservedName.Value },
-            }));
+                Values = new Dictionary<string, object?>
+                {
+                    { nameof(NameValuePair.Name), reservedName.Key },
+                    { nameof(NameValuePair.Value), reservedName.Value },
+                }
+            });
 
         return l.Return(entities, "ok");
     }

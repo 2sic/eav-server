@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Data.Raw;
+﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Models;
 
 namespace ToSic.Eav.DataSources;
@@ -27,25 +26,30 @@ internal record PagingModelOfEntity : ModelFromEntityBasic, IPagingModel
     public int PageCount => GetThis(0);
 }
 
-[ContentTypeSpecs(
+[ContentType(
     Guid = "488386e8-004c-4bd3-848c-46897835e6b1",
     Description = "Paging Information",
     Name = "Paging"
 )]
-internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int PageCount) : RawEntityRecordBase, IPagingModel
+internal record PagingModel(int PageSize, int PageNumber, int ItemCount, int PageCount) : IPagingModel, IRawEntityConvertible
 {
     public string Title => "Paging Information";
-    public override int Id => PageNumber;
 
-    public override IDictionary<string, object?> Attributes(RawConvertOptions options) =>
-        new Dictionary<string, object?>
+    IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
+
+    private static IRawEntityConverter Converter { get; } = new RawEntityConverterFactory<PagingModel>((source, _) =>
+        new RawEntity
         {
-            { AttributeNames.TitleNiceName, Title },
-            { nameof(PageSize), PageSize },
-            { nameof(PageNumber), PageNumber },
-            { nameof(ItemCount), ItemCount },
-            { nameof(PageCount), PageCount }
-        };
+            Id = source.PageNumber,
+            Values = new Dictionary<string, object?>
+            {
+                { AttributeNames.TitleNiceName, source.Title },
+                { nameof(PageSize), source.PageSize },
+                { nameof(PageNumber), source.PageNumber },
+                { nameof(ItemCount), source.ItemCount },
+                { nameof(PageCount), source.PageCount }
+            },
+        });
 }
 
 

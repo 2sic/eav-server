@@ -87,7 +87,7 @@ partial class FileSystemLoader
                 .Select(ct =>
                 {
                     TypeIdSeed += TypeIdDirection;
-                    var typeWithOrigin = typeAssembler.Type.CreateFrom(
+                    var typeWithOrigin = ctAssemblyKit.Type.CreateFrom(
                         ct.ContentType,
                         id: TypeIdSeed,
                         repoType: Options.RepoType,

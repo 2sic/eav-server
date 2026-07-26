@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys;
@@ -42,15 +42,6 @@ public class ContentTypeDtoService(
 
         return l.ReturnAsOk(filteredType);
     }
-
-    // 2rb: Replaced by ContentTypeDetails DataSource.
-    //public ContentTypeDto GetSingle(int appId, string contentTypeStaticName, string? scope = null)
-    //{
-    //    var l = Log.Fn<ContentTypeDto>($"a#{appId}, type:{contentTypeStaticName}, scope:{scope}");
-    //    var appCtxPlus = workEntities.CtxSvc.ContextPlus(appId);
-    //    var ct = appCtxPlus.AppReader.GetContentType(contentTypeStaticName);
-    //    return l.Return(convTypeDto.Convert(ct));
-    //}
 
     #endregion
 

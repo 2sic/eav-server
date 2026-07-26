@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Sys.Capabilities.Features;
 
@@ -98,25 +98,25 @@ public sealed class EntityInspectRelationships : CustomDataSource
         return l.Return(merged);
     }
 
-    [ContentTypeSpecs(
+    [ContentType(
         Guid = "9878be6e-93d9-4d91-82a3-31ca4da436c3",
         Description = "Entity Relationship",
         Name = MyContentTypeName
     )]
     private record EntityRelationship(
-        [property: ContentTypeAttributeIgnore]
+        [property: ContentTypeIgnore]
         IEntity Entity, 
         string Field,
         bool IsChild,
-        [property: ContentTypeAttributeIgnore]
+        [property: ContentTypeIgnore]
         bool FeatEnabled
-    ) : RawEntityRecordBase
+    ) : /*RawEntityRecordBase,*/ IRawEntityConvertible
     {
         private const string MyContentTypeName = "EntityRelationship";
 
-        public override int Id => FeatEnabled ? Entity.EntityId : 0;
+        public int Id => FeatEnabled ? Entity.EntityId : 0;
         
-        public override Guid Guid => FeatEnabled ? Entity.EntityGuid : Guid.Empty;
+        public Guid Guid => FeatEnabled ? Entity.EntityGuid : Guid.Empty;
 
         public string Title => FeatEnabled ? Entity.GetBestTitle() ?? "unknown" : FeatureNotEnabledMessage;
         
@@ -124,19 +124,39 @@ public sealed class EntityInspectRelationships : CustomDataSource
         
         public string ContentTypeNameId => FeatEnabled ? Entity.Type.NameId : MustEnableFeature;
 
-        public override IDictionary<string, object?> Attributes(RawConvertOptions options) =>
-            new Dictionary<string, object?>
-            {
-                { AttributeNames.TitleNiceName, Title },
-                { nameof(Field), Field },
-                { nameof(IsChild), IsChild },
-                { nameof(ContentTypeName), ContentTypeName },
-                { nameof(ContentTypeNameId), ContentTypeNameId }
-            };
+        //public override IDictionary<string, object?> Values => new Dictionary<string, object?>
+        //    {
+        //        { AttributeNames.TitleNiceName, Title },
+        //        { nameof(Field), Field },
+        //        { nameof(IsChild), IsChild },
+        //        { nameof(ContentTypeName), ContentTypeName },
+        //        { nameof(ContentTypeNameId), ContentTypeNameId }
+        //    };
+
+        //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => Values;
+            
         
         private const string MustEnableFeature = "must enable feature";
         private static readonly string FeatureNotEnabledMessage =
             $"hidden, feature {BuiltInFeatures.EntityInspectRelationships.NameId} not enabled";
+
+        IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
+
+        private static IRawEntityConverter Converter { get; } =
+            new RawEntityConverterFactory<EntityRelationship>((source, _) =>
+                new RawEntity
+                {
+                    Id = source.Id,
+                    Guid = source.Guid,
+                    Values = new Dictionary<string, object?>
+                    {
+                        { AttributeNames.TitleNiceName, source.Title },
+                        { nameof(Field), source.Field },
+                        { nameof(IsChild), source.IsChild },
+                        { nameof(ContentTypeName), source.ContentTypeName },
+                        { nameof(ContentTypeNameId), source.ContentTypeNameId }
+                    },
+                });
 
     }
 }

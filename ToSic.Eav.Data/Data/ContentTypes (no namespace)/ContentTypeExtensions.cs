@@ -1,4 +1,4 @@
-﻿using static ToSic.Eav.Data.Sys.Attributes.AttributeMetadataConstants;
+﻿using ToSic.Eav.Data.ContentTypes.Fields;
 
 namespace ToSic.Eav.Data;
 
@@ -81,5 +81,5 @@ public static partial class ContentTypeExtensions
     /// Added a bit later in v21.08.
     /// </remarks>
     public static bool IsEphemeral(this IContentTypeAttribute attribute) =>
-        attribute.Metadata.Get<bool>(MetadataFieldAllIsEphemeral, typeName: TypeGeneral);
+        attribute.Metadata.Get<bool>(nameof(IFieldSettingsGeneral.IsEphemeral), typeName: IFieldSettingsGeneral.Constants.ContentTypeName);
 }

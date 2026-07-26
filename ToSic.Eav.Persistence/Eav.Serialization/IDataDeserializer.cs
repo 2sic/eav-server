@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 
 namespace ToSic.Eav.Serialization;
@@ -52,18 +52,10 @@ public interface IDataDeserializer: IHasLog
     /// <returns>A list of entity objects</returns>
     IList<IEntity> Deserialize(List<string> serialized, bool allowDynamic = false);
 
-    // Removed v20-00-03
-    ///// <summary>
-    ///// De-serialize ContentTypeAttributeSysSettings from SysSettings string field in ToSicEavAttributes and Content-Types (EF/DB)
-    ///// </summary>
-    ///// <returns>ContentTypeAttributeSysSettings or null</returns>
-    //ContentTypeAttributeSysSettings? DeserializeAttributeSysSettings(string name, string json);
-
-
     /// <summary>
-    /// Serialize ContentTypeAttributeSysSettings
+    /// Serialize ContentTypeFieldSysSettings
     /// </summary>
     /// <param name="sysSettings"></param>
     /// <returns>string or null</returns>
-    string? Serialize(ContentTypeAttributeSysSettings sysSettings);
+    string? Serialize(ContentTypeFieldSysSettings sysSettings);
 }

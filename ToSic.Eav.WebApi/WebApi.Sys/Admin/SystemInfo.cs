@@ -80,13 +80,16 @@ public class SystemInfo : CustomDataSource
         var l = Log.Fn<IEnumerable<IRawEntity>>($"{_site.Id}");
         var zoneId = _site.ZoneId;
 
-        var entity = new RawEntity(new()
+        var entity = new RawEntity
         {
-            { nameof(SiteStatsDto.SiteId), _site.Id },
-            { nameof(SiteStatsDto.ZoneId), zoneId },
-            { nameof(SiteStatsDto.Apps), _appsCatalog.Apps(zoneId).Count },
-            { nameof(SiteStatsDto.Languages), _zoneMapper.CulturesWithState(_site).Count },
-        });
+            Values = new Dictionary<string, object?>
+            {
+                { nameof(SiteStatsDto.SiteId), _site.Id },
+                { nameof(SiteStatsDto.ZoneId), zoneId },
+                { nameof(SiteStatsDto.Apps), _appsCatalog.Apps(zoneId).Count },
+                { nameof(SiteStatsDto.Languages), _zoneMapper.CulturesWithState(_site).Count },
+            }
+        };
 
         return l.Return([entity], "1");
     }
@@ -95,14 +98,17 @@ public class SystemInfo : CustomDataSource
     {
         var l = Log.Fn<IEnumerable<IRawEntity>>();
 
-        var entity = new RawEntity(new()
+        var entity = new RawEntity
         {
-            { nameof(SystemInfoDto.Fingerprint), _fingerprint.GetFingerprint() },
-            { nameof(SystemInfoDto.EavVersion), EavSystemInfo.VersionString },
-            { nameof(SystemInfoDto.Platform), _platform.Name },
-            { nameof(SystemInfoDto.PlatformVersion), EavSystemInfo.VersionToNiceFormat(_platform.Version) },
-            { nameof(SystemInfoDto.Zones), _appsCatalog.Zones.Count },
-        });
+            Values = new Dictionary<string, object?>
+            {
+                { nameof(SystemInfoDto.Fingerprint), _fingerprint.GetFingerprint() },
+                { nameof(SystemInfoDto.EavVersion), EavSystemInfo.VersionString },
+                { nameof(SystemInfoDto.Platform), _platform.Name },
+                { nameof(SystemInfoDto.PlatformVersion), EavSystemInfo.VersionToNiceFormat(_platform.Version) },
+                { nameof(SystemInfoDto.Zones), _appsCatalog.Zones.Count },
+            }
+        };
 
         return l.Return([entity], "1");
     }
@@ -118,12 +124,15 @@ public class SystemInfo : CustomDataSource
             .Where(o => o.HasValue())
             .Distinct());
 
-        var entity = new RawEntity(new()
+        var entity = new RawEntity
         {
-            { nameof(LicenseInfoDto.Main), "none" },
-            { nameof(LicenseInfoDto.Count), licenses.All.Count },
-            { nameof(LicenseInfoDto.Owner), owner },
-        });
+            Values = new Dictionary<string, object?>
+            {
+                { nameof(LicenseInfoDto.Main), "none" },
+                { nameof(LicenseInfoDto.Count), licenses.All.Count },
+                { nameof(LicenseInfoDto.Owner), owner },
+            }
+        };
 
         return l.Return([entity], "1");
     }
@@ -135,11 +144,14 @@ public class SystemInfo : CustomDataSource
         var warningsObsolete = CountInsightsMessages(CodeInfoConstants.ObsoleteNameInHistory);
         var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;
 
-        var entity = new RawEntity(new()
+        var entity = new RawEntity
         {
-            { nameof(MessagesDto.WarningsOther), warningsOther },
-            { nameof(MessagesDto.WarningsObsolete), warningsObsolete },
-        });
+            Values = new Dictionary<string, object?>
+            {
+                { nameof(MessagesDto.WarningsOther), warningsOther },
+                { nameof(MessagesDto.WarningsObsolete), warningsObsolete },
+            }
+        };
 
         return l.Return([entity], "1");
     }

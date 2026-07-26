@@ -17,9 +17,9 @@ partial class JsonSerializer(JsonSerializer.Dependencies services, string logNam
         ITargetTypeService MetadataTargets,
         IGlobalDataService GlobalData,
         DataAssembler DataAssembler,
-        ContentTypeAssembler TypeAssembler,
+        ContentTypeAssemblyKit ContentTypeAssemblyKit,
         LazySvc<IValueConverter> ValueConverter)
-        : SerializerBase.Dependencies(MetadataTargets, DataAssembler, TypeAssembler, GlobalData, Connect: [ValueConverter]);
+        : SerializerBase.Dependencies(MetadataTargets, DataAssembler, ContentTypeAssemblyKit, GlobalData, Connect: [ValueConverter]);
 
     #endregion
 

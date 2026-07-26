@@ -19,7 +19,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
         IAppsCatalog AppsCatalog,
         LazySvc<XmlToEntity> XmlToEntity,
         LazySvc<DataAssembler> DataAssembler,
-        LazySvc<ContentTypeAssembler> TypeAssembler,
+        LazySvc<ContentTypeAssemblyKit> TypeAssembler,
         DataImportLogSettings LogSettings)
         : DependenciesRecord(connect: [ImporterLazy, StorageFactory, Environment, AppsCatalog, XmlToEntity, AppCachePurger, DataAssembler, TypeAssembler, LogSettings]);
 

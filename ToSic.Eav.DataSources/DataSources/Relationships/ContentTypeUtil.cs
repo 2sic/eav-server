@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys;
@@ -19,7 +19,7 @@ internal class ContentTypeUtil
     };
 
 
-    internal static Dictionary<string, object?> BuildDictionary(IContentType t) => new()
+    private static Dictionary<string, object?> BuildDictionary(IContentType t) => new()
     {
         { nameof(IContentType.Name), t.Name },
         // 2024-10-29 v18.03 2dm disabled, as deprecated, must see if something breaks, but don't really expect it...
@@ -37,14 +37,15 @@ internal class ContentTypeUtil
     };
 
     internal static RawEntity ToRaw(IContentType t) =>
-        new(BuildDictionary(t))
+        new()
         {
             Id = t.Id,
             Guid = SafeConvertGuid(t) ?? Guid.Empty,
+            Values = BuildDictionary(t),
             Metadata = t.Metadata,
         };
 
-    public static Guid? SafeConvertGuid(IContentType t)
+    private static Guid? SafeConvertGuid(IContentType t)
     {
         try
         {

@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Build.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.ImportExport.Json.Sys;
@@ -17,7 +17,7 @@ internal class EfcContentTypeLoaderService(
     EfcAppLoaderService efcAppLoader,
     Generator<IAppContentTypesLoader> appFileContentTypesLoader,
     Generator<IDataDeserializer> dataDeserializer,
-    ContentTypeAssembler typeAssembler,
+    ContentTypeAssemblyKit ctAssemblyKit,
     IAppStateCacheService appStates,
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
@@ -120,7 +120,7 @@ internal class EfcContentTypeLoaderService(
                 Attributes = set.TsDynDataAttributes
                     .Where(a => a.TransDeletedId == null) // only not-deleted attributes!
                     .OrderBy(a => a.SortOrder)
-                    .Select(a => typeAssembler.Attribute.Create(
+                    .Select(a => ctAssemblyKit.Field.Create(
                         appId: appId,
                         name: a.StaticName,
                         type: ValueTypeHelpers.Get(a.Type),
@@ -169,8 +169,8 @@ internal class EfcContentTypeLoaderService(
                 .ToDictionary(
                     s => s.ContentTypeId,
                     s => s.TsDynDataAttributes
-                        .Select(a => typeAssembler
-                            .Attribute.Create(
+                        .Select(a => ctAssemblyKit
+                            .Field.Create(
                                 appId: appId,
                                 name: a.StaticName,
                                 type: ValueTypeHelpers.Get(a.Type),
@@ -211,7 +211,7 @@ internal class EfcContentTypeLoaderService(
                 var metaSource = MetadataProvider.Create(metaSourceFinder);
                 var metaData = new ContentTypeMetadata(set.StaticName, title: set.Name, source: metaSource);
 
-                return typeAssembler.Type.Create(
+                return ctAssemblyKit.Type.Create(
                     appId: appId,
                     name: set.Name,
                     nameId: set.StaticName,

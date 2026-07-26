@@ -83,16 +83,19 @@ public class AppWebApiControllers : CustomDataSource
             .Union(allInAppCode)
             .ToArray();
 
-        var entities = files.Select((file, index) => new RawEntity(new()
-        {
-            { nameof(AllApiFileDto.Path), file.Path },
-            { nameof(AllApiFileDto.EndpointPath), file.EndpointPath },
-            { nameof(AllApiFileDto.Edition), file.Edition },
-            { nameof(AllApiFileDto.Shared), file.Shared },
-        })
-        {
-            Id = index + 1,
-        }).ToList();
+        var entities = files
+            .Select((file, index) => new RawEntity
+            {
+                Id = index + 1,
+                Values = new Dictionary<string, object?>
+                {
+                    { nameof(AllApiFileDto.Path), file.Path },
+                    { nameof(AllApiFileDto.EndpointPath), file.EndpointPath },
+                    { nameof(AllApiFileDto.Edition), file.Edition },
+                    { nameof(AllApiFileDto.Shared), file.Shared },
+                },
+            })
+            .ToList();
 
         return l.Return(entities, $"{entities.Count}");
     }

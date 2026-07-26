@@ -75,21 +75,22 @@ public class RecycleBin : CustomDataSource
         : items.Where(i => i.TypeName.EqualsInsensitive(ct));
 
         var list = itemsOfContentType
-            .Select(r => new RawEntity(new()
-            {
-                { nameof(r.AppId), r.AppId },
-                { nameof(r.TypeNameId), r.TypeNameId },
-                { nameof(r.TypeName), r.TypeName },
-                { nameof(r.TransactionId), r.TransactionId },
-                { nameof(r.Deleted), r.Deleted },
-                { nameof(r.DeletedBy), r.DeletedBy },
-                { nameof(r.ParentRef), r.ParentRef },
-                { nameof(r.Json), r.Json },
-                { AttributeNames.TitleNiceName, $"{r.TypeName}({r.Id})" },
-            })
+            .Select(r => new RawEntity
             {
                 Id = r.Id,
                 Guid = r.Guid,
+                Values = new Dictionary<string, object?>
+                {
+                    { nameof(r.AppId), r.AppId },
+                    { nameof(r.TypeNameId), r.TypeNameId },
+                    { nameof(r.TypeName), r.TypeName },
+                    { nameof(r.TransactionId), r.TransactionId },
+                    { nameof(r.Deleted), r.Deleted },
+                    { nameof(r.DeletedBy), r.DeletedBy },
+                    { nameof(r.ParentRef), r.ParentRef },
+                    { nameof(r.Json), r.Json },
+                    { AttributeNames.TitleNiceName, $"{r.TypeName} ({r.Id})" },
+                },
             })
             .ToList();
 
@@ -99,13 +100,16 @@ public class RecycleBin : CustomDataSource
             .Select(c =>
             {
                 var first = c.First();
-                return new RawEntity(new()
+                return new RawEntity
                 {
-                    { AttributeNames.TitleNiceName, $"{first.TypeName} ({c.Count()})" },
-                    { "Name", first.TypeName },
-                    { AttributeNames.NameIdNiceName, first.TypeNameId },
-                    { "Count", c.Count() },
-                });
+                    Values = new Dictionary<string, object?>
+                    {
+                        { AttributeNames.TitleNiceName, $"{first.TypeName} ({c.Count()})" },
+                        { "Name", first.TypeName },
+                        { AttributeNames.NameIdNiceName, first.TypeNameId },
+                        { "Count", c.Count() },
+                    }
+                };
             })
             .ToList();
 

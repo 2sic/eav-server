@@ -1,5 +1,6 @@
-﻿using ToSic.Eav.Data.Sys.Ancestors;
-using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
+using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization.Sys.Json;
@@ -187,10 +188,10 @@ partial class JsonSerializer
         return package;
     }
 
-    public string? Serialize(ContentTypeAttributeSysSettings? sysSettings)
+    public string? Serialize(ContentTypeFieldSysSettings? sysSettings)
         => Serialize(sysSettings, LogDsDetails);
 
-    internal static string? Serialize(ContentTypeAttributeSysSettings? sysSettings, ILog? log)
+    internal static string? Serialize(ContentTypeFieldSysSettings? sysSettings, ILog? log)
     {
         var l = log.Fn<string>($"serialize {sysSettings} to json string");
         if (sysSettings == null)

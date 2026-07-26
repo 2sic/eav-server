@@ -21,9 +21,9 @@ public class ImportService(
     IImportExportEnvironment importExportEnvironment,
     LazySvc<EntitySaver> entitySaverLazy,
     DataAssembler dataAssembler,
-    ContentTypeAssembler typeAssembler,
+    ContentTypeAssemblyKit ctAssemblyKit,
     DataImportLogSettings logSettings)
-    : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataAssembler, typeAssembler, logSettings])
+    : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataAssembler, ctAssemblyKit, logSettings])
 {
     #region Detailed Logging
 
@@ -220,13 +220,13 @@ public class ImportService(
                 .Select(a =>
                 {
                     var attributeMetadata = MetadataWithResetIds(a.Metadata);
-                    return typeAssembler.Attribute.CreateFrom(a, metadataItems: attributeMetadata);
+                    return ctAssemblyKit.Field.CreateFrom(a, metadataItems: attributeMetadata);
                 })
                 .ToList();
 
 
             var ctMetadata = MetadataWithResetIds(contentType.Metadata);
-            var newType = typeAssembler.Type.CreateFrom(contentType, metadataItems: ctMetadata,
+            var newType = ctAssemblyKit.Type.CreateFrom(contentType, metadataItems: ctMetadata,
                 attributes: newAttributes);
 
             return l.Return(newType, "existing not found, only reset IDs");
@@ -250,7 +250,7 @@ public class ImportService(
 
                 if (newAttribute.Metadata.Permissions.Any())
                     newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => ((ICanBeEntity)p).Entity));
-                return typeAssembler.Attribute.CreateFrom(newAttribute, metadataItems: newMetaList);
+                return ctAssemblyKit.Field.CreateFrom(newAttribute, metadataItems: newMetaList);
             })
             .ToList();
 
@@ -262,7 +262,7 @@ public class ImportService(
             .Select(p => ((ICanBeEntity)p).Entity)
         );
 
-        var newContentType = typeAssembler.Type.CreateFrom(contentType, metadataItems: merged, attributes: mergedAttributes);
+        var newContentType = ctAssemblyKit.Type.CreateFrom(contentType, metadataItems: merged, attributes: mergedAttributes);
         // contentType.Metadata.Use(merged);
 
         return l.Return(newContentType, "done");

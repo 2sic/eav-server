@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Sys;
-using ToSic.Eav.WebApi.Sys.Dto;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
@@ -17,21 +15,6 @@ public class FieldControllerReal(
 
 
     #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
-
-    // 2rb: Replaced by ContentTypeDetails DataSource.
-
-    //public IEnumerable<ContentTypeFieldDto> All(int appId, string staticName)
-    //    => ctApiLazy.Value.GetFields(appId, staticName);
-
-    //public string[] DataTypes(int appId)
-    //    => attributesMod.New(appId).DataTypes();
-
-    //public ICollection<InputTypeInfo> InputTypes(int appId)
-    //    => inputTypes.New(appId).GetInputTypes();
-
-    //public Dictionary<string, string> ReservedNames()
-    //    => AttributeNames.ReservedNames;
-
     public int Add(int appId, int contentTypeId, string staticName, string type, string inputType, int index)
         => attributesMod.New(appId).AddField(contentTypeId, staticName, type, inputType, index);
 

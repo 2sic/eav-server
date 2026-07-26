@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Sys.Utils;
 
@@ -55,7 +55,7 @@ public class MetadataRecommendation: IEquatable<MetadataRecommendation>
         Type = type;
         Priority = priority;
         var typeDetails = type.DetailsOrNull();
-        Title = (typeDetails?.Title).UseFallbackIfNoValue(type.Name);
+        Title = (typeDetails?.Label).UseFallbackIfNoValue(type.Name);
         Icon = typeDetails?.Icon;
         var recDec = recommendation ?? new MetadataForDecorator();
         Count = count ?? recDec.Amount;

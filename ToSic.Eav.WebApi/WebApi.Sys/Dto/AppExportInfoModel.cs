@@ -1,20 +1,19 @@
 ﻿// ReSharper disable NotAccessedField.Global
 
-using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-[ContentTypeSpecs(
+[ContentType(
     Name = "AppStatistics",
     Guid = "16753307-5d96-4ad8-adc3-a23b2c41edca",
     Description = "App Statistics Information",
     Scope = "System"
 )]
-public class AppExportInfoModel: RawEntity
+public record AppExportInfoModel: RawEntity
 {
-    [ContentTypeAttributeSpecs(IsTitle = true)]
+    [ContentTypeField(IsTitle = true)]
     public required string Name { get; init; }
 
     public required string NameId { get; init; }
@@ -28,18 +27,17 @@ public class AppExportInfoModel: RawEntity
     public required int FilesCount { get; init; }
     public required int TransferableFilesCount { get; init; }
 
-    public override IDictionary<string, object?> Attributes(RawConvertOptions options) =>
-        new Dictionary<string, object?>
-        {
-            { nameof(Name), Name },
-            { nameof(NameId), NameId },
-            { nameof(Version), Version },
-            { nameof(EntitiesCount), EntitiesCount },
-            { nameof(LanguagesCount), LanguagesCount },
-            { nameof(TemplatesCount), TemplatesCount },
-            { nameof(HasRazorTemplates), HasRazorTemplates },
-            { nameof(HasTokenTemplates), HasTokenTemplates },
-            { nameof(FilesCount), FilesCount },
-            { nameof(TransferableFilesCount), TransferableFilesCount },
-        };
+    protected override IDictionary<string, object?> GetValues() => new Dictionary<string, object?>
+    {
+        { nameof(Name), Name },
+        { nameof(NameId), NameId },
+        { nameof(Version), Version },
+        { nameof(EntitiesCount), EntitiesCount },
+        { nameof(LanguagesCount), LanguagesCount },
+        { nameof(TemplatesCount), TemplatesCount },
+        { nameof(HasRazorTemplates), HasRazorTemplates },
+        { nameof(HasTokenTemplates), HasTokenTemplates },
+        { nameof(FilesCount), FilesCount },
+        { nameof(TransferableFilesCount), TransferableFilesCount },
+    };
 }

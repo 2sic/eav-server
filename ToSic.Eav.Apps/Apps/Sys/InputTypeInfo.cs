@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using ToSic.Eav.Data.Sys.Attributes;
+using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.Sys.InputTypes;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Utils;
@@ -118,7 +118,7 @@ public record InputTypeInfo
     /// </summary>
     /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
     public static Dictionary<string, bool> NewDefaultConfigTypesDic()
-        => new(InvariantCultureIgnoreCase) { [AttributeMetadataConstants.TypeGeneral] = true };
+        => new(InvariantCultureIgnoreCase) { [IFieldSettingsGeneral.Constants.ContentTypeName] = true };
 
     /// <summary>
     /// Internal processing to get the config-types in the format we need.

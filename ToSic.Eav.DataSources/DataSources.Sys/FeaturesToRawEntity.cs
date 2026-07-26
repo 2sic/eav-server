@@ -64,36 +64,39 @@ public static class FeaturesToRawEntity
     /// But basically it should be the License + State information.
     /// </summary>
     public static IRawEntity ToRawEntity(this FeatureSetState state)
-        => new RawEntity
+    {
+        var values = new Dictionary<string, object?>
+        {
+            // Properties describing the License
+            // { Attributes.NameIdNiceName, License.Name },
+            { AttributeNames.TitleNiceName, state.Aspect.Name },
+            { nameof(state.Aspect.NameId), state.Aspect.NameId },
+            { nameof(state.LicenseKey), state.LicenseKey },
+            { nameof(state.Aspect.Description), state.Aspect.Description },
+            { nameof(state.Aspect.AutoEnable), state.Aspect.AutoEnable },
+            { nameof(state.Aspect.Priority), state.Aspect.Priority },
+            // The License Condition is an internal property
+            // Used when checking conditions on other objects - if this license is what is expected
+            //{ "LicenseConditionType", License.Condition.Type },
+            //{ "LicenseConditionNameId", License.Condition.NameId },
+            //{ "LicenseConditionIsEnabled", License.Condition.IsEnabled },
+
+            // Properties describing the state/enabled
+            { nameof(state.IsEnabled), state.IsEnabled },
+            { nameof(state.EnabledInConfiguration), state.EnabledInConfiguration },
+            { nameof(state.Valid), state.Valid },
+            { nameof(state.Expiration), state.Expiration },
+            { nameof(state.ExpirationIsValid), state.ExpirationIsValid },
+            { nameof(state.SignatureIsValid), state.SignatureIsValid },
+            { nameof(state.FingerprintIsValid), state.FingerprintIsValid },
+            { nameof(state.VersionIsValid), state.VersionIsValid },
+            { nameof(state.Owner), state.Owner }
+        };
+        
+        return new RawEntity
         {
             Guid = state.Aspect.Guid,
-            Values = new Dictionary<string, object?>
-            {
-                // Properties describing the License
-                // { Attributes.NameIdNiceName, License.Name },
-                { AttributeNames.TitleNiceName, state.Aspect.Name },
-                { nameof(state.Aspect.NameId), state.Aspect.NameId },
-                { nameof(state.LicenseKey), state.LicenseKey },
-                { nameof(state.Aspect.Description), state.Aspect.Description },
-                { nameof(state.Aspect.AutoEnable), state.Aspect.AutoEnable },
-                { nameof(state.Aspect.Priority), state.Aspect.Priority },
-                // The License Condition is an internal property
-                // Used when checking conditions on other objects - if this license is what is expected
-                //{ "LicenseConditionType", License.Condition.Type },
-                //{ "LicenseConditionNameId", License.Condition.NameId },
-                //{ "LicenseConditionIsEnabled", License.Condition.IsEnabled },
-
-                // Properties describing the state/enabled
-                { nameof(state.IsEnabled), state.IsEnabled },
-                { nameof(state.EnabledInConfiguration), state.EnabledInConfiguration },
-                { nameof(state.Valid), state.Valid },
-                { nameof(state.Expiration), state.Expiration },
-                { nameof(state.ExpirationIsValid), state.ExpirationIsValid },
-                { nameof(state.SignatureIsValid), state.SignatureIsValid },
-                { nameof(state.FingerprintIsValid), state.FingerprintIsValid },
-                { nameof(state.VersionIsValid), state.VersionIsValid },
-                { nameof(state.Owner), state.Owner }
-            },
+            Values = values,
         };
-
+    }
 }

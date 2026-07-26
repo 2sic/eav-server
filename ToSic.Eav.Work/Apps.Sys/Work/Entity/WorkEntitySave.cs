@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
@@ -170,7 +171,7 @@ public class WorkEntitySave(
             return l.ReturnNull("no attributes");
 
         var toClear = attributes
-            .Where(a => a.Metadata.Get<bool>(AttributeMetadataConstants.MetadataFieldAllIsEphemeral))
+            .Where(a => a.Metadata.Get<bool>(nameof(IFieldSettingsGeneral.IsEphemeral)))
             .ToListOpt();
 
         if (!toClear.Any())

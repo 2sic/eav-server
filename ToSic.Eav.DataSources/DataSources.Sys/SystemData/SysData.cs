@@ -143,13 +143,16 @@ public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCa
 
         List<IEntity> result =
         [
-            dataFactory.Create(new RawEntity(new()
+            dataFactory.Create(new RawEntity
             {
-                { "Name", "SystemData DataSource - Error or Source/stream not found." },
-                { nameof(SysDataSource), $"'{SysDataSource}' ({(dsFound ? "" : "not ")}found)" },
-                { nameof(streamName), $"'{streamName}' ({(streamFound ? "" : "not ")}found)" },
-                { "Allowed", allowed ?? "unknown" }
-            }))
+                Values = new Dictionary<string, object?>
+                {
+                    { "Name", "SystemData DataSource - Error or Source/stream not found." },
+                    { nameof(SysDataSource), $"'{SysDataSource}' ({(dsFound ? "" : "not ")}found)" },
+                    { nameof(streamName), $"'{streamName}' ({(streamFound ? "" : "not ")}found)" },
+                    { "Allowed", allowed ?? "unknown" }
+                }
+            })
         ];
 
         return l.Return(result, $"{result.Count}");

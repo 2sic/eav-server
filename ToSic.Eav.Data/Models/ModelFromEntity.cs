@@ -22,7 +22,8 @@ public abstract record ModelFromEntity
     #region Constructors & Setup
 
     /// <summary>
-    /// Empty constructor, mainly for factories which must call the setup (otherwise risky to use)
+    /// Empty constructor, mainly for factories which **must** call the Setup(...)
+    /// _otherwise it's risky to use this_
     /// </summary>
     /// <remarks>
     /// This is the primary constructor used by most inheriting classes.
