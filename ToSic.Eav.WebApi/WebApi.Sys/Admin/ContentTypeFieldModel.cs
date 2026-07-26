@@ -1,20 +1,20 @@
-using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
-[ContentTypeSpecs(
+// TODO: This should be reworked, probably make the DTO the real content-type definer, and just add GetValues?
+
+[ContentType(
     Name = "Content Type Field",
     Guid = "40ef450f-6180-42e7-9c14-8d5411873abb",
     Description = "Field definition used while editing content types",
     Scope = "System"
 )]
-public class ContentTypeFieldModel(ContentTypeFieldDto field) : RawEntity
+public record ContentTypeFieldModel(ContentTypeFieldDto field) : RawEntity
 {
-    public override IDictionary<string, object?> Attributes(RawConvertOptions options) =>
+    protected override IDictionary<string, object?> GetValues() =>
         new Dictionary<string, object?>
         {
             { nameof(field.SortOrder), field.SortOrder },
