@@ -9,17 +9,17 @@
 public class ContentTypeSpecsAttribute: Attribute
 {
     /// <summary>
-    /// Content Type Guid, as a string, because GUIDs are not supported in attributes
+    /// Content Type Guid; required. Enter as a string, because GUIDs are not supported in C# attributes.
     /// </summary>
     public required string Guid { get; set; }
 
     /// <summary>
-    /// Content type name.
+    /// Content type name. If not set, will use the class name.
     /// </summary>
     public required string Name { get; set; }
 
     /// <summary>
-    /// Content type description.
+    /// Content type description. It's highly recommended for the future you who must diagnose something.
     /// </summary>
     public required string Description { get; set; }
 

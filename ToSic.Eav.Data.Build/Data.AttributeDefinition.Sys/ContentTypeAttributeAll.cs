@@ -6,9 +6,11 @@ namespace ToSic.Eav.Data.AttributeDefinition.Sys;
 /// <summary>
 /// WIP attribute model
 /// </summary>
-//[ModelSpecs(
-//    ContentType = MyTypeNameId, // TODO - SHOULD MATCH THE OTHER CONTENT-TYPE
-//)]
+[ContentTypeSpecs(
+    Name = MyTypeNameId,
+    Guid = "0bab4be8-e795-4d9f-b50e-f7ec161ed8cb",  // must match DB Guid of @All
+    Description = "Content-Type for the main properties which 'all' attributes have."
+)]
 internal record ContentTypeAttributeAll
 {
     public const string MyTypeNameId = "@All";
@@ -26,6 +28,9 @@ internal record ContentTypeAttributeAll
             dic.Add(AttributeMetadataConstants.GeneralFieldInputType, InputType);
         return dic;
     }
+
+    // ContentTypeAttributes
+    // AttributeDefinitions
 
     internal static ContentTypeAttributeAll? FromCodeAttributeOrNull(ContentTypeAttributeSpecsAttribute? attr)
         => attr == null || (attr.Description.IsEmptyOrWs() && attr.InputTypeWIP.IsEmptyOrWs())
