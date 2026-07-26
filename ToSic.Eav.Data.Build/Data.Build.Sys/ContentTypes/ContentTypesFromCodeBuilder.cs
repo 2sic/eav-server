@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.ContentTypes.Attributes.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 
@@ -23,7 +24,7 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
     {
         var l = Log.Fn<IContentType>(timer: true);
 
-        // 1. Get the content type specs from the attribute, if any and process
+        // 1. Get the content type specs from the attribute (if any) and process
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
         var ctName = name
                      ?? ctSpecs?.Name.NullIfNoValue()
@@ -35,9 +36,19 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
                       ?? ctSpecs?.Scope.NullIfNoValue()
                       ?? ScopeConstants.Default;
 
-        // 2. Create Metadata for the Content-Type based on the info provided
-        // Must be null if no metadata, so that it would then assume empty list...?
-        var ctMdItems = CreateCtDetailsMetadataEntity(ctSpecs?.Description).ToListOfOneOrNull();
+        // 2. Create Description-Metadata for the Content-Type based on the info provided; null if no description provided
+        var ctMdItems = ctSpecs?.Description
+            .NullOrGetWith(desc =>
+            {
+                // Edge case: If the type is the same as the one we're about to create, result in a stack overflow
+                if (type == typeof(ContentTypeSettingsGeneral))
+                    return null;
+
+                var settings = new ContentTypeSettingsGeneral { Description = desc };
+                var entity = Services.DataFactory.Create(settings);
+                return new List<IEntity> { entity };
+            });
+
         var ctMdSource = MetadataProvider.Create(ctMdItems);
         var ctMetadata = new ContentTypeMetadata(typeId: ctNameId, title: ctName, source: ctMdSource);
 
@@ -45,6 +56,7 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
         var attributeHelper = new ContentTypesFromCodeAttributeHelper(Services, Log);
         var (attributes, builtInAttributeDecorator) = attributeHelper.Process(type);
 
+        // 4. Create the ContentType
         var contentType = Services.TypeAssemblyKit.Type.Create(
             appId,
             name: ctName,
@@ -60,33 +72,6 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
                 : RepositoryTypes.CodeConfiguration
         );
         return l.ReturnAndLog(contentType);
-    }
-
-    /// <summary>
-    /// Generate a details entity for a content type.
-    /// Most properties like icon etc. are not important, so ATM it only does:
-    /// - Description
-    /// </summary>
-    private IEntity? CreateCtDetailsMetadataEntity(string? description)
-    {
-        var l = Log.Fn<IEntity>();
-        if (description == null)
-            return l.ReturnNull("no description");
-
-        // All props
-        var dic = new Dictionary<string, object?>
-        {
-            { nameof(ContentTypeDetails.Description), description }
-        };
-        var attributes = Services.AttrListAssembler.Finalize(dic);
-
-        // Create a Description entity
-        var entity = Services.EntityAssembler.Create(
-            NoAppId,
-            Services.TypeAssemblyKit.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName),
-            attributes: attributes
-        );
-        return l.Return(entity, "created");
     }
 
 }
