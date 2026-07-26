@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.ContentTypes;
@@ -128,7 +130,7 @@ public abstract class ContentTypesFromCodeBuildSpecsYes<TCodeTypeWithSpecs>(Cont
 
     [Fact]
     public void ContentType_HasDescription() =>
-        Equal(CodeTypeSpecsConstants.SpecDescription, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Metadata.FirstModel<ContentTypeDetails>()!.Description);
+        Equal(CodeTypeSpecsConstants.SpecDescription, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Metadata.FirstModel<IContentTypeDetails>()!.Description);
 
     #endregion
 

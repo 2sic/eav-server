@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Models;
@@ -131,7 +133,7 @@ public abstract class ContentTypesFromCodeBuildSpecsNone<TCodeTypeNoSpecs>(Conte
 
     [Fact]
     public void ContentType_NoDetailsMetadata() =>
-        Null(GetCurrentContentType().Metadata.FirstModel<ContentTypeDetails>());
+        Null(GetCurrentContentType().Metadata.FirstModel<IContentTypeDetails>());
 
     #endregion
 

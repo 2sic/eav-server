@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Caching.PiggyBack;
 
@@ -14,16 +15,15 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 // Otherwise docs won't generate cross-links as needed
 [PrivateApi("2021-09-30 hidden now, was internal_don't use Always use the interface, not this class")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
+// TODO: 2dm - this looks wrong, this does not contain the data for a content-type.
 [ContentType(
     Guid = "e405beb3-9097-4790-b7b0-0e6d37502bef",
-    Name = TypeName,
+    Name = ContentTypeConstants.ContentTypeName,
     Scope = "System",
     Description = "A ContentType (Schema) describing Entities."
 )]
 public partial record ContentType : IContentType, IContentTypeShared, IHasDecorators<IContentType>, IHasPiggyBack
 {
-    public const string TypeName = "ContentType";
-
     #region simple properties - all are #immutable
 
     /// <inheritdoc />

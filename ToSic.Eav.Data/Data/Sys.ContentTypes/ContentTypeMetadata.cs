@@ -22,13 +22,6 @@ public class ContentTypeMetadata : Metadata<string>
         : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, source: source)
     { }
 
-    // #BreakingChangeV20 - removed this completely; must communicate
-    ///// <summary>
-    ///// Description <see cref="IEntity"/> metadata of this content-type.
-    ///// </summary>
-    //[PrivateApi("was public in the class which used to be public, so it may be used, but try to privatise as we don't plan to publish this")]
-    //public IEntity Description => this.FirstOrDefaultOfType(ContentTypeDetails.ContentTypeTypeName);
-
     /// <summary>
     /// Load / initialize - needed when building the cache.
     /// Must usually be called a bit later, because the data is initialized from a cache, which in case of ghosts may be loaded a bit later.
@@ -48,6 +41,4 @@ public class ContentTypeMetadata : Metadata<string>
         // combine with base string based metadata
         return base.LoadFromProviderInsideLock(mdUsingGuid);
     }
-
-    //public bool CacheChanged(long dependentTimeStamp) => CacheTimestamp > dependentTimeStamp;
 }

@@ -1,14 +1,14 @@
 ﻿using ToSic.Eav.Models;
 
-namespace ToSic.Eav.Data.Sys.ContentTypes;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ContentTypeExtensions
 {
-    public static ContentTypeDetails? DetailsOrNull(this IContentType contentType) =>
+    public static IContentTypeDetails? DetailsOrNull(this IContentType contentType) =>
         contentType.PiggyBack.GetOrGenerate(
             parent: contentType.Metadata,
             key: nameof(DetailsOrNull),
-            create: () => contentType.Metadata.FirstModel<ContentTypeDetails>()
+            create: () => contentType.Metadata.FirstModel<IContentTypeDetails>()
         ).Value;
 }

@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.Data.Sys.Ancestors;
+﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
@@ -30,7 +32,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
         // Note 2024-03-04 2dm - had errors with expired IServiceProvide getting deeper Metadata
         // This should just make it quiet, but there could be a deeper underlying issue.
         // Monitor - happened on Content App - but only when accessing scope System.Cms
-        ContentTypeDetails? details;
+        IContentTypeDetails? details;
         try
         {
             details = cType.DetailsOrNull();
@@ -43,7 +45,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
         }
         l.A("Got past retrieving metadata.");
 
-        var nameOverride = details?.Title;
+        var nameOverride = details?.Label;
         if (string.IsNullOrEmpty(nameOverride))
             nameOverride = cType.Name;
         var ser = convertToEavLight.Value;

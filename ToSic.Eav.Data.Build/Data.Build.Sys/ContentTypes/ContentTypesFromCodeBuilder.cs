@@ -41,10 +41,10 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
             .NullOrGetWith(desc =>
             {
                 // Edge case: If the type is the same as the one we're about to create, result in a stack overflow
-                if (type == typeof(ContentTypeSettingsGeneral))
+                if (type == typeof(ContentTypeDetails))
                     return null;
 
-                var settings = new ContentTypeSettingsGeneral { Description = desc };
+                var settings = new ContentTypeDetails { Description = desc };
                 var entity = Services.DataFactory.Create(settings);
                 return new List<IEntity> { entity };
             });
