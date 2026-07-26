@@ -1,7 +1,7 @@
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.Data.Sys.ContentTypes;
+namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 /// <summary>
 /// Defines an attribute with name and the type this attribute has.
@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 /// * Changed to be a record in v19.01
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal record ContentTypeAttribute : IContentTypeAttribute
+internal record ContentTypeField : IContentTypeAttribute
 {
     /// <inheritdoc />
     public required string Name { get; init; }
@@ -40,7 +40,7 @@ internal record ContentTypeAttribute : IContentTypeAttribute
     /// #SharedFieldDefinition
     /// </summary>
     [PrivateApi]
-    public required ContentTypeAttributeSysSettings? SysSettings { get; init; }
+    public required ContentTypeFieldSysSettings? SysSettings { get; init; }
 
 
     #region Metadata and Permissions

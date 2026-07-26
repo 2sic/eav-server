@@ -1,11 +1,11 @@
 ﻿using static ToSic.Eav.Data.Sys.Attributes.AttributeMetadataConstants;
 
-namespace ToSic.Eav.Data.Sys.ContentTypes;
+namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming
-public static class IContentTypeAttributeExtensions
+public static class IContentTypeFieldExtensions
 {
     /// <param name="definition"></param>
     extension(IContentTypeAttribute definition)

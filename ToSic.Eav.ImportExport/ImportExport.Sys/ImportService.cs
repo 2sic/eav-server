@@ -220,7 +220,7 @@ public class ImportService(
                 .Select(a =>
                 {
                     var attributeMetadata = MetadataWithResetIds(a.Metadata);
-                    return ctAssemblyKit.Attribute.CreateFrom(a, metadataItems: attributeMetadata);
+                    return ctAssemblyKit.Field.CreateFrom(a, metadataItems: attributeMetadata);
                 })
                 .ToList();
 
@@ -250,7 +250,7 @@ public class ImportService(
 
                 if (newAttribute.Metadata.Permissions.Any())
                     newMetaList.AddRange(newAttribute.Metadata.Permissions.Select(p => ((ICanBeEntity)p).Entity));
-                return ctAssemblyKit.Attribute.CreateFrom(newAttribute, metadataItems: newMetaList);
+                return ctAssemblyKit.Field.CreateFrom(newAttribute, metadataItems: newMetaList);
             })
             .ToList();
 

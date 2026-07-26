@@ -2,8 +2,8 @@
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Data.Sys.ContentTypes;
-internal class ContentTypeAttributeMetadataLookup(ContentTypeAttributeSysSettings SysSettings, IMetadataProvider Source, Func<IMetadataSource?> GetMetadataSource)
+namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
+internal class ContentTypeFieldMetadataLookup(ContentTypeFieldSysSettings SysSettings, IMetadataProvider Source, Func<IMetadataSource?> GetMetadataSource)
 {
     [field: AllowNull, MaybeNull]
     ICollection<IContentTypeAttribute> SourceAttributes => field ??= GetSourceAttributes() ?? [];
@@ -60,7 +60,7 @@ internal class ContentTypeAttributeMetadataLookup(ContentTypeAttributeSysSetting
         var sourceAttribute = SourceAttributes.FirstOrDefault(a => a.Guid == sourceGuid);
 
         // Null-Check & cast inner source to this type, so we can access it's private .Source later on
-        if (sourceAttribute?.Metadata is not ContentTypeAttributeMetadata sourceMd)
+        if (sourceAttribute?.Metadata is not ContentTypeFieldMetadata sourceMd)
             return null;
 
         var md = (

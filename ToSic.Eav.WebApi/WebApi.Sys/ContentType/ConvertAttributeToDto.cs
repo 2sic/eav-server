@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
@@ -112,7 +113,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
 
         // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side effects
-        var attribMetadata = (ContentTypeAttributeMetadata)a.Metadata;
+        var attribMetadata = (ContentTypeFieldMetadata)a.Metadata;
         var mdToKeep = attribMetadata
             .Where(m => configTypes.Keys.Contains(m.Type.NameId) || configTypes.Keys.Contains(m.Type.Name))
             .ToList();

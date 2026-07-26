@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Build;
 
-public static class ContentTypeAttributeAssertions
+public static class ContentTypeFieldAssertions
 {
     /// <summary>
     /// Retrieve an attribute-definition on a content type and verify its type, title-ness, and description

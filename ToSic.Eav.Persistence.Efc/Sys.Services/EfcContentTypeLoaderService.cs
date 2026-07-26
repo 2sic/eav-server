@@ -120,7 +120,7 @@ internal class EfcContentTypeLoaderService(
                 Attributes = set.TsDynDataAttributes
                     .Where(a => a.TransDeletedId == null) // only not-deleted attributes!
                     .OrderBy(a => a.SortOrder)
-                    .Select(a => ctAssemblyKit.Attribute.Create(
+                    .Select(a => ctAssemblyKit.Field.Create(
                         appId: appId,
                         name: a.StaticName,
                         type: ValueTypeHelpers.Get(a.Type),
@@ -170,7 +170,7 @@ internal class EfcContentTypeLoaderService(
                     s => s.ContentTypeId,
                     s => s.TsDynDataAttributes
                         .Select(a => ctAssemblyKit
-                            .Attribute.Create(
+                            .Field.Create(
                                 appId: appId,
                                 name: a.StaticName,
                                 type: ValueTypeHelpers.Get(a.Type),

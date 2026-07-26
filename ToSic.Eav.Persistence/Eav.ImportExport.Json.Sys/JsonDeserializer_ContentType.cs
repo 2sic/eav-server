@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
+using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.ImportExport.Json.V1;
@@ -90,10 +91,10 @@ partial class JsonSerializer
                             // Standard mode - either use metadata found, or allow lookup later on
                             : MetadataProvider.Create(mdEntities, appSourceForMd);
 
-                        var attrMetadata = new ContentTypeAttributeMetadata(key: default, type: valType,
+                        var attrMetadata = new ContentTypeFieldMetadata(key: default, type: valType,
                             name: jsonAttr.Name, sysSettings: attrSysSettings, source: mdSource);
 
-                        var attDef = Services.ContentTypeAssemblyKit.Attribute
+                        var attDef = Services.ContentTypeAssemblyKit.Field
                             .Create(
                                 appId: AppId,
                                 name: jsonAttr.Name,
@@ -150,6 +151,6 @@ partial class JsonSerializer
     }
 
     // Removed v20-00-03
-    //public ContentTypeAttributeSysSettings? DeserializeAttributeSysSettings(string name, string json)
+    //public ContentTypeFieldSysSettings? DeserializeAttributeSysSettings(string name, string json)
     //    => JsonDeserializeAttribute.SysSettings(name, json, LogDsDetails);
 }

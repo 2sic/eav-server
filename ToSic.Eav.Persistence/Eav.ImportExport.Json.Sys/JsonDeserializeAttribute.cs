@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
+using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization.Sys.Json;
 
@@ -7,16 +8,16 @@ namespace ToSic.Eav.ImportExport.Json.Sys;
 public class JsonDeserializeAttribute
 {
     /// <summary>
-    /// De-serialize ContentTypeAttributeSysSettings from SysSettings string field in ToSicEavAttributes and Content-Types (EF/DB)
+    /// De-serialize ContentTypeFieldSysSettings from SysSettings string field in ToSicEavAttributes and Content-Types (EF/DB)
     /// </summary>
-    /// <returns>ContentTypeAttributeSysSettings or null</returns>
-    public static ContentTypeAttributeSysSettings? SysSettings(string? nameForLog, string? serialized, ILog? logOrNull)
+    /// <returns>ContentTypeFieldSysSettings or null</returns>
+    public static ContentTypeFieldSysSettings? SysSettings(string? nameForLog, string? serialized, ILog? logOrNull)
     {
         // If nothing to process, exit early without logging
         if (serialized.IsEmpty())
             return null;
 
-        var l = logOrNull.Fn<ContentTypeAttributeSysSettings?>($"{nameForLog}: {serialized.Substring(0, Math.Min(50, serialized.Length))}...");
+        var l = logOrNull.Fn<ContentTypeFieldSysSettings?>($"{nameForLog}: {serialized.Substring(0, Math.Min(50, serialized.Length))}...");
 
         try
         {

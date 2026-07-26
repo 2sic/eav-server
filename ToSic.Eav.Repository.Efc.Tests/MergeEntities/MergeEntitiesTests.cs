@@ -36,19 +36,19 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
     private const int AppId = KnownAppsConstants.TransientAppId;
     //ContentType _ctNull = null;
 
-    private IContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
+    private IContentTypeAttribute CreateField(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
     {
-        return ctAssemblyKit.Attribute.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
+        return ctAssemblyKit.Field.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
     }
 
     IContentType _ctPerson => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "Person", attributes: new List<IContentTypeAttribute>
     {
-        ContentTypeAttribute(AppId, "FullName", "String", true, 0, 0),
-        ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
-        ContentTypeAttribute(AppId, "LastName", "String", true, 0, 0),
-        ContentTypeAttribute(AppId, "Birthday", "DateTime", true, 0, 0),
-        ContentTypeAttribute(AppId, "Husband", "String", true, 0, 0),
-        ContentTypeAttribute(AppId, "UnusedField", "String", true, 0,0)
+        CreateField(AppId, "FullName", "String", true, 0, 0),
+        CreateField(AppId, "FirstName", "String", true, 0, 0),
+        CreateField(AppId, "LastName", "String", true, 0, 0),
+        CreateField(AppId, "Birthday", "DateTime", true, 0, 0),
+        CreateField(AppId, "Husband", "String", true, 0, 0),
+        CreateField(AppId, "UnusedField", "String", true, 0,0)
     });
 
     readonly Entity _origENull = null;
@@ -142,9 +142,9 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
 
     IContentType _ctMlProduct => ctAssemblyKit.Type.CreateContentTypeTac(appId: -1, name: "Product", attributes: new List<IContentTypeAttribute>
         {
-            ContentTypeAttribute(AppId, AttributeNames.TitleNiceName, "String", true, 0, 0),
-            ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
-            ContentTypeAttribute(AppId, "Image", "Hyperlink", false, 0, 0),
+            CreateField(AppId, AttributeNames.TitleNiceName, "String", true, 0, 0),
+            CreateField(AppId, "Teaser", "String", false, 0, 0),
+            CreateField(AppId, "Image", "Hyperlink", false, 0, 0),
         }
     );
 

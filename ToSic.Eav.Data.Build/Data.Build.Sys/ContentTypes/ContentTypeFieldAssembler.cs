@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Metadata;
@@ -17,7 +17,7 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public class ContentTypeAttributeAssembler() : ServiceBase("Eav.CtAtBl")
+public class ContentTypeFieldAssembler() : ServiceBase("Eav.CtAtBl")
 {
     /// <summary>
     /// Create a ContentType Attribute.
@@ -44,18 +44,18 @@ public class ContentTypeAttributeAssembler() : ServiceBase("Eav.CtAtBl")
         int id = default,
         int sortOrder = default,
         Guid? guid = default,   // #SharedFieldDefinition
-        ContentTypeAttributeSysSettings? sysSettings = default, // #SharedFieldDefinition
+        ContentTypeFieldSysSettings? sysSettings = default, // #SharedFieldDefinition
         IMetadata? metadata = default,
         IList<IEntity>? metadataItems = default,
         Func<IHasMetadataSourceAndExpiring>? metaSourceFinder = null)
     {
-        metadata ??= new ContentTypeAttributeMetadata(key: id, name: name, type: type,
+        metadata ??= new ContentTypeFieldMetadata(key: id, name: name, type: type,
             sysSettings: sysSettings,
             source: MetadataProvider.Create(metadataItems, sourceDeferred: metaSourceFinder));
             //source: new MetadataSourceWipOld(metadataItems == null ? null : new ImmutableEntitiesSource(metadataItems.ToImmutableOpt()), null, metaSourceFinder));
             //items: metadataItems, deferredSource: metaSourceFinder);
 
-        return new ContentTypeAttribute
+        return new ContentTypeField
         {
             AppId = appId,
             AttributeId = id,

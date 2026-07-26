@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Security.Permissions;
@@ -9,6 +10,10 @@ namespace ToSic.Eav.Data;
 /// Represents an Attribute definition in a ContentType.
 /// This is the base for attributes in <see cref="IContentType"/>
 /// </summary>
+/// <remarks>
+/// * Was called `IContentTypeAttribute` up until v21
+/// * Probably will be renamed to `IContentTypeField` in v22 (breaking change)
+/// </remarks>
 [PublicApi]
 public interface IContentTypeAttribute: IHasPermissions, IAppIdentityLight, IHasMetadata
 {
@@ -56,7 +61,7 @@ public interface IContentTypeAttribute: IHasPermissions, IAppIdentityLight, IHas
     /// Created ca. v16, releasing ca. v18.02
     /// </remarks>
     [PrivateApi]
-    ContentTypeAttributeSysSettings? SysSettings { get; }
+    ContentTypeFieldSysSettings? SysSettings { get; }
 
     /// <summary>
     /// The input type as string, e.g. "string-text" or "number-default".

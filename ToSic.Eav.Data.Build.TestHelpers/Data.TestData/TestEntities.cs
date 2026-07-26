@@ -11,21 +11,21 @@ public static class TestEntities
     {
         private IContentType CtTestType() => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "TestType", attributes: new List<IContentTypeAttribute>
             {
-                ctAssemblyKit.ContentTypeAttributeTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
-                ctAssemblyKit.ContentTypeAttributeTac(AppId, "LastName", DataTypes.String, false, 0, 0),
-                ctAssemblyKit.ContentTypeAttributeTac(AppId, "Phone", DataTypes.String, false, 0, 0),
-                ctAssemblyKit.ContentTypeAttributeTac(AppId, "Age", DataTypes.Number, false, 0,0),
-                ctAssemblyKit.ContentTypeAttributeTac(AppId, "AnyDate", DataTypes.DateTime, false, 0,0)
+                ctAssemblyKit.ContentTypeFieldTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
+                ctAssemblyKit.ContentTypeFieldTac(AppId, "LastName", DataTypes.String, false, 0, 0),
+                ctAssemblyKit.ContentTypeFieldTac(AppId, "Phone", DataTypes.String, false, 0, 0),
+                ctAssemblyKit.ContentTypeFieldTac(AppId, "Age", DataTypes.Number, false, 0,0),
+                ctAssemblyKit.ContentTypeFieldTac(AppId, "AnyDate", DataTypes.DateTime, false, 0,0)
             }
         );
 
         private IContentType CtPet() => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "Pet", attributes: new List<IContentTypeAttribute>
             {
-                ctAssemblyKit.ContentTypeAttributeTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
-                ctAssemblyKit.ContentTypeAttributeTac(AppId, "LastName", DataTypes.String, false, 0, 0),
+                ctAssemblyKit.ContentTypeFieldTac(AppId, "FirstName", DataTypes.String, true, 0, 0),
+                ctAssemblyKit.ContentTypeFieldTac(AppId, "LastName", DataTypes.String, false, 0, 0),
                 //ContentTypeAttribute(AppId, "Birthday", "DateTime", true, 0, 0),
-                ctAssemblyKit.ContentTypeAttributeTac(AppId, "Phone", DataTypes.String, false, 0, 0),
-                ctAssemblyKit.ContentTypeAttributeTac(AppId, "Age", DataTypes.Number, false, 0,0)
+                ctAssemblyKit.ContentTypeFieldTac(AppId, "Phone", DataTypes.String, false, 0, 0),
+                ctAssemblyKit.ContentTypeFieldTac(AppId, "Age", DataTypes.Number, false, 0,0)
             }
         );
     }

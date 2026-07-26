@@ -1,8 +1,13 @@
-﻿namespace ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.Sys;
 
+namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
+
+/// <summary>
+/// Helper to inspect what entity-type is expected on an entity-field.
+/// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkAttributeEntityInspectType(): ServiceBase("Eav.AtInTy")
+public class WorkFieldEntityInspectType(): ServiceBase("Eav.AtInTy")
 {
     public string PrimaryTypeName(IContentTypeAttribute definition, bool modeCreate, bool tryOtherModes = false)
     {
@@ -11,6 +16,13 @@ public class WorkAttributeEntityInspectType(): ServiceBase("Eav.AtInTy")
         return l.Return(name, $"first on {nameof(modeCreate)} {modeCreate}: '{name}'");
     }
 
+    /// <summary>
+    /// Retrieve the primary entity-type names for a field, according to settings.
+    /// </summary>
+    /// <param name="definition">The content type field definition.</param>
+    /// <param name="modeCreate">Should look in types for create-now (if false, only look in other modes).</param>
+    /// <param name="tryOtherModes">Indicates if other modes should be tried if the primary mode fails.</param>
+    /// <returns>A list of primary entity-type names.</returns>
     public IList<string> PrimaryTypeNames(IContentTypeAttribute definition, bool modeCreate, bool tryOtherModes = false)
     {
         var l = Log.Fn<IList<string>>($"attribute: {definition.Name}; {nameof(modeCreate)}: {modeCreate}; {nameof(tryOtherModes)}: {tryOtherModes}");

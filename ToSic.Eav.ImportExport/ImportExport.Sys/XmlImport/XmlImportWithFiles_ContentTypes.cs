@@ -71,7 +71,7 @@ partial class XmlImportWithFiles
                     guid = result;
                 var sysSettings = JsonDeserializeAttribute.SysSettings(nameId, xmlField.Attribute(XmlConstants.SysSettings)?.Value, Log);
 
-                var attribute = Services.TypeAssembler.Value.Attribute
+                var attribute = Services.TypeAssembler.Value.Field
                     .Create(
                         appId: AppId,
                         name: nameId,

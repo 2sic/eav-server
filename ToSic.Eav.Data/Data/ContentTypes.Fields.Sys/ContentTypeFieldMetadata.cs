@@ -2,7 +2,7 @@
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Sys;
 
-namespace ToSic.Eav.Data.Sys.ContentTypes;
+namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 /// <summary>
 /// WIP
@@ -10,10 +10,10 @@ namespace ToSic.Eav.Data.Sys.ContentTypes;
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeAttributeMetadata(int key, string name, ValueTypes type, IMetadataProvider source, ContentTypeAttributeSysSettings? sysSettings = null)
+public class ContentTypeFieldMetadata(int key, string name, ValueTypes type, IMetadataProvider source, ContentTypeFieldSysSettings? sysSettings = null)
     : Metadata<int>(targetType: (int)TargetTypes.Attribute, key: key, title: $"{name} ({type})", source: source)
 {
-    private ContentTypeAttributeSysSettings SysSettings { get; } = sysSettings ?? new ContentTypeAttributeSysSettings();
+    private ContentTypeFieldSysSettings SysSettings { get; } = sysSettings ?? new ContentTypeFieldSysSettings();
 
     internal IMetadataProvider SourceForUseOfInheritingAttributes => Source;
 
@@ -46,7 +46,7 @@ public class ContentTypeAttributeMetadata(int key, string name, ValueTypes type,
         var final = new List<IEntity>();
         try
         {
-            var helper = new ContentTypeAttributeMetadataLookup(SysSettings, Source, GetMetadataSource);
+            var helper = new ContentTypeFieldMetadataLookup(SysSettings, Source, GetMetadataSource);
             // First get all source attributes
             // This should not be cached, since an early access can happen during App State Build
             // Where it won't be able to find them yet.

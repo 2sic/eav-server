@@ -139,7 +139,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
                     .NullOrGetWith(mdRaw => services.DataFactory.Create([mdRaw]))
                     ?.ToListOpt();
 
-                return services.TypeAssemblyKit.Attribute.Create(
+                return services.TypeAssemblyKit.Field.Create(
                     NoAppId,
                     name: attrName,
                     type: attrType,

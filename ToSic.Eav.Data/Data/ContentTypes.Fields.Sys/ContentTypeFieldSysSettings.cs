@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Sys.ContentTypes;
+﻿namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 /// <summary>
 /// todo
@@ -6,7 +6,7 @@
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeAttributeSysSettings
+public class ContentTypeFieldSysSettings
 {
     #region Sharing / Source
 

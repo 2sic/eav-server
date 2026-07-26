@@ -4,16 +4,16 @@
 /// Internal assembler to assemble content types and content type attributes.
 /// </summary>
 /// <param name="contentTypeBuilder"></param>
-/// <param name="typeAttributeBuilder"></param>
+/// <param name="fieldBuilder"></param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
 public class ContentTypeAssemblyKit(
     LazySvc<ContentTypeAssembler> contentTypeBuilder,
-    LazySvc<ContentTypeAttributeAssembler> typeAttributeBuilder)
-    : ServiceWithSetup<DataAssemblerOptions>("DaB.CtAss", connect: [contentTypeBuilder, typeAttributeBuilder])
+    LazySvc<ContentTypeFieldAssembler> fieldBuilder)
+    : ServiceWithSetup<DataAssemblerOptions>("DaB.CtAss", connect: [contentTypeBuilder, fieldBuilder])
 {
     public ContentTypeAssembler Type => contentTypeBuilder.Value;
 
-    public ContentTypeAttributeAssembler Attribute => typeAttributeBuilder.Value;
+    public ContentTypeFieldAssembler Field => fieldBuilder.Value;
 
 }
