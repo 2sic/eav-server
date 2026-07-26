@@ -9,9 +9,12 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, EntityAssembler entityAssembler, AttributeListAssembler attributeListAssembler)
-    : ServiceBase("Eav.CtFact", connect: [ctAssemblyKit, entityAssembler, attributeListAssembler])
+public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencies services)
+    : ServiceBase<ContentTypesFromCodeBuilder.Dependencies>(services, "Eav.CtFact")
 {
+    public record Dependencies(ContentTypeAssemblyKit CtAssemblyKit, EntityAssembler EntityAssembler, AttributeListAssembler AttributeListAssembler)
+        : DependenciesRecord(connect: [CtAssemblyKit, EntityAssembler, AttributeListAssembler]);
+
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
     public const string AnonymousTypeName = "AnonymousType";
@@ -23,7 +26,7 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
         // 1. Get the content type specs from the attribute, if any and process
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeSpecsAttribute>();
         var ctName = name
-                     ?? ctSpecs?.Name
+                     ?? ctSpecs?.Name.NullIfNoValue()
                      ?? (type.IsAnonymous() ? AnonymousTypeName : type.Name);
         var ctNameId = nameId
                        ?? ctSpecs?.Guid.NullOrGetWith(g => Guid.TryParse(g, out var guid) ? guid.ToString() : null)
@@ -39,10 +42,10 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
         var ctMetadata = new ContentTypeMetadata(typeId: ctNameId, title: ctName, source: ctMdSource);
 
         // 3. Create Attribute Information for the ContentType
-        var attributeHelper = new ContentTypesFromCodeAttributeHelper(ctAssemblyKit, entityAssembler, attributeListAssembler, Log);
+        var attributeHelper = new ContentTypesFromCodeAttributeHelper(Services, Log);
         var (attributes, builtInAttributeDecorator) = attributeHelper.Process(type);
 
-        var contentType = ctAssemblyKit.Type.Create(
+        var contentType = Services.CtAssemblyKit.Type.Create(
             appId,
             name: ctName,
             nameId: ctNameId,
@@ -75,12 +78,12 @@ public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit ctAssemblyKit, E
         {
             { nameof(ContentTypeDetails.Description), description }
         };
-        var attributes = attributeListAssembler.Finalize(dic);
+        var attributes = Services.AttributeListAssembler.Finalize(dic);
 
         // Create a Description entity
-        var entity = entityAssembler.Create(
+        var entity = Services.EntityAssembler.Create(
             NoAppId,
-            ctAssemblyKit.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName),
+            Services.CtAssemblyKit.Type.Transient(NoAppId, ContentTypeDetails.ContentTypeName),
             attributes: attributes
         );
         return l.Return(entity, "created");

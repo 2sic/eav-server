@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using System.Reflection;
+﻿using System.Reflection;
 using ToSic.Eav.Data.AttributeDefinition.Sys;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
@@ -13,15 +12,8 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// <summary>
 /// Helper to handle attribute information from PropertyInfos (reflection) for content types generated from code attributes.
 /// </summary>
-/// <param name="ctAssemblyKit"></param>
-/// <param name="entityAssembler"></param>
-/// <param name="attributeListAssembler"></param>
 /// <param name="parentLog"></param>
-internal class ContentTypesFromCodeAttributeHelper(
-    ContentTypeAssemblyKit ctAssemblyKit,
-    EntityAssembler entityAssembler,
-    AttributeListAssembler attributeListAssembler,
-    ILog parentLog)
+internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.Dependencies services, ILog parentLog)
     : HelperBase(parentLog, "CTC.AttHlp")
 {
     private const int NoAppId = ContentTypesFromCodeBuilder.NoAppId;
@@ -148,7 +140,7 @@ internal class ContentTypesFromCodeAttributeHelper(
                     )
                     .ToListOfOneOrNull();
 
-                return ctAssemblyKit.Attribute.Create(
+                return services.CtAssemblyKit.Attribute.Create(
                     NoAppId,
                     name: attrName,
                     type: attrType,
@@ -179,12 +171,12 @@ internal class ContentTypesFromCodeAttributeHelper(
 
         // All props
         var dic = attrAll.BuildValues();
-        var attributes = attributeListAssembler.Finalize(dic);
+        var attributes = services.AttributeListAssembler.Finalize(dic);
 
         // Create a Description entity
-        var entity = entityAssembler.Create(
+        var entity = services.EntityAssembler.Create(
             NoAppId,
-            ctAssemblyKit.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral),
+            services.CtAssemblyKit.Type.Transient(NoAppId, AttributeMetadataConstants.TypeGeneral),
             attributes: attributes
         );
         return l.Return(entity, "created");
