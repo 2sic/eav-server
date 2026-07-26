@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 /// <summary>
-/// 
+/// Model to read properties of details on a content-type.
 /// </summary>
 /// <remarks>
 /// IMPORTANT: Don't cache this object, as some info inside it can change during runtime
@@ -15,14 +15,6 @@ namespace ToSic.Eav.Data.ContentTypes.Sys;
 [ModelSpecs(ContentType = ContentTypeConstants.ContentTypeName)]
 internal record ContentTypeDetailsModel : ModelFromEntityBasic, IContentTypeDetails
 {
-    ///// <summary>
-    ///// The title of the content type.
-    ///// It does some extra work, because on shared content types the title appears to return empty (for reasons unknown).
-    /////
-    ///// This is mainly important in the UI, where otherwise the title would be defaulted to being the system-name.
-    ///// </summary>
-    //public override string Title => !string.IsNullOrWhiteSpace(base.Title) ? base.Title : Label;
-
     public string? Notes => GetThis<string>(null);
     public string? Icon => GetThis<string>(null);
     public string? Link => GetThis<string>(null);
