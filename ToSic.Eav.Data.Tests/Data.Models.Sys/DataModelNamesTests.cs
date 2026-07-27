@@ -10,6 +10,7 @@ public class DataModelNamesTests
     [InlineData("", false, new string[0])]
     [InlineData("Thing", false, new[] { "Thing" })]
     [InlineData("ThingModel", false, new[] { "ThingModel", "Thing" })]
+    [InlineData("ThingModelFromEntity", false, new[] { "ThingModelFromEntity", "ThingModel", "Thing" })]
     [InlineData("IThing", false, new[] { "IThing" })]
     [InlineData("IThingModel", false, new[] { "IThingModel", "IThing" })]
 
@@ -18,6 +19,7 @@ public class DataModelNamesTests
     [InlineData("", true, new string[0])]
     [InlineData("Thing", true, new[] { "Thing" })]
     [InlineData("ThingModel", true, new[] { "ThingModel", "Thing" })]
+    [InlineData("ThingModelFromEntity", true, new[] { "ThingModelFromEntity", "ThingModel", "Thing" })]
     [InlineData("IThing", true, new[] { "IThing", "Thing" })]
     [InlineData("IThingModel", true, new[] { "IThingModel", "IThing", "ThingModel", "Thing" })]
     public void CreateListOfNameVariants(string input, bool isInterface, string[] expected)

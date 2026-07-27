@@ -1,10 +1,11 @@
 ﻿namespace ToSic.Eav.Models.Sys;
 
+/// <summary>
+/// Helper to figure out the true Content-Type names of models, based on the class name and some common suffixes.
+/// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataModelNames
 {
-
-
     internal static List<string> UseSpecifiedNameOrDeriveFromType<TCustom>(string? names)
         where TCustom : class
     {
@@ -29,19 +30,17 @@ public class DataModelNames
     /// </summary>
     internal static List<string> CreateListOfNameVariants(string name, bool isInterface)
     {
+        // Catch empty
         if (string.IsNullOrWhiteSpace(name))
             return [];
 
-        // Start list with initial name
+        // Start list containing initial name
         List<string> result = [name];
 
         // Check if it ends with Model
-        var nameWithoutModelSuffix = name.EndsWith("Model")
-            ? name.Substring(0, name.Length - 5)
-            : null;
-        if (nameWithoutModelSuffix != null)
-            result.Add(nameWithoutModelSuffix);
-
+        foreach (var s in Suffixes)
+            IfSuffixAddWithoutSuffix(name, s);
+        
         // If it's not an interface beginning with "I", stop here
         if (!isInterface
             || !name.StartsWith("I", StringComparison.Ordinal)
@@ -49,11 +48,35 @@ public class DataModelNames
            )
             return result;
 
+        // ...otherwise add name without prefix, and retry combinations of suffixes
         // Add names without leading I - since it has a leading I
-        result.Add(name.Substring(1));
-        if (nameWithoutModelSuffix != null)
-            result.Add(nameWithoutModelSuffix.Substring(1));
+        var nameWithoutI = name.Substring(1);
+        result.Add(nameWithoutI);
+
+        foreach (var s in Suffixes)
+            IfSuffixAddWithoutSuffix(nameWithoutI, s);
 
         return result;
+
+        
+        
+        void IfSuffixAddWithoutSuffix(string baseName, string suf)
+        {
+            var s = baseName.EndsWith(suf)
+                ? baseName.Substring(0, baseName.Length - suf.Length)
+                : null;
+            if (s != null)
+                result.Add(s);
+        }
     }
+
+    private static readonly IList<string> Suffixes =
+    [
+        "FromEntity",
+        "ModelFromEntity",
+        "Model",
+        // For now, don't support "Raw" as these should never be used to create models from entities.
+        //"Raw",
+        //"ModelRaw",
+    ];
 }
