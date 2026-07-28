@@ -15,11 +15,11 @@ public class DataModelNames
         return list;
     }
 
-    internal static List<string> UseSpecifiedNameOrDeriveFromType(Type tCustom, string? names)
+    internal static List<string> UseSpecifiedNameOrDeriveFromType(Type type, string? names)
     {
         var list = names != null
             ? names.Split(',').Select(n => n.Trim()).ToList()
-            : CreateListOfNameVariants(tCustom.Name, tCustom.IsInterface);
+            : CreateListOfNameVariants(type.Name, type.IsInterface);
         return list;
     }
 

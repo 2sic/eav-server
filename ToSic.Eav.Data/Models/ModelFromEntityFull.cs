@@ -7,18 +7,18 @@
 /// It extends the blank implementation by providing the basic Entity properties `Id`, `Guid` and `Title` by default.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public abstract record ModelFromEntityBasic: ModelFromEntity, IModelFromEntityBasic
+public abstract record ModelFromEntityFull: ModelFromEntity, IModelFromEntityBasic
 {
     /// <summary>
     /// Empty constructor, so it can be inherited without having to specify a constructor.
     /// </summary>
-    protected ModelFromEntityBasic() { }
+    protected ModelFromEntityFull() { }
 
     /// <summary>
     /// Constructor which already includes the data to wrap; rarely used.
     /// </summary>
     /// <param name="entity"></param>
-    protected ModelFromEntityBasic(IEntity entity) : base(entity) { }
+    protected ModelFromEntityFull(IEntity entity) : base(entity) { }
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]

@@ -8,7 +8,7 @@ namespace ToSic.Eav.Data.Sys.InputTypes;
 [PrivateApi]
 [ShowApiWhenReleased(state: ShowApiMode.Never)]
 [ModelSpecs(ContentType = ContentTypeNameId)]
-public record InputTypeDefinition : ModelFromEntityBasic
+public record InputTypeDefinition : ModelFromEntity
 {
     /// <summary>
     /// Name of the content-type which describes Input-Types

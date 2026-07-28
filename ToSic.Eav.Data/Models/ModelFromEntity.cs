@@ -3,11 +3,12 @@
 namespace ToSic.Eav.Models;
 
 /// <summary>
-/// Foundation for a *record* which gets its data from an Entity. Completely empty, no public properties.
+/// Foundation for a *record* which gets its data from an Entity. **Completely empty**, no public properties.
 /// </summary>
 /// <remarks>
 /// This **Core** implementation has zero public properties, so no public `Id`, `Guid` or `Title` properties.
-/// If serialized or use otherwise it will not include anything which was not added explicitly.
+/// When serialized or used otherwise it will not include anything which was not added explicitly.
+/// If you want a base class which has these properties <see cref="ModelFromEntityFull"/>
 ///
 /// This is the **record** implementation, which is the preferred future way of creating models.
 /// To use the **class** based implementation (for example in DNN code not supporting c# 10), use the <see cref="ModelFromEntityClassic"/>
