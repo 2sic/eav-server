@@ -6,6 +6,11 @@ namespace ToSic.Eav.Models.Sys;
 public static class ModelAnalyseUse
 {
     /// <summary>
+    /// The cache to reduce work.
+    /// </summary>
+    private static readonly ConcurrentDictionary<Type, Type> TargetTypesCache = new();
+
+    /// <summary>
     /// Determine the type to generate for a specific model.
     /// </summary>
     /// <typeparam name="TCustom"></typeparam>
@@ -19,27 +24,45 @@ public static class ModelAnalyseUse
     {
         var type = typeof(TCustom);
 
-        if (TargetTypes.TryGetValue(type, out var cachedType))
+        if (TargetTypesCache.TryGetValue(type, out var cachedType))
             return cachedType;
 
-        // Find attributes which describe conversion
-        var attributes = type
-            .GetCustomAttributes(typeof(ModelSpecsAttribute), false)
-            .Cast<ModelSpecsAttribute>()
-            .ToList();
+        var directlyAttachedTargetType = GetDirectlyAttachedEntityTargetType(type);
+        // If we found a target type in the base class, cache and return it.
+        if (directlyAttachedTargetType != null)
+            return TargetTypesCache.GetOrAdd(type, directlyAttachedTargetType);
 
-        // 2025-01-21 temp
-        var implementation = attributes.FirstOrDefault()?.Use;
-        if (implementation != null)
-            return TargetTypes.GetOrAdd(type, implementation);
+        // 2026-07-28 2dm - disabling attached attribute-info, but keep commented code for a while.
+        //// Find attributes which describe conversion
+        //var attributes = type
+        //    .GetCustomAttributes(typeof(ModelSpecsAttribute), false)
+        //    .Cast<ModelSpecsAttribute>()
+        //    .ToList();
+
+        //// 2025-01-21 temp
+        //var implementation = attributes.FirstOrDefault()?.Use;
+        //if (implementation != null)
+        //    return TargetTypesCache.GetOrAdd(type, implementation);
 
 
+        // Nothing found, so if it's an interface (which we can't instantiate) throw an error
         if (type.IsInterface)
             throw new TypeInitializationException(type.FullName,
                 new($"Can't determine type to create of {type.Name} as it's an interface and doesn't have the proper Attributes"));
-        TargetTypes.GetOrAdd(type, type);
+        
+        // Default case: just use the same type
+        TargetTypesCache.GetOrAdd(type, type);
         return type;
     }
 
-    private static readonly ConcurrentDictionary<Type, Type> TargetTypes = new();
+    private static Type? GetDirectlyAttachedEntityTargetType(Type type)
+    {
+        var directlyImplementedInterfaces = type.GetInterfaces()
+            .Except(type.BaseType?.GetInterfaces() ?? Enumerable.Empty<Type>());
+
+        var genericInterfaceType = directlyImplementedInterfaces
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IModelFromEntity<>));
+
+        return genericInterfaceType?.GetGenericArguments()[0];
+    }
 }

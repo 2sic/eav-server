@@ -25,7 +25,7 @@ public class TestModelRequiringFactory(TestModelRequiringFactory.TestModelDepend
 
     bool IModelSetup<IEntity>.SetupModel(IEntity? source)
     {
-        _entity = source;
+        _entity = source!;
         return true;
     }
 

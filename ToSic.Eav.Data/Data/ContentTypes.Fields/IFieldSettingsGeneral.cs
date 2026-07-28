@@ -9,16 +9,13 @@ namespace ToSic.Eav.Data.ContentTypes.Fields;
 /// <remarks>
 /// Note that as of 2026-07-26 there is no model yet to use, but it should be added soon.
 /// </remarks>
-[ModelSpecs(
-    ContentType = Constants.ContentTypeName,
-    Use = typeof(FieldSettingsGeneralModel)
-)]
+[ModelSpecs(ContentType = Constants.ContentTypeName)]
 [ContentType(
     Name = Constants.ContentTypeName,
     Guid = "0bab4be8-e795-4d9f-b50e-f7ec161ed8cb",  // made-up GUID, can't match DB Guid since it's currently `@All`
     Description = "General settings for every Attribute (field) on a Content-Type."
 )]
-public interface IFieldSettingsGeneral : IModelFromEntity
+public interface IFieldSettingsGeneral : IModelFromEntity<FieldSettingsGeneralModel>
 {
     [PrivateApi]
     public static class Constants { public const string ContentTypeName = "@All"; }
@@ -67,6 +64,6 @@ public interface IFieldSettingsGeneral : IModelFromEntity
     /// The formulas associated with this field, which can be used for calculations or transformations.
     /// </summary>
     [ContentTypeField(Type = ValueTypes.Entity)]
-    object Formulas { get; }
+    object? Formulas { get; }
 
 }

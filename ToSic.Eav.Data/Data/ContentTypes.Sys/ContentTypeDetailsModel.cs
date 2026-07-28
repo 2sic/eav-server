@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data.ContentTypes.Sys;
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [ModelSpecs(ContentType = IContentTypeDetails.Constants.ContentTypeName)]
-internal record ContentTypeDetailsModel: ModelFromEntityBasic, IContentTypeDetails
+public record ContentTypeDetailsModel: ModelFromEntity, IContentTypeDetails
 {
     public string? Notes => GetThis<string>(null);
     public string? Icon => GetThis<string>(null);

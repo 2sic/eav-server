@@ -66,21 +66,22 @@ public sealed class ModelSpecsAttribute: Attribute
     [PrivateApi]
     public const string ForAnyContentType = "*";
 
-    /// <summary>
-    /// The type to use when creating a model of this interface.
-    /// </summary>
-    /// <remarks>
-    /// It **must** match (implement or inherit) the type which is being decorated.
-    /// Otherwise, it will throw an exception.
-    /// </remarks>
-    public Type? Use
-    {
-        get;
-#if NETCOREAPP
-        init;
-#else
-        set;
-#endif
-    }
+    // 2026-07-28 2dm - disabling attached attribute-info, but keep commented code for a while.
+//    /// <summary>
+//    /// The type to use when creating a model of this interface.
+//    /// </summary>
+//    /// <remarks>
+//    /// It **must** match (implement or inherit) the type which is being decorated.
+//    /// Otherwise, it will throw an exception.
+//    /// </remarks>
+//    public Type? Use
+//    {
+//        get;
+//#if NETCOREAPP
+//        init;
+//#else
+//        set;
+//#endif
+//    }
 
 }

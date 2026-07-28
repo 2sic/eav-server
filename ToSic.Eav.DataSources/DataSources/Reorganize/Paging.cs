@@ -94,7 +94,7 @@ public sealed class Paging: CustomDataSourceAdvanced
         if (source is null)
             return l.ReturnAsError(Error.TryGetInFailed());
 
-        var rawEntity = new PagingModel(
+        var rawEntity = new PagingModelRaw(
             PageSize: PageSize,
             PageNumber: PageNumber,
             ItemCount: source.Count,

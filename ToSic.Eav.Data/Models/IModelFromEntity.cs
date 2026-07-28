@@ -15,3 +15,8 @@
 [InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IModelFromEntity: IModelFromData;
+
+public interface IModelFromEntity<out TModelFromEntity>
+    : IModelFromEntity
+    where TModelFromEntity : IModelFromEntity
+;

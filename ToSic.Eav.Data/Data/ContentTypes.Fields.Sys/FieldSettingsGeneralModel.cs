@@ -11,7 +11,7 @@ namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [ModelSpecs(ContentType = IFieldSettingsGeneral.Constants.ContentTypeName)]
-internal record FieldSettingsGeneralModel : ModelFromEntityBasic, IFieldSettingsGeneral
+public record FieldSettingsGeneralModel : ModelFromEntity, IFieldSettingsGeneral
 {
     public string Name => GetThis<string>("");
     public string DefaultValue => GetThis<string>("");
@@ -25,5 +25,6 @@ internal record FieldSettingsGeneralModel : ModelFromEntityBasic, IFieldSettings
     public string Placeholder => GetThis<string>("");
     public bool? IsEphemeral => GetThis<bool?>(null);
     public bool? IsUnique => GetThis<bool?>(null);
-    public object Formulas => GetThis<object>(null);
+    // TODO:
+    public object? Formulas => GetThis<object>(null);
 }
