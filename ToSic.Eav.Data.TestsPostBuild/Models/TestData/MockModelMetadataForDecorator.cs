@@ -3,12 +3,13 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Models.TestData;
 
-internal interface ITestModelMetadataForDecorator : IModelFromEntity<TestModelMetadataForDecorator>, IModelSetup<IEntity>;
+internal interface IMockModelMetadataForDecorator : IModelFromEntity<MockModelMetadataForDecorator>, IModelSetup<IEntity>;
 
 /// <summary>
-/// Test Sample Model
+/// Test Sample Model.
+/// Structured like the MetadataForDecorator.
 /// </summary>
-internal record TestModelMetadataForDecorator: ITestModelMetadataForDecorator, IModelSetup<IEntity>, ICanBeEntity
+internal record MockModelMetadataForDecorator: IMockModelMetadataForDecorator, IModelSetup<IEntity>, ICanBeEntity
 {
     bool IModelSetup<IEntity>.SetupModel(IEntity? source)
     {
@@ -25,12 +26,6 @@ internal record TestModelMetadataForDecorator: ITestModelMetadataForDecorator, I
     public int Amount => _entity.Get(nameof(Amount), fallback: 1);
 
     public string? DeleteWarning => _entity.Get<string>(nameof(DeleteWarning), fallback: null);
+    
     IEntity ICanBeEntity.Entity => _entity.Entity;
 }
-
-internal record TestModelMetadataForDecoratorWrongName
-    : TestModelMetadataForDecorator;
-
-[ModelSpecs(ContentType = nameof(TestModelMetadataForDecorator))]
-internal record TestModelMetadataForDecoratorWithAttribute
-    : TestModelMetadataForDecorator;

@@ -2,15 +2,15 @@
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Models.TestData;
 
-namespace ToSic.Eav.Models;
+namespace ToSic.Eav.Models.Entities;
 
 public partial class EntityListFirst(TestDataGenerator generator)
 {
     [Fact]
     public void FirstNameOfWithSameMetadataNone()
     {
-        var entity = generator.EntityWithMetadataForDecorator(0);
-        Null(entity.Metadata.First(nameof(TestModelMetadataForDecorator)));
+        var entity = generator.CreateEntityWithMetadata(0);
+        Null(entity.Metadata.First(nameof(MockModelMetadataForDecorator)));
     }
 
     [Theory]
@@ -18,10 +18,10 @@ public partial class EntityListFirst(TestDataGenerator generator)
     [InlineData(5)]
     public void FirstNameOfWithSameMetadataMany(int amount)
     {
-        var entity = generator.EntityWithMetadataForDecorator(amount);
-        var md = entity.Metadata.First(nameof(TestModelMetadataForDecorator));
+        var entity = generator.CreateEntityWithMetadata(amount);
+        var md = entity.Metadata.First(nameof(MockModelMetadataForDecorator));
         NotNull(md);
-        Equal((int)TargetTypes.Entity, md.Get<int>(nameof(TestModelMetadataForDecorator.TargetType)));
+        Equal((int)TargetTypes.Entity, md.Get<int>(nameof(MockModelMetadataForDecorator.TargetType)));
     }
 
     [Theory]
@@ -29,7 +29,7 @@ public partial class EntityListFirst(TestDataGenerator generator)
     [InlineData(5)]
     public void FirstNameOfSameMetadataManyTimesNamedWrong(int amount)
     {
-        var entity = generator.EntityWithMetadataForDecorator(amount);
+        var entity = generator.CreateEntityWithMetadata(amount);
         Null(entity.Metadata.First(typeName: "some other name"));
     }
 

@@ -1,31 +1,24 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.TestData;
-using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Models.TestData;
 
 public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCodeManager ctDefFactory, ContentTypeAssemblyKit ctAssemblyKit)
 {
-    public IEntity EntityWithMetadataForDecorator(int amount)
+    /// <summary>
+    /// Create an entity having metadata - some of the expected main type, others to optionally mix in (for type testing)
+    /// </summary>
+    /// <param name="amountMdFor"></param>
+    /// <param name="amountOther"></param>
+    /// <returns></returns>
+    public IEntity CreateEntityWithMetadata(int amountMdFor, int amountOther = 0)
     {
         var original = dataAssembler.TestEntityDaniel(ctAssemblyKit);
 
-        var decorators = CreateMdForDecorators(amount);
+        var decorators = CreateMany(amountMdFor, CreateMetadataForDecorator);
 
-        var lazyPartsBuilder = dataAssembler.EntityConnection.UseMetadata(decorators);
-
-        var entity = dataAssembler.Entity.CreateFrom(original, partsBuilder: lazyPartsBuilder);
-        return entity;
-    }
-
-    public IEntity CreateWithMixedMetadata(int amountMdFor, int amountOther)
-    {
-        var original = dataAssembler.TestEntityDaniel(ctAssemblyKit);
-
-        var decorators = CreateMdForDecorators(amountMdFor);
-
-        var newDecorators = CreateMdEmpty(amountOther);
+        var newDecorators = CreateMany(amountOther, CreateEntityForNoSpecs);
 
         var lazyPartsBuilder = dataAssembler.EntityConnection.UseMetadata(decorators.Concat(newDecorators));
 
@@ -33,65 +26,54 @@ public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCode
         return entity;
     }
 
-    private IEnumerable<IEntity> CreateMdEmpty(int amountOther)
+    private static IEnumerable<IEntity> CreateMany(int amount, Func<IEntity> entityFactory)
     {
-        var mdEmptyDecorator = CreateEntityForNoSpecs();
+        var mdEmptyDecorator = entityFactory();
         var newDecorators = Enumerable
-            .Range(1, amountOther)
+            .Range(1, amount)
             .Select(i => mdEmptyDecorator);
         return newDecorators;
     }
 
-    public IEnumerable<IEntity> CreateMdForDecorators(int amount)
-    {
-        var mdForDecorator = CreateMetadataForDecorator();
-        var decorators = Enumerable
-            .Range(1, amount)
-            .Select(i => mdForDecorator);
-        return decorators;
-    }
-
-
     #region Generate One
 
-    public IEntity CreateMetadataForDecorator()
-    {
-        var ct = ctDefFactory.CreateTac<TestModelMetadataForDecorator>();
+    public IEntity CreateMetadataForDecorator() =>
+        CreateMetadataForDecorator(1);
+    
+    public IEntity CreateMetadataForDecorator(int amount) =>
+        dataAssembler.CreateEntityTac(
+            0,
+            ctDefFactory.CreateTac<MockModelMetadataForDecorator>(),
+            values: new MockModelMetadataForDecoratorRaw(amount).Values.ToDictionary(x => x.Key, x => x.Value)!
+        );
 
-        return dataAssembler.CreateEntityTac(0, ct, values: new()
-        {
-            { nameof(TestModelMetadataForDecorator.Amount), 1 },
-            { nameof(TestModelMetadataForDecorator.TargetName), nameof(TargetTypes.Entity) },
-            { nameof(TestModelMetadataForDecorator.TargetType), (int)TargetTypes.Entity },
-            { nameof(TestModelMetadataForDecorator.DeleteWarning), null! }
-        });
-    }
-
-    private IEntity CreateEntityForNoSpecs()
-    {
-        var ct = ctDefFactory.CreateTac<MockEntityType>();
-
-        return dataAssembler.CreateEntityTac(0, ct, values: new()
-        {
-            { nameof(MockEntityType.Id), 1 },
-            { nameof(MockEntityType.Name), "Test" },
-            { nameof(MockEntityType.Age), 30 },
-            { nameof(MockEntityType.BirthDate), new DateTime(1990, 1, 1) },
-            { nameof(MockEntityType.IsAlive), true }
-        });
-    }
+    private IEntity CreateEntityForNoSpecs() =>
+        dataAssembler.CreateEntityTac(
+            0,
+            ctDefFactory.CreateTac<MockEntityType>(),
+            values: new MockEntityType().GetValues()
+        );
 
     private class MockEntityType
     {
-        public int Id { get; set; }
+        public int Id => 1;
 
-        public string? Name { get; set; }
+        public string Name => "Test";
 
-        public int Age { get; set; }
+        public int Age => 30;
 
-        public DateTime BirthDate { get; set; }
+        public DateTime BirthDate => new DateTime(1990, 1, 1);
 
-        public bool IsAlive { get; set; }
+        public bool IsAlive => true;
+
+        public Dictionary<string, object> GetValues() => new()
+        {
+            { nameof(Id), Id },
+            { nameof(Name), Name },
+            { nameof(Age), Age },
+            { nameof(BirthDate), BirthDate },
+            { nameof(IsAlive), IsAlive }
+        };
     }
 
     #endregion

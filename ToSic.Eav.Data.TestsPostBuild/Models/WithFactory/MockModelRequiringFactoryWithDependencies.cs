@@ -2,12 +2,13 @@
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Models.Factory;
 
-namespace ToSic.Eav.Models.TestData;
+namespace ToSic.Eav.Models.WithFactory;
 
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelRequiringFactoryEmptyConstructor : IModelFromEntity, IModelSetup<IEntity>, IModelFactoryRequired
+public class MockModelRequiringFactoryNoDependencies
+    : IModelFromEntity, IModelSetup<IEntity>, IModelFactoryRequired
 {
     public bool SetupModel(IEntity? source) => true;
 }
@@ -15,9 +16,13 @@ public class TestModelRequiringFactoryEmptyConstructor : IModelFromEntity, IMode
 /// <summary>
 /// Test Sample Model
 /// </summary>
-public class TestModelRequiringFactory(TestModelRequiringFactory.TestModelDependencyInjection dependency) : IModelFromEntity, IModelSetup<IEntity>, IModelFactoryRequired
+public class MockModelRequiringFactoryWithDependencies(MockModelRequiringFactoryWithDependencies.Dependencies dependency)
+    : IModelFromEntity, IModelSetup<IEntity>, IModelFactoryRequired
 {
-    public class TestModelDependencyInjection
+    /// <summary>
+    /// Dependencies of this model, which will be injected by the factory
+    /// </summary>
+    public class Dependencies
     {
         public const string HelloMessage = "Hello from TestModelDependency";
         public string GetSomething() => HelloMessage;

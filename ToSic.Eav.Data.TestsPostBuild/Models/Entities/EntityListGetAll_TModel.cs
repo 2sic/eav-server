@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Models.TestData;
+using ToSic.Eav.Models.WithFactory;
 
-namespace ToSic.Eav.Models;
+namespace ToSic.Eav.Models.Entities;
 
 public class EntityListGetAll(TestDataGenerator generator)
 {
@@ -13,8 +14,8 @@ public class EntityListGetAll(TestDataGenerator generator)
     [InlineData(2, 4)]
     public void WithMixedMetadataManyTimes(int amountMdFor, int amountOther)
     {
-        var entity = generator.CreateWithMixedMetadata(amountMdFor, amountOther);
-        var mdList = entity.Metadata.GetModels<TestModelMetadataForDecorator>();
+        var entity = generator.CreateEntityWithMetadata(amountMdFor, amountOther);
+        var mdList = entity.Metadata.GetModels<MockModelMetadataForDecorator>();
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -26,8 +27,8 @@ public class EntityListGetAll(TestDataGenerator generator)
     [InlineData(2, 4)]
     public void GetAllWithNameMixed(int amountMdFor, int amountOther)
     {
-        var entity = generator.CreateWithMixedMetadata(amountMdFor, amountOther);
-        var mdList = entity.Metadata.GetModels<TestModelMetadataForDecorator>(typeName: nameof(TestModelMetadataForDecorator));
+        var entity = generator.CreateEntityWithMetadata(amountMdFor, amountOther);
+        var mdList = entity.Metadata.GetModels<MockModelMetadataForDecorator>(typeName: nameof(MockModelMetadataForDecorator));
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -38,9 +39,9 @@ public class EntityListGetAll(TestDataGenerator generator)
     [InlineData(2)]
     public void GetAllWithCustomNameIncorrect(int amountMdFor)
     {
-        var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
+        var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<TestModelMetadataForDecorator>(typeName: "some-wrong-name");
+            .GetModels<MockModelMetadataForDecorator>(typeName: "some-wrong-name");
         NotNull(mdList);
         Empty(mdList);
     }
@@ -51,9 +52,9 @@ public class EntityListGetAll(TestDataGenerator generator)
     [InlineData(2)]
     public void GetAllWithClassNameIncorrect(int amountMdFor)
     {
-        var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
+        var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<TestModelMetadataForDecoratorWrongName>();
+            .GetModels<MockModelMetadataForDecoratorWrongName>();
         NotNull(mdList);
         Empty(mdList);
     }
@@ -64,9 +65,9 @@ public class EntityListGetAll(TestDataGenerator generator)
     [InlineData(2)]
     public void GetAllWithClassNameIncorrectButName(int amountMdFor)
     {
-        var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
+        var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<TestModelMetadataForDecoratorWrongName>(typeName: nameof(TestModelMetadataForDecorator));
+            .GetModels<MockModelMetadataForDecoratorWrongName>(typeName: nameof(MockModelMetadataForDecorator));
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -77,9 +78,9 @@ public class EntityListGetAll(TestDataGenerator generator)
     [InlineData(2)]
     public void GetAllWithClassNameIncorrectButAttribute(int amountMdFor)
     {
-        var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
+        var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<TestModelMetadataForDecoratorWithAttribute>();
+            .GetModels<MockModelMetadataForDecoratorWithModelSpecs>();
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -90,9 +91,9 @@ public class EntityListGetAll(TestDataGenerator generator)
     public void GetAllRequiringFactoryMissingFails(int amountMdFor) =>
         Throws<InvalidCastException>(() =>
         {
-            var entity = generator.EntityWithMetadataForDecorator(amountMdFor);
-            entity.Metadata.GetModels<TestModelRequiringFactoryEmptyConstructor>(
-                typeName: nameof(TestModelMetadataForDecorator));
+            var entity = generator.CreateEntityWithMetadata(amountMdFor);
+            entity.Metadata.GetModels<MockModelRequiringFactoryNoDependencies>(
+                typeName: nameof(MockModelMetadataForDecorator));
         });
 
 
