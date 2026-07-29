@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq.Expressions;
 
-namespace ToSic.Sys.Utils;
+namespace ToSic.Sys.Utils.Types;
 
 /// <summary>
 /// Special helper to create objects from a type.

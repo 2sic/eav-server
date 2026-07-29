@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using ToSic.Eav.Models.Factory;
 using ToSic.Eav.Models.Sys;
+using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models;
 

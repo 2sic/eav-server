@@ -1,4 +1,6 @@
-﻿namespace ToSic.Sys.Utils.TypeFactoryTests;
+﻿using ToSic.Sys.Utils.Types;
+
+namespace ToSic.Sys.Utils.TypeFactoryTests;
 
 public class TypeFactoryTests
 {

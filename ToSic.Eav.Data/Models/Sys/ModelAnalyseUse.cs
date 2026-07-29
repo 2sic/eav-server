@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models.Sys;
 
@@ -27,7 +28,7 @@ public static class ModelAnalyseUse
         if (TargetTypesCache.TryGetValue(type, out var cachedType))
             return cachedType;
 
-        var directlyAttachedTargetType = GetDirectlyAttachedEntityTargetType(type);
+        var directlyAttachedTargetType = type.GetDirectGenericSubType(typeof(IModelFromEntity<>));
         // If we found a target type in the base class, cache and return it.
         if (directlyAttachedTargetType != null)
             return TargetTypesCache.GetOrAdd(type, directlyAttachedTargetType);
@@ -55,14 +56,4 @@ public static class ModelAnalyseUse
         return type;
     }
 
-    private static Type? GetDirectlyAttachedEntityTargetType(Type type)
-    {
-        var directlyImplementedInterfaces = type.GetInterfaces()
-            .Except(type.BaseType?.GetInterfaces() ?? Enumerable.Empty<Type>());
-
-        var genericInterfaceType = directlyImplementedInterfaces
-            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IModelFromEntity<>));
-
-        return genericInterfaceType?.GetGenericArguments()[0];
-    }
 }
