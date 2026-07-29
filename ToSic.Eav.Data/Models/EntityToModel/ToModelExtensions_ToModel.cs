@@ -26,22 +26,17 @@ public static partial class ToModelExtensions
     /// <param name="entity"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="options">Conversion options for more advanced scenarios</param>
-    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? ToModel<TModel>(
         this IEntity? entity,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        ToModelOptions? options = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined
+        ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
     {
-        return entity.ToModelInternal<TModel>(options: options ?? new()
-        {
-            //TypeNameCheck = skipTypeCheck ? ToModelOptions.ModelTypeCheck.Skip : ToModelOptions.ModelTypeCheck.Strict
-        }, nullHandling: nullHandling);
+        return entity.ToModelInternal<TModel>(options: options ?? new());
     }
 
     /// <summary>

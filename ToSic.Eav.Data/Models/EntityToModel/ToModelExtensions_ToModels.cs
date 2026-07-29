@@ -11,7 +11,8 @@ public static partial class ToModelExtensions
     )
         where TModel : class, IModelFromEntity, new()
     {
-        return entities.ToModelsInternal<TModel>();
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        return entities?.ToListOpt()?.ToModelsInternal<TModel>() ?? [];
     }
 
 
@@ -19,13 +20,13 @@ public static partial class ToModelExtensions
     /// Real implementation of As... methods
     /// </summary>
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
-    /// <param name="entities">The entity to convert.</param>
+    /// <param name="list">The entity to convert.</param>
     /// <param name="methodName">Automatically provided method name for debugging</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     internal static IEnumerable<TModel> ToModelsInternal<TModel>(
-        this IEnumerable<IEntity?> entities,
+        this IList<IEntity?> list,
         [CallerMemberName] string? methodName = default,
         NoParamOrder npo = default
     )
@@ -34,9 +35,7 @@ public static partial class ToModelExtensions
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
 
-        var list = entities?.ToList();
-
-        if (/*nullIfNull &&*/ list == null || !list.Any())
+        if (list.SafeNone())
             return [];
 
         // If it is not null, do check if the cast uses the correct type

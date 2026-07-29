@@ -30,7 +30,11 @@ internal class AppSpecs(AppState appState): IAppSpecs
     /// </summary>
     // public IAppConfiguration Configuration => new AppConfiguration(appState.SettingsInApp.AppConfiguration!);
     public IAppConfiguration Configuration => appState.SettingsInApp.AppConfiguration
-        .ToModel<AppConfiguration>(options: new() { TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip }, /*nullIfNull: false,*/ nullHandling: ModelNullHandling.PreferModel)!;
+        .ToModel<AppConfiguration>(options: new()
+        {
+            TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip,
+            NullHandling = ToModelOptions.DataNullHandling.ConvertForce,
+        } /*nullIfNull: false,*//* nullHandling: ModelNullHandling.PreferModel*/)!;
 
     public IMetadata Metadata => appState.Metadata;
 

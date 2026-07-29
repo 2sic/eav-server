@@ -10,20 +10,16 @@ public static partial class ToModelExtensions
     /// <param name="list">The collection of entities to search.</param>
     /// <param name="id"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="options">Conversion options for more advanced scenarios</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? GetModel<TModel>(
         this IEnumerable<IEntity>? list,
         int id,
         NoParamOrder npo = default,
-        ToModelOptions? options = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined
+        ToModelOptions? options = default
     ) where TModel : class, IModelFromEntity =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(id)).ToModelInternal<TModel>(options: new()
-            {
-                //TypeNameCheck = skipTypeCheck ? ToModelOptions.ModelTypeCheck.Skip : ToModelOptions.ModelTypeCheck.Strict
-            },
-            nullHandling: nullHandling);
+        (list?.GetOne(id)).ToModelInternal<TModel>(options: new());
 
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
@@ -32,19 +28,19 @@ public static partial class ToModelExtensions
     /// <param name="list">The collection of entities to search.</param>
     /// <param name="guid"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="options">Conversion options for more advanced scenarios</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? GetModel<TModel>(
         this IEnumerable<IEntity>? list,
         Guid guid,
         NoParamOrder npo = default,
-        ToModelOptions? options = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined
+        ToModelOptions? options = default
+        //ModelNullHandling nullHandling = ModelNullHandling.Undefined
     ) where TModel : class, IModelFromEntity, new() =>
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         (list?.GetOne(guid)).ToModelInternal<TModel>(options: new()
             {
                 //TypeNameCheck = skipTypeCheck ? ToModelOptions.ModelTypeCheck.Skip : ToModelOptions.ModelTypeCheck.Strict
-            }, 
-            nullHandling: nullHandling);
+            }/*, nullHandling: nullHandling*/);
 
 }

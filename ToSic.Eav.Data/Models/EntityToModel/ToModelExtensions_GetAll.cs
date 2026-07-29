@@ -29,25 +29,21 @@ public static partial class ToModelExtensions
     /// </typeparam>
     /// <param name="list">The source collection of entities to search. Can be null.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="options">Conversion options for more advanced scenarios</param>
     /// <returns>An enumerable collection of TModel instances wrapping the matching entities. Returns an empty collection if the
     /// source is null or no matching entities are found.</returns>
     public static IEnumerable<TModel> GetModels<TModel>(
         this IEnumerable<IEntity>? list,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        ToModelOptions? options = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined
+        ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
     {
         // List null - always stop here
         // Not all options listed, as the explicit return-Empty is automatically covered
         if (list == null)
-            return 
-                //(nullHandling & ModelNullHandling.ListNullThrows) != 0
-                //? throw new ArgumentNullException(nameof(list))
-                //:
-                [];
+            return [];
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
@@ -57,8 +53,11 @@ public static partial class ToModelExtensions
             ? [options.TypeName]
             : DataModelAnalyzer.GetValidTypeNames(trueType);
 
-        if (nullHandling == ModelNullHandling.Undefined)
-            nullHandling = ModelNullHandling.Default;
+        options = (options ?? new ToModelOptions()) with
+        {
+            TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip,
+            NullHandling = ToModelOptions.DataNullPreserveOrSet(options, ToModelOptions.DataNullHandling.AsNull)
+        };
 
         foreach (var name in nameList)
         {
@@ -71,14 +70,8 @@ public static partial class ToModelExtensions
                 continue;
 
             var result = found
-                .Select(raw => raw.ToModelInternal<TModel>(options: new()
-                    {
-                        TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip
-                    },
-                    trueType: trueType, nullHandling: nullHandling)!);
-                    
-            if ((nullHandling & ModelNullHandling.ModelNullSkip) != 0)
-                result = result.Where(item => item != null);
+                .Select(raw => raw.ToModelInternal<TModel>(options: options,
+                    trueType: trueType/*, nullHandling: nullHandling*/)!);
 
             return result.ToList();
         }

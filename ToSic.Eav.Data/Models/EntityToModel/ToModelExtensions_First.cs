@@ -23,44 +23,40 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel">The target model to convert to.</typeparam>
     /// <param name="list">The collection of entities to search.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="nullHandling"></param>
+    /// <param name="options">Conversion options for more advanced scenarios</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(
         this IEnumerable<IEntity>? list,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        ToModelOptions? options = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined
+        ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
     {
-        if (nullHandling == ModelNullHandling.Undefined)
-            nullHandling = ModelNullHandling.Default;
+        var stableOptions = (options ?? new()) with
+        {
+            TypeNameCheck = options?.TypeNameCheck ?? ToModelOptions.ModelTypeCheck.Skip,
+            NullHandling = ToModelOptions.DataNullPreserveOrSet(options, ToModelOptions.DataNullHandling.AsNull)
+        };
+        
 
         if (list == null)
-            return
-                //(nullHandling & ModelNullHandling.ListNullThrows) != 0
-                //? throw new ArgumentNullException(nameof(list))
-                //: 
-                ToModelIntern.FromNull<TModel>(trueType: null, nullHandling);
+            return ToModelIntern.FromNull<TModel>(trueType: null, stableOptions);
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
         var trueType = ModelAnalyseUse.GetTargetType<TModel>();
 
-        var nameList = options?.TypeName != null
-            ? [options.TypeName]
+        var nameList = stableOptions.TypeName != null
+            ? [stableOptions.TypeName]
             : DataModelAnalyzer.GetValidTypeNames(trueType);
 
         var firstMatch = nameList.Select(list.First).OfType<IEntity>().FirstOrDefault();
         return firstMatch != null
-            ? firstMatch.ToModelInternal<TModel>(options: new()
-                {
-                    TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip
-                },
-                trueType: trueType, nullHandling: nullHandling)
+            ? firstMatch.ToModelInternal<TModel>(options: stableOptions,
+                trueType: trueType/*, nullHandling: nullHandling*/)
             // Nothing found
-            : ToModelIntern.FromNull<TModel>(trueType, nullHandling);
+            : ToModelIntern.FromNull<TModel>(trueType, stableOptions/*, nullHandling*/);
     }
 
     #endregion

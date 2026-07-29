@@ -11,10 +11,9 @@ public static class ToModelTestAccessors
     internal static TModel? ToModelInternalTac<TModel>(
         this IEntity? entity,
         ToModelOptions options,
-        NoParamOrder npo = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined
+        NoParamOrder npo = default
     )
-        where TModel : class, IModelFromEntity => entity.ToModelInternal<TModel>(options, npo, nullHandling: nullHandling);
+        where TModel : class, IModelFromEntity => entity.ToModelInternal<TModel>(options, npo);
 
     #endregion
 
@@ -28,11 +27,10 @@ public static class ToModelTestAccessors
         this IEntity? entity,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        ToModelOptions? options = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined
+        ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
-        => entity.ToModel<TModel>(npo, options: options, nullHandling: nullHandling);
+        => entity.ToModel<TModel>(npo, options: options);
 
     /// <summary>
     /// ICanBeEntity Overload
@@ -62,11 +60,10 @@ public static class ToModelTestAccessors
         this IEnumerable<IEntity>? list,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        ToModelOptions? options = default,
-        //string? typeName = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined)
+        ToModelOptions? options = default
+    )
         where TModel : class, IModelFromEntity, new()
-        => list.FirstModel<TModel>(npo, options, /*typeName,*/ nullHandling);
+        => list.FirstModel<TModel>(npo, options);
 
     public static TModel? FirstModelTac<TModel>(this IEnumerable<IEntity>? list)
         where TModel : class, IModelFromEntity, new()

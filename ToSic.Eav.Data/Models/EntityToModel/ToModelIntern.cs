@@ -16,7 +16,6 @@ public static class ToModelIntern
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="options"></param>
     /// <param name="trueType">The true type to actually use, in case the caller already checked for GetTargetType (so it should be reused)</param>
-    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <param name="methodName">Automatically added method name</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
@@ -25,18 +24,15 @@ public static class ToModelIntern
         ToModelOptions options,
         NoParamOrder npo = default,
         Type? trueType = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined,
         [CallerMemberName] string? methodName = default
     )
         where TModel : class, IModelFromEntity
     {
-        if (nullHandling == ModelNullHandling.Undefined)
-            nullHandling = ModelNullHandling.Default;
 
         // Note: No early null-check, as each model can decide if it's valid or not
         // and the caller could always do a ?.As<TModel>() anyway.
         if (entity == null)
-            return FromNull<TModel>(trueType, nullHandling);
+            return FromNull<TModel>(trueType, options);
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
@@ -58,9 +54,9 @@ public static class ToModelIntern
         var ok = (wrapper as IModelSetup<IEntity>)?.SetupModel(entity) ?? false;
         return ok
             ? wrapper
-            : (nullHandling & ModelNullHandling.ModelNullAsModel) != 0
+            : options.NullHandling == ToModelOptions.DataNullHandling.ConvertForce
                 ? wrapper
-                : (nullHandling & ModelNullHandling.ModelNullThrows) != 0
+                : options.NullHandling == ToModelOptions.DataNullHandling.Throw
                     ? throw RequiresFactoryException()
                     : default;
 
@@ -73,7 +69,7 @@ public static class ToModelIntern
         );
     }
 
-    internal static TModel? FromNull<TModel>(Type? trueType = default, ModelNullHandling nullHandling = ModelNullHandling.Undefined)
+    internal static TModel? FromNull<TModel>(Type? trueType, ToModelOptions options)
         where TModel : class
     {
         // Figure out the true type to create, based on Attribute
@@ -81,7 +77,7 @@ public static class ToModelIntern
         trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
 
         // TODO: MAYBE IMPROVE tests / exceptions if not matching the type
-        return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)?.SetupWithDataNullChecks((IEntity?)null, nullHandling) as TModel;
+        return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)?.SetupWithDataNullChecks((IEntity?)null, options.NullHandling) as TModel;
 
     }
 

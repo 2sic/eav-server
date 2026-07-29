@@ -7,7 +7,7 @@ public static partial class ToModelExtensions
 {
 
     #region Generic
-    
+
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
     /// </summary>
@@ -15,6 +15,7 @@ public static partial class ToModelExtensions
     /// <param name="list">The collection of entities to search.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="factory">A factory to create the target model.</param>
+    /// <param name="options">Conversion options for more advanced scenarios</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(
         this IEnumerable<IEntity>? list,

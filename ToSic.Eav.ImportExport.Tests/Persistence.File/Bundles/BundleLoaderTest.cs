@@ -9,7 +9,8 @@ using Xunit.Abstractions;
 namespace ToSic.Eav.ImportExport.Tests.Persistence.File.Bundles;
 
 
-public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoader, FileSystemLoaderOptions> loaderGenerator) : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
+public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoader, FileSystemLoaderOptions> loaderGenerator)
+    : ServiceBase("test"), IClassFixture<DoFixtureStartup<ScenarioMini>>
 {
     [Fact]
     public void TypesInBundles()
@@ -34,7 +35,13 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
     {
         var entities = new LoaderHelper(PersistenceTestConstants.ScenarioMiniDeep, Log)
             .LoadAllQueryEntities(loaderGenerator, output);
-        var export = entities.GetModel<ExportConfiguration>(new Guid("22db39d7-8a59-43be-be68-ea0f28880c10"), /*nullIfNull: true,*/ nullHandling: ModelNullHandling.PreferNull);
+        var export = entities.GetModel<ExportConfiguration>(new Guid("22db39d7-8a59-43be-be68-ea0f28880c10"),
+            options: new()
+            {
+                NullHandling = ToModelOptions.DataNullHandling.AsNull,
+            }
+            ///*nullIfNull: true,*/ nullHandling: ModelNullHandling.PreferNull
+            );
         NotNull(export);//, "should find the system export configuration");
 
         //var export = new ExportConfiguration(systemExportConfiguration);

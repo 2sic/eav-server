@@ -199,7 +199,12 @@ public class ContentExportApi(
     private ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfigGuid)
     {
         var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfigGuid}");
-        var systemExportConfiguration = _appCtx.AppReader.List.GetModel<ExportConfiguration>(exportConfigGuid, nullHandling: ModelNullHandling.PreferNull);
+        var systemExportConfiguration = _appCtx.AppReader.List.GetModel<ExportConfiguration>(exportConfigGuid,
+            options: new()
+            {
+                NullHandling = ToModelOptions.DataNullHandling.AsNull,
+            }
+            /*nullHandling: ModelNullHandling.PreferNull*/);
         return systemExportConfiguration is not null
             ? l.ReturnAsOk(systemExportConfiguration)
             : throw l.Ex(new KeyNotFoundException($"ExportConfiguration:{exportConfigGuid} is missing"));

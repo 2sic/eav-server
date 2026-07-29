@@ -13,7 +13,7 @@ public static partial class ToModelExtensions
     /// </typeparam>
     /// <param name="list">The source collection of entities to search. Can be null.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="typeName">The name identifier of the entity type to filter by. This value is used to select entities of a specific type.</param>
+    /// <param name="options">Conversion options for more advanced scenarios</param>
     /// <returns>An enumerable collection of TModel instances wrapping the matching entities. Returns an empty collection if the
     /// source is null or no matching entities are found.</returns>
     /// <param name="factory">The factory to use for creating wrapper instances.</param>
@@ -23,13 +23,13 @@ public static partial class ToModelExtensions
         IModelFactory factory,
         NoParamOrder npo = default,
         ToModelOptions? options = default
-        //string? typeName = default
     ) where TModel : class, IModelFromEntity
     {
-        if (list.SafeNone())
+        var materialized = list?.ToListOpt();
+        if (materialized.SafeNone())
             return [];
 
-        var selection = list
+        var selection = materialized
             .GetAll(typeName: options?.TypeName ?? typeof(TModel).Name);
 
         return selection.Select(factory.Create<IEntity, TModel>)

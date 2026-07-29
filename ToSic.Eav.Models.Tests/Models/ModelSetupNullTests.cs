@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data;
+using static ToSic.Eav.Models.ToModelOptions;
 
 namespace ToSic.Eav.Models;
 
@@ -31,7 +32,7 @@ public class ModelSetupNullTests
 
     #region Helpers
 
-    private static TModel? CreateAndSetup<TModel>(ModelNullHandling nullHandling, IEntity? data = null)
+    private static TModel? CreateAndSetup<TModel>(DataNullHandling nullHandling, IEntity? data = null)
         where TModel : class, IModelSetup<IEntity>, new()
     {
         var x = new TModel();
@@ -45,49 +46,49 @@ public class ModelSetupNullTests
 
     [Fact]
     public void NullWithDataAsNull_Capable_IsNull() =>
-        Null(CreateAndSetup<MockModelNullCapable>(ModelNullHandling.DataNullAsNull));
+        Null(CreateAndSetup<MockModelNullCapable>(DataNullHandling.AsNull));
 
     [Fact]
     public void NullWithDataAsNull_UnCapable_IsNull() =>
-        Null(CreateAndSetup<MockModelNullUnCapable>(ModelNullHandling.DataNullAsNull));
+        Null(CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.AsNull));
 
     [Fact]
     public void NullWithDataAsModelTry_Capable_NotNull() => 
-        NotNull(CreateAndSetup<MockModelNullCapable>(ModelNullHandling.DataNullTryConvert));
+        NotNull(CreateAndSetup<MockModelNullCapable>(DataNullHandling.ConvertTry));
 
     [Fact]
     public void NullWithDataAsModelTry_UnCapable_IsNull() => 
-        Null(CreateAndSetup<MockModelNullUnCapable>(ModelNullHandling.DataNullTryConvert));
+        Null(CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.ConvertTry));
 
     [Fact]
     public void NullWithDataAsModelForce_Capable_NotNull() => 
-        NotNull(CreateAndSetup<MockModelNullCapable>(ModelNullHandling.DataNullForceConvert));
+        NotNull(CreateAndSetup<MockModelNullCapable>(DataNullHandling.ConvertForce));
 
     [Fact]
     public void NullWithDataAsModelForce_UnCapable_NotNull() => 
-        NotNull(CreateAndSetup<MockModelNullUnCapable>(ModelNullHandling.DataNullForceConvert));
+        NotNull(CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.ConvertForce));
 
     [Fact]
     public void NullWithDataAsThrow_Capable_Throws() =>
         Throws<InvalidCastException>(() =>
-            CreateAndSetup<MockModelNullCapable>(ModelNullHandling.DataNullThrows)
+            CreateAndSetup<MockModelNullCapable>(DataNullHandling.Throw)
         );
 
     [Fact]
     public void NullWithDataAsThrow_UnCapable_Throws() =>
         Throws<InvalidCastException>(() =>
-            CreateAndSetup<MockModelNullUnCapable>(ModelNullHandling.DataNullThrows)
+            CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.Throw)
         );
 
     [Fact]
     public void NullWithDataAsModelOrThrow_Capable_NotNull() =>
-        NotNull(CreateAndSetup<MockModelNullCapable>(ModelNullHandling.DataNullTryConvertOrThrow));
+        NotNull(CreateAndSetup<MockModelNullCapable>(DataNullHandling.ConvertOrThrow));
 
 
     [Fact]
     public void NullWithDataAsModelOrThrow_UnCapable_Throws() =>
         Throws<InvalidCastException>(() =>
-            CreateAndSetup<MockModelNullUnCapable>(ModelNullHandling.DataNullTryConvertOrThrow)
+            CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.ConvertOrThrow)
         );
 
     #endregion
@@ -97,7 +98,7 @@ public class ModelSetupNullTests
 
     [Fact]
     public void NullToModel_DataNullTryToConvert_NotNull() =>
-        NotNull(((IEntity)null!).ToModelTac<MockModelNullCapable>(nullHandling: ModelNullHandling.DataNullTryConvert));
+        NotNull(((IEntity)null!).ToModelTac<MockModelNullCapable>(options: new() { NullHandling = DataNullHandling.ConvertTry }));
 
     [Fact]
     public void NullToModel_Null() =>
@@ -105,7 +106,7 @@ public class ModelSetupNullTests
 
     [Fact]
     public void NullToModel_DataNullAsNull_Null() =>
-        Null(((IEntity)null!).ToModelTac<MockModelNullCapable>(nullHandling: ModelNullHandling.DataNullAsNull));
+        Null(((IEntity)null!).ToModelTac<MockModelNullCapable>(options: new() { NullHandling = DataNullHandling.AsNull }));
 
     #endregion
 

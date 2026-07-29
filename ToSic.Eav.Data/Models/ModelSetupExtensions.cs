@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Models;
+﻿using static ToSic.Eav.Models.ToModelOptions;
+
+namespace ToSic.Eav.Models;
 
 // Must keep private for now, as it somehow ends up on every object in the docs
 [PrivateApi]
@@ -21,24 +23,27 @@ public static class ModelSetupExtensions
     /// Helper to set up the data being wrapped, returning the wrapper for easy chaining.
     /// </summary>
     [return: NotNullIfNotNull(nameof(data))]
-    internal static TModel? SetupWithDataNullChecks<TModel, TData>(this TModel model, TData? data, ModelNullHandling nullHandling)
+    internal static TModel? SetupWithDataNullChecks<TModel, TData>(this TModel model, TData? data, DataNullHandling nullHandling)
         where TData : class
         where TModel : IModelSetup<TData>
     {
         if (data == null)
         {
-            if ((nullHandling & ModelNullHandling.DataNullAsNull) != 0)
-                return default;
-            if ((nullHandling & ModelNullHandling.DataNullThrows) != 0)
-                throw new InvalidCastException("data is null");
+            switch (nullHandling)
+            {
+                case DataNullHandling.Undefined or DataNullHandling.AsNull:
+                    return default;
+                case DataNullHandling.Throw:
+                    throw new InvalidCastException("data is null");
+            }
         }
 
         var ok = model.SetupModel(data);
         return ok
             ? model
-            : (nullHandling & ModelNullHandling.DataNullForceConvert) != 0
+            : nullHandling == DataNullHandling.ConvertForce
                 ? model
-                : (nullHandling & ModelNullHandling.DataNullTryConvertOrThrow) != 0
+                : nullHandling == DataNullHandling.ConvertOrThrow
                     ? throw new InvalidCastException("data is null")
                     : default;
     }
