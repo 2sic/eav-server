@@ -15,10 +15,9 @@ public static partial class ToModelExtensions
     public static TModel? GetMetadataModel<TModel>(
         this IHasMetadata parent,
         NoParamOrder npo = default
-        //ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelFromEntity
     {
-        return parent.Metadata.FirstModel<TModel>(/*nullHandling: nullHandling*/);
+        return parent.Metadata.FirstModel<TModel>();
     }
 }

@@ -22,14 +22,15 @@ public static partial class ToModelExtensions
         this IEnumerable<IEntity>? list,
         IModelFactory factory,
         NoParamOrder npo = default,
-        string? typeName = default
+        ToModelOptions? options = default
+        //string? typeName = default
     ) where TModel : class, IModelFromEntity
     {
-        if (list == null)
+        if (list.SafeNone())
             return [];
 
         var selection = list
-            .GetAll(typeName: typeName ?? typeof(TModel).Name);
+            .GetAll(typeName: options?.TypeName ?? typeof(TModel).Name);
 
         return selection.Select(factory.Create<IEntity, TModel>)
                 .ToList();

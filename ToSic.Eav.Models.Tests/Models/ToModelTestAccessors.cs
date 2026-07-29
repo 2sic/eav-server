@@ -62,10 +62,11 @@ public static class ToModelTestAccessors
         this IEnumerable<IEntity>? list,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        string? typeName = default,
+        ToModelOptions? options = default,
+        //string? typeName = default,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined)
         where TModel : class, IModelFromEntity, new()
-        => list.FirstModel<TModel>(npo, typeName, nullHandling);
+        => list.FirstModel<TModel>(npo, options, /*typeName,*/ nullHandling);
 
     public static TModel? FirstModelTac<TModel>(this IEnumerable<IEntity>? list)
         where TModel : class, IModelFromEntity, new()

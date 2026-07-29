@@ -28,7 +28,8 @@ public class EntityListGetAll(TestDataGenerator generator)
     public void GetAllWithNameMixed(int amountMdFor, int amountOther)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor, amountOther);
-        var mdList = entity.Metadata.GetModels<MockModelMetadataForDecorator>(typeName: nameof(MockModelMetadataForDecorator));
+        var mdList = entity.Metadata.GetModels<MockModelMetadataForDecorator>(
+            options: new() { TypeName = nameof(MockModelMetadataForDecorator) });
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -41,7 +42,7 @@ public class EntityListGetAll(TestDataGenerator generator)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<MockModelMetadataForDecorator>(typeName: "some-wrong-name");
+            .GetModels<MockModelMetadataForDecorator>(options: new() { TypeName = "some-wrong-name" });
         NotNull(mdList);
         Empty(mdList);
     }
@@ -67,7 +68,7 @@ public class EntityListGetAll(TestDataGenerator generator)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<MockModelMetadataForDecoratorWrongName>(typeName: nameof(MockModelMetadataForDecorator));
+            .GetModels<MockModelMetadataForDecoratorWrongName>(options: new() { TypeName = nameof(MockModelMetadataForDecorator) });
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -93,7 +94,7 @@ public class EntityListGetAll(TestDataGenerator generator)
         {
             var entity = generator.CreateEntityWithMetadata(amountMdFor);
             entity.Metadata.GetModels<MockModelRequiringFactoryNoDependencies>(
-                typeName: nameof(MockModelMetadataForDecorator));
+                options: new() { TypeName = nameof(MockModelMetadataForDecorator) });
         });
 
 

@@ -14,14 +14,13 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel">The target model to convert to.</typeparam>
     /// <param name="list">The collection of entities to search.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="typeName">The name of the type to match.</param>
     /// <param name="factory">A factory to create the target model.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(
         this IEnumerable<IEntity>? list,
         IModelFactory factory,
         NoParamOrder npo = default,
-        string? typeName = default
+        ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
     {
@@ -32,8 +31,8 @@ public static partial class ToModelExtensions
         // This is important, in case an interface was passed in.
         var trueType = ModelAnalyseUse.GetTargetType<TModel>();
 
-        var nameList = typeName != null
-            ? [typeName]
+        var nameList = options?.TypeName != null
+            ? [options.TypeName]
             : DataModelAnalyzer.GetValidTypeNames(trueType);
 
         foreach (var name in nameList)

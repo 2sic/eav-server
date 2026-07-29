@@ -60,7 +60,7 @@ public abstract class ToModelWithFactory<TModel>(TestDataGenerator generator, IM
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var list = entity.Metadata.GetModels<TModel>(
             factory,
-            typeName: nameof(MockModelMetadataForDecorator)
+            options: new() { TypeName = nameof(MockModelMetadataForDecorator) } 
         );
         Equal(amountMdFor, list.Count());
     }
@@ -76,7 +76,7 @@ public abstract class ToModelWithFactory<TModel>(TestDataGenerator generator, IM
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var first = entity.Metadata.FirstModel<TModel>(factory,
             // TODO: WHAT EXACTLY are we testing here?
-            typeName: nameof(MockModelMetadataForDecorator)
+            options: new() { TypeName = nameof(MockModelMetadataForDecorator) }
         );
         NotNull(first);
     }

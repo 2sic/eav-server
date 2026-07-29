@@ -37,18 +37,19 @@ public enum ModelNullHandling
     /// </summary>
     DataNullForceConvert = 1 << 4,
 
+    // TODO: THIS is not implemented anywhere - but not sure if it should; ignore for now
+    ///// <summary>
+    ///// If the list is null, return an empty list anyhow.
+    ///// This is only meant for list conversions, and does not affect single item conversions.
+    ///// </summary>
+    //ListNullAsEmpty = 1 << 5,
 
-    /// <summary>
-    /// If the list is null, return an empty list anyhow.
-    /// This is only meant for list conversions, and does not affect single item conversions.
-    /// </summary>
-    ListNullAsEmpty = 1 << 5,
-
-    /// <summary>
-    /// If the list is null, return an empty list anyhow.
-    /// This is only meant for list conversions, and does not affect single item conversions.
-    /// </summary>
-    ListNullThrows = 1 << 6,
+    // TODO: This was handled in 2 places and never used, ignore for now
+    ///// <summary>
+    ///// If the list is null, return an empty list anyhow.
+    ///// This is only meant for list conversions, and does not affect single item conversions.
+    ///// </summary>
+    //ListNullThrows = 1 << 6,
 
 
     /// <summary>
@@ -65,13 +66,17 @@ public enum ModelNullHandling
 
 
 
-    TypeCheckAsNull = 1 << 11,
+    // Only added to presets, never evaluated, ignore for now
+    //TypeCheckAsNull = 1 << 11,
 
-    TypeCheckFilter = 1 << 12,
+    // Never used
+    //TypeCheckFilter = 1 << 12,
 
-    TypeCheckIgnore = 1 << 13,
+    // Only added to presets, never evaluated, ignore for now
+    //TypeCheckIgnore = 1 << 13,
 
-    TypeCheckThrow = 1 << 14,
+    // Never used
+    //TypeCheckThrow = 1 << 14,
 
     /// <summary>
     /// Defaults
@@ -81,20 +86,20 @@ public enum ModelNullHandling
     /// * null-models will return null
     /// * in list scenarios, null-models will be filtered out
     /// </summary>
-    Default = ListNullAsEmpty
-              | DataNullAsNull
-              | TypeCheckAsNull
-              | ModelNullAsNull
-              | ModelNullSkip,
+    Default = //ListNullAsEmpty | 
+              DataNullAsNull |
+              //TypeCheckAsNull |
+              ToModelOptions.ModelResultHandling.ModelNullAsNull |
+              ToModelOptions.ModelResultHandling.ModelNullSkip,
 
-    PreferNull = ListNullAsEmpty
-               | DataNullAsNull
-               | TypeCheckAsNull
-               | ModelNullAsNull
-               | ModelNullSkip,
+    PreferNull = // ListNullAsEmpty |
+                 DataNullAsNull |
+                 //TypeCheckAsNull |
+                 ToModelOptions.ModelResultHandling.ModelNullAsNull |
+                 ToModelOptions.ModelResultHandling.ModelNullSkip,
 
-    PreferModel = ListNullAsEmpty
-               | DataNullForceConvert
-               | TypeCheckIgnore
-               | ModelNullAsModel,
+    PreferModel = // ListNullAsEmpty |
+                  DataNullForceConvert |
+                  //TypeCheckIgnore |
+                  ToModelOptions.ModelResultHandling.ModelNullAsModel,
 }

@@ -30,7 +30,7 @@ public partial class EntityListFirst
     public void FirstGenericSameMetadataManyNamed(int amount)
     {
         var entity = generator.CreateEntityWithMetadata(amount);
-        var md = entity.Metadata.FirstModelTac<MockModelMetadataForDecorator>(typeName: nameof(MockModelMetadataForDecorator));
+        var md = entity.Metadata.FirstModelTac<MockModelMetadataForDecorator>(options: new() { TypeName = nameof(MockModelMetadataForDecorator) });
         NotNull(md);
         Equal((int)TargetTypes.Entity, md.TargetType);
     }
@@ -41,7 +41,7 @@ public partial class EntityListFirst
     public void FirstGenericSameMetadataManyTimesNamedWrong(int amount)
     {
         var entity = generator.CreateEntityWithMetadata(amount);
-        Null(entity.Metadata.FirstModelTac<MockModelMetadataForDecorator>(typeName: "some other name"));
+        Null(entity.Metadata.FirstModelTac<MockModelMetadataForDecorator>(options: new() { TypeName = "some other name"}));
     }
 
     [Theory]
@@ -50,7 +50,7 @@ public partial class EntityListFirst
     public void NotFoundButForceModel(int amount)
     {
         var entity = generator.CreateEntityWithMetadata(amount);
-        NotNull(entity.Metadata.FirstModelTac<MockModelMetadataForDecorator>(typeName: "some other name", nullHandling: ModelNullHandling.PreferModel));
+        NotNull(entity.Metadata.FirstModelTac<MockModelMetadataForDecorator>(options: new() { TypeName = "some other name" }, nullHandling: ModelNullHandling.PreferModel));
     }
 
 }

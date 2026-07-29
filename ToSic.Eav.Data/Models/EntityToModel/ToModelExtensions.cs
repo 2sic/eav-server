@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Eav.Models;
 
+// ReSharper disable UnusedMember.Global
+
 /// <summary>
 /// Extension methods to convert <see cref="IEntity"/> or lists of IEntity to Models.
 /// WIP v21
