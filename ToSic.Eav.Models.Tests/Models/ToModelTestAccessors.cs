@@ -10,12 +10,11 @@ public static class ToModelTestAccessors
 
     internal static TModel? ToModelInternalTac<TModel>(
         this IEntity? entity,
+        ToModelOptions options,
         NoParamOrder npo = default,
-        bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelFromEntity//, new()
-        => entity.ToModelInternal<TModel>(npo, skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
+        where TModel : class, IModelFromEntity => entity.ToModelInternal<TModel>(options, npo, nullHandling: nullHandling);
 
     #endregion
 
@@ -29,18 +28,27 @@ public static class ToModelTestAccessors
         this IEntity? entity,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        bool skipTypeCheck = false,
+        ToModelOptions? options = default,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelFromEntity
-        => entity.ToModel<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
+        => entity.ToModel<TModel>(npo, options: options, nullHandling: nullHandling);
 
-    
+    /// <summary>
+    /// ICanBeEntity Overload
+    /// </summary>
+    public static TModel? ToModelTac<TModel>(
+        this ICanBeEntity? canBeEntity,
+        NoParamOrder npo = default,
+        ToModelOptions? options = default
+    )
+        where TModel : class, IModelFromEntity
+    => canBeEntity.ToModel<TModel>(npo, options: options);
 
     #endregion
 
-    
-    #region ToModel with Factory (Single Entity / CanBeEntity TODO:)
+
+        #region ToModel with Factory (Single Entity / CanBeEntity TODO:)
 
     public static TModel? ToModelTac<TModel>(this IEntity entity, IModelFactory factory)
         where TModel : class, IModelFromEntity

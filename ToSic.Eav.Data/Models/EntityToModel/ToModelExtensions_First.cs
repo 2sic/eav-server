@@ -53,7 +53,11 @@ public static partial class ToModelExtensions
 
         var firstMatch = nameList.Select(list.First).OfType<IEntity>().FirstOrDefault();
         return firstMatch != null
-            ? firstMatch.ToModelInternal<TModel>(trueType: trueType, skipTypeCheck: true, nullHandling: nullHandling)
+            ? firstMatch.ToModelInternal<TModel>(options: new()
+                {
+                    TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip
+                },
+                trueType: trueType, nullHandling: nullHandling)
             // Nothing found
             : ToModelIntern.FromNull<TModel>(trueType, nullHandling);
     }

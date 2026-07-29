@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Models.TestData;
+﻿using ToSic.Eav.Data;
+using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models;
 
@@ -70,7 +71,7 @@ public class ModelEqualityTests(TestDataGenerator generator)
         var entity = generator.CreateMetadataForDecorator();
         var md = entity.ToModelTac<MockModel>()!;
         // Recast via ICanBeEntity
-        var md2 = md.ToModel<MockModel>()!;
+        var md2 = ((ICanBeEntity)md).ToModelTac<MockModel>()!;
         CheckAllEquals(md, md2);
     }
 

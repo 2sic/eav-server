@@ -14,17 +14,17 @@ public static class ToModelIntern
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
     /// <param name="entity">The entity to convert.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="options"></param>
     /// <param name="trueType">The true type to actually use, in case the caller already checked for GetTargetType (so it should be reused)</param>
-    /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
     /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <param name="methodName">Automatically added method name</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     internal static TModel? ToModelInternal<TModel>(
         this IEntity? entity,
+        ToModelOptions options,
         NoParamOrder npo = default,
         Type? trueType = default,
-        bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined,
         [CallerMemberName] string? methodName = default
     )
@@ -43,7 +43,7 @@ public static class ToModelIntern
         trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
 
         // If it is not null, do check if the cast uses the correct type
-        DataModelAnalyzer.IsTypeNameAllowedOrThrow(trueType, entity, entity.EntityId, skipTypeCheck);
+        DataModelAnalyzer.IsTypeNameAllowedOrThrow(trueType, entity, entity.EntityId, options.TypeNameCheck == ToModelOptions.ModelTypeCheck.Skip);
 
         // Create the model
         var wrapper = TypeFactory.CreateInstance(trueType) as TModel

@@ -108,7 +108,7 @@ public class AppUserLanguageCheck(
                 {
                     var pChecker = checkGenerator.New();
                     var permissions = permissionEntities
-                        .Select(p => p.ToModel<Permission>(skipTypeCheck: true)!)
+                        .Select(p => p.ToModel<Permission>(options: new() { TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip })!)
                         .ToListOpt();
                     pChecker.For("user language", ctx, readerSafe, permissions);
                     ok = pChecker.PermissionsAllow(GrantSets.WriteSomething).Allowed;

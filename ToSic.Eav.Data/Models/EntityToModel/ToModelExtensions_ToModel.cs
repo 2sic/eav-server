@@ -14,7 +14,7 @@ public static partial class ToModelExtensions
     public static TModel? ToModel<TModel>(this IEntity? entity)
         where TModel : class, IModelFromEntity
     {
-        return entity.ToModelInternal<TModel>();
+        return entity.ToModelInternal<TModel>(options: new());
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
     /// <param name="entity"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
+    /// <param name="options">Conversion options for more advanced scenarios</param>
     /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
@@ -33,12 +33,15 @@ public static partial class ToModelExtensions
         this IEntity? entity,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,
-        bool skipTypeCheck = false,
+        ToModelOptions? options = default,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
         where TModel : class, IModelFromEntity
     {
-        return entity.ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck, nullHandling: nullHandling);
+        return entity.ToModelInternal<TModel>(options: options ?? new()
+        {
+            //TypeNameCheck = skipTypeCheck ? ToModelOptions.ModelTypeCheck.Skip : ToModelOptions.ModelTypeCheck.Strict
+        }, nullHandling: nullHandling);
     }
 
     /// <summary>
@@ -49,19 +52,17 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
     /// <param name="canBeEntity"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
-    /// <param name="nullHandling">How to handle nulls during the conversion - default is <see cref="ModelNullHandling.Default"/></param>
+    /// <param name="options">Conversion options for more advanced scenarios</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? ToModel<TModel>(
         this ICanBeEntity? canBeEntity,
         NoParamOrder npo = default,
-        bool skipTypeCheck = false,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined
+        ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
     {
-        return (canBeEntity?.Entity).ToModelInternal<TModel>(skipTypeCheck: skipTypeCheck);
+        return (canBeEntity?.Entity).ToModelInternal<TModel>(options: options ?? new());
     }
 
 

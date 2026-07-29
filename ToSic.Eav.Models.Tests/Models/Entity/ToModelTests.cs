@@ -14,7 +14,7 @@ public class ToModel(TestDataGenerator generator) : ToModelTestsShared
         => generator.CreateMetadataForDecorator().ToModelTac<TModel>()!;
     
     protected override TModel GetModelSkipTypeCheck<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelTac<TModel>(skipTypeCheck: true)!;
+        => generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: new() { TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip })!;
 }
 
 /// <summary>
@@ -24,10 +24,10 @@ public class ToModel(TestDataGenerator generator) : ToModelTestsShared
 public class ToModelInternal(TestDataGenerator generator) : ToModelTestsShared
 {
     protected override TModel GetModelNoParams<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>()!;
+        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(new())!;
     
     protected override TModel GetModelSkipTypeCheck<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(skipTypeCheck: true)!;
+        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(new() { TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip })!;
 }
 
 
@@ -117,19 +117,19 @@ public abstract class ToModelTestsShared
         => Throws<InvalidCastException>(GetModelNoParams<MockModelMetadataForDecoratorWithModelSpecsNameWrong>);
     
     [Fact]
-    public void ModelWithNameMismatch_HasSpecsWithNameRight_NotNull()
+    public void ModelWithNameMismatch_HasSpecsWithNameRight_Works()
         => NotNull(GetModelNoParams<MockModelMetadataForDecoratorWithModelSpecsNameRight>());
 
     [Fact]
-    public void ModelWithNameMismatch_HasSpecsWithNameAsterisks_NotNull()
+    public void ModelWithNameMismatch_HasSpecsWithNameAsterisks_Works()
         => NotNull(GetModelNoParams<MockModelMetadataForDecoratorWithModelSpecsNameAsterisks>());
 
     [Fact]
-    public void ModelWithNameMismatch_SkipTypeCheck_NotNull()
+    public void ModelWithNameMismatch_SkipTypeCheck_Works()
         => NotNull(GetModelSkipTypeCheck<MockModelMetadataForDecoratorWrongName>());
 
     [Fact]
-    public void ModelWithNameMismatch_SkipTypeCheck_PropertyTargetTypeMatches()
+    public void ModelWithNameMismatch_SkipTypeCheck_PropertyMatchesExpectedValue()
         => Equal((int)TargetTypes.Entity, GetModelSkipTypeCheck<MockModelMetadataForDecoratorWrongName>()!.TargetType);
 
     #endregion

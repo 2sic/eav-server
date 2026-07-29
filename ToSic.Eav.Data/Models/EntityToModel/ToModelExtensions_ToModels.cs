@@ -8,12 +8,10 @@ public static partial class ToModelExtensions
     public static IEnumerable<TModel> ToModels<TModel>(
         this IEnumerable<IEntity?> entities,
         NoParamOrder npo = default
-        //bool skipTypeCheck = false,
-        //bool nullIfNull = false
     )
         where TModel : class, IModelFromEntity, new()
     {
-        return entities.ToModelsInternal<TModel>(/*skipTypeCheck: skipTypeCheck, nullIfNull: nullIfNull*/);
+        return entities.ToModelsInternal<TModel>();
     }
 
 
@@ -22,17 +20,14 @@ public static partial class ToModelExtensions
     /// </summary>
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
     /// <param name="entities">The entity to convert.</param>
+    /// <param name="methodName">Automatically provided method name for debugging</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="skipTypeCheck">allow conversion even if the Content-Type of the entity doesn't match the type specified in the parameter T</param>
-    /// <param name="nullIfNull">If the underlying data is null, prefer null over an empty model.</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     internal static IEnumerable<TModel> ToModelsInternal<TModel>(
         this IEnumerable<IEntity?> entities,
         [CallerMemberName] string? methodName = default,
         NoParamOrder npo = default
-        //bool skipTypeCheck = true
-        //bool nullIfNull = false
     )
         where TModel : class, IModelFromEntity, new()
     {

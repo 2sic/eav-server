@@ -70,7 +70,11 @@ public static partial class ToModelExtensions
                 continue;
 
             var result = found
-                .Select(raw => raw.ToModelInternal<TModel>(trueType: trueType, skipTypeCheck: true, nullHandling: nullHandling)!);
+                .Select(raw => raw.ToModelInternal<TModel>(options: new()
+                    {
+                        TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip
+                    },
+                    trueType: trueType, nullHandling: nullHandling)!);
                     
             if ((nullHandling & ModelNullHandling.ModelNullSkip) != 0)
                 result = result.Where(item => item != null);
