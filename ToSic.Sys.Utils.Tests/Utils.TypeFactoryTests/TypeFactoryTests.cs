@@ -18,7 +18,7 @@ public class TypeFactoryTests
     {
         var x = TypeFactory.CreateInstance(typeof(ClassWithoutConstructor));
         NotNull(x);
-        Single(TypeFactory.Cache);
+        Single(TypeFactory.TypeFactoryCache);
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class TypeFactoryTests
     {
         var x = TypeFactory.CreateInstance<ClassWithoutConstructor>();
         NotNull(x);
-        Single(TypeFactory.Cache);
+        Single(TypeFactory.TypeFactoryCache);
     }
 
     [Fact]

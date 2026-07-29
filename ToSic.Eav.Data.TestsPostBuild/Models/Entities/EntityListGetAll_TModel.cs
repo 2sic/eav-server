@@ -80,7 +80,7 @@ public class EntityListGetAll(TestDataGenerator generator)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<MockModelMetadataForDecoratorWithModelSpecs>();
+            .GetModels<MockModelMetadataForDecoratorWithModelSpecsNameRight>();
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }

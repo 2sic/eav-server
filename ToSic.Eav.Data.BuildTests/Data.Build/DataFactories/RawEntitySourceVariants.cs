@@ -30,6 +30,6 @@ public class RawEntitySourceVariants
     public void InvalidConverterThrows()
     {
         IRawEntitySource x = new MockRawConvertibleInvalid();
-        Throws<InvalidOperationException>(() => x.GetRawFromConverterOrDirectCast(new()));
+        Throws<InvalidCastException>(() => x.GetRawFromConverterOrDirectCast(new()));
     }
 }

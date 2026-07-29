@@ -22,7 +22,7 @@ public static class ToModelTestAccessors
     #region ToModel (Single Entity / CanBeEntity)
 
     internal static TModel? ToModelTac<TModel>(this IEntity? entity)
-        where TModel : class, IModelFromEntity, new()
+        where TModel : class, IModelFromEntity
         => entity.ToModel<TModel>();
 
     internal static TModel? ToModelTac<TModel>(
@@ -32,7 +32,7 @@ public static class ToModelTestAccessors
         bool skipTypeCheck = false,
         ModelNullHandling nullHandling = ModelNullHandling.Undefined
     )
-        where TModel : class, IModelFromEntity, new()
+        where TModel : class, IModelFromEntity
         => entity.ToModel<TModel>(npo, skipTypeCheck, nullHandling: nullHandling);
 
     
