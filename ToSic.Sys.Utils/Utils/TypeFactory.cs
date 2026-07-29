@@ -16,7 +16,7 @@ public static class TypeFactory
     /// A thread-safe cache to store our compiled delegates.
     /// These are important for fast creation without ongoing reflection.
     /// </summary>
-    internal static readonly ConcurrentDictionary<Type, Func<object>> Cache = new();
+    internal static readonly ConcurrentDictionary<Type, Func<object>> TypeFactoryCache = new();
 
     /// <summary>
     /// The Generic Wrapper: Uses the central cache but returns the correct type.
@@ -32,9 +32,9 @@ public static class TypeFactory
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="InvalidCastException"></exception>
     public static Func<object> CreateInstanceFunc(Type type) =>
-        Cache.GetOrAdd(type, t =>
+        TypeFactoryCache.GetOrAdd(type, t =>
         {
             // If it's a value type (struct), we use Activator or a specialized expression
             // but for simplicity, here is the standard class implementation:
@@ -43,7 +43,7 @@ public static class TypeFactory
 
             var constructor = t.GetConstructor(Type.EmptyTypes);
             if (constructor == null)
-                throw new InvalidOperationException($"Type {t.Name} must have a public parameterless constructor.");
+                throw new InvalidCastException($"Type {t.Name} must have a public parameterless constructor.");
 
             // Generate the IL equivalent of: () => new T()
             var newExp = Expression.New(t);
