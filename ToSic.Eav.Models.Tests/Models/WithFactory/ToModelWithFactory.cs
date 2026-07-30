@@ -6,7 +6,7 @@ using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models.WithFactory;
 
-public class ToModelRequiringFactory_WithDependencies(TestDataGenerator generator, IModelFactory factory)
+public class ToModelRequiringFactory_WithDependencies(MockDataGenerator generator, IModelFactory factory)
     : ToModelWithFactory<MockModelRequiringFactoryWithDependencies>(generator, factory)
 {
     [Fact]
@@ -20,7 +20,7 @@ public class ToModelRequiringFactory_WithDependencies(TestDataGenerator generato
     }
 
 }
-public class ToModelRequiringFactory_NoDependencies(TestDataGenerator generator, IModelFactory factory)
+public class ToModelRequiringFactory_NoDependencies(MockDataGenerator generator, IModelFactory factory)
     : ToModelWithFactory<MockModelRequiringFactoryNoDependencies>(generator, factory)
 {
     [Fact]
@@ -32,7 +32,7 @@ public class ToModelRequiringFactory_NoDependencies(TestDataGenerator generator,
 }
 
 
-public abstract class ToModelWithFactory<TModel>(TestDataGenerator generator, IModelFactory factory)
+public abstract class ToModelWithFactory<TModel>(MockDataGenerator generator, IModelFactory factory)
     where TModel : class, IModelFromEntity
 {
 
@@ -60,7 +60,7 @@ public abstract class ToModelWithFactory<TModel>(TestDataGenerator generator, IM
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var list = entity.Metadata.GetModels<TModel>(
             factory,
-            options: new() { TypeName = nameof(MockModelMetadataForDecorator) } 
+            options: new() { TypeName = nameof(MockMetadataModel) } 
         );
         Equal(amountMdFor, list.Count());
     }
@@ -76,7 +76,7 @@ public abstract class ToModelWithFactory<TModel>(TestDataGenerator generator, IM
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var first = entity.Metadata.FirstModel<TModel>(factory,
             // TODO: WHAT EXACTLY are we testing here?
-            options: new() { TypeName = nameof(MockModelMetadataForDecorator) }
+            options: new() { TypeName = nameof(MockMetadataModel) }
         );
         NotNull(first);
     }

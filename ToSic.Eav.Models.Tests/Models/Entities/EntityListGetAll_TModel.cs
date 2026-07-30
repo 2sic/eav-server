@@ -3,7 +3,7 @@ using ToSic.Eav.Models.WithFactory;
 
 namespace ToSic.Eav.Models.Entities;
 
-public class EntityListGetAll(TestDataGenerator generator)
+public class EntityListGetAll(MockDataGenerator generator)
 {
     [Theory]
     [InlineData(0, 0)]
@@ -15,7 +15,7 @@ public class EntityListGetAll(TestDataGenerator generator)
     public void WithMixedMetadataManyTimes(int amountMdFor, int amountOther)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor, amountOther);
-        var mdList = entity.Metadata.GetModels<MockModelMetadataForDecorator>();
+        var mdList = entity.Metadata.GetModels<MockMetadataModel>();
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -28,8 +28,8 @@ public class EntityListGetAll(TestDataGenerator generator)
     public void GetAllWithNameMixed(int amountMdFor, int amountOther)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor, amountOther);
-        var mdList = entity.Metadata.GetModels<MockModelMetadataForDecorator>(
-            options: new() { TypeName = nameof(MockModelMetadataForDecorator) });
+        var mdList = entity.Metadata.GetModels<MockMetadataModel>(
+            options: new() { TypeName = nameof(MockMetadataModel) });
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -42,7 +42,7 @@ public class EntityListGetAll(TestDataGenerator generator)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<MockModelMetadataForDecorator>(options: new() { TypeName = "some-wrong-name" });
+            .GetModels<MockMetadataModel>(options: new() { TypeName = "some-wrong-name" });
         NotNull(mdList);
         Empty(mdList);
     }
@@ -55,7 +55,7 @@ public class EntityListGetAll(TestDataGenerator generator)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<MockModelMetadataForDecoratorWrongName>();
+            .GetModels<MockMetadataModelWrongName>();
         NotNull(mdList);
         Empty(mdList);
     }
@@ -68,7 +68,7 @@ public class EntityListGetAll(TestDataGenerator generator)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<MockModelMetadataForDecoratorWrongName>(options: new() { TypeName = nameof(MockModelMetadataForDecorator) });
+            .GetModels<MockMetadataModelWrongName>(options: new() { TypeName = nameof(MockMetadataModel) });
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -81,7 +81,7 @@ public class EntityListGetAll(TestDataGenerator generator)
     {
         var entity = generator.CreateEntityWithMetadata(amountMdFor);
         var mdList = entity.Metadata
-            .GetModels<MockModelMetadataForDecoratorWithModelSpecsNameRight>();
+            .GetModels<MockMetadataModelWithSpecsNameRight>();
         NotNull(mdList);
         Equal(amountMdFor, mdList.Count());
     }
@@ -94,7 +94,7 @@ public class EntityListGetAll(TestDataGenerator generator)
         {
             var entity = generator.CreateEntityWithMetadata(amountMdFor);
             entity.Metadata.GetModels<MockModelRequiringFactoryNoDependencies>(
-                options: new() { TypeName = nameof(MockModelMetadataForDecorator) });
+                options: new() { TypeName = nameof(MockMetadataModel) });
         });
 
 

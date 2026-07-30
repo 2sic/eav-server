@@ -4,7 +4,7 @@ using ToSic.Eav.Data.TestData;
 
 namespace ToSic.Eav.Models.TestData;
 
-public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCodeManager ctDefFactory, ContentTypeAssemblyKit ctAssemblyKit)
+public class MockDataGenerator(DataAssembler dataAssembler, ContentTypesFromCodeManager ctDefFactory, ContentTypeAssemblyKit ctAssemblyKit)
 {
     /// <summary>
     /// Create an entity having metadata - some of the expected main type, others to optionally mix in (for type testing)
@@ -43,8 +43,8 @@ public class TestDataGenerator(DataAssembler dataAssembler, ContentTypesFromCode
     public IEntity CreateMetadataForDecorator(int amount) =>
         dataAssembler.CreateEntityTac(
             0,
-            ctDefFactory.CreateTac<MockModelMetadataForDecorator>(),
-            values: new MockModelMetadataForDecoratorRaw(amount).Values.ToDictionary(x => x.Key, x => x.Value)!
+            ctDefFactory.CreateTac<MockMetadataModel>(),
+            values: new MockMetadataRaw(amount).Values.ToDictionary(x => x.Key, x => x.Value)!
         );
 
     private IEntity CreateEntityForNoSpecs() =>

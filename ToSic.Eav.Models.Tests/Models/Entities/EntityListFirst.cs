@@ -4,13 +4,13 @@ using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models.Entities;
 
-public partial class EntityListFirst(TestDataGenerator generator)
+public partial class EntityListFirst(MockDataGenerator generator)
 {
     [Fact]
     public void FirstNameOfWithSameMetadataNone()
     {
         var entity = generator.CreateEntityWithMetadata(0);
-        Null(entity.Metadata.First(nameof(MockModelMetadataForDecorator)));
+        Null(entity.Metadata.First(nameof(MockMetadataModel)));
     }
 
     [Theory]
@@ -19,9 +19,9 @@ public partial class EntityListFirst(TestDataGenerator generator)
     public void FirstNameOfWithSameMetadataMany(int amount)
     {
         var entity = generator.CreateEntityWithMetadata(amount);
-        var md = entity.Metadata.First(nameof(MockModelMetadataForDecorator));
+        var md = entity.Metadata.First(nameof(MockMetadataModel));
         NotNull(md);
-        Equal((int)TargetTypes.Entity, md.Get<int>(nameof(MockModelMetadataForDecorator.TargetType)));
+        Equal((int)TargetTypes.Entity, md.Get<int>(nameof(MockMetadataModel.TargetType)));
     }
 
     [Theory]

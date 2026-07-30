@@ -5,7 +5,7 @@
 /// </summary>
 /// <param name="generator"></param>
 // ReSharper disable once InconsistentNaming
-public class TestDataGenerator_Verify(TestDataGenerator generator)
+public class MockDataGenerator_Verify(MockDataGenerator generator)
 {
     [Theory]
     [InlineData(0)]

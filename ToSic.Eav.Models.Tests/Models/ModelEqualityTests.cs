@@ -3,7 +3,7 @@ using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models;
 
-public class ModelEqualityTests(TestDataGenerator generator)
+public class ModelEqualityTests(MockDataGenerator generator)
 {
     /// <summary>
     /// Test Sample Model

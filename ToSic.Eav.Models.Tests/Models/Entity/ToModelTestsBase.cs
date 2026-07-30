@@ -5,7 +5,7 @@ namespace ToSic.Eav.Models.Entity;
 /// <summary>
 /// Shared base tests for ToModel actions - with virtual methods, so it can also be overriden for ToModelInternal()
 /// </summary>
-public abstract class ToModelTestsBase(TestDataGenerator generator, bool useInternal)
+public abstract class ToModelTestsBase(MockDataGenerator generator, bool useInternal)
 {
     #region Test Setup Helpers to create models either using the internal ToModelInternal or the public ToModel
 
