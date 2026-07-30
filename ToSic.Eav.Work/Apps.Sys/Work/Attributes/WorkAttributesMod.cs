@@ -7,6 +7,7 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Utils;
 using static ToSic.Sys.Capabilities.Features.BuiltInFeatures;
 
 namespace ToSic.Eav.Apps.Sys.Work;
@@ -121,7 +122,7 @@ public class WorkAttributesMod(
     public bool Reorder(int contentTypeId, string orderCsv)
     {
         var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{orderCsv}");
-        var sortOrderList = orderCsv.Split(',').Select(int.Parse).ToList();
+        var sortOrderList = orderCsv.CsvToArrayWithoutEmpty().Select(int.Parse).ToList();
         AppWorkCtx.DbStorage.ContentType.SortAttributes(contentTypeId, sortOrderList);
         TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();

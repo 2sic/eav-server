@@ -120,10 +120,7 @@ public class QueryODataParams
             return null;
 
         var selectedStreams = selectedStream
-            .Split(',')
-            .Select(s => s.Trim())
-            .Where(s => !string.IsNullOrWhiteSpace(s))
-            .ToArray();
+            .CsvToArrayWithoutEmpty();
 
         if (selectedStreams.Length != 1)
             return null;

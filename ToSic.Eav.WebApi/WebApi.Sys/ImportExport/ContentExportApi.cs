@@ -65,7 +65,7 @@ public class ContentExportApi(
         try
         {
             if (exportSelection == ExportSelection.Selection && !string.IsNullOrWhiteSpace(selectedIds))
-                ids = selectedIds!.Split(',').Select(int.Parse).ToArray();
+                ids = selectedIds.CsvToArrayWithoutEmpty().Select(int.Parse).ToArray();
         }
         catch (Exception e)
         {
