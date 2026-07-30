@@ -46,7 +46,7 @@ public static class ToModelTestAccessors
     #endregion
 
 
-        #region ToModel with Factory (Single Entity / CanBeEntity TODO:)
+    #region ToModel with Factory (Single Entity / CanBeEntity TODO:)
 
     public static TModel? ToModelTac<TModel>(this IEntity entity, IModelFactory factory)
         where TModel : class, IModelFromEntity

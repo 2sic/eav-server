@@ -35,8 +35,8 @@ public class EntityListGetAll(TestDataGenerator generator)
     }
 
     [Theory]
-    [InlineData(1)]
     [InlineData(0)]
+    [InlineData(1)]
     [InlineData(2)]
     public void GetAllWithCustomNameIncorrect(int amountMdFor)
     {
@@ -48,8 +48,8 @@ public class EntityListGetAll(TestDataGenerator generator)
     }
 
     [Theory]
-    [InlineData(1)]
     [InlineData(0)]
+    [InlineData(1)]
     [InlineData(2)]
     public void GetAllWithClassNameIncorrect(int amountMdFor)
     {
@@ -61,8 +61,8 @@ public class EntityListGetAll(TestDataGenerator generator)
     }
 
     [Theory]
-    [InlineData(1)]
     [InlineData(0)]
+    [InlineData(1)]
     [InlineData(2)]
     public void GetAllWithClassNameIncorrectButName(int amountMdFor)
     {
@@ -74,8 +74,8 @@ public class EntityListGetAll(TestDataGenerator generator)
     }
 
     [Theory]
-    [InlineData(1)]
     [InlineData(0)]
+    [InlineData(1)]
     [InlineData(2)]
     public void GetAllWithClassNameIncorrectButAttribute(int amountMdFor)
     {

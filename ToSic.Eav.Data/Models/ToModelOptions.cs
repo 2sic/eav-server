@@ -4,30 +4,24 @@
 public record ToModelOptions
 {
     /// <summary>
-    /// allow conversion even if the Content-Type of the entity doesn't match the type specified in the target model type
-    /// </summary>
-    public ModelTypeCheck TypeNameCheck { get; init; } = ModelTypeCheck.Strict;
-
-
-    /// <summary>
     /// The name of the type to match.
     /// Or of the entity type to filter by.
     /// This value is used to select entities of a specific type.
     /// </summary>
     /// <remarks>
     /// Leave `null` for default to just use the type name specified by the model.
+    /// Set to <see cref="TypeNameAny"/> (`*`) to allow any type name, effectively disabling the type-name checks.
     /// </remarks>
-    public string? TypeName { get; init; }
-    
-    
-    public NullHandling NullHandling { get; init; } = NullHandling.Default;
-    
-    public enum ModelTypeCheck
+    public string? TypeName
     {
-        Skip,
-        Strict,
+        get;
+        init;
     }
+    
+    public const string TypeNameAny = "*";
 
+
+    public NullHandling NullHandling { get; init; } = NullHandling.Default;
 
     //internal static NullConversionHandling DataNullPreserveOrSet(ToModelOptions? options, NullConversionHandling preferred)
     //    => options is null or { NullConversion: NullConversionHandling.Default }

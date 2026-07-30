@@ -29,17 +29,18 @@ public static class ToModelIntern
         where TModel : class, IModelFromEntity
     {
 
-        // Note: No early null-check, as each model can decide if it's valid or not
-        // and the caller could always do a ?.As<TModel>() anyway.
-        if (entity == null)
-            return FromNull<TModel>(trueType, options);
-
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
         trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
 
+        // Note: No early null-check, as each model can decide if it's valid or not
+        // and the caller could always do a ?.As<TModel>() anyway.
+        if (entity == null)
+            return FromNull<TModel>(trueType, nullHandling: options.NullHandling);
+
         // If it is not null, do check if the cast uses the correct type
-        DataModelAnalyzer.IsTypeNameAllowedOrThrow(trueType, entity, entity.EntityId, options.TypeNameCheck == ToModelOptions.ModelTypeCheck.Skip);
+        if (options.TypeName != ToModelOptions.TypeNameAny)
+            DataModelAnalyzer.IsTypeNameAllowedOrThrow(trueType, entity, entity.EntityId);
 
         // Create the model
         var wrapper = TypeFactory.CreateInstance(trueType) as TModel
@@ -69,15 +70,12 @@ public static class ToModelIntern
         );
     }
 
-    internal static TModel? FromNull<TModel>(Type? trueType, ToModelOptions options)
+    internal static TModel? FromNull<TModel>(Type trueType, NullHandling nullHandling)
         where TModel : class
     {
-        // Figure out the true type to create, based on Attribute
-        // This is important, in case an interface was passed in.
-        trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
-
-        // TODO: MAYBE IMPROVE tests / exceptions if not matching the type
-        return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)?.SetupWithDataNullChecks((IEntity?)null, options.NullHandling) as TModel;
+        return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)
+            ?.SetupWithDataNullChecks((IEntity?)null, nullHandling)
+            as TModel;
 
     }
 

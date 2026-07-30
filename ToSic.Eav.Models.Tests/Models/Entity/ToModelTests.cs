@@ -14,7 +14,7 @@ public class ToModel(TestDataGenerator generator) : ToModelTestsShared
         => generator.CreateMetadataForDecorator().ToModelTac<TModel>()!;
     
     protected override TModel GetModelSkipTypeCheck<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: new() { TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip })!;
+        => generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: new() { TypeName = ToModelOptions.TypeNameAny })!;
 }
 
 /// <summary>
@@ -27,7 +27,7 @@ public class ToModelInternal(TestDataGenerator generator) : ToModelTestsShared
         => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(new())!;
     
     protected override TModel GetModelSkipTypeCheck<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(new() { TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip })!;
+        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(new() { TypeName = ToModelOptions.TypeNameAny })!;
 }
 
 

@@ -53,11 +53,12 @@ public static partial class ToModelExtensions
             ? [options.TypeName]
             : DataModelAnalyzer.GetValidTypeNames(trueType);
 
+        // We'll pre-fetch the exact type to use and do name checks, so any use later on should not do it again
         options = (options ?? new()) with
         {
-            TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip,
+            TypeName = ToModelOptions.TypeNameAny,
         };
-
+        
         foreach (var name in nameList)
         {
             // ReSharper disable once PossibleMultipleEnumeration - should not do ToList _before_ using this, because it could lose optimizations of the FastLookup etc.
@@ -69,8 +70,7 @@ public static partial class ToModelExtensions
                 continue;
 
             var result = found
-                .Select(raw => raw.ToModelInternal<TModel>(options: options,
-                    trueType: trueType/*, nullHandling: nullHandling*/)!);
+                .Select(raw => raw.ToModelInternal<TModel>(options: options, trueType: trueType)!);
 
             return result.ToList();
         }

@@ -32,9 +32,9 @@ internal class AppSpecs(AppState appState): IAppSpecs
     public IAppConfiguration Configuration => appState.SettingsInApp.AppConfiguration
         .ToModel<AppConfiguration>(options: new()
         {
-            TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip,
+            TypeName = ToModelOptions.TypeNameAny,
             NullHandling = NullHandling.ReturnModel,
-        } /*nullIfNull: false,*//* nullHandling: ModelNullHandling.PreferModel*/)!;
+        })!;
 
     public IMetadata Metadata => appState.Metadata;
 

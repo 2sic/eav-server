@@ -15,7 +15,7 @@ public static partial class ToModelExtensions
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list)
         where TModel : class, IModelFromEntity, new()
-        => list.FirstModel<TModel>(options: new());
+        => list.FirstModel<TModel>(options: default);
 
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
@@ -33,14 +33,10 @@ public static partial class ToModelExtensions
     )
         where TModel : class, IModelFromEntity
     {
-        var stableOptions = (options ?? new()) with
-        {
-            TypeNameCheck = options?.TypeNameCheck ?? ToModelOptions.ModelTypeCheck.Skip,
-        };
+        var stableOptions = options ?? new();
         
-
         if (list == null)
-            return ToModelIntern.FromNull<TModel>(trueType: null, stableOptions);
+            return ToModelIntern.FromNull<TModel>(trueType: ModelAnalyseUse.GetTargetType<TModel>(), nullHandling: stableOptions.NullHandling);
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
@@ -50,12 +46,17 @@ public static partial class ToModelExtensions
             ? [stableOptions.TypeName]
             : DataModelAnalyzer.GetValidTypeNames(trueType);
 
+        // For further processing, make sure that it won't re-check the type name unless explicitly specified
+        stableOptions = stableOptions with
+        {
+            TypeName = options?.TypeName ?? ToModelOptions.TypeNameAny,
+        };
+        
         var firstMatch = nameList.Select(list.First).OfType<IEntity>().FirstOrDefault();
         return firstMatch != null
-            ? firstMatch.ToModelInternal<TModel>(options: stableOptions,
-                trueType: trueType/*, nullHandling: nullHandling*/)
+            ? firstMatch.ToModelInternal<TModel>(options: stableOptions, trueType: trueType)
             // Nothing found
-            : ToModelIntern.FromNull<TModel>(trueType, stableOptions/*, nullHandling*/);
+            : ToModelIntern.FromNull<TModel>(trueType, nullHandling: stableOptions.NullHandling);
     }
 
     #endregion
