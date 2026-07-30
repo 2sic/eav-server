@@ -48,6 +48,7 @@ public enum NullHandling
 
     /// <summary>
     /// If data is null, just return null.
+    /// No conversion will be attempted, and no exception will be thrown.
     /// This is the default behavior.
     /// </summary>
     ReturnNull = 1 << 1,
@@ -69,7 +70,9 @@ public enum NullHandling
     Throw = 1 << 3,
 
     /// <summary>
-    /// If data is null, try to convert. If the model does not accept null, it will return null.
+    /// If data is null, try to convert.
+    /// If the model does not accept null, it will return null.
+    /// If the model setup operation throws an exception, it will be raised, as it shows bad model design or a very unusual situation.
     /// </summary>
     TryOrNull = 1 << 4,
 

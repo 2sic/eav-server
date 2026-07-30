@@ -1,6 +1,4 @@
-﻿using static ToSic.Eav.Models.ToModelOptions;
-
-namespace ToSic.Eav.Models;
+﻿namespace ToSic.Eav.Models;
 
 // Must keep private for now, as it somehow ends up on every object in the docs
 [PrivateApi]
@@ -52,5 +50,33 @@ public static class ModelSetupExtensions
                 }
             }
         };
+
+        // 2026-07-30 2dm - experimental
+        // Don't want to use this though, because Models should actually never do much in the setup
+        // so this is not an expected / supported scenario.
+        //TModel? TrySetupAndHandleExceptions()
+        //{
+        //    try
+        //    {
+        //        return model.SetupModel(data) switch
+        //        {
+        //            true => model,
+        //            false => nullHandling switch
+        //            {
+        //                NullHandling.ReturnModel => model,
+        //                NullHandling.TryOrNull => default,
+        //                NullHandling.TryOrThrow => throw new InvalidCastException("data is null"),
+        //                _ => default
+        //            }
+        //        };
+        //    }
+        //    catch
+        //    {
+        //        if (nullHandling == NullHandling.TryOrNull)
+        //            return default;
+
+        //        throw;
+        //    }
+        //}
     }
 }
