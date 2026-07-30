@@ -18,7 +18,7 @@ public static class IRawEntitySourceExtensions
                 .GetConverter()
                 .Convert(source, options),
             IRawEntity rawEntity => rawEntity,
-            _ => throw new InvalidOperationException(
+            _ => throw new InvalidCastException(
                 $"Cannot convert to raw entity. " +
                 $"The source must implement {nameof(IRawEntity)} or {nameof(IRawEntityConvertible)}"
             )
