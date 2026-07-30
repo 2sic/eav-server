@@ -27,6 +27,10 @@ public record ToModelOptions
     //    => options is null or { NullConversion: NullConversionHandling.Default }
     //        ? preferred
     //        : options.NullConversion;
+
+    [PrivateApi]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    public static ToModelOptions DisableTypeNameCheck = new() { TypeName = TypeNameAny };
 }
 
 public enum NullHandling

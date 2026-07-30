@@ -3,12 +3,19 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Models.TestData;
 
+/// <summary>
+/// The interface - which when used in ToModel will automatically use the MockModelMetadataForDecorator.
+/// </summary>
 internal interface IMockModelMetadataForDecorator : IModelFromEntity<MockModelMetadataForDecorator>, IModelSetup<IEntity>;
 
 /// <summary>
 /// Test Sample Model.
 /// Structured like the MetadataForDecorator.
 /// </summary>
+/// <remarks>
+/// This is the "main" type which will also be used to define the ContentType.
+/// But just using the automatic definition, without attributes.
+/// </remarks>
 internal record MockModelMetadataForDecorator: IMockModelMetadataForDecorator, IModelSetup<IEntity>, ICanBeEntity
 {
     bool IModelSetup<IEntity>.SetupModel(IEntity? source)
