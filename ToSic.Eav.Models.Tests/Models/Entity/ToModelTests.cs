@@ -5,47 +5,23 @@ using ToSic.Eav.Models.TestData;
 namespace ToSic.Eav.Models.Entity;
 
 /// <summary>
-/// Test the public ToModel()
+/// Same Tests - but for the internal ToModelInternal()
 /// </summary>
 /// <param name="generator"></param>
-public class ToModel(TestDataGenerator generator) : ToModelTestsShared
-{
-    protected override TModel GetModelNoParams<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelTac<TModel>()!;
-    
-    protected override TModel GetModelSkipTypeCheck<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: ToModelOptions.DisableTypeNameCheck)!;
-}
+public class ToModel(TestDataGenerator generator)
+    : ToModelTests(generator, useInternal: false);
 
 /// <summary>
-/// Test the internal ToModelInternal()
+/// Override for the ToModelInternal() test
 /// </summary>
-/// <param name="generator"></param>
-public class ToModelInternal(TestDataGenerator generator) : ToModelTestsShared
-{
-    protected override TModel GetModelNoParams<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(new())!;
-    
-    protected override TModel GetModelSkipTypeCheck<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(ToModelOptions.DisableTypeNameCheck)!;
-}
-
+public class ToModelInternal(TestDataGenerator generator)
+    : ToModelTests(generator, useInternal: true);
 
 /// <summary>
 /// Shared tests for ToModel and ToModelInternal
 /// </summary>
-public abstract class ToModelTestsShared
+public abstract class ToModelTests(TestDataGenerator generator, bool useInternal) : ToModelTestsBase(generator, useInternal)
 {
-    #region Test Setup Helpers to create models either using the internal ToModelInternal or the public ToModel
-
-    protected abstract TModel? GetModelNoParams<TModel>()
-        where TModel : class, IModelFromEntity;
-
-    protected abstract TModel? GetModelSkipTypeCheck<TModel>()
-        where TModel : class, IModelFromEntity;
-
-    #endregion
-
 
     #region Basic Direct Conversion (with Model Object, not Interface)
 
@@ -82,26 +58,13 @@ public abstract class ToModelTestsShared
         IsType<MockModelMetadataForDecorator>(model);
     }
 
-    #endregion
-
-
-    #region Model With Constructor - must throw
-
-    private interface IWithConstructor : IModelFromEntity<WithConstructor>;
-    
-    // ReSharper disable once ClassNeverInstantiated.Local
-    // ReSharper disable once NotAccessedPositionalProperty.Local
-    private record WithConstructor(string Something) : IModelFromEntity;
-
     [Fact]
-    public void WithConstructorFromModel_Throws()
-        => Throws<InvalidCastException>(GetModelSkipTypeCheck<WithConstructor>);
-
-    [Fact]
-    public void WithConstructorFromInterface_Throws()
-        => Throws<InvalidCastException>(GetModelSkipTypeCheck<IWithConstructor>);
+    public void FromInterface_PropertyTargetTypeMatches()
+    {
+        var model = GetModelNoParams<IMockModelMetadataForDecorator>()!;
+        Equal((int)TargetTypes.Entity, model.TargetType);
+    }
 
     #endregion
-
     
 }

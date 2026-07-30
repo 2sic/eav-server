@@ -4,48 +4,26 @@ using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models.Entity;
 
-/// <summary>
-/// Test the public ToModel()
-/// </summary>
-/// <param name="generator"></param>
-public class ToModelNameVerificationTests(TestDataGenerator generator) : ToModelNameVerificationTestsShared
-{
-    protected override TModel GetModelNoParams<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelTac<TModel>()!;
-    
-    protected override TModel GetModelSkipTypeCheck<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: ToModelOptions.DisableTypeNameCheck)!;
-}
 
 /// <summary>
 /// Test the internal ToModelInternal()
 /// </summary>
 /// <param name="generator"></param>
-public class ToModelNameVerificationInternal(TestDataGenerator generator) : ToModelNameVerificationTestsShared
-{
-    protected override TModel GetModelNoParams<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(new())!;
-    
-    protected override TModel GetModelSkipTypeCheck<TModel>()
-        => generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(ToModelOptions.DisableTypeNameCheck)!;
-}
+public class ToModelNameVerification(TestDataGenerator generator) 
+    : ToModelNameVerificationTests(generator, useInternal: false);
 
+/// <summary>
+/// Test the internal ToModelInternal()
+/// </summary>
+/// <param name="generator"></param>
+public class ToModelNameVerificationInternal(TestDataGenerator generator)
+    : ToModelNameVerificationTests(generator, useInternal: true);
 
 /// <summary>
 /// Shared tests for ToModel and ToModelInternal
 /// </summary>
-public abstract class ToModelNameVerificationTestsShared
+public abstract class ToModelNameVerificationTests(TestDataGenerator generator, bool useInternal) : ToModelTestsBase(generator, useInternal)
 {
-    #region Test Setup Helpers to create models either using the internal ToModelInternal or the public ToModel
-
-    protected abstract TModel? GetModelNoParams<TModel>()
-        where TModel : class, IModelFromEntity;
-
-    protected abstract TModel? GetModelSkipTypeCheck<TModel>()
-        where TModel : class, IModelFromEntity;
-
-    #endregion
-
     #region Name Checks
 
 

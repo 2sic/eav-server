@@ -6,7 +6,13 @@ namespace ToSic.Eav.Models.TestData;
 /// <summary>
 /// The interface - which when used in ToModel will automatically use the MockModelMetadataForDecorator.
 /// </summary>
-internal interface IMockModelMetadataForDecorator : IModelFromEntity<MockModelMetadataForDecorator>, IModelSetup<IEntity>;
+internal interface IMockModelMetadataForDecorator : IModelFromEntity<MockModelMetadataForDecorator>, IModelSetup<IEntity>
+{
+    public int TargetType { get; }
+    public string TargetName { get; }
+    public int Amount { get; }
+    public string? DeleteWarning { get; }
+}
 
 /// <summary>
 /// Test Sample Model.
