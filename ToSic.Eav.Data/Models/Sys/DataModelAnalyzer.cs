@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Models.Sys;
+﻿using ToSic.Sys.Utils.Types;
+
+namespace ToSic.Eav.Models.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataModelAnalyzer
@@ -21,7 +23,7 @@ public class DataModelAnalyzer
                 DataModelNames.UseSpecifiedNameOrDeriveFromType(tCustom, attribute?.ContentType)
             );
 
-    private static readonly ClassAttributeLookup<IList<string>> ContentTypeNamesCache = new();
+    private static readonly TypeAttributeLookup<IList<string>> ContentTypeNamesCache = new();
 
     /// <summary>
     /// 
@@ -61,7 +63,7 @@ public class DataModelAnalyzer
             DataModelNames.UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
     }
 
-    private static readonly ClassAttributeLookup<IList<string>> StreamNames = new();
+    private static readonly TypeAttributeLookup<IList<string>> StreamNames = new();
 
     #endregion
 

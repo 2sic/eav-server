@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Models;
-
-namespace ToSic.Eav.Data.Models.Sys;
+﻿namespace ToSic.Eav.Data.Models.Sys;
 
 // ReSharper disable once InconsistentNaming
 public class ModelAnalyseUse_DetectsExpectedEntityModelTargetType
