@@ -38,7 +38,7 @@ public class BundleLoaderTest(ITestOutputHelper output, Generator<FileSystemLoad
         var export = entities.GetModel<ExportConfiguration>(new Guid("22db39d7-8a59-43be-be68-ea0f28880c10"),
             options: new()
             {
-                NullHandling = ToModelOptions.DataNullHandling.AsNull,
+                NullHandling = NullHandling.ReturnNull,
             }
             ///*nullIfNull: true,*/ nullHandling: ModelNullHandling.PreferNull
             );

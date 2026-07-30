@@ -32,7 +32,7 @@ public class ModelSetupNullTests
 
     #region Helpers
 
-    private static TModel? CreateAndSetup<TModel>(DataNullHandling nullHandling, IEntity? data = null)
+    private static TModel? CreateAndSetup<TModel>(NullHandling nullHandling, IEntity? data = null)
         where TModel : class, IModelSetup<IEntity>, new()
     {
         var x = new TModel();
@@ -46,49 +46,49 @@ public class ModelSetupNullTests
 
     [Fact]
     public void NullWithDataAsNull_Capable_IsNull() =>
-        Null(CreateAndSetup<MockModelNullCapable>(DataNullHandling.AsNull));
+        Null(CreateAndSetup<MockModelNullCapable>(NullHandling.ReturnNull));
 
     [Fact]
     public void NullWithDataAsNull_UnCapable_IsNull() =>
-        Null(CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.AsNull));
+        Null(CreateAndSetup<MockModelNullUnCapable>(NullHandling.ReturnNull));
 
     [Fact]
     public void NullWithDataAsModelTry_Capable_NotNull() => 
-        NotNull(CreateAndSetup<MockModelNullCapable>(DataNullHandling.ConvertTry));
+        NotNull(CreateAndSetup<MockModelNullCapable>(NullHandling.TryOrNull));
 
     [Fact]
     public void NullWithDataAsModelTry_UnCapable_IsNull() => 
-        Null(CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.ConvertTry));
+        Null(CreateAndSetup<MockModelNullUnCapable>(NullHandling.TryOrNull));
 
     [Fact]
     public void NullWithDataAsModelForce_Capable_NotNull() => 
-        NotNull(CreateAndSetup<MockModelNullCapable>(DataNullHandling.ConvertForce));
+        NotNull(CreateAndSetup<MockModelNullCapable>(NullHandling.ReturnModel));
 
     [Fact]
     public void NullWithDataAsModelForce_UnCapable_NotNull() => 
-        NotNull(CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.ConvertForce));
+        NotNull(CreateAndSetup<MockModelNullUnCapable>(NullHandling.ReturnModel));
 
     [Fact]
     public void NullWithDataAsThrow_Capable_Throws() =>
         Throws<InvalidCastException>(() =>
-            CreateAndSetup<MockModelNullCapable>(DataNullHandling.Throw)
+            CreateAndSetup<MockModelNullCapable>(NullHandling.Throw)
         );
 
     [Fact]
     public void NullWithDataAsThrow_UnCapable_Throws() =>
         Throws<InvalidCastException>(() =>
-            CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.Throw)
+            CreateAndSetup<MockModelNullUnCapable>(NullHandling.Throw)
         );
 
     [Fact]
     public void NullWithDataAsModelOrThrow_Capable_NotNull() =>
-        NotNull(CreateAndSetup<MockModelNullCapable>(DataNullHandling.ConvertOrThrow));
+        NotNull(CreateAndSetup<MockModelNullCapable>(NullHandling.TryOrThrow));
 
 
     [Fact]
     public void NullWithDataAsModelOrThrow_UnCapable_Throws() =>
         Throws<InvalidCastException>(() =>
-            CreateAndSetup<MockModelNullUnCapable>(DataNullHandling.ConvertOrThrow)
+            CreateAndSetup<MockModelNullUnCapable>(NullHandling.TryOrThrow)
         );
 
     #endregion
@@ -98,7 +98,7 @@ public class ModelSetupNullTests
 
     [Fact]
     public void NullToModel_DataNullTryToConvert_NotNull() =>
-        NotNull(((IEntity)null!).ToModelTac<MockModelNullCapable>(options: new() { NullHandling = DataNullHandling.ConvertTry }));
+        NotNull(((IEntity)null!).ToModelTac<MockModelNullCapable>(options: new() { NullHandling = NullHandling.TryOrNull }));
 
     [Fact]
     public void NullToModel_Null() =>
@@ -106,7 +106,7 @@ public class ModelSetupNullTests
 
     [Fact]
     public void NullToModel_DataNullAsNull_Null() =>
-        Null(((IEntity)null!).ToModelTac<MockModelNullCapable>(options: new() { NullHandling = DataNullHandling.AsNull }));
+        Null(((IEntity)null!).ToModelTac<MockModelNullCapable>(options: new() { NullHandling = NullHandling.ReturnNull }));
 
     #endregion
 

@@ -53,10 +53,9 @@ public static partial class ToModelExtensions
             ? [options.TypeName]
             : DataModelAnalyzer.GetValidTypeNames(trueType);
 
-        options = (options ?? new ToModelOptions()) with
+        options = (options ?? new()) with
         {
             TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip,
-            NullHandling = ToModelOptions.DataNullPreserveOrSet(options, ToModelOptions.DataNullHandling.AsNull)
         };
 
         foreach (var name in nameList)

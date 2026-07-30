@@ -33,7 +33,7 @@ internal class AppSpecs(AppState appState): IAppSpecs
         .ToModel<AppConfiguration>(options: new()
         {
             TypeNameCheck = ToModelOptions.ModelTypeCheck.Skip,
-            NullHandling = ToModelOptions.DataNullHandling.ConvertForce,
+            NullHandling = NullHandling.ReturnModel,
         } /*nullIfNull: false,*//* nullHandling: ModelNullHandling.PreferModel*/)!;
 
     public IMetadata Metadata => appState.Metadata;

@@ -23,28 +23,34 @@ public static class ModelSetupExtensions
     /// Helper to set up the data being wrapped, returning the wrapper for easy chaining.
     /// </summary>
     [return: NotNullIfNotNull(nameof(data))]
-    internal static TModel? SetupWithDataNullChecks<TModel, TData>(this TModel model, TData? data, DataNullHandling nullHandling)
+    internal static TModel? SetupWithDataNullChecks<TModel, TData>(this TModel model, TData? data, NullHandling nullHandling)
         where TData : class
         where TModel : IModelSetup<TData>
     {
-        if (data == null)
+        return data switch
         {
-            switch (nullHandling)
-            {
-                case DataNullHandling.Undefined or DataNullHandling.AsNull:
-                    return default;
-                case DataNullHandling.Throw:
-                    throw new InvalidCastException("data is null");
-            }
-        }
+            // data Null with throw
+            null when nullHandling == NullHandling.Throw
+                => throw new InvalidCastException("data is null"),
 
-        var ok = model.SetupModel(data);
-        return ok
-            ? model
-            : nullHandling == DataNullHandling.ConvertForce
-                ? model
-                : nullHandling == DataNullHandling.ConvertOrThrow
-                    ? throw new InvalidCastException("data is null")
-                    : default;
+            // data Null with default / AsNull
+            null when nullHandling is NullHandling.Default or NullHandling.ReturnNull
+                => default,
+
+            // data Null with other or non-null
+            // Try to set up the model, and get feedback if it seems ok.
+            // then return based on ok status and conversion options.
+            _ => model.SetupModel(data) switch
+            {
+                true => model,
+                false => nullHandling switch
+                {
+                    NullHandling.ReturnModel => model,
+                    NullHandling.TryOrNull => default,
+                    NullHandling.TryOrThrow => throw new InvalidCastException("data is null"),
+                    _ => default
+                }
+            }
+        };
     }
 }

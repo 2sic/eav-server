@@ -202,7 +202,7 @@ public class ContentExportApi(
         var systemExportConfiguration = _appCtx.AppReader.List.GetModel<ExportConfiguration>(exportConfigGuid,
             options: new()
             {
-                NullHandling = ToModelOptions.DataNullHandling.AsNull,
+                NullHandling = NullHandling.ReturnNull,
             }
             /*nullHandling: ModelNullHandling.PreferNull*/);
         return systemExportConfiguration is not null

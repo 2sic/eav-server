@@ -20,7 +20,7 @@ public record ToModelOptions
     public string? TypeName { get; init; }
     
     
-    public DataNullHandling NullHandling { get; init; } = DataNullHandling.Undefined;
+    public NullHandling NullHandling { get; init; } = NullHandling.Default;
     
     public enum ModelTypeCheck
     {
@@ -28,45 +28,53 @@ public record ToModelOptions
         Strict,
     }
 
+
+    //internal static NullConversionHandling DataNullPreserveOrSet(ToModelOptions? options, NullConversionHandling preferred)
+    //    => options is null or { NullConversion: NullConversionHandling.Default }
+    //        ? preferred
+    //        : options.NullConversion;
+}
+
+public enum NullHandling
+{
+    /// <summary>
+    /// Represents an undefined state.
+    /// Will usually behave the same as <see cref="ReturnNull"/>.
+    /// </summary>
+    /// <remarks>
+    /// In rare cases the behavior might be different, since the system can detect if it was explicitly set or not.
+    /// </remarks>
+    Default = 0,
+
+    /// <summary>
+    /// If data is null, just return null.
+    /// This is the default behavior.
+    /// </summary>
+    ReturnNull = 1 << 1,
+
+    /// <summary>
+    /// If data is null, force conversion, even if the model may not be able to handle it.
+    /// </summary>
+    /// <remarks>
+    /// This should only be used if you are sure that the model can handle null sources,
+    /// or if you want to force it to do so for testing purposes.
+    ///
+    /// Exceptions during conversion raised by the model itself will still be thrown.
+    /// </remarks>
+    ReturnModel = 1 << 2,
     
-    public enum DataNullHandling
-    {
-        /// <summary>
-        /// Represents an undefined state.
-        /// Will be treated as Default, but can be used to detect if the caller explicitly set it or not.
-        /// </summary>
-        Undefined = 0,
+    /// <summary>
+    /// If data is null, throw an exception.
+    /// </summary>
+    Throw = 1 << 3,
 
-        /// <summary>
-        /// If original data is null, return null.
-        /// This is the default behavior.
-        /// </summary>
-        AsNull = 1 << 0,
+    /// <summary>
+    /// If data is null, try to convert. If the model does not accept null, it will return null.
+    /// </summary>
+    TryOrNull = 1 << 4,
 
-        /// <summary>
-        /// If original data is null, throw an exception.
-        /// </summary>
-        Throw = 1 << 1,
-
-        /// <summary>
-        /// If original data is null, try to return a model, unless the model says otherwise.
-        /// </summary>
-        ConvertTry = 1 << 2,
-
-        /// <summary>
-        /// If original data is null, try to return a model, unless the model says otherwise - in which case throw.
-        /// </summary>
-        ConvertOrThrow = 1 << 3,
-
-        /// <summary>
-        /// If original data is null, force return a model, even if the model may not be able to handle it.
-        /// This is a very aggressive option and should only be used if you are sure that the model can handle null sources, or if you want to force it to do so for testing purposes.
-        /// </summary>
-        ConvertForce = 1 << 4,
-    }
-
-    internal static DataNullHandling DataNullPreserveOrSet(ToModelOptions? options, DataNullHandling preferred)
-        => options is null or { NullHandling: DataNullHandling.Undefined }
-            ? preferred
-            : options.NullHandling;
+    /// <summary>
+    /// If data is null, try to convert. If the model does not accept null, it will throw an exception.
+    /// </summary>
+    TryOrThrow = 1 << 5,
 }

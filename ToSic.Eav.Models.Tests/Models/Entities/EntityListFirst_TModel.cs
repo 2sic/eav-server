@@ -53,7 +53,7 @@ public partial class EntityListFirst
         NotNull(entity.Metadata.FirstModelTac<MockModelMetadataForDecorator>(options: new()
         {
             TypeName = "some other name",
-            NullHandling = ToModelOptions.DataNullHandling.ConvertForce,
+            NullHandling = NullHandling.ReturnModel,
         }));
     }
 

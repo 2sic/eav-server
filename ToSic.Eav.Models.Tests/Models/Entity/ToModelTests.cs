@@ -36,7 +36,7 @@ public class ToModelInternal(TestDataGenerator generator) : ToModelTestsShared
 /// </summary>
 public abstract class ToModelTestsShared
 {
-    #region Helpers to create using ToModelInternal or public ToModel
+    #region Test Setup Helpers to create models either using the internal ToModelInternal or the public ToModel
 
     protected abstract TModel? GetModelNoParams<TModel>()
         where TModel : class, IModelFromEntity;

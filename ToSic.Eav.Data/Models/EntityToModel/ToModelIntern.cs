@@ -54,9 +54,9 @@ public static class ToModelIntern
         var ok = (wrapper as IModelSetup<IEntity>)?.SetupModel(entity) ?? false;
         return ok
             ? wrapper
-            : options.NullHandling == ToModelOptions.DataNullHandling.ConvertForce
+            : options.NullHandling == NullHandling.ReturnModel
                 ? wrapper
-                : options.NullHandling == ToModelOptions.DataNullHandling.Throw
+                : options.NullHandling == NullHandling.Throw
                     ? throw RequiresFactoryException()
                     : default;
 

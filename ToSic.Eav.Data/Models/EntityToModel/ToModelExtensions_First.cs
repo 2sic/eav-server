@@ -36,7 +36,6 @@ public static partial class ToModelExtensions
         var stableOptions = (options ?? new()) with
         {
             TypeNameCheck = options?.TypeNameCheck ?? ToModelOptions.ModelTypeCheck.Skip,
-            NullHandling = ToModelOptions.DataNullPreserveOrSet(options, ToModelOptions.DataNullHandling.AsNull)
         };
         
 
