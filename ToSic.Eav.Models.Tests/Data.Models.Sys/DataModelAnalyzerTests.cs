@@ -1,18 +1,20 @@
-﻿using ToSic.Eav.Models;
-using ToSic.Sys.Wrappers;
+﻿using ToSic.Sys.Wrappers;
+using static ToSic.Eav.Data.Models.Sys.DataModelAnalyzerTestAccessors;
 
 namespace ToSic.Eav.Data.Models.Sys;
 
 public class DataModelAnalyzerTests
 {
-    private void AssertTypeName<T>(string name)
+    private static void AssertTypeName<T>(string name)
         where T : class, IWrapperWip =>
-        Equal(name, string.Join(",", DataModelAnalyzerTestAccessors.GetContentTypeNamesTac(typeof(T))));
+        Equal(name, string.Join(",", GetContentTypeNamesTac(typeof(T))));
 
-    private void AssertStreamNames<T>(string namesCsv)
+    private static void AssertStreamNames<T>(string namesCsv)
         where T : class, IWrapperWip =>
-        Equal(namesCsv, string.Join(",", DataModelAnalyzerTestAccessors.GetStreamNameListTac<T>()));
+        Equal(namesCsv, string.Join(",", GetStreamNameListTac<T>()));
 
+    
+    
     // ReSharper disable once ClassNeverInstantiated.Local
     // ReSharper disable once ArrangeTypeMemberModifiers
     class NotDecorated : IWrapperWip;

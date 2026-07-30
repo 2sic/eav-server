@@ -32,9 +32,7 @@ public static partial class ToModelExtensions
         // This is important, in case an interface was passed in.
         var trueType = ModelAnalyseUse.GetTargetType<TModel>();
 
-        var nameList = options?.TypeName != null
-            ? [options.TypeName]
-            : DataModelAnalyzer.GetValidTypeNames(trueType);
+        var nameList = DataModelAnalyzer.GetValidTypeNames(trueType, preset: options?.TypeName);
 
         foreach (var name in nameList)
         {

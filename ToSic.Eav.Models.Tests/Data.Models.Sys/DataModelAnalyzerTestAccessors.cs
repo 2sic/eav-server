@@ -4,14 +4,17 @@ namespace ToSic.Eav.Data.Models.Sys;
 
 internal static class DataModelAnalyzerTestAccessors
 {
-    public static List<string> GetContentTypeNamesTac(Type type) =>
+    public static IList<string> GetContentTypeNamesTac(Type type) =>
         DataModelAnalyzer.GetValidTypeNames(type);
 
-    public static List<string> GetStreamNameListTac<T>()
-        where T : class => 
+    public static IList<string> GetContentTypeNamesTac(Type type, string? preset) =>
+        DataModelAnalyzer.GetValidTypeNames(type, preset);
+
+    public static IList<string> GetStreamNameListTac<T>()
+        where T : class =>
         DataModelAnalyzer.GetStreamNameList<T>();
 
     public static Type GetTargetTypeTac<T>()
-        where T : class => 
+        where T : class =>
         ModelAnalyseUse.GetTargetType<T>();
 }

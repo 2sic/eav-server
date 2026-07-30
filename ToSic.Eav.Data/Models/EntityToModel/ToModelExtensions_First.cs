@@ -42,9 +42,7 @@ public static partial class ToModelExtensions
         // This is important, in case an interface was passed in.
         var trueType = ModelAnalyseUse.GetTargetType<TModel>();
 
-        var nameList = stableOptions.TypeName != null
-            ? [stableOptions.TypeName]
-            : DataModelAnalyzer.GetValidTypeNames(trueType);
+        var nameList = DataModelAnalyzer.GetValidTypeNames(trueType, preset: stableOptions.TypeName);
 
         // For further processing, make sure that it won't re-check the type name unless explicitly specified
         stableOptions = stableOptions with

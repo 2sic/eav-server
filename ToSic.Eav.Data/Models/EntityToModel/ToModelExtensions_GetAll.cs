@@ -49,33 +49,41 @@ public static partial class ToModelExtensions
         // This is important, in case an interface was passed in.
         var trueType = ModelAnalyseUse.GetTargetType<TModel>();
 
-        var nameList = options?.TypeName != null
-            ? [options.TypeName]
-            : DataModelAnalyzer.GetValidTypeNames(trueType);
+        var nameList = DataModelAnalyzer.GetValidTypeNames(trueType, preset: options?.TypeName);
+
+        var firstMatchingList = nameList
+            .Select(name => list.GetAll(typeName: name).ToListOpt())
+            .FirstOrDefault(found => found.Any());
+
+        if (firstMatchingList == null)
+            return [];
 
         // We'll pre-fetch the exact type to use and do name checks, so any use later on should not do it again
-        options = (options ?? new()) with
-        {
-            TypeName = ToModelOptions.TypeNameAny,
-        };
+        options = (options ?? new()) with { TypeName = ToModelOptions.TypeNameAny };
+
+        return firstMatchingList
+            .Select(raw => raw.ToModelInternal<TModel>(options: options, trueType: trueType)!)
+            .ToList();
         
-        foreach (var name in nameList)
-        {
-            // ReSharper disable once PossibleMultipleEnumeration - should not do ToList _before_ using this, because it could lose optimizations of the FastLookup etc.
-            var found = list
-                .GetAll(typeName: name)
-                .ToListOpt();
+        // 2026-07-30 2dm - old code, which certainly did short-circuit but not as functional
+        // keep for reference for a while, then remove
+        //foreach (var name in nameList)
+        //{
+        //    // ReSharper disable once PossibleMultipleEnumeration - should not do ToList _before_ using this, because it could lose optimizations of the FastLookup etc.
+        //    var found = list
+        //        .GetAll(typeName: name)
+        //        .ToListOpt();
 
-            if (!found.Any())
-                continue;
+        //    if (!found.Any())
+        //        continue;
 
-            var result = found
-                .Select(raw => raw.ToModelInternal<TModel>(options: options, trueType: trueType)!);
+        //    var result = found
+        //        .Select(raw => raw.ToModelInternal<TModel>(options: options, trueType: trueType)!);
 
-            return result.ToList();
-        }
+        //    return result.ToList();
+        //}
 
-        return [];
+        //return [];
     }
 
 

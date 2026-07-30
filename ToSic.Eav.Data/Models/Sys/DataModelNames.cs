@@ -6,22 +6,13 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataModelNames
 {
-    internal static List<string> UseSpecifiedNameOrDeriveFromType<TCustom>(string? names)
+    internal static IList<string> UseSpecifiedNameOrDeriveFromType<TCustom>(string? names)
         where TCustom : class
-    {
-        var list = names != null
-            ? names.Split(',').Select(n => n.Trim()).ToList()
-            : CreateListOfNameVariants(typeof(TCustom).Name, typeof(TCustom).IsInterface);
-        return list;
-    }
+        => UseSpecifiedNameOrDeriveFromType(typeof(TCustom), names);
 
-    internal static List<string> UseSpecifiedNameOrDeriveFromType(Type type, string? names)
-    {
-        var list = names != null
-            ? names.Split(',').Select(n => n.Trim()).ToList()
-            : CreateListOfNameVariants(type.Name, type.IsInterface);
-        return list;
-    }
+    internal static IList<string> UseSpecifiedNameOrDeriveFromType(Type type, string? names)
+        => names?.CsvToArrayPreserveEmpty().ToListOpt()
+           ?? CreateListOfNameVariants(type.Name, type.IsInterface);
 
 
     /// <summary>

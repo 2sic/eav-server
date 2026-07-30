@@ -3,6 +3,10 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataModelAnalyzer
 {
+    public static IList<string> GetValidTypeNames(Type tCustom, string? preset)
+        => preset?.CsvToArrayPreserveEmpty() as IList<string>
+           ?? GetValidTypeNames(tCustom);
+
     /// <summary>
     /// Figure out the expected ContentTypeName of a DataWrapper type.
     /// </summary>
@@ -11,25 +15,23 @@ public class DataModelAnalyzer
     /// If it is decorated with <see cref="ModelSpecsAttribute"/> then use the information it provides, otherwise
     /// use the type name.
     /// </remarks>
-    public static List<string> GetValidTypeNames(Type tCustom)
-    {
-        return ContentTypeNamesCache
+    public static IList<string> GetValidTypeNames(Type tCustom) =>
+        ContentTypeNamesCache
             .Get<ModelSpecsAttribute>(tCustom, attribute =>
                 DataModelNames.UseSpecifiedNameOrDeriveFromType(tCustom, attribute?.ContentType)
             );
-    }
 
-    private static readonly ClassAttributeLookup<List<string>> ContentTypeNamesCache = new();
+    private static readonly ClassAttributeLookup<IList<string>> ContentTypeNamesCache = new();
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="type"></param>
     /// <param name="entity"></param>
-    /// <param name="id"></param>
+    /// <param name="idForErrors"></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException">Thrown if the names don't match and skipTypeCheck is `false` (default).</exception>
-    public static bool IsTypeNameAllowedOrThrow(Type type, IEntity entity, object id)
+    public static bool IsTypeNameAllowedOrThrow(Type type, IEntity entity, object idForErrors)
     {
         // Do Type-Name check
         var typeNames = GetValidTypeNames(type);
@@ -39,7 +41,7 @@ public class DataModelAnalyzer
             return true;
 
         throw new InvalidCastException(
-            $"Item with ID {id} is a '{entity.Type.Name}'/'{entity.Type.NameId}' but not a '{string.Join(",", typeNames)}'. " +
+            $"Item with ID {idForErrors} is a '{entity.Type.Name}'/'{entity.Type.NameId}' but not a '{string.Join(",", typeNames)}'. " +
             $"This is probably a mistake, otherwise set '{nameof(ToModelOptions.TypeName)}: '*' " +
             $"or apply an attribute [{nameof(ModelSpecsAttribute)}({nameof(ModelSpecsAttribute.ContentType)} = \"{entity.Type.Name}\")] to your model class. "
         );
@@ -53,13 +55,13 @@ public class DataModelAnalyzer
     /// </summary>
     /// <typeparam name="TCustom"></typeparam>
     /// <returns></returns>
-    public static List<string> GetStreamNameList<TCustom>() where TCustom : class
+    public static IList<string> GetStreamNameList<TCustom>() where TCustom : class
     {
         return StreamNames.Get<TCustom, ModelSpecsAttribute>(attribute =>
             DataModelNames.UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
     }
 
-    private static readonly ClassAttributeLookup<List<string>> StreamNames = new();
+    private static readonly ClassAttributeLookup<IList<string>> StreamNames = new();
 
     #endregion
 
