@@ -50,8 +50,7 @@ public static partial class ToModelExtensions
 
                 // Throw if TModel inherits from INeedsFactory
                 if (wrapper is IModelFactoryRequired)
-                    throw new InvalidCastException(
-                        $"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead");
+                    throw new MissingFactoryException($"Cannot cast to '{typeof(TModel)}' because it requires a factory. Use 'SomeFactory.{methodName}<TModel>(...)' instead or the {methodName}(factory: ...) overload");
 
                 // Do Setup and check if it's ok.
                 // Wrapper will return false if the entity is null or invalid for the model.

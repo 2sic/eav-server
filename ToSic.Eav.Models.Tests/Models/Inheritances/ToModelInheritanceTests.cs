@@ -31,15 +31,15 @@ public abstract class ToModelInheritanceTests(MockDataGenerator<MockForInherit> 
 {
     #region Test cases which should all just work as expected - Tests from external Generator combining object creation and name combinations
 
-    [Theory, MethodData(nameof(TestCaseGenerator.OkTypesAndNamesIfSetupOk), typeof(TestCaseGenerator))]
+    [Theory, MethodData(nameof(TestCaseGenerator.OkTypesAndNamesBecauseSetupOk), typeof(TestCaseGenerator))]
     public void FromVarious_NotNull(TestCaseTypeAndName testCase)
         => NotNull(testCase.GeneratedObject);
 
-    [Theory, MethodData(nameof(TestCaseGenerator.OkTypesAndNamesIfSetupOk), typeof(TestCaseGenerator))]
+    [Theory, MethodData(nameof(TestCaseGenerator.OkTypesAndNamesBecauseSetupOk), typeof(TestCaseGenerator))]
     public void FromVarious_IsExpectedModelType(TestCaseTypeAndName testCase)
         => IsType(testCase.ExpectedType, testCase.GeneratedObject);
     
-    [Theory, MethodData(nameof(TestCaseGenerator.OkTypesAndNamesIfSetupOk), typeof(TestCaseGenerator))]
+    [Theory, MethodData(nameof(TestCaseGenerator.OkTypesAndNamesBecauseSetupOk), typeof(TestCaseGenerator))]
     public void FromVarious_PropertyTargetTypeMatches(TestCaseTypeAndName testCase)
         => Equal((int)TargetTypes.Entity, ((MockForInherit)testCase.GeneratedObject).TargetType);
 
@@ -49,9 +49,9 @@ public abstract class ToModelInheritanceTests(MockDataGenerator<MockForInherit> 
 
     #region Direct Conversion which are expected to fail
 
-    [Theory, MethodData(nameof(TestCaseGenerator.ThrowingTypesAndNamesIfSetupOk), typeof(TestCaseGenerator))]
+    [Theory, MethodData(nameof(TestCaseGenerator.ThrowingTypesAndNamesDespiteSetupOk), typeof(TestCaseGenerator))]
     public void FromVarious_SetupOkButBadNames_Throws(TestCaseTypeGenAndName testCase)
-        => Throws<InvalidCastException>(() => testCase.Generator());
+        => Throws<KeyNotFoundException>(() => testCase.Generator());
 
 
     #endregion
@@ -60,38 +60,13 @@ public abstract class ToModelInheritanceTests(MockDataGenerator<MockForInherit> 
     
     #region Conversion of Derived Class, Basic. No Specs, no new interfaces. Should Throw because name is incorrect
 
-    [Theory, MethodData(nameof(TestCaseGenerator.ThrowingTypesAndNamesIfSetupWrong), typeof(TestCaseGenerator))]
+    [Theory, MethodData(nameof(TestCaseGenerator.ThrowingTypesAndNamesBecauseSetupWrong), typeof(TestCaseGenerator))]
     public void FromVarious_SetupWrong_Throws(TestCaseTypeGenAndName testCase)
-        => Throws<InvalidCastException>(() => testCase.Generator());
+        => Throws<KeyNotFoundException>(() => testCase.Generator());
 
-    #endregion
-
-    
-
-    #region Conversion of Derived Class, with specs bad (incorrect name)
-    
-    [Fact]
-    public void FromModel_DerivedSpecsBad_IgnoreName_NotNull()
-        => NotNull(GetModelSkipTypeCheck<MockForInheritDerivedSpecsBad>());
-
-    #endregion
-
-    
-    #region Conversion from Interfaces which should not work
-
-    [Fact]
-    public void FromInterface_DerivedAndImplemented_NotNull_ButExtremelyUnlikely()
-        => NotNull(GetModelSkipTypeCheck<IMockForInherit_Implemented>());
-
-    
-    
-    [Fact]
-    public void FromInterface_DerivedReApplyingInterfaces_NotNull()
-        => NotNull(GetModelSkipTypeCheck<IMockForInherit_ReApplyingInterface>());
-
-    [Fact]
-    public void FromInterface_DerivedReApplyingInterfaceWithSpecsGood_NotNull()
-        => NotNull(GetModelSkipTypeCheck<IMockForInherit_ReApplyingInterfaceWithSpecsGood>());
+    [Theory, MethodData(nameof(TestCaseGenerator.OkIfDisableNameCheck), typeof(TestCaseGenerator))]
+    public void FromVarious_SetupWrong_Ignore_Works(TestCaseTypeGenAndName testCase)
+        => NotNull(testCase.Generator());
 
     #endregion
 

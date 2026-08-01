@@ -29,7 +29,7 @@ public static class ModelSetupExtensions
         {
             // data Null with throw
             null when nullHandling == NullHandling.Throw
-                => throw new InvalidCastException("data is null"),
+                => throw new ArgumentNullException(nameof(data), "data is null and null handling does not allow nulls"),
 
             // data Null with default / AsNull
             null when nullHandling is NullHandling.Default or NullHandling.ReturnNull
@@ -45,7 +45,7 @@ public static class ModelSetupExtensions
                 {
                     NullHandling.ReturnModel => model,
                     NullHandling.TryOrNull => default,
-                    NullHandling.TryOrThrow => throw new InvalidCastException("data is null"),
+                    NullHandling.TryOrThrow => throw new ArgumentNullException(nameof(data), "data is null and null handling does not allow nulls"),
                     _ => default
                 }
             }

@@ -34,10 +34,10 @@ public abstract class ToModelWithConstructorTests(MockDataGenerator generator, b
     
     [Fact]
     public void WithConstructorFromModel_Throws()
-        => Throws<InvalidCastException>(GetModelSkipTypeCheck<WithConstructor>);
+        => Throws<MissingMethodException>(GetModelSkipTypeCheck<WithConstructor>);
 
     [Fact]
     public void WithConstructorFromInterface_Throws()
-        => Throws<InvalidCastException>(GetModelSkipTypeCheck<IWithConstructor>);
+        => Throws<MissingMethodException>(GetModelSkipTypeCheck<IWithConstructor>);
 
 }

@@ -44,7 +44,7 @@ public class NullHandlingSetupTests : NullHandlingBase
     [InlineData(typeof(MockModelNullDataRejected))]
     [InlineData(typeof(MockModelNullDataThrow))]
     public void JustSetup_Throw_Always_Throws(Type type) =>
-        Throws<InvalidCastException>(() =>
+        Throws<ArgumentNullException>(() =>
             CreateAndSetupWithNull(type, NullHandling.Throw)
         );
 
@@ -100,7 +100,7 @@ public class NullHandlingSetupTests : NullHandlingBase
 
     [Fact]
     public void JustSetup_TryOrThrow_ModelReject_Throws() =>
-        Throws<InvalidCastException>(() =>
+        Throws<ArgumentNullException>(() =>
             CreateAndSetupWithNull<MockModelNullDataRejected>(NullHandling.TryOrThrow)
         );
 

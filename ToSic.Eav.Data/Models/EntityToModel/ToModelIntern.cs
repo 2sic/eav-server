@@ -64,7 +64,7 @@ public static class ToModelIntern
                     ? throw RequiresFactoryException()
                     : default;
 
-        InvalidCastException RequiresFactoryException() => new(
+        MissingFactoryException RequiresFactoryException() => new(
             $"""
              Cannot cast to '{typeof(TModel)}' because it says it requires a factory.
              This is usually because the model has more advanced features.

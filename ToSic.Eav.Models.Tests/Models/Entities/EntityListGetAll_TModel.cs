@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Models.TestData;
+﻿using ToSic.Eav.Models.Factory;
+using ToSic.Eav.Models.TestData;
 using ToSic.Eav.Models.WithFactory;
 
 namespace ToSic.Eav.Models.Entities;
@@ -90,7 +91,7 @@ public class EntityListGetAll(MockDataGenerator generator)
     [InlineData(1)]
     [InlineData(2)]
     public void GetAllRequiringFactoryMissingFails(int amountMdFor) =>
-        Throws<InvalidCastException>(() =>
+        Throws<MissingFactoryException>(() =>
         {
             var entity = generator.CreateEntityWithMetadata(amountMdFor);
             entity.Metadata.GetModels<MockModelRequiringFactoryNoDependencies>(

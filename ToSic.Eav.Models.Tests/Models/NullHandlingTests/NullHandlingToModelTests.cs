@@ -63,19 +63,19 @@ public class NullHandlingToModelTests : NullHandlingBase
 
     [Fact]
     public void ToModel_Throw_Ok_Throws() =>
-        Throws<InvalidCastException>(() =>
+        Throws<ArgumentNullException>(() =>
             NullEntityToModel<MockModelNullDataOk>(NullHandling.Throw)
         );
 
     [Fact]
     public void ToModel_Throw_Rejected_Throws() =>
-        Throws<InvalidCastException>(() =>
+        Throws<ArgumentNullException>(() =>
             NullEntityToModel<MockModelNullDataRejected>(NullHandling.Throw)
         );
 
     [Fact]
     public void ToModel_Throw_Throw_Throws() =>
-        Throws<InvalidCastException>(() =>
+        Throws<ArgumentNullException>(() =>
             NullEntityToModel<MockModelNullDataThrow>(NullHandling.Throw)
         );
 

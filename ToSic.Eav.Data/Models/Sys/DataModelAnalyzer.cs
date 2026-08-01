@@ -46,7 +46,7 @@ public class DataModelAnalyzer
         if (typeNames.Any(t => t == ToModelOptions.TypeNameAny || entity.Type.Is(t)))
             return true;
 
-        throw new InvalidCastException(
+        throw new KeyNotFoundException(
             $"Item with ID {idForErrors} is a '{entity.Type.Name}'/'{entity.Type.NameId}' but not a '{string.Join(",", typeNames)}'. " +
             $"This is probably a mistake, otherwise set '{nameof(ToModelOptions.TypeName)}: '*' " +
             $"or apply an attribute [{nameof(ModelSpecsAttribute)}({nameof(ModelSpecsAttribute.ContentType)} = \"{entity.Type.Name}\")] to your model class. "

@@ -29,11 +29,11 @@ public abstract class ToModelNameVerificationTests(MockDataGenerator generator, 
 
     [Fact]
     public void ModelWithNameMismatch_Throws()
-        => Throws<InvalidCastException>(GetModel<MockMetadataModelWrongName>);
+        => Throws<KeyNotFoundException>(GetModel<MockMetadataModelWrongName>);
 
     [Fact]
     public void ModelWithNameMismatch_HasSpecsWithNameWrong_Throws()
-        => Throws<InvalidCastException>(GetModel<MockMetadataModelWithSpecsNameWrong>);
+        => Throws<KeyNotFoundException>(GetModel<MockMetadataModelWithSpecsNameWrong>);
     
     [Fact]
     public void ModelWithNameMismatch_HasSpecsWithNameRight_Works()

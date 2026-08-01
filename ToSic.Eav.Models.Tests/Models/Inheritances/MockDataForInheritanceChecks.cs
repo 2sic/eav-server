@@ -12,9 +12,7 @@ namespace ToSic.Eav.Models.Inheritances;
 internal interface IMockForInherit : IModelFromEntity<MockForInherit>
 {
     public int TargetType { get; }
-    public string TargetName { get; }
     public int Amount { get; }
-    public string? DeleteWarning { get; }
 }
 
 /// <summary>
@@ -29,17 +27,15 @@ public record MockForInherit
         IMockForInherit,
         IMockForInherit_Implemented,
         IMockForInherit_ReApplyingInterface,
+        IMockForInherit_ReApplyingInterfaceForInterface,
         IMockForInherit_ReApplyingInterfaceWithSpecsBad,
-        IMockForInherit_ReApplyingInterfaceWithSpecsGood,
+        IMockForInherit_ReApplyingInterfaceWithSpecsExactName,
+        IMockForInherit_ReApplyingInterfaceWithSpecsAsIMock,
         IMockForInherit_ReApplyingInterfaceWithSpecsAsterisks
 {
     public int TargetType => GetThis((int)TargetTypes.None);
 
-    public string TargetName => GetThis(nameof(TargetTypes.None));
-
     public int Amount => GetThis(1);
-
-    public string? DeleteWarning => GetThis<string?>(null);
 }
 
 /// <summary>
@@ -72,18 +68,24 @@ public record MockForInheritDerivedSpecsAsterisks : MockForInherit;
 public record MockForInheritAlternative;
 
 /// <summary>
-/// this should fail as the <see cref="IMockForInherit"/> does not implement this interface
-/// </summary>
-internal interface IMockForInherit_NotImplemented : IMockForInherit;
-
-/// <summary>
 /// This should work as the <see cref="IMockForInherit"/> implements this interface
 /// </summary>
 internal interface IMockForInherit_Implemented : IMockForInherit;
 
 internal interface IMockForInherit_ReApplyingInterface : IMockForInherit, IModelFromEntity<MockForInherit>;
 
+
+
+/// <summary>
+/// this should fail as the <see cref="IMockForInherit"/> does not implement this interface
+/// </summary>
+internal interface IMockForInherit_NotImplemented : IMockForInherit;
+
+/// <summary>
+/// Implemented, but nothing in the data suggest want concrete type, so it should fail.
+/// </summary>
 internal interface IMockForInherit_ReApplyingInterfaceForInterface : IMockForInherit, IModelFromEntity<IMockForInherit>;
+
 
 /// <summary>
 /// Has incorrect name, should throw.
@@ -92,8 +94,14 @@ internal interface IMockForInherit_ReApplyingInterfaceForInterface : IMockForInh
 internal interface IMockForInherit_ReApplyingInterfaceWithSpecsBad : IMockForInherit;
 
 // This should work
+[ModelSpecs(ContentType = nameof(MockForInherit))]
+internal interface IMockForInherit_ReApplyingInterfaceWithSpecsExactName : IMockForInherit;
+
+/// <summary>
+/// This should NOT work if the names is checked.
+/// </summary>
 [ModelSpecs(ContentType = nameof(IMockForInherit))]
-internal interface IMockForInherit_ReApplyingInterfaceWithSpecsGood : IMockForInherit;
+internal interface IMockForInherit_ReApplyingInterfaceWithSpecsAsIMock: IMockForInherit;
 
 /// <summary>
 /// This should always work.

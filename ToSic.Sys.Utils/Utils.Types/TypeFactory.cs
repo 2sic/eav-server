@@ -43,7 +43,7 @@ public static class TypeFactory
 
             var constructor = t.GetConstructor(Type.EmptyTypes);
             if (constructor == null)
-                throw new InvalidCastException($"Type {t.Name} must have a public parameterless constructor.");
+                return () => throw new MissingMethodException($"Type {t.Name} must have a public parameterless constructor.");
 
             // Generate the IL equivalent of: () => new T()
             var newExp = Expression.New(t);

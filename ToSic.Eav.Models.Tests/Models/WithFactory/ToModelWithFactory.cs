@@ -23,11 +23,14 @@ public class ToModelRequiringFactory_WithDependencies(MockDataGenerator generato
 public class ToModelRequiringFactory_NoDependencies(MockDataGenerator generator, IModelFactory factory)
     : ToModelWithFactory<MockModelRequiringFactoryNoDependencies>(generator, factory)
 {
+    /// <summary>
+    /// Note: skip name checks so we get down to the factory exceptions.
+    /// </summary>
     [Fact]
     public void ToModel_NoConstructor_RequiredFactoryMissing_Throws() =>
-        Throws<InvalidCastException>(() =>
+        Throws<MissingFactoryException>(() =>
             generator.CreateMetadataForDecorator()
-                .ToModelTac<MockModelRequiringFactoryNoDependencies>()
+                .ToModelTac<MockModelRequiringFactoryNoDependencies>(options: ToModelOptions.DisableTypeNameCheck)
         );
 }
 
