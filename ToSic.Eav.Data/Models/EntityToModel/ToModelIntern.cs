@@ -39,8 +39,10 @@ public static class ToModelIntern
             return FromNull<TModel>(trueType, nullHandling: options.NullHandling);
 
         // If it is not null, do check if the cast uses the correct type
+        var priorityTypeNames = (options.TypeName ?? DataModelAnalyzer.GetExplicitTypeNames(typeof(TModel)))
+            ?.CsvToArrayWithoutEmpty();
         if (options.TypeName != ToModelOptions.TypeNameAny)
-            DataModelAnalyzer.IsTypeNameAllowedOrThrow(options.TypeName?.CsvToArrayWithoutEmpty(), trueType, entity, entity.EntityId);
+            DataModelAnalyzer.IsTypeNameAllowedOrThrow(priorityTypeNames, trueType, entity, entity.EntityId);
 
         // Create the model
         var wrapperRaw = TypeFactory.CreateInstance(trueType);

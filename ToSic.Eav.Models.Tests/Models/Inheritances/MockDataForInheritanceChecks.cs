@@ -1,10 +1,10 @@
 ﻿using ToSic.Eav.Metadata;
-using ToSic.Eav.Models.TestData;
+
 // ReSharper disable InconsistentNaming
 
 // ReSharper disable RedundantExtendsListEntry
 
-namespace ToSic.Eav.Models.Entity;
+namespace ToSic.Eav.Models.Inheritances;
 
 /// <summary>
 /// The interface - which when used in ToModel will automatically use the <see cref="MockForInherit"/>.
@@ -85,7 +85,9 @@ internal interface IMockForInherit_ReApplyingInterface : IMockForInherit, IModel
 
 internal interface IMockForInherit_ReApplyingInterfaceForInterface : IMockForInherit, IModelFromEntity<IMockForInherit>;
 
-// TODO: ADD BAD SPECS, THIS SHOULD FAIL
+/// <summary>
+/// Has incorrect name, should throw.
+/// </summary>
 [ModelSpecs(ContentType = "WRONG NAME")]
 internal interface IMockForInherit_ReApplyingInterfaceWithSpecsBad : IMockForInherit;
 
@@ -93,6 +95,8 @@ internal interface IMockForInherit_ReApplyingInterfaceWithSpecsBad : IMockForInh
 [ModelSpecs(ContentType = nameof(IMockForInherit))]
 internal interface IMockForInherit_ReApplyingInterfaceWithSpecsGood : IMockForInherit;
 
-// This should work
+/// <summary>
+/// This should always work.
+/// </summary>
 [ModelSpecs(ContentType = "*")]
 internal interface IMockForInherit_ReApplyingInterfaceWithSpecsAsterisks : IMockForInherit;

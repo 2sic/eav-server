@@ -22,9 +22,12 @@ public class DataModelAnalyzer
             .Get<ModelSpecsAttribute>(tCustom, attribute =>
                 DataModelNames.UseSpecifiedNameOrDeriveFromType(tCustom, attribute?.ContentType)
             );
-
     private static readonly TypeAttributeLookup<IList<string>> ContentTypeNamesCache = new();
 
+    public static string? GetExplicitTypeNames(Type tCustom) =>
+        ExplicitTypeNamesCache.Get<ModelSpecsAttribute>(tCustom, attribute => attribute?.ContentType);
+    private static readonly TypeAttributeLookup<string?> ExplicitTypeNamesCache = new();
+    
     /// <summary>
     /// 
     /// </summary>

@@ -5,30 +5,45 @@ namespace ToSic.Eav.Models.Entity;
 /// <summary>
 /// Shared base tests for ToModel actions - with virtual methods, so it can also be overriden for ToModelInternal()
 /// </summary>
-public abstract class ToModelTestsBase(IMockMetadataForGenerator generator, bool useInternal)
+public abstract class ToModelTestsBase(IMockMetadataForGenerator generator, bool useInternal) : IHasMockMetadataForGenerator
 {
-    #region Test Setup Helpers to create models either using the internal ToModelInternal or the public ToModel
+    public bool UseInternal => useInternal;
+    public IMockMetadataForGenerator Generator => generator;
 
-    protected TModel GetModel<TModel>(string? typeName)
-        where TModel : class, IModelFromEntity
-    {
-        var options = new ToModelOptions { TypeName = typeName };
-        return !useInternal
-            ? generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: options)!
-            : generator.CreateMetadataForDecorator().ToModelInternal<TModel>(options: options)!;
-    }
+    #region Test Setup Helpers to create models either using the internal ToModelInternal or the public ToModel
 
     protected TModel GetModel<TModel>()
         where TModel : class, IModelFromEntity
-        => !useInternal
-            ? generator.CreateMetadataForDecorator().ToModelTac<TModel>()!
-            : generator.CreateMetadataForDecorator().ToModelInternal<TModel>(new())!;
+        => !UseInternal
+            ? Generator.CreateMetadataForDecorator().ToModelTac<TModel>()!
+            : Generator.CreateMetadataForDecorator().ToModelInternal<TModel>(new())!;
 
+    
     protected TModel GetModelSkipTypeCheck<TModel>()
         where TModel : class, IModelFromEntity
-        => !useInternal
-            ? generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: ToModelOptions.DisableTypeNameCheck)!
-            : generator.CreateMetadataForDecorator().ToModelInternal<TModel>(ToModelOptions.DisableTypeNameCheck)!;
+        => !UseInternal
+            ? Generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: ToModelOptions.DisableTypeNameCheck)!
+            : Generator.CreateMetadataForDecorator().ToModelInternal<TModel>(ToModelOptions.DisableTypeNameCheck)!;
 
     #endregion
+}
+
+public interface IHasMockMetadataForGenerator
+{
+    IMockMetadataForGenerator Generator { get; }
+    bool UseInternal { get; }
+}
+
+public static class IHasMockMetadataForGeneratorExtension
+{
+    public static TModel GetModel<TModel>(this IHasMockMetadataForGenerator hasMockMetadata, string? typeName)
+        where TModel : class, IModelFromEntity
+    {
+        var options = new ToModelOptions { TypeName = typeName };
+        return !hasMockMetadata.UseInternal
+            ? hasMockMetadata.Generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: options)!
+            : hasMockMetadata.Generator.CreateMetadataForDecorator().ToModelInternal<TModel>(options: options)!;
+    }
+
+    
 }
