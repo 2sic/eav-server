@@ -40,11 +40,12 @@ public static class ToModelIntern
 
         // If it is not null, do check if the cast uses the correct type
         if (options.TypeName != ToModelOptions.TypeNameAny)
-            DataModelAnalyzer.IsTypeNameAllowedOrThrow(trueType, entity, entity.EntityId);
+            DataModelAnalyzer.IsTypeNameAllowedOrThrow(options.TypeName?.CsvToArrayWithoutEmpty(), trueType, entity, entity.EntityId);
 
         // Create the model
-        var wrapper = TypeFactory.CreateInstance(trueType) as TModel
-            ?? throw new InvalidCastException($"Cannot create a {typeof(TModel)} based of the recommended type {trueType.Name}.");
+        var wrapperRaw = TypeFactory.CreateInstance(trueType);
+        var wrapper = wrapperRaw as TModel
+            ?? throw new InvalidCastException($"Cannot convert {trueType.Namespace}.{trueType.Name} to {typeof(TModel)} - seems to be incompatible.");
 
         // Throw if TModel inherits from INeedsFactory
         if (wrapper is IModelFactoryRequired)

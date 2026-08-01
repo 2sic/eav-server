@@ -11,7 +11,7 @@ public static class BuildTestAccessors
         int appId,
         IContentType contentType,
         NoParamOrder npo = default,
-        Dictionary<string, object>? values = default,
+        Dictionary<string, object?>? values = default,
         Dictionary<string, IAttribute>? typedValues = default,
         int entityId = default,
         int repositoryId = EavConstants.NullId,

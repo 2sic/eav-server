@@ -8,7 +8,8 @@ public class Startup : StartupTestsEavDataBuild
     public override void ConfigureServices(IServiceCollection services)
     {
         services
-            .AddTransient<MockDataGenerator>();
+            .AddTransient<MockDataGenerator>()
+            .AddTransient(typeof(MockDataGenerator<>));
         base.ConfigureServices(services);
     }
 }

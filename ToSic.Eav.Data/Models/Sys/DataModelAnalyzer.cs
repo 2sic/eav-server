@@ -28,15 +28,16 @@ public class DataModelAnalyzer
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="typeNames"></param>
     /// <param name="type"></param>
     /// <param name="entity"></param>
     /// <param name="idForErrors"></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException">Thrown if the names don't match and skipTypeCheck is `false` (default).</exception>
-    public static bool IsTypeNameAllowedOrThrow(Type type, IEntity entity, object idForErrors)
+    public static bool IsTypeNameAllowedOrThrow(IList<string>? typeNames, Type type, IEntity entity, object idForErrors)
     {
         // Do Type-Name check
-        var typeNames = GetValidTypeNames(type);
+        typeNames ??= GetValidTypeNames(type);
 
         // Check all type names if they are `*` or match the data ContentType
         if (typeNames.Any(t => t == ToModelOptions.TypeNameAny || entity.Type.Is(t)))

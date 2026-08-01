@@ -29,19 +29,19 @@ public abstract class ToModelNameVerificationTests(MockDataGenerator generator, 
 
     [Fact]
     public void ModelWithNameMismatch_Throws()
-        => Throws<InvalidCastException>(GetModelNoParams<MockMetadataModelWrongName>);
+        => Throws<InvalidCastException>(GetModel<MockMetadataModelWrongName>);
 
     [Fact]
     public void ModelWithNameMismatch_HasSpecsWithNameWrong_Throws()
-        => Throws<InvalidCastException>(GetModelNoParams<MockMetadataModelWithSpecsNameWrong>);
+        => Throws<InvalidCastException>(GetModel<MockMetadataModelWithSpecsNameWrong>);
     
     [Fact]
     public void ModelWithNameMismatch_HasSpecsWithNameRight_Works()
-        => NotNull(GetModelNoParams<MockMetadataModelWithSpecsNameRight>());
+        => NotNull(GetModel<MockMetadataModelWithSpecsNameRight>());
 
     [Fact]
     public void ModelWithNameMismatch_HasSpecsWithNameAsterisks_Works()
-        => NotNull(GetModelNoParams<MockMetadataModelWithSpecsNameAsterisks>());
+        => NotNull(GetModel<MockMetadataModelWithSpecsNameAsterisks>());
 
     [Fact]
     public void ModelWithNameMismatch_SkipTypeCheck_Works()

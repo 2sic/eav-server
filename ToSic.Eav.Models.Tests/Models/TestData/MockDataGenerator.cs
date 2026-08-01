@@ -4,7 +4,18 @@ using ToSic.Eav.Data.TestData;
 
 namespace ToSic.Eav.Models.TestData;
 
-public class MockDataGenerator(DataAssembler dataAssembler, ContentTypesFromCodeManager ctDefFactory, ContentTypeAssemblyKit ctAssemblyKit)
+public class MockDataGenerator(
+    DataAssembler dataAssembler,
+    ContentTypesFromCodeManager ctDefFactory,
+    ContentTypeAssemblyKit ctAssemblyKit)
+    : MockDataGenerator<MockMetadataModel>(dataAssembler, ctDefFactory, ctAssemblyKit);
+
+public interface IMockMetadataForGenerator
+{
+    IEntity CreateMetadataForDecorator();
+}
+
+public class MockDataGenerator<TMockMetadataModel>(DataAssembler dataAssembler, ContentTypesFromCodeManager ctDefFactory, ContentTypeAssemblyKit ctAssemblyKit) : IMockMetadataForGenerator
 {
     /// <summary>
     /// Create an entity having metadata - some of the expected main type, others to optionally mix in (for type testing)
@@ -35,17 +46,22 @@ public class MockDataGenerator(DataAssembler dataAssembler, ContentTypesFromCode
         return newDecorators;
     }
 
-    #region Generate One
+    #region Generate The Real Data which we actually want to use/analyze
 
     public IEntity CreateMetadataForDecorator() =>
         CreateMetadataForDecorator(1);
     
-    public IEntity CreateMetadataForDecorator(int amount) =>
+    internal IEntity CreateMetadataForDecorator(int amount) =>
         dataAssembler.CreateEntityTac(
             0,
-            ctDefFactory.CreateTac<MockMetadataModel>(),
-            values: new MockMetadataRaw(amount).Values.ToDictionary(x => x.Key, x => x.Value)!
+            ctDefFactory.CreateTac<TMockMetadataModel>(),
+            values: new MockMetadataRaw(amount).Values.ToDictionary(x => x.Key, x => x.Value)
         );
+
+    #endregion
+
+
+    #region Dummy data for mixing in, to verify it will be filtered out correctly
 
     private IEntity CreateEntityForNoSpecs() =>
         dataAssembler.CreateEntityTac(
@@ -62,11 +78,11 @@ public class MockDataGenerator(DataAssembler dataAssembler, ContentTypesFromCode
 
         public int Age => 30;
 
-        public DateTime BirthDate => new DateTime(1990, 1, 1);
+        public DateTime BirthDate => new(1990, 1, 1);
 
         public bool IsAlive => true;
 
-        public Dictionary<string, object> GetValues() => new()
+        public Dictionary<string, object?> GetValues() => new()
         {
             { nameof(Id), Id },
             { nameof(Name), Name },
@@ -75,6 +91,7 @@ public class MockDataGenerator(DataAssembler dataAssembler, ContentTypesFromCode
             { nameof(IsAlive), IsAlive }
         };
     }
-
+    
     #endregion
+
 }

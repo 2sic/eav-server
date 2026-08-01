@@ -8,7 +8,7 @@ namespace ToSic.Sys.Utils.Types;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public static class TypeInterfaces
+public static partial class TypeInterfaces
 {
     /// <summary>
     /// A thread-safe cache to store our compiled delegates.
@@ -20,6 +20,10 @@ public static class TypeInterfaces
     /// Get interfaces directly attached to a type, excluding those inherited from base classes or other interfaces.
     /// </summary>
     /// <param name="type"></param>
+    /// <remarks>
+    /// WARNING: It's easy to get this wrong, because re-implementing an interface will usually not work as expected,
+    /// because interfaces are flattened at compile time. So using this method will never catch re-implemented interfaces.
+    /// </remarks>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -55,5 +59,13 @@ public static class TypeInterfaces
 
         return declaredInterfaces.Except(transitiveInterfaces).ToListOpt();
     }
-    
+
+    public static Type? GetGenericSubType(this Type type, Type genericType, int argumentIndex = 0)
+    {
+        var genericInterfaceType = type.GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericTypeOf(genericType));
+
+        return genericInterfaceType?.GetGenericArguments()[argumentIndex];
+    }
+
 }

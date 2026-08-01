@@ -16,7 +16,7 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IModelFromEntity: IModelFromData;
 
-public interface IModelFromEntity<out TModelFromEntity>
+public interface IModelFromEntity<out TConcreteModel>
     : IModelFromEntity
-    where TModelFromEntity : IModelFromEntity
+    where TConcreteModel : IModelFromEntity
 ;

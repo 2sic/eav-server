@@ -11,7 +11,10 @@ namespace ToSic.Eav.Models.TestData;
 /// This is the "main" type which will also be used to define the ContentType.
 /// But just using the automatic definition, without attributes.
 /// </remarks>
-internal record MockMetadataModel: IMockMetadataModel, IModelSetup<IEntity>, ICanBeEntity
+public record MockMetadataModel
+    : IMockMetadataModel,
+        IModelSetup<IEntity>,
+        ICanBeEntity
 {
     bool IModelSetup<IEntity>.SetupModel(IEntity? source)
     {
