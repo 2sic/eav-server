@@ -35,12 +35,12 @@ public static partial class ToModelExtensions
     {
         var stableOptions = options ?? new();
         
-        if (list == null)
-            return ToModelIntern.FromNull<TModel>(trueType: ModelAnalyseUse.GetTargetType<TModel>(), nullHandling: stableOptions.NullHandling);
-
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
         var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+
+        if (list == null)
+            return ToModelIntern.FromNull<TModel>(trueType: trueType, nullHandling: stableOptions.NullHandling);
 
         var nameList = DataModelAnalyzer.GetValidTypeNames(trueType, preset: stableOptions.TypeName);
 
@@ -50,7 +50,11 @@ public static partial class ToModelExtensions
             TypeName = options?.TypeName ?? ToModelOptions.TypeNameAny,
         };
         
-        var firstMatch = nameList.Select(list.First).OfType<IEntity>().FirstOrDefault();
+        var firstMatch = nameList
+            .Select(list.First)
+            .OfType<IEntity>()
+            .FirstOrDefault();
+        
         return firstMatch != null
             ? firstMatch.ToModelInternal<TModel>(options: stableOptions, trueType: trueType)
             // Nothing found

@@ -28,21 +28,23 @@ public static class ToModelIntern
     )
         where TModel : class, IModelFromEntity
     {
-
-        // Figure out the true type to create, based on Attribute
+        // 1. Figure out the true type to create, based on implemented interfaces etc.
         // This is important, in case an interface was passed in.
+        // If the caller already knows the true type, it can be passed in to avoid the reflection overhead.
         trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
 
-        // Note: No early null-check, as each model can decide if it's valid or not
-        // and the caller could always do a ?.As<TModel>() anyway.
+        // 2. If Null, exit early
         if (entity == null)
             return FromNull<TModel>(trueType, nullHandling: options.NullHandling);
 
-        // If it is not null, do check if the cast uses the correct type
-        var priorityTypeNames = (options.TypeName ?? DataModelAnalyzer.GetExplicitTypeNames(typeof(TModel)))
-            ?.CsvToArrayWithoutEmpty();
-        if (options.TypeName != ToModelOptions.TypeNameAny)
-            DataModelAnalyzer.IsTypeNameAllowedOrThrow(priorityTypeNames, trueType, entity, entity.EntityId);
+        // 3. Check if the cast uses the correct type
+        // Priority is
+        // 1. Specified in options (could also be `*` to allow any type)
+        // 2. Derived names of the interface name (e.g. `IContent` -> `Content`, `ContentBlock`, etc.)
+        // 3. 
+        var checkName = DataModelAnalyzer.IsTypeNameAllowed(options.TypeName, typeof(TModel), trueType, entity.Type);
+        if (!checkName.Throw)
+            throw DataModelAnalyzer.KeyNotFoundMessage(checkName.Names ?? [], entity.Type, entity.EntityId);
 
         // Create the model
         var wrapperRaw = TypeFactory.CreateInstance(trueType);

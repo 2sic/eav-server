@@ -20,39 +20,96 @@ public class DataModelAnalyzer
     public static IList<string> GetValidTypeNames(Type tCustom) =>
         ContentTypeNamesCache
             .Get<ModelSpecsAttribute>(tCustom, attribute =>
-                DataModelNames.UseSpecifiedNameOrDeriveFromType(tCustom, attribute?.ContentType)
+                DataModelNameVariants.UseSpecifiedNameOrDeriveFromType(tCustom, attribute?.ContentType)
             );
     private static readonly TypeAttributeLookup<IList<string>> ContentTypeNamesCache = new();
 
-    public static string? GetExplicitTypeNames(Type tCustom) =>
+    private static string? GetExplicitTypeNames(Type tCustom) =>
         ExplicitTypeNamesCache.Get<ModelSpecsAttribute>(tCustom, attribute => attribute?.ContentType);
-    private static readonly TypeAttributeLookup<string?> ExplicitTypeNamesCache = new();
     
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="typeNames"></param>
-    /// <param name="type"></param>
-    /// <param name="entity"></param>
-    /// <param name="idForErrors"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidCastException">Thrown if the names don't match and skipTypeCheck is `false` (default).</exception>
-    public static bool IsTypeNameAllowedOrThrow(IList<string>? typeNames, Type type, IEntity entity, object idForErrors)
+    private static readonly TypeAttributeLookup<string?> ExplicitTypeNamesCache = new();
+
+    internal static (bool Skip, string CacheKey, IList<string>? Names) FindPriorityTypeNames(string? optionsTypeName, Type entryType, Type concreteType, IContentType contentType)
     {
-        // Do Type-Name check
-        typeNames ??= GetValidTypeNames(type);
+        if (optionsTypeName == ToModelOptions.TypeNameAny)
+            return (true, "any", null);
 
-        // Check all type names if they are `*` or match the data ContentType
-        if (typeNames.Any(t => t == ToModelOptions.TypeNameAny || entity.Type.Is(t)))
-            return true;
+        if (optionsTypeName != null)
+            return (false, "option:" + optionsTypeName, optionsTypeName.CsvToArrayWithoutEmpty());
 
-        throw new KeyNotFoundException(
-            $"Item with ID {idForErrors} is a '{entity.Type.Name}'/'{entity.Type.NameId}' but not a '{string.Join(",", typeNames)}'. " +
-            $"This is probably a mistake, otherwise set '{nameof(ToModelOptions.TypeName)}: '*' " +
-            $"or apply an attribute [{nameof(ModelSpecsAttribute)}({nameof(ModelSpecsAttribute.ContentType)} = \"{entity.Type.Name}\")] to your model class. "
-        );
+        var explicitOnEntryType = GetExplicitTypeNames(entryType);
 
+        if (explicitOnEntryType != null)
+            return (false, "entry:" + explicitOnEntryType, explicitOnEntryType.CsvToArrayWithoutEmpty());
+
+        var typesDiffer = entryType != concreteType;
+        var explicitOnConcrete = typesDiffer ? GetExplicitTypeNames(concreteType) : null;
+
+        if (explicitOnConcrete != null)
+            return (false, "concrete:" + explicitOnConcrete, explicitOnConcrete.CsvToArrayWithoutEmpty());
+
+        var namesDerived = typesDiffer
+            ? GetValidTypeNames(entryType)
+                .Concat(GetValidTypeNames(concreteType))
+                .ToArray()
+            : GetValidTypeNames(entryType);
+
+        return (false, "derived:" + entryType.FullName, namesDerived);
     }
+
+    public static (bool Throw, IList<string>? Names) IsTypeNameAllowed(string? optionsTypeName, Type entryType, Type concreteType, IContentType contentType)
+    {
+        if (optionsTypeName == ToModelOptions.TypeNameAny)
+            return (false, null);
+
+        if (optionsTypeName != null)
+            return CheckAndReturn( "option:" + optionsTypeName, optionsTypeName.CsvToArrayWithoutEmpty());
+
+        var explicitOnEntryType = GetExplicitTypeNames(entryType);
+        
+        if (explicitOnEntryType != null)
+            return CheckAndReturn("entry:" + explicitOnEntryType, explicitOnEntryType.CsvToArrayWithoutEmpty());
+
+        var typesDiffer = entryType != concreteType;
+        var explicitOnConcrete = typesDiffer ? GetExplicitTypeNames(concreteType) : null;
+        
+        if (explicitOnConcrete != null)
+            return CheckAndReturn("concrete:" + explicitOnConcrete, explicitOnConcrete.CsvToArrayWithoutEmpty());
+
+        var namesDerived = typesDiffer
+            ? GetValidTypeNames(entryType)
+                .Concat(GetValidTypeNames(concreteType))
+                .ToArray()
+            : GetValidTypeNames(entryType);
+        
+        return CheckAndReturn("derived:" + entryType.FullName, namesDerived);
+
+
+        (bool Throw, IList<string>? Names) CheckAndReturn(string source, IList<string> typeNames)
+        {
+            // CacheKey - note that we'll only cache it if it's ok, never if it fails, to avoid RAM consumption for invalid types
+            // We only need the initial type, because even if it's an interface, it will always result in the same concrete type
+            var cacheKey = source + "|" + contentType.NameId;
+            
+            if (TypeNameAllowedCache.Contains(cacheKey))
+                return (false, null);
+
+            if (!typeNames.Any(t => t == ToModelOptions.TypeNameAny || contentType.Is(t)))
+                return (true, typeNames);
+            
+            TypeNameAllowedCache.Add(cacheKey);
+            return (false, typeNames);
+
+        }
+    }
+    private static readonly HashSet<string> TypeNameAllowedCache = [];
+
+    public static KeyNotFoundException KeyNotFoundMessage(IList<string>? typeNames, IContentType contentType, object idForErrors)
+        => new(
+            $"Item with ID {idForErrors} is a '{contentType.Name}'/'{contentType.NameId}' but not a '{string.Join(",", typeNames ?? [])}'. " +
+            $"This is probably a mistake, otherwise set '{nameof(ToModelOptions.TypeName)}: '*' " +
+            $"or apply an attribute [{nameof(ModelSpecsAttribute)}({nameof(ModelSpecsAttribute.ContentType)} = \"{contentType.Name}\")] to your model class. "
+        );
 
     #region Stream Names WIP
 
@@ -64,7 +121,7 @@ public class DataModelAnalyzer
     public static IList<string> GetStreamNameList<TCustom>() where TCustom : class
     {
         return StreamNames.Get<TCustom, ModelSpecsAttribute>(attribute =>
-            DataModelNames.UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
+            DataModelNameVariants.UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
     }
 
     private static readonly TypeAttributeLookup<IList<string>> StreamNames = new();

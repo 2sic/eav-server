@@ -4,7 +4,7 @@
 /// Helper to figure out the true Content-Type names of models, based on the class name and some common suffixes.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class DataModelNames
+public class DataModelNameVariants
 {
     internal static IList<string> UseSpecifiedNameOrDeriveFromType<TCustom>(string? names)
         where TCustom : class
