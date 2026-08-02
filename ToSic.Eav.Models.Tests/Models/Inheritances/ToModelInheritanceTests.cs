@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Metadata;
+﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Metadata;
 using ToSic.Eav.Models.Entity;
 using ToSic.Eav.Models.TestData;
 using ToSic.Sys.Utils.Types;
@@ -12,40 +13,55 @@ namespace ToSic.Eav.Models.Inheritances;
 
 
 /// <summary>
-/// Same Tests - but for the internal ToModelInternal()
+/// Same Tests - but for the public ToModel()
 /// </summary>
-/// <param name="generator"></param>
-public class ToModelInheritance(MockDataGenerator<MockForInherit> generator)
-    : ToModelInheritanceTests(generator, useInternal: false);
+public class ToModelInheritance : ToModelInheritanceTests
+{
+    public class Startup : StartupInternal
+    {
+        public override void ConfigureServices(IServiceCollection services)
+            => base.ConfigureServices(services.AddTransient<IToModelTac, ToModelTacPublic>());
+    }
+}
 
 /// <summary>
 /// Override for the ToModelInternal() test
 /// </summary>
-public class ToModelInheritanceInternal(MockDataGenerator<MockForInherit> generator)
-    : ToModelInheritanceTests(generator, useInternal: true);
+public class ToModelInheritanceInternal : ToModelInheritanceTests
+{
+    public class Startup : StartupInternal
+    {
+        public override void ConfigureServices(IServiceCollection services)
+            => base.ConfigureServices(services.AddTransient<IToModelTac, ToModelTacInternal>());
+    }
+}
 
 /// <summary>
 /// Shared tests for ToModel and ToModelInternal
 /// </summary>
-public abstract class ToModelInheritanceTests(MockDataGenerator<MockForInherit> generator, bool useInternal)
-    : ToModelTestsBase(generator, useInternal)
+public abstract class ToModelInheritanceTests
 {
+
     #region Test Case Generator - Prepare for later Partials
 
-    public partial class TestCaseGenerator(MockDataGenerator<MockForInherit> generator)
-        : ToModelTestsBase(generator, false)
+    public partial class TestCaseGenerator(MockDataGenerator<MockForInherit> generator, IToModelTac toModelTac)
     {
+        public IMockMetadataForGenerator Generator => generator;
+        
         private IEnumerable<object[]> CreateTestCases<TAttribute>(TestCaseName[] testCases)
             where TAttribute : Attribute
-            => typeof(TestCaseGenerator).Assembly.GetTypesWithAttribute<TAttribute>()
-                .SelectMany(typeAttributePair => testCases
+            => typeof(TestCaseGenerator).Assembly
+                .GetTypesWithAttribute<TAttribute>()
+                .SelectMany(pair => testCases
                     .Select(testCase => new object[]
                     {
                         new TestCaseTypeAndName(
                             Name: testCase.Name,
-                            Generator: () => this.GetModel(typeAttributePair.Type, callInternal: false, testCase.Name),
-                            OriginalType: typeAttributePair.Type,
-                            Attribute: typeAttributePair.Attribute,
+                            Generator: () =>
+                                toModelTac.ToModel(Generator.CreateMetadataForDecorator(), pair.Type,
+                                    testCase.Name),
+                            OriginalType: pair.Type,
+                            Attribute: pair.Attribute,
                             Notes: testCase.Notes
                         )
                     })

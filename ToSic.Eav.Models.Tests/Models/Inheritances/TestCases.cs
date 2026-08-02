@@ -16,7 +16,7 @@ public record TestCaseName(string? Name, string Notes);
 /// <param name="Notes">Additional notes about the test case</param>
 public record TestCaseTypeAndName(
     string? Name,
-    Func<object> Generator,
+    Func<object?> Generator,
     Type OriginalType,
     Attribute Attribute,
     string Notes);

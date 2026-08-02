@@ -7,18 +7,18 @@ namespace ToSic.Eav.Models.Entity;
 /// </summary>
 /// <param name="generator"></param>
 public class ToModelWithConstructor(MockDataGenerator generator)
-    : ToModelWithConstructorTests(generator, useInternal: false);
+    : ToModelWithConstructorTests(generator, new ToModelTacPublic());
 
 /// <summary>
 /// Override for the ToModelInternal() test
 /// </summary>
 public class ToModelWithConstructorInternal(MockDataGenerator generator)
-    : ToModelWithConstructorTests(generator, useInternal: true);
+    : ToModelWithConstructorTests(generator, new ToModelTacInternal());
 
 /// <summary>
 /// Model With Constructor - must throw
 /// </summary>
-public abstract class ToModelWithConstructorTests(MockDataGenerator generator, bool useInternal) : ToModelTestsBase(generator, useInternal)
+public abstract class ToModelWithConstructorTests(MockDataGenerator generator, IToModelTac toModelTac) : ToModelTestsBase(generator, toModelTac)
 {
 
     #region Setup

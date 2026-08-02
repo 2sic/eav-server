@@ -10,19 +10,19 @@ namespace ToSic.Eav.Models.Entity;
 /// </summary>
 /// <param name="generator"></param>
 public class ToModelNameVerification(MockDataGenerator generator) 
-    : ToModelNameVerificationTests(generator, useInternal: false);
+    : ToModelNameVerificationTests(generator, new ToModelTacPublic());
 
 /// <summary>
 /// Test the internal ToModelInternal()
 /// </summary>
 /// <param name="generator"></param>
 public class ToModelNameVerificationInternal(MockDataGenerator generator)
-    : ToModelNameVerificationTests(generator, useInternal: true);
+    : ToModelNameVerificationTests(generator, new ToModelTacInternal());
 
 /// <summary>
 /// Shared tests for ToModel and ToModelInternal
 /// </summary>
-public abstract class ToModelNameVerificationTests(MockDataGenerator generator, bool useInternal) : ToModelTestsBase(generator, useInternal)
+public abstract class ToModelNameVerificationTests(MockDataGenerator generator, IToModelTac toModelTac) : ToModelTestsBase(generator, toModelTac)
 {
     #region Name Checks
 
