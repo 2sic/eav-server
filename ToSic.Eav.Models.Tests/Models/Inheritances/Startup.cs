@@ -10,7 +10,7 @@ public class Startup : StartupTestsEavDataBuild
         services
             .AddTransient<MockDataGenerator>()
             .AddTransient(typeof(MockDataGenerator<>))
-            .AddTransient<TestCaseGenerator>();
+            .AddTransient<ToModelInheritanceTests.TestCaseGenerator>();
         
         base.ConfigureServices(services);
     }

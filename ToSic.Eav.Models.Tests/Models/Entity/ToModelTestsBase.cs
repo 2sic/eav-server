@@ -42,8 +42,17 @@ public static class IHasMockMetadataForGeneratorExtension
         var options = new ToModelOptions { TypeName = typeName };
         return !hasMockMetadata.UseInternal
             ? hasMockMetadata.Generator.CreateMetadataForDecorator().ToModelTac<TModel>(options: options)!
-            : hasMockMetadata.Generator.CreateMetadataForDecorator().ToModelInternal<TModel>(options: options)!;
+            : hasMockMetadata.Generator.CreateMetadataForDecorator().ToModelInternalTac<TModel>(options: options)!;
     }
 
     
+    public static object GetModel(this IHasMockMetadataForGenerator hasMockMetadata, Type type, bool callInternal, string? typeName)
+    {
+        var options = new ToModelOptions { TypeName = typeName };
+        
+        return !callInternal
+            ? hasMockMetadata.Generator.CreateMetadataForDecorator().ToModelTac(type, options: options)!
+            : hasMockMetadata.Generator.CreateMetadataForDecorator().ToModelInternalTac(type, options: options)!;
+    }
+
 }
