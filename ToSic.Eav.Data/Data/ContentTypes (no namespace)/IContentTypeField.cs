@@ -5,6 +5,12 @@ using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Data;
 
+[PrivateApi("Leftover of old days")]
+public interface IContentTypeAttribute
+{
+    ValueTypes Type { get; }
+}
+
 /// <summary>
 /// Represents an Attribute definition in a ContentType.
 /// This is the base for attributes in <see cref="IContentType"/>
@@ -14,7 +20,9 @@ namespace ToSic.Eav.Data;
 /// * Probably will be renamed to `IContentTypeField` in v22 (breaking change)
 /// </remarks>
 [PublicApi]
-public interface IContentTypeField: IHasPermissions, IAppIdentityLight, IHasMetadata
+public interface IContentTypeField
+    : IHasPermissions, IAppIdentityLight, IHasMetadata,
+        IContentTypeAttribute
 {
     /// <summary>
     /// Name of the Attribute
