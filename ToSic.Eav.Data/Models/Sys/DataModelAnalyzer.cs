@@ -1,14 +1,11 @@
-﻿using ToSic.Sys.Utils.Types;
+﻿using System.Collections.Concurrent;
+using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataModelAnalyzer
 {
-    public static IList<string> GetValidTypeNames(Type tCustom, string? preset)
-        => preset?.CsvToArrayPreserveEmpty() as IList<string>
-           ?? GetValidTypeNames(tCustom);
-
     /// <summary>
     /// Figure out the expected ContentTypeName of a DataWrapper type.
     /// </summary>
@@ -16,91 +13,86 @@ public class DataModelAnalyzer
     /// <remarks>
     /// If it is decorated with <see cref="ModelSpecsAttribute"/> then use the information it provides, otherwise
     /// use the type name.
+    ///
+    /// Note: as the code changed, we're not really doing the attribute check here anymore, but still keeping the structure for a quick cache.
+    /// should probably be changed some day
     /// </remarks>
-    public static IList<string> GetValidTypeNames(Type tCustom) =>
-        ContentTypeNamesCache
-            .Get<ModelSpecsAttribute>(tCustom, attribute =>
-                DataModelNameVariants.UseSpecifiedNameOrDeriveFromType(tCustom, attribute?.ContentType)
-            );
-    private static readonly TypeAttributeLookup<IList<string>> ContentTypeNamesCache = new();
+    private static IList<string> GetValidTypeNamesCache(Type tCustom) =>
+        ContentTypeNamesCache.GetOrAdd(tCustom, _ =>
+            DataModelNameVariants.UseSpecifiedNameOrDeriveFromType(tCustom, null)
+        );
+    
+    private static readonly ConcurrentDictionary<Type, IList<string>> ContentTypeNamesCache = new();
 
     private static string? GetExplicitTypeNames(Type tCustom) =>
         ExplicitTypeNamesCache.Get<ModelSpecsAttribute>(tCustom, attribute => attribute?.ContentType);
     
     private static readonly TypeAttributeLookup<string?> ExplicitTypeNamesCache = new();
 
-    internal static (bool Skip, string CacheKey, IList<string>? Names) FindPriorityTypeNames(string? optionsTypeName, Type entryType, Type concreteType, IContentType contentType)
+    /// <summary>
+    /// The main system checking for name priorities.
+    /// Will also check if it had already been verified by the cache, to reduce work in retrieving names etc.
+    /// </summary>
+    /// <param name="optionsTypeName"></param>
+    /// <param name="entryType"></param>
+    /// <param name="concreteType"></param>
+    /// <param name="nameIdOrNull"></param>
+    /// <returns></returns>
+    internal static (bool IsCachedAsVerified, string CacheKey, IList<string>? Names) FindPriorityTypeNames(string? optionsTypeName, Type entryType, Type concreteType, string? nameIdOrNull)
     {
         if (optionsTypeName == ToModelOptions.TypeNameAny)
             return (true, "any", null);
 
         if (optionsTypeName != null)
-            return (false, "option:" + optionsTypeName, optionsTypeName.CsvToArrayWithoutEmpty());
+            return CheckAndReturn($"option:{optionsTypeName}|{nameIdOrNull}", optionsTypeName);
 
         var explicitOnEntryType = GetExplicitTypeNames(entryType);
 
         if (explicitOnEntryType != null)
-            return (false, "entry:" + explicitOnEntryType, explicitOnEntryType.CsvToArrayWithoutEmpty());
-
+            return CheckAndReturn($"entry:{explicitOnEntryType}|{nameIdOrNull}", explicitOnEntryType);
+        
         var typesDiffer = entryType != concreteType;
         var explicitOnConcrete = typesDiffer ? GetExplicitTypeNames(concreteType) : null;
 
         if (explicitOnConcrete != null)
-            return (false, "concrete:" + explicitOnConcrete, explicitOnConcrete.CsvToArrayWithoutEmpty());
+            return CheckAndReturn($"concrete:{explicitOnConcrete}|{nameIdOrNull}", explicitOnConcrete);
 
+        var cacheKeyFinal = $"derived:{entryType.FullName}|{nameIdOrNull}";
+        if (TypeNameAllowedCache.Contains(cacheKeyFinal))
+            return (true, cacheKeyFinal, null);
+        
         var namesDerived = typesDiffer
-            ? GetValidTypeNames(entryType)
-                .Concat(GetValidTypeNames(concreteType))
-                .ToArray()
-            : GetValidTypeNames(entryType);
+            ? GetValidTypeNamesCache(entryType).Concat(GetValidTypeNamesCache(concreteType)).ToArray()
+            : GetValidTypeNamesCache(entryType);
 
-        return (false, "derived:" + entryType.FullName, namesDerived);
+        return (false, cacheKeyFinal, namesDerived);
+
+        (bool IsCachedAsVerified, string CacheKey, IList<string>? Names) CheckAndReturn(string cacheKey, string names)
+            => nameIdOrNull != null && TypeNameAllowedCache.Contains(cacheKey)
+                ? (true, cacheKey, null)
+                : (false, cacheKey, names.CsvToArrayWithoutEmpty());
     }
 
-    public static (bool Throw, IList<string>? Names) IsTypeNameAllowed(string? optionsTypeName, Type entryType, Type concreteType, IContentType contentType)
+    public static (bool IsError, IList<string>? Names) IsTypeNameAllowed(string? optionsTypeName, Type entryType, Type concreteType, IContentType contentType)
     {
-        if (optionsTypeName == ToModelOptions.TypeNameAny)
+        var priorities = FindPriorityTypeNames(optionsTypeName, entryType, concreteType, contentType.NameId);
+
+        if (priorities.IsCachedAsVerified)
             return (false, null);
 
-        if (optionsTypeName != null)
-            return CheckAndReturn( "option:" + optionsTypeName, optionsTypeName.CsvToArrayWithoutEmpty());
-
-        var explicitOnEntryType = GetExplicitTypeNames(entryType);
+        var typeNames = priorities.Names ?? [];
         
-        if (explicitOnEntryType != null)
-            return CheckAndReturn("entry:" + explicitOnEntryType, explicitOnEntryType.CsvToArrayWithoutEmpty());
+        // CacheKey - note that we'll only cache it if it's ok, never if it fails, to avoid RAM consumption for invalid types
+        // We only need the initial type, because even if it's an interface, it will always result in the same concrete type
+        if (TypeNameAllowedCache.Contains(priorities.CacheKey))
+            return (false, null);
 
-        var typesDiffer = entryType != concreteType;
-        var explicitOnConcrete = typesDiffer ? GetExplicitTypeNames(concreteType) : null;
+        if (!typeNames.Any(t => t == ToModelOptions.TypeNameAny || contentType.Is(t)))
+            return (true, typeNames);
         
-        if (explicitOnConcrete != null)
-            return CheckAndReturn("concrete:" + explicitOnConcrete, explicitOnConcrete.CsvToArrayWithoutEmpty());
+        TypeNameAllowedCache.Add(priorities.CacheKey);
+        return (false, typeNames);
 
-        var namesDerived = typesDiffer
-            ? GetValidTypeNames(entryType)
-                .Concat(GetValidTypeNames(concreteType))
-                .ToArray()
-            : GetValidTypeNames(entryType);
-        
-        return CheckAndReturn("derived:" + entryType.FullName, namesDerived);
-
-
-        (bool Throw, IList<string>? Names) CheckAndReturn(string source, IList<string> typeNames)
-        {
-            // CacheKey - note that we'll only cache it if it's ok, never if it fails, to avoid RAM consumption for invalid types
-            // We only need the initial type, because even if it's an interface, it will always result in the same concrete type
-            var cacheKey = source + "|" + contentType.NameId;
-            
-            if (TypeNameAllowedCache.Contains(cacheKey))
-                return (false, null);
-
-            if (!typeNames.Any(t => t == ToModelOptions.TypeNameAny || contentType.Is(t)))
-                return (true, typeNames);
-            
-            TypeNameAllowedCache.Add(cacheKey);
-            return (false, typeNames);
-
-        }
     }
     private static readonly HashSet<string> TypeNameAllowedCache = [];
 

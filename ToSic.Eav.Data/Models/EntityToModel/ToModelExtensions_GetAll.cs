@@ -49,7 +49,7 @@ public static partial class ToModelExtensions
         // This is important, in case an interface was passed in.
         var trueType = ModelAnalyseUse.GetTargetType<TModel>();
 
-        var nameList = DataModelAnalyzer.GetValidTypeNames(trueType, preset: options?.TypeName);
+        var nameList = DataModelAnalyzer.FindPriorityTypeNames(options?.TypeName, typeof(TModel), trueType, null).Names ?? [];
 
         var firstMatchingList = nameList
             .Select(name => list.GetAll(typeName: name).ToListOpt())

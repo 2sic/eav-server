@@ -3,6 +3,10 @@
 /// <summary>
 /// Helper to figure out the true Content-Type names of models, based on the class name and some common suffixes.
 /// </summary>
+/// <remarks>
+/// This is just the analyzer, no caching etc.
+/// For that, use the DataModelAnalyzer
+/// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataModelNameVariants
 {

@@ -43,7 +43,7 @@ public static class ToModelIntern
         // 2. Derived names of the interface name (e.g. `IContent` -> `Content`, `ContentBlock`, etc.)
         // 3. 
         var checkName = DataModelAnalyzer.IsTypeNameAllowed(options.TypeName, typeof(TModel), trueType, entity.Type);
-        if (!checkName.Throw)
+        if (checkName.IsError)
             throw DataModelAnalyzer.KeyNotFoundMessage(checkName.Names ?? [], entity.Type, entity.EntityId);
 
         // Create the model

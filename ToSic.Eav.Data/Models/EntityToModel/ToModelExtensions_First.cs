@@ -42,18 +42,18 @@ public static partial class ToModelExtensions
         if (list == null)
             return ToModelIntern.FromNull<TModel>(trueType: trueType, nullHandling: stableOptions.NullHandling);
 
-        var nameList = DataModelAnalyzer.GetValidTypeNames(trueType, preset: stableOptions.TypeName);
+        var nameList = DataModelAnalyzer.FindPriorityTypeNames(stableOptions.TypeName, typeof(TModel), trueType, null).Names ?? [];
 
+        var firstMatch = nameList
+            .Select(list.First)
+            .OfType<IEntity>()
+            .FirstOrDefault();
+        
         // For further processing, make sure that it won't re-check the type name unless explicitly specified
         stableOptions = stableOptions with
         {
             TypeName = options?.TypeName ?? ToModelOptions.TypeNameAny,
         };
-        
-        var firstMatch = nameList
-            .Select(list.First)
-            .OfType<IEntity>()
-            .FirstOrDefault();
         
         return firstMatch != null
             ? firstMatch.ToModelInternal<TModel>(options: stableOptions, trueType: trueType)

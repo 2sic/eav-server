@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Wrappers;
+﻿using System.Xml.Linq;
+using ToSic.Sys.Wrappers;
 using static ToSic.Eav.Data.Models.Sys.DataModelAnalyzerTestAccessors;
 
 namespace ToSic.Eav.Data.Models.Sys;
@@ -7,7 +8,7 @@ public class DataModelAnalyzerTests
 {
     private static void AssertTypeName<T>(string name)
         where T : class, IWrapperWip =>
-        Equal(name, string.Join(",", GetContentTypeNamesTac(typeof(T))));
+        Equal(name, string.Join(",", FindPriorityTypeNamesTac(typeof(T))));
 
     private static void AssertStreamNames<T>(string namesCsv)
         where T : class, IWrapperWip =>

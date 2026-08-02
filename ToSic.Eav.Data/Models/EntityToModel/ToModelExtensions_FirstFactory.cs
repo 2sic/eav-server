@@ -32,18 +32,26 @@ public static partial class ToModelExtensions
         // This is important, in case an interface was passed in.
         var trueType = ModelAnalyseUse.GetTargetType<TModel>();
 
-        var nameList = DataModelAnalyzer.GetValidTypeNames(trueType, preset: options?.TypeName);
+        var nameList = DataModelAnalyzer.FindPriorityTypeNames(options?.TypeName, typeof(TModel), trueType, null).Names ?? [];
 
-        foreach (var name in nameList)
-        {
+        var firstMatch = nameList
             // ReSharper disable once PossibleMultipleEnumeration - should not ToList or anything, because it could lose optimizations of the FastLookup etc.
-            var first = list.First(typeName: name);
-            if (first != null)
-                return factory.Create<IEntity, TModel>(first);
-        }
+            .Select(list.First)
+            .OfType<IEntity>()
+            .FirstOrDefault();
+
+        //foreach (var name in nameList)
+        //{
+        //    // ReSharper disable once PossibleMultipleEnumeration - should not ToList or anything, because it could lose optimizations of the FastLookup etc.
+        //    var first = list.First(typeName: name);
+        //    if (first != null)
+        //        return factory.Create<IEntity, TModel>(first);
+        //}
 
         // Nothing found
-        return default;
+        return firstMatch != null
+            ? factory.Create<IEntity, TModel>(firstMatch)
+            : default;
     }
 
     #endregion
