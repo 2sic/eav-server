@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Sys.Wrappers;
 using static ToSic.Eav.Data.Models.Sys.DataModelAnalyzerTestAccessors;
 
@@ -117,4 +117,17 @@ public class DataModelAnalyzerTests
     public void IDecoratedStream() =>
         AssertStreamNames<IDecorated>(StreamNameIDecorated);
 
+    [ContentType(
+        Name = "Person",
+        Guid = "00000000-0000-0000-0000-000000000001",
+        Description = "A dummy model for testing purposes"
+    )]
+    private class DummyModel : IWrapperWip;
+
+    [Fact]
+    public void CheckContentTypeName()
+    {
+        AssertTypeName<DummyModel>("Person");
+    }
+    
 }

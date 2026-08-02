@@ -10,10 +10,6 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataModelNameVariants
 {
-    internal static IList<string> UseSpecifiedNameOrDeriveFromType<TCustom>(string? names)
-        where TCustom : class
-        => UseSpecifiedNameOrDeriveFromType(typeof(TCustom), names);
-
     internal static IList<string> UseSpecifiedNameOrDeriveFromType(Type type, string? names)
         => names?.CsvToArrayPreserveEmpty().ToListOpt()
            ?? CreateListOfNameVariants(type.Name, type.IsInterface);
@@ -23,7 +19,7 @@ public class DataModelNameVariants
     /// Take a class/interface name and create a list
     /// which also checks for the same name without leading "I" or without trailing "Model".
     /// </summary>
-    internal static List<string> CreateListOfNameVariants(string name, bool isInterface)
+    internal static IList<string> CreateListOfNameVariants(string name, bool isInterface)
     {
         // Catch empty
         if (string.IsNullOrWhiteSpace(name))

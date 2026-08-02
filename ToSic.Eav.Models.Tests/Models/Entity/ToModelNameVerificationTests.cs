@@ -52,6 +52,10 @@ public abstract class ToModelNameVerificationTests(MockDataGenerator generator, 
         => NotNull(generator.GetModel<MockMetadataModelWithSpecsNameRight>());
 
     [Fact]
+    public void ModelWithNameMismatch_HasContentTypeAttribute_Works()
+        => NotNull(generator.GetModel<MockMetadataModelWithContentTypeSpecsName>());
+
+    [Fact]
     public void ModelWithNameMismatch_HasSpecsWithNameAsterisks_Works()
         => NotNull(generator.GetModel<MockMetadataModelWithSpecsNameAsterisks>());
 

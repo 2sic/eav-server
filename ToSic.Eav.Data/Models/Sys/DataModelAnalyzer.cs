@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models.Sys;
@@ -17,18 +18,22 @@ public class DataModelAnalyzer
     /// Note: as the code changed, we're not really doing the attribute check here anymore, but still keeping the structure for a quick cache.
     /// should probably be changed some day
     /// </remarks>
-    private static IList<string> GetValidTypeNamesCache(Type tCustom) =>
-        ContentTypeNamesCache.GetOrAdd(tCustom, _ =>
-            DataModelNameVariants.UseSpecifiedNameOrDeriveFromType(tCustom, null)
+    private static IList<string> GetValidTypeNamesCache(Type type) =>
+        ContentTypeNamesCache.GetOrAdd(type, _ =>
+            DataModelNameVariants.CreateListOfNameVariants(type.Name, type.IsInterface)
         );
     
     private static readonly ConcurrentDictionary<Type, IList<string>> ContentTypeNamesCache = new();
 
-    private static string? GetExplicitTypeNames(Type tCustom) =>
-        ExplicitTypeNamesCache.Get<ModelSpecsAttribute>(tCustom, attribute => attribute?.ContentType);
+    private static string? GetTypeNameOnModelSpecs(Type tCustom) =>
+        TypeNameOnModelSpecsCache.Get<ModelSpecsAttribute>(tCustom, attribute => attribute?.ContentType);
     
-    private static readonly TypeAttributeLookup<string?> ExplicitTypeNamesCache = new();
+    private static readonly TypeAttributeLookup<string?> TypeNameOnModelSpecsCache = new();
 
+    private static string? GetTypeNameOnContentType(Type tCustom) =>
+        TypeNameOnContentTypeCache.Get<ContentTypeAttribute>(tCustom, attribute => attribute?.Name);
+
+    private static readonly TypeAttributeLookup<string?> TypeNameOnContentTypeCache = new();
     /// <summary>
     /// The main system checking for name priorities.
     /// Will also check if it had already been verified by the cache, to reduce work in retrieving names etc.
@@ -46,18 +51,26 @@ public class DataModelAnalyzer
         if (optionsTypeName != null)
             return CheckAndReturn($"option:{optionsTypeName}|{nameIdOrNull}", optionsTypeName);
 
-        var explicitOnEntryType = GetExplicitTypeNames(entryType);
-
-        if (explicitOnEntryType != null)
-            return CheckAndReturn($"entry:{explicitOnEntryType}|{nameIdOrNull}", explicitOnEntryType);
-        
+        // Check if we have one or two types to check (interface vs concrete type)
         var typesDiffer = entryType != concreteType;
-        var explicitOnConcrete = typesDiffer ? GetExplicitTypeNames(concreteType) : null;
+        (Type type, string keyPrefix)[] typesToCheck = typesDiffer
+            ? [(entryType, "entry"), (concreteType, "concrete")]
+            : [(entryType, "entry")];
 
-        if (explicitOnConcrete != null)
-            return CheckAndReturn($"concrete:{explicitOnConcrete}|{nameIdOrNull}", explicitOnConcrete);
+        // Check the one or two types for ModelSpecsAttribute or ContentTypeAttribute, and return the first one found
+        foreach (var (type, keyPrefix) in typesToCheck)    
+        {
+            var explicitOnModelSpecs = GetTypeNameOnModelSpecs(type);
+            if (explicitOnModelSpecs != null)
+                return CheckAndReturn(CacheKeyForType(keyPrefix), explicitOnModelSpecs);
 
-        var cacheKeyFinal = $"derived:{entryType.FullName}|{nameIdOrNull}";
+            var explicitOnCtSpecs = GetTypeNameOnContentType(type);
+            if (explicitOnCtSpecs != null)
+                return CheckAndReturn(CacheKeyForType(keyPrefix), explicitOnCtSpecs);
+        }
+
+        // Check for automatically derived names
+        var cacheKeyFinal = CacheKeyForType("derived");
         if (TypeNameAllowedCache.Contains(cacheKeyFinal))
             return (true, cacheKeyFinal, null);
         
@@ -67,10 +80,15 @@ public class DataModelAnalyzer
 
         return (false, cacheKeyFinal, namesDerived);
 
+        
+        
         (bool IsCachedAsVerified, string CacheKey, IList<string>? Names) CheckAndReturn(string cacheKey, string names)
             => nameIdOrNull != null && TypeNameAllowedCache.Contains(cacheKey)
                 ? (true, cacheKey, null)
                 : (false, cacheKey, names.CsvToArrayWithoutEmpty());
+        
+        string CacheKeyForType(string prefix)
+            => $"{prefix}:{entryType.FullName}|{nameIdOrNull}";
     }
 
     public static (bool IsError, IList<string>? Names) IsTypeNameAllowed(string? optionsTypeName, Type entryType, Type concreteType, IContentType contentType)
@@ -113,7 +131,7 @@ public class DataModelAnalyzer
     public static IList<string> GetStreamNameList<TCustom>() where TCustom : class
     {
         return StreamNames.Get<TCustom, ModelSpecsAttribute>(attribute =>
-            DataModelNameVariants.UseSpecifiedNameOrDeriveFromType<TCustom>(attribute?.Stream));
+            DataModelNameVariants.UseSpecifiedNameOrDeriveFromType(typeof(TCustom), attribute?.Stream));
     }
 
     private static readonly TypeAttributeLookup<IList<string>> StreamNames = new();

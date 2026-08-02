@@ -36,7 +36,8 @@ public class DataModelNameVariantsTests
     [InlineData("CustomName,Custom2", new[] { "CustomName", "Custom2" })]
     public void UseSpecifiedNameOrDeriveFromType(string input, string[] expected)
     {
-        var result = DataModelNameVariants.UseSpecifiedNameOrDeriveFromType<DataModelNameVariantsTests>(input);
+        var result = DataModelNameVariants.UseSpecifiedNameOrDeriveFromType(typeof(DataModelNameVariantsTests), input);
         Equal(expected, result);
     }
+
 }
