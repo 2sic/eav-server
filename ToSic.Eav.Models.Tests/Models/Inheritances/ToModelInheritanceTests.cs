@@ -32,16 +32,16 @@ public abstract class ToModelInheritanceTests(MockDataGenerator<MockForInherit> 
     #region Test cases which should all just work as expected - Tests from external Generator combining object creation and name combinations
 
     [Theory, MethodData(nameof(TestCaseGenerator.OkTypesAndNamesBecauseSetupOk), typeof(TestCaseGenerator))]
-    public void FromVarious_NotNull(TestCaseTypeAndName testCase)
-        => NotNull(testCase.GeneratedObject);
+    public void IfOk_AllCombinations_NotNull(TestCaseTypeAndName testCase)
+        => NotNull(testCase.Generator());
 
     [Theory, MethodData(nameof(TestCaseGenerator.OkTypesAndNamesBecauseSetupOk), typeof(TestCaseGenerator))]
-    public void FromVarious_IsExpectedModelType(TestCaseTypeAndName testCase)
-        => IsType(testCase.ExpectedType, testCase.GeneratedObject);
+    public void IfOk_AllCombinations_IsExpectedModelType(TestCaseTypeAndName testCase)
+        => IsType(testCase.ExpectedType, testCase.Generator());
     
     [Theory, MethodData(nameof(TestCaseGenerator.OkTypesAndNamesBecauseSetupOk), typeof(TestCaseGenerator))]
-    public void FromVarious_PropertyTargetTypeMatches(TestCaseTypeAndName testCase)
-        => Equal((int)TargetTypes.Entity, ((MockForInherit)testCase.GeneratedObject).TargetType);
+    public void IfOk_AllCombinations_PropertyTargetTypeMatches(TestCaseTypeAndName testCase)
+        => Equal((int)TargetTypes.Entity, ((MockForInherit)testCase.Generator()).TargetType);
 
     #endregion
 
@@ -50,7 +50,7 @@ public abstract class ToModelInheritanceTests(MockDataGenerator<MockForInherit> 
     #region Direct Conversion which are expected to fail
 
     [Theory, MethodData(nameof(TestCaseGenerator.ThrowingTypesAndNamesDespiteSetupOk), typeof(TestCaseGenerator))]
-    public void FromVarious_SetupOkButBadNames_Throws(TestCaseTypeGenAndName testCase)
+    public void IfBadNameParams_Throws(TestCaseTypeAndName testCase)
         => Throws<KeyNotFoundException>(() => testCase.Generator());
 
 
@@ -61,11 +61,11 @@ public abstract class ToModelInheritanceTests(MockDataGenerator<MockForInherit> 
     #region Conversion of Derived Class, Basic. No Specs, no new interfaces. Should Throw because name is incorrect
 
     [Theory, MethodData(nameof(TestCaseGenerator.ThrowingTypesAndNamesBecauseSetupWrong), typeof(TestCaseGenerator))]
-    public void FromVarious_SetupWrong_Throws(TestCaseTypeGenAndName testCase)
+    public void IfBad_FromVarious_SetupWrong_Throws(TestCaseTypeAndName testCase)
         => Throws<KeyNotFoundException>(() => testCase.Generator());
 
     [Theory, MethodData(nameof(TestCaseGenerator.OkIfDisableNameCheck), typeof(TestCaseGenerator))]
-    public void FromVarious_SetupWrong_Ignore_Works(TestCaseTypeGenAndName testCase)
+    public void IfIncorrectName_ButIgnoreNames_Works(TestCaseTypeAndName testCase)
         => NotNull(testCase.Generator());
 
     #endregion

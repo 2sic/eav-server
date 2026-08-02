@@ -11,15 +11,6 @@ namespace ToSic.Eav.Models.Inheritances;
 public record TestCaseName(string? Name, string Notes);
 
 /// <summary>
-/// Test case information for a specific type and name, including the generated object and expected type.
-/// </summary>
-/// <param name="Name">Name to apply when trying to get the model</param>
-/// <param name="GeneratedObject">The object generated for the test case</param>
-/// <param name="ExpectedType">The expected type of the generated object</param>
-/// <param name="Notes">Additional notes about the test case</param>
-public record TestCaseTypeAndName(string? Name, object GeneratedObject, Type ExpectedType, string Notes);
-
-/// <summary>
 /// Test case information for a specific type and name, including a generator function and expected type.
 /// This is used to ensure that any exceptions thrown happen during the test, not during data-generation.
 /// </summary>
@@ -27,7 +18,7 @@ public record TestCaseTypeAndName(string? Name, object GeneratedObject, Type Exp
 /// <param name="Generator">Function to generate the object for the test case</param>
 /// <param name="ExpectedType">The expected type of the generated object</param>
 /// <param name="Notes">Additional notes about the test case</param>
-public record TestCaseTypeGenAndName(string? Name, Func<object> Generator, Type ExpectedType, string Notes);
+public record TestCaseTypeAndName(string? Name, Func<object> Generator, Type ExpectedType, string Notes);
 
 public class TestCaseGenerator(MockDataGenerator<MockForInherit> generator) : ToModelTestsBase(generator, false)
 {
@@ -41,14 +32,14 @@ public class TestCaseGenerator(MockDataGenerator<MockForInherit> generator) : To
     public IEnumerable<object[]> OkTypesAndNamesBecauseSetupOk()
         => OkNamesIfSetupOk
             .SelectMany(testCase => new object[][] {
-                [CreateTestCaseTypeAndName<MockForInherit>(testCase)],
-                [CreateTestCaseTypeAndName<MockForInheritDerivedSpecsGood>(testCase)],
-                [CreateTestCaseTypeAndName<MockForInheritDerivedSpecsAsterisks>(testCase)],
-                [CreateTestCaseTypeAndName<IMockForInherit>(testCase, typeof(MockForInherit))],
-                [CreateTestCaseTypeAndName<IMockForInherit_Implemented>(testCase, typeof(MockForInherit))],
-                [CreateTestCaseTypeAndName<IMockForInherit_ReApplyingInterface>(testCase, typeof(MockForInherit))],
-                [CreateTestCaseTypeAndName<IMockForInherit_ReApplyingInterfaceWithSpecsExactName>(testCase, typeof(MockForInherit))],
-                [CreateTestCaseTypeAndName<IMockForInherit_ReApplyingInterfaceWithSpecsAsterisks>(testCase, typeof(MockForInherit))],
+                [CreateTestCaseData<MockForInherit>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedSpecsGood>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedSpecsAsterisks>(testCase)],
+                [CreateTestCaseData<IMockForInherit>(testCase, typeof(MockForInherit))],
+                [CreateTestCaseData<IMockForInherit_Implemented>(testCase, typeof(MockForInherit))],
+                [CreateTestCaseData<IMockForInherit_ReApplyingInterface>(testCase, typeof(MockForInherit))],
+                [CreateTestCaseData<IMockForInherit_ReApplyingInterfaceWithSpecsExactName>(testCase, typeof(MockForInherit))],
+                [CreateTestCaseData<IMockForInherit_ReApplyingInterfaceWithSpecsAsterisks>(testCase, typeof(MockForInherit))],
             });
 
 
@@ -63,31 +54,31 @@ public class TestCaseGenerator(MockDataGenerator<MockForInherit> generator) : To
         => ThrowingNamesDespiteSetupOk
             .SelectMany(testCase => new object[][]
             {
-                [CreateTestCaseTypeGenAndName<MockForInherit>(testCase)],
-                [CreateTestCaseTypeGenAndName<MockForInheritDerivedSpecsGood>(testCase)],
-                [CreateTestCaseTypeGenAndName<MockForInheritDerivedSpecsAsterisks>(testCase)],
-                [CreateTestCaseTypeGenAndName<IMockForInherit>(testCase)],
-                [CreateTestCaseTypeGenAndName<IMockForInherit_NotImplemented>(testCase)],
-                [CreateTestCaseTypeGenAndName<IMockForInherit_ReApplyingInterfaceForInterface>(testCase)],
+                [CreateTestCaseData<MockForInherit>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedSpecsGood>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedSpecsAsterisks>(testCase)],
+                [CreateTestCaseData<IMockForInherit>(testCase)],
+                [CreateTestCaseData<IMockForInherit_NotImplemented>(testCase)],
+                [CreateTestCaseData<IMockForInherit_ReApplyingInterfaceForInterface>(testCase)],
             });
     
     public IEnumerable<object[]> OkIfDisableNameCheck()
         => new TestCaseName[] { new("*", "Skip type Check") }
             .SelectMany(testCase => new object[][]
             {
-                [CreateTestCaseTypeGenAndName<MockForInherit>(testCase)],
-                [CreateTestCaseTypeGenAndName<MockForInheritDerivedSpecsGood>(testCase)],
-                [CreateTestCaseTypeGenAndName<MockForInheritDerivedSpecsAsterisks>(testCase)],
-                [CreateTestCaseTypeGenAndName<IMockForInherit>(testCase)],
+                [CreateTestCaseData<MockForInherit>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedSpecsGood>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedSpecsAsterisks>(testCase)],
+                [CreateTestCaseData<IMockForInherit>(testCase)],
                 // Skip because not implemented
                 //[CreateTestCaseTypeGenAndName<IMockForInherit_NotImplemented>(testCase)],
-                [CreateTestCaseTypeGenAndName<IMockForInherit_ReApplyingInterfaceForInterface>(testCase)],
+                [CreateTestCaseData<IMockForInherit_ReApplyingInterfaceForInterface>(testCase)],
                 
                 
-                [CreateTestCaseTypeGenAndName<MockForInheritDerivedBasic>(testCase)],
-                [CreateTestCaseTypeGenAndName<MockForInheritDerivedSpecsBad>(testCase)],
-                [CreateTestCaseTypeGenAndName<IMockForInherit_ReApplyingInterfaceWithSpecsBad>(testCase)],
-                [CreateTestCaseTypeGenAndName<IMockForInherit_ReApplyingInterfaceWithSpecsAsIMock>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedBasic>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedSpecsBad>(testCase)],
+                [CreateTestCaseData<IMockForInherit_ReApplyingInterfaceWithSpecsBad>(testCase)],
+                [CreateTestCaseData<IMockForInherit_ReApplyingInterfaceWithSpecsAsIMock>(testCase)],
             });
 
 
@@ -100,16 +91,13 @@ public class TestCaseGenerator(MockDataGenerator<MockForInherit> generator) : To
     public IEnumerable<object[]> ThrowingTypesAndNamesBecauseSetupWrong()
         => ThrowingNamesBecauseSetupWrong
             .SelectMany(testCase => new object[][] {
-                [CreateTestCaseTypeGenAndName<MockForInheritDerivedBasic>(testCase)],
-                [CreateTestCaseTypeGenAndName<MockForInheritDerivedSpecsBad>(testCase)],
-                [CreateTestCaseTypeGenAndName<IMockForInherit_ReApplyingInterfaceWithSpecsBad>(testCase)],
-                [CreateTestCaseTypeGenAndName<IMockForInherit_ReApplyingInterfaceWithSpecsAsIMock>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedBasic>(testCase)],
+                [CreateTestCaseData<MockForInheritDerivedSpecsBad>(testCase)],
+                [CreateTestCaseData<IMockForInherit_ReApplyingInterfaceWithSpecsBad>(testCase)],
+                [CreateTestCaseData<IMockForInherit_ReApplyingInterfaceWithSpecsAsIMock>(testCase)],
             });
 
 
-    private TestCaseTypeAndName CreateTestCaseTypeAndName<TModel>(TestCaseName testCase, Type? expected = null) where TModel : class, IModelFromEntity
-        => new(testCase.Name, this.GetModel<TModel>(testCase.Name), expected ?? typeof(TModel), testCase.Notes);
-
-    private TestCaseTypeGenAndName CreateTestCaseTypeGenAndName<TModel>(TestCaseName testCase) where TModel : class, IModelFromEntity
-        => new(testCase.Name, () => this.GetModel<TModel>(testCase.Name), typeof(TModel), testCase.Notes);
+    private TestCaseTypeAndName CreateTestCaseData<TModel>(TestCaseName testCase, Type? expected = null) where TModel : class, IModelFromEntity
+        => new(testCase.Name, () => this.GetModel<TModel>(testCase.Name), expected ?? typeof(TModel), testCase.Notes);
 }
