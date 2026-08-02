@@ -6,10 +6,8 @@ namespace ToSic.Eav.Data.Raw.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.FrAnon")
 {
-    public IRawEntity Convert(object? original)
+    internal static RawEntity ConvertBasics(object? original)
     {
-        var l = Log.Fn<IRawEntity>();
-
         // if original is null, assume empty anonymous
         original ??= new { };
 
@@ -21,11 +19,29 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
             Guid = ExtractConvert<Guid>(nameof(IRawEntity.Guid)),
             Created = ExtractConvert<DateTime>(nameof(IRawEntity.Created)),
             Modified = ExtractConvert<DateTime>(nameof(IRawEntity.Modified)),
-            Values = null!,   // this is just temp
-            RelationshipKeys = null!, // this is just temp
+            Values = dic,   // this is temp, could still have unprocessed Relationships
+            RelationshipKeys = null, // this is just temp
         };
 
-        var extractKeys = ExtractRelationshipKeys(basic.Id, dic);
+        return basic;
+        
+        // Helper to extract a value and remove it from the original dictionary, converting it to the specified type
+        TVal? ExtractConvert<TVal>(string name)
+        {
+            if (!dic.TryGetValue(name, out var value))
+                return default;
+            dic.Remove(name);
+            return value.ConvertOrDefault<TVal>();
+        }
+    }
+    
+    public IRawEntity Convert(object? original)
+    {
+        var l = Log.Fn<IRawEntity>();
+
+        var basic = ConvertBasics(original);
+        
+        var extractKeys = ExtractRelationshipKeys(basic.Id, basic.Values);
         
         var typedRelationships = StrongTypeRelationships(extractKeys.values);
 
@@ -37,14 +53,6 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
 
         return l.Return(basic);
 
-        // Helper to extract a value and remove it from the original dictionary, converting it to the specified type
-        TVal? ExtractConvert<TVal>(string name)
-        {
-            if (!dic.TryGetValue(name, out var value))
-                return default;
-            dic.Remove(name);
-            return value.ConvertOrDefault<TVal>();
-        }
     }
 
     /// <summary>

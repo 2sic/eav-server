@@ -18,8 +18,15 @@ public static class DictionaryExtensions
     /// </remarks>
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsIgnoreCase<T>(this IDictionary<string, T> original)
-        => (original is Dictionary<string, T> dic && dic.Comparer.IsIgnoreCase())
-        || (original is ImmutableDictionary<string, T> dicIm && dicIm.KeyComparer.IsIgnoreCase());
+        => original.GetComparer().IsIgnoreCase();
+    
+    internal static IEqualityComparer<string> GetComparer<T>(this IDictionary<string, T> original)
+        => original switch
+        {
+            Dictionary<string, T> dic => dic.Comparer,
+            ImmutableDictionary<string, T> dicIm => dicIm.KeyComparer,
+            _ => EqualityComparer<string>.Default
+        };
 
     private static bool IsIgnoreCase(this IEqualityComparer<string> comparer)
         => Equals(comparer, InvariantCultureIgnoreCase) || Equals(comparer, OrdinalIgnoreCase);
@@ -94,6 +101,20 @@ public static class DictionaryExtensions
         return true;
     }
 
+    // Note: never tested yet, just think it makes sense, be careful when you first use this
+    // Created 2026-08-02 2dm
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    public static TResult GetTypedOrFallback<TResult, TKey, TValue>(this IDictionary<TKey, TValue>? source, TKey key, TResult fallback)
+    {
+        if (source == null)
+            return fallback;
+        if (!source.TryGetValue(key, out var innerResult))
+            return fallback;
+        if (innerResult is not TResult typed)
+            return fallback;
+        return typed;
+    }
+    
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, Func<TValue> factory)
     {
@@ -106,5 +127,12 @@ public static class DictionaryExtensions
     
     public static string GetValueOrKey(this IDictionary<string, string> dic, string key)
         => dic.TryGetValue(key, out var value) && value != null ? value : key;
-            
+
+    public static IDictionary<string, TValue> FilterOutKeys<TValue>(this IDictionary<string, TValue> dic, IEnumerable<string> keysToRemove)
+    {
+        var keys = keysToRemove.ToHashSet();
+        return dic
+            .Where(pair => !keys.Contains(pair.Key))
+            .ToDictionary(pair => pair.Key, pair => pair.Value, dic.GetComparer());
+    }
 }

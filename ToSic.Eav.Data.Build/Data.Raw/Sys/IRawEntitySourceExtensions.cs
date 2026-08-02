@@ -17,6 +17,8 @@ public static class IRawEntitySourceExtensions
             IRawEntityConvertible getConverter => getConverter
                 .GetConverter()
                 .Convert(source, options),
+            IRawEntityAutoConvert autoConvert => RawFromAnonymousHelper.ConvertBasics(autoConvert),
+            // This case must come last, as some objects may implement both IRawEntityConvertible and IRawEntity, and we want to use the converter in that case.
             IRawEntity rawEntity => rawEntity,
             _ => throw new InvalidCastException(
                 $"Cannot convert to raw entity. " +

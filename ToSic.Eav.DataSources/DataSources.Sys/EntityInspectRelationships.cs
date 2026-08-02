@@ -57,10 +57,10 @@ public sealed class EntityInspectRelationships : CustomDataSource
 
     }
 
-    private IEnumerable<IRawEntity> GetRelationships(IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
+    private IEnumerable<IRawEntitySource> GetRelationships(IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
     {
         var id = Id;
-        var l = Log.Fn<IEnumerable<IRawEntity>>($"Id: {id}");
+        var l = Log.Fn<IEnumerable<IRawEntitySource>>($"Id: {id}");
         if (id == 0)
             return l.Return([], "no id provided, []");
 
@@ -75,8 +75,11 @@ public sealed class EntityInspectRelationships : CustomDataSource
         // Get all the child relationships, incl. what field the data is in
         var childrenWithField = entity.Attributes
             .GetEntityAttributes()
-            .SelectMany(a => a.Value.TypedContents?
-                .Select(e => new EntityRelationship(e, Field: a.Key, IsChild: true, FeatEnabled: featureEnabled)) ?? [])
+            .SelectMany(a => a.Value
+                                 .TypedContents?
+                                 .Select(e => new EntityRelationship(Field: a.Key, IsChild: true) { Entity = e, FeatEnabled = featureEnabled })
+                             ?? []
+            )
             .ToList();
 
         // Get all the parent relationships, incl. what field the data is in
@@ -85,14 +88,14 @@ public sealed class EntityInspectRelationships : CustomDataSource
             .SelectMany(parent => parent.Attributes
                 .GetEntityAttributes()
                 .Where(pAttribs => pAttribs.Value.TypedContents?.Any(child => child.EntityId == id) == true)
-                .Select(a => new EntityRelationship(parent, Field: a.Key, IsChild: false, FeatEnabled: featureEnabled))
+                .Select(a => new EntityRelationship(Field: a.Key, IsChild: false) { Entity = parent, FeatEnabled = featureEnabled })
             )
             .ToList();
 
         // Merge, convert and return
         var merged = childrenWithField
             .Union(parentsWithField)
-            .Cast<IRawEntity>()
+            .OfType<IRawEntitySource>()
             .ToList();
 
         return l.Return(merged);
@@ -104,25 +107,33 @@ public sealed class EntityInspectRelationships : CustomDataSource
         Name = MyContentTypeName
     )]
     private record EntityRelationship(
-        [property: ContentTypeIgnore]
-        IEntity Entity, 
         string Field,
-        bool IsChild,
-        [property: ContentTypeIgnore]
-        bool FeatEnabled
-    ) : /*RawEntityRecordBase,*/ IRawEntityConvertible
+        bool IsChild
+    ) : /*RawEntityRecordBase,*/ IRawEntityAutoConvert
     {
         private const string MyContentTypeName = "EntityRelationship";
+        
+        [ContentTypeIgnore]
+        internal required IEntity Entity { get; init; }
+        
+        [ContentTypeIgnore]
+        internal required bool FeatEnabled { get; init; }
 
         public int Id => FeatEnabled ? Entity.EntityId : 0;
         
         public Guid Guid => FeatEnabled ? Entity.EntityGuid : Guid.Empty;
 
         public string Title => FeatEnabled ? Entity.GetBestTitle() ?? "unknown" : FeatureNotEnabledMessage;
-        
+
         public string ContentTypeName => FeatEnabled ? Entity.Type.Name : MustEnableFeature;
         
         public string ContentTypeNameId => FeatEnabled ? Entity.Type.NameId : MustEnableFeature;
+
+        private const string MustEnableFeature = "must enable feature";
+        private static readonly string FeatureNotEnabledMessage =
+            $"hidden, feature {BuiltInFeatures.EntityInspectRelationships.NameId} not enabled";
+
+        #region Original using IRawEntity (commented out, but keeping as a sample)
 
         //public override IDictionary<string, object?> Values => new Dictionary<string, object?>
         //    {
@@ -134,29 +145,29 @@ public sealed class EntityInspectRelationships : CustomDataSource
         //    };
 
         //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => Values;
-            
-        
-        private const string MustEnableFeature = "must enable feature";
-        private static readonly string FeatureNotEnabledMessage =
-            $"hidden, feature {BuiltInFeatures.EntityInspectRelationships.NameId} not enabled";
 
-        IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
+        #endregion
 
-        private static IRawEntityConverter Converter { get; } =
-            new RawEntityConverterFactory<EntityRelationship>((source, _) =>
-                new RawEntity
-                {
-                    Id = source.Id,
-                    Guid = source.Guid,
-                    Values = new Dictionary<string, object?>
-                    {
-                        { AttributeNames.TitleNiceName, source.Title },
-                        { nameof(Field), source.Field },
-                        { nameof(IsChild), source.IsChild },
-                        { nameof(ContentTypeName), source.ContentTypeName },
-                        { nameof(ContentTypeNameId), source.ContentTypeNameId }
-                    },
-                });
+        #region Second iteration using IRawEntityConvertible.GetConverter (commented out, but keeping sample)
 
+        //IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
+
+        //private static IRawEntityConverter Converter { get; } =
+        //    new RawEntityConverterFactory<EntityRelationship>((source, _) =>
+        //        new RawEntity
+        //        {
+        //            Id = source.Id,
+        //            Guid = source.Guid,
+        //            Values = new Dictionary<string, object?>
+        //            {
+        //                { AttributeNames.TitleNiceName, source.Title },
+        //                { nameof(Field), source.Field },
+        //                { nameof(IsChild), source.IsChild },
+        //                { nameof(ContentTypeName), source.ContentTypeName },
+        //                { nameof(ContentTypeNameId), source.ContentTypeNameId }
+        //            },
+        //        });
+
+        #endregion
     }
 }

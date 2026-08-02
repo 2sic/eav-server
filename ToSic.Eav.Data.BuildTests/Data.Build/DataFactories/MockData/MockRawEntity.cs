@@ -25,3 +25,11 @@ internal record MockRawEntityProvidingConversion(IRawEntity _dataToProvideInConv
             _dataToProvideInConverter
         );
 }
+
+internal record MockRawAutoConvert : IRawEntityAutoConvert
+{
+    public int Id => IdDefault;
+    public const int IdDefault = 7;
+    public string Name => NameDefault;
+    public const string NameDefault = "MockRawAutoConvert";
+}

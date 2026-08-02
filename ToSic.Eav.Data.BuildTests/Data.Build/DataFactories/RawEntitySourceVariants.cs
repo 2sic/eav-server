@@ -32,4 +32,26 @@ public class RawEntitySourceVariants
         IRawEntitySource x = new MockRawConvertibleInvalid();
         Throws<InvalidCastException>(() => x.GetRawFromConverterOrDirectCast(new()));
     }
+
+    private IRawEntity AutoConverted => new MockRawAutoConvert().GetRawFromConverterOrDirectCast(new());
+
+    [Fact]
+    public void IRawEntityAutoConvert_Works()
+        => NotNull(AutoConverted);
+
+    [Fact]
+    public void IRawEntityAutoConvert_HasName()
+        => Equal(MockRawAutoConvert.NameDefault, AutoConverted.Values[nameof(MockRawAutoConvert.Name)]);
+
+    [Fact]
+    public void IRawEntityAutoConvert_HasOneValue()
+        => Single(AutoConverted.Values);
+
+    [Fact]
+    public void IRawEntityAutoConvert_HasId()
+        => Equal(MockRawAutoConvert.IdDefault, AutoConverted.Id);
+
+    [Fact]
+    public void IRawEntityAutoConvert_HasDefaultGuid()
+        => Equal(Guid.Empty, AutoConverted.Guid);
 }
