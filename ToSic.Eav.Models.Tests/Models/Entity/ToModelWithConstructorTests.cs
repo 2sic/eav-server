@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Models.TestData;
+﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models.Entity;
 
@@ -7,19 +8,29 @@ namespace ToSic.Eav.Models.Entity;
 /// </summary>
 /// <param name="generator"></param>
 public class ToModelWithConstructor(MockDataGenerator generator)
-    : ToModelWithConstructorTests(generator, new ToModelTacPublic());
+    : ToModelWithConstructorTests(generator, false);
 
 /// <summary>
 /// Override for the ToModelInternal() test
 /// </summary>
 public class ToModelWithConstructorInternal(MockDataGenerator generator)
-    : ToModelWithConstructorTests(generator, new ToModelTacInternal());
+    : ToModelWithConstructorTests(generator, true)
+{
+    public class Startup : ToSic.Eav.Models.Startup
+    {
+        public override void ConfigureServices(IServiceCollection services)
+            => base.ConfigureServices(services.AddTransient<IToModelTac, ToModelTacInternal>());
+    }
+}
 
 /// <summary>
 /// Model With Constructor - must throw
 /// </summary>
-public abstract class ToModelWithConstructorTests(MockDataGenerator generator, IToModelTac toModelTac) : ToModelTestsBase(generator, toModelTac)
+public abstract class ToModelWithConstructorTests(MockDataGenerator generator, bool useInternal)
 {
+    [Fact]
+    public void VerifyCorrectToModelImplementation()
+        => generator.VerifyCorrectToModelImplementation(useInternal);
 
     #region Setup
 
@@ -34,10 +45,10 @@ public abstract class ToModelWithConstructorTests(MockDataGenerator generator, I
     
     [Fact]
     public void WithConstructorFromModel_Throws()
-        => Throws<MissingMethodException>(GetModelSkipTypeCheck<WithConstructor>);
+        => Throws<MissingMethodException>(generator.GetModelSkipTypeCheck<WithConstructor>);
 
     [Fact]
     public void WithConstructorFromInterface_Throws()
-        => Throws<MissingMethodException>(GetModelSkipTypeCheck<IWithConstructor>);
+        => Throws<MissingMethodException>(generator.GetModelSkipTypeCheck<IWithConstructor>);
 
 }

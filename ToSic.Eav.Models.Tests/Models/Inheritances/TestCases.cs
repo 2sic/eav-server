@@ -5,7 +5,10 @@
 /// </summary>
 /// <param name="Name">Name to apply when trying to get the model</param>
 /// <param name="Notes">Additional notes about the test case</param>
-public record TestCaseName(string? Name, string Notes);
+public record TestCaseName(
+    string? Name,
+    string Notes
+);
 
 /// <summary>
 /// Test case information for a specific type and name, including a generator function and expected type.
@@ -19,5 +22,6 @@ public record TestCaseTypeAndName(
     Func<object?> Generator,
     Type OriginalType,
     Attribute Attribute,
-    string Notes);
+    string Notes
+);
 

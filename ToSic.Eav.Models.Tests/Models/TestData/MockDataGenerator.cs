@@ -1,22 +1,49 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.TestData;
+using ToSic.Sys.DI;
 
 namespace ToSic.Eav.Models.TestData;
 
 public class MockDataGenerator(
     DataAssembler dataAssembler,
     ContentTypesFromCodeManager ctDefFactory,
-    ContentTypeAssemblyKit ctAssemblyKit)
-    : MockDataGenerator<MockMetadataModel>(dataAssembler, ctDefFactory, ctAssemblyKit);
+    ContentTypeAssemblyKit ctAssemblyKit,
+    IToModelTac toModelTac)
+    : MockDataGenerator<MockMetadataModel>(dataAssembler, ctDefFactory, ctAssemblyKit, toModelTac);
 
 public interface IMockMetadataForGenerator
 {
     IEntity CreateMetadataForDecorator();
+
+    IToModelTac ToModelTac { get; }
 }
 
-public class MockDataGenerator<TMockMetadataModel>(DataAssembler dataAssembler, ContentTypesFromCodeManager ctDefFactory, ContentTypeAssemblyKit ctAssemblyKit) : IMockMetadataForGenerator
+public class MockDataGenerator<TMockMetadataModel>(
+    DataAssembler dataAssembler,
+    ContentTypesFromCodeManager ctDefFactory,
+    ContentTypeAssemblyKit ctAssemblyKit,
+    IToModelTac toModelTac)
+    : IMockMetadataForGenerator
 {
+    public void VerifyCorrectToModelImplementation(bool useInternal)
+        => IsType(useInternal ? typeof(ToModelTacInternal) : typeof(ToModelTacPublic), toModelTac);
+
+    public IToModelTac ToModelTac => toModelTac;
+
+    #region Test Setup Helpers to create models either using the internal ToModelInternal or the public ToModel
+
+    internal TModel? GetModel<TModel>()
+        where TModel : class, IModelFromEntity
+        => toModelTac.ToModelTac<TModel>(CreateMetadataForDecorator());
+
+    internal TModel? GetModelSkipTypeCheck<TModel>()
+        where TModel : class, IModelFromEntity
+        => toModelTac.ToModelTac<TModel>(CreateMetadataForDecorator(), ToModelOptions.DisableTypeNameCheck);
+
+    #endregion
+
+
     /// <summary>
     /// Create an entity having metadata - some of the expected main type, others to optionally mix in (for type testing)
     /// </summary>

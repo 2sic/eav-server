@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Models.Entity;
 using ToSic.Eav.Models.TestData;
 using ToSic.Sys.Utils.Types;
 using Xunit.DependencyInjection;
@@ -15,21 +14,14 @@ namespace ToSic.Eav.Models.Inheritances;
 /// <summary>
 /// Same Tests - but for the public ToModel()
 /// </summary>
-public class ToModelInheritance : ToModelInheritanceTests
-{
-    public class Startup : StartupInternal
-    {
-        public override void ConfigureServices(IServiceCollection services)
-            => base.ConfigureServices(services.AddTransient<IToModelTac, ToModelTacPublic>());
-    }
-}
+public class ToModelInheritance(MockDataGenerator<MockForInherit> generator) : ToModelInheritanceTests(generator, false);
 
 /// <summary>
 /// Override for the ToModelInternal() test
 /// </summary>
-public class ToModelInheritanceInternal : ToModelInheritanceTests
+public class ToModelInheritanceInternal(MockDataGenerator<MockForInherit> generator) : ToModelInheritanceTests(generator, true)
 {
-    public class Startup : StartupInternal
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
             => base.ConfigureServices(services.AddTransient<IToModelTac, ToModelTacInternal>());
@@ -39,34 +31,15 @@ public class ToModelInheritanceInternal : ToModelInheritanceTests
 /// <summary>
 /// Shared tests for ToModel and ToModelInternal
 /// </summary>
-public abstract class ToModelInheritanceTests
+public abstract class ToModelInheritanceTests(MockDataGenerator<MockForInherit> generator, bool useInternal)
 {
-
     #region Test Case Generator - Prepare for later Partials
 
-    public partial class TestCaseGenerator(MockDataGenerator<MockForInherit> generator, IToModelTac toModelTac)
-    {
-        public IMockMetadataForGenerator Generator => generator;
-        
-        private IEnumerable<object[]> CreateTestCases<TAttribute>(TestCaseName[] testCases)
-            where TAttribute : Attribute
-            => typeof(TestCaseGenerator).Assembly
-                .GetTypesWithAttribute<TAttribute>()
-                .SelectMany(pair => testCases
-                    .Select(testCase => new object[]
-                    {
-                        new TestCaseTypeAndName(
-                            Name: testCase.Name,
-                            Generator: () =>
-                                toModelTac.ToModel(Generator.CreateMetadataForDecorator(), pair.Type,
-                                    testCase.Name),
-                            OriginalType: pair.Type,
-                            Attribute: pair.Attribute,
-                            Notes: testCase.Notes
-                        )
-                    })
-                );
-    }
+    [Fact]
+    public void VerifyCorrectToModelImplementation()
+        => generator.VerifyCorrectToModelImplementation(useInternal);
+
+    public partial class TestCaseGenerator(MockDataGenerator<MockForInherit> generator): TestCaseGeneratorBase(generator);
 
     #endregion
 
@@ -99,7 +72,7 @@ public abstract class ToModelInheritanceTests
 
     [Theory, MethodData(nameof(TestCaseGenerator.ValidTypesWithGoodNames), typeof(TestCaseGenerator))]
     public void Valid_PropertyMatchesData(TestCaseTypeAndName testCase)
-        => Equal((int)TargetTypes.Entity, ((MockForInherit)testCase.Generator()).TargetType);
+        => Equal((int)TargetTypes.Entity, ((MockForInherit)testCase.Generator()!).TargetType);
 
     #endregion
 

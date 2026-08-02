@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Metadata;
-
-namespace ToSic.Eav.Models.TestData;
+﻿namespace ToSic.Eav.Models.TestData;
 
 /// <summary>
 /// The interface - which when used in ToModel will automatically use the <see cref="MockMetadataModel"/>.

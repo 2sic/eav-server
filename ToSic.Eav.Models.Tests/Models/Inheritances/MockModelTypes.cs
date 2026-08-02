@@ -6,14 +6,16 @@
 
 namespace ToSic.Eav.Models.Inheritances;
 
-public abstract class TestCaseInheritanceBaseAttribute : Attribute
+#region Attributes to categorize Types for Tests (will be automatically picked up by the test generator)
+
+public abstract class TestCase_BaseAttribute : Attribute
 {
     public string? Notes { get; init; }
 }
 
-public class TestCase_IsValidAttribute : TestCaseInheritanceBaseAttribute;
+public class TestCase_IsValidAttribute : TestCase_BaseAttribute;
 
-public class TestCase_ExpectedTypeAttribute : TestCaseInheritanceBaseAttribute
+public class TestCase_ExpectedTypeAttribute : TestCase_BaseAttribute
 {
     /// <summary>
     /// Optional expected type - should only be specified if the resulting Model will be different from the type where this attribute is set.
@@ -21,9 +23,14 @@ public class TestCase_ExpectedTypeAttribute : TestCaseInheritanceBaseAttribute
     public Type? Type { get; set; }
 }
 
-public class TestCase_BadNameAttribute : TestCaseInheritanceBaseAttribute;
+public class TestCase_BadNameAttribute : TestCase_BaseAttribute;
 
-public class TestCase_BadInterfaceCastAttribute : TestCaseInheritanceBaseAttribute;
+public class TestCase_BadInterfaceCastAttribute : TestCase_BaseAttribute;
+
+#endregion
+
+
+#region Core Interface and Implementation
 
 /// <summary>
 /// The interface - which when used in ToModel will automatically use the <see cref="MockForInherit"/>.
@@ -61,6 +68,11 @@ public record MockForInherit
     public int Amount => GetThis(1);
 }
 
+#endregion
+
+
+#region Derived Types for Testing Results
+
 /// <summary>
 /// This derives, but doesn't specify the ContentType, so it will inherit the ContentType from the base class
 /// Expectation: throws because name is off.
@@ -95,6 +107,12 @@ public record MockForInheritDerivedSpecsBad : MockForInherit;
 public record MockForInheritDerivedSpecsAsterisks : MockForInherit;
 
 public record MockForInheritAlternative: IModelFromEntity;
+
+#endregion
+
+
+
+#region Derived Intefaces for testing conversion results
 
 /// <summary>
 /// This should work as the <see cref="IMockForInherit"/> implements this interface
@@ -159,3 +177,4 @@ internal interface IMockForInherit_NotImplemented : IMockForInherit;
 [TestCase_BadInterfaceCast(Notes = "This fails even if we set another IModel, because they are compatible")]
 internal interface IMockForInherit_ReApplyingInterfaceWrong : IMockForInherit, IModelFromEntity<MockForInheritAlternative>;
 
+#endregion
