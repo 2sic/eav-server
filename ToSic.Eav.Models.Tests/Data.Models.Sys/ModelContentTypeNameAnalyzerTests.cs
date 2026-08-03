@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Sys.Wrappers;
-using static ToSic.Eav.Data.Models.Sys.DataModelAnalyzerTestAccessors;
+using static ToSic.Eav.Data.Models.Sys.ModelAnalysersTac;
 
 namespace ToSic.Eav.Data.Models.Sys;
 

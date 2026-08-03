@@ -131,7 +131,7 @@ public abstract class ContentTypesFromCodeBuildSpecsNone<TCodeTypeNoSpecs>(Conte
 
     [Fact]
     public void ContentType_NoDetailsMetadata() =>
-        Null(GetCurrentContentType().Metadata.FirstModel<IContentTypeDetails>());
+        Null(GetCurrentContentType().GetMetadataModel<IContentTypeDetails>());
 
     #endregion
 

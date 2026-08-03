@@ -1,12 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Eav.Models.Factory;
 using ToSic.Eav.Models.Sys;
 using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public static class ToModelIntern
+public static class ToModelInternal
 {
     /// <summary>
     /// Real implementation of As... methods
@@ -38,10 +37,6 @@ public static class ToModelIntern
             return FromNull<TModel>(trueType, nullHandling: options.NullHandling);
 
         // 3. Check if the cast uses the correct type
-        // Priority is
-        // 1. Specified in options (could also be `*` to allow any type)
-        // 2. Derived names of the interface name (e.g. `IContent` -> `Content`, `ContentBlock`, etc.)
-        // 3. 
         var checkName = ModelContentTypeNameAnalyzer.IsTypeNameAllowed(options.TypeName, typeof(TModel), trueType, entity.Type);
         if (!checkName.IsOk)
             throw ModelContentTypeNameAnalyzer.KeyNotFoundMessage(checkName.Names ?? [], entity.Type, entity.EntityId);
@@ -63,11 +58,9 @@ public static class ToModelIntern
 
     internal static TModel? FromNull<TModel>(Type trueType, NullHandling nullHandling)
         where TModel : class
-    {
-        return (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)
-            ?.SetupWithDataNullChecks((IEntity?)null, nullHandling)
+        => nullHandling is NullHandling.Default or NullHandling.ReturnNull
+            ? default
+            : (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)
+            ?.SetupWithNullChecks((IEntity?)null, nullHandling)
             as TModel;
-
-    }
-
 }

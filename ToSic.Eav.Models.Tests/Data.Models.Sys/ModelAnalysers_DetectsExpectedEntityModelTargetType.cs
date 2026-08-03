@@ -4,27 +4,27 @@ using ToSic.Sys.Utils.Types;
 namespace ToSic.Eav.Data.Models.Sys;
 
 // ReSharper disable once InconsistentNaming
-public class ModelAnalyseUse_DetectsExpectedEntityModelTargetType
+public class ModelAnalysers_DetectsExpectedEntityModelTargetType
 {
     #region Helper to test input and expected
 
     private static void AssertEntityTargetType<TInspect, TExpected>()
         where TInspect : class, IModelFromEntity
     {
-        var data = DataModelAnalyzerTestAccessors.GetTargetTypeTac<TInspect>();
+        var data = ModelAnalysersTac.GetTargetTypeTac<TInspect>();
         Equal(typeof(TExpected), data);
     }
     
     private static void AssertEntityTargetTypeNoFactory<TInspect, TExpected>()
         where TInspect : class, IModelFromEntity
     {
-        var data = DataModelAnalyzerTestAccessors.GetTargetTypeNoFactoryTac<TInspect>("TestMethod");
+        var data = ModelAnalysersTac.GetTargetTypeNoFactoryTac<TInspect>("TestMethod");
         Equal(typeof(TExpected), data);
     }
 
     private static void CreateNoFactory<TInspect>()
         where TInspect : class, IModelFromEntity
-        => DataModelAnalyzerTestAccessors.GetTargetTypeNoFactoryTac<TInspect>("TestMethod");
+        => ModelAnalysersTac.GetTargetTypeNoFactoryTac<TInspect>("TestMethod");
 
     #endregion
 

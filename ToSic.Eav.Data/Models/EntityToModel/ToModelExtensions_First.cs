@@ -40,7 +40,7 @@ public static partial class ToModelExtensions
         var trueType = ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(nameof(FirstModel));
 
         if (list == null)
-            return ToModelIntern.FromNull<TModel>(trueType: trueType, nullHandling: stableOptions.NullHandling);
+            return ToModelInternal.FromNull<TModel>(trueType: trueType, nullHandling: stableOptions.NullHandling);
 
         var nameList = ModelContentTypeNameExtractor
             .GetNames(stableOptions.TypeName, typeof(TModel), trueType).Names;

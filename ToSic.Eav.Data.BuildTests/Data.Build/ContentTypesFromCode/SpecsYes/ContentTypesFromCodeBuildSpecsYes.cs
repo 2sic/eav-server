@@ -128,7 +128,7 @@ public abstract class ContentTypesFromCodeBuildSpecsYes<TCodeTypeWithSpecs>(Cont
 
     [Fact]
     public void ContentType_HasDescription() =>
-        Equal(CodeTypeSpecsConstants.SpecDescription, ctDefManager.CreateTac<TCodeTypeWithSpecs>().Metadata.FirstModel<IContentTypeDetails>()!.Description);
+        Equal(CodeTypeSpecsConstants.SpecDescription, ctDefManager.CreateTac<TCodeTypeWithSpecs>().GetMetadataModel<IContentTypeDetails>()!.Description);
 
     #endregion
 

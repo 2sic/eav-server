@@ -12,13 +12,13 @@ public class NullHandlingSetupTests : NullHandlingBase
         where TModel : class, IModelSetup<IEntity>, new()
     {
         var x = new TModel();
-        return x.SetupWithDataNullChecks((IEntity?)null, nullHandling);
+        return x.SetupWithNullChecks((IEntity?)null, nullHandling);
     }
 
     private static object? CreateAndSetupWithNull(Type type, NullHandling nullHandling)
     {
         var x = TypeFactoryTac.CreateInstanceTac(type) as IModelSetup<IEntity>;
-        return x!.SetupWithDataNullChecks((IEntity?)null, nullHandling);
+        return x!.SetupWithNullChecks((IEntity?)null, nullHandling);
     }
 
     #endregion

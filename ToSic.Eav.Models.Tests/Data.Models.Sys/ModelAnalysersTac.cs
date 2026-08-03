@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Models.Sys;
 
-internal static class DataModelAnalyzerTestAccessors
+internal static class ModelAnalysersTac
 {
     public static IList<string> FindPriorityTypeNamesTac(Type type)
         => ModelContentTypeNameExtractor.GetNames(null, type, type).Names;
