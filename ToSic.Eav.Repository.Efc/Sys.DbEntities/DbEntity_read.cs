@@ -1,5 +1,7 @@
 ﻿using ToSic.Eav.Persistence.Efc.Sys;
 
+using System.Linq.Expressions;
+
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
@@ -140,21 +142,35 @@ partial class DbEntity
     }
 
     // 2020-10-07 2dm experiment with fewer requests
-    private IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid[] entityGuid, bool preferUntracked = false)
+    private IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid[] entityGuids, bool preferUntracked = false)
         //=> EntityQuery
         => DbStore.SqlDb.TsDynDataEntities
             .AsNoTrackingOptional(DbStore.Features, preferUntracked)
+            // 2026-08-03 stv commented because of bug in MySql.EntityFrameworkCore 10.0.9 (Connector/NET 26.7.0): https://bugs.mysql.com/bug.php?id=121029
+            //.Where(e =>
+            //    // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
+            //    // entityGuids.Contains(e.EntityGuid)
+            //    Enumerable.Contains(entityGuids, e.EntityGuid))
+            .Where(EntityGuidIsOneOf(entityGuids))
             .Where(e =>
-                        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-                        // entityGuid.Contains(e.EntityGuid)
-                        Enumerable.Contains(entityGuid, e.EntityGuid)
-                        && e.TransDeletedId == null
+                        e.TransDeletedId == null
                         && e.ContentTypeNavigation.TransDeletedId == null
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId)
                         && Enumerable.Contains(DbStore.AppIds, e.AppId)
             );
 
+    // MySql.EntityFrameworkCore 10.0.9 (Connector/NET 26.7.0) cannot bind Guid[] collection parameters: https://bugs.mysql.com/bug.php?id=121029
+    // so we need to build the expression manually
+    private static Expression<Func<TsDynDataEntity, bool>> EntityGuidIsOneOf(Guid[] entityGuids)
+    {
+        var entity = Expression.Parameter(typeof(TsDynDataEntity), "entity");
+        var entityGuid = Expression.Property(entity, nameof(TsDynDataEntity.EntityGuid));
+        Expression filter = Expression.Constant(false);
+        foreach (var guid in entityGuids)
+            filter = Expression.OrElse(filter, Expression.Equal(entityGuid, Expression.Constant(guid)));
+        return Expression.Lambda<Func<TsDynDataEntity, bool>>(filter, entity);
+    }
 
     /// <summary>
     /// Test whether Entity exists on current App and is not deleted
