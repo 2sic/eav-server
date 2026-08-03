@@ -5,7 +5,7 @@ namespace ToSic.Eav.Data.Models.Sys;
 internal static class DataModelAnalyzerTestAccessors
 {
     public static IList<string> FindPriorityTypeNamesTac(Type type)
-        => ModelContentTypeNameAnalyzer.FindPriorityTypeNames(null, type, type, null).Names!;
+        => ModelContentTypeNameExtractor.GetNames(null, type, type).Names;
     
 
     public static IList<string> GetStreamNameListTac<T>()

@@ -49,7 +49,8 @@ public static partial class ToModelExtensions
         // This is important, in case an interface was passed in.
         var trueType = ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(nameof(GetModels));
 
-        var nameList = ModelContentTypeNameAnalyzer.FindPriorityTypeNames(options?.TypeName, typeof(TModel), trueType, null).Names ?? [];
+        var nameList = ModelContentTypeNameExtractor
+            .GetNames(options?.TypeName, typeof(TModel), trueType).Names;
 
         var firstMatchingList = nameList
             .Select(name => list.GetAll(typeName: name).ToListOpt())

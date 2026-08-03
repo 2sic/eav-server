@@ -42,7 +42,8 @@ public static partial class ToModelExtensions
         if (list == null)
             return ToModelIntern.FromNull<TModel>(trueType: trueType, nullHandling: stableOptions.NullHandling);
 
-        var nameList = ModelContentTypeNameAnalyzer.FindPriorityTypeNames(stableOptions.TypeName, typeof(TModel), trueType, null).Names ?? [];
+        var nameList = ModelContentTypeNameExtractor
+            .GetNames(stableOptions.TypeName, typeof(TModel), trueType).Names;
 
         var firstMatch = nameList
             .Select(list.First)

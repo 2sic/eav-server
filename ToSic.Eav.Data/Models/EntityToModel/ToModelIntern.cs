@@ -43,7 +43,7 @@ public static class ToModelIntern
         // 2. Derived names of the interface name (e.g. `IContent` -> `Content`, `ContentBlock`, etc.)
         // 3. 
         var checkName = ModelContentTypeNameAnalyzer.IsTypeNameAllowed(options.TypeName, typeof(TModel), trueType, entity.Type);
-        if (checkName.IsError)
+        if (!checkName.IsOk)
             throw ModelContentTypeNameAnalyzer.KeyNotFoundMessage(checkName.Names ?? [], entity.Type, entity.EntityId);
 
         // Create the model. Cast is guaranteed, because the trueType was already checked to be compatible with TModel.
