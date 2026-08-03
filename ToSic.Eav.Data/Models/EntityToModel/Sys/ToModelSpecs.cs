@@ -86,7 +86,9 @@ internal record ToModelSpecs<TModel>(bool ExitEarly, TModel? Result, Type TrueTy
         // Short circuit to avoid creating an instance if null is expected anyhow
         => specs.Options.NullHandling is NullHandling.Default or NullHandling.ReturnNull
             ? default
-            : (TypeFactory.CreateInstance(specs.TrueType) as IModelSetup<IEntity>)
-            ?.SetupWithNullChecks((IEntity?)null, specs.Options.NullHandling)
-            as TModel;
+            : specs.Factory == null
+                ? ((IModelSetup<IEntity>)TypeFactory.CreateInstance(specs.TrueType))
+                .SetupWithNullChecks((IEntity?)null, specs.Options.NullHandling)
+                as TModel
+                : specs.Factory.Create<IEntity, TModel>(null, specs.Options);
 }

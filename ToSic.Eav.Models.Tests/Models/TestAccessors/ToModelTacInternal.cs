@@ -22,7 +22,13 @@ public class ToModelTacInternal : IToModelTac
         {
             // Invoke the method. The arguments are: entity, npo, options
             return ToModelInternalMethodInfo.MakeGenericMethod(type)
-                .Invoke(null, [entity, options, null, nameof(ToModelInternalTac)]);
+                .Invoke(null, [
+                    entity,
+                    options,
+                    null, // TrueType
+                    null, // Factory
+                    nameof(ToModelInternalTac)
+                ]);
         }
         catch (TargetInvocationException ex)
         {

@@ -1,13 +1,24 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Models.Factory;
+using ToSic.Eav.Models.TestData;
 
 namespace ToSic.Eav.Models.WithFactory;
 
 /// <summary>
 /// Test Sample Model
 /// </summary>
+[ModelSpecs(ContentType = nameof(MockMetadataModel))]
 public class MockModelRequiringFactoryNoDependencies
+    : IModelFromEntity, IModelSetup<IEntity>, IModelFactoryRequired
+{
+    public bool SetupModel(IEntity? source) => true;
+}
+
+/// <summary>
+/// This should throw an error because the name doesn't match
+/// </summary>
+public class MockModelRequiringFactoryNoDependenciesNoSpecs
     : IModelFromEntity, IModelSetup<IEntity>, IModelFactoryRequired
 {
     public bool SetupModel(IEntity? source) => true;
@@ -16,6 +27,7 @@ public class MockModelRequiringFactoryNoDependencies
 /// <summary>
 /// Test Sample Model
 /// </summary>
+[ModelSpecs(ContentType = nameof(MockMetadataModel))]
 public class MockModelRequiringFactoryWithDependencies(MockModelRequiringFactoryWithDependencies.Dependencies dependency)
     : IModelFromEntity, IModelSetup<IEntity>, IModelFactoryRequired
 {

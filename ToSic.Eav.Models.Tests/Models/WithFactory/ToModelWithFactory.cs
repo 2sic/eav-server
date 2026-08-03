@@ -32,6 +32,14 @@ public class ToModelRequiringFactory_NoDependencies(MockDataGenerator generator,
             generator.CreateMetadataForDecorator()
                 .ToModelTac<MockModelRequiringFactoryNoDependencies>(options: ToModelOptions.DisableTypeNameCheck)
         );
+    
+    [Fact]
+    public void ToModel_WrongName_Throws() =>
+        Throws<KeyNotFoundException>(() =>
+            generator.CreateMetadataForDecorator()
+                .ToModelTac<MockModelRequiringFactoryNoDependenciesNoSpecs>(factory)
+        );
+    
 }
 
 
