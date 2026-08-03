@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Sys.Utils.Types;
+using static ToSic.Eav.Models.Sys.ModelContentTypeNameCacheKeys;
 
 namespace ToSic.Eav.Models.Sys;
 
@@ -16,22 +17,18 @@ internal static class ModelContentTypeNameExtractor
     {
         // 1. If we have options, then this will pre-determine what is checked, so this would be what we use
         if (optionsTypeName != null)
-            return (ModelContentTypeNameCacheKeys.CacheKeyOptions(optionsTypeName), optionsTypeName.CsvToArrayWithoutEmpty());
+            return (CacheKeyOptions(optionsTypeName), optionsTypeName.CsvToArrayWithoutEmpty());
 
         // Check if we have one or two types to check (interface vs concrete type)
-        var typesDiffer = entryType != concreteType;
-        Type[] typesToCheck = typesDiffer ? [entryType, concreteType] : [entryType];
+        Type[] typesToCheck = entryType == concreteType ? [entryType] : [entryType, concreteType];
 
         // Check the one or two types for ModelSpecsAttribute or ContentTypeAttribute, and return the first one found
         foreach (var type in typesToCheck)
         {
-            var explicitOnModelSpecs = GetTypeNameOnModelSpecs(type);
-            if (explicitOnModelSpecs != null)
-                return (ModelContentTypeNameCacheKeys.CacheKeyForType(ModelContentTypeNameCacheKeys.CachePrefixType, type), explicitOnModelSpecs.CsvToArrayWithoutEmpty());
-
-            var explicitOnCtSpecs = GetTypeNameOnContentType(type);
-            if (explicitOnCtSpecs != null)
-                return (ModelContentTypeNameCacheKeys.CacheKeyForType(ModelContentTypeNameCacheKeys.CachePrefixType, type), explicitOnCtSpecs.CsvToArrayWithoutEmpty());
+            var onAttribute = GetTypeNameOnModelSpecs(type)
+                              ?? GetTypeNameOnContentType(type);
+            if (onAttribute != null)
+                return (CacheKeyForType(CachePrefixType, type), onAttribute.CsvToArrayWithoutEmpty());
         }
 
         // Check for automatically derived names
@@ -40,7 +37,7 @@ internal static class ModelContentTypeNameExtractor
             .SelectMany(ModelNameVariants.GetCached)
             .ToArray();
 
-        return (ModelContentTypeNameCacheKeys.CacheKeyForType(ModelContentTypeNameCacheKeys.CachePrefixDerived, entryType), namesDerived);
+        return (CacheKeyForType(CachePrefixDerived, entryType), namesDerived);
     }
 
     private static string? GetTypeNameOnModelSpecs(Type tCustom) =>
