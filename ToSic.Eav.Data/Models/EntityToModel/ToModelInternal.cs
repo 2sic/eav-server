@@ -45,19 +45,16 @@ public static class ToModelInternal
         var instance = (TModel)TypeFactory.CreateInstance(trueType);
 
         // Do Setup and check if it's ok.
-        // Wrapper will return false if the entity is null or invalid for the model.
-        var ok = ((IModelSetup<IEntity>)instance).SetupModel(entity);
-        return ok || options.NullHandling == NullHandling.ReturnModel
-            ? instance
-            : options.NullHandling == NullHandling.Throw
-                ? throw new ArgumentNullException($"Can't setup model of type {typeof(TModel)} with entity {entity.EntityId}")
-                : default;
+        // This may throw an exception if the model is not compatible with the entity, which is expected behavior.
+        ((IModelSetup<IEntity>)instance).SetupWithNullChecks(entity, options.NullHandling);
+        return instance;
     }
 
 
 
     internal static TModel? FromNull<TModel>(Type trueType, NullHandling nullHandling)
         where TModel : class
+        // Short circuit to avoid creating an instance if null is expected anyhow
         => nullHandling is NullHandling.Default or NullHandling.ReturnNull
             ? default
             : (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)

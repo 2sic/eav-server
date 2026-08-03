@@ -21,7 +21,8 @@ public static class ModelSetupExtensions
     /// Helper to set up the data being wrapped, returning the wrapper for easy chaining.
     /// </summary>
     [return: NotNullIfNotNull(nameof(data))]
-    internal static TModel? SetupWithNullChecks<TModel, TData>(this TModel model, TData? data, NullHandling nullHandling)
+    internal static TModel? SetupWithNullChecks<TModel, TData>(this TModel model, TData? data,
+        NullHandling nullHandling)
         where TData : class
         where TModel : IModelSetup<TData>
         => data switch
@@ -45,7 +46,7 @@ public static class ModelSetupExtensions
                     NullHandling.ReturnModel => model,
                     NullHandling.TryOrNull => default,
                     NullHandling.TryOrThrow => throw new ArgumentNullException(nameof(data),
-                        "data is null and null handling does not allow nulls"),
+                        $"Model setup failed. Data is probably null and null handling specifies {NullHandling.TryOrThrow}"),
                     _ => default
                 }
             }
