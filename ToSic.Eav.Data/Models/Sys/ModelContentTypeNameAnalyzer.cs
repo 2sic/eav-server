@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Sys.Caching.Keys;
 using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models.Sys;
@@ -21,7 +22,38 @@ public class ModelContentTypeNameAnalyzer
         TypeNameOnContentTypeCache.Get<ContentTypeAttribute>(tCustom, attribute => attribute?.Name);
 
     private static readonly TypeAttributeLookup<string?> TypeNameOnContentTypeCache = new();
+
+    internal bool PreFlightCheck(string? optionsTypeName, Type entryType, string? nameIdOrNull)
+    {
+        // If configured to match "Any" it's always ok.
+        if (optionsTypeName == ToModelOptions.TypeNameAny)
+            return true;
+
+        // If we don't have a name-id, then we can't check the cache, so it's not ok; requires more information to check
+        if (nameIdOrNull == null)
+            return false;
+        
+        // If we have options, then this will pre-determine what is checked, so this would be the cached info
+        if (optionsTypeName != null)
+            return TypeNameAllowedCache.Contains(CacheKeyOptions(optionsTypeName, nameIdOrNull));
+
+        // Check if we have a cache key for the type, which would have been cached if it was already verified as ok
+        if (TypeNameAllowedCache.Contains(CacheKeyForType(CachePrefixType, entryType, nameIdOrNull)))
+            return true;
+
+        // Check if we have a cache key for derived names, which would have been cached if it was already verified as ok
+        if (TypeNameAllowedCache.Contains(CacheKeyForType(CachePrefixDerived, entryType, nameIdOrNull)))
+            return true;
+
+        return false;
+    }
+
+    private const string CachePrefixType = "type";
+    private const string CachePrefixDerived = "derived";
     
+    private static string CacheKeyOptions(string optionsTypeName, string nameId) => $"option:{optionsTypeName}|{nameId}";
+    private static string CacheKeyForType(string prefix, Type entryType, string nameIdOrNull) => $"{prefix}:{entryType.FullName}|{nameIdOrNull}";
+
     /// <summary>
     /// The main system checking for name priorities.
     /// Will also check if it had already been verified by the cache, to reduce work in retrieving names etc.
@@ -37,28 +69,29 @@ public class ModelContentTypeNameAnalyzer
             return (true, "any", null);
 
         if (optionsTypeName != null)
-            return CheckAndReturn($"option:{optionsTypeName}|{nameIdOrNull}", optionsTypeName);
+            return CheckAndReturn(CacheKeyOptions(optionsTypeName, nameIdOrNull), optionsTypeName);
 
         // Check if we have one or two types to check (interface vs concrete type)
         var typesDiffer = entryType != concreteType;
-        (Type type, string keyPrefix)[] typesToCheck = typesDiffer
-            ? [(entryType, "entry"), (concreteType, "concrete")]
-            : [(entryType, "entry")];
+        Type[] typesToCheck = typesDiffer
+            ? [entryType, concreteType]
+            : [entryType];
 
         // Check the one or two types for ModelSpecsAttribute or ContentTypeAttribute, and return the first one found
-        foreach (var (type, keyPrefix) in typesToCheck)    
+        foreach (var type in typesToCheck)    
         {
             var explicitOnModelSpecs = GetTypeNameOnModelSpecs(type);
             if (explicitOnModelSpecs != null)
-                return CheckAndReturn(CacheKeyForType(keyPrefix), explicitOnModelSpecs);
+                return CheckAndReturn(CacheKeyForType(CachePrefixType, type, nameIdOrNull), explicitOnModelSpecs);
 
             var explicitOnCtSpecs = GetTypeNameOnContentType(type);
             if (explicitOnCtSpecs != null)
-                return CheckAndReturn(CacheKeyForType(keyPrefix), explicitOnCtSpecs);
+                return CheckAndReturn(CacheKeyForType(CachePrefixType, type, nameIdOrNull), explicitOnCtSpecs);
         }
 
         // Check for automatically derived names
-        var cacheKeyFinal = CacheKeyForType("derived");
+        // The values don't need to be in the cache, as the derived names are deterministic
+        var cacheKeyFinal = CacheKeyForType(CachePrefixDerived, entryType, nameIdOrNull);
         if (TypeNameAllowedCache.Contains(cacheKeyFinal))
             return (true, cacheKeyFinal, null);
         
@@ -75,8 +108,7 @@ public class ModelContentTypeNameAnalyzer
                 ? (true, cacheKey, null)
                 : (false, cacheKey, names.CsvToArrayWithoutEmpty());
         
-        string CacheKeyForType(string prefix)
-            => $"{prefix}:{entryType.FullName}|{nameIdOrNull}";
+        
     }
 
     public static (bool IsError, IList<string>? Names) IsTypeNameAllowed(string? optionsTypeName, Type entryType, Type concreteType, IContentType contentType)
