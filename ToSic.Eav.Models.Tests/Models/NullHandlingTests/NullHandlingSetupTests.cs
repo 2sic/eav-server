@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data;
+using ToSic.Sys.Utils.TypeFactoryTests;
 using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models.NullHandlingTests;
@@ -16,7 +17,7 @@ public class NullHandlingSetupTests : NullHandlingBase
 
     private static object? CreateAndSetupWithNull(Type type, NullHandling nullHandling)
     {
-        var x = TypeFactory.CreateInstance(type) as IModelSetup<IEntity>;
+        var x = TypeFactoryTac.CreateInstanceTac(type) as IModelSetup<IEntity>;
         return x!.SetupWithDataNullChecks((IEntity?)null, nullHandling);
     }
 

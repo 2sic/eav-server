@@ -19,8 +19,9 @@ public class TypeFactoryTests
     [Fact]
     public void A_TypeFactoryCreateSimpleObject_NotNull()
     {
-        var x = TypeFactory.CreateInstance(typeof(ClassWithoutConstructor));
+        var x = TypeFactoryTac.CreateInstanceTac(typeof(ClassWithoutConstructor));
         NotNull(x);
+        IsType<ClassWithoutConstructor>(x);
     }
 
     //[Fact]
@@ -40,7 +41,7 @@ public class TypeFactoryTests
 
     [Fact]
     public void B_ThrowsIfNonEmptyConstructor() =>
-        Throws<MissingConstructorException>(TypeFactory.CreateInstance<ClassWithConstructor>);
+        Throws<MissingConstructorException>(TypeFactoryTac.CreateInstanceTac<ClassWithConstructor>);
 
     //private class ClassToTestMultipleRuns { }
 

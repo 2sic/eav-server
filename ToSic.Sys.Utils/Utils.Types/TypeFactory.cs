@@ -33,7 +33,7 @@ public static class TypeFactory
     /// <param name="type"></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
-    public static Func<object> CreateInstanceFunc(Type type)
+    private static Func<object> CreateInstanceFunc(Type type)
         => TypeFactoryCache.GetOrAdd(type, t =>
         {
             // If it's a value type (struct), we use Activator or a specialized expression
@@ -41,8 +41,8 @@ public static class TypeFactory
             if (t.IsValueType)
                 return () => Activator.CreateInstance(t)!;
 
-            var constructor = t.GetConstructor(Type.EmptyTypes);
-            if (constructor == null)
+            // Verify it has an empty constructor
+            if (t.GetConstructor(Type.EmptyTypes) == null)
                 return () => throw new MissingConstructorException($"Type {t.Name} must have a public parameterless constructor.");
 
             // Generate the IL equivalent of: () => new T()
