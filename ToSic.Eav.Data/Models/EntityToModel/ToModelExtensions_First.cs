@@ -33,30 +33,27 @@ public static partial class ToModelExtensions
     )
         where TModel : class, IModelFromEntity
     {
-        var stableOptions = options ?? new();
-        
-        // Figure out the true type to create, based on Attribute
-        // This is important, in case an interface was passed in.
-        var trueType = ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(nameof(FirstModel));
+        var specs = ToModelSpecs<TModel>.List(list, options, null, useFactory: false, methodName: nameof(FirstModel));
+        if (specs.ExitEarly)
+            return specs.Result;
 
-        if (list == null)
-            return ToModelInternal.FromNull<TModel>(trueType: trueType, nullHandling: stableOptions.NullHandling);
+        (_, _, var trueType, options) = specs;
 
         var nameList = ModelContentTypeNameExtractor
-            .GetNames(stableOptions.TypeName, typeof(TModel), trueType).Names;
+            .GetNames(options.TypeName, typeof(TModel), trueType).Names;
 
         var firstMatch = nameList
-            .Select(list.First)
+            .Select(list!.First)
             .OfType<IEntity>()
             .FirstOrDefault();
         
         // For further processing, make sure that it won't re-check the type name unless explicitly specified
-        stableOptions = stableOptions with
+        options = options with
         {
-            TypeName = options?.TypeName ?? ToModelOptions.TypeNameAny,
+            TypeName = options.TypeName ?? ToModelOptions.TypeNameAny,
         };
 
-        return firstMatch.ToModelOrNull<TModel>(options: stableOptions, trueType: trueType);
+        return firstMatch.ToModelOrNull<TModel>(options: options, trueType: trueType);
     }
 
     #endregion

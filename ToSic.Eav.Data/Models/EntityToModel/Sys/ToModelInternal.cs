@@ -1,8 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Eav.Models.Sys;
 using ToSic.Sys.Utils.Types;
 
-namespace ToSic.Eav.Models;
+namespace ToSic.Eav.Models.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ToModelInternal
@@ -27,17 +26,15 @@ public static class ToModelInternal
     )
         where TModel : class, IModelFromEntity
     {
-        // 1. Figure out the true type to create, based on implemented interfaces etc.
-        // This is important, in case an interface was passed in.
-        // If the caller already knows the true type, it can be passed in to avoid the reflection overhead.
-        trueType ??= ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(methodName!);
+        // 1. Do Preflight; stabilize parameters and check if exit early is needed
+        var specs = ToModelSpecs<TModel>.Item(entity, options, trueType, methodName!);
+        if (specs.ExitEarly)
+            return specs.Result;
 
-        // 2. If Null, exit early
-        if (entity == null)
-            return FromNull<TModel>(trueType, nullHandling: options.NullHandling);
+        (_, _, trueType, options) = specs;
 
         // 3. Check if the cast uses the correct type
-        var checkName = ModelContentTypeNameAnalyzer.IsTypeNameAllowed(options.TypeName, typeof(TModel), trueType, entity.Type);
+        var checkName = ModelContentTypeNameAnalyzer.IsTypeNameAllowed(options.TypeName, typeof(TModel), trueType, entity!.Type);
         if (!checkName.IsOk)
             throw ModelContentTypeNameAnalyzer.KeyNotFoundMessage(checkName.Names ?? [], entity.Type, entity.EntityId);
 

@@ -25,29 +25,20 @@ public static partial class ToModelExtensions
     )
         where TModel : class, IModelFromEntity
     {
-        if (list == null)
-            return default;
+        var specs = ToModelSpecs<TModel>.List(list, options, null, useFactory: true, methodName: nameof(FirstModel));
+        if (specs.ExitEarly)
+            return specs.Result;
 
-        // Figure out the true type to create, based on Attribute
-        // This is important, in case an interface was passed in.
-        var trueType = ModelFromEntityTypeManager.GetTargetType<TModel>();
+        (_, _, var trueType, options) = specs;
 
         var nameList = ModelContentTypeNameExtractor
-            .GetNames(options?.TypeName, typeof(TModel), trueType).Names;
+            .GetNames(options.TypeName, typeof(TModel), trueType).Names;
 
         var firstMatch = nameList
             // ReSharper disable once PossibleMultipleEnumeration - should not ToList or anything, because it could lose optimizations of the FastLookup etc.
-            .Select(list.First)
+            .Select(list!.First)
             .OfType<IEntity>()
             .FirstOrDefault();
-
-        //foreach (var name in nameList)
-        //{
-        //    // ReSharper disable once PossibleMultipleEnumeration - should not ToList or anything, because it could lose optimizations of the FastLookup etc.
-        //    var first = list.First(typeName: name);
-        //    if (first != null)
-        //        return factory.Create<IEntity, TModel>(first);
-        //}
 
         // Nothing found
         return firstMatch != null

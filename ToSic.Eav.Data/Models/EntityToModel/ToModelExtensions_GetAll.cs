@@ -40,27 +40,24 @@ public static partial class ToModelExtensions
     )
         where TModel : class, IModelFromEntity
     {
-        // List null - always stop here
-        // Not all options listed, as the explicit return-Empty is automatically covered
-        if (list == null)
+        var specs = ToModelSpecs<TModel>.List(list, options, null, useFactory: false, methodName: nameof(GetModels));
+        if (specs.ExitEarly)
             return [];
 
-        // Figure out the true type to create, based on Attribute
-        // This is important, in case an interface was passed in.
-        var trueType = ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(nameof(GetModels));
+        (_, _, var trueType, options) = specs;
 
         var nameList = ModelContentTypeNameExtractor
-            .GetNames(options?.TypeName, typeof(TModel), trueType).Names;
+            .GetNames(options.TypeName, typeof(TModel), trueType).Names;
 
         var firstMatchingList = nameList
-            .Select(name => list.GetAll(typeName: name).ToListOpt())
+            .Select(name => list!.GetAll(typeName: name).ToListOpt())
             .FirstOrDefault(found => found.Any());
 
         if (firstMatchingList == null)
             return [];
 
         // We'll pre-fetch the exact type to use and do name checks, so any use later on should not do it again
-        options = (options ?? new()) with { TypeName = ToModelOptions.TypeNameAny };
+        options = options with { TypeName = ToModelOptions.TypeNameAny };
 
         return firstMatchingList
             .Select(raw => raw.ToModelOrNull<TModel>(options: options, trueType: trueType)!)
