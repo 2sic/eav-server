@@ -19,7 +19,7 @@ public static class ToModelIntern
     /// <param name="methodName">Automatically added method name</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
-    internal static TModel? ToModelInternal<TModel>(
+    internal static TModel? ToModelOrNull<TModel>(
         this IEntity? entity,
         ToModelOptions options,
         NoParamOrder npo = default,
@@ -31,7 +31,7 @@ public static class ToModelIntern
         // 1. Figure out the true type to create, based on implemented interfaces etc.
         // This is important, in case an interface was passed in.
         // If the caller already knows the true type, it can be passed in to avoid the reflection overhead.
-        trueType ??= ModelAnalyseUse.GetTargetType<TModel>();
+        trueType ??= ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(methodName!);
 
         // 2. If Null, exit early
         if (entity == null)
@@ -46,34 +46,20 @@ public static class ToModelIntern
         if (checkName.IsError)
             throw DataModelAnalyzer.KeyNotFoundMessage(checkName.Names ?? [], entity.Type, entity.EntityId);
 
-        // Create the model
-        var wrapperRaw = TypeFactory.CreateInstance(trueType);
-        var wrapper = wrapperRaw as TModel
-            ?? throw new InvalidCastException($"Cannot convert {trueType.Namespace}.{trueType.Name} to {typeof(TModel)} - seems to be incompatible.");
-
-        // Throw if TModel inherits from INeedsFactory
-        if (wrapper is IModelFactoryRequired)
-            throw RequiresFactoryException();
+        // Create the model. Cast is guaranteed, because the trueType was already checked to be compatible with TModel.
+        var instance = (TModel)TypeFactory.CreateInstance(trueType);
 
         // Do Setup and check if it's ok.
         // Wrapper will return false if the entity is null or invalid for the model.
-        var ok = (wrapper as IModelSetup<IEntity>)?.SetupModel(entity) ?? false;
-        return ok
-            ? wrapper
-            : options.NullHandling == NullHandling.ReturnModel
-                ? wrapper
-                : options.NullHandling == NullHandling.Throw
-                    ? throw RequiresFactoryException()
-                    : default;
-
-        MissingFactoryException RequiresFactoryException() => new(
-            $"""
-             Cannot cast to '{typeof(TModel)}' because it says it requires a factory.
-             This is usually because the model has more advanced features.
-             Please use '.{methodName}<TModel>(..., factory: modelFactory)' or the appropriate create method on a factory, such as 'As<{typeof(TModel)}>().
-             """
-        );
+        var ok = ((IModelSetup<IEntity>)instance).SetupModel(entity);
+        return ok || options.NullHandling == NullHandling.ReturnModel
+            ? instance
+            : options.NullHandling == NullHandling.Throw
+                ? throw new ArgumentNullException($"Can't setup model of type {typeof(TModel)} with entity {entity.EntityId}")
+                : default;
     }
+
+
 
     internal static TModel? FromNull<TModel>(Type trueType, NullHandling nullHandling)
         where TModel : class

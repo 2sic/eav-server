@@ -13,6 +13,10 @@ internal static class DataModelAnalyzerTestAccessors
         DataModelAnalyzer.GetStreamNameList<T>();
 
     public static Type GetTargetTypeTac<T>()
-        where T : class =>
-        ModelAnalyseUse.GetTargetType<T>();
+        where T : class, IModelFromData
+        => ModelFromEntityTypeManager.GetTargetType<T>();
+
+    public static Type GetTargetTypeNoFactoryTac<TModel>(string methodName)
+        where TModel : class, IModelFromEntity
+        => ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(methodName);
 }

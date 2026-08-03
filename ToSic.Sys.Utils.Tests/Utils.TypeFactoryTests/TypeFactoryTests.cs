@@ -40,10 +40,7 @@ public class TypeFactoryTests
 
     [Fact]
     public void B_ThrowsIfNonEmptyConstructor() =>
-        Throws<MissingMethodException>(() =>
-        {
-            TypeFactory.CreateInstance<ClassWithConstructor>();
-        });
+        Throws<MissingConstructorException>(TypeFactory.CreateInstance<ClassWithConstructor>);
 
     //private class ClassToTestMultipleRuns { }
 

@@ -17,9 +17,9 @@ public static partial class ToModelExtensions
         int id,
         NoParamOrder npo = default,
         ToModelOptions? options = default
-    ) where TModel : class, IModelFromEntity =>
+    ) where TModel : class, IModelFromEntity
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(id)).ToModelInternal<TModel>(options: new());
+        => (list?.GetOne(id)).ToModelOrNull<TModel>(options: options ?? new());
 
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
@@ -35,12 +35,8 @@ public static partial class ToModelExtensions
         Guid guid,
         NoParamOrder npo = default,
         ToModelOptions? options = default
-        //ModelNullHandling nullHandling = ModelNullHandling.Undefined
-    ) where TModel : class, IModelFromEntity, new() =>
+    ) where TModel : class, IModelFromEntity
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        (list?.GetOne(guid)).ToModelInternal<TModel>(options: new()
-            {
-                //TypeNameCheck = skipTypeCheck ? ToModelOptions.ModelTypeCheck.Skip : ToModelOptions.ModelTypeCheck.Strict
-            }/*, nullHandling: nullHandling*/);
+        => (list?.GetOne(guid)).ToModelOrNull<TModel>(options: options ?? new());
 
 }

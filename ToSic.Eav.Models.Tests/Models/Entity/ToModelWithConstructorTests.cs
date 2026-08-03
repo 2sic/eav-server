@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Models.TestData;
+using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models.Entity;
 
@@ -45,10 +46,10 @@ public abstract class ToModelWithConstructorTests(MockDataGenerator generator, b
     
     [Fact]
     public void WithConstructorFromModel_Throws()
-        => Throws<MissingMethodException>(generator.GetModelSkipTypeCheck<WithConstructor>);
+        => Throws<MissingConstructorException>(generator.GetModelSkipTypeCheck<WithConstructor>);
 
     [Fact]
     public void WithConstructorFromInterface_Throws()
-        => Throws<MissingMethodException>(generator.GetModelSkipTypeCheck<IWithConstructor>);
+        => Throws<MissingConstructorException>(generator.GetModelSkipTypeCheck<IWithConstructor>);
 
 }

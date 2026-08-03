@@ -21,11 +21,11 @@ public static class TypeFactory
     /// <summary>
     /// The Generic Wrapper: Uses the central cache but returns the correct type.
     /// </summary>
-    public static T CreateInstance<T>() where T: class =>
-        (T)CreateInstanceFunc(typeof(T))();
+    public static T CreateInstance<T>() where T: class
+        => (T)CreateInstanceFunc(typeof(T))();
 
-    public static object CreateInstance(Type type) =>
-        CreateInstanceFunc(type)();
+    public static object CreateInstance(Type type)
+        => CreateInstanceFunc(type)();
 
     /// <summary>
     /// GetOrAdd ensures we only compile the expression once
@@ -33,8 +33,8 @@ public static class TypeFactory
     /// <param name="type"></param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
-    public static Func<object> CreateInstanceFunc(Type type) =>
-        TypeFactoryCache.GetOrAdd(type, t =>
+    public static Func<object> CreateInstanceFunc(Type type)
+        => TypeFactoryCache.GetOrAdd(type, t =>
         {
             // If it's a value type (struct), we use Activator or a specialized expression
             // but for simplicity, here is the standard class implementation:
@@ -43,7 +43,7 @@ public static class TypeFactory
 
             var constructor = t.GetConstructor(Type.EmptyTypes);
             if (constructor == null)
-                return () => throw new MissingMethodException($"Type {t.Name} must have a public parameterless constructor.");
+                return () => throw new MissingConstructorException($"Type {t.Name} must have a public parameterless constructor.");
 
             // Generate the IL equivalent of: () => new T()
             var newExp = Expression.New(t);

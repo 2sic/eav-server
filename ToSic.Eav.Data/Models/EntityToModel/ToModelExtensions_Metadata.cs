@@ -14,10 +14,11 @@ public static partial class ToModelExtensions
     /// <returns></returns>
     public static TModel? GetMetadataModel<TModel>(
         this IHasMetadata parent,
-        NoParamOrder npo = default
+        NoParamOrder npo = default,
+        ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
     {
-        return parent.Metadata.FirstModel<TModel>();
+        return parent.Metadata.FirstModel<TModel>(options: options);
     }
 }

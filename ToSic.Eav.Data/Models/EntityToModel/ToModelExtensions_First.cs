@@ -14,7 +14,7 @@ public static partial class ToModelExtensions
     /// <param name="list">The collection of entities to search.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : class, IModelFromEntity, new()
+        where TModel : class, IModelFromEntity
         => list.FirstModel<TModel>(options: default);
 
     /// <summary>
@@ -37,7 +37,7 @@ public static partial class ToModelExtensions
         
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
-        var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+        var trueType = ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(nameof(FirstModel));
 
         if (list == null)
             return ToModelIntern.FromNull<TModel>(trueType: trueType, nullHandling: stableOptions.NullHandling);
@@ -54,11 +54,8 @@ public static partial class ToModelExtensions
         {
             TypeName = options?.TypeName ?? ToModelOptions.TypeNameAny,
         };
-        
-        return firstMatch != null
-            ? firstMatch.ToModelInternal<TModel>(options: stableOptions, trueType: trueType)
-            // Nothing found
-            : ToModelIntern.FromNull<TModel>(trueType, nullHandling: stableOptions.NullHandling);
+
+        return firstMatch.ToModelOrNull<TModel>(options: stableOptions, trueType: trueType);
     }
 
     #endregion

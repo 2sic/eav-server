@@ -14,7 +14,7 @@ public static partial class ToModelExtensions
     public static TModel? ToModel<TModel>(this IEntity? entity)
         where TModel : class, IModelFromEntity
     {
-        return entity.ToModelInternal<TModel>(options: new());
+        return entity.ToModelOrNull<TModel>(options: new());
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public static partial class ToModelExtensions
     )
         where TModel : class, IModelFromEntity
     {
-        return entity.ToModelInternal<TModel>(options: options ?? new());
+        return entity.ToModelOrNull<TModel>(options: options ?? new());
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public static partial class ToModelExtensions
     )
         where TModel : class, IModelFromEntity
     {
-        return (canBeEntity?.Entity).ToModelInternal<TModel>(options: options ?? new());
+        return (canBeEntity?.Entity).ToModelOrNull<TModel>(options: options ?? new());
     }
 
 

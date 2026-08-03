@@ -30,7 +30,7 @@ public static partial class ToModelExtensions
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
-        var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+        var trueType = ModelFromEntityTypeManager.GetTargetType<TModel>();
 
         var nameList = DataModelAnalyzer.FindPriorityTypeNames(options?.TypeName, typeof(TModel), trueType, null).Names ?? [];
 

@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.Data.Models.Sys;
+﻿using ToSic.Eav.Models.Factory;
+using ToSic.Sys.Utils.Types;
+
+namespace ToSic.Eav.Data.Models.Sys;
 
 // ReSharper disable once InconsistentNaming
 public class ModelAnalyseUse_DetectsExpectedEntityModelTargetType
@@ -12,33 +15,90 @@ public class ModelAnalyseUse_DetectsExpectedEntityModelTargetType
         Equal(typeof(TExpected), data);
     }
     
+    private static void AssertEntityTargetTypeNoFactory<TInspect, TExpected>()
+        where TInspect : class, IModelFromEntity
+    {
+        var data = DataModelAnalyzerTestAccessors.GetTargetTypeNoFactoryTac<TInspect>("TestMethod");
+        Equal(typeof(TExpected), data);
+    }
+
+    private static void CreateNoFactory<TInspect>()
+        where TInspect : class, IModelFromEntity
+        => DataModelAnalyzerTestAccessors.GetTargetTypeNoFactoryTac<TInspect>("TestMethod");
+
     #endregion
 
+    #region Basic Class, Can't work because it doesn't implement the IModelFromEntity interface, commented out
 
-    #region NotDecorated - should return itself as the type
+    //private class EmptyClass;
+
+    //[Fact]
+    //public void EmptyClass_NoFac_ThrowsMissignSetup() =>
+    //    Throws<MissingSetupException>(AssertEntityTargetTypeNoFactory<EmptyClass, EmptyClass>);
+    
+    #endregion
+
+    #region Class NotDecorated - should return itself as the type
 
     // ReSharper disable once ClassNeverInstantiated.Local
     private class NotDecorated : IModelFromEntity;
 
     [Fact]
-    public void TypeUndecorated_ReturnsItself() =>
+    public void TypeUndecorated_Get_ReturnsItself() =>
         AssertEntityTargetType<NotDecorated, NotDecorated>();
+
+    [Fact]
+    public void TypeUndecorated_NoFac_ThrowsMissignSetup() =>
+        Throws<MissingSetupException>(CreateNoFactory<NotDecorated>);
 
     #endregion
 
+    #region Class With Constructor - should throw
+
+    // ReSharper disable once ClassNeverInstantiated.Local
+    private class WithConstructor(string Test) : IModelFromEntity;
+
+    [Fact]
+    public void TypeWithConstructor_Get_Works() =>
+        AssertEntityTargetType<WithConstructor, WithConstructor>();
+
+    [Fact]
+    public void TypeWithConstructor_NoFac_Throws() =>
+        Throws<MissingConstructorException>(CreateNoFactory<WithConstructor>);
+
+    #endregion
     
-    #region Interface not Decorated - should return itself as the type
+    #region Class Requiring Factory
+
+    // ReSharper disable once ClassNeverInstantiated.Local
+    private class RequiresFactory : IModelFromEntity, IModelFactoryRequired;
+
+    [Fact]
+    public void RequiresFactory_Get_ReturnsItself() =>
+        AssertEntityTargetType<RequiresFactory, RequiresFactory>();
+
+    [Fact]
+    public void RequiresFactory_NoFac_ThrowsMissignFactory() =>
+        Throws<MissingFactoryException>(CreateNoFactory<RequiresFactory>);
+
+    #endregion
+    
+    #region Interface not Decorated - should throw
 
     private interface INotDecorated : IModelFromEntity;
 
     [Fact]
-    public void InterfaceUndecorated_Throws() =>
+    public void InterfaceUndecorated_Get_Throws() =>
         Throws<TypeInitializationException>(AssertEntityTargetType<INotDecorated, INotDecorated>);
-
+    
+    [Fact]
+    public void InterfaceUndecorated_NoFac_Throws() =>
+        Throws<TypeInitializationException>(CreateNoFactory<INotDecorated>);
+    
     #endregion
 
     
-    #region Decorated - should return the decorated type
+    #region Class Decorated - should return the decorated type
 
     //[ModelSpecs(Use = typeof(DecoratedEntity))]
     private record Decorated: ModelFromEntity, IModelFromEntity<DecoratedEntity>;
@@ -47,8 +107,12 @@ public class ModelAnalyseUse_DetectsExpectedEntityModelTargetType
     private record DecoratedEntity : Decorated;
 
     [Fact]
-    public void TypeDecorated_ReturnsModelSpecUse() =>
+    public void TypeDecorated_Get_ReturnsModelSpecUse() =>
         AssertEntityTargetType<Decorated, DecoratedEntity>();
+    
+    [Fact]
+    public void TypeDecorated_NoFac_ReturnsModelSpecUse() =>
+        AssertEntityTargetTypeNoFactory<Decorated, DecoratedEntity>();
 
     #endregion
 
@@ -58,40 +122,51 @@ public class ModelAnalyseUse_DetectsExpectedEntityModelTargetType
     private record InheritDecorated : Decorated;
 
     [Fact]
-    public void TypeUndecorated_InheritFromDecorated_ReturnsItself() =>
+    public void TypeUndecorated_InheritFromDecorated_Get_ReturnsItself() =>
         AssertEntityTargetType<InheritDecorated, InheritDecorated>();
+    
+    [Fact]
+    public void TypeUndecorated_InheritFromDecorated_NoFac_ReturnsItself() =>
+        AssertEntityTargetTypeNoFactory<InheritDecorated, InheritDecorated>();
+    
+   
 
     #endregion
 
     
     #region Inherit and redecorate, should return the newly decorated type
 
-    //[ModelSpecs(Use = typeof(InheritReDecoratedEntity))]
     private record InheritReDecorated : InheritDecorated, IModelFromEntity<InheritReDecoratedEntity>;
 
     // ReSharper disable once ClassNeverInstantiated.Local
     private record InheritReDecoratedEntity : InheritReDecorated;
 
     [Fact]
-    public void TypeDecorated_InheritFromDecorated__ReturnsNewlyDecoratedType() =>
+    public void TypeDecorated_InheritFromDecorated_Get_ReturnsNewlyDecoratedType() =>
         AssertEntityTargetType<InheritReDecorated, InheritReDecoratedEntity>();
 
-    #endregion
+    [Fact]
+    public void TypeDecorated_InheritFromDecorated_NoFac__ReturnsNewlyDecoratedType() =>
+        AssertEntityTargetTypeNoFactory<InheritReDecorated, InheritReDecoratedEntity>();
+
+   #endregion
 
     
     #region Interface decorated - should return the decorated type
 
-    //[ModelSpecs(Use = typeof(EntityOfIDecorated))]
     private interface IDecorated : IModelFromEntity<EntityOfIDecorated>;
 
     // ReSharper disable once ClassNeverInstantiated.Local
     private record EntityOfIDecorated : InheritReDecorated, IDecorated;
 
     [Fact]
-    public void InterfaceDecorated_ReturnsModelSpecsUse() =>
+    public void InterfaceDecorated_Get_ReturnsModelSpecsUse() =>
         AssertEntityTargetType<IDecorated, EntityOfIDecorated>();
 
-    #endregion
+    [Fact]
+    public void InterfaceDecorated_NoFac_ReturnsModelSpecsUse() =>
+        AssertEntityTargetTypeNoFactory<IDecorated, EntityOfIDecorated>();
+   #endregion
 
 
     #region Interface with ModelFromEntity<T>
@@ -102,8 +177,11 @@ public class ModelAnalyseUse_DetectsExpectedEntityModelTargetType
     private record UndecoratedWithInheritanceModelFromEntity : IUndecoratedWithInheritance;
 
     [Fact]
-    public void InterfaceInheritingDef_ReturnsModelSpecsUse() =>
+    public void InterfaceInheritingDef_Get_ReturnsModelSpecsUse() =>
         AssertEntityTargetType<IUndecoratedWithInheritance, UndecoratedWithInheritanceModelFromEntity>();
 
-    #endregion
+    [Fact]
+    public void InterfaceInheritingDef_NoFac_ThrowsMissingSetup() =>
+        Throws<MissingSetupException>(CreateNoFactory<IUndecoratedWithInheritance>);
+   #endregion
 }

@@ -22,7 +22,7 @@ public class ToModelTacInternal : IToModelTac
         ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
-        => entity.ToModelInternal<TModel>(options ?? new());
+        => entity.ToModelOrNull<TModel>(options ?? new());
 
     public object? ToModel(IEntity entity, Type type, string? typeName)
         => ToModelInternalTac(entity, type, options: new() { TypeName = typeName });
@@ -51,10 +51,10 @@ public class ToModelTacInternal : IToModelTac
                 .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
                 .FirstOrDefault(m => m is
                 {
-                    Name: nameof(ToModelIntern.ToModelInternal),
+                    Name: nameof(ToModelIntern.ToModelOrNull),
                     IsGenericMethod: true
                 })
-            ?? throw new InvalidOperationException($"Method '{nameof(ToModelIntern.ToModelInternal)}' not found or not generic.");
+            ?? throw new InvalidOperationException($"Method '{nameof(ToModelIntern.ToModelOrNull)}' not found or not generic.");
 }
 
 
@@ -131,7 +131,7 @@ public static class ToModelTestAccessors
         NoParamOrder npo = default
     )
         where TModel : class, IModelFromEntity
-        => entity.ToModelInternal<TModel>(options, npo);
+        => entity.ToModelOrNull<TModel>(options, npo);
 
 
     #endregion

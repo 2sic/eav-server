@@ -47,7 +47,7 @@ public static partial class ToModelExtensions
 
         // Figure out the true type to create, based on Attribute
         // This is important, in case an interface was passed in.
-        var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+        var trueType = ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(nameof(GetModels));
 
         var nameList = DataModelAnalyzer.FindPriorityTypeNames(options?.TypeName, typeof(TModel), trueType, null).Names ?? [];
 
@@ -62,7 +62,7 @@ public static partial class ToModelExtensions
         options = (options ?? new()) with { TypeName = ToModelOptions.TypeNameAny };
 
         return firstMatchingList
-            .Select(raw => raw.ToModelInternal<TModel>(options: options, trueType: trueType)!)
+            .Select(raw => raw.ToModelOrNull<TModel>(options: options, trueType: trueType)!)
             .ToList();
         
         // 2026-07-30 2dm - old code, which certainly did short-circuit but not as functional
