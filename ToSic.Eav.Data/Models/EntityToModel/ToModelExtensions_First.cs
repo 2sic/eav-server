@@ -15,7 +15,8 @@ public static partial class ToModelExtensions
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list)
         where TModel : class, IModelFromEntity
-        => list.FirstModel<TModel>(options: default);
+        => FirstModel<TModel>(list, options: default, factory: null);
+
 
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
@@ -27,16 +28,7 @@ public static partial class ToModelExtensions
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-    {
-        var specs = ToModelSpecs<TModel>.List(list, options, null, useFactory: false);
-        if (specs.ExitEarly)
-            return specs.Result;
-
-        // For further processing, make sure that it won't re-check the type name unless explicitly specified
-        var firstMatch = FirstDoLookup(specs, list!);
-        
-        return firstMatch.ToModelOrNull<TModel>(options: specs.DisableNameCheck().Options, trueType: specs.TrueType);
-    }
+        => FirstModel<TModel>(list, options: options, factory: null);
 
 
     /// <summary>
@@ -50,31 +42,31 @@ public static partial class ToModelExtensions
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list, IModelFactory factory, NoParamOrder npo = default, ToModelOptions? options = null)
         where TModel : class, IModelFromEntity
+        => FirstModel<TModel>(list, options: options, factory: factory ?? throw new ArgumentNullException(nameof(factory)));
+
+
+    /// <summary>
+    /// Main work horse for FirstModel, used by both overloads.
+    /// It handles the common logic of filtering and selecting the first entity, and then delegates the final conversion to the provided function.
+    /// </summary>
+    private static TModel? FirstModel<TModel>(IEnumerable<IEntity>? list, ToModelOptions? options, IModelFactory? factory)
+        where TModel : class, IModelFromEntity
     {
-        var specs = ToModelSpecs<TModel>.List(list, options, null, useFactory: true);
+        var specs = ToModelSpecs<TModel>.List(list, options, null, factory);
         if (specs.ExitEarly)
             return specs.Result;
 
-        var firstMatch = FirstDoLookup(specs, list!);
-
-        // Nothing found
-        return firstMatch != null
-            ? factory.Create<IEntity, TModel>(firstMatch)
-            : default;
-    }
-
-
-
-    private static IEntity? FirstDoLookup(ToModelSpecs specs, IEnumerable<IEntity> list)
-    {
         var nameList = ModelContentTypeNameExtractor.GetNames(specs).Names;
 
         var firstMatch = nameList
             .Select(list!.First)
             .OfType<IEntity>()
             .FirstOrDefault();
-        return firstMatch;
-    }
 
+        // Process result
+        return factory != null
+            ? firstMatch != null ? factory.Create<IEntity, TModel>(firstMatch) : default
+            : firstMatch.ToModelOrNull<TModel>(options: specs.OptionsDisableNameCheck(), trueType: specs.TrueType);
+    }
 
 }

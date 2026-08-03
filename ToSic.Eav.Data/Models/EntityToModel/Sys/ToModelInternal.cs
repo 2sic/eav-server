@@ -26,7 +26,7 @@ public static class ToModelInternal
         where TModel : class, IModelFromEntity
     {
         // 1. Do Preflight; stabilize parameters and check if exit early is needed
-        var specs = ToModelSpecs<TModel>.Item(entity, options, trueType, methodName!);
+        var specs = ToModelSpecs<TModel>.Item(entity, options, trueType, null, methodName!);
         if (specs.ExitEarly)
             return specs.Result;
 

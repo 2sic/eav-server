@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Metadata;
+using ToSic.Eav.Models.Factory;
+// ReSharper disable MethodOverloadWithOptionalParameter
 
 namespace ToSic.Eav.Models;
 
@@ -14,8 +16,7 @@ public static partial class ToModelExtensions
     /// <returns></returns>
     public static TModel? GetMetadataModel<TModel>(this IHasMetadata parent)
         where TModel : class, IModelFromEntity
-        => parent.Metadata.FirstModel<TModel>();
-
+        => FirstModel<TModel>(parent.Metadata, null, null);
 
     /// <summary>
     /// Get a typed metadata from an object which has metadata.
@@ -26,12 +27,12 @@ public static partial class ToModelExtensions
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="options">Conversion options</param>
     /// <returns></returns>
-    public static TModel? GetMetadataModel<TModel>(
-        this IHasMetadata parent,
-        // ReSharper disable once MethodOverloadWithOptionalParameter
-        NoParamOrder npo = default,
-        ToModelOptions? options = default
-    )
+    public static TModel? GetMetadataModel<TModel>(this IHasMetadata parent, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-        => parent.Metadata.FirstModel<TModel>(options: options);
+        => FirstModel<TModel>(parent.Metadata, options: options, factory: null);
+    
+    
+    public static TModel? GetMetadataModel<TModel>(this IHasMetadata parent, IModelFactory factory, NoParamOrder npo = default, ToModelOptions? options = default)
+        where TModel : class, IModelFromEntity
+        => FirstModel<TModel>(parent.Metadata, options: options, factory: factory ?? throw new ArgumentNullException(nameof(factory)));
 }

@@ -14,15 +14,13 @@ public static partial class ToModelExtensions
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="options">Conversion options</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? GetModel<TModel>(
-        this IEnumerable<IEntity>? list,
-        int id,
-        NoParamOrder npo = default,
-        ToModelOptions? options = default
-    ) where TModel : class, IModelFromEntity
+    public static TModel? GetModel<TModel>(this IEnumerable<IEntity>? list, int id, NoParamOrder npo = default, ToModelOptions? options = default)
+        where TModel : class, IModelFromEntity
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         => (list?.GetOne(id)).ToModelOrNull<TModel>(options: options ?? new());
 
+    
+    
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
     /// </summary>
@@ -32,12 +30,8 @@ public static partial class ToModelExtensions
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="options">Conversion options</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? GetModel<TModel>(
-        this IEnumerable<IEntity>? list,
-        Guid guid,
-        NoParamOrder npo = default,
-        ToModelOptions? options = default
-    ) where TModel : class, IModelFromEntity
+    public static TModel? GetModel<TModel>(this IEnumerable<IEntity>? list, Guid guid, NoParamOrder npo = default, ToModelOptions? options = default)
+        where TModel : class, IModelFromEntity
         // Note: if null / nothing found, let the model decide if it should wrap or return null
         => (list?.GetOne(guid)).ToModelOrNull<TModel>(options: options ?? new());
 

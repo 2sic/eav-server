@@ -13,7 +13,7 @@ internal static class ModelContentTypeNameExtractor
     internal static (string CacheKeyPrefix, IList<string> Names) GetNames(ToModelSpecs specs)
     {
         // Extract types from the ToModelSpecs record
-        var (entryType, concreteType, toModelOptions, _) = specs;
+        var (entryType, concreteType, toModelOptions, _, _) = specs;
         var optionsTypeName = toModelOptions.TypeName;
         
         // 1. If we have options, then this will pre-determine what is checked, so this would be what we use
