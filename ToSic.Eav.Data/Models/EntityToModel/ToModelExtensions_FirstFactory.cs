@@ -32,7 +32,7 @@ public static partial class ToModelExtensions
         // This is important, in case an interface was passed in.
         var trueType = ModelFromEntityTypeManager.GetTargetType<TModel>();
 
-        var nameList = DataModelAnalyzer.FindPriorityTypeNames(options?.TypeName, typeof(TModel), trueType, null).Names ?? [];
+        var nameList = ModelContentTypeNameAnalyzer.FindPriorityTypeNames(options?.TypeName, typeof(TModel), trueType, null).Names ?? [];
 
         var firstMatch = nameList
             // ReSharper disable once PossibleMultipleEnumeration - should not ToList or anything, because it could lose optimizations of the FastLookup etc.

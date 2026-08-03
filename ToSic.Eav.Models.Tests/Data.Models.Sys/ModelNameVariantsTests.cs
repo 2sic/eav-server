@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Models.Sys;
 
-public class DataModelNameVariantsTests
+public class ModelNameVariantsTests
 {
     [Theory]
     // isInterface = false
@@ -24,19 +24,19 @@ public class DataModelNameVariantsTests
     [InlineData("IThingModel", true, new[] { "IThingModel", "IThing", "ThingModel", "Thing" })]
     public void CreateListOfNameVariants(string input, bool isInterface, string[] expected)
     {
-        var result = DataModelNameVariants.CreateListOfNameVariants(input, isInterface);
+        var result = ModelNameVariants.CreateListOfNameVariants(input, isInterface);
         Equal(expected, result);
     }
 
 
     [Theory]
-    [InlineData(null, new[] { nameof(DataModelNameVariantsTests) })]
+    [InlineData(null, new[] { nameof(ModelNameVariantsTests) })]
     [InlineData("", new[] { "" })]
     [InlineData("CustomName", new[] { "CustomName" })]
     [InlineData("CustomName,Custom2", new[] { "CustomName", "Custom2" })]
     public void UseSpecifiedNameOrDeriveFromType(string input, string[] expected)
     {
-        var result = DataModelNameVariants.UseSpecifiedNameOrDeriveFromType(typeof(DataModelNameVariantsTests), input);
+        var result = ModelNameVariants.GetFromNameOrFromType(input, typeof(ModelNameVariantsTests));
         Equal(expected, result);
     }
 

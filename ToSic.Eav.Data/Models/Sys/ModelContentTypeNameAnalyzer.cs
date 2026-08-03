@@ -1,29 +1,16 @@
-﻿using System.Collections.Concurrent;
-using ToSic.Eav.Data.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class DataModelAnalyzer
+public class ModelContentTypeNameAnalyzer
 {
     /// <summary>
-    /// Figure out the expected ContentTypeName of a DataWrapper type.
+    /// Main cache, remembering which type names have already been verified as allowed for a specific type and nameId.
+    /// The string is a cache key describing the parameters which were used to check if it's ok.
     /// </summary>
-    /// <returns></returns>
-    /// <remarks>
-    /// If it is decorated with <see cref="ModelSpecsAttribute"/> then use the information it provides, otherwise
-    /// use the type name.
-    ///
-    /// Note: as the code changed, we're not really doing the attribute check here anymore, but still keeping the structure for a quick cache.
-    /// should probably be changed some day
-    /// </remarks>
-    private static IList<string> GetValidTypeNamesCache(Type type) =>
-        ContentTypeNamesCache.GetOrAdd(type, _ =>
-            DataModelNameVariants.CreateListOfNameVariants(type.Name, type.IsInterface)
-        );
-    
-    private static readonly ConcurrentDictionary<Type, IList<string>> ContentTypeNamesCache = new();
+    private static readonly HashSet<string> TypeNameAllowedCache = [];
 
     private static string? GetTypeNameOnModelSpecs(Type tCustom) =>
         TypeNameOnModelSpecsCache.Get<ModelSpecsAttribute>(tCustom, attribute => attribute?.ContentType);
@@ -34,6 +21,7 @@ public class DataModelAnalyzer
         TypeNameOnContentTypeCache.Get<ContentTypeAttribute>(tCustom, attribute => attribute?.Name);
 
     private static readonly TypeAttributeLookup<string?> TypeNameOnContentTypeCache = new();
+    
     /// <summary>
     /// The main system checking for name priorities.
     /// Will also check if it had already been verified by the cache, to reduce work in retrieving names etc.
@@ -75,8 +63,8 @@ public class DataModelAnalyzer
             return (true, cacheKeyFinal, null);
         
         var namesDerived = typesDiffer
-            ? GetValidTypeNamesCache(entryType).Concat(GetValidTypeNamesCache(concreteType)).ToArray()
-            : GetValidTypeNamesCache(entryType);
+            ? ModelNameVariants.GetCached(entryType).Concat(ModelNameVariants.GetCached(concreteType)).ToArray()
+            : ModelNameVariants.GetCached(entryType);
 
         return (false, cacheKeyFinal, namesDerived);
 
@@ -112,7 +100,6 @@ public class DataModelAnalyzer
         return (false, typeNames);
 
     }
-    private static readonly HashSet<string> TypeNameAllowedCache = [];
 
     public static KeyNotFoundException KeyNotFoundMessage(IList<string>? typeNames, IContentType contentType, object idForErrors)
         => new(
@@ -120,22 +107,9 @@ public class DataModelAnalyzer
             $"This is probably a mistake, otherwise set '{nameof(ToModelOptions.TypeName)}: '*' " +
             $"or apply an attribute [{nameof(ModelSpecsAttribute)}({nameof(ModelSpecsAttribute.ContentType)} = \"{contentType.Name}\")] to your model class. "
         );
+}
 
-    #region Stream Names WIP
-
-    /// <summary>
-    /// Get the stream names of the current type.
-    /// </summary>
-    /// <typeparam name="TCustom"></typeparam>
-    /// <returns></returns>
-    public static IList<string> GetStreamNameList<TCustom>() where TCustom : class
-    {
-        return StreamNames.Get<TCustom, ModelSpecsAttribute>(attribute =>
-            DataModelNameVariants.UseSpecifiedNameOrDeriveFromType(typeof(TCustom), attribute?.Stream));
-    }
-
-    private static readonly TypeAttributeLookup<IList<string>> StreamNames = new();
-
-    #endregion
-
+public static class ModelNameVerifier
+{
+    
 }

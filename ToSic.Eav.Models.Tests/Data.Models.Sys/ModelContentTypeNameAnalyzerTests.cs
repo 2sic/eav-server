@@ -4,7 +4,7 @@ using static ToSic.Eav.Data.Models.Sys.DataModelAnalyzerTestAccessors;
 
 namespace ToSic.Eav.Data.Models.Sys;
 
-public class DataModelAnalyzerTests
+public class ModelContentTypeNameAnalyzerTests
 {
     private static void AssertTypeName<T>(string name)
         where T : class, IWrapperWip =>

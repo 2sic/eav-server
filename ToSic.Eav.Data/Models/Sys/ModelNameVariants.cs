@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Models.Sys;
+﻿using System.Collections.Concurrent;
+
+namespace ToSic.Eav.Models.Sys;
 
 /// <summary>
 /// Helper to figure out the true Content-Type names of models, based on the class name and some common suffixes.
@@ -8,11 +10,29 @@
 /// For that, use the DataModelAnalyzer
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class DataModelNameVariants
+public class ModelNameVariants
 {
-    internal static IList<string> UseSpecifiedNameOrDeriveFromType(Type type, string? names)
+    /// <summary>
+    /// Figure out the expected ContentTypeName of a DataWrapper type.
+    /// </summary>
+    /// <returns></returns>
+    /// <remarks>
+    /// If it is decorated with <see cref="ModelSpecsAttribute"/> then use the information it provides, otherwise
+    /// use the type name.
+    ///
+    /// Note: as the code changed, we're not really doing the attribute check here anymore, but still keeping the structure for a quick cache.
+    /// should probably be changed some day
+    /// </remarks>
+    internal static IList<string> GetCached(Type type) =>
+        NameVariantsCache.GetOrAdd(type, _ =>
+            CreateListOfNameVariants(type.Name, type.IsInterface)
+        );
+
+    private static readonly ConcurrentDictionary<Type, IList<string>> NameVariantsCache = new();
+
+    internal static IList<string> GetFromNameOrFromType(string? names, Type type)
         => names?.CsvToArrayPreserveEmpty().ToListOpt()
-           ?? CreateListOfNameVariants(type.Name, type.IsInterface);
+           ?? GetCached(type);
 
 
     /// <summary>

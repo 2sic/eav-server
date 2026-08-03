@@ -54,7 +54,16 @@ public static class ModelFromEntityTypeManagerNoFactory
     {
         try
         {
-            var trueType = ModelFromEntityTypeManager.GetTargetType<TModel>();
+            Type trueType;
+            try
+            {
+                trueType = ModelFromEntityTypeManager.GetTargetType<TModel>();
+            }
+            catch (Exception ex)
+            {
+                return new(ex, ModelCreationStatus.GetTargetTypeFails);
+            }
+
 
             // Test-Create the type to determine if it's compatible
             // Cache / remember exceptions raised during normal creation.
@@ -65,7 +74,7 @@ public static class ModelFromEntityTypeManagerNoFactory
             }
             catch (Exception ex)
             {
-                return new(ex, ModelCreationStatus.ErrorCreateInstance);
+                return new(ex, ModelCreationStatus.CreateInstanceFails);
             }
 
             // Verify it can be cast to the specified model type

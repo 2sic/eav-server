@@ -3,7 +3,8 @@
 internal enum ModelCreationStatus
 {
     Success,
-    ErrorCreateInstance,
+    GetTargetTypeFails,
+    CreateInstanceFails,
     InvalidCast,
     RequiresFactory,
     MissingSetup,
