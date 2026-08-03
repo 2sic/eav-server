@@ -1,22 +1,26 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Models.Factory;
+// ReSharper disable InconsistentNaming
 
 namespace ToSic.Eav.Models.NullHandlingTests;
 
 public class NullHandlingToModelTests_Static : NullHandlingToModelTests
 {
+    protected override TModel? NullEntityToModel<TModel>(NullHandling nullHandling) where TModel : class
+        => ((IEntity)null!).ToModelTac<TModel>(options: new() { NullHandling = nullHandling });
     
 }
 
-public class NullHandlingToModelTests_Factory(IModelFactory modelFactory) : NullHandlingToModelTests
+public class NullHandlingToModelTests_FactoryDirect(IModelFactory modelFactory) : NullHandlingToModelTests
 {
-    /// <summary>
-    ///  Register the normal Dependencies for the IModelFactory to work
-    /// </summary>
-    public class Startup : ToSic.Eav.Models.Startup;
-
     protected override TModel? NullEntityToModel<TModel>(NullHandling nullHandling) where TModel : class
         => modelFactory.Create<IEntity, TModel>(null!, new() { NullHandling = nullHandling });
+}
+
+public class NullHandlingToModelTests_FactoryExtension(IModelFactory modelFactory) : NullHandlingToModelTests
+{
+    protected override TModel? NullEntityToModel<TModel>(NullHandling nullHandling) where TModel : class
+        => ((IEntity)null!).ToModelTac<TModel>(factory: modelFactory, options: new() { NullHandling = nullHandling });
 }
 
 
@@ -27,8 +31,8 @@ public abstract class NullHandlingToModelTests : NullHandlingBase
 {
     #region ToModel Test Helpers
 
-    protected virtual TModel? NullEntityToModel<TModel>(NullHandling nullHandling) where TModel : class, IModelFromEntity
-        => ((IEntity)null!).ToModelTac<TModel>(options: new() { NullHandling = nullHandling });
+    protected abstract TModel? NullEntityToModel<TModel>(NullHandling nullHandling)
+        where TModel : class, IModelFromEntity;
 
     #endregion
 

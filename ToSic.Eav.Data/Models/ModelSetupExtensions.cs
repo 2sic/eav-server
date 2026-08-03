@@ -8,12 +8,12 @@ public static class ModelSetupExtensions
     /// <summary>
     /// Helper to set up the data being wrapped, returning the wrapper for easy chaining.
     /// </summary>
-    [return: NotNullIfNotNull(nameof(source))]
-    public static TWrapper? Setup<TWrapper, TSource>(this TWrapper wrapper, TSource? source)
-        where TSource : class
-        where TWrapper : IModelSetup<TSource>
+    [return: NotNullIfNotNull(nameof(data))]
+    public static TModel? Setup<TData, TModel>(this TModel wrapper, TData? data)
+        where TData : class
+        where TModel : IModelSetup<TData>
     {
-        var ok = wrapper.SetupModel(source);
+        var ok = wrapper.SetupModel(data);
         return ok ? wrapper : default;
     }
 

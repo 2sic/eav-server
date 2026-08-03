@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Models.Factory;
-using ToSic.Eav.Models.Sys;
 using ToSic.Sys.Coding;
 
 namespace ToSic.Eav.Models;
@@ -9,13 +8,9 @@ public static class ToModelTestAccessors
 {
     #region ToModelInternal
 
-    internal static TModel? ToModelOrNullTac<TModel>(
-        this IEntity? entity,
-        ToModelOptions options,
-        NoParamOrder npo = default
-    )
+    internal static TModel? ToModelOrNullTac<TModel>(this IEntity? entity, ToModelOptions options, NoParamOrder npo = default)
         where TModel : class, IModelFromEntity
-        => entity.ToModelOrNull<TModel>(options, npo);
+        => ToModelExtensions.ToModelInternal<TModel>(entity, options);
 
 
     #endregion
@@ -27,23 +22,21 @@ public static class ToModelTestAccessors
         where TModel : class, IModelFromEntity
         => entity.ToModel<TModel>();
 
-    internal static TModel? ToModelTac<TModel>(
-        this IEntity? entity,
-        // ReSharper disable once MethodOverloadWithOptionalParameter
-        ToModelOptions? options = default
-    )
+    // ReSharper disable once MethodOverloadWithOptionalParameter
+    internal static TModel? ToModelTac<TModel>(this IEntity? entity, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
         => entity.ToModel<TModel>(options: options);
 
 
+    public static TModel? ToModelTac<TModel>(this IEntity entity, IModelFactory factory, NoParamOrder npo = default, ToModelOptions? options = default)
+        where TModel : class, IModelFromEntity
+        => entity.ToModel<TModel>(factory, npo, options);
+    
+
     /// <summary>
     /// ICanBeEntity Overload
     /// </summary>
-    public static TModel? ToModelTac<TModel>(
-        this ICanBeEntity? canBeEntity,
-        NoParamOrder npo = default,
-        ToModelOptions? options = default
-    )
+    public static TModel? ToModelTac<TModel>(this ICanBeEntity? canBeEntity, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
     => canBeEntity.ToModel<TModel>(npo, options: options);
 

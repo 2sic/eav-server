@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Models.Factory;
+﻿using System.Runtime.CompilerServices;
+using ToSic.Eav.Models.Factory;
 using ToSic.Eav.Models.Sys;
 // ReSharper disable MethodOverloadWithOptionalParameter
 
@@ -17,7 +18,7 @@ public static partial class ToModelExtensions
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? ToModel<TModel>(this IEntity? entity)
         where TModel : class, IModelFromEntity
-        => entity.ToModelOrNull<TModel>(options: new());
+        => ToModelInternal<TModel>(entity, options: new());
 
     
     
@@ -34,7 +35,7 @@ public static partial class ToModelExtensions
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? ToModel<TModel>(this IEntity? entity, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-        => entity.ToModelOrNull<TModel>(options: options ?? new());
+        => ToModelInternal<TModel>(entity, options: options ?? new());
 
     
     
@@ -51,7 +52,7 @@ public static partial class ToModelExtensions
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? ToModel<TModel>(this ICanBeEntity? canBeEntity, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-        => (canBeEntity?.Entity).ToModelOrNull<TModel>(options: options ?? new());
+        => ToModelInternal<TModel>(canBeEntity?.Entity, options: options ?? new());
 
     
 
@@ -62,19 +63,46 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel"></typeparam>
     /// <param name="entity"></param>
     /// <param name="factory"></param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="options">Conversion options</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static TModel? ToModel<TModel>(this IEntity entity, IModelFactory factory)
+    public static TModel? ToModel<TModel>(this IEntity entity, IModelFactory factory, NoParamOrder npo = default, ToModelOptions? options = default)
+        where TModel : class, IModelFromEntity
+        => AssertFactory(factory).Create<IEntity, TModel>(entity, options ?? new());
+
+    
+    
+    /// <summary>
+    /// Real implementation of As... methods - will return the model or null
+    /// </summary>
+    /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
+    /// <param name="entity">The entity to convert.</param>
+    /// <param name="options"></param>
+    /// <param name="trueType">The true type to actually use, in case the caller already checked for GetTargetType (so it should be reused)</param>
+    /// <param name="methodName">Automatically added method name</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidCastException"></exception>
+    internal static TModel? ToModelInternal<TModel>(IEntity? entity, ToModelOptions options, Type? trueType = default, [CallerMemberName] string? methodName = default)
         where TModel : class, IModelFromEntity
     {
-        if (factory == null)
-            throw new ArgumentNullException(nameof(factory));
+        // 1. Do Preflight; stabilize parameters and check if exit early is needed
+        var specs = ToModelSpecs<TModel>.Item(entity, options, trueType, null, methodName!);
+        if (specs.ExitEarly)
+            return specs.Result;
 
-        if (entity == null! /* paranoid */)
-            return default;
+        // 3. Check if the cast uses the correct type
+        var checkName = ModelContentTypeNameAnalyzer.IsTypeNameAllowed(specs, entity!.Type);
+        if (!checkName.IsOk)
+            throw ModelContentTypeNameAnalyzer.KeyNotFoundMessage(checkName.Names ?? [], entity.Type, entity.EntityId);
 
-        var wrapper = factory.Create<IEntity, TModel>(entity, new ToModelOptions());
-        return wrapper;
+        // Create the model. Cast is guaranteed, because the trueType was already checked to be compatible with TModel.
+        var instance = specs.CreateInstance();
+
+        // Do Setup and check if it's ok.
+        // This may throw an exception if the model is not compatible with the entity, which is expected behavior.
+        var result = ((IModelSetup<IEntity>)instance).SetupWithNullChecks(entity, specs.Options.NullHandling);
+        return result as TModel;
     }
 
 }

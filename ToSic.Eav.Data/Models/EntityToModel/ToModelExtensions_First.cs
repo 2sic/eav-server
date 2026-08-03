@@ -15,9 +15,10 @@ public static partial class ToModelExtensions
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list)
         where TModel : class, IModelFromEntity
-        => FirstModel<TModel>(list, options: default, factory: null);
+        => FirstModelInternal<TModel>(list, options: default, factory: null);
 
 
+    
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
     /// </summary>
@@ -28,9 +29,10 @@ public static partial class ToModelExtensions
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-        => FirstModel<TModel>(list, options: options, factory: null);
+        => FirstModelInternal<TModel>(list, options: options, factory: null);
 
 
+    
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
     /// </summary>
@@ -42,14 +44,15 @@ public static partial class ToModelExtensions
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list, IModelFactory factory, NoParamOrder npo = default, ToModelOptions? options = null)
         where TModel : class, IModelFromEntity
-        => FirstModel<TModel>(list, options: options, factory: factory ?? throw new ArgumentNullException(nameof(factory)));
+        => FirstModelInternal<TModel>(list, options: options, factory: AssertFactory(factory));
 
 
+    
     /// <summary>
     /// Main work horse for FirstModel, used by both overloads.
     /// It handles the common logic of filtering and selecting the first entity, and then delegates the final conversion to the provided function.
     /// </summary>
-    private static TModel? FirstModel<TModel>(IEnumerable<IEntity>? list, ToModelOptions? options, IModelFactory? factory)
+    private static TModel? FirstModelInternal<TModel>(IEnumerable<IEntity>? list, ToModelOptions? options, IModelFactory? factory)
         where TModel : class, IModelFromEntity
     {
         var specs = ToModelSpecs<TModel>.List(list, options, null, factory);
@@ -64,10 +67,10 @@ public static partial class ToModelExtensions
             .FirstOrDefault();
 
         // Process result
-        var o = specs.OptionsDisableNameCheck();
+        var optionsSkipNameCheck = specs.OptionsDisableNameCheck();
         return factory != null
-            ? firstMatch != null ? factory.Create<IEntity, TModel>(firstMatch, o) : default
-            : firstMatch.ToModelOrNull<TModel>(options: o, trueType: specs.TrueType);
+            ? factory.Create<IEntity, TModel>(firstMatch, optionsSkipNameCheck)
+            : ToModelInternal<TModel>(firstMatch, options: optionsSkipNameCheck, trueType: specs.TrueType);
     }
 
 }

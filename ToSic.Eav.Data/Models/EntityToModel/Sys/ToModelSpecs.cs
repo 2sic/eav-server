@@ -51,7 +51,7 @@ internal record ToModelSpecs<TModel>(bool ExitEarly, TModel? Result, Type TrueTy
     {
         var specs = Start<TModel>(trueType, options, factory, useFactory: factory != null, methodName!);
         
-        // 2. If Null, exit early
+        // 2. If no data, exit early
         if (list == null)
             return new(true, null, specs.TrueType, specs.Options, factory, methodName!);
 
@@ -74,9 +74,11 @@ internal record ToModelSpecs<TModel>(bool ExitEarly, TModel? Result, Type TrueTy
         return new(false, null, specs.TrueType, specs.Options, factory, methodName);
     }
 
-    internal ToModelSpecs<TModel> DisableNameCheck()
-        => this with { Options = Options with { TypeName = ToModelOptions.TypeNameAny } };
-
+    /// <summary>
+    /// Create the model.
+    /// Cast is guaranteed, because the trueType was already checked to be compatible with TModel.
+    /// </summary>
+    /// <returns></returns>
     internal TModel CreateInstance()
         => (TModel)TypeFactory.CreateInstance(TrueType);
 

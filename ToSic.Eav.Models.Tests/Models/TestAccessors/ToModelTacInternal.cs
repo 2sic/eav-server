@@ -1,18 +1,13 @@
 ﻿using System.Reflection;
 using ToSic.Eav.Data;
-using ToSic.Eav.Models.Sys;
-using ToSic.Sys.Coding;
 
 namespace ToSic.Eav.Models;
 
 public class ToModelTacInternal : IToModelTac
 {
-    public TModel? ToModelTac<TModel>(
-        IEntity? entity,
-        ToModelOptions? options = default
-    )
+    public TModel? ToModelTac<TModel>(IEntity? entity, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-        => entity.ToModelOrNull<TModel>(options ?? new());
+        => ToModelExtensions.ToModelInternal<TModel>(entity, options ?? new());
 
     public object? ToModel(IEntity entity, Type type, string? typeName)
         => ToModelInternalTac(entity, type, options: new() { TypeName = typeName });
@@ -27,7 +22,7 @@ public class ToModelTacInternal : IToModelTac
         {
             // Invoke the method. The arguments are: entity, npo, options
             return ToModelInternalMethodInfo.MakeGenericMethod(type)
-                .Invoke(null, [entity, options, default(NoParamOrder), null, nameof(ToModelInternalTac)]);
+                .Invoke(null, [entity, options, null, nameof(ToModelInternalTac)]);
         }
         catch (TargetInvocationException ex)
         {
@@ -37,12 +32,12 @@ public class ToModelTacInternal : IToModelTac
     }
 
     private static MethodInfo ToModelInternalMethodInfo => field
-        ??= typeof(ToModelInternal)
+        ??= typeof(ToModelExtensions)
                 .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
                 .FirstOrDefault(m => m is
                 {
-                    Name: nameof(ToModelInternal.ToModelOrNull),
+                    Name: nameof(ToModelExtensions.ToModelInternal),
                     IsGenericMethod: true
                 })
-            ?? throw new InvalidOperationException($"Method '{nameof(ToModelInternal.ToModelOrNull)}' not found or not generic.");
+            ?? throw new InvalidOperationException($"Method '{nameof(ToModelExtensions.ToModelInternal)}' not found or not generic.");
 }

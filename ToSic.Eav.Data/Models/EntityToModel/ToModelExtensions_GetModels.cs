@@ -20,7 +20,7 @@ public static partial class ToModelExtensions
     /// input is null or contains no matching entities.</returns>
     public static IEnumerable<TModel?> GetModels<TModel>(this IEnumerable<IEntity>? list)
         where TModel : class, IModelFromEntity
-        => GetModels<TModel>(list, options: new(), factory: null);
+        => GetModelsInternal<TModel>(list, options: new(), factory: null);
 
     
     
@@ -39,8 +39,10 @@ public static partial class ToModelExtensions
     /// source is null or no matching entities are found.</returns>
     public static IEnumerable<TModel?> GetModels<TModel>(this IEnumerable<IEntity>? list, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-        => GetModels<TModel>(list, options: options, factory: null);
+        => GetModelsInternal<TModel>(list, options: options, factory: null);
 
+    
+    
     /// <summary>
     /// Returns a collection of wrapper objects of type `TModel` for all entities of the specified type name.
     /// </summary>
@@ -57,10 +59,11 @@ public static partial class ToModelExtensions
     // ReSharper disable once MethodOverloadWithOptionalParameter
     public static IEnumerable<TModel?> GetModels<TModel>(this IEnumerable<IEntity>? list, IModelFactory factory, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-        => GetModels<TModel>(list: list, options: options, factory: factory ?? throw new ArgumentNullException(nameof(factory)));
+        => GetModelsInternal<TModel>(list: list, options: options, factory: AssertFactory(factory));
 
 
-    private static IEnumerable<TModel?> GetModels<TModel>(IEnumerable<IEntity>? list, ToModelOptions? options, IModelFactory? factory)
+    
+    private static IEnumerable<TModel?> GetModelsInternal<TModel>(IEnumerable<IEntity>? list, ToModelOptions? options, IModelFactory? factory)
         where TModel : class, IModelFromEntity
     {
         var specs = ToModelSpecs<TModel>.List(list, options, null, factory);
@@ -71,18 +74,17 @@ public static partial class ToModelExtensions
 
         var firstMatchingList = nameList
             .Select(name => list!.GetAll(typeName: name).ToListOpt())
-            .FirstOrDefault(found => found.Any());
+            .FirstOrDefault(found => found.Any())
+            ?? [];
 
-        var o = specs.OptionsDisableNameCheck();
-        if (factory != null)
-            return firstMatchingList
-                       ?.Select(item => factory.Create<IEntity, TModel>(item, o))
-                       .ToListOpt()
-                   ?? [];
-
-        return firstMatchingList
-                   ?.Select(raw => raw.ToModelOrNull<TModel>(options: o, trueType: specs.TrueType)!)
-                   .ToListOpt()
-               ?? [];
+        var optionsSkipNameCheck = specs.OptionsDisableNameCheck();
+        
+        return factory != null
+            ? firstMatchingList
+                .Select(item => factory.Create<IEntity, TModel>(item, optionsSkipNameCheck))
+                .ToListOpt()
+            : firstMatchingList
+                .Select(raw => ToModelInternal<TModel>(raw, options: optionsSkipNameCheck, trueType: specs.TrueType)!)
+                .ToListOpt();
     }
 }

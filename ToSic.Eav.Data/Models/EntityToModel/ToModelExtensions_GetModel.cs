@@ -17,7 +17,7 @@ public static partial class ToModelExtensions
     public static TModel? GetModel<TModel>(this IEnumerable<IEntity>? list, int id, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        => (list?.GetOne(id)).ToModelOrNull<TModel>(options: options ?? new());
+        => ToModelInternal<TModel>(list?.GetOne(id), options: options ?? new());
 
     
     
@@ -33,6 +33,6 @@ public static partial class ToModelExtensions
     public static TModel? GetModel<TModel>(this IEnumerable<IEntity>? list, Guid guid, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
         // Note: if null / nothing found, let the model decide if it should wrap or return null
-        => (list?.GetOne(guid)).ToModelOrNull<TModel>(options: options ?? new());
+        => ToModelInternal<TModel>(list?.GetOne(guid), options: options ?? new());
 
 }

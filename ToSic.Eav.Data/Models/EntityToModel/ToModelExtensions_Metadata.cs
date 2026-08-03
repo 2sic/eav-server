@@ -16,8 +16,10 @@ public static partial class ToModelExtensions
     /// <returns></returns>
     public static TModel? GetMetadataModel<TModel>(this IHasMetadata parent)
         where TModel : class, IModelFromEntity
-        => FirstModel<TModel>(parent.Metadata, null, null);
+        => FirstModelInternal<TModel>(parent.Metadata, null, null);
 
+    
+    
     /// <summary>
     /// Get a typed metadata from an object which has metadata.
     /// Will return `null` if no data found, unless specified otherwise in the options.
@@ -29,10 +31,11 @@ public static partial class ToModelExtensions
     /// <returns></returns>
     public static TModel? GetMetadataModel<TModel>(this IHasMetadata parent, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-        => FirstModel<TModel>(parent.Metadata, options: options, factory: null);
+        => FirstModelInternal<TModel>(parent.Metadata, options: options, factory: null);
+    
     
     
     public static TModel? GetMetadataModel<TModel>(this IHasMetadata parent, IModelFactory factory, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
-        => FirstModel<TModel>(parent.Metadata, options: options, factory: factory ?? throw new ArgumentNullException(nameof(factory)));
+        => FirstModelInternal<TModel>(parent.Metadata, options: options, factory: AssertFactory(factory));
 }
