@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Models.Sys;
+// ReSharper disable PossibleMultipleEnumeration
+// ReSharper disable MethodOverloadWithOptionalParameter
 
 namespace ToSic.Eav.Models;
 
@@ -29,60 +31,36 @@ public static partial class ToModelExtensions
     /// </typeparam>
     /// <param name="list">The source collection of entities to search. Can be null.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="options">Conversion options for more advanced scenarios</param>
+    /// <param name="options">Conversion options</param>
     /// <returns>An enumerable collection of TModel instances wrapping the matching entities. Returns an empty collection if the
     /// source is null or no matching entities are found.</returns>
-    public static IEnumerable<TModel> GetModels<TModel>(
-        this IEnumerable<IEntity>? list,
-        // ReSharper disable once MethodOverloadWithOptionalParameter
-        NoParamOrder npo = default,
-        ToModelOptions? options = default
-    )
+    public static IEnumerable<TModel> GetModels<TModel>(this IEnumerable<IEntity>? list, NoParamOrder npo = default, ToModelOptions? options = default)
         where TModel : class, IModelFromEntity
     {
-        var specs = ToModelSpecs<TModel>.List(list, options, null, useFactory: false, methodName: nameof(GetModels));
+        var specs = ToModelSpecs<TModel>.List(list, options, null, useFactory: false);
         if (specs.ExitEarly)
             return [];
+        
+        var firstMatchingList = GetModelsDoLookup(specs, list!);
 
-        (_, _, var trueType, options) = specs;
+        // We'll pre-fetch the exact type to use and do name checks, so any use later on should not do it again
+        specs = specs.DisableNameCheck();
 
-        var nameList = ModelContentTypeNameExtractor
-            .GetNames(options.TypeName, typeof(TModel), trueType).Names;
+        return firstMatchingList
+            ?.Select(raw => raw.ToModelOrNull<TModel>(options: specs.Options, trueType: specs.TrueType)!)
+            .ToListOpt()
+            ?? [];
+    }
+
+    private static IList<IEntity>? GetModelsDoLookup(ToModelSpecs specs, IEnumerable<IEntity> list)
+    {
+        var nameList = ModelContentTypeNameExtractor.GetNames(specs).Names;
 
         var firstMatchingList = nameList
             .Select(name => list!.GetAll(typeName: name).ToListOpt())
             .FirstOrDefault(found => found.Any());
 
-        if (firstMatchingList == null)
-            return [];
-
-        // We'll pre-fetch the exact type to use and do name checks, so any use later on should not do it again
-        options = options with { TypeName = ToModelOptions.TypeNameAny };
-
-        return firstMatchingList
-            .Select(raw => raw.ToModelOrNull<TModel>(options: options, trueType: trueType)!)
-            .ToList();
-        
-        // 2026-07-30 2dm - old code, which certainly did short-circuit but not as functional
-        // keep for reference for a while, then remove
-        //foreach (var name in nameList)
-        //{
-        //    // ReSharper disable once PossibleMultipleEnumeration - should not do ToList _before_ using this, because it could lose optimizations of the FastLookup etc.
-        //    var found = list
-        //        .GetAll(typeName: name)
-        //        .ToListOpt();
-
-        //    if (!found.Any())
-        //        continue;
-
-        //    var result = found
-        //        .Select(raw => raw.ToModelInternal<TModel>(options: options, trueType: trueType)!);
-
-        //    return result.ToList();
-        //}
-
-        //return [];
+        return firstMatchingList;
     }
-
 
 }

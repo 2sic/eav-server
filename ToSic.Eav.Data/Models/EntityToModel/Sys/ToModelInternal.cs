@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models.Sys;
 
@@ -31,30 +30,17 @@ public static class ToModelInternal
         if (specs.ExitEarly)
             return specs.Result;
 
-        (_, _, trueType, options) = specs;
-
         // 3. Check if the cast uses the correct type
-        var checkName = ModelContentTypeNameAnalyzer.IsTypeNameAllowed(options.TypeName, typeof(TModel), trueType, entity!.Type);
+        var checkName = ModelContentTypeNameAnalyzer.IsTypeNameAllowed(specs, entity!.Type);
         if (!checkName.IsOk)
             throw ModelContentTypeNameAnalyzer.KeyNotFoundMessage(checkName.Names ?? [], entity.Type, entity.EntityId);
 
         // Create the model. Cast is guaranteed, because the trueType was already checked to be compatible with TModel.
-        var instance = (TModel)TypeFactory.CreateInstance(trueType);
+        var instance = specs.CreateInstance();
 
         // Do Setup and check if it's ok.
         // This may throw an exception if the model is not compatible with the entity, which is expected behavior.
-        ((IModelSetup<IEntity>)instance).SetupWithNullChecks(entity, options.NullHandling);
+        ((IModelSetup<IEntity>)instance).SetupWithNullChecks(entity, specs.Options.NullHandling);
         return instance;
     }
-
-
-
-    internal static TModel? FromNull<TModel>(Type trueType, NullHandling nullHandling)
-        where TModel : class
-        // Short circuit to avoid creating an instance if null is expected anyhow
-        => nullHandling is NullHandling.Default or NullHandling.ReturnNull
-            ? default
-            : (TypeFactory.CreateInstance(trueType) as IModelSetup<IEntity>)
-            ?.SetupWithNullChecks((IEntity?)null, nullHandling)
-            as TModel;
 }

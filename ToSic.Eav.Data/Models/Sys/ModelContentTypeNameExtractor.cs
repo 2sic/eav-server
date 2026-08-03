@@ -9,12 +9,13 @@ internal static class ModelContentTypeNameExtractor
     /// <summary>
     /// Figure out the names which the current combination of types would result in.
     /// </summary>
-    /// <param name="optionsTypeName">Options provided to check first.</param>
-    /// <param name="entryType">The entry type to check - could be an interface.</param>
-    /// <param name="concreteType">The concrete type to check - could be the same as the entry type or if the entry is an interface, it would be the implementing class.</param>
     /// <returns>A tuple containing the cache key prefix and a list of names.</returns>
-    internal static (string CacheKeyPrefix, IList<string> Names) GetNames(string? optionsTypeName, Type entryType, Type concreteType)
+    internal static (string CacheKeyPrefix, IList<string> Names) GetNames(ToModelSpecs specs)
     {
+        // Extract types from the ToModelSpecs record
+        var (entryType, concreteType, toModelOptions, _) = specs;
+        var optionsTypeName = toModelOptions.TypeName;
+        
         // 1. If we have options, then this will pre-determine what is checked, so this would be what we use
         if (optionsTypeName != null)
             return (CacheKeyOptions(optionsTypeName), optionsTypeName.CsvToArrayWithoutEmpty());

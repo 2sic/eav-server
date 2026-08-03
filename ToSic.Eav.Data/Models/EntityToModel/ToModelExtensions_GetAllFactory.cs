@@ -1,4 +1,6 @@
 ﻿using ToSic.Eav.Models.Factory;
+using ToSic.Eav.Models.Sys;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace ToSic.Eav.Models;
 
@@ -13,28 +15,23 @@ public static partial class ToModelExtensions
     /// </typeparam>
     /// <param name="list">The source collection of entities to search. Can be null.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="options">Conversion options for more advanced scenarios</param>
+    /// <param name="options">Conversion options</param>
     /// <returns>An enumerable collection of TModel instances wrapping the matching entities. Returns an empty collection if the
     /// source is null or no matching entities are found.</returns>
     /// <param name="factory">The factory to use for creating wrapper instances.</param>
     // ReSharper disable once MethodOverloadWithOptionalParameter
-    public static IEnumerable<TModel?> GetModels<TModel>(
-        this IEnumerable<IEntity>? list,
-        IModelFactory factory,
-        NoParamOrder npo = default,
-        ToModelOptions? options = default
-    ) where TModel : class, IModelFromEntity
+    public static IEnumerable<TModel?> GetModels<TModel>(this IEnumerable<IEntity>? list, IModelFactory factory, NoParamOrder npo = default, ToModelOptions? options = default)
+        where TModel : class, IModelFromEntity
     {
-        var materialized = list?.ToListOpt();
-        if (materialized.SafeNone())
+        var specs = ToModelSpecs<TModel>.List(list, options, null, useFactory: true);
+        if (specs.ExitEarly)
             return [];
 
-        var selection = materialized
-            .GetAll(typeName: options?.TypeName ?? typeof(TModel).Name);
+        var firstMatchingList = GetModelsDoLookup(specs, list!);
 
-        return selection.Select(factory.Create<IEntity, TModel>)
-                .ToList();
+        return firstMatchingList
+            ?.Select(factory.Create<IEntity, TModel>)
+            .ToListOpt()
+            ?? [];
     }
-
-
 }

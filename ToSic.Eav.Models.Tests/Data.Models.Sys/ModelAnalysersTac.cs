@@ -5,8 +5,10 @@ namespace ToSic.Eav.Data.Models.Sys;
 internal static class ModelAnalysersTac
 {
     public static IList<string> FindPriorityTypeNamesTac(Type type)
-        => ModelContentTypeNameExtractor.GetNames(null, type, type).Names;
+        => ModelContentTypeNameExtractor.GetNames(new(type, type, new(), nameof(FindPriorityTypeNamesTac))).Names;
     
+    public static IList<string> FindPriorityTypeNamesTac(ToModelSpecs specs)
+        => ModelContentTypeNameExtractor.GetNames(specs).Names;
 
     public static IList<string> GetStreamNameListTac<T>()
         where T : class =>

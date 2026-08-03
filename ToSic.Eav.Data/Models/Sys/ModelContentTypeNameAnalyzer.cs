@@ -52,12 +52,12 @@ public class ModelContentTypeNameAnalyzer
     /// <param name="concreteType"></param>
     /// <param name="contentType"></param>
     /// <returns></returns>
-    public static (bool IsOk, IList<string>? Names) IsTypeNameAllowed(string? optionsTypeName, Type entryType, Type concreteType, IContentType contentType)
+    public static (bool IsOk, IList<string>? Names) IsTypeNameAllowed(ToModelSpecs specs, IContentType contentType)
     {
-        if (PreFlightCheck(optionsTypeName, entryType, contentType.NameId))
+        if (PreFlightCheck(specs.Options.TypeName, specs.EntryType, contentType.NameId))
             return (true, null);
 
-        var (cacheKeyPrefix, typeNames) = ModelContentTypeNameExtractor.GetNames(optionsTypeName, entryType, concreteType);
+        var (cacheKeyPrefix, typeNames) = ModelContentTypeNameExtractor.GetNames(specs);
 
         var cacheKey = cacheKeyPrefix + contentType.NameId;
         

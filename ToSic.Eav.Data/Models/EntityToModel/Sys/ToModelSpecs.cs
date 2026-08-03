@@ -1,4 +1,7 @@
-﻿namespace ToSic.Eav.Models.Sys;
+﻿using System.Runtime.CompilerServices;
+using ToSic.Sys.Utils.Types;
+
+namespace ToSic.Eav.Models.Sys;
 
 /// <summary>
 /// 
@@ -6,7 +9,7 @@
 /// <param name="EntryType"></param>
 /// <param name="TrueType"></param>
 /// <param name="Options"></param>
-internal record ToModelSpecs(Type EntryType, Type TrueType, ToModelOptions Options)
+public record ToModelSpecs(Type EntryType, Type TrueType, ToModelOptions Options, string MethodName)
 {
     public static ToModelSpecs Start<TModel>(Type? trueType, ToModelOptions? options, bool useFactory, string methodName)
         where TModel : class, IModelFromEntity
@@ -19,7 +22,7 @@ internal record ToModelSpecs(Type EntryType, Type TrueType, ToModelOptions Optio
             : ModelFromEntityTypeManagerNoFactory.GetTargetType<TModel>(methodName);
 
         // 2. Stabilize options and return
-        return new(typeof(TModel), trueType, options ?? new());
+        return new(typeof(TModel), trueType, options ?? new(), methodName);
     }
 }
 
@@ -31,32 +34,52 @@ internal record ToModelSpecs(Type EntryType, Type TrueType, ToModelOptions Optio
 /// <param name="Result"></param>
 /// <param name="TrueType"></param>
 /// <param name="Options"></param>
-internal record ToModelSpecs<TModel>(bool ExitEarly, TModel? Result, Type TrueType, ToModelOptions Options)
-    : ToModelSpecs(typeof(TModel), TrueType, Options)
+/// <param name="MethodName"></param>
+internal record ToModelSpecs<TModel>(bool ExitEarly, TModel? Result, Type TrueType, ToModelOptions Options, string MethodName)
+    : ToModelSpecs(typeof(TModel), TrueType, Options, MethodName)
     where TModel : class, IModelFromEntity
 {
-    internal static ToModelSpecs<TModel> List(object? list, ToModelOptions? options, Type? trueType, bool useFactory, string methodName)
-
+    /// <summary>
+    /// 
+    /// </summary>
+    internal static ToModelSpecs<TModel> List(IEnumerable<IEntity>? list, ToModelOptions? options, Type? trueType, bool useFactory, [CallerMemberName] string? methodName = null)
     {
-        var specs = Start<TModel>(trueType, options, useFactory: useFactory, methodName);
+        var specs = Start<TModel>(trueType, options, useFactory: useFactory, methodName!);
+        
         // 2. If Null, exit early
         if (list == null)
-            return new(true, /*FromNull<TModel>(trueType, nullHandling: options.NullHandling)*/null, specs.TrueType, specs.Options);
+            return new(true, null, specs.TrueType, specs.Options, methodName!);
 
         // 3. If Object not null, continue processing
-        return new(false, null, specs.TrueType, specs.Options);
+        return new(false, null, specs.TrueType, specs.Options, methodName!);
     }
 
-    internal static ToModelSpecs<TModel> Item(object? dataForNullCheck, ToModelOptions? options, Type? trueType, string methodName)
+    /// <summary>
+    /// 
+    /// </summary>
+    internal static ToModelSpecs<TModel> Item(IEntity? entity, ToModelOptions? options, Type? trueType, string methodName)
     {
         var specs = Start<TModel>(trueType, options, useFactory: false, methodName);
 
         // 2. If Null, exit early
-        if (dataForNullCheck == null)
-            return new(true, ToModelInternal.FromNull<TModel>(specs.TrueType, nullHandling: specs.Options.NullHandling), specs.TrueType, specs.Options);
+        if (entity == null)
+            return new(true, CreateFromNull(specs), specs.TrueType, specs.Options, methodName);
 
         // 3. If Object not null, continue processing
-        return new(false, null, specs.TrueType, specs.Options);
+        return new(false, null, specs.TrueType, specs.Options, methodName);
     }
 
+    internal ToModelSpecs<TModel> DisableNameCheck()
+        => this with { Options = Options with { TypeName = ToModelOptions.TypeNameAny } };
+
+    internal TModel CreateInstance()
+        => (TModel)TypeFactory.CreateInstance(TrueType);
+
+    internal static TModel? CreateFromNull(ToModelSpecs specs)
+        // Short circuit to avoid creating an instance if null is expected anyhow
+        => specs.Options.NullHandling is NullHandling.Default or NullHandling.ReturnNull
+            ? default
+            : (TypeFactory.CreateInstance(specs.TrueType) as IModelSetup<IEntity>)
+            ?.SetupWithNullChecks((IEntity?)null, specs.Options.NullHandling)
+            as TModel;
 }

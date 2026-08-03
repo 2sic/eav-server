@@ -15,9 +15,7 @@ public static partial class ToModelExtensions
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? ToModel<TModel>(this IEntity? entity)
         where TModel : class, IModelFromEntity
-    {
-        return entity.ToModelOrNull<TModel>(options: new());
-    }
+        => entity.ToModelOrNull<TModel>(options: new());
 
     /// <summary>
     /// WIP
@@ -27,7 +25,7 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
     /// <param name="entity"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="options">Conversion options for more advanced scenarios</param>
+    /// <param name="options">Conversion options</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? ToModel<TModel>(
@@ -37,9 +35,7 @@ public static partial class ToModelExtensions
         ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
-    {
-        return entity.ToModelOrNull<TModel>(options: options ?? new());
-    }
+        => entity.ToModelOrNull<TModel>(options: options ?? new());
 
     /// <summary>
     /// WIP
@@ -49,7 +45,7 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel">TModel must implement IWrapperSetup&lt;IEntity&gt; and have a parameterless constructor.</typeparam>
     /// <param name="canBeEntity"></param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="options">Conversion options for more advanced scenarios</param>
+    /// <param name="options">Conversion options</param>
     /// <returns></returns>
     /// <exception cref="InvalidCastException"></exception>
     public static TModel? ToModel<TModel>(
@@ -58,9 +54,5 @@ public static partial class ToModelExtensions
         ToModelOptions? options = default
     )
         where TModel : class, IModelFromEntity
-    {
-        return (canBeEntity?.Entity).ToModelOrNull<TModel>(options: options ?? new());
-    }
-
-
+        => (canBeEntity?.Entity).ToModelOrNull<TModel>(options: options ?? new());
 }

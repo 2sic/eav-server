@@ -24,7 +24,7 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel">Any model object or interface.</typeparam>
     /// <param name="parent">An object which has metadata.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="options"></param>
+    /// <param name="options">Conversion options</param>
     /// <returns></returns>
     public static TModel? GetMetadataModel<TModel>(
         this IHasMetadata parent,
