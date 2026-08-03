@@ -73,13 +73,13 @@ public static partial class ToModelExtensions
             .Select(name => list!.GetAll(typeName: name).ToListOpt())
             .FirstOrDefault(found => found.Any());
 
+        var o = specs.OptionsDisableNameCheck();
         if (factory != null)
             return firstMatchingList
-                       ?.Select(factory.Create<IEntity, TModel>)
+                       ?.Select(item => factory.Create<IEntity, TModel>(item, o))
                        .ToListOpt()
                    ?? [];
 
-        var o = specs.OptionsDisableNameCheck();
         return firstMatchingList
                    ?.Select(raw => raw.ToModelOrNull<TModel>(options: o, trueType: specs.TrueType)!)
                    .ToListOpt()

@@ -40,7 +40,7 @@ public static class ToModelInternal
 
         // Do Setup and check if it's ok.
         // This may throw an exception if the model is not compatible with the entity, which is expected behavior.
-        ((IModelSetup<IEntity>)instance).SetupWithNullChecks(entity, specs.Options.NullHandling);
-        return instance;
+        var result = ((IModelSetup<IEntity>)instance).SetupWithNullChecks(entity, specs.Options.NullHandling);
+        return result as TModel;
     }
 }

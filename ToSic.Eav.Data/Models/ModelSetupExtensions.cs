@@ -21,9 +21,7 @@ public static class ModelSetupExtensions
     /// Helper to set up the data being wrapped, returning the wrapper for easy chaining.
     /// </summary>
     [return: NotNullIfNotNull(nameof(data))]
-    internal static TModel? SetupWithNullChecks<TModel, TData>(this TModel model, TData? data,
-        NullHandling nullHandling)
-        where TData : class
+    internal static TModel? SetupWithNullChecks<TData, TModel>(this TModel model, TData? data, NullHandling nullHandling)
         where TModel : IModelSetup<TData>
         => data switch
         {

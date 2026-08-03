@@ -1,15 +1,33 @@
 ﻿using ToSic.Eav.Data;
+using ToSic.Eav.Models.Factory;
 
 namespace ToSic.Eav.Models.NullHandlingTests;
+
+public class NullHandlingToModelTests_Static : NullHandlingToModelTests
+{
+    
+}
+
+public class NullHandlingToModelTests_Factory(IModelFactory modelFactory) : NullHandlingToModelTests
+{
+    /// <summary>
+    ///  Register the normal Dependencies for the IModelFactory to work
+    /// </summary>
+    public class Startup : ToSic.Eav.Models.Startup;
+
+    protected override TModel? NullEntityToModel<TModel>(NullHandling nullHandling) where TModel : class
+        => modelFactory.Create<IEntity, TModel>(null!, new() { NullHandling = nullHandling });
+}
+
 
 /// <summary>
 /// These tests build upon the <see cref="NullHandlingSetupTests"/> - so if all that works, also verify it's the same calling ToModel
 /// </summary>
-public class NullHandlingToModelTests : NullHandlingBase
+public abstract class NullHandlingToModelTests : NullHandlingBase
 {
     #region ToModel Test Helpers
 
-    private static TModel? NullEntityToModel<TModel>(NullHandling nullHandling) where TModel : class, IModelFromEntity
+    protected virtual TModel? NullEntityToModel<TModel>(NullHandling nullHandling) where TModel : class, IModelFromEntity
         => ((IEntity)null!).ToModelTac<TModel>(options: new() { NullHandling = nullHandling });
 
     #endregion

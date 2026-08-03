@@ -19,10 +19,12 @@ public interface IModelFactory
     /// </remarks>
     /// <typeparam name="TSource">The type of the source object used to initialize the wrapper model.</typeparam>
     /// <typeparam name="TModel">The type of the wrapper model to create. Must implement <see cref="IModelSetup{TSource}"/>.</typeparam>
-    /// <param name="source">The source object containing data used to set up the wrapper model. Cannot be null.</param>
+    /// <param name="item">The source object containing data used to set up the wrapper model. Cannot be null.</param>
+    /// <param name="options">Conversion options</param>
     /// <returns>An instance of <typeparamref name="TModel"/> initialized with the specified source object.</returns>
-    public TModel? Create<TSource, TModel>(TSource? source)
-        where TModel : IModelFromEntity;
+    [return: NotNullIfNotNull(nameof(item))]
+    public TModel? Create<TSource, TModel>(TSource? item, ToModelOptions options)
+        where TModel : class, IModelFromEntity;
 
     [return: NotNullIfNotNull(nameof(item))]
     TCustom? AsCustomFrom<TCustom, TSource>(TSource? item, ModelSettings? settings = default)

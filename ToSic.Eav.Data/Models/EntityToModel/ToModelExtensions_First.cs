@@ -64,9 +64,10 @@ public static partial class ToModelExtensions
             .FirstOrDefault();
 
         // Process result
+        var o = specs.OptionsDisableNameCheck();
         return factory != null
-            ? firstMatch != null ? factory.Create<IEntity, TModel>(firstMatch) : default
-            : firstMatch.ToModelOrNull<TModel>(options: specs.OptionsDisableNameCheck(), trueType: specs.TrueType);
+            ? firstMatch != null ? factory.Create<IEntity, TModel>(firstMatch, o) : default
+            : firstMatch.ToModelOrNull<TModel>(options: o, trueType: specs.TrueType);
     }
 
 }

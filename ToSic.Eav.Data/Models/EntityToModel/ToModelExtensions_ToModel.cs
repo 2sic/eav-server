@@ -73,7 +73,7 @@ public static partial class ToModelExtensions
         if (entity == null! /* paranoid */)
             return default;
 
-        var wrapper = factory.Create<IEntity, TModel>(entity);
+        var wrapper = factory.Create<IEntity, TModel>(entity, new ToModelOptions());
         return wrapper;
     }
 
