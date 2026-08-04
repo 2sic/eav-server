@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.ContentTypes.Fields;
 /// Does not implement <see cref="IFieldSettingsGeneral"/>
 /// as that has many more fields we don't care about in most create-data scenarios.
 /// </remarks>
-[ContentTypeAssign(Type = typeof(IFieldSettingsGeneral))]
+[ContentTypeUse(Type = typeof(IFieldSettingsGeneral))]
 internal record FieldSettingsGeneralMinimal: RawEntity
 {
     public string Notes { get; init; } = "";

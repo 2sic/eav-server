@@ -84,7 +84,7 @@ public class ContentTypesFromCodeManager(LazySvc<ContentTypesFromCodeBuilder> ct
     }
 
     private Type FindReassignedType(Type type) =>
-        type.GetDirectlyAttachedAttribute<ContentTypeAssignAttribute>()?.Type ?? type;
+        type.GetDirectlyAttachedAttribute<ContentTypeUseAttribute>()?.Type ?? type;
 
     private static readonly ConcurrentDictionary<Type, IContentType> CtCache = new();
 

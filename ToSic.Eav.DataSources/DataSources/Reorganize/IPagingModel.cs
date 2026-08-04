@@ -35,7 +35,7 @@ public record PagingModel : ModelFromEntity, IPagingModel
     public int PageCount => GetThis(0);
 }
 
-[ContentTypeAssign(Type = typeof(IPagingModel))]
+[ContentTypeUse(Type = typeof(IPagingModel))]
 internal record PagingModelRaw(int PageSize, int PageNumber, int ItemCount, int PageCount) : IPagingModel, IRawEntityConvertible
 {
     //public string Title => "Paging Information";

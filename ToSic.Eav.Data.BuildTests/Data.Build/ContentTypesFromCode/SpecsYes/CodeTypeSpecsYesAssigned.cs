@@ -6,5 +6,5 @@ namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 /// Just an empty content type with specs.
 /// The specs are constants, as we'll reuse them in all CodeType With Specs
 /// </summary>
-[ContentTypeAssign(Type = typeof(CodeTypeSpecsYesEmpty))]
+[ContentTypeUse(Type = typeof(CodeTypeSpecsYesEmpty))]
 public class CodeTypeSpecsYesAssigned;

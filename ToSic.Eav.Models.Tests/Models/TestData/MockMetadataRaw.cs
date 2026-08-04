@@ -4,7 +4,7 @@ using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Models.TestData;
 
-[ContentTypeAssign(Type = typeof(MockMetadataModel))]
+[ContentTypeUse(Type = typeof(MockMetadataModel))]
 internal record MockMetadataRaw(int Amount) : RawEntity
 {
     protected override IDictionary<string, object?> GetValues() =>
