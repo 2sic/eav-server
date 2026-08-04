@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -38,85 +37,46 @@ public class InputTypes : CustomDataSource
 
         ProvideOutRaw(GetDataTypes, name: "DataTypes", options: () => new()
         {
-            TitleField = nameof(NameValuePair.Name),
+            TitleField = nameof(NameValueModel.Name),
             AllowUnknownValueTypes = true,
         });
 
         ProvideOutRaw(GetReservedNames, name: "ReservedNames", options: () => new()
         {
-            TitleField = nameof(NameValuePair.Name),
+            TitleField = nameof(NameValueModel.Name),
             AllowUnknownValueTypes = true,
         });
     }
 
-    private IEnumerable<IRawEntity> GetInputTypes()
+    private IEnumerable<InputTypeModel> GetInputTypes()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>($"{AppId}");
+        var l = Log.Fn<IEnumerable<InputTypeModel>>($"{AppId}");
 
         var entities = _inputTypes.New(AppId)
             .GetInputTypes()
-            .Select(inputType => new RawEntity
-            {
-                Values = new Dictionary<string, object?>
-                {
-                    { nameof(InputTypeInfo.Type), inputType.Type },
-                    { nameof(InputTypeInfo.Label), inputType.Label },
-                    { nameof(InputTypeInfo.Description), inputType.Description },
-                    { nameof(InputTypeInfo.DisableI18n), inputType.DisableI18n },
-                    { nameof(InputTypeInfo.UiAssets), inputType.UiAssets },
-                    { nameof(InputTypeInfo.UseAdam), inputType.UseAdam },
-                    { nameof(InputTypeInfo.IsObsolete), inputType.IsObsolete },
-                    { nameof(InputTypeInfo.ObsoleteMessage), inputType.ObsoleteMessage },
-                    { nameof(InputTypeInfo.IsRecommended), inputType.IsRecommended },
-                    { nameof(InputTypeInfo.IsDefault), inputType.IsDefault },
-                    { nameof(InputTypeInfo.Source), inputType.Source },
-                    { nameof(InputTypeInfo.ConfigTypes), inputType.ConfigTypes },
-                }
-            });
+            .Select(inputType => new InputTypeModel(inputType));
 
         return l.Return(entities, "ok");
     }
 
-    private IEnumerable<IRawEntity> GetDataTypes()
+    private IEnumerable<NameValueModel> GetDataTypes()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>($"{AppId}");
+        var l = Log.Fn<IEnumerable<NameValueModel>>($"{AppId}");
 
         var entities = _attributesMod.New(AppId)
             .DataTypes()
-            .Select(dataType => new RawEntity
-            {
-                Values = new Dictionary<string, object?>
-                {
-                    { nameof(NameValuePair.Name), dataType },
-                }
-            });
+            .Select(dataType => new NameValueModel(dataType));
 
         return l.Return(entities, "ok");
     }
 
-    private IEnumerable<IRawEntity> GetReservedNames()
+    private IEnumerable<NameValueModel> GetReservedNames()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<NameValueModel>>();
 
         var entities = AttributeNames.ReservedNames
-            .Select(reservedName => new RawEntity
-            {
-                Values = new Dictionary<string, object?>
-                {
-                    { nameof(NameValuePair.Name), reservedName.Key },
-                    { nameof(NameValuePair.Value), reservedName.Value },
-                }
-            });
+            .Select(reservedName => new NameValueModel(reservedName.Key, reservedName.Value));
 
         return l.Return(entities, "ok");
-    }
-
-    /// <summary>
-    /// Dummy class, actually just for the constant field names
-    /// </summary>
-    private class NameValuePair
-    {
-        public required string Name { get; init; }
-        public required string Value { get; init; }
     }
 }

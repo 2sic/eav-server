@@ -1,5 +1,4 @@
-using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
 
@@ -40,9 +39,9 @@ public class AppWebApiControllerEndpoints : CustomDataSource
         });
     }
 
-    private IEnumerable<IRawEntity> GetEndpoints()
+    private IEnumerable<AppWebApiEndpointModel> GetEndpoints()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<AppWebApiEndpointModel>>();
 
         if (string.IsNullOrWhiteSpace(Path))
             return l.Return([], "missing path");
@@ -50,22 +49,7 @@ public class AppWebApiControllerEndpoints : CustomDataSource
         var assembly = _assemblyLoader.GetAssembly(Path);
         var dto = _analyzer.Analyze(Path, assembly);
 
-        var entities = dto.actions.Select(action =>
-        {
-            var mergedSecurity = action.mergedSecurity;
-
-            var values = AppWebApiControllerSecurityValues.ToDictionary(mergedSecurity);
-            values.Add(nameof(ApiActionDto.name), action.name);
-            values.Add(nameof(ApiActionDto.returns), action.returns);
-            values.Add(nameof(ApiActionDto.verbs), string.Join(", ", action.verbs));
-            values.Add(nameof(ApiActionDto.parameters), action.parameters);
-            values.Add(nameof(ApiActionDto.security), AppWebApiControllerSecurityValues.ToDictionary(action.security));
-
-            return new RawEntity
-            {
-                Values = values
-            };
-        }).ToList();
+        var entities = dto.actions.Select(action => new AppWebApiEndpointModel(action)).ToList();
 
         return l.Return(entities, $"{entities.Count}");
     }

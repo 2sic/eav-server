@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
@@ -42,9 +41,9 @@ public class AppWebApiControllers : CustomDataSource
         });
     }
 
-    private IEnumerable<IRawEntity> GetApiFiles()
+    private IEnumerable<AppWebApiFileModel> GetApiFiles()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>($"list all api files a#{AppId}");
+        var l = Log.Fn<IEnumerable<AppWebApiFileModel>>($"list all api files a#{AppId}");
 
         var mask = $"*{EavConstants.ApiControllerSuffix}.cs";
 
@@ -83,19 +82,10 @@ public class AppWebApiControllers : CustomDataSource
             .Union(allInAppCode)
             .ToArray();
 
-        var entities = files
-            .Select((file, index) => new RawEntity
-            {
-                Id = index + 1,
-                Values = new Dictionary<string, object?>
-                {
-                    { nameof(AllApiFileDto.Path), file.Path },
-                    { nameof(AllApiFileDto.EndpointPath), file.EndpointPath },
-                    { nameof(AllApiFileDto.Edition), file.Edition },
-                    { nameof(AllApiFileDto.Shared), file.Shared },
-                },
-            })
-            .ToList();
+        var entities = files.Select((file, index) => new AppWebApiFileModel(file)
+        {
+            Id = index + 1,
+        }).ToList();
 
         return l.Return(entities, $"{entities.Count}");
     }
