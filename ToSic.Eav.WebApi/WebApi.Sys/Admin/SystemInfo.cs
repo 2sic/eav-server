@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
-using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Sys;
@@ -75,47 +74,41 @@ public class SystemInfo : CustomDataSource
         });
     }
 
-    private IEnumerable<IRawEntity> GetSite()
+    private IEnumerable<SiteStatsModel> GetSite()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>($"{_site.Id}");
+        var l = Log.Fn<IEnumerable<SiteStatsModel>>($"{_site.Id}");
         var zoneId = _site.ZoneId;
 
-        var entity = new RawEntity
+        var entity = new SiteStatsModel(new()
         {
-            Values = new Dictionary<string, object?>
-            {
-                { nameof(SiteStatsDto.SiteId), _site.Id },
-                { nameof(SiteStatsDto.ZoneId), zoneId },
-                { nameof(SiteStatsDto.Apps), _appsCatalog.Apps(zoneId).Count },
-                { nameof(SiteStatsDto.Languages), _zoneMapper.CulturesWithState(_site).Count },
-            }
-        };
+            SiteId = _site.Id,
+            ZoneId = zoneId,
+            Apps = _appsCatalog.Apps(zoneId).Count,
+            Languages = _zoneMapper.CulturesWithState(_site).Count,
+        });
 
         return l.Return([entity], "1");
     }
 
-    private IEnumerable<IRawEntity> GetSystem()
+    private IEnumerable<SystemInfoModel> GetSystem()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<SystemInfoModel>>();
 
-        var entity = new RawEntity
+        var entity = new SystemInfoModel(new()
         {
-            Values = new Dictionary<string, object?>
-            {
-                { nameof(SystemInfoDto.Fingerprint), _fingerprint.GetFingerprint() },
-                { nameof(SystemInfoDto.EavVersion), EavSystemInfo.VersionString },
-                { nameof(SystemInfoDto.Platform), _platform.Name },
-                { nameof(SystemInfoDto.PlatformVersion), EavSystemInfo.VersionToNiceFormat(_platform.Version) },
-                { nameof(SystemInfoDto.Zones), _appsCatalog.Zones.Count },
-            }
-        };
+            Fingerprint = _fingerprint.GetFingerprint(),
+            EavVersion = EavSystemInfo.VersionString,
+            Platform = _platform.Name,
+            PlatformVersion = EavSystemInfo.VersionToNiceFormat(_platform.Version),
+            Zones = _appsCatalog.Zones.Count,
+        });
 
         return l.Return([entity], "1");
     }
 
-    private IEnumerable<IRawEntity> GetLicense()
+    private IEnumerable<LicenseInfoModel> GetLicense()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<LicenseInfoModel>>();
         var licenses = _licenseService.Value;
 
         var owner = string.Join(", ", licenses.All
@@ -124,34 +117,28 @@ public class SystemInfo : CustomDataSource
             .Where(o => o.HasValue())
             .Distinct());
 
-        var entity = new RawEntity
+        var entity = new LicenseInfoModel(new()
         {
-            Values = new Dictionary<string, object?>
-            {
-                { nameof(LicenseInfoDto.Main), "none" },
-                { nameof(LicenseInfoDto.Count), licenses.All.Count },
-                { nameof(LicenseInfoDto.Owner), owner },
-            }
-        };
+            Main = "none",
+            Count = licenses.All.Count,
+            Owner = owner,
+        });
 
         return l.Return([entity], "1");
     }
 
-    private IEnumerable<IRawEntity> GetMessages()
+    private IEnumerable<MessagesModel> GetMessages()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<MessagesModel>>();
 
         var warningsObsolete = CountInsightsMessages(CodeInfoConstants.ObsoleteNameInHistory);
         var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;
 
-        var entity = new RawEntity
+        var entity = new MessagesModel(new()
         {
-            Values = new Dictionary<string, object?>
-            {
-                { nameof(MessagesDto.WarningsOther), warningsOther },
-                { nameof(MessagesDto.WarningsObsolete), warningsObsolete },
-            }
-        };
+            WarningsOther = warningsOther,
+            WarningsObsolete = warningsObsolete,
+        });
 
         return l.Return([entity], "1");
     }

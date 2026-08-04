@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.WebApi.Sys.Dto;
 
@@ -30,26 +29,15 @@ public class AppLanguages : CustomDataSource
             });
     }
 
-    private IEnumerable<IRawEntity> GetLanguages(LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
+    private IEnumerable<AppLanguageModel> GetLanguages(LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<AppLanguageModel>>();
 
         var appReader = appReadersLazy.Value.Get(AppId);
 
         var list = languagesBackend
             .GetLanguagesOfApp(appReader, true)
-            .Select(IRawEntity (language) => new RawEntity
-            {
-                Values = new Dictionary<string, object?>
-                {
-                    { nameof(SiteLanguageDto.Code), language.Code },
-                    { nameof(SiteLanguageDto.Culture), language.Culture },
-                    { nameof(SiteLanguageDto.IsEnabled), language.IsEnabled },
-                    { nameof(SiteLanguageDto.IsAllowed), language.IsAllowed },
-                    { nameof(SiteLanguageDto.NameId), language.NameId },
-                    { nameof(SiteLanguageDto.Permissions), language.Permissions },
-                }
-            })
+            .Select(language => new AppLanguageModel(language))
             .ToList();
 
         return l.Return(list, $"{list.Count}");

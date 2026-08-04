@@ -1,5 +1,4 @@
-using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
 
@@ -40,23 +39,16 @@ public class AppWebApiControllerDetails : CustomDataSource
         });
     }
 
-    private IEnumerable<IRawEntity> GetDetails()
+    private IEnumerable<AppWebApiControllerModel> GetDetails()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<AppWebApiControllerModel>>();
 
         if (string.IsNullOrWhiteSpace(Path))
             return l.Return([], "missing path");
 
         var assembly = _assemblyLoader.GetAssembly(Path);
         var dto = _analyzer.Analyze(Path, assembly);
-        var security = dto.security;
-
-        var values = AppWebApiControllerSecurityValues.ToDictionary(security);
-        values.Add(nameof(ApiControllerDto.controller), dto.controller);
-        var entity = new RawEntity
-        {
-            Values = values
-        };
+        var entity = new AppWebApiControllerModel(dto);
 
         return l.Return([entity], "ok");
     }
