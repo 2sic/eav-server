@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.Data.ContentTypes;
 
-[PrivateApi("WIP")]
+[WorkInProgressApi("v22")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public class ContentTypeFieldAttribute : Attribute

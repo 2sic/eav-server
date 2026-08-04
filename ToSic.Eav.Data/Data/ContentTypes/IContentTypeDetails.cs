@@ -48,7 +48,7 @@ public interface IContentTypeDetails: IModelFromEntity<ContentTypeDetailsModel>
     string? EditInstructions { get; }
 
     /// <summary>
-    /// Instructions to show when listing items of this content type - I believe currently not implemented.
+    /// Instructions to show when listing items of this content type - I believe currently not used.
     /// </summary>
     string? ListInstructions { get; }
 

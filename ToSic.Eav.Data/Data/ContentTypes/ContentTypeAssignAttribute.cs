@@ -4,7 +4,7 @@
 /// WIP
 /// Use this to specify raw data which - when converted to an entity - should be assigned to a specific content-type.
 /// </summary>
-[PrivateApi("WIP")]
+[WorkInProgressApi("v22")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [AttributeUsage(AttributeTargets.Class)]
 public class ContentTypeAssignAttribute : Attribute

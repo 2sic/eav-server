@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Models.Sys;
-
-namespace ToSic.Eav.Models;
+﻿namespace ToSic.Eav.Models;
 
 public static partial class ToModelExtensions
 {

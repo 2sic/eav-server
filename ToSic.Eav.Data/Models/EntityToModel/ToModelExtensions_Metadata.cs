@@ -4,7 +4,6 @@ using ToSic.Eav.Models.Factory;
 
 namespace ToSic.Eav.Models;
 
-[WorkInProgressApi("beta v21")]
 public static partial class ToModelExtensions
 {
     /// <summary>

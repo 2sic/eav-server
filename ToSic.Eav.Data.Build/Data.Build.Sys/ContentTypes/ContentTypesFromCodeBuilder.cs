@@ -39,6 +39,7 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
 
         // 2. Create Description-Metadata for the Content-Type based on the info provided; null if no description provided
         var ctMdItems = ctSpecs?.Description
+            .NullIfNoValue()
             .NullOrGetWith(desc =>
             {
                 // Edge case: If the type is the same as the one we're about to create, result in a stack overflow
