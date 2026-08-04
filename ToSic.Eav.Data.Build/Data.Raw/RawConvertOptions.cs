@@ -8,9 +8,10 @@ namespace ToSic.Eav.Data.Raw;
 /// Options which may be needed to create new <see cref="IEntity"/>s from <see cref="IRawEntity"/>.
 /// </summary>
 /// <remarks>
-/// Added in 15.04
+/// Added in 15.04, accidentally marked [PublicApi]
+/// Re-publising v22 as [WorkInProgressApi] to avoid confusion.
 /// </remarks>
-[PublicApi]
+[WorkInProgressApi("v22")]
 public class RawConvertOptions
 {
     public RawConvertOptions(

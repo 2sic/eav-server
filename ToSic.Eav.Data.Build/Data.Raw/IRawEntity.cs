@@ -9,7 +9,7 @@
 /// * Added in 15.04 accidentally as public
 /// * Was public till 16.09, but needed to be reworked, currently should be unknown to the public
 /// </remarks>
-[PrivateApi]
+[WorkInProgressApi("v22")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IRawEntity: IRawEntitySource
 {
