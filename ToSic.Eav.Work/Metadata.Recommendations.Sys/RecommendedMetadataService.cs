@@ -126,7 +126,9 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 // and it's ServiceProvider is dead at that time, trying to debug
                 try
                 {
-                    var allForDecors = ct.Metadata.GetModels<MetadataForDecorator>()
+                    var allForDecors = ct.Metadata
+                        .GetModels<MetadataForDecorator>()
+                        .OfType<MetadataForDecorator>()
                         .ToListOpt();
                     var allForThisTargetType = allForDecors
                         .Where(dec => dec.TargetType == targetType)
@@ -280,6 +282,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
 
         var all = md
             .GetModels<MetadataExpectedDecorator>()
+            .OfType<MetadataExpectedDecorator>()
             .ToListOpt();
 
         if (targetTypeFor > 0)

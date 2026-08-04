@@ -30,6 +30,7 @@ partial class Metadata<T>
     {
         get => field == null || UpStreamChanged()
             ? field = AllWithHidden.GetModels<Permission>()
+                .OfType<IPermission>()
                 .ToImmutableOpt()
             : field;
         set;

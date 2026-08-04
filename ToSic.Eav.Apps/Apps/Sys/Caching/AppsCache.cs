@@ -9,7 +9,9 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// </summary>
 [PrivateApi]
 internal class AppsCache(IRuntimeKeyService runtimeKeyService)
+#pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
     : AppsCacheBase(runtimeKeyService), IAppsCacheSwitchable
+#pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
 {
     #region SwitchableService
 
@@ -29,9 +31,8 @@ internal class AppsCache(IRuntimeKeyService runtimeKeyService)
         if (!TryZoneCacheKey(out var cacheKey))
             return LoadZones(tools);
 
-        var lazy = ZoneAppCaches.GetOrAdd(cacheKey,
-            // Lazy ensures only one LoadZones per tenant key, even under concurrency.
-            _ => new Lazy<IReadOnlyDictionary<int, Zone>>(() => LoadZones(tools)));
+        // Lazy ensures only one LoadZones per tenant key, even under concurrency.
+        var lazy = ZoneAppCaches.GetOrAdd(cacheKey, _ => new(() => LoadZones(tools)));
         return lazy.Value;
     }
 

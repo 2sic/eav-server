@@ -36,27 +36,26 @@ public record ToModelSpecs(Type EntryType, Type TrueType, ToModelOptions Options
 /// </summary>
 /// <typeparam name="TModel"></typeparam>
 /// <param name="ExitEarly"></param>
-/// <param name="Result"></param>
 /// <param name="TrueType"></param>
 /// <param name="Options"></param>
 /// <param name="MethodName"></param>
-internal record ToModelSpecs<TModel>(bool ExitEarly, TModel? Result, Type TrueType, ToModelOptions Options, IModelFactory? Factory, string MethodName)
+internal record ToModelSpecs<TModel>(bool ExitEarly, Type TrueType, ToModelOptions Options, IModelFactory? Factory, string MethodName)
     : ToModelSpecs(typeof(TModel), TrueType, Options, Factory, MethodName)
     where TModel : class, IModelFromEntity
 {
     /// <summary>
     /// 
     /// </summary>
-    internal static ToModelSpecs<TModel> List(IEnumerable<IEntity>? list, ToModelOptions? options, Type? trueType, IModelFactory? factory, [CallerMemberName] string? methodName = null)
+    internal static ToModelSpecs<TModel> List(IEnumerable<IEntity?>? list, ToModelOptions? options, Type? trueType, IModelFactory? factory, [CallerMemberName] string? methodName = null)
     {
         var specs = Start<TModel>(trueType, options, factory, useFactory: factory != null, methodName!);
         
         // 2. If no data, exit early
         if (list == null)
-            return new(true, null, specs.TrueType, specs.Options, factory, methodName!);
+            return new(true, specs.TrueType, specs.Options, factory, methodName!);
 
         // 3. If Object not null, continue processing
-        return new(false, null, specs.TrueType, specs.Options, factory, methodName!);
+        return new(false, specs.TrueType, specs.Options, factory, methodName!);
     }
 
     /// <summary>
@@ -68,10 +67,10 @@ internal record ToModelSpecs<TModel>(bool ExitEarly, TModel? Result, Type TrueTy
 
         // 2. If Null, exit early
         if (entity == null)
-            return new(true, CreateFromNull(specs), specs.TrueType, specs.Options, factory, methodName);
+            return new(true, specs.TrueType, specs.Options, factory, methodName);
 
         // 3. If Object not null, continue processing
-        return new(false, null, specs.TrueType, specs.Options, factory, methodName);
+        return new(false, specs.TrueType, specs.Options, factory, methodName);
     }
 
     /// <summary>
@@ -82,13 +81,13 @@ internal record ToModelSpecs<TModel>(bool ExitEarly, TModel? Result, Type TrueTy
     internal TModel CreateInstance()
         => (TModel)TypeFactory.CreateInstance(TrueType);
 
-    internal static TModel? CreateFromNull(ToModelSpecs specs)
+    internal TModel? CreateFromNull()
         // Short circuit to avoid creating an instance if null is expected anyhow
-        => specs.Options.NullHandling is NullHandling.Default or NullHandling.ReturnNull
+        => Options.NullHandling is NullHandling.Default or NullHandling.ReturnNull
             ? default
-            : specs.Factory == null
-                ? ((IModelSetup<IEntity>)TypeFactory.CreateInstance(specs.TrueType))
-                .SetupWithNullChecks((IEntity?)null, specs.Options.NullHandling)
+            : Factory == null
+                ? ((IModelSetup<IEntity>)TypeFactory.CreateInstance(TrueType))
+                .SetupWithNullChecks((IEntity?)null, Options.NullHandling)
                 as TModel
-                : specs.Factory.Create<IEntity, TModel>(null, specs.Options);
+                : Factory.Create<IEntity, TModel>(null, Options);
 }

@@ -115,7 +115,7 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
     private List<ItemIdentifier> ReplaceSimpleTypeNames(IAppWorkCtxPlus appWorkCtxPlus, List<ItemIdentifier> items)
     {
         var result = items
-            .Select(itm =>
+            .Select(ItemIdentifier? (itm) =>
             {
                 if (string.IsNullOrEmpty(itm.ContentTypeName))
                     return itm;
@@ -131,7 +131,7 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
                     return itm with {ContentTypeName = ct.NameId};
                 return itm;
             })
-            .Where(itm => itm != null!)
+            .OfType<ItemIdentifier>()
             .ToList();
         
         //foreach (var itm in items.Where(i => !string.IsNullOrEmpty(i.ContentTypeName)).ToArray())

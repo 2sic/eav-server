@@ -113,6 +113,7 @@ public class WorkInputTypes(
         (overrideCtx ?? AppWorkCtx)
         .AppReader.List
         .GetModels<InputTypeDefinition>()
+        .OfType<InputTypeDefinition>()
         .Select(e => new InputTypeInfo(metadata: (e as ICanBeEntity)?.Entity.Metadata)
         {
             Type = e.Type,

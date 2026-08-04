@@ -90,7 +90,7 @@ public static partial class ToModelExtensions
         // 1. Do Preflight; stabilize parameters and check if exit early is needed
         var specs = ToModelSpecs<TModel>.Item(entity, options, trueType, factory, methodName!);
         if (specs.ExitEarly)
-            return specs.Result;
+            return specs.CreateFromNull();
 
         // 2. Check if the cast uses the correct type
         var checkName = ModelContentTypeNameAnalyzer.IsTypeNameAllowed(specs, entity!.Type);

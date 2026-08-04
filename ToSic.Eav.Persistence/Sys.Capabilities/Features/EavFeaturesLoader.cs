@@ -33,6 +33,7 @@ public class EavFeaturesLoader(
 
             var licEntities = list
                 .GetModels<LicenseEntity>()
+                .OfType<LicenseEntity>()
                 .ToListOpt();
             l.A($"licEnt:{licEntities.Count}");
 

@@ -57,7 +57,7 @@ public static partial class ToModelExtensions
     {
         var specs = ToModelSpecs<TModel>.List(list, options, null, factory);
         if (specs.ExitEarly)
-            return specs.Result;
+            return specs.CreateFromNull();
 
         var nameList = ModelContentTypeNameExtractor.GetNames(specs).Names;
 

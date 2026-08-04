@@ -32,7 +32,7 @@ public interface IContentTypeField
     /// <summary>
     /// The official type, as a controlled (enum) value.
     /// </summary>
-    ValueTypes Type { get; }
+    new ValueTypes Type { get; }
 
     /// <summary>
     /// additional info for the persistence layer
