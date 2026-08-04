@@ -1,20 +1,19 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.ContentTypes;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
-[ContentTypeSpecs(
-    Name = "InputTy peInfo", 
-    Guid = "8c0b688e-c79a-4180-8123-5d1959f3a89f", 
-    Description = "Input type information", 
+[ContentType(
+    Name = "InputTypeInfo",
+    Guid = "8c0b688e-c79a-4180-8123-5d1959f3a89f",
+    Description = "Input type information",
     Scope = "System"
-    )]
-public class InputTypeModel(InputTypeInfo inputType) : RawEntity
+)]
+public record InputTypeModel(InputTypeInfo inputType) : RawEntity
 {
-    [ContentTypeAttributeSpecs(IsTitle = true)] public string Type => inputType.Type;
-    public override IDictionary<string, object?> Attributes(RawConvertOptions options) => new Dictionary<string, object?>
+    [ContentTypeField(IsTitle = true)] public string Type => inputType.Type;
+    protected override IDictionary<string, object?> GetValues() => new Dictionary<string, object?>
     {
         { nameof(InputTypeInfo.Type), inputType.Type }, { nameof(InputTypeInfo.Label), inputType.Label },
         { nameof(InputTypeInfo.Description), inputType.Description }, { nameof(InputTypeInfo.DisableI18n), inputType.DisableI18n },
@@ -25,16 +24,16 @@ public class InputTypeModel(InputTypeInfo inputType) : RawEntity
     };
 }
 
-[ContentTypeSpecs(
-    Name = "NameValuePair", 
-    Guid = "db36e44b-46e1-427c-bd2e-65c84cd5c392", 
-    Description = "Named system value", 
+[ContentType(
+    Name = "NameValuePair",
+    Guid = "db36e44b-46e1-427c-bd2e-65c84cd5c392",
+    Description = "Named system value",
     Scope = "System"
-    )]
-public class NameValueModel(string name, string? value = default) : RawEntity
+)]
+public record NameValueModel(string name, string? value = default) : RawEntity
 {
-    [ContentTypeAttributeSpecs(IsTitle = true)] public string Name => name;
-    public override IDictionary<string, object?> Attributes(RawConvertOptions options) => new Dictionary<string, object?>
+    [ContentTypeField(IsTitle = true)] public string Name => name;
+    protected override IDictionary<string, object?> GetValues() => new Dictionary<string, object?>
     {
         { nameof(Name), Name }, { "Value", value },
     };
