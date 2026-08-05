@@ -12,15 +12,17 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public record QueryPartDefinition : ModelFromEntityFull
 {
+    /// <summary>
+    /// Content-Type name of the query Content-Type
+    /// </summary>
+    internal static readonly string TypeName = "DataPipelinePart";
+
     internal QueryPartDefinition(IEntity? entity, string typeIdentifier, Type type, DataSourceInfo dataSourceInfo) : base(entity!)
     {
         DataSourceTypeIdentifier = typeIdentifier;
         DataSourceType = type;
         DataSourceInfo = dataSourceInfo;
     }
-
-    /// <summary>Content-Type name of the query Content-Type</summary>
-    internal static readonly string TypeName = "DataPipelinePart";
 
     /// <summary>
     /// Information for this part, how it's to be displayed in the visual query.
