@@ -59,7 +59,7 @@ public static class ToModelTestAccessors
         where TModel : class, IModelFromEntity, new()
         => list.FirstModel<TModel>();
 
-    internal static TModel? FirstModelTac<TModel>(
+    public static TModel? FirstModelTac<TModel>(
         this IEnumerable<IEntity>? list,
         // ReSharper disable once MethodOverloadWithOptionalParameter
         NoParamOrder npo = default,

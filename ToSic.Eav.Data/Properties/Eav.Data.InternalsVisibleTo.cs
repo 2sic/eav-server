@@ -9,6 +9,7 @@
 
 // Data Tests which need internals
 [assembly: InternalsVisibleTo("ToSic.Eav.Data.Tests")]
+[assembly: InternalsVisibleTo("ToSic.Eav.Data.TestHelpers")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Data.Build.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Models.Tests")]
 [assembly: InternalsVisibleTo("ToSic.Eav.Data.TestsPostBuild")]
