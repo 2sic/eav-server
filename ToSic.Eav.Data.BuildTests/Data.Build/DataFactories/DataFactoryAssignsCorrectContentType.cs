@@ -18,10 +18,10 @@ public class DataFactoryAssignsCorrectContentType(IDataFactory dataFactory)
 {
     #region Name Checks for resulting Content Type
 
-    private void NameNotSetUsesDefault<T>() where T: IRawEntitySource, new() =>
+    private void NameNotSetUsesDefault<T>() where T: IRawData, new() =>
         NameIsSet<T>(DataConstants.DataFactoryDefaultTypeName);
 
-    private void NameIsSet<T>(string expectedName) where T : IRawEntitySource, new()
+    private void NameIsSet<T>(string expectedName) where T : IRawData, new()
     {
         var x = new T();
         var y = dataFactory.CreateTac(x);

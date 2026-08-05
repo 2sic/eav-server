@@ -14,7 +14,7 @@ partial class DataFactory
     #region Create IRawEntity and Lists thereof
 
     /// <inheritdoc/>
-    public IEntity Create(IRawEntitySource item)
+    public IEntity Create(IRawData item)
     {
         // Get the raw entity using the extension which checks if it uses a converter or not.
         var raw = item.GetRawFromConverterOrDirectCast(MyOptions.RawConvertOptions);
@@ -22,7 +22,7 @@ partial class DataFactory
     }
 
     /// <inheritdoc />
-    public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : class, IRawEntitySource
+    public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : class, IRawData
         => WrapUp(Prepare(list));
 
     #endregion
@@ -56,7 +56,7 @@ partial class DataFactory
     #region Prepare Convertibles to Pairs with raw entities
 
     private IList<EntityPair<IRawEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list)
-        where TNewEntity : class, IRawEntitySource
+        where TNewEntity : class, IRawData
     {
         var l = Log.Fn<IList<EntityPair<IRawEntity>>>();
 

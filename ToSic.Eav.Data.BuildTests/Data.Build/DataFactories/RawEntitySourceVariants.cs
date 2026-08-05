@@ -12,7 +12,7 @@ public class RawEntitySourceVariants
     [Fact]
     public void RawEntityIsConverted()
     {
-        IRawEntitySource x = new MockRawEntity();
+        var x = new MockRawEntity();
         var y = x.GetRawFromConverterOrDirectCast(new());
         NotNull(y);
         Equal(MockRawEntity.DefaultId, y.Id);
@@ -21,7 +21,7 @@ public class RawEntitySourceVariants
     [Fact]
     public void HasConverterIsConverted()
     {
-        IRawEntitySource x = new MockRawConvertible();
+        var x = new MockRawConvertible();
         var y = x.GetRawFromConverterOrDirectCast(new());
         NotNull(y);
         Equal(MockRawConvertible.DefaultId, y.Id);    // The ID is fixed to 92 by the HasDummy converter
@@ -30,7 +30,7 @@ public class RawEntitySourceVariants
     [Fact]
     public void InvalidConverterThrows()
     {
-        IRawEntitySource x = new MockRawConvertibleInvalid();
+        var x = new MockRawConvertibleInvalid();
         Throws<InvalidCastException>(() => x.GetRawFromConverterOrDirectCast(new()));
     }
 

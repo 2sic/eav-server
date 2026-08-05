@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.Build.DataFactories;
 public class DataFactoryItemTitleFromRaw(IDataFactory dataFactory)
     : DataFactoryItemTitle
 {
-    protected override IEntity CreateTestEntity(IRawEntitySource source, bool withSpecs)
+    protected override IEntity CreateTestEntity(IRawData source, bool withSpecs)
         => dataFactory.CreateTac(source);
 }
 
@@ -20,7 +20,7 @@ public class DataFactoryItemTitleFromRaw(IDataFactory dataFactory)
 public class DataFactoryItemTitleFromConverter(IDataFactory dataFactory)
     : DataFactoryItemTitle
 {
-    protected override IEntity CreateTestEntity(IRawEntitySource source, bool withSpecs)
+    protected override IEntity CreateTestEntity(IRawData source, bool withSpecs)
     {
         // Create a fake raw, which doesn't have relevant properties, but would provide the source
         // in the GetConverter...
@@ -42,7 +42,7 @@ public abstract class DataFactoryItemTitle
     /// This is because we'll have some tests which will return the entity generated from raw,
     /// while others return the entity generated from a converter.
     /// </summary>
-    protected abstract IEntity CreateTestEntity(IRawEntitySource source, bool withSpecs);
+    protected abstract IEntity CreateTestEntity(IRawData source, bool withSpecs);
     
     [Fact]
     public void TitleOfSpecsNone_Empty_IsNull()

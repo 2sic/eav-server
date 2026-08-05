@@ -3,14 +3,14 @@
 /// <summary>
 /// This is the basic implementation of a converter, using a simple factory function
 /// </summary>
-public class RawEntityConverterFactory<TFactorySource>(Func<TFactorySource, RawConvertOptions, IRawEntity> factory)
+public class RawEntityConverterFactory<TData>(Func<TData, RawConvertOptions, IRawEntity> factory)
     : IRawEntityConverter
-    where TFactorySource : class
+    where TData : class
 {
     public IRawEntity Convert<TSource>(TSource source, RawConvertOptions options)
         where TSource : class =>
-        factory(source as TFactorySource
-                ?? throw new InvalidOperationException($"Invalid source type: {source?.GetType().Name}, could not convert to {typeof(TFactorySource).Name}"),
+        factory(source as TData
+                ?? throw new InvalidOperationException($"Invalid source type: {source?.GetType().Name}, could not convert to {typeof(TData).Name}"),
             options
         );
 }

@@ -57,10 +57,10 @@ public sealed class EntityInspectRelationships : CustomDataSource
 
     }
 
-    private IEnumerable<IRawEntitySource> GetRelationships(IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
+    private IEnumerable<IRawData> GetRelationships(IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
     {
         var id = Id;
-        var l = Log.Fn<IEnumerable<IRawEntitySource>>($"Id: {id}");
+        var l = Log.Fn<IEnumerable<IRawData>>($"Id: {id}");
         if (id == 0)
             return l.Return([], "no id provided, []");
 
@@ -95,7 +95,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
         // Merge, convert and return
         var merged = childrenWithField
             .Union(parentsWithField)
-            .OfType<IRawEntitySource>()
+            .OfType<IRawData>()
             .ToList();
 
         return l.Return(merged);

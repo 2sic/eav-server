@@ -13,4 +13,4 @@
 /// This interface should usually not be assigned directly, since it would be missing the converter or raw entity implementation.
 /// </remarks>
 [PrivateApi]
-public interface IRawEntitySource;
+public interface IRawEntitySource: IRawData;
