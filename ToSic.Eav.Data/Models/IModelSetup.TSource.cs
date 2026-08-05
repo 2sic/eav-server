@@ -7,7 +7,7 @@
 /// Marks objects such as custom items or data models, which can receive a _specific_ data-type (entity _or_ typed item) and wrap it.
 /// </summary>
 /// <remarks>
-/// This is more specific than the <see cref="ICanWrapData"/>, since that is just a marker interface.
+/// This is more specific than the <see cref="IModelFromData"/>, since that is just a marker interface.
 /// This one specifies that the object has the necessary `Setup()` method to receive the data of the expected type.
 /// 
 /// Typical use is for custom data such as classes inheriting from [](xref:Custom.Data.CustomItem)
@@ -20,7 +20,7 @@
 /// </remarks>
 /// <typeparam name="TSource">
 /// The data type which can be accepted.
-/// Must be <see cref="IEntity"/> or <see cref="ITypedItem"/> (other types not supported for now).
+/// Must be <see cref="IEntity"/> or [](xref:ToSic.Sxc.Data.ITypedItem`) (other types not supported for now).
 /// </typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
 public interface IModelSetup<in TSource>

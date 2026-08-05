@@ -30,7 +30,7 @@ public static partial class ToModelExtensions
     /// <typeparam name="TModel">
     /// The model type to wrap each entity.
     /// Must implement <see cref="IModelFromEntity"/> and should implement <see cref="IModelSetup{IEntity}"/>.
-    /// The type-name being filtered is used from <see cref="typeName"/>, derived from the model name, or from the <see cref="ModelSpecsAttribute"/> on the model.
+    /// The type-name being filtered is used from <see cref="ToModelOptions"/>, derived from the model name, or from the <see cref="ModelSpecsAttribute"/> on the model.
     /// </typeparam>
     /// <param name="list">The source collection of entities to search. Can be null.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>

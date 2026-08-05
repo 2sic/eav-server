@@ -57,14 +57,6 @@ public abstract partial class ModelFromEntityClassic: IModelFromEntity, IModelSe
         return true;
     }
 
-    //void IDataWrapperNeedingFactory<IEntity>.Setup(IEntity source, IModelFactory modelFactory)
-    //{
-    //    _entity = source;
-    //    _modelFactory = modelFactory;
-    //}
-
-    //private IModelFactory _modelFactory = null!;
-
     /// <summary>
     /// This is necessary so the object can be used in places where an IEntity is expected,
     /// like toolbars.
