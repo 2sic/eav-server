@@ -3,11 +3,17 @@ using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Data.ContentTypes;
 
+// TODO: RENAME TO IContentTypeDetailsModel
+
 /// <summary>
 /// Content Type Settings as typically configured in the UI
 /// </summary>
 /// <remarks>Added v22</remarks>
-[ModelSpecs(ContentType = Constants.ContentTypeName)]
+[ContentType(
+    Name = Constants.ContentTypeName,
+    Guid = "3ef2547d-8a6d-4cc4-91e0-a6396b96f7e7", // Made-up Guid!, real Guid is a string "ContentType" which would fail! should be fixed some day...
+    Description = "Content-Type for the main properties which 'all' attributes have."
+)]
 public interface IContentTypeDetails: IModelFromEntity<ContentTypeDetailsModel>
 {
     [PrivateApi]
@@ -16,6 +22,7 @@ public interface IContentTypeDetails: IModelFromEntity<ContentTypeDetailsModel>
     /// <summary>
     /// The visible label / title of the content type, as it appears in the UI.
     /// </summary>
+    [ContentTypeField(IsTitle = true)]
     string Label { get; }
 
     /// <summary>

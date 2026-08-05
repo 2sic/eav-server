@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Data.ContentTypes.Sys;
 
+
 /// <summary>
 /// Model to read properties of details on a content-type.
 /// </summary>
@@ -11,9 +12,9 @@ namespace ToSic.Eav.Data.ContentTypes.Sys;
 /// * Added in 13.02
 /// * Renamed from `ContentTypeDetails` to `ContentTypeDetailsModel` in v22
 /// </remarks>
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[ModelSpecs(ContentType = IContentTypeDetails.Constants.ContentTypeName)]
-public record ContentTypeDetailsModel: ModelFromEntity, IContentTypeDetails
+public record ContentTypeDetailsModel : ModelFromEntity, IContentTypeDetails
 {
     public string? Notes => GetThis<string>(null);
     public string? Icon => GetThis<string>(null);

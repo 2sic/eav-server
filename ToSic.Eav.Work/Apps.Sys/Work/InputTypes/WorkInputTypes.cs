@@ -179,7 +179,12 @@ public class WorkInputTypes(
         l.A("Types with input-type metadata: " + typesWithMetadata.Count);
 
         // Define priority of metadata to check
-        var typesToCheckInThisOrder = new[] { ContentTypeNameId, IContentTypeDetails.Constants.ContentTypeName, null };
+        var typesToCheckInThisOrder = new[]
+        {
+            ContentTypeNameId,
+            IContentTypeDetails.Constants.ContentTypeName,
+            null
+        };
         var inputsWithAt = types
             .Select(it =>
             {
