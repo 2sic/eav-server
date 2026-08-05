@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Data;
+﻿using ToSic.Eav.Data;
 using ToSic.Eav.Models.TestData;
 using ToSic.Sys.TestHelpers.Equality;
 
@@ -9,18 +7,14 @@ using ToSic.Sys.TestHelpers.Equality;
 
 namespace ToSic.Eav.Models.Equality;
 
+/// <summary>
+/// Test Equality for Records
+/// </summary>
+/// <param name="generator"></param>
+/// <param name="equalityChecker"></param>
 public class ModelEqualityTests_Record(MockDataGenerator generator, EqualityChecker<ModelEqualityTests_Record.MyMockModelRecord> equalityChecker)
     : ModelEqualityTestsBase<ModelEqualityTests_Record.MyMockModelRecord>(generator, equalityChecker)
 {
-    public class Startup : Models.Startup
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.TryAddTransient(typeof(EqualityChecker<>));
-            base.ConfigureServices(services);
-        }
-    }
-    
     /// <summary>
     /// Test Sample Model
     /// </summary>
@@ -44,22 +38,20 @@ public class ModelEqualityTests_Record(MockDataGenerator generator, EqualityChec
         var entity = generator.CreateMetadataForDecorator();
         var md = entity.ToModelTac<MyMockModelRecord>()!;
         var md2 = md with { };
-        Equal(md, md2, equalityType);
+        equalityChecker.Equal(md, md2, equalityType);
     }
 }
 
+
+
+/// <summary>
+/// Test Equality for Classes
+/// </summary>
+/// <param name="generator"></param>
+/// <param name="equalityChecker"></param>
 public class ModelEqualityTests_Classic(MockDataGenerator generator, EqualityChecker<ModelEqualityTests_Classic.MyMockModelClassic> equalityChecker)
     : ModelEqualityTestsBase<ModelEqualityTests_Classic.MyMockModelClassic>(generator, equalityChecker)
 {
-    public class Startup : Models.Startup
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.TryAddTransient(typeof(EqualityChecker<>));
-            base.ConfigureServices(services);
-        }
-    }
-
     /// <summary>
     /// Test Sample Model
     /// </summary>
@@ -72,14 +64,15 @@ public class ModelEqualityTests_Classic(MockDataGenerator generator, EqualityChe
 
 
 
+/// <summary>
+/// Shared Equality Tests for Models
+/// </summary>
+/// <typeparam name="TModel"></typeparam>
+/// <param name="generator"></param>
+/// <param name="equalityChecker"></param>
 public abstract class ModelEqualityTestsBase<TModel>(MockDataGenerator generator, EqualityChecker<TModel> equalityChecker)
     where TModel: class, IModelFromEntity
 {
-    protected void Equal(TModel md, TModel md2, EqualityTypes equalityType) => equalityChecker.Equal(md, md2, equalityType);
-
-    protected void NotEqual(TModel md, TModel md2, EqualityTypes equalityType) => equalityChecker.NotEqual(md, md2, equalityType);
-
-
     [Theory]
     [InlineData(EqualityTypes.AssertEqual)]
     [InlineData(EqualityTypes.OperatorEqual)]
@@ -89,7 +82,7 @@ public abstract class ModelEqualityTestsBase<TModel>(MockDataGenerator generator
     public void Self_IsEqual(EqualityTypes equalityType)
     {
         var md = generator.GetModel<TModel>()!;
-        Equal(md, md, equalityType);
+        equalityChecker.Equal(md, md, equalityType);
     }
 
     [Theory]
@@ -97,11 +90,12 @@ public abstract class ModelEqualityTestsBase<TModel>(MockDataGenerator generator
     [InlineData(EqualityTypes.OperatorEqual)]
     [InlineData(EqualityTypes.OperatorEqualNegated)]
     [InlineData(EqualityTypes.ObjectEquals)]
+    [InlineData(EqualityTypes.ReferenceEquals)]
     public void DifferentEntityInstances_NotEqual(EqualityTypes equalityType)
     {
         var md = generator.GetModel<TModel>()!;
         var md2 = generator.GetModel<TModel>()!;
-        NotEqual(md, md2, equalityType);
+        equalityChecker.NotEqual(md, md2, equalityType);
     }
     
     [Theory]
@@ -109,12 +103,13 @@ public abstract class ModelEqualityTestsBase<TModel>(MockDataGenerator generator
     [InlineData(EqualityTypes.OperatorEqual)]
     [InlineData(EqualityTypes.OperatorEqualNegated)]
     [InlineData(EqualityTypes.ObjectEquals)]
+    [InlineData(EqualityTypes.ReferenceEquals)]
     public void DifferentAmount_NotEqual(EqualityTypes equalityType)
     {
         var md = generator.GetModel<TModel>()!;
         var entity2 = generator.CreateMetadataForDecorator(2);
         var md2 = entity2.ToModelTac<TModel>()!;
-        NotEqual(md, md2, equalityType);
+        equalityChecker.NotEqual(md, md2, equalityType);
     }
 
 
@@ -128,7 +123,7 @@ public abstract class ModelEqualityTestsBase<TModel>(MockDataGenerator generator
         var entity = generator.CreateMetadataForDecorator();
         var md = entity.ToModelTac<TModel>()!;
         var md2 = entity.ToModelTac<TModel>()!;
-        Equal(md, md2, equalityType);
+        equalityChecker.Equal(md, md2, equalityType);
     }
 
     [Theory]
@@ -142,6 +137,6 @@ public abstract class ModelEqualityTestsBase<TModel>(MockDataGenerator generator
         var md = entity.ToModelTac<TModel>()!;
         // Recast and then re-create via ICanBeEntity
         var md2 = ((ICanBeEntity)md).ToModelTac<TModel>()!;
-        Equal(md, md2, equalityType);
+        equalityChecker.Equal(md, md2, equalityType);
     }
 }
