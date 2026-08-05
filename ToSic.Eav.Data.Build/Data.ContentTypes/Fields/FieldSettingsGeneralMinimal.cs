@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.Raw;
-using ToSic.Eav.Data.Raw.Sys;
 
 namespace ToSic.Eav.Data.ContentTypes.Fields;
 
@@ -11,18 +10,11 @@ namespace ToSic.Eav.Data.ContentTypes.Fields;
 /// as that has many more fields we don't care about in most create-data scenarios.
 /// </remarks>
 [ContentTypeUse(Type = typeof(IFieldSettingsGeneral))]
-internal record FieldSettingsGeneralMinimal: RawEntity
+internal record FieldSettingsGeneralMinimal: IRawEntityAutoConvert
 {
     public string Notes { get; init; } = "";
 
     public string InputType { get; init; } = "";
-
-    protected override IDictionary<string, object?> GetValues() =>
-        new Dictionary<string, object?>
-        {
-            { nameof(IFieldSettingsGeneral.Notes), Notes },
-            { nameof(IFieldSettingsGeneral.InputType), InputType }
-        };
 
     internal static FieldSettingsGeneralMinimal? FromCodeAttributeOrNull(ContentTypeFieldAttribute? attr)
         => attr == null || (attr.Description.IsEmptyOrWs() && attr.InputTypeWIP.IsEmptyOrWs())

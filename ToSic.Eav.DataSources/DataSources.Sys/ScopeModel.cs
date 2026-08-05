@@ -1,6 +1,5 @@
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
-using ToSic.Eav.Data.Raw.Sys;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -10,7 +9,7 @@ namespace ToSic.Eav.DataSources.Sys;
     Description = "Data Scope",
     Scope = "System"
 )]
-public record ScopeModel : RawEntity, IHasIdentityNameId
+public record ScopeModel : IRawEntityAutoConvert
 {
     public required string NameId { get; init; }
 
@@ -23,12 +22,4 @@ public record ScopeModel : RawEntity, IHasIdentityNameId
     
     public required int TypesOfApp { get; init; }
 
-    protected override IDictionary<string, object?> GetValues() => new Dictionary<string, object?>
-    {
-        { nameof(NameId), NameId },
-        { nameof(Name), Name },
-        { nameof(TypesTotal), TypesTotal },
-        { nameof(TypesInherited), TypesInherited },
-        { nameof(TypesOfApp), TypesOfApp },
-    };
 }
