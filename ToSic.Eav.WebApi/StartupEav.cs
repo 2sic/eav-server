@@ -6,13 +6,13 @@ using ToSic.Eav.DataFormats.EavLight;
 namespace ToSic.Eav.Run.Startup;
 
 /// <summary>
-/// Global Eav Configuration
+/// Combined Eav Dependency Injection Startup
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEav
 {
     /// <summary>
-    /// Use this to setup the new DI container
+    /// Use this to set up the new DI container
     /// </summary>
     /// <param name="services"></param>
     public static IServiceCollection AddEavAll(this IServiceCollection services)
