@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.Models;
 
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Models;
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract record ModelFromEntity
+public abstract partial record ModelFromEntity
     : IModelFromEntity,         // Model will be built using an entity
         IModelSetup<IEntity>,   // Allow setting up the wrapper with an entity
         ICanBeEntity            // Allow retrieving the entity directly if needed

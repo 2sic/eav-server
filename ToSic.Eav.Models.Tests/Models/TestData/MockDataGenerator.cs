@@ -77,12 +77,16 @@ public class MockDataGenerator<TMockMetadataModel>(
 
     public IEntity CreateMetadataForDecorator() =>
         CreateMetadataForDecorator(1);
-    
-    internal IEntity CreateMetadataForDecorator(int amount) =>
+
+    internal IEntity CreateMetadataForDecorator(int valueInAmount) =>
         dataAssembler.CreateEntityTac(
             0,
             ctDefFactory.CreateTac<TMockMetadataModel>(),
-            values: new MockMetadataRaw(amount).Values.ToDictionary(x => x.Key, x => x.Value)
+            values: new MockMetadataRaw(valueInAmount).Values
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.Value
+                )
         );
 
     #endregion

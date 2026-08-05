@@ -1,8 +1,14 @@
 ﻿namespace ToSic.Eav.Models;
 
-partial class ModelFromEntityClassic: IMultiWrapper<IEntity>, IEquatable<IEntity>
+partial class ModelFromEntityClassic
+    : IMultiWrapper<IEntity>,
+        IEquatable<ModelFromEntityClassic>
 {
-    bool IEquatable<IEntity>.Equals(IEntity? other) => Equals(other);
+    // 2026-08-05 2dm - dropped this, I think it doesn't make sense to make a model equal to the underlying entity
+    //bool IEquatable<IEntity>.Equals(IEntity? other) => Equals(other);
+
+    public bool Equals(ModelFromEntityClassic other)
+        => MultiWrapperEquality.EqualsWrapper(this, other);
 
     /// <summary>
     /// Ensure that the equality check is done correctly.
@@ -17,7 +23,7 @@ partial class ModelFromEntityClassic: IMultiWrapper<IEntity>, IEquatable<IEntity
         => MultiWrapperEquality.GetWrappedHashCode(this);
 
     IEntity? IMultiWrapper<IEntity>.RootContentsForEqualityCheck
-        => (Entity as IMultiWrapper<IEntity>)?.RootContentsForEqualityCheck;
+        => (Entity as IMultiWrapper<IEntity>)?.RootContentsForEqualityCheck ?? Entity;
 
     /// <summary>
     /// Ensure that the equality check is done correctly.
