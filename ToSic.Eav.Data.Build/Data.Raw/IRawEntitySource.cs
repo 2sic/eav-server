@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Raw.Sys;
+﻿namespace ToSic.Eav.Data.Raw;
 
 /// <summary>
 /// Should mark any object/interface which can be converted to a raw entity.

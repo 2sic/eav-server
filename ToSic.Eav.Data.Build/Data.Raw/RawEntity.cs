@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Data.Raw.Sys;
+namespace ToSic.Eav.Data.Raw;
 
 /// <summary>
 /// A ready-to-use <see cref="IRawEntity"/> which receives all the data in the constructor.

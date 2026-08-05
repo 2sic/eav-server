@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Raw.Sys;
+﻿namespace ToSic.Eav.Data.Raw;
 
 /// <summary>
 /// This marks objects which have data prepared to be converted to Entities.

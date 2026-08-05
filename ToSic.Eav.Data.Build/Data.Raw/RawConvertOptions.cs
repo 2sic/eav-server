@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.Raw;
 /// </summary>
 /// <remarks>
 /// Added in 15.04, accidentally marked [PublicApi]
-/// Re-publising v22 as [WorkInProgressApi] to avoid confusion.
+/// Re-publishing v22 as [WorkInProgressApi] to avoid confusion.
 /// </remarks>
 [WorkInProgressApi("v22")]
 public class RawConvertOptions

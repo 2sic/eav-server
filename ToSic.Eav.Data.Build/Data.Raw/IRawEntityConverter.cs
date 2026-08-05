@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Raw.Sys;
+﻿namespace ToSic.Eav.Data.Raw;
 
 /// <summary>
 /// WIP v22 2dm

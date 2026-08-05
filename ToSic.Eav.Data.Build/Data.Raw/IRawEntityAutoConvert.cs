@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Raw.Sys;
+﻿using ToSic.Eav.Data.Raw.Sys;
+
+namespace ToSic.Eav.Data.Raw;
 
 /// <summary>
 /// AutoConvert using <see cref="RawFromAnonymousHelper"/>
