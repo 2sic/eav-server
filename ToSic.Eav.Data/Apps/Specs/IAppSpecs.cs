@@ -18,7 +18,7 @@ public interface IAppSpecs : IAppIdentity, IHasIdentityNameId
     /// <summary>
     /// Runtime key to uniquely identify this app across tenants/platforms.
     /// </summary>
-    string RuntimeKey { get; }
+    string CacheKey { get; }
 
     IAppConfiguration Configuration { get; }
 

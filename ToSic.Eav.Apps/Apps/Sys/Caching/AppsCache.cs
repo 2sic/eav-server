@@ -8,9 +8,9 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// The default Apps Cache system running on a normal environment.
 /// </summary>
 [PrivateApi]
-internal class AppsCache(IRuntimeKeyService runtimeKeyService)
+internal class AppsCache(IAppCacheKeyService appCacheKeyService)
 #pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
-    : AppsCacheBase(runtimeKeyService), IAppsCacheSwitchable
+    : AppsCacheBase(appCacheKeyService), IAppsCacheSwitchable
 #pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
 {
     #region SwitchableService
@@ -44,7 +44,7 @@ internal class AppsCache(IRuntimeKeyService runtimeKeyService)
             // Use a stable app identity with no DB lookup; tenant-aware runtimes will encode tenant here.
             var identity = new AppIdentity(KnownAppsConstants.DefaultZoneId, KnownAppsConstants.AppIdEmpty);
             // Use runtime key presence as the guard for safe, tenant-scoped caching.
-            cacheKey = runtimeKeyService.AppRuntimeKey(identity);
+            cacheKey = appCacheKeyService.AppCacheKey(identity);
             return cacheKey.HasValue();
         }
         catch

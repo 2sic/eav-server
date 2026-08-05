@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class AppsCacheBase(IRuntimeKeyService runtimeKeyService) : IAppsCacheSwitchable
+public abstract class AppsCacheBase(IAppCacheKeyService appCacheKeyService) : IAppsCacheSwitchable
 {
     #region Switchable
 
@@ -73,8 +73,8 @@ public abstract class AppsCacheBase(IRuntimeKeyService runtimeKeyService) : IApp
     protected string CacheKey(IAppIdentity appIdentity)
     {
         var runtimeKey = appIdentity is IAppStateCache appState
-            ? appState.RuntimeKey
-            : runtimeKeyService.AppRuntimeKey(appIdentity);
+            ? appState.CacheKey
+            : appCacheKeyService.AppCacheKey(appIdentity);
 
         return runtimeKey.HasValue()
             ? runtimeKey

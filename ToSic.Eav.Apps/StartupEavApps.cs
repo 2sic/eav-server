@@ -39,7 +39,7 @@ public static class StartupEavApps
 
         services.TryAddTransient<AppDataStackService>();
 
-        services.TryAddTransient<IRuntimeKeyService, RuntimeKeyServiceDefault>();
+        services.TryAddTransient<IAppCacheKeyService, AppCacheKeyServiceDefault>();
 
         return services;
     }
