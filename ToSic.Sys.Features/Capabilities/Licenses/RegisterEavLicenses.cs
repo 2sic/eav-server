@@ -9,6 +9,7 @@ internal class RegisterEavLicenses
             CoreFree,
             CorePlus,
             CoreBeta,
+            DevCoreFree,
             PatronBasic,
             PatronLanguages,
             PatronData,

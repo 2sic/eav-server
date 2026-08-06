@@ -69,6 +69,9 @@ internal class RegisterBuiltInSysFeatures
             PermissionsByLanguage,
             EditUiDisableDraft,
 
+            // Dev Core
+            FileNamesCrossPlatform, // v22
+            
             // Beta features
             AdamRestrictLookupToEntity
 
