@@ -10,6 +10,6 @@ public class AdamItemDto<TFolderId, TItemId>(
     DateTime modified)
     : AdamItemDto(isFolder, name, size, created, modified)
 {
-    public TItemId Id { get; set; } = id;
-    public TFolderId ParentId { get; set; } = parentId;
+    public TItemId Id { get; init; } = id;
+    public TFolderId ParentId { get; init; } = parentId;
 }

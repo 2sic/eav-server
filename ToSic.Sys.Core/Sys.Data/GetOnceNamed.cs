@@ -7,7 +7,7 @@ namespace ToSic.Sys.Data;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class GetOnceNamed<TResult>
 {
-    public IDictionary<string, TResult> Cache = new ConcurrentDictionary<string, TResult>(InvariantCultureIgnoreCase);
+    private IDictionary<string, TResult> _cache = new ConcurrentDictionary<string, TResult>(InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Construct an empty GetOnceNamed object for use later on.
@@ -28,20 +28,26 @@ public class GetOnceNamed<TResult>
     /// <returns></returns>
     public TResult Get(string name, Func<TResult> generator)
     {
-        if (Cache.TryGetValue(name, out var result)) return result;
+        if (_cache.TryGetValue(name, out var result))
+            return result;
+        
         // Important: don't use try/catch, because the parent should be able to decide if try/catch is appropriate
         var value = generator();
-        Cache.Add(name, value);
+        
+        _cache.Add(name, value);
         // Important: This must happen explicitly after the generator() - otherwise there is a risk of cyclic code which already assume
         // the value was created, while still inside the creation of the value.
-        // So we would rather have a stack overflow and find the problem code, than to let the code assume the value was already made and null
+        // So we would rather have a stack overflow and find the problem code, then to let the code assume the value was already made and null
         return value;
     }
 
-    public void Reset() => Cache = new ConcurrentDictionary<string, TResult>();
+    public void Reset()
+        => _cache = new ConcurrentDictionary<string, TResult>();
 
-    public void Reset(string name) => Cache.Remove(name);
+    public void Reset(string name)
+        => _cache.Remove(name);
 
-    public bool IsValueCreated(string name) => Cache.ContainsKey(name);
+    public bool IsValueCreated(string name)
+        => _cache.ContainsKey(name);
 
 }
