@@ -12,7 +12,7 @@ public class LanguagesBackend(
     LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy)
     : Services_ServiceBase("Bck.Admin", connect: [zoneManager, site, appUserLanguageCheckLazy])
 {
-    public List<AppLanguageRaw> GetLanguagesOfApp(IAppReader? appReaderOrNull, bool withCount = false)
+    public List<LanguageStatusRaw> GetLanguagesOfApp(IAppReader? appReaderOrNull, bool withCount = false)
     {
         try
         {
@@ -20,7 +20,7 @@ public class LanguagesBackend(
             var converted = langs
                 .Select(l =>
                 {
-                    var dto = new AppLanguageRaw
+                    var dto = new LanguageStatusRaw
                     {
                         Code = l.Code,
                         Culture = l.Culture,

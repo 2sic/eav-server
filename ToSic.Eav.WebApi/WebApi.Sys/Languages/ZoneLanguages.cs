@@ -31,12 +31,12 @@ public class ZoneLanguages : CustomDataSource
             });
     }
 
-    private IEnumerable<AppLanguageRaw> GetLanguages(IZoneMapper zoneMapper, ISite site)
+    private IEnumerable<LanguageStatusRaw> GetLanguages(IZoneMapper zoneMapper, ISite site)
     {
-        var l = Log.Fn<IEnumerable<AppLanguageRaw>>($"{site.Id}");
+        var l = Log.Fn<IEnumerable<LanguageStatusRaw>>($"{site.Id}");
 
         var list = zoneMapper.CulturesWithState(site)
-            .Select(c => new AppLanguageRaw
+            .Select(c => new LanguageStatusRaw
             {
                 Code = c.Code,
                 Culture = c.Culture,

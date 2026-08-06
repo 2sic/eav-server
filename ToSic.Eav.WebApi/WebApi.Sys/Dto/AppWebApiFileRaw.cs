@@ -11,6 +11,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 )]
 public class AppWebApiFileRaw : IRawEntityAutoConvert
 {
+    // TODO: @2rb - fix, should be init only
     public int Id { get; set; }
 
     [ContentTypeField(IsTitle = true)]

@@ -43,7 +43,8 @@ public class AppWebApiControllers : CustomDataSource
 
         var mask = $"*{EavConstants.ApiControllerSuffix}.cs";
 
-        var localFiles = AppFileController.All(AppId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
+        var localFiles = AppFileController
+            .All(AppId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
             .Select(file => new AppWebApiFileRaw
             {
                 Path = file,
@@ -55,7 +56,8 @@ public class AppWebApiControllers : CustomDataSource
         l.A($"local files:{localFiles.Length}");
 
         var globalFiles = _user.IsSystemAdmin
-            ? AppFileController.All(AppId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
+            ? AppFileController
+                .All(AppId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
                 .Select(file => new AppWebApiFileRaw
                 {
                     Path = file,
@@ -68,7 +70,8 @@ public class AppWebApiControllers : CustomDataSource
 
         l.A($"global files:{globalFiles.Length}");
 
-        var allInAppCode = AppFileController.AllApiFilesInAppCodeForAllEditions(AppId)
+        var allInAppCode = AppFileController
+            .AllApiFilesInAppCodeForAllEditions(AppId)
             .ToArray();
 
         l.A($"all in AppCode:{allInAppCode.Length}");
@@ -78,11 +81,15 @@ public class AppWebApiControllers : CustomDataSource
             .Union(allInAppCode)
             .ToArray();
 
-        var entities = files.Select((file, index) =>
-        {
-            file.Id = index + 1;
-            return file;
-        }).ToList();
+        // TODO: @2rb - fix this, make functional - don't update existing objects
+        // set the IDs on initial creation instead before
+        var entities = files
+            .Select((file, index) =>
+            {
+                file.Id = index + 1;
+                return file;
+            })
+            .ToList();
 
         return l.Return(entities, $"{entities.Count}");
     }

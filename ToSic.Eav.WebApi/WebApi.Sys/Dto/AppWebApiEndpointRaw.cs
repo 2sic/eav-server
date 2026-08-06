@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "App WebApi controller endpoint",
     Scope = "System"
 )]
-public class AppWebApiEndpointRaw : IRawEntityAutoConvert
+public record AppWebApiEndpointRaw : IRawEntityAutoConvert
 {
     [ContentTypeField(IsTitle = true)]
     public required string name { get; init; }
@@ -17,16 +17,16 @@ public class AppWebApiEndpointRaw : IRawEntityAutoConvert
     public required string returns { get; init; }
     public required string verbs { get; init; }
     public required IEnumerable<Parameter> parameters { get; init; }
-    public required Dictionary<string, object?> security { get; init; }
+    public required IDictionary<string, object?> security { get; init; }
 
-    public bool IgnoreSecurity { get; init; }
-    public bool AllowAnonymous { get; init; }
-    public bool RequireVerificationToken { get; init; }
-    public bool RequireContext { get; init; }
-    public bool View { get; init; }
-    public bool Edit { get; init; }
-    public bool Admin { get; init; }
-    public bool SuperUser { get; init; }
+    public required bool IgnoreSecurity { get; init; }
+    public required bool AllowAnonymous { get; init; }
+    public required bool RequireVerificationToken { get; init; }
+    public required bool RequireContext { get; init; }
+    public required bool View { get; init; }
+    public required bool Edit { get; init; }
+    public required bool Admin { get; init; }
+    public required bool SuperUser { get; init; }
 
     public class Parameter
     {

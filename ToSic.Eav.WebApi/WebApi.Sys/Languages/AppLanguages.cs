@@ -28,9 +28,9 @@ public class AppLanguages : CustomDataSource
             });
     }
 
-    private IEnumerable<AppLanguageRaw> GetLanguages(LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
+    private IEnumerable<LanguageStatusRaw> GetLanguages(LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
     {
-        var l = Log.Fn<IEnumerable<AppLanguageRaw>>();
+        var l = Log.Fn<IEnumerable<LanguageStatusRaw>>();
 
         var appReader = appReadersLazy.Value.Get(AppId);
 

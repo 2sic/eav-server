@@ -5,12 +5,12 @@ using ToSic.Eav.WebApi.Sys.Security;
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
 [ContentType(
-    Name = "AppLanguage",
+    Name = "LanguageStatus",
     Guid = "c8676078-b904-4412-bf4e-aa83d48b63e7",
     Description = "Language enabled for an app",
     Scope = "System"
 )]
-public class AppLanguageRaw : IRawEntityAutoConvert
+public class LanguageStatusRaw : IRawEntityAutoConvert
 {
     public required string Code { get; init; }
 

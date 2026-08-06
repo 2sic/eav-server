@@ -9,17 +9,17 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "App WebApi controller details",
     Scope = "System"
 )]
-public class AppWebApiControllerRaw : IRawEntityAutoConvert
+public record AppWebApiControllerRaw : IRawEntityAutoConvert
 {
     [ContentTypeField(IsTitle = true)]
     public required string controller { get; init; }
 
-    public bool IgnoreSecurity { get; init; }
-    public bool AllowAnonymous { get; init; }
-    public bool RequireVerificationToken { get; init; }
-    public bool RequireContext { get; init; }
-    public bool View { get; init; }
-    public bool Edit { get; init; }
-    public bool Admin { get; init; }
-    public bool SuperUser { get; init; }
+    public required bool IgnoreSecurity { get; init; }
+    public required bool AllowAnonymous { get; init; }
+    public required bool RequireVerificationToken { get; init; }
+    public required bool RequireContext { get; init; }
+    public required bool View { get; init; }
+    public required bool Edit { get; init; }
+    public required bool Admin { get; init; }
+    public required bool SuperUser { get; init; }
 }
