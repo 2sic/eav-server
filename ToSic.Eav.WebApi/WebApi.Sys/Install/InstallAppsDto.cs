@@ -3,6 +3,10 @@
 
 namespace ToSic.Eav.WebApi.Sys.Install;
 
+// TODO: @2rb
+// probably just rename these to ...Raw
+// and add [ContentType] etc. with new random guids https://guidgenerator.com/
+
 public class InstallAppsDto
 {
     public required string remoteUrl { get; init; }
@@ -11,6 +15,9 @@ public class InstallAppsDto
 
     public required ICollection<AppDtoLight> installedApps { get; init; }
 }
+
+// TODO: @2rb - this already seems to have a RAW: SiteSetupAutoInstallAppsRule
+// probably use that...
 
 public class AppInstallRuleDto
 {
