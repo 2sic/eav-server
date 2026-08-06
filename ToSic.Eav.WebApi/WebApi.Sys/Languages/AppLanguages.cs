@@ -24,6 +24,7 @@ public class AppLanguages : CustomDataSource
             options: () => new()
             {
                 AutoId = true,
+                AllowUnknownValueTypes = true,
             });
     }
 

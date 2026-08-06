@@ -46,7 +46,7 @@ public class InputTypes : CustomDataSource
 
         var entities = _inputTypes.New(AppId)
             .GetInputTypes()
-            .Select(inputType => new InputTypeInfoRaw(inputType));
+            .Select(inputType => new InputTypeInfoRaw(source: inputType));
 
         return l.Return(entities, "ok");
     }
@@ -57,7 +57,7 @@ public class InputTypes : CustomDataSource
 
         var entities = _attributesMod.New(AppId)
             .DataTypes()
-            .Select(dataType => new NameValueRaw(dataType));
+            .Select(dataType => new NameValueRaw(Name: dataType));
 
         return l.Return(entities, "ok");
     }
@@ -67,7 +67,7 @@ public class InputTypes : CustomDataSource
         var l = Log.Fn<IEnumerable<NameValueRaw>>();
 
         var entities = AttributeNames.ReservedNames
-            .Select(reservedName => new NameValueRaw(reservedName.Key, reservedName.Value));
+            .Select(reservedName => new NameValueRaw(Name: reservedName.Key, Value: reservedName.Value));
 
         return l.Return(entities, "ok");
     }

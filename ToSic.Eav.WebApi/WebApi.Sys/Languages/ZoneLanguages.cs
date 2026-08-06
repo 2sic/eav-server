@@ -27,6 +27,7 @@ public class ZoneLanguages : CustomDataSource
             options: () => new()
             {
                 AutoId = true,
+                AllowUnknownValueTypes = true,
             });
     }
 
