@@ -8,13 +8,11 @@ namespace ToSic.Eav.Apps.Sys.AppStack;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppDataStackService(IAppReaderFactory appReaderFactory/*, ILogStore wipLogStore*/) : ServiceBase("App.Stack", connect: [appReaderFactory])
+public class AppDataStackService(IAppReaderFactory appReaderFactory) : ServiceBase("App.Stack", connect: [appReaderFactory])
 {
     public AppDataStackService Init(IAppReader appReader)
     {
         AppReader = appReader;
-
-        //wipLogStore.Add("wip", Log);
 
         return this;
     }

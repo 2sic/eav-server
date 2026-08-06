@@ -1,8 +1,9 @@
 ﻿namespace ToSic.Sys.Boot;
 
 /// <summary>
-/// Defines a service (which must be added using AddTransient (not TryAddTransient).
-/// Can then do more registrations at startup, like register features
+/// Defines a service, which must be added using `AddTransient` (not `TryAddTransient`).
+/// 
+/// Such a boot process can then do more work at startup, like register features.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]

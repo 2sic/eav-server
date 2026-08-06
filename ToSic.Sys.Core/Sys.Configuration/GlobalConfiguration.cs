@@ -2,7 +2,7 @@
 
 namespace ToSic.Sys.Configuration;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi("Concrete implementation should remain hidden.")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class GlobalConfiguration : IGlobalConfiguration
 {

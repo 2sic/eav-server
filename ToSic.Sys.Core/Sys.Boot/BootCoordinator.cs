@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Sys.Boot;
 
 /// <summary>
-/// The main / overall loader which will coordinate all the loaders.
+/// During boot, this will get all <see cref="IBootProcess"/> services and ensure that they are triggered in the correct order.
 /// </summary>
 /// <remarks>
 /// It will run pre-loaders first, then the main loader.
