@@ -1,6 +1,5 @@
-﻿using System.Globalization;
+using System.Globalization;
 using ToSic.Eav.WebApi.Sys.Languages;
-using ToSic.Eav.WebApi.Sys.Zone;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -21,6 +20,5 @@ public class ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend)
         => languagesBackend.Value.Toggle(cultureCode, enable, CultureInfo.GetCultureInfo(cultureCode).EnglishName);
 
     /// <inheritdoc />
-    //public SystemInfoSetDto GetSystemInfo() => zoneBackend.Value.GetSystemInfo();
 
 }

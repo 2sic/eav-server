@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
+using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -31,25 +32,19 @@ public class AppWebApiControllerDetails : CustomDataSource
         _analyzer = analyzer;
         _assemblyLoader = assemblyLoader;
 
-        ProvideOutRaw(GetDetails, options: () => new()
-        {
-            TitleField = nameof(ApiControllerDto.controller),
-            TypeName = "AppWebApiControllerDetails",
-            AllowUnknownValueTypes = true,
-        });
+        ProvideOutRaw(GetDetails);
     }
 
-    private IEnumerable<AppWebApiControllerModel> GetDetails()
+    private IEnumerable<AppWebApiControllerRaw> GetDetails()
     {
-        var l = Log.Fn<IEnumerable<AppWebApiControllerModel>>();
+        var l = Log.Fn<IEnumerable<AppWebApiControllerRaw>>();
 
         if (string.IsNullOrWhiteSpace(Path))
             return l.Return([], "missing path");
 
         var assembly = _assemblyLoader.GetAssembly(Path);
-        var dto = _analyzer.Analyze(Path, assembly);
-        var entity = new AppWebApiControllerModel(dto);
+        var (controller, _) = _analyzer.Analyze(Path, assembly);
 
-        return l.Return([entity], "ok");
+        return l.Return([controller], "ok");
     }
 }

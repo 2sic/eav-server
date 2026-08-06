@@ -24,21 +24,18 @@ public class AppLanguages : CustomDataSource
             options: () => new()
             {
                 AutoId = true,
-                TitleField = nameof(SiteLanguageDto.Culture),
-                TypeName = "AppLanguages",
             });
     }
 
-    private IEnumerable<AppLanguageModel> GetLanguages(LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
+    private IEnumerable<AppLanguageRaw> GetLanguages(LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
     {
-        var l = Log.Fn<IEnumerable<AppLanguageModel>>();
+        var l = Log.Fn<IEnumerable<AppLanguageRaw>>();
 
         var appReader = appReadersLazy.Value.Get(AppId);
 
         var list = languagesBackend
             .GetLanguagesOfApp(appReader, true)
-            .Select(language => new AppLanguageModel(language))
-            .ToList();
+            .ToListOpt();
 
         return l.Return(list, $"{list.Count}");
     }

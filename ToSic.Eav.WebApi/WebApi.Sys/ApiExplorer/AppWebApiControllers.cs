@@ -1,7 +1,8 @@
-﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
+using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Users;
 
 namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
@@ -33,22 +34,17 @@ public class AppWebApiControllers : CustomDataSource
         _user = user;
         _appFileController = appFileController;
 
-        ProvideOutRaw(GetApiFiles, options: () => new()
-        {
-            TitleField = nameof(AllApiFileDto.Path),
-            TypeName = "ApiFile",
-            AllowUnknownValueTypes = true,
-        });
+        ProvideOutRaw(GetApiFiles);
     }
 
-    private IEnumerable<AppWebApiFileModel> GetApiFiles()
+    private IEnumerable<AppWebApiFileRaw> GetApiFiles()
     {
-        var l = Log.Fn<IEnumerable<AppWebApiFileModel>>($"list all api files a#{AppId}");
+        var l = Log.Fn<IEnumerable<AppWebApiFileRaw>>($"list all api files a#{AppId}");
 
         var mask = $"*{EavConstants.ApiControllerSuffix}.cs";
 
         var localFiles = AppFileController.All(AppId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
-            .Select(file => new AllApiFileDto
+            .Select(file => new AppWebApiFileRaw
             {
                 Path = file,
                 EndpointPath = ApiFileEndpointPath(file),
@@ -60,7 +56,7 @@ public class AppWebApiControllers : CustomDataSource
 
         var globalFiles = _user.IsSystemAdmin
             ? AppFileController.All(AppId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
-                .Select(file => new AllApiFileDto
+                .Select(file => new AppWebApiFileRaw
                 {
                     Path = file,
                     Shared = true,
@@ -82,9 +78,10 @@ public class AppWebApiControllers : CustomDataSource
             .Union(allInAppCode)
             .ToArray();
 
-        var entities = files.Select((file, index) => new AppWebApiFileModel(file)
+        var entities = files.Select((file, index) =>
         {
-            Id = index + 1,
+            file.Id = index + 1;
+            return file;
         }).ToList();
 
         return l.Return(entities, $"{entities.Count}");

@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+using System.Reflection;
 using ToSic.Eav.Sys;
+using ToSic.Eav.WebApi.Sys.Admin;
+using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
@@ -7,15 +9,15 @@ namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 public class AppWebApiControllerAnalyzer(IApiInspector inspector)
     : ServiceBase($"{EavLogs.WebApi}.ApiCtlAn", connect: [inspector])
 {
-    internal ApiControllerDto Analyze(string path, Assembly assembly)
+    internal (AppWebApiControllerRaw Controller, IReadOnlyCollection<AppWebApiEndpointRaw> Endpoints) Analyze(string path, Assembly assembly)
     {
-        var l = Log.Fn<ApiControllerDto>();
+        var l = Log.Fn<(AppWebApiControllerRaw, IReadOnlyCollection<AppWebApiEndpointRaw>)>();
 
         path = CleanPath(path);
         var controller = GetController(path, assembly);
-        var dto = BuildApiControllerDto(controller);
+        var result = Build(controller);
 
-        return l.ReturnAsOk(dto);
+        return l.ReturnAsOk(result);
     }
 
     private string CleanPath(string path)
@@ -47,49 +49,82 @@ public class AppWebApiControllerAnalyzer(IApiInspector inspector)
         return l.ReturnAsOk(controller);
     }
 
-    private ApiControllerDto BuildApiControllerDto(Type controller)
+    private (AppWebApiControllerRaw Controller, IReadOnlyCollection<AppWebApiEndpointRaw> Endpoints) Build(Type controller)
     {
-        var l = Log.Fn<ApiControllerDto>();
+        var l = Log.Fn<(AppWebApiControllerRaw, IReadOnlyCollection<AppWebApiEndpointRaw>)>();
 
         var controllerSecurity = inspector.GetSecurity(controller);
+        var controllerRaw = ToControllerRaw(controller.Name, controllerSecurity);
 
-        var controllerDto = new ApiControllerDto
+        var endpoints = controller.GetMethods()
+            .Where(methodInfo =>
+                methodInfo.IsPublic &&
+                !methodInfo.IsSpecialName &&
+                inspector.GetHttpVerbs(methodInfo).Count > 0)
+            .Select(methodInfo =>
+            {
+                var methodSecurity = inspector.GetSecurity(methodInfo);
+                var mergedSecurity = MergeSecurity(controllerSecurity, methodSecurity);
+
+                return ToEndpointRaw(
+                    methodInfo.Name,
+                    inspector.GetHttpVerbs(methodInfo),
+                    methodInfo.GetParameters(),
+                    ApiExplorerJs.JsTypeName(methodInfo.ReturnType),
+                    methodSecurity,
+                    mergedSecurity);
+            })
+            .ToArray();
+
+        return l.ReturnAsOk((controllerRaw, endpoints));
+    }
+
+    private AppWebApiEndpointRaw ToEndpointRaw(
+        string name,
+        IEnumerable<string> verbs,
+        IEnumerable<ParameterInfo> parameters,
+        string returns,
+        ApiSecurityDto security,
+        ApiSecurityDto mergedSecurity)
+        => new()
         {
-            controller = controller.Name,
-            actions = controller.GetMethods()
-                .Where(methodInfo =>
-                    methodInfo.IsPublic &&
-                    !methodInfo.IsSpecialName &&
-                    inspector.GetHttpVerbs(methodInfo).Count > 0)
-                .Select(methodInfo =>
+            name = name,
+            verbs = string.Join(", ", verbs.Select(verb => verb.ToUpperInvariant())),
+            parameters = parameters
+                .Select(parameter => new AppWebApiEndpointRaw.Parameter
                 {
-                    var methodSecurity = inspector.GetSecurity(methodInfo);
-                    var mergedSecurity = MergeSecurity(controllerSecurity, methodSecurity);
-
-                    return new ApiActionDto
-                    {
-                        name = methodInfo.Name,
-                        verbs = inspector.GetHttpVerbs(methodInfo).Select(verb => verb.ToUpperInvariant()),
-                        parameters = methodInfo.GetParameters()
-                            .Select(parameter => new ApiActionParamDto
-                            {
-                                name = parameter.Name!,
-                                type = ApiExplorerJs.JsTypeName(parameter.ParameterType),
-                                defaultValue = parameter.DefaultValue,
-                                isOptional = parameter.IsOptional,
-                                isBody = inspector.IsBody(parameter),
-                            })
-                            .ToArray(),
-                        security = methodSecurity,
-                        mergedSecurity = mergedSecurity,
-                        returns = ApiExplorerJs.JsTypeName(methodInfo.ReturnType),
-                    };
-                }),
-            security = controllerSecurity
+                    name = parameter.Name!,
+                    type = ApiExplorerJs.JsTypeName(parameter.ParameterType),
+                    defaultValue = parameter.DefaultValue,
+                    isOptional = parameter.IsOptional,
+                    isBody = inspector.IsBody(parameter),
+                })
+                .ToArray(),
+            security = AppWebApiControllerSecurityValues.ToDictionary(security),
+            returns = returns,
+            IgnoreSecurity = mergedSecurity.IgnoreSecurity,
+            AllowAnonymous = mergedSecurity.AllowAnonymous,
+            RequireVerificationToken = mergedSecurity.RequireVerificationToken,
+            RequireContext = mergedSecurity.RequireContext,
+            View = mergedSecurity.View,
+            Edit = mergedSecurity.Edit,
+            Admin = mergedSecurity.Admin,
+            SuperUser = mergedSecurity.SuperUser,
         };
 
-        return l.ReturnAsOk(controllerDto);
-    }
+    private static AppWebApiControllerRaw ToControllerRaw(string name, ApiSecurityDto security)
+        => new()
+        {
+            controller = name,
+            IgnoreSecurity = security.IgnoreSecurity,
+            AllowAnonymous = security.AllowAnonymous,
+            RequireVerificationToken = security.RequireVerificationToken,
+            RequireContext = security.RequireContext,
+            View = security.View,
+            Edit = security.Edit,
+            Admin = security.Admin,
+            SuperUser = security.SuperUser,
+        };
 
     private ApiSecurityDto MergeSecurity(ApiSecurityDto controllerSecurity, ApiSecurityDto methodSecurity)
     {
