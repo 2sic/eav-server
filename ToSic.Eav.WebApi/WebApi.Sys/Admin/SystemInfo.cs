@@ -116,11 +116,10 @@ public class SystemInfo : CustomDataSource
         var warningsObsolete = CountInsightsMessages(CodeInfoConstants.ObsoleteNameInHistory);
         var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;
 
-        var entity = new MessagesRaw
-        {
-            WarningsOther = warningsOther,
-            WarningsObsolete = warningsObsolete,
-        };
+        var entity = new MessagesRaw(
+            WarningsOther: warningsOther,
+            WarningsObsolete: warningsObsolete
+        );
 
         return l.Return([entity], "1");
     }
