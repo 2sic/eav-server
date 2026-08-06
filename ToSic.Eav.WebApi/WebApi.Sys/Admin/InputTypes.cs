@@ -2,6 +2,8 @@
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.WebApi.Sys.Dto;
+
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
 [PrivateApi]
@@ -30,52 +32,42 @@ public class InputTypes : CustomDataSource
 
         ProvideOutRaw(GetInputTypes, name: "InputTypes", options: () => new()
         {
-            TitleField = nameof(InputTypeInfo.Type),
-            TypeName = nameof(InputTypeInfo),
             AllowUnknownValueTypes = true,
         });
 
-        ProvideOutRaw(GetDataTypes, name: "DataTypes", options: () => new()
-        {
-            TitleField = nameof(NameValueModel.Name),
-            AllowUnknownValueTypes = true,
-        });
+        ProvideOutRaw(GetDataTypes, name: "DataTypes");
 
-        ProvideOutRaw(GetReservedNames, name: "ReservedNames", options: () => new()
-        {
-            TitleField = nameof(NameValueModel.Name),
-            AllowUnknownValueTypes = true,
-        });
+        ProvideOutRaw(GetReservedNames, name: "ReservedNames");
     }
 
-    private IEnumerable<InputTypeModel> GetInputTypes()
+    private IEnumerable<InputTypeInfoRaw> GetInputTypes()
     {
-        var l = Log.Fn<IEnumerable<InputTypeModel>>($"{AppId}");
+        var l = Log.Fn<IEnumerable<InputTypeInfoRaw>>($"{AppId}");
 
         var entities = _inputTypes.New(AppId)
             .GetInputTypes()
-            .Select(inputType => new InputTypeModel(inputType));
+            .Select(inputType => new InputTypeInfoRaw(inputType));
 
         return l.Return(entities, "ok");
     }
 
-    private IEnumerable<NameValueModel> GetDataTypes()
+    private IEnumerable<NameValueRaw> GetDataTypes()
     {
-        var l = Log.Fn<IEnumerable<NameValueModel>>($"{AppId}");
+        var l = Log.Fn<IEnumerable<NameValueRaw>>($"{AppId}");
 
         var entities = _attributesMod.New(AppId)
             .DataTypes()
-            .Select(dataType => new NameValueModel(dataType));
+            .Select(dataType => new NameValueRaw(dataType));
 
         return l.Return(entities, "ok");
     }
 
-    private IEnumerable<NameValueModel> GetReservedNames()
+    private IEnumerable<NameValueRaw> GetReservedNames()
     {
-        var l = Log.Fn<IEnumerable<NameValueModel>>();
+        var l = Log.Fn<IEnumerable<NameValueRaw>>();
 
         var entities = AttributeNames.ReservedNames
-            .Select(reservedName => new NameValueModel(reservedName.Key, reservedName.Value));
+            .Select(reservedName => new NameValueRaw(reservedName.Key, reservedName.Value));
 
         return l.Return(entities, "ok");
     }

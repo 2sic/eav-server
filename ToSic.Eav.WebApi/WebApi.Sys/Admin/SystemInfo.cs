@@ -3,7 +3,7 @@ using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Sys.Zone;
+using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Capabilities.Platform;
@@ -50,65 +50,50 @@ public class SystemInfo : CustomDataSource
         _licenseService = licenseService;
         _logStore = logStore;
 
-        ProvideOutRaw(GetSite, name: "Site", options: () => new()
-        {
-            TitleField = nameof(SiteStatsDto.SiteId),
-            TypeName = "SiteStats",
-        });
+        ProvideOutRaw(GetSite, name: "Site");
 
-        ProvideOutRaw(GetSystem, name: "System", options: () => new()
-        {
-            TitleField = nameof(SystemInfoDto.Platform),
-            TypeName = "SystemInfo",
-        });
+        ProvideOutRaw(GetSystem, name: "System");
 
-        ProvideOutRaw(GetLicense, name: "License", options: () => new()
-        {
-            TitleField = nameof(LicenseInfoDto.Main),
-            TypeName = "LicenseInfo",
-        });
+        ProvideOutRaw(GetLicense, name: "License");
 
-        ProvideOutRaw(GetMessages, name: "Messages", options: () => new()
-        {
-            TypeName = "Messages",
-        });
+        ProvideOutRaw(GetMessages, name: "Messages");
     }
 
-    private IEnumerable<SiteStatsModel> GetSite()
+    private IEnumerable<SiteStatsRaw> GetSite()
     {
-        var l = Log.Fn<IEnumerable<SiteStatsModel>>($"{_site.Id}");
+        var l = Log.Fn<IEnumerable<SiteStatsRaw>>($"{_site.Id}");
         var zoneId = _site.ZoneId;
 
-        var entity = new SiteStatsModel(new()
+        var entity = new SiteStatsRaw
         {
             SiteId = _site.Id,
             ZoneId = zoneId,
             Apps = _appsCatalog.Apps(zoneId).Count,
             Languages = _zoneMapper.CulturesWithState(_site).Count,
-        });
+        };
 
         return l.Return([entity], "1");
     }
 
-    private IEnumerable<SystemInfoModel> GetSystem()
+    private IEnumerable<SystemInfoRaw> GetSystem()
     {
-        var l = Log.Fn<IEnumerable<SystemInfoModel>>();
+        var l = Log.Fn<IEnumerable<SystemInfoRaw>>();
 
-        var entity = new SystemInfoModel(new()
+        var sysinfo = new SystemInfoRaw
         {
             Fingerprint = _fingerprint.GetFingerprint(),
             EavVersion = EavSystemInfo.VersionString,
             Platform = _platform.Name,
             PlatformVersion = EavSystemInfo.VersionToNiceFormat(_platform.Version),
             Zones = _appsCatalog.Zones.Count,
-        });
+        };
 
-        return l.Return([entity], "1");
+        return l.Return([sysinfo], "1");
     }
 
-    private IEnumerable<LicenseInfoModel> GetLicense()
+    private IEnumerable<LicenseInfoRaw> GetLicense()
     {
-        var l = Log.Fn<IEnumerable<LicenseInfoModel>>();
+        var l = Log.Fn<IEnumerable<LicenseInfoRaw>>();
         var licenses = _licenseService.Value;
 
         var owner = string.Join(", ", licenses.All
@@ -117,28 +102,28 @@ public class SystemInfo : CustomDataSource
             .Where(o => o.HasValue())
             .Distinct());
 
-        var entity = new LicenseInfoModel(new()
+        var entity = new LicenseInfoRaw
         {
             Main = "none",
             Count = licenses.All.Count,
             Owner = owner,
-        });
+        };
 
         return l.Return([entity], "1");
     }
 
-    private IEnumerable<MessagesModel> GetMessages()
+    private IEnumerable<MessagesRaw> GetMessages()
     {
-        var l = Log.Fn<IEnumerable<MessagesModel>>();
+        var l = Log.Fn<IEnumerable<MessagesRaw>>();
 
         var warningsObsolete = CountInsightsMessages(CodeInfoConstants.ObsoleteNameInHistory);
         var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;
 
-        var entity = new MessagesModel(new()
+        var entity = new MessagesRaw
         {
             WarningsOther = warningsOther,
             WarningsObsolete = warningsObsolete,
-        });
+        };
 
         return l.Return([entity], "1");
     }

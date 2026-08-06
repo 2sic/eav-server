@@ -1,8 +1,6 @@
 ﻿
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
-using ToSic.Eav.Data.Raw;
-using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -29,37 +27,23 @@ public class ZoneLanguages : CustomDataSource
             options: () => new()
             {
                 AutoId = true,
-                TitleField = nameof(SiteLanguageDto.Culture),
-                TypeName = "ZoneLanguages",
             });
     }
 
-    private IEnumerable<IRawEntity> GetLanguages(IZoneMapper zoneMapper, ISite site)
+    private IEnumerable<AppLanguageRaw> GetLanguages(IZoneMapper zoneMapper, ISite site)
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>($"{site.Id}");
+        var l = Log.Fn<IEnumerable<AppLanguageRaw>>($"{site.Id}");
 
-        // ReSharper disable once PossibleInvalidOperationException
-        var cultures = zoneMapper.CulturesWithState(site)
-            .Select(c => new SiteLanguageDto
+        var list = zoneMapper.CulturesWithState(site)
+            .Select(c => new AppLanguageRaw
             {
                 Code = c.Code,
                 Culture = c.Culture,
                 IsEnabled = c.IsEnabled,
+                IsAllowed = null,
+                Permissions = null,
             })
             .ToList();
-
-        var list = cultures
-            .Select(language => new RawEntity
-            {
-                Values = new Dictionary<string, object?>
-                {
-                    { nameof(SiteLanguageDto.Code), language.Code },
-                    { nameof(SiteLanguageDto.Culture), language.Culture },
-                    { nameof(SiteLanguageDto.IsEnabled), language.IsEnabled },
-                    { nameof(SiteLanguageDto.NameId), language.NameId },
-                }
-            })
-            .ToList<IRawEntity>();
 
         return l.Return(list, $"{list.Count}");
     }

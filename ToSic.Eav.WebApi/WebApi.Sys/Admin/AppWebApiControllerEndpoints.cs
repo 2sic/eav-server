@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
+using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -33,25 +34,21 @@ public class AppWebApiControllerEndpoints : CustomDataSource
 
         ProvideOutRaw(GetEndpoints, options: () => new()
         {
-            TitleField = nameof(ApiActionDto.name),
-            TypeName = "AppWebApiControllerEndpoint",
             AllowUnknownValueTypes = true,
         });
     }
 
-    private IEnumerable<AppWebApiEndpointModel> GetEndpoints()
+    private IEnumerable<AppWebApiEndpointRaw> GetEndpoints()
     {
-        var l = Log.Fn<IEnumerable<AppWebApiEndpointModel>>();
+        var l = Log.Fn<IEnumerable<AppWebApiEndpointRaw>>();
 
         if (string.IsNullOrWhiteSpace(Path))
             return l.Return([], "missing path");
 
         var assembly = _assemblyLoader.GetAssembly(Path);
-        var dto = _analyzer.Analyze(Path, assembly);
+        var (_, endpoints) = _analyzer.Analyze(Path, assembly);
 
-        var entities = dto.actions.Select(action => new AppWebApiEndpointModel(action)).ToList();
-
-        return l.Return(entities, $"{entities.Count}");
+        return l.Return(endpoints, $"{endpoints.Count}");
     }
 
 }
