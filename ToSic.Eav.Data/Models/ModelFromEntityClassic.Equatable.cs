@@ -7,7 +7,7 @@ partial class ModelFromEntityClassic
     // 2026-08-05 2dm - dropped this, I think it doesn't make sense to make a model equal to the underlying entity
     //bool IEquatable<IEntity>.Equals(IEntity? other) => Equals(other);
 
-    public bool Equals(ModelFromEntityClassic other)
+    public bool Equals(ModelFromEntityClassic? other)
         => MultiWrapperEquality.EqualsWrapper(this, other);
 
     /// <summary>

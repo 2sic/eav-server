@@ -9,5 +9,5 @@ internal class DataSourceGenerator<TDataSource>(LazySvc<IDataSourcesService> dat
 
     [Obsolete("v21")]
     public TDataSource New(IDataSourceLinkable? attach = default, IDataSourceOptions? options = default)
-        => dataSourceFactory.Value.Create<TDataSource>(/*attach: attach,*/ options: options.WithAttach(attach));
+        => dataSourceFactory.Value.Create<TDataSource>(options: options.WithAttach(attach));
 }
