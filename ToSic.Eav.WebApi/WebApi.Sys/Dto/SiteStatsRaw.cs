@@ -9,14 +9,10 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "Site statistics",
     Scope = "System"
 )]
-public class SiteStatsRaw : IRawEntityAutoConvert
-{
-    [ContentTypeField(IsTitle = true)]
-    public required int SiteId { get; init; }
-
-    public required int ZoneId { get; init; }
-
-    public required int Apps { get; init; }
-
-    public required int Languages { get; init; }
-}
+public record SiteStatsRaw(
+    [property: ContentTypeField(IsTitle = true)]
+    int SiteId,
+    int ZoneId,
+    int Apps,
+    int Languages
+) : IRawEntityAutoConvert;

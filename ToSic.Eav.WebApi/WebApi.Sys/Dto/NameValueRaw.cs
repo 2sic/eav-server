@@ -9,16 +9,31 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "Named system value",
     Scope = "System"
 )]
-public class NameValueRaw : IRawEntityAutoConvert
-{
-    public NameValueRaw(string name, string? value = null)
-    {
-        Name = name;
-        Value = value;
-    }
+public record NameValueRaw(
+    [property: ContentTypeField(IsTitle = true)]
+    string Name,
+    string? Value = null
+) : IRawEntityAutoConvert;
 
-    [ContentTypeField(IsTitle = true)]
-    public string Name { get; init; }
+// Changes
+// 1. record
+// 2. primary constructor
+// 3. fields in primary constructor
+// 4. Attributes in constructor
 
-    public string? Value { get; init; }
-}
+
+
+// old
+//public class NameValueRaw : IRawEntityAutoConvert
+//{
+//    public NameValueRaw(string name, string? value = null)
+//    {
+//        Name = name;
+//        Value = value;
+//    }
+
+//    [ContentTypeField(IsTitle = true)]
+//    public string Name { get; init; }
+
+//    public string? Value { get; init; }
+//}

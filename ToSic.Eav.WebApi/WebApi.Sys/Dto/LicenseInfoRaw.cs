@@ -9,12 +9,9 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "License information",
     Scope = "System"
 )]
-public class LicenseInfoRaw : IRawEntityAutoConvert
-{
-    [ContentTypeField(IsTitle = true)]
-    public required string Main { get; init; }
-
-    public required int Count { get; init; }
-
-    public required string Owner { get; init; }
-}
+public record LicenseInfoRaw(
+    [property: ContentTypeField(IsTitle = true)]
+    string Main,
+    int Count,
+    string Owner
+) : IRawEntityAutoConvert;

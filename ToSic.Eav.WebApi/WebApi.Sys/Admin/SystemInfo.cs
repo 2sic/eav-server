@@ -64,13 +64,12 @@ public class SystemInfo : CustomDataSource
         var l = Log.Fn<IEnumerable<SiteStatsRaw>>($"{_site.Id}");
         var zoneId = _site.ZoneId;
 
-        var entity = new SiteStatsRaw
-        {
-            SiteId = _site.Id,
-            ZoneId = zoneId,
-            Apps = _appsCatalog.Apps(zoneId).Count,
-            Languages = _zoneMapper.CulturesWithState(_site).Count,
-        };
+        var entity = new SiteStatsRaw(
+            SiteId: _site.Id,
+            ZoneId: zoneId,
+            Apps: _appsCatalog.Apps(zoneId).Count,
+            Languages: _zoneMapper.CulturesWithState(_site).Count
+        );
 
         return l.Return([entity], "1");
     }
@@ -79,16 +78,15 @@ public class SystemInfo : CustomDataSource
     {
         var l = Log.Fn<IEnumerable<SystemInfoRaw>>();
 
-        var sysinfo = new SystemInfoRaw
-        {
-            Fingerprint = _fingerprint.GetFingerprint(),
-            EavVersion = EavSystemInfo.VersionString,
-            Platform = _platform.Name,
-            PlatformVersion = EavSystemInfo.VersionToNiceFormat(_platform.Version),
-            Zones = _appsCatalog.Zones.Count,
-        };
+        var sysInfo = new SystemInfoRaw(
+            Fingerprint: _fingerprint.GetFingerprint(),
+            EavVersion: EavSystemInfo.VersionString,
+            Platform: _platform.Name,
+            PlatformVersion: EavSystemInfo.VersionToNiceFormat(_platform.Version),
+            Zones: _appsCatalog.Zones.Count
+        );
 
-        return l.Return([sysinfo], "1");
+        return l.Return([sysInfo], "1");
     }
 
     private IEnumerable<LicenseInfoRaw> GetLicense()
@@ -102,12 +100,11 @@ public class SystemInfo : CustomDataSource
             .Where(o => o.HasValue())
             .Distinct());
 
-        var entity = new LicenseInfoRaw
-        {
-            Main = "none",
-            Count = licenses.All.Count,
-            Owner = owner,
-        };
+        var entity = new LicenseInfoRaw(
+            Main: "none",
+            Count: licenses.All.Count,
+            Owner: owner
+        );
 
         return l.Return([entity], "1");
     }
