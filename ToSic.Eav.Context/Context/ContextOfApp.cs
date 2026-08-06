@@ -81,7 +81,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: UserMayEdit || User.IsContentAdmin);
 
     private bool UserMayEdit => _userMayEditGet.Get(GetUserMayEdit);
-    private readonly GetOnce<bool> _userMayEditGet = new();
+    private readonly LazyGetAndReset<bool> _userMayEditGet = new();
 
     private bool GetUserMayEdit()
     {
@@ -122,9 +122,10 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     #endregion
 
     public IAppReader? AppReaderOrNull => _appReaderOrNull.Get(() => AppIdentity == null! ? null : AppServices.AppReaders.TryGet(AppIdentity));
-    private readonly GetOnce<IAppReader?> _appReaderOrNull = new();
+    private readonly LazyGetAndReset<IAppReader?> _appReaderOrNull = new();
 
-    public IAppReader AppReaderRequired => AppReaderOrNull ?? throw new NullReferenceException($"Trying to get AppReader but AppIdentity is null");
+    public IAppReader AppReaderRequired => AppReaderOrNull
+                                           ?? throw new NullReferenceException("Trying to get AppReader but AppIdentity is null");
 
     #region Settings and Resources
 

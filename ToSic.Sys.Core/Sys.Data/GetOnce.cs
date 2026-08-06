@@ -2,7 +2,7 @@
 
 namespace ToSic.Sys.Data;
 
-// TODO: consider renaming to LazyGet (to make it clearer what it is) and move the namespace away from Sys.Data
+// TODO: consider renaming to LazyValue (to make it clearer what it is) and move the namespace away from Sys.Data
 
 /// <summary>
 /// Simple helper class to use on object properties which should be generated once.
@@ -40,14 +40,14 @@ public class GetOnce<TResult>
     public TResult? Get(Func<TResult> generator)
     {
         if (IsValueCreated)
-            return _value;
+            return Value;
         // Important: don't use try/catch, because the parent should be able to decide if try/catch is appropriate
-        _value = generator();
+        Value = generator();
         // Important: This must happen explicitly after the generator() - otherwise there is a risk of cyclic code which already assume
         // the value was created, while still inside the creation of the value.
         // So we would rather have a stack overflow and find the problem code, than to let the code assume the value was already made and null
         IsValueCreated = true;
-        return _value;
+        return Value;
     }
 
     /// <summary>
@@ -77,41 +77,53 @@ public class GetOnce<TResult>
     )
     {
         if (IsValueCreated)
-            return _value;
+            return Value;
         IsValueCreated = true;
         // ReSharper disable ExplicitCallerInfoArgument
-        return _value = log.Getter(generator, timer: timer, enabled: enabled, parameters: parameters, message: message, cPath: cPath, cName: cName, cLine: cLine);
+        return Value = log.Getter(generator, timer: timer, enabled: enabled, parameters: parameters, message: message, cPath: cPath, cName: cName, cLine: cLine);
         // ReSharper restore ExplicitCallerInfoArgument
     }
     
-    /// <summary>
-    /// Reset the state and value so it will be re-generated next time it's needed.
-    /// </summary>
-    public void Reset()
-        => IsValueCreated = false;
+    ///// <summary>
+    ///// Reset the state and value so it will be re-generated next time it's needed.
+    ///// </summary>
+    //public void Reset()
+    //    => IsValueCreated = false;
 
-    /// <summary>
-    /// Reset the state and value so it will be re-generated next time it's needed.
-    /// </summary>
-    public void Reset(ILog? log)
-    {
-        log.A(nameof(Reset));
-        IsValueCreated = false;
-    }
-
-    /// <summary>
-    /// Reset the state and value so it will be re-generated next time it's needed.
-    /// </summary>
-    public void Reset(TResult newValue)
-    {
-        _value = newValue;
-        IsValueCreated = true;
-    }
+    ///// <summary>
+    ///// Reset the state and value so it will be re-generated next time it's needed.
+    ///// </summary>
+    //public void Reset(TResult newValue)
+    //{
+    //    Value = newValue;
+    //    IsValueCreated = true;
+    //}
 
     /// <summary>
     /// Determines if value has been created.
     /// The name `IsValueCreated` is the same as in a Lazy() object
     /// </summary>
-    public bool IsValueCreated { get; private set; }
-    private TResult? _value;
+    public bool IsValueCreated { get; protected set; }
+    protected TResult? Value;
+}
+
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public class LazyGetAndReset<TValue>: GetOnce<TValue>
+{
+    /// <summary>
+    /// Reset the state and value so it will be re-generated next time it's needed.
+    /// </summary>
+    public void Reset()
+        => IsValueCreated = false;
+    
+    /// <summary>
+    /// Reset the state and value so it will be re-generated next time it's needed.
+    /// </summary>
+    public void Reset(TValue newValue)
+    {
+        Value = newValue;
+        IsValueCreated = true;
+    }
+    
 }

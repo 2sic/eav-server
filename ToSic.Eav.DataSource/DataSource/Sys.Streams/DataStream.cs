@@ -122,7 +122,7 @@ public class DataStream(
     /// <remarks>
     /// Where possible, it will be an ImmutableSmartList wrapping an ImmutableArray for maximum performance.
     /// </remarks>
-    private readonly GetOnce<IImmutableList<IEntity>> _list = new();
+    private readonly LazyGetAndReset<IImmutableList<IEntity>> _list = new();
 
     /// <summary>
     /// Assemble the list - from the initially configured ListDelegate

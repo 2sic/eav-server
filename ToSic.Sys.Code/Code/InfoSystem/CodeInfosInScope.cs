@@ -70,6 +70,6 @@ public class CodeInfosInScope(CodeInfoStats codeInfoStats)
         });
 
 
-    private readonly GetOnce<IDictionary<string, string>?> _specs = new();
+    private readonly LazyGetAndReset<IDictionary<string, string>?> _specs = new();
     private Func<IDictionary<string, string>>? _specsFactory;
 }

@@ -10,5 +10,5 @@ public interface IZoneCultureResolverProWIP
     /// <remarks>
     /// MUST guarantee to be lower case, no further checking will happen.
     /// </remarks>
-    List<string> CultureCodesWithFallbacks { get; }
+    List<string>? CultureCodesWithFallbacks { get; }
 }

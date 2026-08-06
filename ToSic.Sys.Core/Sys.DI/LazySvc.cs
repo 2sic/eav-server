@@ -46,7 +46,7 @@ public class LazySvc<TService>(IServiceProvider sp)
         _initCall?.Invoke(value);
         return value;
     })!;
-    private readonly GetOnce<TService> _valueGet = new();
+    private readonly LazyGetAndReset<TService> _valueGet = new();
 
     public bool IsValueCreated => _valueGet.IsValueCreated;
 
