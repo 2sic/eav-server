@@ -27,8 +27,7 @@ public class AppsCacheSwitch(
 
     #region Main Value Handling (access static presolved value, optionally reset)
 
-    public new IAppsCacheSwitchable Value => _value.Get(GetOnceDuringCurrentRequest)!;
-    private readonly GetOnce<IAppsCacheSwitchable> _value = new();
+    public new IAppsCacheSwitchable Value => field ??= GetOnceDuringCurrentRequest();
 
     public void Purge(IAppIdentity app)
         => Value.Purge(app);

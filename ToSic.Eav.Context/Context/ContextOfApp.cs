@@ -67,9 +67,9 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         {
             field = value;
             _appReaderOrNull.Reset();
-            _appSettingsStack.Reset();
-            _settings.Reset();
-            _resources.Reset();
+            AppSettings = null!;
+            AppResources = null!;
+            AppDataStackService = null!;
             _userMayEditGet.Reset();
         }
     }
@@ -128,13 +128,26 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     #region Settings and Resources
 
-    public PropertyStack AppSettings => _settings.Get(() => AppDataStackService.GetStack(RootNameSettings))!;
-    private readonly GetOnce<PropertyStack> _settings = new();
-    public PropertyStack AppResources => _resources.Get(() => AppDataStackService.GetStack(RootNameResources))!;
-    private readonly GetOnce<PropertyStack> _resources = new();
+    [field: AllowNull, MaybeNull]
+    public PropertyStack AppSettings
+    {
+        get => field ??= AppDataStackService.GetStack(RootNameSettings);
+        private set;
+    }
 
-    private AppDataStackService AppDataStackService => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppReaderRequired))!;
-    private readonly GetOnce<AppDataStackService> _appSettingsStack = new();
+    [field: AllowNull, MaybeNull]
+    public PropertyStack AppResources
+    {
+        get => field ??= AppDataStackService.GetStack(RootNameResources);
+        private set;
+    }
+
+    [field: AllowNull, MaybeNull]
+    private AppDataStackService AppDataStackService
+    {
+        get => field ??= AppServices.SettingsStack.Value.Init(AppReaderRequired);
+        set;
+    }
 
     #endregion
 }

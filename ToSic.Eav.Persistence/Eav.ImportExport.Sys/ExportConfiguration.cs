@@ -37,12 +37,11 @@ public record ExportConfiguration : ModelFromEntity
     /// <summary>
     /// Find all decorator metadata of type SystemExportDecorator
     /// </summary>
-    public ICollection<ExportDecorator> ExportMarkers => _exportMarkers.Get(() => Entity
-        .Parents(ExportDecorator.ContentTypeNameId)
-        .Select(e => e.ToModel<ExportDecorator>()!)
-        .ToListOpt()
-    )!;
-    private readonly GetOnce<ICollection<ExportDecorator>> _exportMarkers = new();
+    public ICollection<ExportDecorator> ExportMarkers => field
+        ??= Entity
+            .Parents(ExportDecorator.ContentTypeNameId)
+            .Select(e => e.ToModel<ExportDecorator>()!)
+            .ToListOpt();
 
     /// <summary>
     /// Content Types to Export

@@ -2,20 +2,31 @@
 
 namespace ToSic.Sys.Data;
 
+// TODO: consider renaming to LazyGet (to make it clearer what it is) and move the namespace away from Sys.Data
+
 /// <summary>
 /// Simple helper class to use on object properties which should be generated once.
-/// 
-/// Important for properties which can also return null, because then checking for null won't work to determine if we already tried to retrieve it.
+/// Similar to Lazy(), but the generator function is passed in on the Get() call, not on the constructor.
 /// </summary>
 /// <typeparam name="TResult"></typeparam>
 /// <remarks>
+/// Important for properties which can also return null, because then checking for null won't work to determine if we already tried to retrieve it.
+/// 
 /// Constructor is empty.
 ///
 /// In case you're wondering why we can't pass the generator in on the constructor:
 /// Reason is that in most cases we need real objects in the generator function,
 /// which doesn't work in a `static` context.
 /// This means that if the = new GetOnce() is run on the private property
-/// (which is the most common case) most generators can't be added. 
+/// (which is the most common case) most generators can't be added.
+///
+/// Typical use cases:
+/// 
+/// 1. Properties which could validly return a null, in which case ?.Get() would run too often.
+/// 2. Properties which must - in rare cases, be reset
+/// 3. Properties which must check if they were already created (like Lazy())
+/// 4. Properties which have non-nullable types like tuples, which can't self-detect if they are still empty
+/// 5. Methods which behave like properties but as methods (typically to prevent serialization), so they don't have a backing `field`, needing additional code
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -72,79 +83,7 @@ public class GetOnce<TResult>
         return _value = log.Getter(generator, timer: timer, enabled: enabled, parameters: parameters, message: message, cPath: cPath, cName: cName, cLine: cLine);
         // ReSharper restore ExplicitCallerInfoArgument
     }
-
-    // 2025-05-10 2dm disabled, changed code to not use this
-    ///// <summary>
-    ///// Getter with will log when it gets the property the first time.
-    ///// This will also provide the logger to the generator as a first function parameter.
-    ///// </summary>
-    ///// <param name="log">Log object to use when logging</param>
-    ///// <param name="generator">
-    ///// Function which will generate the value on first use.
-    ///// The function must return the expected value/type.
-    ///// </param>
-    ///// <param name="timer">enable a timer from call/close</param>
-    ///// <param name="enabled">can be set to false if you want to disable logging</param>
-    ///// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
-    ///// <param name="cName">auto pre filled by the compiler - the method name</param>
-    ///// <param name="cLine">auto pre filled by the compiler - the code line</param>
-    ///// <returns></returns>
-    //public TResult GetL(ILog log, Func<ILog, TResult> generator,
-    //    bool timer = default,
-    //    bool enabled = true,
-    //    string? parameters = default,
-    //    string? message = default,
-    //    [CallerFilePath] string? cPath = default,
-    //    [CallerMemberName] string? cName = default,
-    //    [CallerLineNumber] int cLine = default
-    //)
-    //{
-    //    if (IsValueCreated) return _value;
-    //    IsValueCreated = true;
-    //    return _value = log.GetterL(generator, timer: timer, enabled: enabled, parameters: parameters, message: message, cPath: cPath, cName: cName, cLine: cLine);
-    //}
-
-    // Important: this is broken; while refactoring I changed it, and the current code would not work if ever reactivated!!!
-    ///// <summary>
-    ///// Getter with will log when it gets the property the first time.
-    ///// It provides the logger as a first function in the parameter.
-    ///// </summary>
-    ///// <param name="log">Log object to use when logging</param>
-    ///// <param name="generator">
-    ///// Function which will generate the value on first use.
-    ///// The function must return a Tuple `(TResult Result, string Message)` which it uses to log when done.
-    ///// </param>
-    ///// <param name="timer">enable a timer from call/close</param>
-    ///// <param name="enabled">can be set to false if you want to disable logging</param>
-    ///// <param name="message"></param>
-    ///// <param name="cPath">auto pre filled by the compiler - the path to the code file</param>
-    ///// <param name="cName">auto pre filled by the compiler - the method name</param>
-    ///// <param name="cLine">auto pre filled by the compiler - the code line</param>
-    ///// <param name="parameters"></param>
-    ///// <returns></returns>
-    //public TResult GetM(ILog log, Func<ILog?, (TResult Result, string Message)> generator,
-    //    bool timer = default,
-    //    bool enabled = true,
-    //    string? parameters = default,
-    //    string? message = default,
-    //    [CallerFilePath] string? cPath = default,
-    //    [CallerMemberName] string? cName = default,
-    //    [CallerLineNumber] int cLine = default
-    //)
-    //{
-    //    if (IsValueCreated)
-    //        return _value;
-    //    IsValueCreated = true;
-    //    var l = enabled
-    //        ? log.Fn<TResult>(parameters, message, timer, enabled, ILog_Properties.GetPrefix + cPath, cName, cLine)
-    //        : null;
-    //    var (result, finalMsg) = generator(l);
-    //    return enabled
-    //        ? l.Return(result, finalMsg)
-    //        : result;
-    //    //return _value = log.GetterM(generator, timer: timer, enabled: enabled, cPath: ILog_Properties.GetPrefix + cPath, cName: cName, cLine: cLine);
-    //}
-
+    
     /// <summary>
     /// Reset the state and value so it will be re-generated next time it's needed.
     /// </summary>
