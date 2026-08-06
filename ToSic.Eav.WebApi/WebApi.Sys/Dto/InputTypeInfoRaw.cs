@@ -6,7 +6,6 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 
 /// <summary>
 /// Raw entity wrapper for InputTypeInfo to enable automatic raw conversion.
-/// This bridges the gap between InputTypeInfo (in ToSic.Eav.Apps) and IRawEntityAutoConvert (in ToSic.Eav.Data.Build).
 /// </summary>
 [ContentType(
     Name = "InputTypeInfo",
