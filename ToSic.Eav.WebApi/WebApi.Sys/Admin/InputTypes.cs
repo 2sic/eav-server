@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -46,7 +46,21 @@ public class InputTypes : CustomDataSource
 
         var entities = _inputTypes.New(AppId)
             .GetInputTypes()
-            .Select(inputType => new InputTypeInfoRaw(source: inputType));
+            .Select(inputType => new InputTypeInfoRaw
+            {
+                type = inputType.Type,
+                label = inputType.Label,
+                description = inputType.Description,
+                disableI18n = inputType.DisableI18n,
+                uiAssets = inputType.UiAssets,
+                useAdam = inputType.UseAdam,
+                isObsolete = inputType.IsObsolete ?? false,
+                obsoleteMessage = inputType.ObsoleteMessage,
+                isRecommended = inputType.IsRecommended ?? false,
+                isDefault = inputType.IsDefault ?? false,
+                source = inputType.Source,
+                configTypes = inputType.ConfigTypes == null ? null : [inputType.ConfigTypes],
+            });
 
         return l.Return(entities, "ok");
     }

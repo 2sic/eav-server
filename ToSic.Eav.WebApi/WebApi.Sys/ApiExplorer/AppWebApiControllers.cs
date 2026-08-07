@@ -47,9 +47,11 @@ public class AppWebApiControllers : CustomDataSource
             .All(AppId, global: false, mask: mask, withSubfolders: true, returnFolders: false)
             .Select(file => new AppWebApiFileRaw
             {
-                Path = file,
-                EndpointPath = ApiFileEndpointPath(file),
-                Edition = GetEdition(file),
+                id = 0,
+                path = file,
+                endpointPath = ApiFileEndpointPath(file),
+                edition = GetEdition(file),
+                shared = false,
             })
             .ToArray();
 
@@ -60,10 +62,11 @@ public class AppWebApiControllers : CustomDataSource
                 .All(AppId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
                 .Select(file => new AppWebApiFileRaw
                 {
-                    Path = file,
-                    Shared = true,
-                    EndpointPath = ApiFileEndpointPath(file),
-                    Edition = GetEdition(file),
+                    id = 0,
+                    path = file,
+                    endpointPath = ApiFileEndpointPath(file),
+                    edition = GetEdition(file),
+                    shared = true,
                 })
                 .ToArray()
             : [];
@@ -81,14 +84,8 @@ public class AppWebApiControllers : CustomDataSource
             .Union(allInAppCode)
             .ToArray();
 
-        // TODO: @2rb - fix this, make functional - don't update existing objects
-        // set the IDs on initial creation instead before
         var entities = files
-            .Select((file, index) =>
-            {
-                file.Id = index + 1;
-                return file;
-            })
+            .Select((file, index) => file with { id = index + 1 })
             .ToList();
 
         return l.Return(entities, $"{entities.Count}");

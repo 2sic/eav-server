@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
@@ -22,11 +22,11 @@ public class LanguagesBackend(
                 {
                     var dto = new LanguageStatusRaw
                     {
-                        Code = l.Code,
-                        Culture = l.Culture,
-                        IsAllowed = l.IsAllowed,
-                        IsEnabled = l.IsEnabled,
-                        Permissions = (withCount) ? new() { Count = l.PermissionCount } : null,
+                        code = l.Code,
+                        culture = l.Culture,
+                        isAllowed = l.IsAllowed,
+                        isEnabled = l.IsEnabled,
+                        permissions = withCount ? new() { Count = l.PermissionCount } : null,
                     };
                     return dto;
                 })
