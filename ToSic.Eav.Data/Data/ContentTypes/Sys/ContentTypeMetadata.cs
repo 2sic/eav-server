@@ -8,20 +8,12 @@ namespace ToSic.Eav.Data.ContentTypes.Sys;
 /// Provides metadata for a content type. This can be very special, because ContentTypes can be shared (ghosts),
 /// in which case the metadata must be retrieved from another "remote" location (where the original is defined). 
 /// </summary>
-[PrivateApi("2021-09-30 hidden now, previously InternalApi_DoNotUse_MayChangeWithoutNotice this is just fyi")]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContentTypeMetadata : Metadata<string>
+[method: PrivateApi]
+public class ContentTypeMetadata(string typeId, string title, IMetadataProvider source)
+    : Metadata<string>(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, source: source)
 {
-    /// <summary>
-    /// Used in cases where the metadata-provider is already known
-    /// </summary>
-    /// <param name="typeId">type id / static-name</param>
-    /// <param name="title"></param>
-    /// <param name="source"></param>
-    public ContentTypeMetadata(string typeId, string title, IMetadataProvider source)
-        : base(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, source: source)
-    { }
-
     /// <summary>
     /// Load / initialize - needed when building the cache.
     /// Must usually be called a bit later, because the data is initialized from a cache, which in case of ghosts may be loaded a bit later.

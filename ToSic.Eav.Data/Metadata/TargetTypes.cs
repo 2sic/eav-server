@@ -1,9 +1,15 @@
 ﻿namespace ToSic.Eav.Metadata;
 
+// Docs notes:
+// - not sure when originally created
+// Then public till v21
+// Made Internal for v22
+
+
 /// <summary>
 /// Metadata targets specific things, and the TargetTypes determines what kind of thing this is. 
 /// </summary>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public enum TargetTypes
 {
     /// <summary>
