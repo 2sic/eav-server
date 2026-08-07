@@ -20,7 +20,7 @@
 /// </remarks>
 /// <typeparam name="TSource">
 /// The data type which can be accepted.
-/// Must be <see cref="IEntity"/> or [](xref:ToSic.Sxc.Data.ITypedItem`) (other types not supported for now).
+/// Must be <see cref="IEntity"/> or [](xref:ToSic.Sxc.Data.ITypedItem) (other types not supported for now).
 /// </typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
 public interface IModelSetup<in TSource>
