@@ -7,9 +7,9 @@ using ToSic.Sys.Capabilities.Features;
 namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
 /// <summary>
-/// Load the preset app.
+/// Load the preset app from the file system during boot.
 /// </summary>
-internal class EavBootLoadPresetApp(
+internal sealed class BootPreloadPresetApp(
     ILogStore logStore,
     // loader should be lazy, so we can swap the log before it's created
     LazySvc<IAppStateLoader> appLoader,
@@ -19,20 +19,17 @@ internal class EavBootLoadPresetApp(
 {
     public const int LoadAppPriority = 100;
 
-    /// <summary>
-    /// This will access the DB once to warm up the connection pool and make sure the DB is available.
-    /// </summary>
-    public override void Run() => LoadPresetApp();
-
-    private void LoadPresetApp()
+    public override void Run()
     {
-        var (main, lStandalone, lNormal) = BootLogHelper.GetLoggersForStandaloneLogs(logStore, Log, "AppPst", "Load Global Preset App");
+        var (main, lStandalone, lNormal) = BootLogHelper
+            .GetLoggersForStandaloneLogs(logStore, Log, "AppPst", "Load Global Preset App");
         var logSettings = new EavFeaturesLogSettingsHelper(featuresLoader, Log)
             .GetLogSettings();
 
         // Build the cache of all system-types. Must happen before everything else
         // This should use the lazy AppLoader, because the features should be loaded before it's created
-        var presetApp = appLoader.LinkLog(main).Value.LoadFullAppState(logSettings);
+        var presetApp = appLoader.LinkLog(main).Value
+            .LoadFullAppState(logSettings);
         appsCache.Value.Add(presetApp.AppState);
         lStandalone.Done();
         lNormal.Done();

@@ -23,7 +23,7 @@ public static class StartupEavAppsPersistence
         services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
 
         services.AddTransient<IBootProcess, BootWarmUpAssemblies>();
-        services.AddTransient<IBootProcess, EavBootLoadPresetApp>();
+        services.AddTransient<IBootProcess, BootPreloadPresetApp>();
         services.TryAddTransient<AppLoaderLogSettings>();   // new v20
         services.TryAddTransient<DataImportLogSettings>();   // new v20.00-03
 

@@ -20,5 +20,4 @@ public partial class BuiltInFeatures
         Security = FeaturesCatalogRules.Security0Improved,
         LicenseRules = ForBeta
     };
-
 }

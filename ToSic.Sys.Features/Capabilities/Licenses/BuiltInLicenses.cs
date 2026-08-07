@@ -22,6 +22,7 @@ namespace ToSic.Sys.Capabilities.Licenses;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class BuiltInLicenses
 {
+
     // IMPORTANT
     // The guids of these licenses must match the ones in the 2sxc.org license management list
     // So always create the definition there first, then use the GUID of that definition here
@@ -205,4 +206,5 @@ public class BuiltInLicenses
     };
 
 #endif
+    
 }

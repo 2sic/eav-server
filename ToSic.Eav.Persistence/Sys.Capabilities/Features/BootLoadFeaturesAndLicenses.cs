@@ -2,14 +2,22 @@
 
 namespace ToSic.Sys.Capabilities.Features;
 
+/// <summary>
+/// Load configured features and licenses at application start
+/// </summary>
+/// <param name="logStore"></param>
+/// <param name="featuresLoader"></param>
 [PrivateApi]
-public class EavBootLoadFeaturesAndLicenses(ILogStore logStore, EavFeaturesLoader featuresLoader)
+internal sealed class BootLoadFeaturesAndLicenses(ILogStore logStore, EavFeaturesLoader featuresLoader)
     : BootProcessBase("EavLnF",
         bootPhase: BootPhase.Loading,
         priority: 1000, // Depends on the preset app being loaded first, for the content-types
         connect: [logStore, featuresLoader]
     )
 {
+    /// <summary>
+    /// Prevent multiple Initializations; not sure why we had to add this.
+    /// </summary>
     private static bool _startupAlreadyRan;
 
     /// <summary>
@@ -18,7 +26,8 @@ public class EavBootLoadFeaturesAndLicenses(ILogStore logStore, EavFeaturesLoade
     public override void Run()
     {
         var l = BootLog.Log.Fn("Eav: StartUp", timer: true);
-        // Prevent multiple Initializations
+        
+        // Prevent multiple initializations, not sure why this is necessary.
         if (_startupAlreadyRan)
             throw new("Startup should never be called twice.");
         _startupAlreadyRan = true;

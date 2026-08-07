@@ -41,8 +41,8 @@ public static class StartupSysCapabilities
         services.TryAddTransient<SystemFingerprint>();
 
         // v20 Startup - Registration of Licenses and Features
-        services.AddTransient<IBootProcess, BootRegistrationEavFeatures>();
-        services.AddTransient<IBootProcess, BootRegistrationEavLicenses>();
+        services.AddTransient<IBootProcess, BootRegisterEavFeatures>();
+        services.AddTransient<IBootProcess, BootRegisterEavLicenses>();
 
 
         return services;
