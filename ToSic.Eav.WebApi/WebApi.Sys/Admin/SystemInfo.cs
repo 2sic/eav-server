@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -116,10 +116,11 @@ public class SystemInfo : CustomDataSource
         var warningsObsolete = CountInsightsMessages(CodeInfoConstants.ObsoleteNameInHistory);
         var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;
 
-        var entity = new MessagesRaw(
-            WarningsOther: warningsOther,
-            WarningsObsolete: warningsObsolete
-        );
+        var entity = new MessagesRaw
+        {
+            warningsOther = warningsOther,
+            warningsObsolete = warningsObsolete,
+        };
 
         return l.Return([entity], "1");
     }

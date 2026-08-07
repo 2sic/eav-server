@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Xml.Linq;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -33,6 +32,7 @@ public class AppWebApiControllerAnalyzer(IApiInspector inspector)
         return l.Return(path.Backslash(), "ok");
     }
 
+
     private Type GetController(string path, Assembly assembly)
     {
         var l = Log.Fn<Type>();
@@ -58,14 +58,14 @@ public class AppWebApiControllerAnalyzer(IApiInspector inspector)
         var controllerRaw = new AppWebApiControllerRaw
         {
             controller = controller.Name,
-            IgnoreSecurity = controllerSecurity.IgnoreSecurity,
-            AllowAnonymous = controllerSecurity.AllowAnonymous,
-            RequireVerificationToken = controllerSecurity.RequireVerificationToken,
-            RequireContext = controllerSecurity.RequireContext,
-            View = controllerSecurity.View,
-            Edit = controllerSecurity.Edit,
-            Admin = controllerSecurity.Admin,
-            SuperUser = controllerSecurity.SuperUser,
+            ignoreSecurity = controllerSecurity.IgnoreSecurity,
+            allowAnonymous = controllerSecurity.AllowAnonymous,
+            requireVerificationToken = controllerSecurity.RequireVerificationToken,
+            requireContext = controllerSecurity.RequireContext,
+            view = controllerSecurity.View,
+            edit = controllerSecurity.Edit,
+            admin = controllerSecurity.Admin,
+            superUser = controllerSecurity.SuperUser,
         };
 
         var endpoints = controller.GetMethods()
@@ -112,8 +112,6 @@ public class AppWebApiControllerAnalyzer(IApiInspector inspector)
                     isBody = inspector.IsBody(parameter),
                 })
                 .ToArray(),
-            
-            //security = AppWebApiControllerSecurityValues.ToDictionary(security),
             security = security
                 .ObjectToDictionary()
                 .FilterOutKeys([
@@ -122,47 +120,13 @@ public class AppWebApiControllerAnalyzer(IApiInspector inspector)
                     nameof(security.IgnoreAntiforgeryToken),
                 ]),
             returns = returns,
-            IgnoreSecurity = mergedSecurity.IgnoreSecurity,
-            AllowAnonymous = mergedSecurity.AllowAnonymous,
-            RequireVerificationToken = mergedSecurity.RequireVerificationToken,
-            RequireContext = mergedSecurity.RequireContext,
-            View = mergedSecurity.View,
-            Edit = mergedSecurity.Edit,
-            Admin = mergedSecurity.Admin,
-            SuperUser = mergedSecurity.SuperUser,
+            ignoreSecurity = mergedSecurity.IgnoreSecurity,
+            allowAnonymous = mergedSecurity.AllowAnonymous,
+            requireVerificationToken = mergedSecurity.RequireVerificationToken,
+            requireContext = mergedSecurity.RequireContext,
+            view = mergedSecurity.View,
+            edit = mergedSecurity.Edit,
+            admin = mergedSecurity.Admin,
+            superUser = mergedSecurity.SuperUser,
         };
-
-    //private ApiSecurityDto MergeSecurity(ApiSecurityDto controllerSecurity, ApiSecurityDto methodSecurity)
-    //{
-    //    var l = Log.Fn<ApiSecurityDto>();
-
-    //    var ignoreSecurity = controllerSecurity.IgnoreSecurity || methodSecurity.IgnoreSecurity;
-    //    var allowAnonymous = controllerSecurity.AllowAnonymous || methodSecurity.AllowAnonymous;
-    //    var view = controllerSecurity.View || methodSecurity.View;
-    //    var edit = controllerSecurity.Edit || methodSecurity.Edit;
-    //    var admin = controllerSecurity.Admin || methodSecurity.Admin;
-    //    var superUser = controllerSecurity.SuperUser || methodSecurity.SuperUser;
-    //    var requireContext = controllerSecurity.RequireContext || methodSecurity.RequireContext;
-
-    //    var requireVerificationToken =
-    //        methodSecurity.ValidateAntiForgeryToken ||
-    //        methodSecurity.AutoValidateAntiforgeryToken ||
-    //        methodSecurity.IgnoreAntiforgeryToken
-    //            ? methodSecurity.RequireVerificationToken
-    //            : controllerSecurity.RequireVerificationToken;
-
-    //    var result = new ApiSecurityDto
-    //    {
-    //        IgnoreSecurity = ignoreSecurity,
-    //        AllowAnonymous = ignoreSecurity || (allowAnonymous && !view && !edit && !admin && !superUser),
-    //        View = ignoreSecurity || ((allowAnonymous || view) && !edit && !admin && !superUser),
-    //        Edit = ignoreSecurity || ((allowAnonymous || view || edit) && !admin && !superUser),
-    //        Admin = ignoreSecurity || ((allowAnonymous || view || edit || admin) && !superUser),
-    //        SuperUser = ignoreSecurity || allowAnonymous || view || edit || admin || superUser,
-    //        RequireContext = !ignoreSecurity && requireContext,
-    //        RequireVerificationToken = !ignoreSecurity && requireVerificationToken,
-    //    };
-
-    //    return l.ReturnAsOk(result);
-    //}
 }

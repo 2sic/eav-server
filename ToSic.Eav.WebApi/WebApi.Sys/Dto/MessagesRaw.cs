@@ -9,7 +9,9 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "System message statistics",
     Scope = "System"
 )]
-public record MessagesRaw(
-    int WarningsOther,
-    int WarningsObsolete
-) : IRawEntityAutoConvert;
+public record MessagesRaw : IRawEntityAutoConvert
+{
+    public required int warningsOther { get; init; }
+
+    public required int warningsObsolete { get; init; }
+}

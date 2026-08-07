@@ -9,15 +9,14 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "App WebApi controller file",
     Scope = "System"
 )]
-public class AppWebApiFileRaw : IRawEntityAutoConvert
+public record AppWebApiFileRaw : IRawEntityAutoConvert
 {
-    // TODO: @2rb - fix, should be init only
-    public int Id { get; set; }
+    public required int id { get; init; }
 
     [ContentTypeField(IsTitle = true)]
-    public required string Path { get; init; }
+    public required string path { get; init; }
 
-    public required string EndpointPath { get; init; }
-    public required string Edition { get; init; }
-    public bool? Shared { get; init; }
+    public required string endpointPath { get; init; }
+    public required string edition { get; init; }
+    public required bool shared { get; init; }
 }

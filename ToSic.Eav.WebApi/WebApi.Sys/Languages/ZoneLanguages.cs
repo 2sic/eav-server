@@ -1,4 +1,4 @@
-﻿
+
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.DataSource;
@@ -38,11 +38,11 @@ public class ZoneLanguages : CustomDataSource
         var list = zoneMapper.CulturesWithState(site)
             .Select(c => new LanguageStatusRaw
             {
-                Code = c.Code,
-                Culture = c.Culture,
-                IsEnabled = c.IsEnabled,
-                IsAllowed = null,
-                Permissions = null,
+                code = c.Code,
+                culture = c.Culture,
+                isEnabled = c.IsEnabled,
+                isAllowed = null,
+                permissions = null,
             })
             .ToList();
 

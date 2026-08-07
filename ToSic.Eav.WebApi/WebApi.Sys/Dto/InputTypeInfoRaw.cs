@@ -1,58 +1,28 @@
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-/// <summary>
-/// Raw entity wrapper for InputTypeInfo to enable automatic raw conversion.
-/// </summary>
 [ContentType(
     Name = "InputTypeInfo",
     Guid = "8c0b688e-c79a-4180-8123-5d1959f3a89f",
     Description = "Input type information",
     Scope = "System"
 )]
-public class InputTypeInfoRaw : IRawEntityAutoConvert
+public record InputTypeInfoRaw : IRawEntityAutoConvert
 {
-    public InputTypeInfoRaw(InputTypeInfo source)
-    {
-        Type = source.Type;
-        Label = source.Label;
-        Description = source.Description;
-        DisableI18n = source.DisableI18n;
-        UiAssets = source.UiAssets;
-        UseAdam = source.UseAdam;
-        IsObsolete = source.IsObsolete ?? false;
-        ObsoleteMessage = source.ObsoleteMessage;
-        IsRecommended = source.IsRecommended ?? false;
-        IsDefault = source.IsDefault ?? false;
-        Source = source.Source;
-        ConfigTypes = source.ConfigTypes == null ? null : [source.ConfigTypes];
-    }
-
     [ContentTypeField(IsTitle = true)]
-    public string Type { get; init; }
+    public required string type { get; init; }
 
-    public string? Label { get; init; }
-
-    public string? Description { get; init; }
-
-    public bool DisableI18n { get; init; }
-
-    public IDictionary<string, string> UiAssets { get; init; }
-
-    public bool UseAdam { get; init; }
-
-    public bool IsObsolete { get; init; }
-
-    public string? ObsoleteMessage { get; init; }
-
-    public bool IsRecommended { get; init; }
-
-    public bool IsDefault { get; init; }
-
-    public string? Source { get; init; }
-
-    public string[]? ConfigTypes { get; init; }
+    public required string? label { get; init; }
+    public required string? description { get; init; }
+    public required bool disableI18n { get; init; }
+    public required IDictionary<string, string> uiAssets { get; init; }
+    public required bool useAdam { get; init; }
+    public required bool isObsolete { get; init; }
+    public required string? obsoleteMessage { get; init; }
+    public required bool isRecommended { get; init; }
+    public required bool isDefault { get; init; }
+    public required string? source { get; init; }
+    public required string[]? configTypes { get; init; }
 }
