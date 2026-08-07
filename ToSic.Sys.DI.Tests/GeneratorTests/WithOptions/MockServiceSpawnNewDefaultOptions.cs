@@ -9,6 +9,9 @@ public class MockServiceSpawnNewDefaultOptions(
     Generator<MockServiceSpawnNewDefaultOptions, MockServiceOptions> selfGenerator)
     : ServiceWithSetup<MockServiceOptions>("Tst"), IServiceRespawn<MockServiceSpawnNewDefaultOptions, MockServiceOptions>
 {
+    protected override MockServiceOptions GetDefaultOptions() => new();
+    
     public MockServiceSpawnNewDefaultOptions SpawnNew(MockServiceOptions options)
         => selfGenerator.New(options);
+
 }

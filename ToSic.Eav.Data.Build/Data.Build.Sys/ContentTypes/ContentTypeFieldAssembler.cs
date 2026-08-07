@@ -17,7 +17,7 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public class ContentTypeFieldAssembler() : ServiceBase("Eav.CtAtBl")
+public class ContentTypeFieldAssembler() : ServiceWithSetup<DataAssemblerOptions>("Eav.CtAtBl")
 {
     /// <summary>
     /// Create a ContentType Attribute.

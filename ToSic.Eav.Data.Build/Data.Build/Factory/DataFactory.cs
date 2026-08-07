@@ -8,11 +8,17 @@ namespace ToSic.Eav.Data.Build;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal partial class DataFactory(
     Generator<DataAssembler, DataAssemblerOptions> dataAssembler,
-    LazySvc<ContentTypeAssembler> typeAssembler,
-    Generator<IDataFactory, DataFactoryOptions> selfGenerator,
-    LazySvc<ContentTypesFromCodeManager> codeCtManager)
-    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, codeCtManager]), IDataFactory
+    Generator<DataFactoryContentTypeHelper, DataFactoryOptions> contentTypeHelper,
+    Generator<IDataFactory, DataFactoryOptions> selfGenerator
+)
+    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, contentTypeHelper, selfGenerator]), IDataFactory
 {
+    /// <summary>
+    /// The data factory will often need options, but there could be cases (WIP) where it's called without...?
+    /// </summary>
+    /// <returns></returns>
+    [PrivateApi]
+    protected override DataFactoryOptions GetDefaultOptions() => new();
 
     #region Properties to configure Builder / Defaults
 
@@ -31,7 +37,7 @@ internal partial class DataFactory(
 
     [field: AllowNull, MaybeNull]
     private DataFactoryContentTypeHelper ContentTypeHelper => field
-        ??= new(MyOptions, codeCtManager, typeAssembler, Log);
+        ??= contentTypeHelper.New(MyOptions);
 
     private string PreferredTitleFieldName => field ??= ContentTypeHelper.PreferredTitleFieldName;
 
@@ -119,4 +125,5 @@ internal partial class DataFactory(
     // #TODO: @2dm #RawEntity - #SpawnNewBadPattern
     public IDataFactory SpawnNew(DataFactoryOptions options)
         => selfGenerator.New(options);
+
 }

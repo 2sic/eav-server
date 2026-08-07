@@ -7,8 +7,10 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// Internal data assembler to create languages.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class LanguageAssembler
+public class LanguageAssembler(): ServiceWithSetup<DataAssemblerOptions>("DTA.Lang")
 {
+    protected override DataAssemblerOptions GetDefaultOptions() => new();
+
     public Language CreateFrom(ILanguage orig, bool? readOnly) =>
         new(orig.Key, readOnly ?? orig.ReadOnly, orig.DimensionId);
 

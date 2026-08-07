@@ -8,12 +8,14 @@
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
 public class ContentTypeAssemblyKit(
-    LazySvc<ContentTypeAssembler> contentTypeBuilder,
-    LazySvc<ContentTypeFieldAssembler> fieldBuilder)
+    Generator<ContentTypeAssembler, DataAssemblerOptions> contentTypeBuilder,
+    Generator<ContentTypeFieldAssembler, DataAssemblerOptions> fieldBuilder)
     : ServiceWithSetup<DataAssemblerOptions>("DaB.CtAss", connect: [contentTypeBuilder, fieldBuilder])
 {
-    public ContentTypeAssembler Type => contentTypeBuilder.Value;
+    protected override DataAssemblerOptions GetDefaultOptions() => new();
+    
+    public ContentTypeAssembler Type => field ??= contentTypeBuilder.New(MyOptions);
 
-    public ContentTypeFieldAssembler Field => fieldBuilder.Value;
+    public ContentTypeFieldAssembler Field => field ??= fieldBuilder.New(MyOptions);
 
 }

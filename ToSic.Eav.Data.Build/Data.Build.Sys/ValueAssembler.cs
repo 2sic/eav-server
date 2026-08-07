@@ -19,6 +19,8 @@ namespace ToSic.Eav.Data.Build.Sys;
 [method: PrivateApi]
 public class ValueAssembler() : ServiceWithSetup<DataAssemblerOptions>("DaB.ValBld")
 {
+    protected override DataAssemblerOptions GetDefaultOptions() => new();
+
     #region Simple Values: Bool, DateTime, Number, String
 
     public IValue<bool?> Bool(bool? value, IImmutableList<ILanguage> languages) => 

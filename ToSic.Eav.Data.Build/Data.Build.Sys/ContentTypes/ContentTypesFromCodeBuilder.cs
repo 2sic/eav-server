@@ -14,8 +14,8 @@ namespace ToSic.Eav.Data.Build.Sys;
 public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencies services)
     : ServiceBase<ContentTypesFromCodeBuilder.Dependencies>(services, "Eav.CtFact")
 {
-    public record Dependencies(ContentTypeAssemblyKit TypeAssemblyKit, EntityAssembler EntityAssembler, AttributeListAssembler AttrListAssembler, IDataFactory DataFactory)
-        : DependenciesRecord(connect: [TypeAssemblyKit, EntityAssembler, AttrListAssembler, DataFactory]);
+    public record Dependencies(ContentTypeAssemblyKit TypeAssemblyKit, IDataFactory DataFactory)
+        : DependenciesRecord(connect: [TypeAssemblyKit, DataFactory]);
 
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;

@@ -6,14 +6,25 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// <summary>
 /// Internal data assembler to create attributes.
 /// </summary>
-/// <param name="valueAssembler"></param>
-/// <param name="languageAssembler"></param>
+/// <param name="valAss"></param>
+/// <param name="langAss"></param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public partial class AttributeAssembler(ValueAssembler valueAssembler, LanguageAssembler languageAssembler)
-    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld", connect: [languageAssembler, valueAssembler])
+public class AttributeAssembler(
+    Generator<LanguageAssembler, DataAssemblerOptions> langAss,
+    Generator<ValueAssembler, DataAssemblerOptions> valAss,
+    Generator<ValueListAssembler, DataAssemblerOptions> valListAss
+)
+    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld", connect: [langAss, valAss, valListAss])
 {
+    protected override DataAssemblerOptions GetDefaultOptions() => new();
 
+    internal LanguageAssembler Languages => field ??= langAss.New(MyOptions);
+
+    internal ValueAssembler Values => field ??= valAss.New(MyOptions);
+
+    internal ValueListAssembler ValueList => field ??= valListAss.New(MyOptions);
+    
     /// <summary>
     /// Get Attribute for specified Typ
     /// </summary>
@@ -69,9 +80,9 @@ public partial class AttributeAssembler(ValueAssembler valueAssembler, LanguageA
     )
     {
         var l = Log.IfDetails(MyOptions.LogSettings).Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
-        var valueLanguages = languageAssembler.GetBestValueLanguages(language, languageReadOnly);
+        var valueLanguages = Languages.GetBestValueLanguages(language, languageReadOnly);
 
-        var valueWithLanguages = valueAssembler.Create(type, value, valueLanguages.ToImmutableOpt());
+        var valueWithLanguages = Values.Create(type, value, valueLanguages.ToImmutableOpt());
 
         // add or replace to the collection
         if (originalOrNull == null)
@@ -79,7 +90,7 @@ public partial class AttributeAssembler(ValueAssembler valueAssembler, LanguageA
 
         // maybe: test if the new model has the same type as the attribute we're adding to
         // ca: if(attrib.ControlledType != valueModel.)
-        var updatedValueList = new ValueListAssembler().Replace(originalOrNull.Values, valueToReplace, valueWithLanguages);
+        var updatedValueList = ValueList.Replace(originalOrNull.Values, valueToReplace, valueWithLanguages);
         return l.Return(originalOrNull.With(updatedValueList));
     }
 

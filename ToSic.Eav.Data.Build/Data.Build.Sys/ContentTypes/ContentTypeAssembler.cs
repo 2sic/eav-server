@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// Internal assembler for ContentTypes. The name is a bit strange, to differentiate it from <see cref="ContentTypeAssemblyKit"/>.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class ContentTypeAssembler
+public class ContentTypeAssembler(): ServiceWithSetup<DataAssemblerOptions>("Bld.ConTyp")
 {
     public const int DynTypeId = 1;
 

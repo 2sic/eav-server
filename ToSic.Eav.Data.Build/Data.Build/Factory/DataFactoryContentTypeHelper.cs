@@ -9,13 +9,12 @@ namespace ToSic.Eav.Data.Build;
 /// <param name="options"></param>
 /// <param name="codeCtManager"></param>
 /// <param name="typeAssembler"></param>
-/// <param name="parentLog"></param>
 internal class DataFactoryContentTypeHelper(
     DataFactoryOptions options,
     LazySvc<ContentTypesFromCodeManager> codeCtManager,
-    LazySvc<ContentTypeAssembler> typeAssembler,
-    ILog parentLog)
-    : HelperBase(parentLog, "DaF.PctHlp")
+    Generator<ContentTypeAssembler, DataAssemblerOptions> typeAssembler
+)
+    : ServiceWithSetup<DataFactoryOptions>("DaF.PctHlp")
 {
     /// <summary>
     /// The type of the source object which was used to create the entity.
@@ -43,7 +42,7 @@ internal class DataFactoryContentTypeHelper(
 
         // Priority 2: If the options have a TypeName, use that to create a transient type
         if (options.TypeName != null)
-            return l.Return(typeAssembler.Value.Transient(options.TypeName), $"Options.TypeName: {options.TypeName}");
+            return l.Return(typeAssembler.New(new()).Transient(options.TypeName), $"Options.TypeName: {options.TypeName}");
 
         // Priority 3: Try to find a type based on the source object
         // but only if the source object has an explicit Attribute-Defined type
@@ -55,7 +54,7 @@ internal class DataFactoryContentTypeHelper(
         }
 
         // Priority 9: Use a fallback / auto-generated type
-        return l.Return(typeAssembler.Value.Transient(DataConstants.DataFactoryDefaultTypeName), "Fallback type");
+        return l.Return(typeAssembler.New(new()).Transient(DataConstants.DataFactoryDefaultTypeName), "Fallback type");
     }
 
 }

@@ -32,6 +32,10 @@ public class ZipExport(
         public string PhysicalAppPath { get; init; } = "";
         public string PhysicalPathGlobal { get; init; } = "";
     }
+    
+    // 2026-08-07 2dm - believe that options are always required
+    //protected override Options GetDefaultOptions() => new();
+
 
     private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
     private const string SourceControlDataFolder = FolderConstants.DataFolderProtected;
@@ -282,4 +286,5 @@ public class ZipExport(
         foreach (var file in Directory.GetFiles(srcPath))
             File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
     }
+
 }

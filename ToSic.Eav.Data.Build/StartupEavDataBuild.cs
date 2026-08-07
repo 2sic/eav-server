@@ -50,6 +50,7 @@ public static class StartupEavDataBuild
     public static IServiceCollection AddDataBuildFactories(this IServiceCollection services)
     {
         services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
+        services.TryAddTransient<DataFactoryContentTypeHelper>();
 
         return services;
     }
