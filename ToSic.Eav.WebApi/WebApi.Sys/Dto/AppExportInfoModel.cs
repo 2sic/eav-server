@@ -14,7 +14,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 )]
 public record AppExportInfoModel: RawEntity
 {
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public required string Name { get; init; }
 
     public required string NameId { get; init; }

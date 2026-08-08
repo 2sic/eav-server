@@ -23,7 +23,7 @@ public interface IPagingModel : IModelFromEntity<PagingModel>
     /// <summary>
     /// The current page number - which page is currently shown.
     /// </summary>
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     int PageNumber { get; }
 
     /// <summary>

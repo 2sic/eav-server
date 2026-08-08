@@ -16,7 +16,7 @@ public record LanguageStatusRaw : IRawEntityAutoConvert
 
     public string nameId => code.ToLowerInvariant();
 
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public required string culture { get; init; }
 
     public required bool isEnabled { get; init; }

@@ -15,7 +15,7 @@ public class ContentTypeDto: IRawEntityAutoConvert
 {
 
     public required int Id { get; init; }
-    [ContentTypeField(IsTitle = true)] // TODO: REMEMBER TO KEEP
+    [ContentTypeTitle] // TODO: REMEMBER TO KEEP
     public required string Name { get; init; }
 
     public required string Label { get; init; }

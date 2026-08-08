@@ -31,7 +31,7 @@ public class AppRaw: IRawEntityAutoConvert
     public required bool IsApp { get; init; }
     public required string Guid { get; init; }
 
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public required string Name { get; init; }
     
     public required string Folder { get; init; }

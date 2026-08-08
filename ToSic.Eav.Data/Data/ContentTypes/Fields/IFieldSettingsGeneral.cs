@@ -20,7 +20,7 @@ public interface IFieldSettingsGeneral : IModelFromEntity<FieldSettingsGeneralMo
     [PrivateApi]
     public static class Constants { public const string ContentTypeName = "@All"; }
 
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     string Name { get; }
 
     string DefaultValue { get; }

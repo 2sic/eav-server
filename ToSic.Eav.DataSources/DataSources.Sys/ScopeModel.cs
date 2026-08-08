@@ -13,7 +13,7 @@ public record ScopeModel : IRawEntityAutoConvert
 {
     public required string NameId { get; init; }
 
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public required string Name { get; init; }
     
     public required int TypesTotal { get; init; }

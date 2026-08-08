@@ -29,7 +29,7 @@ public class AppStackDataRaw(PropertyDumpItem original) : IRawEntityConvertible
 
     public int Priority { get; set; } = original.SourcePriority;
 
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public string Path { get; set; } = original.Path;
 
     public object? Value { get; set; } = original.Property?.Result;

@@ -20,7 +20,7 @@ public class ContentTypeFieldDto: IRawEntityAutoConvert
     public required string Type { get; init; }
     public required string InputType { get; init; }
     
-    [ContentTypeField(IsTitle = true)]  // todo
+    [ContentTypeTitle]  // todo
     public required string StaticName { get; init; }
     
     public bool IsTitle { get; init; }

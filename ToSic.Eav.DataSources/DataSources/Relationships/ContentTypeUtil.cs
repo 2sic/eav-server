@@ -74,7 +74,7 @@ internal class ContentTypeUtil
         public Guid Guid => SafeConvertGuid(ct);
         public IMetadata Metadata => ct.Metadata;
 
-        [ContentTypeField(IsTitle = true)]
+        [ContentTypeTitle]
         public string Name => ct.Name;
         public string NameId => ct.NameId;
         public bool IsDynamic => ct.IsDynamic;

@@ -22,7 +22,7 @@ public interface IContentTypeDetails: IModelFromEntity<ContentTypeDetailsModel>
     /// <summary>
     /// The visible label / title of the content type, as it appears in the UI.
     /// </summary>
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     string Label { get; }
 
     /// <summary>

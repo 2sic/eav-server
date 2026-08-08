@@ -32,7 +32,7 @@ public record NameValueRaw(
 //        Value = value;
 //    }
 
-//    [ContentTypeField(IsTitle = true)]
+//    [ContentTypeTitle]
 //    public string Name { get; init; }
 
 //    public string? Value { get; init; }

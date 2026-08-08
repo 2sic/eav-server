@@ -11,7 +11,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 )]
 public record AppWebApiControllerRaw : IRawEntityAutoConvert
 {
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public required string controller { get; init; }
 
     public required bool ignoreSecurity { get; init; }

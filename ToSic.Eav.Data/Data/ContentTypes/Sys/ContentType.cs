@@ -29,7 +29,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     public required int AppId { get; init; }
 
     /// <inheritdoc />
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public required string Name { get; init; }
 
     /// <inheritdoc />

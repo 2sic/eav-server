@@ -11,7 +11,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 )]
 public record InputTypeInfoRaw : IRawEntityAutoConvert
 {
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public required string type { get; init; }
 
     public required string? label { get; init; }

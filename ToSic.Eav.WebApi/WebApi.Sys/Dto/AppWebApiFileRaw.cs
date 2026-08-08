@@ -13,7 +13,7 @@ public record AppWebApiFileRaw : IRawEntityAutoConvert
 {
     public required int id { get; init; }
 
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public required string path { get; init; }
 
     public required string endpointPath { get; init; }

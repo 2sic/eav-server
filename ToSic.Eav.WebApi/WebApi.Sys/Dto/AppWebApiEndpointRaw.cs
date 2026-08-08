@@ -11,7 +11,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 )]
 public record AppWebApiEndpointRaw : IRawEntityAutoConvert
 {
-    [ContentTypeField(IsTitle = true)]
+    [ContentTypeTitle]
     public required string name { get; init; }
 
     public required string returns { get; init; }
