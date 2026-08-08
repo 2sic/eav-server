@@ -6,14 +6,9 @@ namespace ToSic.Eav.Data.Build;
 /// <summary>
 /// Handles complexity of determining / retrieving the correct content-type to apply to a Raw-Entity being converted into a real entity.
 /// </summary>
-/// <param name="options"></param>
 /// <param name="codeCtManager"></param>
 /// <param name="typeAssembler"></param>
-internal class DataFactoryContentTypeHelper(
-    DataFactoryOptions options,
-    LazySvc<ContentTypesFromCodeManager> codeCtManager,
-    Generator<ContentTypeAssembler, DataAssemblerOptions> typeAssembler
-)
+internal class DataFactoryContentTypeHelper(LazySvc<ContentTypesFromCodeManager> codeCtManager, Generator<ContentTypeAssembler, DataAssemblerOptions> typeAssembler)
     : ServiceWithSetup<DataFactoryOptions>("DaF.PctHlp")
 {
     /// <summary>
@@ -27,7 +22,7 @@ internal class DataFactoryContentTypeHelper(
         ??= GetPreferredContentType();
 
     internal string PreferredTitleFieldName => field
-        ??= options.TitleField.UseFallbackIfNoValue(PreferredContentType.TitleFieldName ?? AttributeNames.TitleNiceName);
+        ??= MyOptions.TitleField.UseFallbackIfNoValue(PreferredContentType.TitleFieldName ?? AttributeNames.TitleNiceName);
 
     /// <summary>
     /// Get the best possible ContentType definition in the current scenario.
@@ -37,12 +32,12 @@ internal class DataFactoryContentTypeHelper(
     {
         var l = Log.Fn<IContentType>();
         // Priority 1: If the options have a type, use that
-        if (options.Type != null)
-            return l.Return(codeCtManager.Value.Get(options.Type), $"Options.Type: {options.Type.Name}");
+        if (MyOptions.Type is {} type)
+            return l.Return(codeCtManager.Value.Get(type), $"Options.Type: {type.Name}");
 
         // Priority 2: If the options have a TypeName, use that to create a transient type
-        if (options.TypeName != null)
-            return l.Return(typeAssembler.New(new()).Transient(options.TypeName), $"Options.TypeName: {options.TypeName}");
+        if (MyOptions.TypeName is {} typeName)
+            return l.Return(typeAssembler.New(new()).Transient(typeName), $"Options.TypeName: {typeName}");
 
         // Priority 3: Try to find a type based on the source object
         // but only if the source object has an explicit Attribute-Defined type
