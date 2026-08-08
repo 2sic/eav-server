@@ -64,27 +64,29 @@ internal class ContentTypeUtil
 
     // 2026-08-07 2DM - TRYING to move away from SpawNew and just return IRawData
     // not done, interrupted, must go
-    
-    //[ContentTypeUse(Type = typeof(ContentType))]
-    //internal class ContentTypeSummary(IContentType ct)
-    //{
-    //    public int Id => ct.Id;
-    //    public Guid Guid => SafeConvertGuid(ct);
-    //    public IMetadata Metadata => ct.Metadata;
+    // probably for TODO: @2rb continue here
+    // Goal is to get rid of all SpawnNew() calls and make sure all work with the new raw model.
 
-    //    [ContentTypeField(IsTitle = true)]
-    //    public string Name => ct.Name;
-    //    public string NameId => ct.NameId;
-    //    public bool IsDynamic => ct.IsDynamic;
-    //    public string Scope => ct.Scope;
-    //    public int AttributesCount => ct.Attributes.Count();
-    //    public string RepositoryType => ct.RepositoryType.ToString();
-    //    public string RepositoryAddress => ct.RepositoryAddress;
+    [ContentTypeUse(Type = typeof(ContentType))]
+    internal class ContentTypeSummary(IContentType ct)
+    {
+        public int Id => ct.Id;
+        public Guid Guid => SafeConvertGuid(ct);
+        public IMetadata Metadata => ct.Metadata;
 
-    //    // 2024-10-29 v18.03 2dm disabled, as deprecated, must see if something breaks, but don't really expect it...
-    //    // noticed that it's actually used quite a bit in our internal fields, would have to change that first...
-    //    // I must also assume that it may have been used elsewhere too, but I don't really think so...
-    //    public string StaticName => ct.NameId; // TODO: This should be removed, but JS code still uses it, so it much be change first
-    //}
+        [ContentTypeField(IsTitle = true)]
+        public string Name => ct.Name;
+        public string NameId => ct.NameId;
+        public bool IsDynamic => ct.IsDynamic;
+        public string Scope => ct.Scope;
+        public int AttributesCount => ct.Attributes.Count();
+        public string RepositoryType => ct.RepositoryType.ToString();
+        public string RepositoryAddress => ct.RepositoryAddress;
+
+        // 2024-10-29 v18.03 2dm disabled, as deprecated, must see if something breaks, but don't really expect it...
+        // noticed that it's actually used quite a bit in our internal fields, would have to change that first...
+        // I must also assume that it may have been used elsewhere too, but I don't really think so...
+        public string StaticName => ct.NameId; // TODO: This should be removed, but JS code still uses it, so it much be change first
+    }
 }
 
