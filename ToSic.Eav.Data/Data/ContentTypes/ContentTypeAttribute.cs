@@ -8,7 +8,6 @@
 /// mainly for marking the generated Entities to allow future auto-conversion to Models.
 /// </remarks>
 [WorkInProgressApi("v22")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 public class ContentTypeAttribute : Attribute
 {

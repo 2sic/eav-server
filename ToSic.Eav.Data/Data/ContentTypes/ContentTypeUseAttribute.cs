@@ -11,7 +11,6 @@
 /// but your **Raw Data Object** must reference that.
 /// </remarks>
 [WorkInProgressApi("v22")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 [AttributeUsage(AttributeTargets.Class)]
 public class ContentTypeUseAttribute : Attribute
 {

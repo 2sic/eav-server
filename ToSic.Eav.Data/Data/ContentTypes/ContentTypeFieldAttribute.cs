@@ -1,7 +1,10 @@
 ﻿namespace ToSic.Eav.Data.ContentTypes;
 
+/// <summary>
+/// Provide additional information about a field,
+/// for generating the content-type definition.
+/// </summary>
 [WorkInProgressApi("v22")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public class ContentTypeFieldAttribute : Attribute
 {
@@ -31,12 +34,4 @@ public class ContentTypeFieldAttribute : Attribute
     //public int SortOrder { get; set; }
 
     public string? InputTypeWIP { get; init; }
-}
-
-public class ContentTypeTitleAttribute : ContentTypeFieldAttribute
-{
-    public ContentTypeTitleAttribute()
-    {
-        IsTitle = true;
-    }
 }
