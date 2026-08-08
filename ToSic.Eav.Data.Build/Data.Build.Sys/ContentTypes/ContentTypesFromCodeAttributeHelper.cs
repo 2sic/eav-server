@@ -61,7 +61,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
 
         var attributes = gDefault == null || !gDefault.Any()
             ? []
-            : PropertiesToAttributes(gDefault, false);
+            : PropertiesToFields(gDefault, false);
 
         // 4. Generate list of virtual attributes
         var gSystem = propsGrouped
@@ -69,7 +69,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
             ?.ToListOpt();
         var vAttributes = gSystem == null || !gSystem.Any()
             ? null
-            : PropertiesToAttributes(gSystem, true);
+            : PropertiesToFields(gSystem, true);
 
         // Return everything
         return l.Return((attributes, vAttributes), $"real: {attributes.Count}, virtual: {vAttributes?.Count}");
@@ -111,7 +111,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
     }
 
 
-    private IList<IContentTypeField> PropertiesToAttributes(IList<PropertyInfo> propsFiltered, bool skipNoMetadata)
+    private IList<IContentTypeField> PropertiesToFields(IList<PropertyInfo> propsFiltered, bool skipNoMetadata)
     {
         var pairs = propsFiltered
             .Select(p =>

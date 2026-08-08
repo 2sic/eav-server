@@ -3,22 +3,27 @@ using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Models;
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
 
 namespace ToSic.Eav.Data.Build.ContentTypesFromCode.SpecsYes;
 
-// ReSharper disable UnusedMember.Global
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class ContentTypesFromCodeBuildSpecsYesInterface(ContentTypesFromCodeManager ctDefManager)
+public class ContentTypesFromCodeBuild_SpecsYes_Interface(ContentTypesFromCodeManager ctDefManager)
     : ContentTypesFromCodeBuildSpecsYes<ICodeTypeSpecsYesInterface>(ctDefManager);
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class ContentTypesFromCodeBuildSpecsYesClass(ContentTypesFromCodeManager ctDefManager)
+public class ContentTypesFromCodeBuild_SpecsYes_Record(ContentTypesFromCodeManager ctDefManager)
+    : ContentTypesFromCodeBuildSpecsYes<CodeTypeSpecsYesRecord>(ctDefManager);
+
+[Startup(typeof(StartupTestsEavDataBuild))]
+public class ContentTypesFromCodeBuild_SpecsYes_Class(ContentTypesFromCodeManager ctDefManager)
     : ContentTypesFromCodeBuildSpecsYes<CodeTypeSpecsYesClass>(ctDefManager);
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class ContentTypesFromCodeBuildSpecsYesRecord(ContentTypesFromCodeManager ctDefManager)
-    : ContentTypesFromCodeBuildSpecsYes<CodeTypeSpecsYesRecord>(ctDefManager);
+public class ContentTypesFromCodeBuild_SpecsYes_ClassAlternateTitle(ContentTypesFromCodeManager ctDefManager)
+    : ContentTypesFromCodeBuildSpecsYes<CodeTypeSpecsYesClassWithOtherTitle>(ctDefManager);
 
 // ReSharper restore UnusedMember.Global
 

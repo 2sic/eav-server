@@ -32,3 +32,11 @@ public class ContentTypeFieldAttribute : Attribute
 
     public string? InputTypeWIP { get; init; }
 }
+
+public class ContentTypeTitleAttribute : ContentTypeFieldAttribute
+{
+    public ContentTypeTitleAttribute()
+    {
+        IsTitle = true;
+    }
+}
