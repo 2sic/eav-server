@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Sys.Ancestors;
-using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.ImportExport.Sys.XmlExport;
 using ToSic.Eav.Persistence.Sys.Logging;
@@ -32,6 +32,10 @@ public class ZipExport(
         public string PhysicalAppPath { get; init; } = "";
         public string PhysicalPathGlobal { get; init; } = "";
     }
+
+    // 2026-08-07 2dm - believe that options are always required
+    //protected override Options GetDefaultOptions() => new();
+
 
     private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
     private const string SourceControlDataFolder = FolderConstants.DataFolderProtected;

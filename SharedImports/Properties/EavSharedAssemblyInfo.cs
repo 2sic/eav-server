@@ -33,7 +33,7 @@ public static class SharedAssemblyInfo
     public const string AssemblyVersion = "21.08.00";
     public const string Company = "2sic internet solutions GmbH, Switzerland";
     public const string Product = "2sic Sys/Lib Core Parts";
-    public const string Copyright = "Copyright AGPL © 2sic 2025";
+    public const string Copyright = "Copyright AGPL © 2sic 2026";
 }
 
 
