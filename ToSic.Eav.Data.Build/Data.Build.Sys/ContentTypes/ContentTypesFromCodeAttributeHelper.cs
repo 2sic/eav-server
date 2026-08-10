@@ -10,7 +10,8 @@ using ToSic.Eav.Metadata;
 namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
-/// Helper to handle attribute information from PropertyInfos (reflection) for content types generated from code attributes.
+/// Extracts [ContentTypeField] attribute information from PropertyInfos (reflection).
+/// For content types generated from code attributes.
 /// </summary>
 /// <param name="parentLog"></param>
 internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.Dependencies services, ILog parentLog)
@@ -45,7 +46,6 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
 
         // 1. Get all properties of the type; exit early if none
         var properties = type.GetProperties();
-
         if (properties.Length == 0)
             return l.Return(([], []), "no properties");
 
@@ -54,53 +54,17 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
             .GroupBy(CategorizePropertyInfo)
             .ToListOpt();
 
-        // 3. Handle normal / general properties
-        var normalProps = propsGrouped
-            .FirstOrDefault(g => g.Key == TempCategory.Normal)
-            ?.ToListOpt();
+        // 3. Normal properties
+        var normalFields = PropertiesToFields(propsGrouped, TempCategory.Normal);
 
-        var normalFields = normalProps.SafeNone()
-            ? []
-            : PropertiesToFields(normalProps, keepEvenIfNoAttribute: true);
-
-        // 4. Generate list of virtual attributes
-        var systemProps = propsGrouped
-            .FirstOrDefault(g => g.Key == TempCategory.System)
-            ?.ToListOpt();
-        var systemFields = systemProps.SafeNone()
-            ? []
-            : PropertiesToFields(systemProps, keepEvenIfNoAttribute: false);
+        // 4. System properties
+        var systemFields = PropertiesToFields(propsGrouped, TempCategory.System);
 
         // Return everything
         return l.Return((normalFields, systemFields), $"real: {normalFields.Count}, virtual: {systemFields.Count}");
-
-
-
-
-        static TempCategory CategorizePropertyInfo(PropertyInfo p) => p.Name switch
-        {
-            AttributeNames.IdNiceName
-                or AttributeNames.GuidNiceName
-                or AttributeNames.CreatedNiceName
-                or AttributeNames.ModifiedNiceName
-                => TempCategory.System,
-
-            // Standard built-in properties which are almost certainly never used otherwise
-            nameof(IHasMetadata.Metadata)
-                or nameof(IRelationshipKeys.RelationshipKeys)
-                => TempCategory.Ignore,
-
-            // Values property. which could be used otherwise as well, so we'll only skip if it's the 
-            nameof(IRawEntity.Values)
-                //when typeof(IDictionary<string, object?>).IsAssignableFrom(p.PropertyType)
-                when typeof(IDictionary<string, object?>) == p.PropertyType
-                => TempCategory.Ignore,
-
-            _ => p.GetCustomAttribute<ContentTypeIgnoreAttribute>() != null
-                ? TempCategory.Ignore
-                : TempCategory.Normal,
-        };
     }
+
+    #region Categorize property infos by usage
 
     private enum TempCategory
     {
@@ -109,22 +73,60 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
         Ignore
     }
 
-
-    private IList<IContentTypeField> PropertiesToFields(IList<PropertyInfo> propsFiltered, bool keepEvenIfNoAttribute)
+    private static TempCategory CategorizePropertyInfo(PropertyInfo p) => p.Name switch
     {
-        var pairs = propsFiltered
+        // System attributes
+        AttributeNames.IdNiceName
+            or AttributeNames.GuidNiceName
+            or AttributeNames.CreatedNiceName
+            or AttributeNames.ModifiedNiceName
+            => TempCategory.System,
+
+        // Standard built-in properties which are almost certainly never used otherwise
+        nameof(IHasMetadata.Metadata)
+            or nameof(IRelationshipKeys.RelationshipKeys)
+            => TempCategory.Ignore,
+
+        // Property "Values" which could be a real property, or the dictionary containing the values
+        // note that Dictionary type check must be exact, not "IsAssignableFrom", otherwise it could have too many false positives
+        nameof(IRawEntity.Values)
+            when typeof(IDictionary<string, object?>) == p.PropertyType
+            => TempCategory.Ignore,
+
+        // Rest: Check if it's marked with a [ContentTypeIgnore] attribute
+        _ => p.GetCustomAttribute<ContentTypeIgnoreAttribute>() != null
+            ? TempCategory.Ignore
+            : TempCategory.Normal,
+    };
+    
+    #endregion
+
+
+    private IList<IContentTypeField> PropertiesToFields(IList<IGrouping<TempCategory, PropertyInfo>> all, TempCategory category)
+    {
+        // Find all of category, exit early
+        var ofCategory = all
+            .FirstOrDefault(g => g.Key == category)
+            ?.ToListOpt();
+        if (ofCategory.SafeNone())
+            return [];
+
+        // Pair with the matching [ContentTypeField] attributes, will also find the [ContentTypeTitle] attributes, since it's inherited
+        var pairs = ofCategory
             .Select(p =>
                 new
                 {
                     PropertyInfo = p,
                     Specs = p.GetCustomAttributes<ContentTypeFieldAttribute>().FirstOrDefault(),
                 })
-            .Where(pair => pair.Specs != null || keepEvenIfNoAttribute)
+            // For "System", only keep the ones with attributes; otherwise keep all
+            .Where(pair => category != TempCategory.System || pair.Specs != null)
             .ToListOpt();
 
         var fields = pairs
             .Select(pair =>
             {
+                // Prepare resulting values
                 var specs = pair.Specs;
                 var attrName = specs?.Name ?? pair.PropertyInfo.Name;
                 var attrType = specs is null || specs.Type == ValueTypes.Undefined
@@ -138,6 +140,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
                     .NullOrGetWith(mdRaw => services.DataFactory.Create([mdRaw]))
                     ?.ToListOpt();
 
+                // Return the field definition
                 return services.TypeAssemblyKit.Field.Create(
                     NoAppId,
                     name: attrName,
