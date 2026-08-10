@@ -11,8 +11,8 @@ public partial class BuiltInFeatures
         Ui = false,
         Description = "Warn about issues with file names across different platforms",
         Security = new(0, "Does not affect security."),
-        LicenseRules = BuiltInLicenseRules.DevCoreEnabled, // TESTING, Turn off before releasing
-        RunOnStateChange = (state, log) => { DevFeatures.FileNamesCrossPlatform = state.IsEnabled; },
+        LicenseRules = BuiltInLicenseRules.DevCoreDisabled,
+        RunOnStateChange = (state, _) => { DevFeatures.FileNamesCrossPlatform = state.IsEnabled; },
     };
 
     public static class DevFeatures
