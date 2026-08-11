@@ -1,16 +1,16 @@
 ﻿using System.Collections.Concurrent;
 using static System.StringComparer;
 
-namespace ToSic.Sys.Data;
+namespace ToSic.Sys;
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Experimental")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class GetOnceNamed<TResult>
+public class LazyGetByName<TResult>
 {
     private IDictionary<string, TResult> _cache = new ConcurrentDictionary<string, TResult>(InvariantCultureIgnoreCase);
 
     /// <summary>
-    /// Construct an empty GetOnceNamed object for use later on.
+    /// Construct an empty LazyGetByName object for use later on.
     ///
     /// In case you're wondering why we can't pass the generator in on the constructor:
     /// Reason is that in most cases we need real objects in the generator function,
@@ -18,7 +18,7 @@ public class GetOnceNamed<TResult>
     /// This means that if the = new LazyGet() is run on the private property
     /// (which is the most common case) most generators can't be added. 
     /// </summary>
-    public GetOnceNamed() { }
+    public LazyGetByName() { }
 
     /// <summary>
     /// Get the value. If not yet retrieved, use the generator function (but only once). 

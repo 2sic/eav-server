@@ -1,6 +1,4 @@
-﻿namespace ToSic.Sys.Data;
-
-// TODO: consider renaming to LazyValue (to make it clearer what it is) and move the namespace away from Sys.Data
+﻿namespace ToSic.Sys;
 
 /// <summary>
 /// Simple helper class to use on object properties which should be generated once.
@@ -52,30 +50,6 @@ public class LazyGet<TValue>
     /// Determines if value has been created.
     /// The name `IsValueCreated` is the same as in a Lazy() object
     /// </summary>
-    public bool IsValueCreated { get; protected set; }
-    protected TValue? Value;
-}
-
-/// <summary>
-/// A <see cref="LazyGet{TValue}"/> with the ability to reset or flush the value.
-/// </summary>
-/// <typeparam name="TValue"></typeparam>
-[PrivateApi]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class LazyGetAndReset<TValue>: LazyGet<TValue>
-{
-    /// <summary>
-    /// Reset the state and value so it will be re-generated next time it's needed.
-    /// </summary>
-    public void Reset()
-        => IsValueCreated = false;
-    
-    /// <summary>
-    /// Reset the state and value so it will be re-generated next time it's needed.
-    /// </summary>
-    public void Set(TValue newValue)
-    {
-        Value = newValue;
-        IsValueCreated = true;
-    }
+    public bool IsValueCreated { get; protected internal set; }
+    protected internal TValue? Value;
 }

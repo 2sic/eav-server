@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ToSic.Sys.Data;
+namespace ToSic.Sys;
 
 /// <summary>
 /// A <see cref="LazyGet{TValue}"/> with logging.
