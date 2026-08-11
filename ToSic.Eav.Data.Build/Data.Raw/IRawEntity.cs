@@ -10,8 +10,7 @@
 /// * Was public till 16.09, but needed to be reworked, currently should be unknown to the public
 /// </remarks>
 [WorkInProgressApi("v22")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IRawEntity: IRawEntitySource
+public interface IRawEntity: IRawData
 {
     /// <summary>
     /// The ID to use.

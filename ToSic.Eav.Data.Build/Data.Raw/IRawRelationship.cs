@@ -1,12 +1,12 @@
-﻿namespace ToSic.Eav.Data.Raw.Sys;
+﻿namespace ToSic.Eav.Data.Raw;
 
 /// <summary>
 /// Marks raw relationships.
 /// This is internal, only used to mark <see cref="RawRelationship"/> objects which are generic.
 /// </summary>
 /// <remarks>
-/// Added in 15.04
+/// * Added in 15.04
+/// * Slowly making public v22
 /// </remarks>
-[PrivateApi("was internal till 16.09")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[WorkInProgressApi("v22")]
 public interface IRawRelationship;

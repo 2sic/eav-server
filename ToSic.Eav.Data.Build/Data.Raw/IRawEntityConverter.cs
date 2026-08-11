@@ -3,8 +3,7 @@
 /// <summary>
 /// WIP v22 2dm
 /// </summary>
-[PrivateApi]
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[WorkInProgressApi("v22")]
 public interface IRawEntityConverter
 {
     IRawEntity Convert<TSource>(TSource source, RawConvertOptions options)

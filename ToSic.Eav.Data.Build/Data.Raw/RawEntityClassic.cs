@@ -1,6 +1,6 @@
 ﻿//using ToSic.Eav.Metadata;
 
-//namespace ToSic.Eav.Data.Raw.Sys;
+//namespace ToSic.Eav.Data.Raw;
 
 ///// <summary>
 ///// Record to provide a raw entity. It should never be inherited, as it's purpose is to bridge the gap between

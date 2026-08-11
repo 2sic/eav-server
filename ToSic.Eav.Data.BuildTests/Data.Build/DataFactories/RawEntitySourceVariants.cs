@@ -5,7 +5,7 @@ using ToSic.Eav.Data.Raw.Sys;
 namespace ToSic.Eav.Data.Build.DataFactories;
 
 /// <summary>
-/// Test all known combinations of <see cref="IRawEntitySource"/>
+/// Test all known combinations of <see cref="IRawData"/>
 /// </summary>
 public class RawEntitySourceVariants
 {

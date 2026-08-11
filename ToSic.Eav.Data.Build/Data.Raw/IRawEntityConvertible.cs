@@ -3,9 +3,8 @@
 /// <summary>
 /// WIP v22 2dm
 /// </summary>
-[PrivateApi]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IRawEntityConvertible: IRawEntitySource
+[WorkInProgressApi("v22")]
+public interface IRawEntityConvertible: IRawData
 {
     /// <summary>
     /// Get a raw-entity converter for this object.

@@ -1,14 +1,14 @@
 ﻿namespace ToSic.Eav.Data.Raw.Sys;
 
 /// <summary>
-/// Extensions for any <see cref="IRawData"/> but it must implement <see cref="IRawEntitySource"/>
+/// Extensions for any <see cref="IRawData"/> but it must implement other interfaces to properly support conversion.
 /// </summary>
 [PrivateApi]
 public static class IRawEntitySourceExtensions
 {
 
     /// <summary>
-    /// Extension method, to convert any <see cref="IRawEntitySource"/> to a <see cref="IRawEntity"/>
+    /// Extension method, to convert any <see cref="IRawData"/> to a <see cref="IRawEntity"/>
     /// </summary>
     public static IRawEntity GetRawFromConverterOrDirectCast<TSource>(this TSource source, RawConvertOptions options)
         where TSource : class, IRawData =>

@@ -8,4 +8,5 @@ namespace ToSic.Eav.Data.Raw;
 /// <remarks>
 /// Only supports fully automatic conversion, without relationships etc.
 /// </remarks>
-public interface IRawEntityAutoConvert : IRawEntitySource;
+[WorkInProgressApi("v22")]
+public interface IRawEntityAutoConvert : IRawData;

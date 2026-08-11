@@ -13,8 +13,7 @@ namespace ToSic.Eav.Data.Raw;
 /// * Moved to .Sys ca. v20 - no complaints, so seems to be unused
 /// * Changed to be record instead of class v22 (WIP)
 /// </remarks>
-[PrivateApi]
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[WorkInProgressApi("v22")]
 public record RawEntity: IRawEntity, IRelationshipKeys, IHasMetadata
 {
     #region Core Properties Id, Guid, Created, Modified
