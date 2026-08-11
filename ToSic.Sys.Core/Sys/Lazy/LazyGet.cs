@@ -24,7 +24,7 @@
 /// 4. Properties which have non-nullable types like tuples, which can't self-detect if they are still empty
 /// 5. Methods which behave like properties but as methods (typically to prevent serialization), so they don't have a backing `field`, needing additional code
 /// </remarks>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyGet<TValue>
 {

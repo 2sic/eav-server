@@ -3,7 +3,7 @@ using static System.StringComparer;
 
 namespace ToSic.Sys;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice("Experimental")]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyGetByName<TResult>
 {

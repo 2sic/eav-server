@@ -4,7 +4,7 @@
 /// A <see cref="LazyGet{TValue}"/> with the ability to reset or flush the value.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyGetAndReset<TValue>: LazyGet<TValue>
 {

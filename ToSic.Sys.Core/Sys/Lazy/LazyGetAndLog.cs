@@ -6,7 +6,7 @@ namespace ToSic.Sys;
 /// A <see cref="LazyGet{TValue}"/> with logging.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyGetAndLog<TValue>
 {
