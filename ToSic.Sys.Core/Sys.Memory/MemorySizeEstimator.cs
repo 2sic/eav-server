@@ -12,7 +12,7 @@ public class MemorySizeEstimator(ILog? parentLog) : HelperBase(parentLog, "Eav.M
     public SizeEstimate EstimateMany(object?[] values)
         => values.Aggregate(new SizeEstimate(), (current, value) => current + Estimate(value));
 
-    public SizeEstimate EstimateInternal(object? value, int recursion)
+    private SizeEstimate EstimateInternal(object? value, int recursion)
     {
         if (value == null)
             return new();

@@ -9,8 +9,14 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IBootProcess: IHasLog, IHasIdentityNameId
 {
+    /// <summary>
+    /// The phase during which to run this.
+    /// </summary>
     BootPhase Phase { get; }
 
+    /// <summary>
+    /// The priority within the phase. Lower numbers run first. Default is usually 999.
+    /// </summary>
     int Priority { get; }
 
     void Run();
