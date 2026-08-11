@@ -8,10 +8,6 @@ public interface IQueryController
 
     bool Delete(int appId, int id);
 
-    IEnumerable<DataSourceDto> DataSources(int zoneId, int appId);
-
-    QueryDefinitionDto Get(int appId, int? id = null);
-
     bool Import(EntityImportDto args);
 
     QueryRunDto RunDev(int appId, int id, int top = 0);

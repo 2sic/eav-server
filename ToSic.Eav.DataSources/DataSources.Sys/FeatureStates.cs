@@ -18,6 +18,7 @@ namespace ToSic.Eav.DataSources.Sys;
     UiHint = "List all features states",
     Type = DataSourceType.System,
     NameId = "9c92f05c-ac1e-419d-8d55-3be46660aaa1",
+    NameIds = ["System.FeatureStates"],
     Audience = Audience.System,
     DataConfidentiality = DataConfidentiality.System
 )]
@@ -48,11 +49,8 @@ public sealed class FeatureStates : CustomDataSource
     {
         var filterIds = FeatureId.CsvToArrayWithoutEmpty();
 
-        if (!filterIds.Any())
-            return [];
-
         var mainList = featuresService.All
-            .Where(f => filterIds.Contains(f.NameId, StringComparer.InvariantCultureIgnoreCase));
+            .Where(f => !filterIds.Any() || filterIds.Contains(f.NameId, StringComparer.InvariantCultureIgnoreCase));
 
         var result = mainList
             .OrderBy(f => f.NameId)

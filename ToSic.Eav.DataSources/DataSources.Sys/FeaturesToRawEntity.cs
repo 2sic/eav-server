@@ -18,9 +18,12 @@ public static class FeaturesToRawEntity
         var values = new Dictionary<string, object?>
         {
             { nameof(state.NameId), state.NameId },
+            { "Name", state.Aspect.Name },
             { AttributeNames.TitleNiceName, state.Aspect.Name },
             { nameof(Aspect.Description), state.Aspect.Description },
             { nameof(state.IsEnabled), state.IsEnabled },
+            { "AllowUse", state.IsEnabled },
+            { "Behavior", state.Aspect.DisabledBehavior.ToString().ToLowerInvariant() },
             { nameof(state.Aspect.Link), state.Aspect.Link },
             { $"{nameof(state.License)}{nameof(state.License.Name)}", state.License?.Name ?? EavConstants.NullNameId },
             { $"{nameof(state.License)}{nameof(state.License.Guid)}", state.License?.Guid ?? Guid.Empty },
@@ -75,6 +78,7 @@ public static class FeaturesToRawEntity
             { nameof(state.Aspect.Description), state.Aspect.Description },
             { nameof(state.Aspect.AutoEnable), state.Aspect.AutoEnable },
             { nameof(state.Aspect.Priority), state.Aspect.Priority },
+            { nameof(state.Aspect.FeatureLicense), state.Aspect.FeatureLicense },
             // The License Condition is an internal property
             // Used when checking conditions on other objects - if this license is what is expected
             //{ "LicenseConditionType", License.Condition.Type },

@@ -1,9 +1,7 @@
-﻿using ToSic.Eav.Context;
-using ToSic.Eav.Data.EntityDecorators.Sys;
-using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Context;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.Serialization.Sys.Options;
 using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Sys.Security.Permissions;
 
@@ -46,12 +44,17 @@ public class EntitiesAdmin : CustomDataSource
         _appsCatalog = appsCatalog;
         _entityApi = entityApi;
 
-        ProvideOut(GetEntities);
+        ProvideOutRaw(GetEntities, options: () => new()
+        {
+            TitleField = "Title",
+            TypeName = "Entity",
+            AllowUnknownValueTypes = true,
+        });
     }
 
-    private IEnumerable<IEntity> GetEntities()
+    private IEnumerable<IRawEntity> GetEntities()
     {
-        var l = Log.Fn<IEnumerable<IEntity>>();
+        var l = Log.Fn<IEnumerable<IRawEntity>>();
 
         if (string.IsNullOrWhiteSpace(ContentType))
             return l.Return([], "no content type");
@@ -60,31 +63,38 @@ public class EntitiesAdmin : CustomDataSource
 
         var entities = _entityApi.Value
             .InitOrThrowBasedOnGrants(_siteContext.Value, app, ContentType, GrantSets.ReadSomething)
-            .GetEntitiesForAdminStep1(ContentType);
+            .GetEntitiesForAdmin(ContentType)
+            .Select(ToRawEntity)
+            .ToList();
 
-        // Attach serializationMetadata
-        // This matches the ConvertToEavLight.ConfigureForAdminUse()
-        var decorator = new EntitySerializationDecorator
-        {
-            SerializeGuid = true,
-            WithPublishing = true,
-            SerializeMetadataFor = new() { Serialize = true },
-            SerializeMetadata = new SubEntitySerialization
-            {
-                Serialize = true,
-                SerializeId = true,
-                SerializeTitle = true,
-                SerializeGuid = true
-            },
-            WithEditInfos = true,
-            LinksWithBothValues = true,
-        };
-
-        var result = entities
-            .Select(IEntity (e) => new EntityWithDecorator<EntitySerializationDecorator>(e, decorator))
-            .ToImmutableOpt();
-
-
-        return l.Return(result);
+        return l.Return(entities, $"{entities.Count}");
     }
+
+    private static RawEntity ToRawEntity(Dictionary<string, object> entity)
+    {
+        var now = DateTime.Now;
+        return new()
+        {
+            Id = TryGetInt(entity, nameof(IRawEntity.Id)),
+            Guid = TryGetGuid(entity, nameof(IRawEntity.Guid)),
+            Created = TryGetDateTime(entity, nameof(IRawEntity.Created), now),
+            Modified = TryGetDateTime(entity, nameof(IRawEntity.Modified), now),
+            Values = entity.ToDictionary(pair => pair.Key, pair => (object?)pair.Value),
+        };
+    }
+
+    private static int TryGetInt(IDictionary<string, object> values, string key)
+        => values.TryGetValue(key, out var value) && int.TryParse(value?.ToString(), out var result)
+            ? result
+            : 0;
+
+    private static Guid TryGetGuid(IDictionary<string, object> values, string key)
+        => values.TryGetValue(key, out var value) && Guid.TryParse(value?.ToString(), out var result)
+            ? result
+            : Guid.Empty;
+
+    private static DateTime TryGetDateTime(IDictionary<string, object> values, string key, DateTime fallback)
+        => values.TryGetValue(key, out var value) && value is DateTime result
+            ? result
+            : fallback;
 }

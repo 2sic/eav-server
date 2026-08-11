@@ -21,29 +21,36 @@ internal class ContentTypeUtil
     };
 
 
-    private static Dictionary<string, object?> BuildDictionary(IContentType t) => new()
+    private static Dictionary<string, object?> BuildDictionary(IContentType t, int? itemCount = null)
     {
-        { nameof(IContentType.Name), t.Name },
-        // 2024-10-29 v18.03 2dm disabled, as deprecated, must see if something breaks, but don't really expect it...
-        // noticed that it's actually used quite a bit in our internal fields, would have to change that first...
-        // I must also assume that it may have been used elsewhere too, but I don't really think so...
-        { "StaticName", t.NameId }, // TODO: This should be removed, but JS code still uses it, so it much be change first
-        { nameof(t.NameId), t.NameId },
-        { nameof(IContentType.IsDynamic), t.IsDynamic },
+        var values = new Dictionary<string, object?>
+        {
+            { nameof(IContentType.Name), t.Name },
+            // 2024-10-29 v18.03 2dm disabled, as deprecated, must see if something breaks, but don't really expect it...
+            // noticed that it's actually used quite a bit in our internal fields, would have to change that first...
+            // I must also assume that it may have been used elsewhere too, but I don't really think so...
+            { "StaticName", t.NameId }, // TODO: This should be removed, but JS code still uses it, so it much be change first
+            { nameof(t.NameId), t.NameId },
+            { nameof(IContentType.IsDynamic), t.IsDynamic },
 
-        { nameof(IContentType.Scope), t.Scope },
-        { nameof(IContentType.Attributes) + "Count", t.Attributes.Count() },
+            { nameof(IContentType.Scope), t.Scope },
+            { nameof(IContentType.Attributes) + "Count", t.Attributes.Count() },
 
-        { nameof(IContentType.RepositoryType), t.RepositoryType.ToString() },
-        { nameof(IContentType.RepositoryAddress), t.RepositoryAddress },
-    };
+            { nameof(IContentType.RepositoryType), t.RepositoryType.ToString() },
+            { nameof(IContentType.RepositoryAddress), t.RepositoryAddress },
+        };
+        if (itemCount.HasValue)
+            values["Items"] = itemCount.Value;
 
-    internal static IRawEntity ToRaw(IContentType t) =>
+        return values;
+    }
+
+    internal static IRawEntity ToRaw(IContentType t, int? itemCount = null) =>
         new RawEntity()
         {
             Id = t.Id,
             Guid = SafeConvertGuid(t),
-            Values = BuildDictionary(t),
+            Values = BuildDictionary(t, itemCount),
             Metadata = t.Metadata,
         };
 

@@ -47,18 +47,18 @@ public class InputTypes : CustomDataSource
             .GetInputTypes()
             .Select(inputType => new InputTypeInfoRaw
             {
-                type = inputType.Type,
-                label = inputType.Label,
-                description = inputType.Description,
-                disableI18n = inputType.DisableI18n,
-                uiAssets = inputType.UiAssets,
-                useAdam = inputType.UseAdam,
-                isObsolete = inputType.IsObsolete ?? false,
-                obsoleteMessage = inputType.ObsoleteMessage,
-                isRecommended = inputType.IsRecommended ?? false,
-                isDefault = inputType.IsDefault ?? false,
-                source = inputType.Source,
-                configTypes = inputType.ConfigTypes == null ? null : [inputType.ConfigTypes],
+                Type = inputType.Type,
+                Label = inputType.Label,
+                Description = inputType.Description,
+                DisableI18n = inputType.DisableI18n,
+                UiAssets = inputType.UiAssets,
+                UseAdam = inputType.UseAdam,
+                IsObsolete = inputType.IsObsolete ?? false,
+                ObsoleteMessage = inputType.ObsoleteMessage,
+                IsRecommended = inputType.IsRecommended ?? false,
+                IsDefault = inputType.IsDefault ?? false,
+                Source = inputType.Source,
+                ConfigTypes = inputType.ConfigTypes == null ? null : [inputType.ConfigTypes],
             });
 
         return l.Return(entities, "ok");

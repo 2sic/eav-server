@@ -9,14 +9,6 @@ public interface IInstallController
     bool Resume();
 
     /// <summary>
-    /// New API to get install URL etc. New in v15
-    /// Requires latest build of quick dialog.
-    /// </summary>
-    /// <param name="isContentApp"></param>
-    /// <returns></returns>
-    InstallAppsDto InstallSettings(bool isContentApp);
-
-    /// <summary>
     /// Before this was GET Installer/InstallPackage
     /// </summary>
     /// <param name="packageUrl"></param>

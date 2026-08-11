@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
@@ -25,6 +25,7 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
     NameIds =
     [
+        "System.ContentTypes",
         "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         // not sure if this was ever used...just added it for safety for now
         // can probably remove again, if we see that all system queries use the correct name
@@ -74,7 +75,8 @@ public sealed class ContentTypes: CustomDataSource
         // Get the scope. Make sure that an empty string will be ignored and "Default" is used
         var scp = Scope.UseFallbackIfNoValue(ScopeConstants.Default);
 
-        var types = _appReaders.Get(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
+        var appReader = _appReaders.Get(appId);
+        var types = appReader.ContentTypes.OfScope(scp, includeAttributeTypes: true);
 
         // Deduplicate, in case we have identical types on current app and inherited
         var deDuplicate = types
@@ -98,9 +100,14 @@ public sealed class ContentTypes: CustomDataSource
             })
             .ToList();
 
+        var itemCounts = appReader.List
+            .GroupBy(entity => entity.Type.NameId)
+            .ToDictionary(group => group.Key, group => group.Select(entity => entity.EntityId).Distinct().Count());
+
         var list = deDuplicate
             .OrderBy(t => t.Name)
-            .Select(ContentTypeUtil.ToRaw)
+            .Select(type => ContentTypeUtil.ToRaw(type,
+                itemCounts.TryGetValue(type.NameId, out var itemCount) ? itemCount : 0))
             .ToList();
 
 

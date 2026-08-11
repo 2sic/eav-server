@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSources.Sys;
     Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.System,
     NameId = "402fa226-5584-46d1-a763-e63ba0774c31",
+    NameIds = ["System.Licenses"],
     Audience = Audience.Advanced
 )]
 // ReSharper disable once UnusedMember.Global
