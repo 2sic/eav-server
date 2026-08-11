@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Sys.Services;
 
+// Note: we can't call it `Dependencies` otherwise all inheriting dependencies would have to use the full namespace.
+
 /// <summary>
 /// Base class for all Dependency helpers on services.
 /// </summary>
@@ -12,10 +14,10 @@
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract record DependenciesRecord : IDependencies
+public abstract record DependenciesBase : IDependencies
 {
     // ReSharper disable once UnusedParameter.Local
-    protected DependenciesRecord(NoParamOrder npo = default, object[]? connect = default)
+    protected DependenciesBase(NoParamOrder npo = default, object[]? connect = default)
     {
         if (connect == null)
             return;

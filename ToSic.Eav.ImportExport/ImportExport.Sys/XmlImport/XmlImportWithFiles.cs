@@ -21,7 +21,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
         LazySvc<DataAssembler> DataAssembler,
         LazySvc<ContentTypeAssemblyKit> TypeAssembler,
         DataImportLogSettings LogSettings)
-        : DependenciesRecord(connect: [ImporterLazy, StorageFactory, Environment, AppsCatalog, XmlToEntity, AppCachePurger, DataAssembler, TypeAssembler, LogSettings]);
+        : DependenciesBase(connect: [ImporterLazy, StorageFactory, Environment, AppsCatalog, XmlToEntity, AppCachePurger, DataAssembler, TypeAssembler, LogSettings]);
 
     public int AppId { get; private set; }
     public int ZoneId { get; private set; }

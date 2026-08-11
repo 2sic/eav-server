@@ -118,7 +118,7 @@ public class Sql : CustomDataSourceAdvanced
 
     [PrivateApi]
     public new record Dependencies(SqlPlatformInfo SqlPlatformInfo, CustomDataSourceAdvanced.Dependencies ParentServices)
-        : DependenciesRecord(connect: [SqlPlatformInfo]);
+        : DependenciesBase(connect: [SqlPlatformInfo]);
 
     // Important: This constructor must come BEFORE the other constructors
     // because it is the one which the .net Core DI should use!

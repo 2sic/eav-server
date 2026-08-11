@@ -16,7 +16,7 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
     #region Constructor / DI
 
     public record Dependencies(ISite Site, IUser User, Generator<AppPermissionCheck> AppPermissionCheck)
-        : DependenciesRecord(connect: [Site, User, AppPermissionCheck]);
+        : DependenciesBase(connect: [Site, User, AppPermissionCheck]);
 
     /// <summary>
     /// Constructor for DI

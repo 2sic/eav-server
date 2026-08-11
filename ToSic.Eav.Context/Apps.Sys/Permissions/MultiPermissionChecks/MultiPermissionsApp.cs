@@ -18,7 +18,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
         LazySvc<IZoneMapper> ZoneMapper,
         Generator<AppPermissionCheck> AppPermCheckGenerator,
         Generator<ISysFeaturesService> FeatIntGen)
-        : DependenciesRecord(connect: [ZoneMapper, AppPermCheckGenerator, FeatIntGen]);
+        : DependenciesBase(connect: [ZoneMapper, AppPermCheckGenerator, FeatIntGen]);
 
     public record Options
     {

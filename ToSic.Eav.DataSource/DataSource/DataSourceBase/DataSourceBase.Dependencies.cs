@@ -24,5 +24,5 @@ partial class DataSourceBase
         LazySvc<DataSourceErrorHelper> ErrorHandler,
         ConfigurationDataLoader ConfigDataLoader,
         LazySvc<IDataSourceCacheService> CacheService)
-        : DependenciesRecord(connect: [Configuration, ErrorHandler, ConfigDataLoader, CacheService]);
+        : DependenciesBase(connect: [Configuration, ErrorHandler, ConfigDataLoader, CacheService]);
 }

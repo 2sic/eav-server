@@ -15,7 +15,7 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
     : ServiceBase<ContentTypesFromCodeBuilder.Dependencies>(services, "Eav.CtFact")
 {
     public record Dependencies(ContentTypeAssemblyKit TypeAssemblyKit, IDataFactory DataFactory)
-        : DependenciesRecord(connect: [TypeAssemblyKit, DataFactory]);
+        : DependenciesBase(connect: [TypeAssemblyKit, DataFactory]);
 
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;

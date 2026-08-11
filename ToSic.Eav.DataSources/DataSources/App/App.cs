@@ -86,7 +86,7 @@ public partial class App : DataSourceBase
         IAppReaderFactory AppReaders,
         IDataSourcesService DataSourceFactory,
         ICurrentContextUserPermissionsService UserPermissions)
-        : DependenciesRecord(connect: [AppReaders, DataSourceFactory, UserPermissions]);
+        : DependenciesBase(connect: [AppReaders, DataSourceFactory, UserPermissions]);
 
     /// <summary>
     /// Constructs a new App DataSource

@@ -17,7 +17,7 @@ public abstract class SerializerBase(SerializerBase.Dependencies services, strin
     #region MyServices
 
     public record Dependencies(ITargetTypeService MetadataTargets, DataAssembler DataAssembler, ContentTypeAssemblyKit ContentTypeAssemblyKit, IGlobalDataService GlobalData, object[]? Connect = default)
-        : DependenciesRecord(connect: [MetadataTargets, DataAssembler, ContentTypeAssemblyKit, GlobalData, ..Connect ?? []]);
+        : DependenciesBase(connect: [MetadataTargets, DataAssembler, ContentTypeAssemblyKit, GlobalData, ..Connect ?? []]);
 
     #endregion
 

@@ -23,7 +23,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         Generator<XmlImportWithFiles> XmlImpExpFiles,
         AppCachePurger AppCachePurger,
         IAppsCatalog AppsCatalog)
-        : DependenciesRecord(connect: [FileManagerGenerator, Environment, XmlImpExpFiles, AppCachePurger, AppsCatalog]);
+        : DependenciesBase(connect: [FileManagerGenerator, Environment, XmlImpExpFiles, AppCachePurger, AppsCatalog]);
 
 
     public ZipImport Init(int zoneId, int? appId, bool allowCode)

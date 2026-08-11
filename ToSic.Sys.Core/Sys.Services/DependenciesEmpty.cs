@@ -5,4 +5,4 @@
 /// </summary>
 [PrivateApi("not important enough to show to public")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public record DependenciesEmpty: DependenciesRecord;
+public record DependenciesEmpty: DependenciesBase;

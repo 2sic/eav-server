@@ -29,7 +29,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         LazySvc<AppUserLanguageCheck> LangChecks,
         Generator<IEnvironmentPermission> EnvironmentPermissions,
         LazySvc<AppDataStackService> SettingsStack)
-        : DependenciesRecord(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, SettingsStack]);
+        : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, SettingsStack]);
 
     /// <summary>
     /// Constructor for DI

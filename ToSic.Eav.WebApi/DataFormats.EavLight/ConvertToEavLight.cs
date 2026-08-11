@@ -24,7 +24,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
         LazySvc<IAppReaderFactory> AppReaders,
         IValueConverter ValueConverter,
         IZoneCultureResolver ZoneCultureResolver)
-        : DependenciesRecord(connect: [AppReaders, ValueConverter, ZoneCultureResolver]);
+        : DependenciesBase(connect: [AppReaders, ValueConverter, ZoneCultureResolver]);
 
     /// <summary>
     /// Important: this constructor is used both in inherited,

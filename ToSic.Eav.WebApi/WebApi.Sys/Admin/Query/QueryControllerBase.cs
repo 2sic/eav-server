@@ -41,7 +41,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
         Generator<IAppReaderFactory> AppStates,
         GenWorkBasic<WorkQueryMod> WorkUnitQueryMod,
         GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy)
-        : DependenciesRecord(connect:
+        : DependenciesBase(connect:
         [
             QueryFactory, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough,
             QueryDefSvc, AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
