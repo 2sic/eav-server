@@ -33,42 +33,9 @@ public static class IHasPiggyBackExtensions
 
         // If our source has a PiggyBack cache, use this
         if (advProperty.Source is IHasPiggyBack piggyBackCache)
-            return l.Return(piggyBackCache.GetPiggyBack("auto-pgb-" + field, () => factory(valString)), "piggyback");
+            return l.Return(piggyBackCache.PiggyBackGet("auto-pgb-" + field, () => factory(valString)), "piggyback");
 
         // Otherwise just create
         return l.Return(factory(valString), "no piggyback");
-    }
-
-    /// <summary>
-    /// Get from piggyback, while using the AppState itself as the cache/expiring parameter to ensure reload when app changes
-    /// </summary>
-    /// <typeparam name="TData"></typeparam>
-    /// <param name="parent"></param>
-    /// <param name="key"></param>
-    /// <param name="create"></param>
-    /// <returns></returns>
-    public static (TData Value, bool IsCached) GetPiggyBackExpiring<TData>(this IAppReader parent, string key, Func<TData> create)
-    {
-        var appState = parent.GetCache();
-        return appState.PiggyBack.GetOrGenerate(appState, key, create);
-    }
-
-
-    /// <summary>
-    /// Get PiggyBack property, and if it doesn't exist, create it.
-    /// Will auto-expire if the app has any changes on it.
-    /// Uses the file name and method for the key.
-    /// </summary>
-    /// <typeparam name="TData"></typeparam>
-    /// <param name="parent"></param>
-    /// <param name="create"></param>
-    /// <param name="cPath">auto</param>
-    /// <param name="cName">auto</param>
-    /// <returns></returns>
-    public static (TData Value, bool IsCached) GetPiggyBackPropExpiring<TData>(this IAppReader parent, Func<TData> create,
-        [CallerFilePath] string? cPath = default, [CallerMemberName] string? cName = default)
-    {
-        var appState = parent.GetCache();
-        return appState.PiggyBack.GetOrGenerate(appState, $"autokey:{cPath};{cName}()", create);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Models;
+using ToSic.Sys.Caching.PiggyBack;
 
 namespace ToSic.Eav.Data.ContentTypes.Sys;
 
@@ -6,9 +7,9 @@ namespace ToSic.Eav.Data.ContentTypes.Sys;
 public static class ContentTypeExtensions
 {
     public static IContentTypeDetails? DetailsOrNull(this IContentType contentType) =>
-        contentType.PiggyBack.GetOrGenerate(
-            parent: contentType.Metadata,
+        contentType.PiggyBackGetExpiring(
+            expiring: contentType.Metadata,
             key: nameof(DetailsOrNull),
-            create: () => contentType.GetMetadataModel<IContentTypeDetails>()
+            create: contentType.GetMetadataModel<IContentTypeDetails>
         ).Value;
 }

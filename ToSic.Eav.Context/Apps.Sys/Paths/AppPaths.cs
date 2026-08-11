@@ -72,7 +72,7 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
         // 2025-12-02 2dm still have cases where the cached value is not as it should be
         if (!_skipCache && final.Contains(AppSpecConstants.ErrorAppFolderNotLoaded))
         {
-            appReader.GetCache().PiggyBack.TryRemove(key);
+            appReader.GetCache().PiggyBackRemove(key);
             final = GetFromCacheOrBypass();
         }
 
@@ -84,7 +84,7 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
             ? generator()
             : appReader
                 .GetCache()
-                .GetPiggyBack(
+                .PiggyBackGet(
                     key,
                     () =>
                     {
