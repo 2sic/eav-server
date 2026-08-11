@@ -11,7 +11,7 @@ partial class ContentTypeWrapper : IEquatable<ContentTypeWrapper>, IEquatable<IM
             ? wrapper.RootContentsForEqualityCheck ?? RootContentsForEqualityCheck
             : contents;
     });
-    private readonly GetOnce<IContentType?> _rootContentsForEqualityCheck = new();
+    private readonly LazyGet<IContentType?> _rootContentsForEqualityCheck = new();
 
     public static bool operator ==(ContentTypeWrapper d1, ContentTypeWrapper d2) => IsEqual(d1, d2);
 

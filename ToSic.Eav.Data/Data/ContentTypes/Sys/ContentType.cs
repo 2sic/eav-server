@@ -67,7 +67,7 @@ public partial record ContentType : IContentType, IContentTypeShared, IHasDecora
     [ContentTypeIgnore]
     public string? TitleFieldName
         => _titleFieldName.Get(() => Attributes.FirstOrDefault(a => a.IsTitle)?.Name);
-    private readonly GetOnce<string?> _titleFieldName = new();
+    private readonly LazyGet<string?> _titleFieldName = new();
 
     /// <summary>
     /// For future use, like if this type is SQL based etc.

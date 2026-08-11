@@ -186,5 +186,5 @@ public class DataStream(
     public IDataSourceLink GetLink() =>
         _link.Get(() => new DataSourceLink { DataSource = Source, Stream = this, OutName = Name })!;
 
-    private readonly GetOnce<IDataSourceLink> _link = new();
+    private readonly LazyGet<IDataSourceLink> _link = new();
 }

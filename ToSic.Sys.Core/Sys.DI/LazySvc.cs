@@ -55,7 +55,7 @@ public class LazySvc<TService>(IServiceProvider sp)
     /// </summary>
     /// <param name="replacement"></param>
     public void Inject(TService replacement)
-        => _valueGet.Reset(replacement);
+        => _valueGet.Set(replacement);
 
     /// <summary>
     /// Initializer to attach the log to the generator.

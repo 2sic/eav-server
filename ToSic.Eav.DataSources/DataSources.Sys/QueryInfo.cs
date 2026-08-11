@@ -136,7 +136,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     }
 
     private IDataSource? Query => _q.Get(BuildQuery);
-    private readonly GetOnce<IDataSource?> _q = new();
+    private readonly LazyGet<IDataSource?> _q = new();
 
 
     private IDataSource? BuildQuery()

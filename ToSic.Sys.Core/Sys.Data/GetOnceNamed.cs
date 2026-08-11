@@ -15,7 +15,7 @@ public class GetOnceNamed<TResult>
     /// In case you're wondering why we can't pass the generator in on the constructor:
     /// Reason is that in most cases we need real objects in the generator function,
     /// which doesn't work in a `static` context.
-    /// This means that if the = new GetOnce() is run on the private property
+    /// This means that if the = new LazyGet() is run on the private property
     /// (which is the most common case) most generators can't be added. 
     /// </summary>
     public GetOnceNamed() { }

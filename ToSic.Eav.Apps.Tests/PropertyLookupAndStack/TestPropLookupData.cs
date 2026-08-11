@@ -34,6 +34,6 @@ internal class TestPropLookupData(string sourceId, string name)
     public KeyValuePair<string, IPropertyLookup> StackPart =>
         _stackPart.Get(() => new(Lookup.NameId, Lookup));
 
-    private readonly GetOnce<KeyValuePair<string, IPropertyLookup>> _stackPart = new();
+    private readonly LazyGet<KeyValuePair<string, IPropertyLookup>> _stackPart = new();
 
 }

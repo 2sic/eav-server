@@ -10,7 +10,7 @@ public partial class PropertyStack
     private IImmutableList<KeyValuePair<string, IPropertyLookup>>? _sources;
 
     public IImmutableList<KeyValuePair<string, IPropertyLookup>> SourcesReal => _sourcesReal.Get(GeneratorSourcesReal)!;
-    private readonly GetOnce<IImmutableList<KeyValuePair<string, IPropertyLookup>>> _sourcesReal = new();
+    private readonly LazyGet<IImmutableList<KeyValuePair<string, IPropertyLookup>>> _sourcesReal = new();
 
     private IImmutableList<KeyValuePair<string, IPropertyLookup>> GeneratorSourcesReal()
     {

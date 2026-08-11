@@ -101,6 +101,6 @@ partial class Metadata<T>
     /// <returns></returns>
     [PrivateApi]
     protected IMetadataSource? GetMetadataSource() => _mdsGetOnce.Get(() => Source.LookupSource?.MetadataSource);
-    private readonly GetOnce<IMetadataSource?> _mdsGetOnce = new();
+    private readonly LazyGet<IMetadataSource?> _mdsGetOnce = new();
 
 }

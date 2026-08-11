@@ -70,7 +70,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
             AppSettings = null!;
             AppResources = null!;
             AppDataStackService = null!;
-            _userMayEditGet.Reset();
+            _userMayEdit.Reset();
         }
     }
 
@@ -80,8 +80,8 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     EffectivePermissions ICurrentContextUserPermissions.Permissions
         => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: UserMayEdit || User.IsContentAdmin);
 
-    private bool UserMayEdit => _userMayEditGet.Get(GetUserMayEdit);
-    private readonly LazyGetAndReset<bool> _userMayEditGet = new();
+    private bool UserMayEdit => _userMayEdit.Get(GetUserMayEdit);
+    private readonly LazyGetAndReset<bool> _userMayEdit = new();
 
     private bool GetUserMayEdit()
     {
