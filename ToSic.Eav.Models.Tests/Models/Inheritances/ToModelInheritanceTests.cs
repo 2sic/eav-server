@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Models.TestData;
-using ToSic.Sys.Utils.Types;
 using Xunit.DependencyInjection;
 
 // ReSharper disable UnusedMember.Global

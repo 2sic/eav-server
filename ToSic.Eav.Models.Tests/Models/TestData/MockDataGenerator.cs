@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.TestData;
-using ToSic.Sys.DI;
 
 namespace ToSic.Eav.Models.TestData;
 

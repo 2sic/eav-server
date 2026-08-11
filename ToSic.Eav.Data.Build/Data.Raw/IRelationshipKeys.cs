@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Data.Raw.Sys;
-
-namespace ToSic.Eav.Data.Raw;
+﻿namespace ToSic.Eav.Data.Raw;
 
 /// <summary>
 /// Mark objects of type <see cref="IRawEntity"/> to also provide relationship keys.
