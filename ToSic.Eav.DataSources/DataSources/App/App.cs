@@ -81,18 +81,12 @@ public partial class App : DataSourceBase
 
     #region Constructor / DI
 
-    public new class Dependencies(
-        Eav.DataSource.DataSourceBase.Dependencies parentServices,
-        IAppReaderFactory appReaders,
-        IDataSourcesService dataSourceFactory,
-        ICurrentContextUserPermissionsService userPermissions)
-        : DependenciesBase(connect: [appReaders, dataSourceFactory, userPermissions])
-    {
-        public DataSourceBase.Dependencies ParentServices { get; } = parentServices;
-        public ICurrentContextUserPermissionsService UserPermissions { get; } = userPermissions;
-        public IDataSourcesService DataSourceFactory { get; } = dataSourceFactory;
-        public IAppReaderFactory AppReaders { get; } = appReaders;
-    }
+    public new record Dependencies(
+        Eav.DataSource.DataSourceBase.Dependencies ParentServices,
+        IAppReaderFactory AppReaders,
+        IDataSourcesService DataSourceFactory,
+        ICurrentContextUserPermissionsService UserPermissions)
+        : DependenciesRecord(connect: [AppReaders, DataSourceFactory, UserPermissions]);
 
     /// <summary>
     /// Constructs a new App DataSource

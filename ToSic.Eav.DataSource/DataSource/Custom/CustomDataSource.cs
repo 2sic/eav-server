@@ -24,14 +24,14 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// Otherwise, compiled code would break when we need additional dependencies just for the CustomDataSource.
     /// </remarks>
     [PrivateApi]
-    public new class Dependencies(
-        IDataSourceConfiguration configuration,
-        LazySvc<DataSourceErrorHelper> errorHandler,
-        ConfigurationDataLoader configDataLoader,
-        LazySvc<IDataSourceCacheService> cacheService,
-        IDataFactory dataFactory
+    public new record Dependencies(
+        IDataSourceConfiguration Configuration,
+        LazySvc<DataSourceErrorHelper> ErrorHandler,
+        ConfigurationDataLoader ConfigDataLoader,
+        LazySvc<IDataSourceCacheService> CacheService,
+        IDataFactory DataFactory
         )
-        : CustomDataSourceAdvanced.Dependencies(configuration, errorHandler, configDataLoader, cacheService, dataFactory);
+        : CustomDataSourceAdvanced.Dependencies(Configuration, ErrorHandler, ConfigDataLoader, CacheService, DataFactory);
 
     /// <summary>
     /// Constructor for creating a Custom DataSource.

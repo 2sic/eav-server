@@ -11,21 +11,18 @@ partial class DataSourceBase
     /// </summary>
     /// <remarks>
     /// * Added in v15.0x
-    /// * Important: The internals of this class are not documented, as they will change with time.
-    /// * Important: This must be a `class`, not a `record`, because it needs to be inherited and extended by inheriting DataSources, and some platforms like DNN would not support records.
-    ///     Changing to records would be a breaking change.
+    /// * The internals of this class are not documented, as they will change with time.
+    /// * Up to v21 we believed that this must be a `class`, not a `record`,
+    ///     because it needs to be inherited and extended by inheriting DataSources, and some platforms like DNN would not support records.
+    /// * But in v22 we realized that derived classes would never need to inherit this,
+    ///     since they can just add their own dependencies to their constructor, and the base class will still work.
+    ///     So it was changed to be a `record` - which could be a breaking change.
     /// </remarks>
     [PrivateApi]
-    public class Dependencies(
-        IDataSourceConfiguration configuration,
-        LazySvc<DataSourceErrorHelper> errorHandler,
-        ConfigurationDataLoader configDataLoader,
-        LazySvc<IDataSourceCacheService> cacheService)
-        : DependenciesBase(connect: [configuration, errorHandler, configDataLoader, cacheService])
-    {
-        public LazySvc<IDataSourceCacheService> CacheService { get; } = cacheService;
-        public IDataSourceConfiguration Configuration { get; } = configuration;
-        public ConfigurationDataLoader ConfigDataLoader { get; } = configDataLoader;
-        public LazySvc<DataSourceErrorHelper> ErrorHandler { get; } = errorHandler;
-    }
+    public record Dependencies(
+        IDataSourceConfiguration Configuration,
+        LazySvc<DataSourceErrorHelper> ErrorHandler,
+        ConfigurationDataLoader ConfigDataLoader,
+        LazySvc<IDataSourceCacheService> CacheService)
+        : DependenciesRecord(connect: [Configuration, ErrorHandler, ConfigDataLoader, CacheService]);
 }

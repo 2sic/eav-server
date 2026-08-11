@@ -19,7 +19,7 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
 {
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public new class Dependencies: DataSourceBase.Dependencies
+    public new record Dependencies: DataSourceBase.Dependencies
     {
         [PrivateApi]
         public IDataFactory DataFactory { get; }
