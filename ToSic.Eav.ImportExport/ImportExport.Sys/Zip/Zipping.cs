@@ -262,7 +262,7 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
         if (!IsWindowsFileSystem() || string.IsNullOrWhiteSpace(path) || path.StartsWith(ExtendedPathPrefix, StringComparison.Ordinal))
             return path;
 
-        // On net472, Path.GetFullPath itself can throw for an already-absolute long path before the
+        // On net48, Path.GetFullPath itself can throw for an already-absolute long path before the
         // fallback is applied, so only normalize relative paths here.
         var fullPath = Path.IsPathRooted(path)
             ? path
