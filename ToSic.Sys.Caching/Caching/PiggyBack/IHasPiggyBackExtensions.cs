@@ -33,7 +33,7 @@ public static class IHasPiggyBackExtensions
     /// <param name="parent"></param>
     /// <param name="key"></param>
     public static void PiggyBackRemove(this IHasPiggyBack parent, string key)
-        => parent.PiggyBack.TryRemove(key, out _);
+        => _ = parent.PiggyBack.TryRemove(key, out _);
 
 
     /// <summary>
