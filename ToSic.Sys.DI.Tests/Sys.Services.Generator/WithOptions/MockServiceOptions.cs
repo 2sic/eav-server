@@ -1,0 +1,10 @@
+﻿namespace ToSic.Sys.Services.Generator.WithOptions;
+
+public record MockServiceOptions
+{
+    public const string NameUndefined = "undefined";
+    public const int NumberUndefined = -47;
+
+    public string Name { get; init; } = NameUndefined;
+    public int Number { get; init; } = NumberUndefined;
+}

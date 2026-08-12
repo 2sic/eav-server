@@ -3,7 +3,7 @@
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
 
   <PropertyGroup>
-    <RootNamespace>ToSic.Lib.DI</RootNamespace>
+    <RootNamespace>ToSic</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
