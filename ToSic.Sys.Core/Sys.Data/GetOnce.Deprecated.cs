@@ -7,5 +7,5 @@
 /// <typeparam name="TValue"></typeparam>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-[Obsolete("Deprecated in v22, pls change all code which uses this to use LazyGet instead; #ToBeRemovedV24")]
+[Obsolete("Deprecated in v22, pls change all code which uses this to use LazyGet instead; #RemoveV24")]
 public class GetOnce<TValue>: LazyGet<TValue>;
