@@ -48,5 +48,5 @@ public class ExportApp(ExportHelper exportHelper) : ServiceBase("Bck.Export", co
     private static (IEnumerable<PathCaseItem> App, IEnumerable<PathCaseItem> Shared) ReferencesOrEmpty(
         Func<(IEnumerable<PathCaseItem> App, IEnumerable<PathCaseItem> Shared)>? getReferences)
         => getReferences?.Invoke()
-            ?? (Enumerable.Empty<PathCaseItem>(), Enumerable.Empty<PathCaseItem>());
+            ?? ([], []);
 }

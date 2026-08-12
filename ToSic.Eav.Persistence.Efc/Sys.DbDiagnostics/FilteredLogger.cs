@@ -9,9 +9,9 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics;
 public class EfCoreFilteredLoggerProvider : ILoggerProvider
 {
     private static readonly string[] Categories =
-    {
-        typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName,
-    };
+    [
+        typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName
+    ];
 
     public ILogger CreateLogger(string categoryName)
     {

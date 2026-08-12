@@ -128,7 +128,7 @@ internal class EntityLoader(
 
         if (appId == KnownAppsConstants.PresetAppId
             || appId == KnownAppsConstants.GlobalPresetAppId)
-            return l.Return(new List<TempEntity>(), "preset app, skip DB query");
+            return l.Return([], "preset app, skip DB query");
 
         var entitiesQuery = EntityQueries.EntitiesOfAppQuery(appId, entityIds, filterJsonType);
 

@@ -86,8 +86,7 @@ public class AppsCacheMultiTenantTests
             { 11, "251c0000-eafe-2792-0001-000000000001" },
             { 12, appName }
         };
-        var zone = new Zone(1, 10, 11, new ReadOnlyDictionary<int, string>(apps), new List<DimensionDefinition>
-        {
+        var zone = new Zone(1, 10, 11, new ReadOnlyDictionary<int, string>(apps), [
             new()
             {
                 Active = true,
@@ -97,7 +96,7 @@ public class AppsCacheMultiTenantTests
                 Name = "English",
                 Parent = null
             }
-        });
+        ]);
         return new Dictionary<int, Zone> { { 1, zone } };
     }
 
