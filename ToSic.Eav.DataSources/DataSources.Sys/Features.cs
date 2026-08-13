@@ -25,8 +25,8 @@ public sealed class Features : CustomDataSource
     {
         ProvideOutRaw(
             () => featuresService.All
-                .OrderBy(f => f.NameId)
-                .Select(f => f.ToRawEntity()),
+                .OrderBy(feature => feature.NameId)
+                .Select(feature => new FeatureStateRaw(feature)),
             options: () => new() { TypeName = "Feature" }
         );
     }

@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Raw;
-using ToSic.Eav.DataSource.Sys;
+﻿using ToSic.Eav.DataSource.Sys;
 using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -29,7 +28,7 @@ public sealed class FeatureStates : CustomDataSource
     /// Optional filter to only return specific features by their NameId, comma-separated. E.g. "Feature1,Feature2"
     /// </summary>
     /// <remarks>
-    /// If blank or not set, will return all feature states.
+    /// If blank or not set, all feature states are returned.
     /// 
     /// Added in v21.02
     /// </remarks>
@@ -41,21 +40,20 @@ public sealed class FeatureStates : CustomDataSource
     {
         ProvideOutRaw(
             () => GetList(featuresService),
-            options: () => new() { TypeName = FeaturesToRawEntity.FeatureStateTypeName }
+            options: () => new() { TypeName = "FeatureState" }
         );
     }
 
-    private IEnumerable<IRawEntity> GetList(ISysFeaturesService featuresService)
+    private IEnumerable<FeatureStateDetailedRaw> GetList(ISysFeaturesService featuresService)
     {
         var filterIds = FeatureId.CsvToArrayWithoutEmpty();
 
-        var mainList = featuresService.All
-            .Where(f => !filterIds.Any() || filterIds.Contains(f.NameId, StringComparer.InvariantCultureIgnoreCase));
+        var features = filterIds.Any()
+            ? featuresService.All.Where(feature => filterIds.Contains(feature.NameId, StringComparer.InvariantCultureIgnoreCase))
+            : featuresService.All;
 
-        var result = mainList
-            .OrderBy(f => f.NameId)
-            .Select(f => f.ToRawEntity(detailed: true));
-
-        return result;
+        return features
+            .OrderBy(feature => feature.NameId)
+            .Select(feature => new FeatureStateDetailedRaw(feature));
     }
 }

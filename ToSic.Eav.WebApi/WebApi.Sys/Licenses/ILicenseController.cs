@@ -2,6 +2,9 @@
 
 public interface ILicenseController
 {
+    // Replaced by DataSources System.Licenses and System.FeatureStates through query System.SysData.
+    //IEnumerable<LicenseDto> Summary();
+
     /// <summary>
     /// License-upload backend
     /// </summary>

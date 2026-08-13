@@ -1,5 +1,4 @@
-﻿
-using ToSic.Eav.WebApi.Sys.Dto;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -20,6 +19,9 @@ public interface ITypeController
     /// <param name="staticName"></param>
     /// <returns></returns>
     bool Delete(int appId, string staticName);
+
+    // Replaced by DataSource System.ContentTypes through query System.SysData.
+    //IEnumerable<ContentTypeDto> List(int appId, string? scope = null, bool withStatistics = false);
 
     // 2019-11-15 2dm special change: item to be Dictionary<string, object> because in DNN 9.4
     // it causes problems when a content-type has metadata, where a value then is a deeper object

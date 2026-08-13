@@ -110,33 +110,9 @@ public class EntityApi(
 
         // Convert all to dictionary
         var entityToDic = entitiesToDicLazy.New();
-        var converter = (ConvertToEavLight)entityToDic;
-        converter.ConfigureForAdminUse();
+        ((ConvertToEavLight)entityToDic).ConfigureForAdminUse();
         var list = entityToDic.Convert(afterAncestorFilter)
             .ToList();
-
-        // Admin lists must always have a usable title, even when the current
-        // language priorities don't match any value on the title attribute.
-        // In that case use the first available localized value and also restore
-        // the real title field (for example "Name" on DataPipeline entities).
-        for (var i = 0; i < afterAncestorFilter.Count && i < list.Count; i++)
-        {
-            var entity = afterAncestorFilter[i];
-            var title = entity.GetBestTitle(converter.Languages);
-            if (string.IsNullOrWhiteSpace(title))
-                title = entity.Title
-                    ?.GetTypedValue(converter.Languages, fallbackToAny: true)
-                    .Result
-                    ?.ToString();
-
-            if (string.IsNullOrWhiteSpace(title))
-                continue;
-
-            list[i]["Title"] = title;
-            var titleFieldName = entity.Type.TitleFieldName;
-            if (titleFieldName is { Length: > 0 })
-                list[i][titleFieldName] = title;
-        }
 
         // Truncate all values to 50 chars
         var result = Log.Quick(message: "truncate dictionary", timer: true,

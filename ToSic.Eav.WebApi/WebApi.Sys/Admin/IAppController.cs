@@ -59,5 +59,8 @@ public interface IAppController
     /// <param name="zoneId"></param>
     /// <param name="pendingApps"></param>
     /// <returns></returns>
+    // Replaced by DataSource System.AppsPendingInitialization through query System.SysData.
+    //IEnumerable<PendingAppDto> GetPendingApps(int zoneId);
+
     ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppDto> pendingApps);
 }

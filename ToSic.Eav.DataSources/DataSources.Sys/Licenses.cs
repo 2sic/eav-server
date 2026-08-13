@@ -29,8 +29,8 @@ public sealed class Licenses : CustomDataSource
     {
         ProvideOutRaw(
             () => licenseService.All
-                .OrderBy(l => l.Aspect?.Priority ?? 0)
-                .Select(l => l.ToRawEntity()),
+                .OrderBy(license => license.Aspect?.Priority ?? 0)
+                .Select(license => new FeatureSetStateRaw(license)),
             options: () => new() { TypeName = "License" }
         );
     }
