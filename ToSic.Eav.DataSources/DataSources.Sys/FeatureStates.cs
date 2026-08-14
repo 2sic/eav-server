@@ -25,10 +25,10 @@ namespace ToSic.Eav.DataSources.Sys;
 public sealed class FeatureStates : CustomDataSource
 {
     /// <summary>
-    /// Optional filter to only return specific features by their NameId, comma-separated. E.g. "Feature1,Feature2"
+    /// Required filter to only return specific features by their NameId, comma-separated. E.g. "Feature1,Feature2"
     /// </summary>
     /// <remarks>
-    /// If blank or not set, all feature states are returned.
+    /// If blank or not set, an empty list is returned.
     /// 
     /// Added in v21.02
     /// </remarks>
@@ -48,9 +48,10 @@ public sealed class FeatureStates : CustomDataSource
     {
         var filterIds = FeatureId.CsvToArrayWithoutEmpty();
 
-        var features = filterIds.Any()
-            ? featuresService.All.Where(feature => filterIds.Contains(feature.NameId, StringComparer.InvariantCultureIgnoreCase))
-            : featuresService.All;
+        if (!filterIds.Any())
+            return [];
+
+        var features = featuresService.All.Where(feature => filterIds.Contains(feature.NameId, StringComparer.InvariantCultureIgnoreCase));
 
         return features
             .OrderBy(feature => feature.NameId)
