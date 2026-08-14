@@ -11,7 +11,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 )]
 public record MessagesRaw : IRawEntityAutoConvert
 {
-    public required int warningsOther { get; init; }
+    public required int WarningsOther { get; init; }
 
-    public required int warningsObsolete { get; init; }
+    public required int WarningsObsolete { get; init; }
 }

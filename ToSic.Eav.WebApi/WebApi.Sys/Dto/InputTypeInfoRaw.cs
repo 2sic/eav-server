@@ -12,17 +12,17 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 public record InputTypeInfoRaw : IRawEntityAutoConvert
 {
     [ContentTypeTitle]
-    public required string type { get; init; }
+    public required string Type { get; init; }
 
-    public required string? label { get; init; }
-    public required string? description { get; init; }
-    public required bool disableI18n { get; init; }
-    public required IDictionary<string, string> uiAssets { get; init; }
-    public required bool useAdam { get; init; }
-    public required bool isObsolete { get; init; }
-    public required string? obsoleteMessage { get; init; }
-    public required bool isRecommended { get; init; }
-    public required bool isDefault { get; init; }
-    public required string? source { get; init; }
-    public required string[]? configTypes { get; init; }
+    public required string? Label { get; init; }
+    public required string? Description { get; init; }
+    public required bool DisableI18n { get; init; }
+    public required IDictionary<string, string> UiAssets { get; init; }
+    public required bool UseAdam { get; init; }
+    public required bool IsObsolete { get; init; }
+    public required string? ObsoleteMessage { get; init; }
+    public required bool IsRecommended { get; init; }
+    public required bool IsDefault { get; init; }
+    public required string? Source { get; init; }
+    public required string[]? ConfigTypes { get; init; }
 }

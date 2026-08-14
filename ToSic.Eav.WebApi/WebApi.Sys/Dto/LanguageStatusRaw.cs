@@ -12,18 +12,18 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 )]
 public record LanguageStatusRaw : IRawEntityAutoConvert
 {
-    public required string code { get; init; }
+    public required string Code { get; init; }
 
-    public string nameId => code.ToLowerInvariant();
+    public string NameId => Code.ToLowerInvariant();
 
     [ContentTypeTitle]
-    public required string culture { get; init; }
+    public required string Culture { get; init; }
 
-    public required bool isEnabled { get; init; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public required bool? isAllowed { get; init; }
+    public required bool IsEnabled { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public required HasPermissionsDto? permissions { get; init; }
+    public required bool? IsAllowed { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public required HasPermissionsDto? Permissions { get; init; }
 }

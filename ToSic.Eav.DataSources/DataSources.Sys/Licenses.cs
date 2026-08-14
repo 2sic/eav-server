@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSources.Sys;
     Icon = DataSourceIcons.TableChart,
     Type = DataSourceType.System,
     NameId = "402fa226-5584-46d1-a763-e63ba0774c31",
+    NameIds = ["System.Licenses"],
     Audience = Audience.Advanced
 )]
 // ReSharper disable once UnusedMember.Global
@@ -28,8 +29,8 @@ public sealed class Licenses : CustomDataSource
     {
         ProvideOutRaw(
             () => licenseService.All
-                .OrderBy(l => l.Aspect?.Priority ?? 0)
-                .Select(l => l.ToRawEntity()),
+                .OrderBy(license => license.Aspect?.Priority ?? 0)
+                .Select(license => new FeatureSetStateRaw(license)),
             options: () => new() { TypeName = "License" }
         );
     }

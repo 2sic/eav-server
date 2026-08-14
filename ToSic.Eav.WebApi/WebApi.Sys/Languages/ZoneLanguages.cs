@@ -38,11 +38,11 @@ public class ZoneLanguages : CustomDataSource
         var list = zoneMapper.CulturesWithState(site)
             .Select(c => new LanguageStatusRaw
             {
-                code = c.Code,
-                culture = c.Culture,
-                isEnabled = c.IsEnabled,
-                isAllowed = null,
-                permissions = null,
+                Code = c.Code,
+                Culture = c.Culture,
+                IsEnabled = c.IsEnabled,
+                IsAllowed = null,
+                Permissions = null,
             })
             .ToList();
 

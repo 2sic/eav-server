@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource;
@@ -62,8 +62,8 @@ public class EntitiesAdmin : CustomDataSource
             .InitOrThrowBasedOnGrants(_siteContext.Value, app, ContentType, GrantSets.ReadSomething)
             .GetEntitiesForAdminStep1(ContentType);
 
-        // Attach serializationMetadata
-        // This matches the ConvertToEavLight.ConfigureForAdminUse()
+        // Attach serialization metadata.
+        // This matches ConvertToEavLight.ConfigureForAdminUse().
         var decorator = new EntitySerializationDecorator
         {
             SerializeGuid = true,
@@ -74,16 +74,15 @@ public class EntitiesAdmin : CustomDataSource
                 Serialize = true,
                 SerializeId = true,
                 SerializeTitle = true,
-                SerializeGuid = true
+                SerializeGuid = true,
             },
             WithEditInfos = true,
             LinksWithBothValues = true,
         };
 
         var result = entities
-            .Select(IEntity (e) => new EntityWithDecorator<EntitySerializationDecorator>(e, decorator))
+            .Select(entity => new EntityWithDecorator<EntitySerializationDecorator>(entity, decorator))
             .ToImmutableOpt();
-
 
         return l.Return(result);
     }

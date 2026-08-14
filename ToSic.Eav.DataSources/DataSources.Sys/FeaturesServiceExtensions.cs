@@ -24,16 +24,7 @@ public class FeaturesForDataSources(ISysFeaturesService featureSvc, IDataFactory
 
     public IEnumerable<IEntity> GetDataForFeature(Feature feature)
     {
-        var df = dataFactory.SpawnNew(options: new()
-        {
-            AutoId = false,
-            TypeName = FeaturesToRawEntity.FeatureStateTypeName,
-        });
-
-        var featState = featureSvc.Get(feature.NameId)!.ToRawEntity(minimal: true);
-
-        var converted = df.Create(featState);
-        
-        return [converted];
+        var featureState = new FeatureStateMinimalRaw(featureSvc.Get(feature.NameId)!);
+        return [dataFactory.Create(featureState)];
     }
 }

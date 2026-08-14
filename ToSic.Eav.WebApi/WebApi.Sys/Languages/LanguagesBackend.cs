@@ -22,11 +22,11 @@ public class LanguagesBackend(
                 {
                     var dto = new LanguageStatusRaw
                     {
-                        code = l.Code,
-                        culture = l.Culture,
-                        isAllowed = l.IsAllowed,
-                        isEnabled = l.IsEnabled,
-                        permissions = withCount ? new() { Count = l.PermissionCount } : null,
+                        Code = l.Code,
+                        Culture = l.Culture,
+                        IsAllowed = l.IsAllowed,
+                        IsEnabled = l.IsEnabled,
+                        Permissions = withCount ? new() { Count = l.PermissionCount } : null,
                     };
                     return dto;
                 })

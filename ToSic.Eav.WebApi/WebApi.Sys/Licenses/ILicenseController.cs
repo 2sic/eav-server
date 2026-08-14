@@ -2,11 +2,8 @@
 
 public interface ILicenseController
 {
-    /// <summary>
-    /// Gives an array of License (sort by priority)
-    /// </summary>
-    /// <returns></returns>
-    IEnumerable<LicenseDto> Summary();
+    // Replaced by DataSources System.Licenses and System.FeatureStates through query System.SysData.
+    //IEnumerable<LicenseDto> Summary();
 
     /// <summary>
     /// License-upload backend

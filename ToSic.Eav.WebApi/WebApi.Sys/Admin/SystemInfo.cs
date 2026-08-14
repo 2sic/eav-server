@@ -118,8 +118,8 @@ public class SystemInfo : CustomDataSource
 
         var entity = new MessagesRaw
         {
-            warningsOther = warningsOther,
-            warningsObsolete = warningsObsolete,
+            WarningsOther = warningsOther,
+            WarningsObsolete = warningsObsolete,
         };
 
         return l.Return([entity], "1");
