@@ -10,6 +10,20 @@
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
 {
+    #region Logging
+
+    /// <inheritdoc/>
+    void ILazyInitLog.SetLog(ILog? parentLog)
+        => Log = parentLog;
+
+    /// <inheritdoc cref="LazySvc{TService}.Log"/>
+    public ILog? Log { get; private set; }
+
+    #endregion
+
+    
+    #region Get / New / Value
+
     /// <summary>
     /// Factory method to generate a new service
     /// </summary>
@@ -21,19 +35,10 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
         return service;
     }
 
-    /// <summary>
-    /// Initializer to attach the log to the generator.
-    /// The log is later given to generated objects.
-    /// </summary>
-    /// <param name="parentLog"></param>
-    void ILazyInitLog.SetLog(ILog? parentLog)
-        => Log = parentLog;
+    #endregion
 
-    /// <summary>
-    /// The parent log, which is attached to newly generated objects
-    /// _if_ they support logging.
-    /// </summary>
-    public ILog? Log { get; private set; }
+
+    #region SetInit
 
     /// <summary>
     /// Set the init-command as needed
@@ -42,16 +47,11 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     /// <param name="allowReplace">Allow replacing the set-init</param>
     public Generator<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
     {
-#if DEBUG
-        // Warn if we're accidentally replacing init-call, but only do this on debug
-        // In most cases it has no consequences, but we should write code that avoids this
-        if (_initCall != null && !allowReplace)
-            throw new($"You tried to call {nameof(SetInit)} twice. This should never happen");
-#endif
-        _initCall = newInitCall;
+        _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
         return this;
     }
     private Action<TService>? _initCall;
 
+    #endregion
 
 }
