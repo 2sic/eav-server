@@ -23,22 +23,22 @@ public class LazySvc<TService>(IServiceProvider sp)
     : ILazyLike<TService>, IHasLog, ILazyInitLog
     where TService : class
 {
+    #region Logging
+
+    /// <inheritdoc/>
+    void ILazyInitLog.SetLog(ILog? parentLog)
+        => Log = parentLog;
+
     /// <summary>
-    /// Set the init-command as needed
+    /// The parent log, which is attached to newly generated objects
+    /// _if_ they support logging.
     /// </summary>
-    /// <param name="newInitCall"></param>
-    public LazySvc<TService> SetInit(Action<TService> newInitCall)
-    {
-#if DEBUG
-        // Warn if we're accidentally replacing init-call, but only do this on debug
-        // In most cases it has no consequences, but we should write code that avoids this
-        if (_initCall != null)
-            throw new($"You tried to call {nameof(SetInit)} twice. This should never happen");
-#endif
-        _initCall = newInitCall;
-        return this;
-    }
-    private Action<TService>? _initCall;
+    public ILog? Log { get; private set; }
+
+    #endregion
+
+    
+    #region Get / New / Value
 
     public TService Value => _valueGet.Get(() =>
     {
@@ -50,25 +50,29 @@ public class LazySvc<TService>(IServiceProvider sp)
 
     public bool IsValueCreated => _valueGet.IsValueCreated;
 
+    #endregion
+
+
+    #region SetInit
+
+    /// <summary>
+    /// Set the init-command as needed
+    /// </summary>
+    /// <param name="newInitCall"></param>
+    /// <param name="allowReplace">Allow replacing the set-init</param>
+    public LazySvc<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
+    {
+        _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
+        return this;
+    }
+    private Action<TService>? _initCall;
+
+    #endregion
+
     /// <summary>
     /// EXPERIMENTAL - replace a service with an already prepared one, to bypass the default factory in edge cases
     /// </summary>
     /// <param name="replacement"></param>
     public void Inject(TService replacement)
         => _valueGet.Set(replacement);
-
-    /// <summary>
-    /// Initializer to attach the log to the generator.
-    /// The log is later given to generated objects.
-    /// </summary>
-    /// <param name="parentLog"></param>
-    void ILazyInitLog.SetLog(ILog? parentLog)
-        => Log = parentLog;
-
-    /// <summary>
-    /// The parent log, which is attached to newly generated objects
-    /// _if_ they support logging.
-    /// </summary>
-    public ILog? Log { get; private set; }
-
 }
