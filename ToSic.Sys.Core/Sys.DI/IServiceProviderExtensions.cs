@@ -46,10 +46,11 @@ public static class IServiceProviderExtensions
     /// <param name="key"></param>
     /// <returns></returns>
     public static T Build<T>(this IServiceProvider serviceProvider, string key)
-    {
-        var found = serviceProvider.GetKeyedService<T>(key);
-        return found ?? throw new InvalidOperationException($"Service with key '{key}' not found.");
-    }
+        => serviceProvider.GetKeyedService<T>(key)
+           ?? throw new InvalidOperationException($"Service with key '{key}' not found.");
+
+    public static T? TryBuild<T>(this IServiceProvider serviceProvider, string key)
+        => serviceProvider.GetKeyedService<T>(key);
 
     /// <summary>
     /// Build a service and if it supports logging, attach it to the parent
@@ -81,11 +82,19 @@ public static class IServiceProviderExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="serviceProvider"></param>
+    /// <param name="key"></param>
     /// <param name="parentLog"></param>
     /// <returns></returns>
     public static T Build<T>(this IServiceProvider serviceProvider, string key, ILog? parentLog)
     {
         var service = serviceProvider.Build<T>(key);
+        if (service is IHasLog withLog && parentLog != null)
+            withLog.LinkLog(parentLog);
+        return service;
+    }
+    public static T? TryBuild<T>(this IServiceProvider serviceProvider, string key, ILog? parentLog)
+    {
+        var service = serviceProvider.TryBuild<T>(key);
         if (service is IHasLog withLog && parentLog != null)
             withLog.LinkLog(parentLog);
         return service;

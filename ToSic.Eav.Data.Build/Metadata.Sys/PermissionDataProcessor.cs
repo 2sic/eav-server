@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Processing;
+using ToSic.Sys.HookUp;
 using ToSic.Sys.Users;
 using static ToSic.Eav.Data.Processing.DataProcessingEvents;
 
@@ -7,23 +8,24 @@ using static ToSic.Eav.Data.Processing.DataProcessingEvents;
 
 namespace ToSic.Eav.Metadata.Sys;
 
-internal class PermissionDataProcessor(IUser user) : ServiceBase("Sec.Process"), IDataProcessor
+internal class PermissionDataProcessor(IUser user) : ServiceBase("Sec.Process"), IWorkEntityAction
 {
-    public Task<ActionData<IEntity?>> Process(string action, ActionData<IEntity?> entity) =>
-        action.ToLowerInvariant() switch
+    public Task<Package<IEntity?>> Handle(WorkContext context, Package<(string Action, IEntity? Entity)> package)
+        => package.Data.Action.ToLowerInvariant() switch
         {
-            PreEdit or PreSave => new DataProcessorBlockUserWithoutElevation(user, UserElevation.SiteAdmin, action).Process(entity),
-            _ => Task.FromResult(entity)
+            PreEdit or PreSave => new DataProcessorBlockUserWithoutElevation(user, UserElevation.SiteAdmin, package.Data.Action)
+                .Handle(context, package.RePackage(package.Data.Entity)),
+            _ => Task.FromResult(package.Data.Entity.ToPackage())
         };
 }
 
 
 
-internal class DataProcessorBlockUserWithoutElevation(IUser user, UserElevation elevation, string verb) : IDataProcessorAction
+internal class DataProcessorBlockUserWithoutElevation(IUser user, UserElevation elevation, string verb) : IWorkEntity
 {
-    public async Task<ActionData<IEntity?>> Process(ActionData<IEntity?> data) =>
-        user.GetElevation().IsAtLeast(elevation)
-            ? data
+    public async Task<Package<IEntity?>> Handle(WorkContext context, Package<IEntity?> package)
+        => user.GetElevation().IsAtLeast(elevation)
+            ? package
             : new()
             {
                 Data = null,

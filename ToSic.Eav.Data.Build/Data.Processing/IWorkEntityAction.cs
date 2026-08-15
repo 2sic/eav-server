@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.Data.Processing;
+﻿using ToSic.Sys.HookUp;
+
+namespace ToSic.Eav.Data.Processing;
 
 /// <summary>
 /// WIP - idea is to have objects which can process data - like before/after saving.
@@ -6,7 +8,7 @@
 /// </summary>
 [PrivateApi("WIP v21")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IDataProcessor
+public interface IWorkEntityAction
 {
-    Task<ActionData<IEntity?>> Process(string action, ActionData<IEntity?> entity);
+    Task<Package<IEntity?>> Handle(WorkContext context, Package<(string Action, IEntity? Entity)> package);
 }

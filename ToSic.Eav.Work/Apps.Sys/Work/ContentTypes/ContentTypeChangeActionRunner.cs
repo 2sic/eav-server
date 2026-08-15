@@ -1,4 +1,5 @@
 using ToSic.Eav.Data.Processing;
+using ToSic.Sys.HookUp;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -7,7 +8,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeChangeActionRunner(
-    IEnumerable<ILowCodeAction<ContentTypeChange, ContentTypeChange>> actions)
+    IEnumerable<IWork<ContentTypeChange, ContentTypeChange>> actions)
     : ServiceBase("Wrk.CtAct")
 {
     public void RunFor(int appId, string contentTypeNameId, string source = ContentTypeChangeSources.ContentTypeField)
@@ -21,11 +22,9 @@ public class ContentTypeChangeActionRunner(
             return;
         }
 
-        var actionContext = new LowCodeActionContext();
-        var result = ActionData.Create(new ContentTypeChange(
-            AppId: appId,
-            ContentTypeNameId: contentTypeNameId,
-            Source: source));
+        var actionContext = new WorkContext();
+        var result = new ContentTypeChange(AppId: appId, ContentTypeNameId: contentTypeNameId, Source: source)
+            .ToPackage();
 
         foreach (var action in activeActions)
         {
@@ -33,7 +32,7 @@ public class ContentTypeChangeActionRunner(
             {
                 var errorCountBefore = result.Exceptions.Count;
                 result = action
-                    .Run(actionContext, result)
+                    .Handle(actionContext, result)
                     .GetAwaiter()
                     .GetResult();
 
