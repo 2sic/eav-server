@@ -35,6 +35,21 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
         return service;
     }
 
+    /// <summary>
+    /// Factory method to generate a new service using a name/keyed.
+    /// </summary>
+    /// <param name="key">The key/name of the service to generate.</param>
+    /// <remarks>
+    /// New in v22
+    /// </remarks>
+    /// <returns></returns>
+    public TService New(string key)
+    {
+        var service = sp.Build<TService>(key, Log);
+        _initCall?.Invoke(service);
+        return service;
+    }
+    
     #endregion
 
 
