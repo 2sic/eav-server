@@ -39,6 +39,19 @@ public static class IServiceProviderExtensions
     }
 
     /// <summary>
+    /// Build a service from DI or if not found, try ActivatorUtilities
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="serviceProvider"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public static T Build<T>(this IServiceProvider serviceProvider, string key)
+    {
+        var found = serviceProvider.GetKeyedService<T>(key);
+        return found ?? throw new InvalidOperationException($"Service with key '{key}' not found.");
+    }
+
+    /// <summary>
     /// Build a service and if it supports logging, attach it to the parent
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -62,6 +75,22 @@ public static class IServiceProviderExtensions
         //    throw;
         //}
     }
+
+    /// <summary>
+    /// Build a service and if it supports logging, attach it to the parent
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="serviceProvider"></param>
+    /// <param name="parentLog"></param>
+    /// <returns></returns>
+    public static T Build<T>(this IServiceProvider serviceProvider, string key, ILog? parentLog)
+    {
+        var service = serviceProvider.Build<T>(key);
+        if (service is IHasLog withLog && parentLog != null)
+            withLog.LinkLog(parentLog);
+        return service;
+    }
+
 
 
     public static T Build<T>(this IServiceProvider serviceProvider, Type type, ILog? parentLog = null) where T: class
