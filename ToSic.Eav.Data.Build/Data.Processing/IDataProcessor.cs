@@ -8,5 +8,5 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IDataProcessor
 {
-    Task<DataProcessorResult<IEntity?>> Process(string action, DataProcessorResult<IEntity?> entity);
+    Task<ActionData<IEntity?>> Process(string action, ActionData<IEntity?> entity);
 }

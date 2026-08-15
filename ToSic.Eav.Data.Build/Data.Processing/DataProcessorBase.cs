@@ -13,7 +13,7 @@ public abstract class DataProcessorBase: IDataProcessor
     /// <param name="action"></param>
     /// <param name="entity"></param>
     /// <returns></returns>
-    public virtual Task<DataProcessorResult<IEntity?>> Process(string action, DataProcessorResult<IEntity?> entity)
+    public virtual Task<ActionData<IEntity?>> Process(string action, ActionData<IEntity?> entity)
     {
         return Task.FromResult(entity);
     }
