@@ -1,4 +1,4 @@
-﻿namespace ToSic.NamedDependencies;
+﻿namespace ToSic.Mocks.Named;
 
 public interface IMockNamedService
 {
