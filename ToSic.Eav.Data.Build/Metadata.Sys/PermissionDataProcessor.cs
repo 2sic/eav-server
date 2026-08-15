@@ -9,7 +9,7 @@ namespace ToSic.Eav.Metadata.Sys;
 
 internal class PermissionDataProcessor(IUser user) : ServiceBase("Sec.Process"), IDataProcessor
 {
-    public Task<DataProcessorResult<IEntity?>> Process(string action, DataProcessorResult<IEntity?> entity) =>
+    public Task<ActionData<IEntity?>> Process(string action, ActionData<IEntity?> entity) =>
         action.ToLowerInvariant() switch
         {
             PreEdit or PreSave => new DataProcessorBlockUserWithoutElevation(user, UserElevation.SiteAdmin, action).Process(entity),
@@ -21,7 +21,7 @@ internal class PermissionDataProcessor(IUser user) : ServiceBase("Sec.Process"),
 
 internal class DataProcessorBlockUserWithoutElevation(IUser user, UserElevation elevation, string verb) : IDataProcessorAction
 {
-    public async Task<DataProcessorResult<IEntity?>> Process(DataProcessorResult<IEntity?> data) =>
+    public async Task<ActionData<IEntity?>> Process(ActionData<IEntity?> data) =>
         user.GetElevation().IsAtLeast(elevation)
             ? data
             : new()

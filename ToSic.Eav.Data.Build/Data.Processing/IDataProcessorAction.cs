@@ -3,6 +3,6 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IDataProcessorAction
 {
-    Task<DataProcessorResult<IEntity?>> Process(DataProcessorResult<IEntity?> entity);
+    Task<ActionData<IEntity?>> Process(ActionData<IEntity?> entity);
 
 }
