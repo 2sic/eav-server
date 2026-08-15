@@ -13,10 +13,10 @@ public class StartupEavDataBuildDataProcessorsTests
         services.AddEavDataProcessors();
 
         var registrations = services
-            .Where(descriptor => descriptor.ServiceType == typeof(IDataProcessor))
+            .Where(descriptor => descriptor.ServiceType == typeof(IWorkEntityAction))
             .ToList();
 
-        Equal(1, registrations.Count(descriptor => descriptor.ImplementationType == typeof(DataProcessor)));
+        Equal(1, registrations.Count(descriptor => descriptor.ImplementationType == typeof(WorkOnEntityNoOp)));
         Equal(1, registrations.Count(descriptor => descriptor.ImplementationType?.FullName == "ToSic.Eav.Metadata.Sys.PermissionDataProcessor"));
     }
 
@@ -29,7 +29,7 @@ public class StartupEavDataBuildDataProcessorsTests
         services.AddEavDataProcessors();
 
         var duplicateDescriptors = services
-            .Where(descriptor => descriptor.ServiceType == typeof(IDataProcessor))
+            .Where(descriptor => descriptor.ServiceType == typeof(IWorkEntityAction))
             .GroupBy(descriptor => descriptor.ImplementationType)
             .Where(group => group.Key != null && group.Count() > 1)
             .ToList();
@@ -44,15 +44,15 @@ public class StartupEavDataBuildDataProcessorsTests
         services.AddEavDataProcessors();
 
         var registrations = services
-            .Where(descriptor => descriptor.ServiceType == typeof(IDataProcessor))
+            .Where(descriptor => descriptor.ServiceType == typeof(IWorkEntityAction))
             .ToList();
 
-        Contains(registrations, descriptor => descriptor.ImplementationType == typeof(ExternalMockDataProcessor));
-        Contains(services, descriptor => descriptor.ServiceType == typeof(ExternalMockDataProcessor));
+        Contains(registrations, descriptor => descriptor.ImplementationType == typeof(MockWorkOnEntity));
+        Contains(services, descriptor => descriptor.ServiceType == typeof(MockWorkOnEntity));
 
         using var provider = services.BuildServiceProvider();
-        NotNull(provider.GetRequiredService<ExternalMockDataProcessor>());
+        NotNull(provider.GetRequiredService<MockWorkOnEntity>());
     }
 
-    private sealed class ExternalMockDataProcessor : DataProcessorBase;
+    private sealed class MockWorkOnEntity : WorkOnEntityNoOp;
 }

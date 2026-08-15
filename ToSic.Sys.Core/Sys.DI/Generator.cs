@@ -9,6 +9,7 @@
 /// <typeparam name="TService">The service to generate. It must implement <see cref="IServiceWithSetup{TOptions}"/></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
+    where TService: class
 {
     #region Logging
 
@@ -46,6 +47,15 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     public TService New(string key)
     {
         var service = sp.Build<TService>(key, Log);
+        _initCall?.Invoke(service);
+        return service;
+    }
+    
+    public TService? TryNew(string key)
+    {
+        var service = sp.TryBuild<TService>(key, Log);
+        if (service == null)
+            return null;
         _initCall?.Invoke(service);
         return service;
     }

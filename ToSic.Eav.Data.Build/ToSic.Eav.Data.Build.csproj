@@ -9,8 +9,4 @@
     <ProjectReference Include="..\ToSic.Eav.Data\ToSic.Eav.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data.ContentTypes.Sys\" />
-  </ItemGroup>
-
 </Project>

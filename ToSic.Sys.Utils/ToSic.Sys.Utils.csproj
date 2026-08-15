@@ -17,8 +17,4 @@
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="LowCode\" />
-  </ItemGroup>
-
 </Project>

@@ -112,8 +112,8 @@ public static class StartupEavDataBuild
         // Microsoft DI has this pattern specifically for multi-registrations that should not duplicate: TryAddEnumerable.
         // - It still allows multiple implementations of the same service (which you want for IDataProcessor).
         // - But it prevents duplicates of the exact same (service type + implementation type) from being added again.
-        services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IDataProcessor), typeof(DataProcessor)));
-        services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IDataProcessor), typeof(PermissionDataProcessor)));
+        services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IWorkEntityAction), typeof(WorkOnEntityNoOp)));
+        services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IWorkEntityAction), typeof(PermissionDataProcessor)));
 
         // Register directly, so it can be instantiated
         services.TryAddTransient<PermissionDataProcessor>();
@@ -121,14 +121,14 @@ public static class StartupEavDataBuild
         // Auto-register all concrete IDataProcessor implementations from loaded assemblies (incl. optional bin dlls).
         // Keep this startup-only and dedupe by stable identity to avoid duplicate service descriptors.
         var discoveredTypes = AssemblyHandling
-            .FindInherited(typeof(IDataProcessor))
+            .FindInherited(typeof(IWorkEntityAction))
             .Where(type => !type.IsAbstract && !type.IsInterface)
             .GroupBy(type => type.FullName ?? type.AssemblyQualifiedName ?? type.Name, StringComparer.Ordinal)
             .Select(group => group.First());
 
         foreach (var discoveredType in discoveredTypes)
         {
-            services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IDataProcessor), discoveredType));
+            services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IWorkEntityAction), discoveredType));
 
             // Register concrete type too, so Build(...) / direct resolution can create it with DI.
             services.TryAddTransient(discoveredType);

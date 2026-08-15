@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Sys.HookUp;
 
 namespace ToSic.Eav.WebApi.Sys.Entities;
 
@@ -10,7 +11,7 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
     : ServiceBase("Api.Entity", connect: [appWorkCtxSvc, entityAssembler])
 {
     // Note: reworked this 2026-05-15 2dm to make the objects immutable, hope no side effects #ImmutableIsTheNewBlack
-    public List<BundleWithHeaderOptional<IEntity>> Run(LowCodeActionContext actionCtx, List<ItemIdentifier> items)
+    public List<BundleWithHeaderOptional<IEntity>> Run(WorkContext actionCtx, List<ItemIdentifier> items)
     {
         var appWorkCtxPlus = actionCtx.Get<IAppWorkCtxPlus>(EditLoadContextConstants.AppCtxWork);
 

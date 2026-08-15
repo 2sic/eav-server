@@ -11,5 +11,5 @@ namespace ToSic.Eav.DataSources.Sys;
     DataConfidentiality = DataConfidentiality.System,
     UiHint = "Data Processors in this system")]
 // ReSharper disable once UnusedMember.Global
-public class DataProcessors(CustomDataSource.Dependencies services, LazySvc<IEnumerable<IDataProcessor>> generators)
-    : RegisteredClasses<IDataProcessor>(services, generators);
+public class DataProcessors(CustomDataSource.Dependencies services, LazySvc<IEnumerable<IWorkEntityAction>> generators)
+    : RegisteredClasses<IWorkEntityAction>(services, generators);
