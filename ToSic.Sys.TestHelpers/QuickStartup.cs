@@ -9,7 +9,6 @@ namespace ToSic.Sys;
 /// <param name="configureServices">The action to configure services.</param>
 public abstract class QuickStartup(Action<IServiceCollection> configureServices)
 {
-    public virtual void ConfigureServices(IServiceCollection services) =>
-        configureServices(services);
-
+    public virtual void ConfigureServices(IServiceCollection services)
+        => configureServices(services);
 }

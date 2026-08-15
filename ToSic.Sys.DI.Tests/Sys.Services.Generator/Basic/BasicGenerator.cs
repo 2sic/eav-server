@@ -1,9 +1,16 @@
-﻿using ToSic.Sys.DI;
+﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Sys.DI;
+using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.Services.Generator.Basic;
 
 public class BasicGenerator
 {
+    public class Startup() : QuickStartup(s => s
+        .AddTransient<TestObjectToGenerate>()
+        .AddSysCore()
+    );
+
     private readonly Generator<TestObjectToGenerate> _generator;
     private readonly Generator<TestObjectToGenerate> _generatorWithInit;
 

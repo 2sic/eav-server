@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Mocks.Named;
+using ToSic.Sys;
 
 namespace ToSic.NamedDependencies;
 
@@ -21,11 +22,9 @@ public class UseKeyedServiceInvalidName(IServiceProvider serviceProvider)
     /// <summary>
     /// Add the faulty service to the DI container, so we can test if it throws an error when requested.
     /// </summary>
-    public class Startup: ToSic.NamedDependencies.Startup
-    {
-        public override void ConfigureServices(IServiceCollection services)
-            => base.ConfigureServices(services.AddTransient<WouldNeedInvalidName>());
-    }
+    public class Startup() : QuickStartup(s => s.AddMockNamedServices()
+        .AddTransient<WouldNeedInvalidName>()
+    );
     
     /// <summary>
     /// Verify that it will throw.

@@ -15,6 +15,8 @@ public class VerifySwitchableServiceSingleton(
     ServiceSwitcherSingleton<IMockSwitchableService> switcher4
 )
 {
+    public class Startup() : QuickStartup(s => s.AddMockSwitchableAndCoreServices());
+    
     [Fact, Priority(1)]
     public void AccessSingletonN001() =>
         False(switcher1.IsValueCreated, "shouldn't be created at first");
@@ -35,9 +37,3 @@ public class VerifySwitchableServiceSingleton(
     public void FindFallbackByName() =>
         Equal(MockSwitchableFallback.Name, switcher4.ByNameId(MockSwitchableFallback.Name)?.NameId);
 }
-
-//[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-//class TestPriorityAttribute(int priority) : Attribute
-//{
-//    public int Priority { get; } = priority;
-//}
