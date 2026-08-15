@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Mocks.Named;
+﻿using ToSic.Mocks.Named;
+using ToSic.Sys;
 
 namespace ToSic.NamedDependencies;
 
@@ -10,10 +10,7 @@ namespace ToSic.NamedDependencies;
 /// <param name="services"></param>
 public class UseKeyedServiceAllOfInterface(IEnumerable<IMockNamedService> services)
 {
-    public class Startup
-    {
-        public void ConfigureServices(IServiceCollection services) => services.AddMockNamedServices();
-    }
+    public class Startup() : QuickStartup(s => s.AddMockNamedServices());
     
     [Fact]
     public void WithoutNameItHasNone()
