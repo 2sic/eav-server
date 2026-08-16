@@ -7,7 +7,15 @@ public record WorkContext
     /// Just an empty constructor to see where it's used.
     /// </summary>
     public WorkContext() { }
-    
+
+    #region Attached HookUp Engine
+
+    public IHookUpWork HookUp { get; init; }
+
+    #endregion
+
+    #region Context Values / Properties
+
     internal Dictionary<string, object?> Items { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 
     public virtual TContext Get<TContext>(string name)
@@ -17,4 +25,7 @@ public record WorkContext
 
         throw new KeyNotFoundException($"Context '{name}' of type {typeof(TContext)} not found.");
     }
+
+    #endregion
+
 }

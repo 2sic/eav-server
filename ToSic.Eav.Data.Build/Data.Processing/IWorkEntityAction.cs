@@ -10,5 +10,5 @@ namespace ToSic.Eav.Data.Processing;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IWorkEntityAction
 {
-    Task<Package<IEntity?>> Handle(WorkContext context, Package<(string Action, IEntity? Entity)> package);
+    Task<Package<IEntity?>> Handle(WorkContext context, Package<DoNamedInput<IEntity?>> package);
 }

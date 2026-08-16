@@ -10,12 +10,12 @@ namespace ToSic.Eav.Metadata.Sys;
 
 internal class PermissionDataProcessor(IUser user) : ServiceBase("Sec.Process"), IWorkEntityAction
 {
-    public Task<Package<IEntity?>> Handle(WorkContext context, Package<(string Action, IEntity? Entity)> package)
+    public Task<Package<IEntity?>> Handle(WorkContext context, Package<DoNamedInput<IEntity?>> package)
         => package.Data.Action.ToLowerInvariant() switch
         {
             PreEdit or PreSave => new DataProcessorBlockUserWithoutElevation(user, UserElevation.SiteAdmin, package.Data.Action)
-                .Handle(context, package.RePackage(package.Data.Entity)),
-            _ => Task.FromResult(package.Data.Entity.ToPackage())
+                .Handle(context, package.RePackage(package.Data.Input)),
+            _ => Task.FromResult(package.Data.Input.ToPackage())
         };
 }
 

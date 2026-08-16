@@ -15,8 +15,8 @@ public class WorkOnEntityNoOp: IWorkEntityAction
     /// <param name="context">The work context</param>
     /// <param name="package">The entity / action package</param>
     /// <returns>The processed entity package</returns>
-    public virtual Task<Package<IEntity?>> Handle(WorkContext context, Package<(string Action, IEntity? Entity)> package)
+    public virtual Task<Package<IEntity?>> Handle(WorkContext context, Package<DoNamedInput<IEntity?>> package)
     {
-        return Task.FromResult(package.Data.Entity.ToPackage());
+        return Task.FromResult(package.Data.Input.ToPackage());
     }
 }
