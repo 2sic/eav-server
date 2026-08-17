@@ -1,6 +1,8 @@
 ﻿using ToSic.Eav.Data.Build.DataFactories.MockData;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 
 namespace ToSic.Eav.Data.Build.DataFactories;
 
@@ -55,4 +57,28 @@ public class RawEntitySourceVariants
     [Fact]
     public void IRawEntityAutoConvert_HasDefaultGuid()
         => Equal(Guid.Empty, AutoConverted.Guid);
+
+    [Fact]
+    public void IRawEntityAutoConvert_PreservesMetadata()
+    {
+        var metadata = new ContentTypeMetadata("test", "Test", MetadataProvider.Create());
+        var converted = IsType<RawEntity>(
+            new MockRawAutoConvertWithMetadata(metadata).GetRawFromConverterOrDirectCast(new()));
+
+        Same(metadata, converted.Metadata);
+        False(converted.Values.ContainsKey(nameof(MockRawAutoConvertWithMetadata.Metadata)));
+    }
+
+    [Fact]
+    public void IRawEntityAutoConvert_PreservesSeparateSerializedMetadata()
+    {
+        var metadata = new ContentTypeMetadata("test", "Test", MetadataProvider.Create());
+        var converted = IsType<RawEntity>(
+            new MockRawAutoConvertWithSeparateMetadata(metadata).GetRawFromConverterOrDirectCast(new()));
+
+        Same(metadata, converted.Metadata);
+        var serialized = IsType<string[]>(converted.Values[nameof(MockRawAutoConvertWithSeparateMetadata.Metadata)]);
+        Single(serialized);
+        Equal("serialized", serialized[0]);
+    }
 }

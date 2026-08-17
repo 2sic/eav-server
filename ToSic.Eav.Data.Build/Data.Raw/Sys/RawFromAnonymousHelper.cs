@@ -1,10 +1,11 @@
-﻿using System.Collections;
+using System.Collections;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data.Raw.Sys;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.FrAnon")
+public class RawFromAnonymousHelper(ILog parentLog) : HelperBase(parentLog, "Raw.FrAnon")
 {
     internal static RawEntity ConvertBasics(object? original)
     {
@@ -12,7 +13,11 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
         original ??= new { };
 
         var dic = original.ToDicInvariantInsensitive(mutable: true);
-        
+        var metadata = (original as IHasMetadata)?.Metadata;
+        if (dic.TryGetValue(nameof(IHasMetadata.Metadata), out var metadataValue)
+            && metadataValue is IMetadata)
+            dic.Remove(nameof(IHasMetadata.Metadata));
+
         var basic = new RawEntity
         {
             Id = ExtractConvert<int>(nameof(IRawEntity.Id)),
@@ -21,10 +26,11 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
             Modified = ExtractConvert<DateTime>(nameof(IRawEntity.Modified)),
             Values = dic,   // this is temp, could still have unprocessed Relationships
             RelationshipKeys = null, // this is just temp
+            Metadata = metadata,
         };
 
         return basic;
-        
+
         // Helper to extract a value and remove it from the original dictionary, converting it to the specified type
         TVal? ExtractConvert<TVal>(string name)
         {
@@ -34,15 +40,15 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
             return value.ConvertOrDefault<TVal>();
         }
     }
-    
+
     public IRawEntity Convert(object? original)
     {
         var l = Log.Fn<IRawEntity>();
 
         var basic = ConvertBasics(original);
-        
+
         var extractKeys = ExtractRelationshipKeys(basic.Id, basic.Values);
-        
+
         var typedRelationships = StrongTypeRelationships(extractKeys.values);
 
         basic = basic with
@@ -67,7 +73,7 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
         var l = Log.Fn<(IDictionary<string, object?> values, IList<object> relationshipKeys)>($"{id}");
 
         const string relKeysField = nameof(IRelationshipKeys.RelationshipKeys);
-        
+
         // Start with keys containing the ID, as this is a key for establishing relationships, and will be used if no other keys are found
         IList<object> relationshipsDefault = [id];
 
@@ -75,7 +81,7 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
         if (!dic.TryGetValue(relKeysField, out var maybeRels) ||
             maybeRels is not (IEnumerable rels and not string))
             return l.Return((dic, relationshipsDefault), "no additional keys");
-        
+
         try
         {
             l.A("Found relationship keys");
@@ -112,7 +118,7 @@ public class RawFromAnonymousHelper(ILog parentLog): HelperBase(parentLog, "Raw.
         return l.Return(updated, $"Replaced {replacements.Count} relationships");
 
     }
-    
+
     /// <summary>
     /// Extract all objects / properties which contain relationships, and correctly type them.
     /// </summary>

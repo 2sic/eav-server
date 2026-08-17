@@ -64,7 +64,12 @@ public sealed class ContentTypes: CustomDataSource
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.CTypes", connect: [appReaders])
     {
         _appReaders = appReaders;
-        ProvideOutRaw(GetList, options: () => new() { AppId = OfAppId, WithMetadata = true });
+        ProvideOutRaw(GetList, options: () => new()
+        {
+            AppId = OfAppId,
+            WithMetadata = true,
+            AllowUnknownValueTypes = true
+        });
     }
     private readonly IAppReaderFactory _appReaders;
 
