@@ -10,17 +10,19 @@ public class ChildScopeSetup
     {
         var parentSp = new ServiceCollection()
             .AddMockLifetimes()
+            .AddMockPreRegisterChildInstances()
             .BuildServiceProvider();
 
         var childSp = parentSp
             .AddChildScope(services =>
             {
-                services.TryAddTransient<MockChildTransientBasic>();
-                services.TryAddTransient<IMockTransientStandalone, MockChildTransientBasic>();
-                services.TryAddScoped<MockChildScopedBasic>();
+                // Add services that are only registered in the child scope
+                services.TryAddTransient<MockChildScopeOnlyTransientBasic>();
+                services.TryAddTransient<IMockTransientStandalone, MockChildScopeOnlyTransientBasic>();
+                services.TryAddScoped<MockChildScopeOnlyScopedBasic>();
 
                 // Re-Register previously registered services to test that they are freshly scoped
-                services.TryAddScoped<MockScopedStandaloneToReRegister>();
+                services.TryAddScoped<MockScopedToReRegisterReqITransient>();
                 return services;
             });
 
@@ -30,16 +32,4 @@ public class ChildScopeSetup
 
     internal static T? ParentService<T>() where T : class => BuildSps().Parent.GetService<T>();
     internal static T? ChildService<T>() where T : class => BuildSps().Child.GetService<T>();
-}
-
-internal class MockChildTransientBasic : MockTransientStandalone
-{
-    private const int InitialValue = 2603;
-    public override int Value { get; set; } = InitialValue;
-}
-
-internal class MockChildScopedBasic : MockScopedStandalone
-{
-    private const int InitialValue = 20395;
-    public override int Value { get; set; } = InitialValue;
 }
