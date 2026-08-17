@@ -10,7 +10,7 @@ public class PackageTests
         // Arrange
         var data = 123;
         // Act
-        var package = new Package<int> { Data = data };
+        var package = data.ToPackage();
         // Assert
         Equal(data, package.Data);
     }

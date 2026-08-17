@@ -66,9 +66,9 @@ public static class HookUpExtensions
         return chain;
     }
 
-    public static Task<IHookUpWork<TData>> Work<TData, TWork>(this IHookUpWork<TData> hookUp)
-        where TWork : IWork<TData, TData>
-        => hookUp.Work(hookUp.ServiceProvider.Build<TWork>());
+    //public static Task<IHookUpWork<TData>> Work<TData, TWork>(this IHookUpWork<TData> hookUp)
+    //    where TWork : IWork<TData, TData>
+    //    => hookUp.Work(hookUp.ServiceProvider.Build<TWork>());
 
     //    public static async Task<IHookUpWork<TOutput>> Work<TData, TWork, TOutput>(this IHookUpWork<TData> hookUpWork)
     //        where TWork: IWork<TData, TOutput>

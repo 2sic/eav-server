@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Run.Startup;
+using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Eav.Data.Build.Startup;
 
@@ -10,7 +11,9 @@ public class StartupEavDataBuildDataProcessorsTests
     public void AddEavDataProcessors_RegistersBuiltInsOnce()
     {
         var services = new ServiceCollection();
-        services.AddEavDataProcessors();
+        services
+            .AddHookUp()
+            .AddEavDataProcessors();
 
         var registrations = services
             .Where(descriptor => descriptor.ServiceType == typeof(IWorkEntityAction))

@@ -10,3 +10,6 @@ public interface IWork<TDataIn, TDataOut>
 {
     public Task<Package<TDataOut>> Handle(WorkContext mainCtx, Package<TDataIn> package);
 }
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public interface IWork<TData>: IWork<TData, TData>;

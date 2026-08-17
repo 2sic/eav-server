@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.Metadata.Sys;
+using ToSic.Sys.HookUp;
 using ToSic.Sys.Utils.Assemblies;
 
 // ReSharper disable once CheckNamespace
@@ -110,7 +112,7 @@ public static class StartupEavDataBuild
         // Register baseline processors using interface so they are discoverable in the system data-source.
         // Dedupe-safe multi-registration (safe if called multiple times)
         // Microsoft DI has this pattern specifically for multi-registrations that should not duplicate: TryAddEnumerable.
-        // - It still allows multiple implementations of the same service (which you want for IDataProcessor).
+        // - It still allows multiple implementations of the same service (which you want for IWorkEntityAction).
         // - But it prevents duplicates of the exact same (service type + implementation type) from being added again.
         services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IWorkEntityAction), typeof(WorkOnEntityNoOp)));
         services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IWorkEntityAction), typeof(PermissionDataProcessor)));
@@ -118,7 +120,7 @@ public static class StartupEavDataBuild
         // Register directly, so it can be instantiated
         services.TryAddTransient<PermissionDataProcessor>();
 
-        // Auto-register all concrete IDataProcessor implementations from loaded assemblies (incl. optional bin dlls).
+        // Auto-register all concrete IWorkEntityAction implementations from loaded assemblies (incl. optional bin dlls).
         // Keep this startup-only and dedupe by stable identity to avoid duplicate service descriptors.
         var discoveredTypes = AssemblyHandling
             .FindInherited(typeof(IWorkEntityAction))
@@ -133,6 +135,10 @@ public static class StartupEavDataBuild
             // Register concrete type too, so Build(...) / direct resolution can create it with DI.
             services.TryAddTransient(discoveredType);
         }
+        
+        // New v22 - add named services; later maybe use [attributes] or something
+        //services.TryAddKeyedTransient<IWork<IEntity?>, DataProcessorBlockUserWithoutElevation>(DataProcessingEvents.PreEdit);
+        //services.TryAddKeyedTransient<IWork<IEntity?>, DataProcessorBlockUserWithoutElevation>(DataProcessingEvents.PreSave);
 
         return services;
     }
