@@ -135,10 +135,10 @@ public static class StartupEavDataBuild
             // Register concrete type too, so Build(...) / direct resolution can create it with DI.
             services.TryAddTransient(discoveredType);
         }
-        
+
         // New v22 - add named services; later maybe use [attributes] or something
-        //services.TryAddKeyedTransient<IWork<IEntity?>, DataProcessorBlockUserWithoutElevation>(DataProcessingEvents.PreEdit);
-        //services.TryAddKeyedTransient<IWork<IEntity?>, DataProcessorBlockUserWithoutElevation>(DataProcessingEvents.PreSave);
+        services.TryAddKeyedTransient<WorkEntityBlockUsers>(DataProcessingEvents.PreEdit);
+        services.TryAddKeyedTransient<WorkEntityBlockUsers>(DataProcessingEvents.PreSave);
 
         return services;
     }
