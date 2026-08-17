@@ -2,7 +2,7 @@
 
 namespace ToSic.Sys.DI;
 
-public static partial class OverrideContext<TService>
+public static partial class OverrideService<TService>
 {
 
     /// <summary>

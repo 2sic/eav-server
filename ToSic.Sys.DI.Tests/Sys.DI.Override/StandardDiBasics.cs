@@ -1,27 +1,27 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Mock.LifetimeServices;
 
-namespace ToSic.Sys.DI.ChildScope;
+namespace ToSic.Sys.DI.Override;
 
 /// <summary>
 /// Verify standard DI works, before trying to create sub-scopes.
 /// </summary>
-public class StandardDiBasics
+public class StandardDiBasics(IServiceProvider sp)
 {
-
-    private static ServiceProvider BuildSp()
-        => new ServiceCollection()
-            .AddMockLifetimes()
-            .BuildServiceProvider();
+    public class Startup() : QuickStartup(services =>
+    {
+        services.TryAddTransient<MockTransientStandalone>();
+        services.TryAddScoped<MockScopedStandalone>();
+    });
 
     [Fact]
     public void Standard_Verify_Transient_NotNull()
-        => NotNull(BuildSp().GetService<MockTransientStandalone>());
+        => NotNull(sp.GetService<MockTransientStandalone>());
 
     [Fact]
     public void Standard_Verify_Transient_NotShared()
     {
-        var sp = BuildSp();
         var first = sp.GetRequiredService<MockTransientStandalone>();
         Equal(MockTransientStandalone.InitialValue, first.Value);
         first.Value = 27;
@@ -31,12 +31,11 @@ public class StandardDiBasics
 
     [Fact]
     public void Standard_Verify_Scoped_NotNull()
-        => NotNull(BuildSp().GetService<MockScopedStandalone>());
+        => NotNull(sp.GetService<MockScopedStandalone>());
 
     [Fact]
     public void Standard_Verify_Scoped_IsShared()
     {
-        var sp = BuildSp();
         var first = sp.GetRequiredService<MockScopedStandalone>();
         Equal(MockScopedStandalone.InitialValue, first.Value);
         first.Value = 27;

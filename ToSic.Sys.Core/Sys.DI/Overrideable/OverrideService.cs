@@ -3,23 +3,23 @@
 namespace ToSic.Sys.DI;
 
 
-public static partial class OverrideContext<TService> where TService : class
+public static partial class OverrideService<TService> where TService : class
 {
     private static readonly AsyncLocal<Func<IServiceProvider, TService>?> Factory = new();
 
     public static Func<IServiceProvider, TService>? CurrentFactory => Factory.Value;
 
     // Overload 1: Supply a type (preserves transient lifetime via DI container)
-    public static IDisposable Begin<TImplementation>()
+    public static IDisposable Use<TImplementation>()
         where TImplementation : class, TService
-        => Begin(sp => sp.GetRequiredService<TImplementation>());
+        => Use(sp => sp.GetRequiredService<TImplementation>());
 
-    public static IDisposable Begin<TImplementation>(TImplementation value)
+    public static IDisposable Use<TImplementation>(TImplementation value)
         where TImplementation : class, TService
-        => Begin(_ => value);
+        => Use(_ => value);
 
     // Overload 2: Supply a custom factory function
-    public static IDisposable Begin(Func<IServiceProvider, TService> factory)
+    public static IDisposable Use(Func<IServiceProvider, TService> factory)
     {
         var newScope = new Scope(Factory.Value);
         Factory.Value = factory;
