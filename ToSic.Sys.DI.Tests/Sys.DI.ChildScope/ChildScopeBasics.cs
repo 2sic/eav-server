@@ -12,49 +12,36 @@ public class ChildScopeBasics
     #region Verify Parent is unchanged
 
     [Fact]
-    public void ParentScope_NewlyRegisteredTransient_IsNull()
-        => Null(ParentService<MockChildScopeOnlyTransientBasic>());
-
-    [Fact]
     public void ParentScope_ReRegisteredTransient_IsPreviousType()
         => IsType<MockTransientStandalone>(ParentService<IMockTransientStandalone>());
 
     [Fact]
-    public void ParentScope_NewlyRegisteredScoped_IsNull()
-        => Null(ParentService<MockChildScopeOnlyScopedBasic>());
+    public void ParentScope_NewlyRegisteredScoped_Throws()
+        => Throws<NotSupportedException>(ParentService<IMockChildScopeOnlyScopedBasic>);
 
     #endregion
 
-
-    #region Verify Child Previous Registrations still work
-
-    [Fact]
-    public void ChildScope_PreviouslyRegisteredTransient_NotNull()
-        => NotNull(ChildService<MockTransientStandalone>());
-
-    [Fact]
-    public void ChildScope_PreviouslyRegisteredScoped_NotNull()
-        => NotNull(ChildService<MockScopedStandalone>());
-
-    #endregion
 
     #region Verify Child Additions work
 
     [Fact]
-    public void ChildScope_NewlyRegisteredTransient_NotNull()
-        => NotNull(ChildService<MockChildScopeOnlyTransientBasic>());
-    
-    [Fact]
     public void ChildScope_NewlyRegisteredScoped_NotNull()
-        => NotNull(ChildService<MockChildScopeOnlyScopedBasic>());
+    {
+        using (OverrideContext<IMockChildScopeOnlyScopedBasic>.Begin<MockChildScopeOnlyScopedBasic>())
+        {
+            NotNull(ParentService<IMockChildScopeOnlyScopedBasic>());
+        }
+    }
 
-    [Fact]
-    public void ChildScope_ReRegisteredTransient_NotNull()
-        => NotNull(ChildService<IMockTransientStandalone>());
 
     [Fact]
     public void ChildScope_ReRegisteredTransient_IsNewType()
-        => IsType<MockChildScopeOnlyTransientBasic>(ChildService<IMockTransientStandalone>());
+    {
+        using (OverrideContext<IMockTransientStandalone>.Begin(_ => new MockChildScopeOnlyTransientBasic()))
+        {
+            IsType<MockChildScopeOnlyTransientBasic>(ParentService<IMockTransientStandalone>());
+        }
+    }
 
     #endregion
 
@@ -66,19 +53,26 @@ public class ChildScopeBasics
     {
         // Arrange
         var services = BuildSps();
-        var fromParent1 = services.Parent.GetService<MockScopedToReRegisterReqITransient>()!;
-        var fromParent2 = services.Parent.GetService<MockScopedToReRegisterReqITransient>()!;
+        var fromParent1 = services.Parent.GetService<IMockScopedToReRegisterReqITransient>()!;
+        var fromParent2 = services.Parent.GetService<IMockScopedToReRegisterReqITransient>()!;
         
         // Pre-Verify that parent services are shared
         fromParent1.Value = 27;
+        Equal(27, fromParent1.Value);
         Equal(27, fromParent2.Value);
-        
-        var fromChild1 = services.Child.GetService<MockScopedToReRegisterReqITransient>()!;
-        var fromChild2 = services.Child.GetService<MockScopedToReRegisterReqITransient>()!;
-        fromChild1.Value = 42;
-        Equal(42, fromChild2.Value);
-        
-        NotEqual(fromParent1.Value, fromChild2.Value);
+
+        using (OverrideContext<IMockScopedToReRegisterReqITransient>.Begin(new MockScopedToReRegisterReqITransient(null!)))
+        {
+            var fromChild1 = services.Parent.GetService<IMockScopedToReRegisterReqITransient>()!;
+            var fromChild2 = services.Parent.GetService<IMockScopedToReRegisterReqITransient>()!;
+            fromChild1.Value = 42;
+            Equal(42, fromChild2.Value);
+            
+            // The child must have isolated objects
+            NotSame(fromChild1, fromParent1);
+            NotEqual(fromParent1.Value, fromChild2.Value);
+        }
+
     }
     
     private IMockTransientStandalone GetTransChild(IServiceProvider sp)
@@ -92,11 +86,15 @@ public class ChildScopeBasics
     public void ChildScope_ReRegisteredScoped_GetsNewDependency()
     {
         // Arrange
-        var transientProp = ChildService<MockScopedToReRegisterReqITransient>()!
-            .TransientStandalone;
-        
-        NotEqual(ExpectedOutside, transientProp.Value);
-        Equal(ExpectedInside, transientProp.Value);
+        // TODO:
+        using (OverrideContext<IMockTransientStandalone>.Begin<MockChildScopeOnlyTransientBasic>())
+        {
+            var transientProp = ParentService<IMockScopedToReRegisterReqITransient>()!
+                .TransientStandalone;
+
+            NotEqual(ExpectedOutside, transientProp.Value);
+            Equal(ExpectedInside, transientProp.Value);
+        }
     }
     
     [Fact]
@@ -220,5 +218,6 @@ public class ChildScopeBasics
     // TODO:
     // - previously registered services asking for a new dependency, should get the new dependency
     // - anything asking for the service provider should get the latest
+    // - stacked overrides! ⚠️
 
 }
