@@ -3,6 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ToSic.Sys.DI.ChildScope;
 
+public class EntryChildScopeServiceProvider(ChildScopeServiceProvider childSp) : IServiceProvider, IDisposable
+{
+    public object? GetService(Type serviceType)
+    {
+        return childSp.GetService(serviceType);
+    }
+
+    public void Dispose()
+        => childSp.Dispose();
+}
+
 public class ChildScopeServiceProvider : IServiceProvider, IDisposable
 {
     private readonly IServiceProvider _parent;
@@ -30,6 +41,7 @@ public class ChildScopeServiceProvider : IServiceProvider, IDisposable
 
         // Fall back to the parent scope for any non-overridden dependency
         return _parent.GetService(serviceType);
+        //return ActivatorUtilities.CreateInstance(this, serviceType);
     }
 
     private object? CreateInstance(ServiceDescriptor descriptor)
