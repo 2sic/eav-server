@@ -36,7 +36,8 @@ public sealed class FeatureStates : CustomDataSource
     public string FeatureId => Configuration.GetThis<string>("");
 
     [PrivateApi]
-    public FeatureStates(Dependencies services, ISysFeaturesService featuresService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [featuresService])
+    public FeatureStates(Dependencies services, ISysFeaturesService featuresService)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [featuresService])
     {
         ProvideOutRaw(
             () => GetList(featuresService),

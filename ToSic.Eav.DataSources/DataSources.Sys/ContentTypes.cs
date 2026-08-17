@@ -60,7 +60,8 @@ public sealed class ContentTypes: CustomDataSource
     /// Constructs a new ContentTypes DS
     /// </summary>
     [PrivateApi]
-    public ContentTypes(Dependencies services, IAppReaderFactory appReaders): base(services, $"{DataSourceConstantsInternal.LogPrefix}.CTypes", connect: [appReaders])
+    public ContentTypes(Dependencies services, IAppReaderFactory appReaders)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.CTypes", connect: [appReaders])
     {
         _appReaders = appReaders;
         ProvideOutRaw(GetList, options: () => new() { AppId = OfAppId, WithMetadata = true });
