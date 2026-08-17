@@ -1,9 +1,15 @@
 ﻿namespace ToSic.Mock.LifetimeServices;
 
-internal class MockScopedToReRegisterReqITransient(IMockTransientStandalone transientStandalone)
+internal interface IMockScopedToReRegisterReqITransient
+{
+    int Value { get; set; }
+    IMockTransientStandalone TransientStandalone { get; }
+}
+
+internal class MockScopedToReRegisterReqITransient(IMockTransientStandalone transientStandalone) : IMockScopedToReRegisterReqITransient
 {
     public const int InitialValue = 602305;
-    public virtual int Value { get; set; } = InitialValue;
+    public int Value { get; set; } = InitialValue;
     
     public IMockTransientStandalone TransientStandalone { get; } = transientStandalone;
 }

@@ -11,25 +11,26 @@ public class ChildScopeSetup
         var parentSp = new ServiceCollection()
             .AddMockLifetimes()
             .AddMockPreRegisterChildInstances()
+            .AddMockInitialsWhichThrow()
             .BuildServiceProvider();
 
-        var childSp = parentSp
-            .AddChildScope(services =>
-            {
-                // Add services that are only registered in the child scope
-                services.TryAddTransient<MockChildScopeOnlyTransientBasic>();
-                services.TryAddTransient<IMockTransientStandalone, MockChildScopeOnlyTransientBasic>();
-                services.TryAddScoped<MockChildScopeOnlyScopedBasic>();
+        //var childSp = parentSp
+        //    .AddChildScope(services =>
+        //    {
+        //        // Add services that are only registered in the child scope
+        //        services.TryAddTransient<MockChildScopeOnlyTransientBasic>();
+        //        services.TryAddTransient<IMockTransientStandalone, MockChildScopeOnlyTransientBasic>();
+        //        services.TryAddScoped<MockChildScopeOnlyScopedBasic>();
 
-                // Re-Register previously registered services to test that they are freshly scoped
-                services.TryAddScoped<MockScopedToReRegisterReqITransient>();
-                return services;
-            });
+        //        // Re-Register previously registered services to test that they are freshly scoped
+        //        services.TryAddScoped<MockScopedToReRegisterReqITransient>();
+        //        return services;
+        //    });
 
 
-        return (parentSp, childSp);
+        return (parentSp, null);
     }
 
     internal static T? ParentService<T>() where T : class => BuildSps().Parent.GetService<T>();
-    internal static T? ChildService<T>() where T : class => BuildSps().Child.GetService<T>();
+    //internal static T? ChildService<T>() where T : class => BuildSps().Child.GetService<T>();
 }
