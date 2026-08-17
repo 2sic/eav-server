@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes;
-using ToSic.Eav.Data.Raw;
+﻿using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -16,52 +15,23 @@ namespace ToSic.Eav.DataSources.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class RegisteredClasses<TClassOrInterface>: CustomDataSource where TClassOrInterface: class
 {
-    protected RegisteredClasses(Dependencies services, LazySvc<IEnumerable<TClassOrInterface>> generators)
-        : base(services, logName: $"{DataSourceConstantsInternal.LogPrefix}.C#Cls", connect: [generators])
+    protected RegisteredClasses(Dependencies services, LazySvc<IEnumerable<TClassOrInterface>> servicesOfType)
+        : base(services, logName: $"{DataSourceConstantsInternal.LogPrefix}.C#Cls", connect: [servicesOfType])
     {
-        ProvideOutRaw(
-            () => Generators(generators.Value)
-            //options: () => new()
-            //{
-            //    AutoId = true,
-            //    TitleField = "FullName",
-            //    TypeName = "Classes",
-            //}
-            );
+        ProvideOutRaw(() => Generators(servicesOfType.Value));
     }
 
-    private IEnumerable<IRawData> Generators(IEnumerable<TClassOrInterface> fileGenerators)
+    private IEnumerable<IRawData> Generators(IEnumerable<TClassOrInterface> servicesOfType)
     {
         var l = Log.Fn<IEnumerable<IRawData>>();
-        var list = fileGenerators
+        var list = servicesOfType
             .Select(g => g.GetType())
             .Where(type => !type.IsAbstract && !type.IsInterface)
-            .Select((type, index) => new ClassRaw(index, type.Name, type.FullName ?? "", type.Assembly.FullName, type.AssemblyQualifiedName ?? "", type.Namespace ?? ""))
-            //{
-            //    Values = new Dictionary<string, object?>
-            //    {
-            //        { nameof(type.Name), type.Name },
-            //        { nameof(type.FullName), type.FullName },
-            //        { nameof(type.Assembly), type.Assembly },
-            //        { nameof(type.AssemblyQualifiedName), type.AssemblyQualifiedName },
-            //        { nameof(type.Namespace), type.Namespace },
-            //    }
-            //})
+            .Select((type, index) => new ClassInfoRaw(type, index))
             .ToList();
 
         return l.Return(list, $"{list.Count}");
     }
 
-    [ContentType(
-        Name = "Classes",
-        Guid = "6eb62f0c-e6b9-414d-999f-24fc972bdf9c")]
-    private record ClassRaw(
-        int Id,
-        string Name,
-        [property: ContentTypeTitle]
-        string FullName,
-        string Assembly,
-        string AssemblyQualifiedName,
-        string Namespace
-    ) : IRawEntityAutoConvert;
+
 }
