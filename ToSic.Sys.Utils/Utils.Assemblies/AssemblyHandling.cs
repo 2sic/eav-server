@@ -37,7 +37,8 @@ public class AssemblyHandling
     public static Type? GetTypeOrNull(string typeFullName, ILog? log = null)
     {
         var l = log.Fn<Type?>(message: $"HasType {typeFullName}");
-        return l.ReturnAsOk(GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
+        var type = GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1);
+        return l.Return(type, type == null ? "not found": "found");
     }
 
     public static List<Type> GetTypes(ILog? log = null)
