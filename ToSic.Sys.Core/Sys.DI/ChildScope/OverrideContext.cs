@@ -2,36 +2,6 @@
 
 namespace ToSic.Sys.DI.ChildScope;
 
-//public static class OverrideContext<T> where T : class
-//{
-//    private static readonly AsyncLocal<T?> _current = new();
-
-//    public static T? Current => _current.Value;
-
-//    public static IDisposable Begin(T overrideInstance)
-//    {
-//        // Save whatever was there before (could be null, or an outer override)
-//        var previousValue = _current.Value;
-//        _current.Value = overrideInstance;
-
-//        return new Scope(previousValue);
-//    }
-
-//    private class Scope(T? previousValue) : IDisposable
-//    {
-//        private bool _disposed;
-
-//        public void Dispose()
-//        {
-//            if (_disposed)
-//                return;
-            
-//            // Restore the outer context when the inner scope ends!
-//            _current.Value = previousValue;
-//            _disposed = true;
-//        }
-//    }
-//}
 
 public static class OverrideContext<TService> where TService : class
 {
@@ -68,4 +38,30 @@ public static class OverrideContext<TService> where TService : class
             _disposed = true;
         }
     }
+
+
+    /// <summary>
+    /// Generate the factory function to either get from the override, or from the underlying service provider.
+    /// </summary>
+    /// <typeparam name="TService">Service type or interface</typeparam>
+    /// <typeparam name="TImplementation">Implementation type</typeparam>
+    /// <returns>A factory function to create the service instance</returns>
+    public static Func<IServiceProvider, TService> Register<TImplementation>()
+        where TImplementation : class, TService
+    {
+        // Check if an override is active in the current async context
+        return sp => CurrentFactory is { } overrideFactory
+            // 1. Return from new factory
+            ? overrideFactory(sp)
+            // 2. Fall back to the default implementation in the SAME scope
+            : sp.GetRequiredService<TImplementation>();
+    }
+    
+    /// <summary>
+    /// Generate the factory function to either get from the override, or from the underlying service provider.
+    /// </summary>
+    /// <typeparam name="TService">Service type or interface</typeparam>
+    /// <returns>A factory function to create the service instance</returns>
+    public static Func<IServiceProvider, TService> Register()
+        => Register<TService>();
 }

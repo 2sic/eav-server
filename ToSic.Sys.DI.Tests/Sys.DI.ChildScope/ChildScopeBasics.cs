@@ -132,6 +132,7 @@ public class ChildScopeBasics
             Equal(ExpectedInside, transientProp.Value);
         }
     }
+
     [Fact]
     public void ChildScope_PreviouslyRegisteredTransient_Factory_RemainsTransient()
     {
