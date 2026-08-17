@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Data.Build.DataFactories.MockData;
 
@@ -33,4 +34,14 @@ internal record MockRawAutoConvert : IRawEntityAutoConvert
     public const int IdDefault = 7;
     public string Name => NameDefault;
     public const string NameDefault = "MockRawAutoConvert";
+}
+
+internal record MockRawAutoConvertWithMetadata(IMetadata Metadata)
+    : IRawEntityAutoConvert, IHasMetadata;
+
+internal record MockRawAutoConvertWithSeparateMetadata(IMetadata MetadataSource)
+    : IRawEntityAutoConvert, IHasMetadata
+{
+    public string[] Metadata => ["serialized"];
+    IMetadata IHasMetadata.Metadata => MetadataSource;
 }

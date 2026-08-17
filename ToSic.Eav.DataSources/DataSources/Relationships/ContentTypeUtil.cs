@@ -17,11 +17,16 @@ internal class ContentTypeUtil
     internal class ContentTypeSummary(IContentType contentType, int items)
         : IRawEntityAutoConvert, IHasMetadata
     {
+        internal record MetadataReference(int Id, string? Title, Guid Guid);
+        internal record CountInfo(int Count);
+
         public int Id => contentType.Id;
         public Guid Guid => SafeConvertGuid(contentType);
 
-        [ContentTypeIgnore]
-        public IMetadata Metadata => contentType.Metadata;
+        public IEnumerable<MetadataReference> Metadata => contentType.Metadata
+            .Select(entity => new MetadataReference(entity.EntityId, entity.GetBestTitle(), entity.EntityGuid));
+
+        IMetadata IHasMetadata.Metadata => contentType.Metadata;
 
         [ContentTypeTitle]
         public string Name => contentType.Name;
@@ -30,6 +35,7 @@ internal class ContentTypeUtil
         public bool IsDynamic => contentType.IsDynamic;
         public string Scope => contentType.Scope;
         public int AttributesCount => contentType.Attributes.Count();
+        public CountInfo Permissions => new(contentType.Metadata.Permissions.Count());
         public int Items => items;
         public string RepositoryType => contentType.RepositoryType.ToString();
         public string RepositoryAddress => contentType.RepositoryAddress;
