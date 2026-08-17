@@ -14,6 +14,7 @@ public static class StartupEavCore
             .AddSysSecurity()
             .AddSysCode()
             .AddSysCaching()
+            .AddHookUp()
             .AddSysUtils()
             .AddSysCore();
 
