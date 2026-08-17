@@ -8,7 +8,4 @@ namespace ToSic.Eav.Data.Processing;
 /// </summary>
 [PrivateApi("WIP v21")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IWorkEntityAction: IWork<DoNamedInput<IEntity?>, IEntity?>
-{
-    //Task<Package<IEntity?>> Handle(WorkContext context, Package<DoNamedInput<IEntity?>> package);
-}
+public interface IWorkEntityAction: IWork<DoNamedInput<IEntity?>, IEntity?>;

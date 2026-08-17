@@ -8,22 +8,27 @@ using static ToSic.Eav.Data.Processing.DataProcessingEvents;
 
 namespace ToSic.Eav.Metadata.Sys;
 
+/// <summary>
+/// Warning: this exact name is used in some metadata of entities.
+/// Renaming it would break the protection, unless the data is updated.
+/// </summary>
+/// <param name="user"></param>
 internal class PermissionDataProcessor(IUser user) : ServiceBase("Sec.Process"), IWorkEntityAction
 {
     public Task<Package<IEntity?>> Handle(WorkContext context, Package<DoNamedInput<IEntity?>> package)
         => package.Data.Action.ToLowerInvariant() switch
         {
-            PreEdit or PreSave => new DataProcessorBlockUserWithoutElevation(user)
-                .Handle(context, package.RePackage(new DataProcessorBlockUserWithoutElevation.Payload(package.Data) { ExpectedElevation = UserElevation.SiteAdmin })),
+            PreEdit or PreSave => new WorkEntityBlockUsers(user)
+                .Handle(context, package.RePackage(new PermissionCheckPayload(package.Data) { ExpectedElevation = UserElevation.SiteAdmin })),
             _ => Task.FromResult(package.Data.Input.ToPackage())
         };
 }
 
 
 
-internal class DataProcessorBlockUserWithoutElevation(IUser user)
+public class WorkEntityBlockUsers(IUser user): IWork<PermissionCheckPayload, IEntity?>
 {
-    public Task<Package<IEntity?>> Handle(WorkContext context, Package<Payload> package)
+    public Task<Package<IEntity?>> Handle(WorkContext context, Package<PermissionCheckPayload> package)
         => Task.FromResult(user.GetElevation().IsAtLeast(package.Data.ExpectedElevation)
             ? package.RePackage(package.Data.Input)
             : new()
@@ -33,13 +38,21 @@ internal class DataProcessorBlockUserWithoutElevation(IUser user)
                 Exceptions = [new UnauthorizedAccessException($"User is not authorized to {package.Data.Action} this entity.")]
             });
 
-    public record Payload : DoNamedInput<IEntity?>
-    {
-        public Payload(DoNamedInput<IEntity?> input) : base(input)
-        { }
 
-        public required UserElevation ExpectedElevation { get; init; }
-
-    }
 }
 
+
+public record PermissionCheckPayload : DoNamedInput<IEntity?>
+{
+    public PermissionCheckPayload(DoNamedInput<IEntity?> input) : base(input)
+    { }
+
+    [SetsRequiredMembers]
+    public PermissionCheckPayload(string action, IEntity? input, UserElevation expectedElevation) : base(action, input)
+    {
+        ExpectedElevation = expectedElevation;
+    }
+
+    public required UserElevation ExpectedElevation { get; init; }
+
+}
