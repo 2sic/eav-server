@@ -7,7 +7,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities)
+internal class InsightsEntities(AppWorkQuick<WorkEntities> workEntities)
     : InsightsProvider(new() { Name = Link, Title = "Entities" }, connect: [workEntities])
 {
     public static string Link = "Entities";
@@ -20,7 +20,7 @@ internal class InsightsEntities(GenWorkPlus<WorkEntities> workEntities)
         Log.A($"debug app attributes for {AppId} and {Type}");
         var appEntities = workEntities.New(AppId ?? 0);
 
-        var typ = appEntities.AppWorkCtx.AppReader.TryGetContentType(Type);
+        var typ = appEntities.MyOptions.AppReader.TryGetContentType(Type);
 
         var msg = "" + H1($"Entities of {Type} ({HtmlEncode(typ?.Name)}/{typ?.NameId}) in {AppId}\n");
         try

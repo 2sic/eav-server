@@ -4,19 +4,19 @@ using ToSic.Eav.Metadata;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityCreate(DataAssembler dataAssembler, GenWorkDb<WorkEntitySave> workEntSave)
-    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntCre", connect: [workEntSave, dataAssembler])
+public class WorkEntityCreate(DataAssembler dataAssembler, AppWorkChain<WorkEntitySave> workEntSave)
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntCre", connect: [workEntSave, dataAssembler])
 {
     public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget? metadataFor = null)
     {
         var l = Log.Fn<(int EntityId, Guid EntityGuid)>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
 
-        var newEnt = dataAssembler.Entity.Create(appId: AppWorkCtx.AppId, guid: Guid.NewGuid(),
-            contentType: AppWorkCtx.AppReader.GetContentType(typeName),
+        var newEnt = dataAssembler.Entity.Create(appId: MyOptions.AppId, guid: Guid.NewGuid(),
+            contentType: MyOptions.AppReader.GetContentType(typeName),
             attributes: dataAssembler.AttributeList.Finalize(values!),
             metadataFor: metadataFor);
 
-        var entSaver = workEntSave.New(AppWorkCtx);
+        var entSaver = workEntSave.New(MyOptions);
         var eid = entSaver.Save(newEnt, entSaver.SaveOptions());
 
         return l.Return((eid.Id, eid.Guid), $"id:{eid.Id}, guid:{eid.Guid}");
@@ -33,24 +33,24 @@ public class WorkEntityCreate(DataAssembler dataAssembler, GenWorkDb<WorkEntityS
     public int GetOrCreate(Guid newGuid, string typeName, Dictionary<string, object> values)
     {
         Log.A($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
-        if (AppWorkCtx.DbStorage.Entities.EntityExists(newGuid))
+        if (MyOptions.DbStorage.Entities.EntityExists(newGuid))
         {
             // check if it's deleted - if yes, resurrect
             // 2025-04-29 2dm code changed a bit for 2sxc v20.0, but couldn't see how to test it / when this scenario pops up
             // remove this comment if everything is ok by 2026-04
             // 2025-12-17 2dm finding: ATM this could never hit, because GetEntityStub(...) will filter out deleted entities
             // ...note that there is another GetStub which uses ID, which would not filter... might need revisiting some day
-            var existingEnt = AppWorkCtx.DbStorage.Entities.GetEntityStubsByGuid(newGuid).First();
+            var existingEnt = MyOptions.DbStorage.Entities.GetEntityStubsByGuid(newGuid).First();
             if (existingEnt.TransDeletedId != null)
                 existingEnt.TransDeletedId = null;
 
             return existingEnt.EntityId;
         }
 
-        var newE = dataAssembler.Entity.Create(appId: AppWorkCtx.AppId, guid: newGuid,
-            contentType: AppWorkCtx.AppReader.GetContentType(typeName),
+        var newE = dataAssembler.Entity.Create(appId: MyOptions.AppId, guid: newGuid,
+            contentType: MyOptions.AppReader.GetContentType(typeName),
             attributes: dataAssembler.AttributeList.Finalize(values!));
-        var entSaver = workEntSave.New(AppWorkCtx);
+        var entSaver = workEntSave.New(MyOptions);
         return entSaver.Save(newE, entSaver.SaveOptions()).Id;
     }
 

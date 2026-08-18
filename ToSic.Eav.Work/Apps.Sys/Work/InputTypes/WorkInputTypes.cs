@@ -9,10 +9,11 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkInputTypes(
+    LazySvc<AppWorkContextService> appWorkCtxSvc,
     LazySvc<IAppReaderFactory> appReaders,
     LazySvc<IAppInputTypesLoader> appFileSystemLoaderLazy,
     LazySvc<AppWorkContextService> ctxSvc)
-    : WorkUnitBase<IAppWorkCtxPlus>("ApS.InpGet", connect: [appReaders, appFileSystemLoaderLazy, ctxSvc])
+    : ServiceWithSetup<IAppWorkContext>("ApS.InpGet", connect: [appWorkCtxSvc, appReaders, appFileSystemLoaderLazy, ctxSvc])
 {
     /// <summary>
     /// Retrieve a list of all input types known to the current system
@@ -44,7 +45,7 @@ public class WorkInputTypes(
         LogListOfInputTypes("Combined", inputTypes);
 
         // Merge input types registered in global metadata-app
-        var systemAppCtx = ctxSvc.Value.ContextPlus(KnownAppsConstants.MetaDataAppId);
+        var systemAppCtx = appWorkCtxSvc.Value.ContextNew(KnownAppsConstants.MetaDataAppId);
         var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx);
         systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
         LogListOfInputTypes("Input Types in System App", systemAppInputTypes);
@@ -109,8 +110,8 @@ public class WorkInputTypes(
     /// </summary>
     /// <param name="overrideCtx">App context to use. Often the current app, but can be a custom one.</param>
     /// <returns></returns>
-    private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus? overrideCtx = default) =>
-        (overrideCtx ?? AppWorkCtx)
+    private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkContext? overrideCtx = default) =>
+        (overrideCtx ?? MyOptions)
         .AppReader.List
         .GetModels<InputTypeDefinition>()
         .OfType<InputTypeDefinition>()
@@ -137,7 +138,7 @@ public class WorkInputTypes(
         try
         {
             var appLoader = appFileSystemLoaderLazy.Value;
-            appLoader.Init(AppWorkCtx.AppReader, new());
+            appLoader.Init(MyOptions.AppReader, new());
             var inputTypes = appLoader.InputTypes();
             return l.Return(inputTypes, $"{inputTypes.Count}");
         }

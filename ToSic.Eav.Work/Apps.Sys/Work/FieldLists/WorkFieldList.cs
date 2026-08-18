@@ -5,15 +5,15 @@ using Callback = System.Func<ToSic.Eav.Apps.Sys.Work.CoupledIdLists, System.Coll
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkFieldList(GenWorkDb<WorkEntityUpdate> entityUpdate)
-    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntFL", connect: [entityUpdate])
+public class WorkFieldList(AppWorkChain<WorkEntityUpdate> entityUpdate)
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntFL", connect: [entityUpdate])
 {
     public void FieldListUpdate(IEntity target, string[] fields, bool asDraft, Callback callback)
     {
-        target = AppWorkCtx.AppReader.GetDraftOrKeep(target)!;
+        target = MyOptions.AppReader.GetDraftOrKeep(target)!;
         var lists = new CoupledIdLists(fields.ToDictionary(f => f, f => FieldListIdsWithNulls(target.Children(f))), Log);
         var values = callback.Invoke(lists);
-        entityUpdate.New(AppWorkCtx)
+        entityUpdate.New(MyOptions)
             .UpdatePartsFromValues(target, values, new() { ShouldPublish = !asDraft, ShouldBranchDrafts = asDraft});
     }
 

@@ -10,7 +10,7 @@ using Xunit.DependencyInjection;
 namespace ToSic.Eav.Versioning;
 
 [Startup(typeof(StartupTestWork))]
-public class VersioningTests(Generator<DbStorage, StorageOptions> dbDataGenerator, GenWorkDb<WorkEntityVersioning> workEntityVersioning, ITestOutputHelper output)
+public class VersioningTests(Generator<DbStorage, StorageOptions> dbDataGenerator, AppWorkQuick<WorkEntityVersioning> workEntityVersioning, ITestOutputHelper output)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     #region Test Data

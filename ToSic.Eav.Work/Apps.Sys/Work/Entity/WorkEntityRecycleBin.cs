@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<JsonSerializer> jsonSerializer)
-    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntRcy", connect: [compressor, jsonSerializer])
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcy", connect: [compressor, jsonSerializer])
 {
     /// <summary>
     /// Old SQL name, which is still used as a key in the history table, so we need to keep it here as a constant.
@@ -42,9 +42,9 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<Json
     {
         var l = Log.Fn<IReadOnlyList<RecycleBinItem>>();
 
-        var appId = AppWorkCtx.AppId;
+        var appId = MyOptions.AppId;
         var appRefId = DbVersioning.ParentRefForApp(appId)!;
-        var db = AppWorkCtx.DbStorage.SqlDb;
+        var db = MyOptions.DbStorage.SqlDb;
 
         var softDeletedItems = LoadSoftDeletedRecycleBinItems(db, appId, appRefId, dateFrom, dateTo, contentType);
         var historyOnlyItems = LoadHistoryOnlyRecycleBinItems(db, appId, appRefId, dateFrom, dateTo, contentType);
@@ -218,7 +218,7 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<Json
         try
         {
             var serializer = jsonSerializer.New();
-            serializer.Initialize(AppWorkCtx.AppReader);
+            serializer.Initialize(MyOptions.AppReader);
             return serializer.Deserialize(json);
         }
         catch

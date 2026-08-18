@@ -26,9 +26,9 @@ public static class StartupEavWork
 
         // New part v16 with better architecture
         services.TryAddTransient<AppWorkContextService>();
-        services.TryAddTransient(typeof(GenWorkPlus<>));
-        services.TryAddTransient(typeof(GenWorkDb<>));
-        services.TryAddTransient(typeof(GenWorkBasic<>));
+        //services.TryAddTransient(typeof(GenWorkPlus<>));
+        //services.TryAddTransient(typeof(GenWorkDb<>));
+        //services.TryAddTransient(typeof(GenWorkBasic<>));
         services.TryAddTransient<WorkEntities>();
         services.TryAddTransient<WorkInputTypes>();
         services.TryAddTransient<WorkEntitySave>();
@@ -64,6 +64,11 @@ public static class StartupEavWork
         // v22 - Enable AppWorkCtx to be injected
         services.AddAppWorkContext();
 
+        // v22
+        services.TryAddTransient<WorkFieldsDataTypes>();
+        services.TryAddTransient(typeof(AppWorkQuick<>));
+        services.TryAddTransient(typeof(AppWorkChain<>));
+
         return services;
     }
 
@@ -89,8 +94,8 @@ public static class StartupEavWork
     public static IServiceCollection AddAppWorkContext(this IServiceCollection services)
     {
         // Make sure that when nothing was overridden, we will get an exception, so that we don't accidentally use a missing context
-        services.TryAddTransient<AppWorkCtxForDiMissing>();
-        services.TryAddTransient(OverrideService<IAppWorkCtxForDiWip>.Register<AppWorkCtxForDiMissing>());
+        services.TryAddTransient<AppWorkContextNotReplaced>();
+        services.TryAddTransient(OverrideService<IAppWorkContext>.Register<AppWorkContextNotReplaced>());
 
         return services;
     }

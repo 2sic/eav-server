@@ -20,7 +20,7 @@ public partial class ImportListXml(
     LazySvc<ImportService> importerLazy,
     Generator<DataAssembler, DataAssemblerOptions> builderGenerator,
     LazySvc<IValueConverter> valueConverter,
-    GenWorkDb<WorkEntityDelete> entDelete)
+    AppWorkQuick<WorkEntityDelete> entDelete)
     : ServiceBase("App.ImpVtT", connect: [builderGenerator, valueConverter, importerLazy, entDelete])
 {
     private DataAssembler DataAssembler { get; set; } = null!;

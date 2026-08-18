@@ -3,13 +3,13 @@
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
+public class WorkAttributes() : ServiceWithSetup<IAppWorkContext>("Wrk.Attrib")
 {
     public List<PairTypeWithAttribute> GetFields(string staticName)
     {
-        var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{AppWorkCtx.Show()}, type:{staticName}");
+        var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{MyOptions.Show()}, type:{staticName}");
 
-        if (AppWorkCtx.AppReader.TryGetContentType(staticName) is not { } type)
+        if (MyOptions.AppReader.TryGetContentType(staticName) is not { } type)
             return l.Return([], $"error, type:{staticName} is null. Missing or not a ContentType.");
 
         var fields = type.Attributes
@@ -30,7 +30,7 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
     /// <returns></returns>
     public List<PairTypeWithAttribute> GetSharedFields(int attributeId = 0)
     {
-        var l = Log.Fn<List<PairTypeWithAttribute>>($"get shared fields {AppWorkCtx.Show()}");
+        var l = Log.Fn<List<PairTypeWithAttribute>>($"get shared fields {MyOptions.Show()}");
 
         // If we know what AttributeId it's for, then filter
         var attributeType = ValueTypes.Undefined;
@@ -108,12 +108,12 @@ public class WorkAttributes() : WorkUnitBase<IAppWorkCtx>("Wrk.Attrib")
     }
 
     private List<IContentType> GetLocalTypes() =>
-        AppWorkCtx.AppReader.ContentTypes
+        MyOptions.AppReader.ContentTypes
             .Where(ct => !ct.HasAncestor())
             .ToList();
 
     private IContentTypeField? GetAttribute(int attributeId) =>
-        AppWorkCtx.AppReader.ContentTypes
+        MyOptions.AppReader.ContentTypes
             .Select(ct => ct.Attributes.FirstOrDefault(a => a.AttributeId == attributeId))
             // must check for null, as some types don't have any attributes, so the previous select would return null
             // so the first one may end up being a null, even if there are other attributes in other types, so we need to check all of them until we find a match

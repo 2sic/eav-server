@@ -11,7 +11,7 @@ public class WorkEntityPublish(AppsCacheSwitch appsCache)
     /// <summary>
     /// Publish many entities
     /// </summary>
-    public void Publish(IAppWorkCtxForDiWip appWorkCtx, int[] entityIds)
+    public void Publish(IAppWorkContext appWorkCtx, int[] entityIds)
     {
         var l = Log.Fn(Log.Try(() => $"Publish({entityIds.Length} items [{string.Join(",", entityIds)}])"));
         foreach (var eid in entityIds)
@@ -29,7 +29,7 @@ public class WorkEntityPublish(AppsCacheSwitch appsCache)
     }
 
 
-    private bool PublishWithoutPurge(IAppWorkCtxForDiWip appWorkCtx, int entityId)
+    private bool PublishWithoutPurge(IAppWorkContext appWorkCtx, int entityId)
     {
         var l = Log.Fn<bool>($"{entityId}");
 

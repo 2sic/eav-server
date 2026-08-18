@@ -4,7 +4,7 @@ using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppWorkCtxNew(IAppReader appReader, AppWorkContextService ctxSvc, bool? showDrafts = default) : IAppWorkCtxForDiWip
+public class AppWorkContext(IAppReader appReader, AppWorkContextService ctxSvc, bool? showDrafts = default) : IAppWorkContext
 {
     /// <inheritdoc />
     public int ZoneId { get; } = appReader.ZoneId;

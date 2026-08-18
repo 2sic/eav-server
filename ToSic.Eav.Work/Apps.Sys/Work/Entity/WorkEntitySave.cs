@@ -26,7 +26,7 @@ public class WorkEntitySave(
     LazySvc<IImportExportEnvironment> environmentLazy,
     DataImportLogSettings importLogSettings
     )
-    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntSav", connect: [dataAssembler, appsCache, environmentLazy])
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntSav", connect: [dataAssembler, appsCache, environmentLazy])
 {
     // Note: Singleton
 
@@ -35,7 +35,7 @@ public class WorkEntitySave(
 
     public void Import(List<IEntity> newEntities)
     {
-        var appStateList = AppWorkCtx.AppReader.List;
+        var appStateList = MyOptions.AppReader.List;
         foreach (var e in newEntities.Where(e => appStateList.GetOne(e.EntityGuid) != null))
             throw new ArgumentException($"Can't import this item - an item with the same guid {e.EntityGuid} already exists");
 
@@ -49,7 +49,7 @@ public class WorkEntitySave(
     }
 
     public SaveOptions SaveOptions()
-        => environmentLazy.Value.SaveOptions(AppWorkCtx.ZoneId);
+        => environmentLazy.Value.SaveOptions(MyOptions.ZoneId);
 
     public EntityIdentity Save(IEntity entity, SaveOptions saveOptions)
         => Save([new(entity, saveOptions)]).FirstOrDefault() ?? new(0, Guid.Empty);
@@ -64,7 +64,7 @@ public class WorkEntitySave(
         // because sometimes the save may be executed twice before the state knows that the entity exists
         // in which case it would add it twice
 
-        var appReader = AppWorkCtx.AppReader;
+        var appReader = MyOptions.AppReader;
         List<EntityIdentity> ids = null!;
         appReader.GetCache().DoInLock(Log, () => ids = InnerSaveInLock());
         return l.Return(ids, $"ids:{ids.Count}");
@@ -106,7 +106,7 @@ public class WorkEntitySave(
             //entities = AttachRelationshipResolver(entities, appReader.GetCache());
 
             List<EntityIdentity> idList = null!;
-            var dc = AppWorkCtx.DbStorage;
+            var dc = MyOptions.DbStorage;
             dc.ConfigureLogging(importLogSettings.GetLogSettings());
             dc.DoButSkipAppCachePurge(() => idList = dc.Save(pairsToSave));
 

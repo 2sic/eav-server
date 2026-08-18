@@ -1,15 +1,13 @@
-﻿using ToSic.Eav.WebApi.Sys.Dto;
-using ToSic.Sys.Capabilities.Features;
+﻿using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class FieldControllerReal(
-    LazySvc<ContentTypeDtoService> ctApiLazy,
-    GenWorkPlus<WorkInputTypes> inputTypes,
-    GenWorkDb<WorkAttributesMod> attributesMod,
+    //QuickWork<ContentTypeDtoService> ctApiLazy,
+    AppWorkQuick<WorkAttributesMod> attributesMod,
     LazySvc<ISysFeaturesService> featuresSvc)
-    : ServiceBase("Api.FieldRl", connect: [inputTypes, attributesMod, ctApiLazy, featuresSvc]), IFieldController
+    : ServiceBase("Api.FieldRl", connect: [attributesMod, /*ctApiLazy,*/ featuresSvc]), IFieldController
 {
     public const string LogSuffix = "Field";
 
@@ -34,18 +32,18 @@ public class FieldControllerReal(
 
     #region Shared Fields
 
-    public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId = default) 
-        => ctApiLazy.Value.GetSharedFields(appId, attributeId);
+    //public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId = default) 
+    //    => ctApiLazy.New(appId).GetSharedFields(appId, attributeId);
 
-    public IEnumerable<ContentTypeFieldDto> GetAncestors(int appId, int attributeId)
-        => featuresSvc.Value.IsEnabled(BuiltInFeatures.ContentTypeFieldsReuseDefinitions)
-            ? ctApiLazy.Value.GetAncestors(appId, attributeId)
-            : [];
+    //public IEnumerable<ContentTypeFieldDto> GetAncestors(int appId, int attributeId)
+    //    => featuresSvc.Value.IsEnabled(BuiltInFeatures.ContentTypeFieldsReuseDefinitions)
+    //        ? ctApiLazy.New(appId).GetAncestors(appId, attributeId)
+    //        : [];
 
-    public IEnumerable<ContentTypeFieldDto> GetDescendants(int appId, int attributeId)
-        => featuresSvc.Value.IsEnabled(BuiltInFeatures.ContentTypeFieldsReuseDefinitions)
-            ? ctApiLazy.Value.GetDescendants(appId, attributeId)
-            : [];
+    //public IEnumerable<ContentTypeFieldDto> GetDescendants(int appId, int attributeId)
+    //    => featuresSvc.Value.IsEnabled(BuiltInFeatures.ContentTypeFieldsReuseDefinitions)
+    //        ? ctApiLazy.New(appId).GetDescendants(appId, attributeId)
+    //        : [];
 
     public bool Share(int appId, int attributeId, bool share, bool hide = false)
         => attributesMod.New(appId).FieldShare(attributeId, share, hide);

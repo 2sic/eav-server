@@ -38,11 +38,11 @@ public class ContentExportApi(
     public ContentExportApi Init(int appId)
     {
         var l = Log.Fn<ContentExportApi>($"For app: {appId}");
-        _appCtx = appWorkCtxSvc.Context(appId);
+        _appCtx = appWorkCtxSvc.ContextNew(appId);
         return l.Return(this);
     }
 
-    private IAppWorkCtx _appCtx = null!;
+    private IAppWorkContext _appCtx = null!;
 
     public (string FileContents, string FileName) ExportContent(IUser user,
         string language,

@@ -16,35 +16,37 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 )]
 public class SharedFields : CustomDataSource
 {
-    private readonly GenWorkBasic<WorkAttributes> _workAttributes;
-    private readonly Generator<ConvertAttributeToDto> _convertAttribute;
-    private readonly LazySvc<ISysFeaturesService> _features;
-
     [Configuration(Fallback = "0")]
     public int AttributeId => Configuration.GetThis(fallback: 0);
 
     public SharedFields(
         Dependencies services,
-        GenWorkBasic<WorkAttributes> workAttributes,
+        AppWorkQuick<WorkAttributes> workAttributes,
         Generator<ConvertAttributeToDto> convertAttribute,
         LazySvc<ISysFeaturesService> features)
         : base(services, logName: "Eav.SharedFld", connect: [workAttributes, convertAttribute, features])
     {
-        _workAttributes = workAttributes;
-        _convertAttribute = convertAttribute;
-        _features = features;
-
-        ProvideOutRaw(() => Convert(_workAttributes.New(AppId).GetSharedFields(AttributeId)));
-        ProvideOutRaw(() => FeatureEnabled() ? Convert(_workAttributes.New(AppId).GetAncestors(AttributeId)) : [], name: "Ancestors");
-        ProvideOutRaw(() => FeatureEnabled() ? Convert(_workAttributes.New(AppId).GetDescendants(AttributeId)) : [], name: "Descendants");
+        ProvideOutRaw(() => Convert(convertAttribute, workAttributes.New(AppId).GetSharedFields(AttributeId)));
+        ProvideOutRaw(
+            () => FeatureEnabled(features)
+                ? Convert(convertAttribute, workAttributes.New(AppId).GetAncestors(AttributeId))
+                : [],
+            name: "Ancestors"
+        );
+        ProvideOutRaw(
+            () => FeatureEnabled(features)
+                ? Convert(convertAttribute, workAttributes.New(AppId).GetDescendants(AttributeId))
+                : [],
+            name: "Descendants"
+        );
     }
 
-    private IEnumerable<ContentTypeFieldModel> Convert(List<PairTypeWithAttribute> fields) =>
-        _convertAttribute.New()
+    private IEnumerable<ContentTypeFieldModel> Convert(Generator<ConvertAttributeToDto> convertAttribute, List<PairTypeWithAttribute> fields)
+        => convertAttribute.New()
             .Init(AppId, true)
             .Convert(fields)
             .Select(field => new ContentTypeFieldModel(field) { Id = field.Id });
 
-    private bool FeatureEnabled() =>
-        _features.Value.IsEnabled(BuiltInFeatures.ContentTypeFieldsReuseDefinitions);
+    private bool FeatureEnabled(LazySvc<ISysFeaturesService> features)
+        => features.Value.IsEnabled(BuiltInFeatures.ContentTypeFieldsReuseDefinitions);
 }

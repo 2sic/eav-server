@@ -10,27 +10,16 @@ using ToSic.Sys.Utils;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
+public class WorkQueryCopy(
+    LazySvc<QueryDefinitionService> queryDefSvc,
+    LazySvc<DataAssembler> builder,
+    LazySvc<JsonSerializer> jsonSerializer,
+    AppWorkChain<WorkEntitySave> entSave)
+    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod", connect: [entSave, queryDefSvc, jsonSerializer, builder])
 {
+    private LazySvc<JsonSerializer> Serializer => field ??= jsonSerializer.SetInit(j => j.SetApp(MyOptions.AppReader));
 
-    public WorkQueryCopy(
-        LazySvc<QueryDefinitionService> queryDefSvc,
-        LazySvc<DataAssembler> builder,
-        LazySvc<JsonSerializer> jsonSerializer,
-        GenWorkDb<WorkEntitySave> entSave) : base("AWk.QryMod", connect: [entSave, queryDefSvc, jsonSerializer, builder])
-    {
-        _entSave = entSave;
-        _queryDefSvc = queryDefSvc;
-        _serializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppReader));
-        _builder = builder;
-    }
-
-    private readonly GenWorkDb<WorkEntitySave> _entSave;
-    private readonly LazySvc<DataAssembler> _builder;
-    private readonly LazySvc<QueryDefinitionService> _queryDefSvc;
-    private readonly LazySvc<JsonSerializer> _serializer;
-
-    private QueryDefinition Get(int queryId) => _queryDefSvc.Value.GetDefinition(AppWorkCtx.AppReader, queryId);
+    private QueryDefinition Get(int queryId) => queryDefSvc.Value.GetDefinition(MyOptions.AppReader, queryId);
 
 
     public void SaveCopy(int id) => SaveCopy(Get(id));
@@ -61,25 +50,25 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         );
         var newWiring = RemapWiringToCopy(query.Connections, keyMap);
 
-        var newWiringValue = _builder.Value.Value.String(newWiring, []);
+        var newWiringValue = builder.Value.Value.String(newWiring, []);
         var newWiringValues = new List<IValue> { newWiringValue };
         var queryAttributes = (query as ICanBeEntity).Entity.Attributes.ToEditableIgnoreCase();
-        queryAttributes[nameof(QueryDefinition.StreamWiring)] = _builder.Value.Attribute.CreateFrom(
+        queryAttributes[nameof(QueryDefinition.StreamWiring)] = builder.Value.Attribute.CreateFrom(
             queryAttributes[nameof(QueryDefinition.StreamWiring)],
             newWiringValues.ToImmutableOpt()
         );
 
         // Try to add "Copy" to title
-        queryAttributes[nameof(QueryDefinition.Name)] = _builder.Value.Attribute.CreateFrom(
+        queryAttributes[nameof(QueryDefinition.Name)] = builder.Value.Attribute.CreateFrom(
             queryAttributes[nameof(QueryDefinition.Name)],
-            [_builder.Value.Value.String(query.Title + " Copy", [])]
+            [builder.Value.Value.String(query.Title + " Copy", [])]
         );
 
-        var newQuery = _builder.Value.Entity.CreateFrom(
+        var newQuery = builder.Value.Entity.CreateFrom(
             (query as ICanBeEntity).Entity,
             id: 0,
             guid: newQueryGuid,
-            attributes: _builder.Value.AttributeList.Finalize(queryAttributes)
+            attributes: builder.Value.AttributeList.Finalize(queryAttributes)
         );
 
         var entityList = newParts
@@ -88,7 +77,7 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
         entityList = entityList.Append(newQuery);
 
 
-        var entSaver = _entSave.New(AppWorkCtx.AppReader);
+        var entSaver = entSave.New(MyOptions);
         var saveOptions = entSaver.SaveOptions();
         var saveList = entityList
             .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
@@ -123,10 +112,10 @@ public class WorkQueryCopy: WorkUnitBase<IAppWorkCtx>
     {
         var l = Log.Fn<IEntity>();
         // todo: probably replace with clone as that should be reliable now...
-        var newSer = _serializer.Value.Serialize(original);
-        var newEnt = _serializer.Value.Deserialize(newSer);
+        var newSer = Serializer.Value.Serialize(original);
+        var newEnt = Serializer.Value.Deserialize(newSer);
 
-        newEnt = _builder.Value.Entity.CreateFrom(newEnt, guid: newGuid, id: 0,
+        newEnt = builder.Value.Entity.CreateFrom(newEnt, guid: newGuid, id: 0,
             target: newMetadataTarget == null
                 ? null
                 : new Target(original.MetadataFor, keyGuid: newMetadataTarget.Value)
