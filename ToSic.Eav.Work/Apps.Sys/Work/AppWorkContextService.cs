@@ -24,9 +24,6 @@ public class AppWorkContextService(
     public IAppWorkCtx Context(int appId)
         => new AppWorkCtx(appReaders.Value.Get(appId));
 
-    public IAppWorkCtx Context(IAppReader appReader)
-        => new AppWorkCtx(appReader);
-
     public IDisposable WithContext(IAppReader appReader)
     {
         return OverrideService<IAppWorkCtxForDiWip>.Use(new AppWorkCtxNew(appReader, this));
@@ -44,9 +41,6 @@ public class AppWorkContextService(
 
     public IAppWorkCtxPlus ContextPlus(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource? data = default)
         => new AppWorkCtxPlus(dataSourceSvc.Value, appReaders.Value.GetOrKeep(appIdentity), showDrafts, data);
-
-    //public IAppWorkCtxPlus ToCtxPlus(IAppWorkCtx appCtx, bool? showDrafts = default, IDataSource? data = default)
-    //    => new AppWorkCtxPlus(appCtx, dataSourceSvc.Value, appCtx.AppReader, showDrafts, data);
 
     public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity)
         => CtxWithDb(Context(identity).AppReader);

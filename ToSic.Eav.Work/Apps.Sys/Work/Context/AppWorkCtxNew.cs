@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppWorkCtxNew(IAppReader appReader, AppWorkContextService ctxSvc) : IAppWorkCtxForDiWip
+public class AppWorkCtxNew(IAppReader appReader, AppWorkContextService ctxSvc) : IAppWorkCtxForDiWip, IAppWorkCtx
 {
     /// <inheritdoc />
     public int ZoneId { get; } = appReader.ZoneId;
