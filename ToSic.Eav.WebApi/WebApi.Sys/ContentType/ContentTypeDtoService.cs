@@ -9,11 +9,11 @@ namespace ToSic.Eav.WebApi.Sys;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeDtoService(
-    GenWorkPlus<WorkEntities> workEntities,
-    GenWorkBasic<WorkAttributes> attributes,
+    AppWorkChain<WorkEntities> workEntities,
+    AppWorkChain<WorkAttributes> attributes,
     Generator<ConvertAttributeToDto> convAttrDto,
     ConvertContentTypeToDto convTypeDto)
-    : ServiceBase("Api.EavCTC", connect: [attributes, convAttrDto, convTypeDto, workEntities])
+    : ServiceWithSetup<IAppWorkContext>("Api.EavCTC", connect: [attributes, convAttrDto, convTypeDto, workEntities])
 {
 
     #region Content-Type Get, Delete, Save
@@ -21,13 +21,13 @@ public class ContentTypeDtoService(
     public IList<ContentTypeDto> List(int appId, string? scope = null, bool withStatistics = false)
     {
         var l = Log.Fn<IList<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
-        var appCtxPlus = workEntities.CtxSvc.ContextPlus(appId);
+        //var appCtxPlus = workEntities.CtxSvc.ContextPlus(appId);
 
         // should use app-manager and return each type 1x only
-        var appEntities = workEntities.New(appCtxPlus);
+        var appEntities = workEntities.New(MyOptions);
 
         // get all types
-        var allTypes = appCtxPlus.AppReader.ContentTypes
+        var allTypes = MyOptions.AppReader.ContentTypes
             .OfScope(scope, true)
             .ToList();
 
@@ -47,26 +47,26 @@ public class ContentTypeDtoService(
 
     #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
 
-    /// <summary>
-    /// Returns the configuration for a content type
-    /// </summary>
-    public IEnumerable<ContentTypeFieldDto> GetFields(int appId, string staticName)
-        => Convert(appId, attributes.New(appId).GetFields(staticName), false);
+    ///// <summary>
+    ///// Returns the configuration for a content type
+    ///// </summary>
+    //public IEnumerable<ContentTypeFieldDto> GetFields(int appId, string staticName)
+    //    => Convert(appId, attributes.New(appId).GetFields(staticName), false);
 
 
-    public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId)
-        => Convert(appId, attributes.New(appId).GetSharedFields(attributeId), true);
+    //public IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId)
+    //    => Convert(appId, attributes.New(appId).GetSharedFields(attributeId), true);
 
-    public IEnumerable<ContentTypeFieldDto> GetAncestors(int appId, int attributeId)
-        => Convert(appId, attributes.New(appId).GetAncestors(attributeId), true);
+    //public IEnumerable<ContentTypeFieldDto> GetAncestors(int appId, int attributeId)
+    //    => Convert(appId, attributes.New(appId).GetAncestors(attributeId), true);
 
-    public IEnumerable<ContentTypeFieldDto> GetDescendants(int appId, int attributeId)
-        => Convert(appId, attributes.New(appId).GetDescendants(attributeId), true);
+    //public IEnumerable<ContentTypeFieldDto> GetDescendants(int appId, int attributeId)
+    //    => Convert(appId, attributes.New(appId).GetDescendants(attributeId), true);
 
-    private IEnumerable<ContentTypeFieldDto> Convert(int appId, List<PairTypeWithAttribute> fields, bool withType)
-        => convAttrDto.New()
-            .Init(appId, withType)
-            .Convert(fields);
+    //private IEnumerable<ContentTypeFieldDto> Convert(int appId, List<PairTypeWithAttribute> fields, bool withType)
+    //    => convAttrDto.New()
+    //        .Init(appId, withType)
+    //        .Convert(fields);
 
     #endregion
 

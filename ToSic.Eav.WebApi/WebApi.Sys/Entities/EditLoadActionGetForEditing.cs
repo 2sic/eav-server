@@ -2,6 +2,7 @@
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Sys.HookUp;
 
 namespace ToSic.Eav.WebApi.Sys.Entities;
 
@@ -10,17 +11,17 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
     : ServiceBase("Api.Entity", connect: [appWorkCtxSvc, entityAssembler])
 {
     // Note: reworked this 2026-05-15 2dm to make the objects immutable, hope no side effects #ImmutableIsTheNewBlack
-    public List<BundleWithHeaderOptional<IEntity>> Run(LowCodeActionContext actionCtx, List<ItemIdentifier> items)
+    public List<BundleWithHeaderOptional<IEntity>> Run(WorkContext actionCtx, List<ItemIdentifier> items)
     {
-        var appWorkCtxPlus = actionCtx.Get<IAppWorkCtxPlus>(EditLoadContextConstants.AppCtxWork);
+        var appWorkCtxPlus = actionCtx.Get<IAppWorkContext>(EditLoadContextConstants.AppWorkCtx);
 
-        items = ReplaceSimpleTypeNames(appWorkCtxPlus, items);
+        items = ReplaceSimpleTypeNames(appWorkCtxPlus.AppReader, items);
 
         var list = items
             .Select(p =>
             {
                 var ent = p.EntityId != 0 || p.DuplicateEntity.HasValue
-                    ? GetEditableEditionAndMaybeCloneIt(appWorkCtxPlus, p)
+                    ? GetEditableEditionAndMaybeCloneIt(appWorkCtxPlus.AppReader, p)
                     : null;
                 return new BundleWithHeaderOptional<IEntity>
                 {
@@ -93,12 +94,11 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
     }
 
 
-    private IEntity GetEditableEditionAndMaybeCloneIt(IAppWorkCtxPlus appWorkCtxPlus, ItemIdentifier p)
+    private IEntity GetEditableEditionAndMaybeCloneIt(IAppReader appReader, ItemIdentifier p)
     {
-        var appState = appWorkCtxPlus.AppReader;
-        var found = appState.List.GetOrThrow(p.ContentTypeName!, p.DuplicateEntity ?? p.EntityId);
+        var found = appReader.List.GetOrThrow(p.ContentTypeName!, p.DuplicateEntity ?? p.EntityId);
         // if there is a draft, use that for editing - not the original
-        found = appState.GetDraft(found) ?? found;
+        found = appReader.GetDraft(found) ?? found;
 
         // If we want the original (not a copy for new) then stop here
         if (!p.DuplicateEntity.HasValue)
@@ -112,7 +112,7 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
     /// <summary>
     /// clean up content-type names in case it's using the nice-name instead of the static name...
     /// </summary>
-    private List<ItemIdentifier> ReplaceSimpleTypeNames(IAppWorkCtxPlus appWorkCtxPlus, List<ItemIdentifier> items)
+    private List<ItemIdentifier> ReplaceSimpleTypeNames(IAppReader appReader, List<ItemIdentifier> items)
     {
         var result = items
             .Select(ItemIdentifier? (itm) =>
@@ -120,7 +120,7 @@ public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, En
                 if (string.IsNullOrEmpty(itm.ContentTypeName))
                     return itm;
                 
-                var ct = appWorkCtxPlus.AppReader.TryGetContentType(itm.ContentTypeName!);
+                var ct = appReader.TryGetContentType(itm.ContentTypeName!);
                 if (ct == null)
                 {
                     return !itm.ContentTypeName!.StartsWith("@")

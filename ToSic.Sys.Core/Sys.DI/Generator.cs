@@ -9,7 +9,22 @@
 /// <typeparam name="TService">The service to generate. It must implement <see cref="IServiceWithSetup{TOptions}"/></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
+    where TService: class
 {
+    #region Logging
+
+    /// <inheritdoc/>
+    void ILazyInitLog.SetLog(ILog? parentLog)
+        => Log = parentLog;
+
+    /// <inheritdoc cref="LazySvc{TService}.Log"/>
+    public ILog? Log { get; private set; }
+
+    #endregion
+
+    
+    #region Get / New / Value
+
     /// <summary>
     /// Factory method to generate a new service
     /// </summary>
@@ -22,18 +37,33 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     }
 
     /// <summary>
-    /// Initializer to attach the log to the generator.
-    /// The log is later given to generated objects.
+    /// Factory method to generate a new service using a name/keyed.
     /// </summary>
-    /// <param name="parentLog"></param>
-    void ILazyInitLog.SetLog(ILog? parentLog)
-        => Log = parentLog;
+    /// <param name="key">The key/name of the service to generate.</param>
+    /// <remarks>
+    /// New in v22
+    /// </remarks>
+    /// <returns></returns>
+    public TService New(string key)
+    {
+        var service = sp.Build<TService>(key, Log);
+        _initCall?.Invoke(service);
+        return service;
+    }
+    
+    public TService? TryNew(string key)
+    {
+        var service = sp.TryBuild<TService>(key, Log);
+        if (service == null)
+            return null;
+        _initCall?.Invoke(service);
+        return service;
+    }
+    
+    #endregion
 
-    /// <summary>
-    /// The parent log, which is attached to newly generated objects
-    /// _if_ they support logging.
-    /// </summary>
-    public ILog? Log { get; private set; }
+
+    #region SetInit
 
     /// <summary>
     /// Set the init-command as needed
@@ -42,16 +72,11 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     /// <param name="allowReplace">Allow replacing the set-init</param>
     public Generator<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
     {
-#if DEBUG
-        // Warn if we're accidentally replacing init-call, but only do this on debug
-        // In most cases it has no consequences, but we should write code that avoids this
-        if (_initCall != null && !allowReplace)
-            throw new($"You tried to call {nameof(SetInit)} twice. This should never happen");
-#endif
-        _initCall = newInitCall;
+        _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
         return this;
     }
     private Action<TService>? _initCall;
 
+    #endregion
 
 }

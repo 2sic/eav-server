@@ -17,33 +17,32 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 )]
 public class InputTypes : CustomDataSource
 {
-    private readonly GenWorkPlus<WorkInputTypes> _inputTypes;
-    private readonly GenWorkDb<WorkAttributesMod> _attributesMod;
-
     public InputTypes(
         Dependencies services,
-        GenWorkPlus<WorkInputTypes> inputTypes,
-        GenWorkDb<WorkAttributesMod> attributesMod)
-        : base(services, logName: "Sxc.InpTyp", connect: [inputTypes, attributesMod])
+        AppWorkContextService appWorkContextService,
+        AppWorkChain<WorkInputTypes> inputTypes,
+        AppWorkChain<WorkFieldsDataTypes> fieldsDataTypes)
+        : base(services, logName: "Sxc.InpTyp", connect: [appWorkContextService, inputTypes, fieldsDataTypes])
     {
-        _inputTypes = inputTypes;
-        _attributesMod = attributesMod;
+        var ctx = new Lazy<IAppWorkContext>(() => appWorkContextService.ContextNew(AppId));
+        
+        ProvideOutRaw(() => GetInputTypes(inputTypes.New(ctx.Value)),
+            name: "InputTypes",
+            options: () => new()
+            {
+                AllowUnknownValueTypes = true,
+            });
 
-        ProvideOutRaw(GetInputTypes, name: "InputTypes", options: () => new()
-        {
-            AllowUnknownValueTypes = true,
-        });
-
-        ProvideOutRaw(GetDataTypes, name: "DataTypes");
+        ProvideOutRaw(() => GetDataTypes(fieldsDataTypes.New(ctx.Value)), name: "DataTypes");
 
         ProvideOutRaw(GetReservedNames, name: "ReservedNames");
     }
 
-    private IEnumerable<InputTypeInfoRaw> GetInputTypes()
+    private IEnumerable<InputTypeInfoRaw> GetInputTypes(WorkInputTypes inputTypes)
     {
         var l = Log.Fn<IEnumerable<InputTypeInfoRaw>>($"{AppId}");
 
-        var entities = _inputTypes.New(AppId)
+        var entities = inputTypes
             .GetInputTypes()
             .Select(inputType => new InputTypeInfoRaw
             {
@@ -64,11 +63,11 @@ public class InputTypes : CustomDataSource
         return l.Return(entities, "ok");
     }
 
-    private IEnumerable<NameValueRaw> GetDataTypes()
+    private IEnumerable<NameValueRaw> GetDataTypes(WorkFieldsDataTypes fieldsDataTypes)
     {
         var l = Log.Fn<IEnumerable<NameValueRaw>>($"{AppId}");
 
-        var entities = _attributesMod.New(AppId)
+        var entities = fieldsDataTypes
             .DataTypes()
             .Select(dataType => new NameValueRaw(Name: dataType));
 

@@ -5,6 +5,7 @@ namespace ToSic.Sys.Services.Switchable;
 
 public class VerifySwitchableService(ServiceSwitcher<IMockSwitchableService> switcher)
 {
+    public class Startup() : QuickStartup(s => s.AddMockSwitchableAndCoreServices());
 
     [Fact]
     public void FindKeepService() =>

@@ -38,7 +38,6 @@ public static class StartupEavData
     /// <summary>
     /// Registers the default system core wrapper services with the dependency injection container.
     /// </summary>
-    /// <inheritdoc cref="StartupSysCore.AddSysCore"/>
     public static IServiceCollection AddEavModels(this IServiceCollection services)
     {
         // Wrapper Factory - new it v21

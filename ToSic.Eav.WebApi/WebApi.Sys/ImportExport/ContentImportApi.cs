@@ -18,7 +18,7 @@ public class ContentImportApi(
     LazySvc<ImportListXml> importListXml,
     LazySvc<JsonSerializer> jsonSerializerLazy,
     AppCachePurger appCachePurger,
-    GenWorkDb<WorkEntitySave> workEntSave,
+    AppWorkQuick<WorkEntitySave> workEntSave,
     IAppsCatalog appsCatalog,
     IAppReaderFactory appReaders,
     DataImportLogSettings importLogSettings

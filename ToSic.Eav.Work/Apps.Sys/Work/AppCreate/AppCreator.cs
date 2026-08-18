@@ -15,7 +15,7 @@ public class AppCreator(
     Generator<DbStorage, StorageOptions> db,
     IAppsAndZonesLoaderWithRaw appsAndZonesLoader,
     AppCachePurger appCachePurger,
-    Generator<AppInitializer> appInitGenerator)
+    AppWorkQuick<AppInitializer> appInitGenerator)
     : ServiceBase("Eav.AppBld", connect: [db, appInitGenerator, appCachePurger, appsAndZonesLoader])
 {
     #region Constructor / DI
@@ -48,9 +48,9 @@ public class AppCreator(
             : CreateInDb(appGuid ?? Guid.NewGuid().ToString(), inheritAppId);
 
         // must get app from DB directly, not from cache, so no State.Get(...)
-        var appState = appsAndZonesLoader.AppReaderRaw(appId, new());
+        var appReader = appsAndZonesLoader.AppReaderRaw(appId, new());
 
-        appInitGenerator.New().InitializeApp(appState, appName, new());
+        appInitGenerator.New(appReader).InitializeApp(/*appReader,*/ appName, new());
     }
 
     private int ConfigureExistingDefaultApp(int inheritAppId)

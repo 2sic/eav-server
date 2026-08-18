@@ -18,7 +18,7 @@ namespace ToSic.Eav.Work.Tests.Recycle;
 [Startup(typeof(StartupTestWork))]
 public class WorkEntityRecycleTests(
     Generator<DbStorage, StorageOptions> dbDataGenerator,
-    GenWorkDb<WorkEntityRecycle> workEntityRecycle,
+    AppWorkQuick<WorkEntityRecycle> workEntityRecycle,
     ImportService importService,
     DataAssembler dataAssembler)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>

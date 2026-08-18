@@ -33,7 +33,7 @@ public class RecycleBin : CustomDataSource
 
     #endregion
 
-    public RecycleBin(Dependencies services, GenWorkDb<WorkEntityRecycleBin> recycleBin, FeaturesForDataSources featuresForDs)
+    public RecycleBin(Dependencies services, AppWorkQuick<WorkEntityRecycleBin> recycleBin, FeaturesForDataSources featuresForDs)
         : base(services, logName: "CDS.RecycleBin", connect: [recycleBin, featuresForDs])
     {
         ProvideOutRaw(
@@ -59,7 +59,7 @@ public class RecycleBin : CustomDataSource
 
     private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) _cache = (null!, null!); // temp null at start
 
-    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) GetList(GenWorkDb<WorkEntityRecycleBin> recycleBin)
+    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) GetList(AppWorkQuick<WorkEntityRecycleBin> recycleBin)
     {
         var l = Log.Fn<(IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes)>($"DateFrom:{DateFrom}, DateTo:{DateTo}, ContentType:{ContentType}");
 

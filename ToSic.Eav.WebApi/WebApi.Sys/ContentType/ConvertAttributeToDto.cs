@@ -14,10 +14,10 @@ namespace ToSic.Eav.WebApi.Sys;
 
 public class ConvertAttributeToDto(
     LazySvc<IConvertToEavLight> convertToLight,
-    GenWorkPlus<WorkInputTypes> inputTypes,
-    IAppReaderFactory appReaders,
-    LazySvc<RecommendedMetadataService> mdRead)
-    : ServiceBase("Cnv.AtrDto", connect: [inputTypes, convertToLight, mdRead]),
+    AppWorkChain<WorkInputTypes> genInputTypes,
+    LazySvc<AppWorkContextService> appWorkCtxSvc,
+    AppWorkChain<RecommendedMetadataService> genMdRead)
+    : ServiceBase("Cnv.AtrDto", connect: [genInputTypes, convertToLight, genMdRead]),
         IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
 {
     public ConvertAttributeToDto Init(int appId, bool withContentType)
@@ -30,6 +30,8 @@ public class ConvertAttributeToDto(
 
     private int _appId;
     private bool _withContentType;
+
+    private IAppWorkContext WorkCtx => field ??= appWorkCtxSvc.Value.ContextNew(_appId);
 
     public IEnumerable<ContentTypeFieldDto> Convert(IEnumerable<PairTypeWithAttribute> list)
     {
@@ -103,7 +105,7 @@ public class ConvertAttributeToDto(
 
     [field: AllowNull, MaybeNull]
     private List<InputTypeInfo> AppInputTypes => field ??=
-        inputTypes.New(_appId)
+        genInputTypes.New(WorkCtx)
             .GetInputTypes()
             .OrderBy(it => it.Type) // order for easier debugging
             .ToList();
@@ -242,21 +244,12 @@ public class ConvertAttributeToDto(
 
     private bool IsRecommended(string targetIdentifier, string typeName)
     {
-        var mdRecommendations = MdRecommendations();
+        var mdRecommendations = MdRecommendations;
         var recommendations= mdRecommendations.GetRecommendations((int)TargetTypes.Attribute, targetIdentifier);
         return recommendations.Any(r => r.Name == typeName);
     }
 
-    private RecommendedMetadataService MdRecommendations()
-    {
-        if (_mdRecs != null)
-            return _mdRecs;
-        _mdRecs = mdRead.Value;
-        var appReader = appReaders.Get(_appId);
-        _mdRecs.Setup(appReader, _appId);
-        return _mdRecs;
-    }
-    private RecommendedMetadataService? _mdRecs;
+    private RecommendedMetadataService MdRecommendations => field ??= genMdRead.New(WorkCtx);
 
     #endregion
 }

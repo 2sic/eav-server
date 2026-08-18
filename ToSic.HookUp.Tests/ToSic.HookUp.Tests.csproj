@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
+
+  <PropertyGroup>
+    <RootNamespace>ToSic</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Sys.TestHelpers\ToSic.Sys.TestHelpers.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
+  </ItemGroup>
+
+</Project>

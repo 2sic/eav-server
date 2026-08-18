@@ -21,10 +21,6 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 )]
 public class EntitiesAdmin : CustomDataSource
 {
-    private readonly LazySvc<IContextOfSite> _siteContext;
-    private readonly LazySvc<IAppsCatalog> _appsCatalog;
-    private readonly LazySvc<EntityApi> _entityApi;
-
     #region Configuration Properties
 
     /// <summary>
@@ -42,24 +38,20 @@ public class EntitiesAdmin : CustomDataSource
         LazySvc<EntityApi> entityApi)
         : base(services, logName: "Eav.EntitiesAdmin", connect: [siteContext, appsCatalog, entityApi])
     {
-        _siteContext = siteContext;
-        _appsCatalog = appsCatalog;
-        _entityApi = entityApi;
-
-        ProvideOut(GetEntities);
+        ProvideOut(() => GetEntities(siteContext.Value, appsCatalog.Value, entityApi.Value));
     }
 
-    private IEnumerable<IEntity> GetEntities()
+    private IEnumerable<IEntity> GetEntities(IContextOfSite siteContext, IAppsCatalog appsCatalogValue, EntityApi entityApiValue)
     {
         var l = Log.Fn<IEnumerable<IEntity>>();
 
         if (string.IsNullOrWhiteSpace(ContentType))
             return l.Return([], "no content type");
 
-        var app = _appsCatalog.Value.AppIdentity(AppId);
+        var app = appsCatalogValue.AppIdentity(AppId);
 
-        var entities = _entityApi.Value
-            .InitOrThrowBasedOnGrants(_siteContext.Value, app, ContentType, GrantSets.ReadSomething)
+        var entities = entityApiValue
+            .InitOrThrowBasedOnGrants(siteContext, app, ContentType, GrantSets.ReadSomething)
             .GetEntitiesForAdminStep1(ContentType);
 
         // Attach serialization metadata.

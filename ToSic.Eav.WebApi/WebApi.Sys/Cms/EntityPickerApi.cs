@@ -7,7 +7,7 @@ using static System.String;
 namespace ToSic.Eav.WebApi.Sys.Cms;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user)
+public class EntityPickerApi(AppWorkQuick<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user)
     : ServiceBase("Api.EntPck", connect: [cultureResolver, workEntities, user])
 {
     /// <summary>
@@ -23,7 +23,7 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
         if (!IsNullOrEmpty(contentTypeName))
         {
             contentType = IsNullOrWhiteSpace(contentTypeName)
-                ? appEnts.AppWorkCtx.AppReader.TryGetContentType(contentTypeName!)
+                ? appEnts.MyOptions.AppReader.TryGetContentType(contentTypeName!)
                 : null;
             l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
             if (contentType == null)
@@ -45,7 +45,7 @@ public class EntityPickerApi(GenWorkPlus<WorkEntities> workEntities, IZoneCultur
             l.A($"Will restrict by scope if user is not system admin: {user.IsSystemAdmin}");
             list = allowFromAllScopes
                 // Get all the data which the current user may see (filtering drafts etc.)
-                ? appEnts.AppWorkCtx.Data.List.ToList()
+                ? appEnts.MyOptions.Data.List.ToList()
                 // Get all content only, and maybe configuration
                 : appEnts.OnlyContent(withConfiguration: user.IsSystemAdmin).ToList(); // only super user should also get Configuration
         }

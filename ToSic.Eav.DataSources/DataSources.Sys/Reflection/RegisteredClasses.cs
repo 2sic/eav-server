@@ -4,10 +4,10 @@ using ToSic.Eav.DataSource.Sys;
 namespace ToSic.Eav.DataSources.Sys;
 
 /// <summary>
-/// Generic data source to provide reflection data about classes or interfaces - but only such that are registered in the DI.
+/// Generic Data Source to provide reflection data about classes or interfaces - but only such that are registered in the DI.
 /// </summary>
 /// <remarks>
-/// Used for example to provide the list of IDataProcessor implementations, but can be used for any class or interface type.
+/// Used for example to provide the list of IWorkEntityAction implementations, but can be used for any class or interface type.
 /// Created in v21.02.
 /// </remarks>
 /// <typeparam name="TClassOrInterface"></typeparam>
@@ -15,37 +15,19 @@ namespace ToSic.Eav.DataSources.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class RegisteredClasses<TClassOrInterface>: CustomDataSource where TClassOrInterface: class
 {
-    protected RegisteredClasses(Dependencies services, LazySvc<IEnumerable<TClassOrInterface>> generators)
-        : base(services, logName: $"{DataSourceConstantsInternal.LogPrefix}.C#Cls", connect: [generators])
+    protected RegisteredClasses(Dependencies services, LazySvc<IEnumerable<TClassOrInterface>> servicesOfType)
+        : base(services, logName: $"{DataSourceConstantsInternal.LogPrefix}.C#Cls", connect: [servicesOfType])
     {
-        ProvideOutRaw(
-            () => Generators(generators.Value),
-            options: () => new()
-            {
-                AutoId = true,
-                TitleField = "FullName",
-                TypeName = "Classes",
-            });
+        ProvideOutRaw(() => Generators(servicesOfType.Value));
     }
 
-    private IEnumerable<IRawEntity> Generators(IEnumerable<TClassOrInterface> fileGenerators)
+    private IEnumerable<IRawData> Generators(IEnumerable<TClassOrInterface> servicesOfType)
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
-        var list = fileGenerators
+        var l = Log.Fn<IEnumerable<IRawData>>();
+        var list = servicesOfType
             .Select(g => g.GetType())
             .Where(type => !type.IsAbstract && !type.IsInterface)
-            .Select(type => new RawEntity
-            {
-                Values = new Dictionary<string, object?>
-                {
-                    //{ AttributeNames.NameIdNiceName, g.NameId },
-                    { nameof(type.Name), type.Name },
-                    { nameof(type.FullName), type.FullName },
-                    { nameof(type.Assembly), type.Assembly },
-                    { nameof(type.AssemblyQualifiedName), type.AssemblyQualifiedName },
-                    { nameof(type.Namespace), type.Namespace },
-                }
-            })
+            .Select((type, index) => new ClassInfoRaw(type, index))
             .ToList();
 
         return l.Return(list, $"{list.Count}");

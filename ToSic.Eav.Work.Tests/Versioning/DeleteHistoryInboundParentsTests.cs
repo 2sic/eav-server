@@ -13,7 +13,7 @@ namespace ToSic.Eav.Versioning;
 [Startup(typeof(StartupTestWork))]
 public class DeleteHistoryInboundParentsTests(
     Generator<DbStorage, StorageOptions> dbDataGenerator,
-    GenWorkDb<WorkEntityDelete> workEntityDelete,
+    AppWorkQuick<WorkEntityDelete> workEntityDelete,
     ImportService importService,
     DataAssembler dataAssembler)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
