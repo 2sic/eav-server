@@ -6,40 +6,34 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkCtxPlus : AppWorkCtx, IAppWorkCtxPlus
 {
-    public AppWorkCtxPlus(IDataSourcesService dsf, IAppReader appReader, bool? showDrafts, IDataSource? data = default) : base(appReader)
+    internal AppWorkCtxPlus(IDataSourcesService dsf, IAppReader appReader, bool? showDrafts, IDataSource? data) : base(appReader)
     {
         DataSourcesFactory = dsf;
         ShowDrafts = showDrafts;
-        _data = data;
+        Data = data;
     }
 
-    public AppWorkCtxPlus(IAppWorkCtx original, IDataSourcesService? dsf = default, IAppReader? appReader = default, bool? showDrafts = default, IDataSource? data = default) : base(original, appReader)
+    private AppWorkCtxPlus(AppWorkCtxPlus original, IDataSource data) : base(original)
     {
-        var origOfClass = original as AppWorkCtxPlus;
-        DataSourcesFactory = dsf
-                             ?? origOfClass?.DataSourcesFactory!;
-        ShowDrafts = showDrafts
-                     ?? (original as IAppWorkCtxPlus)?.ShowDrafts
-                     ?? origOfClass?.ShowDrafts;
-        _data = data
-                ?? origOfClass?._data;
+        DataSourcesFactory = original.DataSourcesFactory;
+        ShowDrafts = original.ShowDrafts;
+        Data = data;
     }
 
     public IAppWorkCtxPlus SpawnNewWithPresetData(IDataSource data)
-        => new AppWorkCtxPlus(this, data: data);
+        => new AppWorkCtxPlus(this, data);
 
     /// <summary>
     /// Temp solution to provide the data if it was not itself initialized.
     /// </summary>
     private IDataSourcesService DataSourcesFactory { get; }
 
-    public IDataSource Data => _data
+    public IDataSource Data => field
         ??= DataSourcesFactory.CreateDefault(new DataSourceOptions
         {
             AppIdentityOrReader = AppReader.PureIdentity(),
             ShowDrafts = ShowDrafts,
         });
-    private IDataSource? _data;
 
 
     public bool? ShowDrafts { get; }

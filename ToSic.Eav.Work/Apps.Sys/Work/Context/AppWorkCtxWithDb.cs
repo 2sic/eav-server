@@ -11,12 +11,12 @@ public class AppWorkCtxWithDb : AppWorkCtx, IAppWorkCtxWithDb
     [field: AllowNull, MaybeNull]
     public DbStorage DbStorage => field ??= _dbLazy.New(new(AppReader));
 
-    public AppWorkCtxWithDb(Generator<DbStorage, StorageOptions> dbLazy, IAppReader appReader) : base(appReader)
+    internal AppWorkCtxWithDb(Generator<DbStorage, StorageOptions> dbLazy, IAppReader appReader) : base(appReader)
     {
         _dbLazy = dbLazy;
     }
 
-    public AppWorkCtxWithDb(DbStorage db, IAppReader appReader) : base(appReader)
+    internal AppWorkCtxWithDb(DbStorage db, IAppReader appReader) : base(appReader)
     {
         DbStorage = db;
     }
