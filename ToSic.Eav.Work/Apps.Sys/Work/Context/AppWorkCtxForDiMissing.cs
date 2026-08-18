@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Repository.Efc.Sys.DbStorage;
+﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -18,4 +19,5 @@ public class AppWorkCtxForDiMissing: IAppWorkCtx, IAppWorkCtxForDiWip
     public int AppId => throw new ArgumentNullException(ErrorMessage);
     public IAppReader AppReader => throw new ArgumentNullException(ErrorMessage);
     public DbStorage DbStorage => throw new ArgumentNullException(ErrorMessage);
+    public IDataSource Data => throw new ArgumentNullException(ErrorMessage);
 }

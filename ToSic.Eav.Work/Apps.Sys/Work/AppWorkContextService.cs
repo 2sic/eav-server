@@ -24,13 +24,21 @@ public class AppWorkContextService(
     public IAppWorkCtx Context(int appId)
         => new AppWorkCtx(appReaders.Value.Get(appId));
 
-    public IDisposable WithContext(IAppReader appReader)
-    {
-        return OverrideService<IAppWorkCtxForDiWip>.Use(new AppWorkCtxNew(appReader, this));
-    }
-
     public IAppWorkCtx Context(IAppIdentity appIdentity)
         => new AppWorkCtx(appReaders.Value.GetOrKeep(appIdentity));
+    
+    
+    public IDisposable WithContext(IAppReader appReader)
+    {
+        return OverrideService<IAppWorkCtxForDiWip>.Use(ContextNew(appReader));
+    }
+    
+    public IAppWorkCtxForDiWip ContextNew(IAppReader appReader, bool? showDrafts = default)
+        => new AppWorkCtxNew(appReader, this, showDrafts);
+    public IAppWorkCtxForDiWip ContextNew(int appId, bool? showDrafts = default)
+        => ContextNew(appReaders.Value.Get(appId), showDrafts);
+    public IAppWorkCtxForDiWip ContextNew(IAppIdentity appIdentity, bool? showDrafts = default)
+        => ContextNew(appReaders.Value.GetOrKeep(appIdentity), showDrafts);
 
 
     public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource? data = default)
@@ -51,5 +59,6 @@ public class AppWorkContextService(
             : new AppWorkCtxWithDb(existingDb, appReader);
 
     internal Generator<DbStorage, StorageOptions> DbGenerator => dbGen;
+    internal LazySvc<IDataSourcesService> DataSourcesSvc => dataSourceSvc;
 
 }

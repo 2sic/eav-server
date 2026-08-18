@@ -22,9 +22,6 @@ public class GenWorkPlus<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generator
 
     public TWork New(IAppWorkCtxPlus ctx) => NewInternal(ctx);
 
-    //public TWork New(AppState state, bool? showDrafts = default)
-    //=> NewInternal(_ctxSvc.Value.ContextPlus(state, showDrafts: showDrafts));
-
     public TWork New(IAppReader state, bool? showDrafts = default)
         => NewInternal(ctxSvc.Value.ContextPlus(state, showDrafts: showDrafts));
 
