@@ -12,9 +12,9 @@ public class GenWorkBasic<TWorkContext>(LazySvc<AppWorkContextService> ctxSvc, G
     where TWorkContext : WorkUnitBase<IAppWorkCtx>
 {
     public TWorkContext New(int appId)
-        => NewInternal(ctxSvc.Value.Context(appId));
+        => New(ctxSvc.Value.Context(appId));
 
-    private TWorkContext NewInternal(IAppWorkCtx ctx)
+    public TWorkContext New(IAppWorkCtx ctx)
     {
         var fresh = gen.New();
         fresh._initCtx(ctx);

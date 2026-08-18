@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IAppWorkCtxForDiWip : IAppIdentity
+public interface IAppWorkCtxForDiWip : IAppIdentity, IAppWorkCtx
 {
     IAppReader AppReader { get; }
 
