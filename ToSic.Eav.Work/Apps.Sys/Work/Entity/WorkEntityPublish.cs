@@ -5,60 +5,59 @@ using ToSic.Eav.Repository.Efc.Sys.DbParts;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityPublish(AppsCacheSwitch appsCache)
-    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntPub", connect: [appsCache])
+public class WorkEntityPublish(AppsCacheSwitch appsCache, LazySvc<IAppWorkCtxForDiWip> appWorkCtx)
+    : ServiceBase("AWk.EntPub", connect: [appsCache])
 {
-
-    /// <summary>
-    /// Publish a single entity 
-    /// </summary>
-    public void Publish(int entityId) => Publish([entityId]);
-
-
     /// <summary>
     /// Publish many entities
     /// </summary>
     public void Publish(int[] entityIds)
     {
-        var l = Log.Fn(Log.Try(() => "Publish(" + entityIds.Length + " items [" + string.Join(",", entityIds) + "])"));
+        var l = Log.Fn(Log.Try(() => $"Publish({entityIds.Length} items [{string.Join(",", entityIds)}])"));
         foreach (var eid in entityIds)
             try
             {
                 PublishWithoutPurge(eid);
             }
-            catch (EntityAlreadyPublishedException) { /* ignore */ }
+            catch (EntityAlreadyPublishedException)
+            {
+                 /* ignore */
+            }
         // Tell the cache to do a partial update
-        appsCache.Update(AppWorkCtx, entityIds);
+        appsCache.Update(appWorkCtx.Value, entityIds);
         l.Done();
     }
 
 
-    private void PublishWithoutPurge(int entityId)
+    private bool PublishWithoutPurge(int entityId)
     {
-        var l = Log.Fn($"PublishWithoutPurge({entityId})");
+        var l = Log.Fn<bool>($"{entityId}");
 
         // 1. make sure we're publishing the draft, because the entityId might be the published one...
-        var contEntity = AppWorkCtx.AppReader.List.FindRepoId(entityId);
+        var contEntity = appWorkCtx.Value.AppReader.List.FindRepoId(entityId);
+        
+        // Exit early
         if (contEntity == null)
-            l.A($"Will skip, couldn't find the entity {entityId}");
-        else
-        {
-            l.A($"found id: {contEntity.EntityId}, " +
-                $"rid: {contEntity.RepositoryId}, isPublished: {contEntity.IsPublished}");
+            return l.ReturnFalse($"Will skip, couldn't find the entity {entityId}");
+        
+        l.A($"found id: {contEntity.EntityId}, " +
+            $"rid: {contEntity.RepositoryId}, isPublished: {contEntity.IsPublished}");
 
-            var maybeDraft = contEntity.IsPublished
-                ? AppWorkCtx.AppReader.GetDraft(contEntity) ?? contEntity // if no draft exists, use current
-                : contEntity; // if it isn't published, use current
+        var entityMaybeDraft = contEntity.IsPublished
+            ? appWorkCtx.Value.AppReader.GetDraft(contEntity) ?? contEntity // if no draft exists, use current
+            : contEntity; // if it isn't published, use current
 
-            var repoId = maybeDraft.RepositoryId;
+        var repoId = entityMaybeDraft.RepositoryId;
 
-            l.A($"publish requested for:{entityId}, " +
-                $"will publish: {repoId} if published false (it's: {maybeDraft.IsPublished})");
+        l.A($"publish requested for:{entityId}, " +
+            $"will publish: {repoId} if published false (it's: {entityMaybeDraft.IsPublished})");
 
-            if (!maybeDraft.IsPublished)
-                AppWorkCtx.DbStorage.Publishing.PublishDraftInDbEntity(repoId, maybeDraft);
-        }
+        if (entityMaybeDraft.IsPublished)
+            return l.ReturnFalse("already published");
+        
+        // implement final changes
+        appWorkCtx.Value.DbStorage.Publishing.PublishDraftInDbEntity(repoId, entityMaybeDraft);
+        return l.ReturnTrue("published");
 
-        l.Done($"/PublishWithoutPurge({entityId})");
     }
 }

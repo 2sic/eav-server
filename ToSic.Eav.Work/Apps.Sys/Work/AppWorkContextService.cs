@@ -27,6 +27,11 @@ public class AppWorkContextService(
     public IAppWorkCtx Context(IAppReader appReader)
         => new AppWorkCtx(appReader);
 
+    public IDisposable WithContext(IAppReader appReader)
+    {
+        return OverrideService<IAppWorkCtxForDiWip>.Use(new AppWorkCtxNew(appReader, this));
+    }
+
     public IAppWorkCtx Context(IAppIdentity appIdentity)
         => new AppWorkCtx(appReaders.Value.GetOrKeep(appIdentity));
 
@@ -50,5 +55,7 @@ public class AppWorkContextService(
         => existingDb == null
             ? new(dbGen, appReader)
             : new AppWorkCtxWithDb(existingDb, appReader);
+
+    internal Generator<DbStorage, StorageOptions> DbGenerator => dbGen;
 
 }

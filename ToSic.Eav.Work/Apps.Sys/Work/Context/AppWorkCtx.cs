@@ -5,7 +5,7 @@
 /// This should help us change all the Read/Parts etc. to be fully functional and not depend on a Parent object. 
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppWorkCtx : IAppWorkCtx, IAppWorkCtxForDiWip
+public class AppWorkCtx : IAppWorkCtx
 {
     /// <inheritdoc />
     public int ZoneId { get; }
@@ -22,7 +22,7 @@ public class AppWorkCtx : IAppWorkCtx, IAppWorkCtxForDiWip
         AppReader = appReader;
     }
 
-    internal AppWorkCtx(IAppWorkCtx original)
+    protected AppWorkCtx(IAppWorkCtx original)
     {
         if (original == null)
             throw new ArgumentException(@"Original must exist", nameof(original));
