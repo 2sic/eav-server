@@ -16,4 +16,9 @@
     <ProjectReference Include="..\ToSic.Sys.TestHelpers\ToSic.Sys.TestHelpers.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="Sys.DI.OverrideRequired\" />
+  </ItemGroup>
+
 </Project>

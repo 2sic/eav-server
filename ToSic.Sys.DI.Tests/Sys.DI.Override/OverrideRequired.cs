@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Mock.LifetimeServices;
 
-namespace ToSic.Sys.DI.OverrideRequired;
+namespace ToSic.Sys.DI.Override;
 
 public class OverrideRequired(IServiceProvider sp)
 {
@@ -11,20 +10,20 @@ public class OverrideRequired(IServiceProvider sp)
     /// <summary>
     /// This is the interface we must look for, so we can register it separately from the proper implementation.
     /// </summary>
-    private interface IMockMustOverride
+    private interface ICarInitiallyUndefined
     {
         int Value { get; set; }
     }
 
-    private class MockMustOverrideOk : IMockMustOverride
+    private class ICarFord : ICarInitiallyUndefined
     {
-        public const int InitialValue = 20395;
+        private const int InitialValue = 20395;
         public int Value { get; set; } = InitialValue;
     }
 
-    private class MockMustOverrideWillThrow : MockMustOverrideOk
+    private class CarUndefinedWillThrow : ICarFord
     {
-        public MockMustOverrideWillThrow()
+        public CarUndefinedWillThrow()
         {
             throw new NotSupportedException();
         }
@@ -39,8 +38,8 @@ public class OverrideRequired(IServiceProvider sp)
     {
         // Register the MockChildScopeOnlyTransientPreRegistered as a transient service
         // we'll later access it through the interface, but
-        services.TryAddTransient(OverrideService<IMockMustOverride>.Register(() => new MockMustOverrideWillThrow()));
-        services.TryAddTransient<MockMustOverrideOk>();  // make sure the underlying real implementation can be resolved
+        services.TryAddTransient(OverrideService<ICarInitiallyUndefined>.Register(() => new CarUndefinedWillThrow()));
+        services.TryAddTransient<ICarFord>();  // make sure the underlying real implementation can be resolved
     });
     
     
@@ -49,32 +48,32 @@ public class OverrideRequired(IServiceProvider sp)
     
     [Fact]
     public void TypeWhichMustBeOverridden_NoOverride_Throws()
-        => Throws<NotSupportedException>(sp.GetService<IMockMustOverride>);
+        => Throws<NotSupportedException>(sp.GetService<ICarInitiallyUndefined>);
 
 
     [Fact]
     public void TypeWhichMustBeOverridden_ReplacedWithType_NotNull()
     {
-        using (OverrideService<IMockMustOverride>.Use<MockMustOverrideOk>())
+        using (OverrideService<ICarInitiallyUndefined>.Use<ICarFord>())
         {
-            NotNull(sp.GetService<IMockMustOverride>());
+            NotNull(sp.GetService<ICarInitiallyUndefined>());
         }
     }
     [Fact]
     public void TypeWhichMustBeOverridden_ReplacedWithType_IsNewType()
     {
-        using (OverrideService<IMockMustOverride>.Use<MockMustOverrideOk>())
+        using (OverrideService<ICarInitiallyUndefined>.Use<ICarFord>())
         {
-            IsType<MockMustOverrideOk>(sp.GetService<IMockMustOverride>());
+            IsType<ICarFord>(sp.GetService<ICarInitiallyUndefined>());
         }
     }
 
     [Fact]
     public void TypeWhichMustBeOverridden_ReplacedWithValue_IsNewType()
     {
-        using (OverrideService<IMockMustOverride>.Use(_ => new MockMustOverrideOk()))
+        using (OverrideService<ICarInitiallyUndefined>.Use(_ => new ICarFord()))
         {
-            IsType<MockMustOverrideOk>(sp.GetService<IMockMustOverride>());
+            IsType<ICarFord>(sp.GetService<ICarInitiallyUndefined>());
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace ToSic.Sys.DI.OverrideRequired;
+namespace ToSic.Sys.DI.Override;
 
 public class OverrideVsNoOverride(IServiceProvider sp)
 {
@@ -12,7 +12,7 @@ public class OverrideVsNoOverride(IServiceProvider sp)
         int Value { get; set; }
     }
 
-    private class Implementation() : IInterface
+    private class Implementation : IInterface
     {
         private const int InitialValue = 602305;
         public int Value { get; set; } = InitialValue;
