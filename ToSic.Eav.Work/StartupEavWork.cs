@@ -61,6 +61,8 @@ public static class StartupEavWork
         services.TryAddScoped<ExportListXml>();
         services.TryAddScoped<ImportListXml>();
 
+        // v22 - Enable AppWorkCtx to be injected
+        services.AddAppWorkContext();
 
         return services;
     }
@@ -76,6 +78,19 @@ public static class StartupEavWork
     /// </remarks>
     public static IServiceCollection AddWorkFallbackServices(this IServiceCollection services)
     {
+        return services;
+    }
+    
+    /// <summary>
+    /// New / WIP v22
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddAppWorkContext(this IServiceCollection services)
+    {
+        // Make sure that when nothing was overridden, we will get an exception, so that we don't accidentally use a missing context
+        services.TryAddTransient<AppWorkCtxForDiMissing>();
+        services.TryAddTransient(OverrideService<IAppWorkCtxForDiWip>.Register<AppWorkCtxForDiMissing>());
 
         return services;
     }
