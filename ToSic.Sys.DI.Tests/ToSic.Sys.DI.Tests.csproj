@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Sys.DI.OverrideRequired\**" />
+    <EmbeddedResource Remove="Sys.DI.OverrideRequired\**" />
+    <None Remove="Sys.DI.OverrideRequired\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Xunit.Priority" Version="1.1.6" />
   </ItemGroup>
 
@@ -14,11 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
     <ProjectReference Include="..\ToSic.Sys.TestHelpers\ToSic.Sys.TestHelpers.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Sys.DI.OverrideRequired\" />
   </ItemGroup>
 
 </Project>
