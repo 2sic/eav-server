@@ -57,7 +57,7 @@ public class OverrideLazy(IServiceProvider sp)
     
 
     [Fact]
-    public void Lazy_Incorrect()
+    public void Lazy()
     {
         Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
