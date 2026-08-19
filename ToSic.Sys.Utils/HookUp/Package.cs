@@ -1,4 +1,8 @@
-﻿namespace ToSic.Sys.HookUp;
+﻿using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
+using ToSic.Sys.Utils;
+
+namespace ToSic.Sys.HookUp;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record Package<TData> : IPackage
@@ -31,15 +35,40 @@ public record Package<TData> : IPackage
         get;
         init;
     } = [];
+
+    public IImmutableStack<string> History { get; init; } = [];
 }
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class PackageExtensions
 {
-    public static Package<TData> ToPackage<TData>(this TData data) => new(data);
-    public static Package<T> RePackage<TData, T>(this Package<TData> package, T data) => new(data)
+    public static Package<TData> ToPackage<TData>(
+        this TData data,
+        [CallerFilePath] string? callerFilePath = null
+    ) => new(data) { History = ["Created package"] };
+
+    extension<TData>(Package<TData> package)
     {
-        Decision = package.Decision,
-        Exceptions = package.Exceptions
-    };
+        public Package<T> RePackage<T>(T data,
+            [CallerFilePath] string? callerFilePath = null
+        ) => new(data)
+        {
+            Decision = package.Decision,
+            Exceptions = package.Exceptions,
+            History = package.History.Push($"Repackaged from {callerFilePath.After("\\")}")
+        };
+
+        public Package<TData> Visited([CallerFilePath] string? callerFilePath = null
+        ) => package with
+        {
+            History = package.History.Push($"Visited from {callerFilePath.After("\\")}")
+        };
+
+        public Package<TData> LogSkipped(string? message = default,
+            [CallerFilePath] string? callerFilePath = null
+        ) => package with
+        {
+            History = package.History.Push($"Skipped '{message}' in {callerFilePath.After("\\")}")
+        };
+    }
 }

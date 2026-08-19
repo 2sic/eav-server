@@ -60,6 +60,7 @@ internal class WorkSequenceBase<TWork, TData>(IEnumerable<TWork> works, Func<Wor
 
                     // Skip: ignore this work, but continue with the next one
                     case ResultState.Skip:
+                        payload = payload.LogSkipped($"Work {work.GetType().Name} skipped");
                         continue;
 
                     // Default: update the payload and continue with the next work

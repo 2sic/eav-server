@@ -24,7 +24,7 @@ public static class SubstringExtensions
     /// <param name="caseSensitive">Set to true if you need case-sensitive compare</param>
     /// <returns></returns>
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static string? After(this string value, string key, bool caseSensitive = false)
+    public static string? After(this string? value, string? key, bool caseSensitive = false)
         => value.AfterInternal(key, caseSensitive ? Ordinal : InvariantCultureIgnoreCase);
 
     // 2023-09-15 2dm removing, as it's now used from RazorBlade...
