@@ -18,12 +18,24 @@ public record WorkContext
 
     internal Dictionary<string, object?> Items { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 
+    public virtual TContext Get<TContext>()
+        => Get<TContext>(typeof(TContext).Name);
+    public virtual TContext? TryGet<TContext>()
+        => TryGet<TContext>(typeof(TContext).Name);
+    
     public virtual TContext Get<TContext>(string name)
     {
         if (Items.TryGetValue(name, out var context))
             return (TContext)context!;
 
         throw new KeyNotFoundException($"Context '{name}' of type {typeof(TContext)} not found.");
+    }
+    
+    public virtual TContext? TryGet<TContext>(string name)
+    {
+        if (Items.TryGetValue(name, out var context))
+            return (TContext)context!;
+        return default;
     }
 
     #endregion

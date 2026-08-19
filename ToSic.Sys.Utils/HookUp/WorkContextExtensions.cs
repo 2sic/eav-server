@@ -9,6 +9,12 @@ public static class WorkContextExtensions
                 [name] = value
             }
         };
+    public static WorkContext With<TContext>(this WorkContext context, TContext? value) =>
+        context with { Items = new(context.Items, StringComparer.OrdinalIgnoreCase)
+            {
+                [typeof(TContext).Name] = value
+            }
+        };
     
     public static WorkContext With(this WorkContext context, IEnumerable<KeyValuePair<string, object?>> values)
     {

@@ -24,8 +24,12 @@ public static class StartupSysUtils
 
     public static IServiceCollection AddHookUp(this IServiceCollection services)
     {
-        services.TryAddTransient<IHookUp, HookUp.HookUpBase>();
+        services.TryAddTransient<IHookUp, HookUpBase>();
         services.TryAddTransient(typeof(RemoteWork<,,>));
+        services.TryAddTransient(typeof(WorkSequenceManual<,>));
+        services.TryAddTransient(typeof(IWorkSequenceManual<,>), typeof(WorkSequenceManual<,>));
+        services.TryAddTransient(typeof(WorkSequence<,>));
+        services.TryAddTransient(typeof(IWorkSequence<,>), typeof(WorkSequence<,>));
         return services;
     }
 }
