@@ -5,6 +5,6 @@
 /// </summary>
 public interface IPackage
 {
-    DataPreprocessorDecision Decision { get; init; }
+    ResultState Decision { get; init; }
     List<Exception> Exceptions { get; init; }
 }

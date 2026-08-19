@@ -17,11 +17,11 @@ public record Package<TData> : IPackage
     /// <summary>
     /// Decision, not worked out yet, should be able to tell upstream to stop
     /// </summary>
-    public DataPreprocessorDecision Decision
+    public ResultState Decision
     {
-        get => Exceptions.Any() ? DataPreprocessorDecision.Error : field;
+        get => Exceptions.Any() ? ResultState.Error : field;
         init;
-    } = DataPreprocessorDecision.Continue;
+    } = ResultState.Default;
 
     /// <summary>
     /// Collection of problems / exceptions which occured.

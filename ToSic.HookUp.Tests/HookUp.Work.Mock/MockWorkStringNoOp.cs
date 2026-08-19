@@ -22,7 +22,7 @@ internal class MockWorkStringNoOpWithException : IWork<string, string?>
         => Task.FromResult(new Package<string?>
         {
             Data = null,
-            Decision = DataPreprocessorDecision.Error,
+            Decision = ResultState.Error,
             Exceptions = [new(ErrorMessage)]
         });
 }

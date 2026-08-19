@@ -34,7 +34,7 @@ public class WorkEntityBlockUsers(IUser user): IWork<PermissionCheckPayload, IEn
             : new()
             {
                 Data = null,
-                Decision = DataPreprocessorDecision.Error,
+                Decision = ResultState.Error,
                 Exceptions = [new UnauthorizedAccessException($"User is not authorized to {package.Data.Action} this entity.")]
             });
 

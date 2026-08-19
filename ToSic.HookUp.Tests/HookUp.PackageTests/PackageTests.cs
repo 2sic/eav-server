@@ -58,11 +58,11 @@ public class PackageTests
         var repackagedData = "Repackaging Reason";
         // Act
         var package = data.ToPackage();
-        package = package with { Decision = DataPreprocessorDecision.Error };
+        package = package with { Decision = ResultState.Error };
         package = package.RePackage(repackagedData);
         // Assert
         Equal(repackagedData, package.Data);
-        Equal(DataPreprocessorDecision.Error, package.Decision);
+        Equal(ResultState.Error, package.Decision);
     }
 
 }

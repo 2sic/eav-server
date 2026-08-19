@@ -19,7 +19,7 @@ public class WorkVerifyBasic
         var work = new MockWorkStringNoOpWithException();
         var result = await work.Handle(new(), "test".ToPackage());
         Null(result.Data); // Check for null string or empty
-        Equal(DataPreprocessorDecision.Error, result.Decision);
+        Equal(ResultState.Error, result.Decision);
         NotEmpty(result.Exceptions);
         Contains(MockWorkStringNoOpWithException.ErrorMessage, result.Exceptions.Select(e => e.Message));
     }
