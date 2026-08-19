@@ -25,40 +25,6 @@ public class ContentTypeChangeActionRunnerTests
         Equal(new[] { "Alpha", "Beta" }, action.Types.OrderBy(t => t).ToArray());
     }
 
-    /// <summary>
-    /// The caller uses prepareForRun to purge the app-cache, so actions see field settings
-    /// from after the save. It must run after resolving (which needs the attribute) and before
-    /// the first action - and not at all when there is nothing to generate.
-    /// </summary>
-    [Fact]
-    public void PrepareForRunHappensOnceBeforeTheActions()
-    {
-        var (runner, action) = NewRunner();
-        var prepared = 0;
-
-        runner.RunForFieldMetadata(AppId, ContentTypes(), [AttributeTarget(11), AttributeTarget(21)],
-            prepareForRun: () =>
-            {
-                Empty(action.Types); // nothing generated yet
-                prepared++;
-            });
-
-        Equal(1, prepared);
-        Equal(new[] { "Alpha", "Beta" }, action.Types.OrderBy(t => t).ToArray());
-    }
-
-    [Fact]
-    public void PrepareForRunSkippedWhenNothingToGenerate()
-    {
-        var (runner, _) = NewRunner();
-        var prepared = 0;
-
-        runner.RunForFieldMetadata(AppId, ContentTypes(), [AttributeTarget(999)],
-            prepareForRun: () => prepared++);
-
-        Equal(0, prepared);
-    }
-
     [Fact]
     public void UnknownOrNonFieldTargetsTriggerNothing()
     {

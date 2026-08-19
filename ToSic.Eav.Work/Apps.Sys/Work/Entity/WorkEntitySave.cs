@@ -75,11 +75,8 @@ public class WorkEntitySave(
         appReader.GetCache().DoInLock(Log, () => ids = InnerSaveInLock());
 
         // Field settings are metadata, so saving them here is a content-type change (eg. for code generation).
-        // The purge is required: this save only did a partial cache update, which skips the content-type
-        // load, so the actions would otherwise read field settings from before this save.
         contentTypeChangeActions.Value
-            .RunForFieldMetadata(MyOptions.AppId, appReader.ContentTypes, metadataTargets,
-                prepareForRun: () => appsCache.Purge(appReader));
+            .RunForFieldMetadata(MyOptions.AppId, appReader.ContentTypes, metadataTargets);
 
         return l.Return(ids, $"ids:{ids.Count}");
 

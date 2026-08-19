@@ -41,40 +41,18 @@ public class ContentTypeChangeActionRunner(
     /// Run actions for the content-types owning the fields which these metadata targets describe.
     /// Best-effort: an optional generation problem must never break the save which triggered it.
     /// </summary>
-    /// <param name="prepareForRun">
-    /// Called once before the first action, only if there is anything to run.
-    /// Callers whose save did NOT purge the app-cache must use this to force a full reload -
-    /// see the remarks, this is not optional for them.
-    /// </param>
-    /// <remarks>
-    /// IMPORTANT: actions read field settings off the content-type, and a partial app-cache update
-    /// (AppStateLoadSequence.ItemLoad) explicitly skips the content-type load - see
-    /// EfcAppLoaderService.Update, "skipping content-type load". So an entity-save which only did
-    /// appsCache.Update() leaves the old IContentTypeField objects in place, and generation would
-    /// run against field settings that predate the save. The schema paths in WorkAttributesMod don't
-    /// have this problem, because DbStorage purges the whole app on save.
-    /// </remarks>
-    public void RunForFieldMetadata(int appId, IEnumerable<IContentType> contentTypes, IEnumerable<ITarget> targets, Action? prepareForRun = default)
+    public void RunForFieldMetadata(int appId, IEnumerable<IContentType> contentTypes, IEnumerable<ITarget> targets)
     {
         var l = Log.Fn($"app:{appId}");
         try
         {
-            // Resolve first - this still needs the pre-purge state, which knows the attribute.
-            // Materialize too, as actions reload the app-state we're reading here.
+            // Materialize before running any action, as actions reload the app-state we're reading here.
             var typeNames = targets
                 .Where(t => t.TargetType == (int)TargetTypes.Attribute && t.KeyNumber.HasValue)
                 .Select(t => contentTypes.FindAttribute(t.KeyNumber!.Value).ContentType?.NameId)
                 .Where(name => name.HasValue())
                 .Distinct(StringComparer.InvariantCultureIgnoreCase)
                 .ToList();
-
-            if (typeNames.Count == 0)
-            {
-                l.Done("no field metadata");
-                return;
-            }
-
-            prepareForRun?.Invoke();
 
             foreach (var typeName in typeNames)
                 RunFor(appId, typeName!, ContentTypeChangeSources.ContentTypeField);
