@@ -24,9 +24,10 @@ public class WorkEntitySave(
     LazySvc<DataAssembler> dataAssembler,
     AppsCacheSwitch appsCache,
     LazySvc<IImportExportEnvironment> environmentLazy,
-    DataImportLogSettings importLogSettings
+    DataImportLogSettings importLogSettings,
+    LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions
     )
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntSav", connect: [dataAssembler, appsCache, environmentLazy])
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntSav", connect: [dataAssembler, appsCache, environmentLazy, contentTypeChangeActions])
 {
     // Note: Singleton
 
@@ -59,6 +60,11 @@ public class WorkEntitySave(
     {
         var l = Log.Fn<ICollection<EntityIdentity>>($"save count:{entities.Count}");
 
+        // Note the metadata targets before saving, as InnerSaveInLock replaces the entity objects.
+        var metadataTargets = entities
+            .Select(pair => pair.Entity.MetadataFor)
+            .ToListOpt();
+
         // Run the change in a lock/transaction
         // This is to avoid parallel creation of new entities
         // because sometimes the save may be executed twice before the state knows that the entity exists
@@ -67,6 +73,14 @@ public class WorkEntitySave(
         var appReader = MyOptions.AppReader;
         List<EntityIdentity> ids = null!;
         appReader.GetCache().DoInLock(Log, () => ids = InnerSaveInLock());
+
+        // Field settings are metadata, so saving them here is a content-type change (eg. for code generation).
+        // The purge is required: this save only did a partial cache update, which skips the content-type
+        // load, so the actions would otherwise read field settings from before this save.
+        contentTypeChangeActions.Value
+            .RunForFieldMetadata(MyOptions.AppId, appReader.ContentTypes, metadataTargets,
+                prepareForRun: () => appsCache.Purge(appReader));
+
         return l.Return(ids, $"ids:{ids.Count}");
 
         // Inner call which will be executed with the Lock of the AppState

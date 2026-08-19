@@ -37,7 +37,11 @@ public class WorkAttributesMod(
                 id: 0,
                 sortOrder: sortOrder
             );
-        var id = AddFieldToDbAndInitGeneralMetadata(contentTypeId, attDef, inputType);
+        // Suppress while saving, because the app-reader is stale here (adding the field purged the cache),
+        // so only this method can resolve the content-type reliably - from the id it was given.
+        var id = 0;
+        contentTypeChangeActions.Value.DoWithoutActions(
+            () => id = AddFieldToDbAndInitGeneralMetadata(contentTypeId, attDef, inputType));
         if (triggerPostSave)
             // Field definition changed => generated models may have new/removed properties.
             TriggerPostSaveForContentType(GetContentType(contentTypeId));
@@ -83,7 +87,6 @@ public class WorkAttributesMod(
     {
         var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
         // Capture content-type before mutation because this path only receives fieldDef id.
-
         var attribute = MyOptions.DbStorage.Attributes.GetTracked(attributeId)
                         ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
         var contentTypeId = attribute.ContentTypeId;
@@ -91,7 +94,9 @@ public class WorkAttributesMod(
         var newValues = new Dictionary<string, object> { { nameof(IFieldSettingsGeneral.InputType), inputType } };
 
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        workMetadata.New(MyOptions).SaveMetadata(meta, IFieldSettingsGeneral.Constants.ContentTypeName, newValues);
+        // Suppress during save, so the trigger below is the single one, using the id we already know.
+        contentTypeChangeActions.Value.DoWithoutActions(
+            () => workMetadata.New(MyOptions).SaveMetadata(meta, IFieldSettingsGeneral.Constants.ContentTypeName, newValues));
         TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
@@ -260,13 +265,23 @@ public class WorkAttributesMod(
     private void TriggerPostSaveForContentType(IContentType? contentType)
     {
         if (contentType == null)
+        {
+            Log.A("No content-type found, so no post-save actions will run.");
             return;
+        }
 
         // Runner is intentionally best-effort so editor save is never blocked by optional generation issues.
-        contentTypeChangeActions.Value.RunFor(
-            MyOptions.AppId,
-            contentType.NameId,
-            source: ContentTypeChangeSources.ContentTypeField);
+        try
+        {
+            contentTypeChangeActions.Value.RunFor(
+                MyOptions.AppId,
+                contentType.NameId,
+                source: ContentTypeChangeSources.ContentTypeField);
+        }
+        catch (Exception ex)
+        {
+            Log.Ex($"Error running post-save actions for '{contentType.NameId}'; the save itself is not affected.", ex);
+        }
     }
 
     #endregion

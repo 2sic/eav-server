@@ -48,7 +48,7 @@ public static class AppStateMetadataTargetExtensions
                 ? default
                 : contentTypes.FindAttribute(keyInt);
 
-        private (IContentType ContentType, IContentTypeField Attribute) FindAttribute(int id)
+        public (IContentType ContentType, IContentTypeField Attribute) FindAttribute(int id)
         {
             var allLocalCts = contentTypes
                 .Where(ct => !ct.HasAncestor());
