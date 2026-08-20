@@ -104,25 +104,26 @@ public class ExtensionManifestService() : ServiceBase("Ext.ManSvc")
 
     #region Helper Methods
 
-    /// <summary>
-    /// Extract GUIDs from <see cref="ExtensionManifest.Releases"/> when it is an array of GUID strings.
-    /// Returns an empty list if shape is different.
-    /// </summary>
-    public IReadOnlyList<Guid> GetReleaseGuids(ExtensionManifest manifest)
-    {
-        var list = new List<Guid>();
-        var releases = manifest.Releases;
-        if (releases.ValueKind == JsonValueKind.Array)
-            foreach (var item in releases.EnumerateArray())
-            {
-                if (item.ValueKind != JsonValueKind.String)
-                    continue;
-                var s = item.GetString();
-                if (s != null && Guid.TryParse(s, out var g))
-                    list.Add(g);
-            }
-        return list;
-    }
+    // 2026-08-20 2dm - seems to be unused code, remove EOY
+    ///// <summary>
+    ///// Extract GUIDs from <see cref="ExtensionManifest.Releases"/> when it is an array of GUID strings.
+    ///// Returns an empty list if shape is different.
+    ///// </summary>
+    //public IReadOnlyList<Guid> GetReleaseGuids(ExtensionManifest manifest)
+    //{
+    //    var list = new List<Guid>();
+    //    var releases = manifest.Releases;
+    //    if (releases.ValueKind == JsonValueKind.Array)
+    //        foreach (var item in releases.EnumerateArray())
+    //        {
+    //            if (item.ValueKind != JsonValueKind.String)
+    //                continue;
+    //            var s = item.GetString();
+    //            if (s != null && Guid.TryParse(s, out var g))
+    //                list.Add(g);
+    //        }
+    //    return list;
+    //}
 
     ///// <summary>
     ///// Extract bundle GUIDs from <see cref="ExtensionManifest.Bundles"/>.
