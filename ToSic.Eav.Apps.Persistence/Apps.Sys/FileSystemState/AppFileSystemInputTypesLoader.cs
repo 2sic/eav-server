@@ -304,12 +304,13 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         return l.Return(result, $"normalized: base='{basePath}', edition='{editionPrefix}', file='{normalized}'");
     }
 
-    private static readonly JsonSerializerOptions ManifestSerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        AllowTrailingCommas = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-    };
+    // 2026-08-20 2dm - seems unused, commented out; #ToRemoveV24
+    //private static readonly JsonSerializerOptions ManifestSerializerOptions = new()
+    //{
+    //    PropertyNameCaseInsensitive = true,
+    //    AllowTrailingCommas = true,
+    //    ReadCommentHandling = JsonCommentHandling.Skip,
+    //};
 
     #endregion
 }
