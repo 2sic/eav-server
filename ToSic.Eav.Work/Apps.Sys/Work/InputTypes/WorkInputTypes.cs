@@ -11,7 +11,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkInputTypes(
     LazySvc<AppWorkContextService> appWorkCtxSvc,
     LazySvc<IAppReaderFactory> appReaders,
-    LazySvc<IAppInputTypesLoader> appFileSystemLoaderLazy,
+    Generator<IAppInputTypesLoader, AppFileSystemLoaderOptions> appFileSystemLoaderLazy,
     LazySvc<AppWorkContextService> ctxSvc)
     : ServiceWithSetup<IAppWorkContext>("ApS.InpGet", connect: [appWorkCtxSvc, appReaders, appFileSystemLoaderLazy, ctxSvc])
 {
@@ -137,8 +137,7 @@ public class WorkInputTypes(
         var l = Log.Fn<ICollection<InputTypeInfo>>();
         try
         {
-            var appLoader = appFileSystemLoaderLazy.Value;
-            appLoader.Init(MyOptions.AppReader, new());
+            var appLoader = appFileSystemLoaderLazy.New(new(MyOptions.AppReader, new()));
             var inputTypes = appLoader.InputTypes();
             return l.Return(inputTypes, $"{inputTypes.Count}");
         }

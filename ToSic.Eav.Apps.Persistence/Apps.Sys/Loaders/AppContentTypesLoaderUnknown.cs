@@ -1,12 +1,14 @@
-﻿using ToSic.Eav.Data.Sys.Entities.Sources;
+﻿using ToSic.Eav.Apps.Sys.FileSystemState;
+using ToSic.Eav.Apps.Sys.PresetLoaders;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 
-namespace ToSic.Eav.Apps.Sys.PresetLoaders;
+namespace ToSic.Eav.Apps.Sys.Loaders;
 
-internal class AppContentTypesLoaderUnknown: ServiceBase, IAppContentTypesLoader, IIsUnknown
+internal class AppContentTypesLoaderUnknown: ServiceWithSetup<AppFileSystemLoaderOptions>, IAppContentTypesLoader, IIsUnknown
 {
     public AppContentTypesLoaderUnknown(WarnUseOfUnknown<AppContentTypesLoaderUnknown> _) : base(LogScopes.NotImplemented + ".RepLdr") { }
 
-    public void Init(IAppReader app, ToSic.Sys.Logging.LogSettings logSettings, string? appFolderBeforeReaderIsReady = default)
+    public void Init(AppFileSystemLoaderOptions options)
     {
         Log.A("Unknown App Repo loader - won't load anything");
     }

@@ -2,10 +2,10 @@
 
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
-internal sealed class AppInputTypesLoaderUnknown(WarnUseOfUnknown<AppInputTypesLoaderUnknown> _) : ServiceBase(LogConstants.FullNameUnknown), IAppInputTypesLoader, IIsUnknown
+internal sealed class AppInputTypesLoaderUnknown(WarnUseOfUnknown<AppInputTypesLoaderUnknown> _) : ServiceWithSetup<AppFileSystemLoaderOptions>(LogConstants.FullNameUnknown), IAppInputTypesLoader, IIsUnknown
 {
     // do nothing
-    public void Init(IAppReader reader, ToSic.Sys.Logging.LogSettings logSettings, string? optionalOverrideAppFolder = default)
+    public void Init(AppFileSystemLoaderOptions options)
     {
         Log.A("Unknown App Repo loader - won't load anything");
     }

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.Sys.FileSystemState;
 using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Build.Sys;
@@ -15,7 +16,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 
 internal class EfcContentTypeLoaderService(
     EfcAppLoaderService efcAppLoader,
-    Generator<IAppContentTypesLoader> appFileContentTypesLoader,
+    Generator<IAppContentTypesLoader, AppFileSystemLoaderOptions> appFileContentTypesLoader,
     Generator<IDataDeserializer> dataDeserializer,
     ContentTypeAssemblyKit ctAssemblyKit,
     IAppStateCacheService appStates,
@@ -65,8 +66,8 @@ internal class EfcContentTypeLoaderService(
     {
         var l = Log.Fn<PartialData>(timer: true);
         // must create a new loader for each app
-        var loader = appFileContentTypesLoader.New();
-        loader.Init(appReader, efcAppLoader.LogSettings);
+        var loader = appFileContentTypesLoader.New(new(appReader, efcAppLoader.LogSettings));
+        //loader.Init(new(appReader, efcAppLoader.LogSettings));
         var types = loader.TypesAndEntities(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }

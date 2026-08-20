@@ -58,14 +58,11 @@ public class ExtensionManifestService() : ServiceBase("Ext.ManSvc")
             // JsonElement holds a pointer to a JsonDocument which may be disposed after this method returns.
             var result = tempResult with
             {
-                //InputTypeAssets = CloneJsonElement(tempResult.InputTypeAssets),
                 DataBundles = CloneJsonElement(tempResult.DataBundles),
-                //Bundles = CloneJsonElement(tempResult.Bundles),
                 Releases = CloneJsonElement(tempResult.Releases),
                 InputFieldAssets = CloneJsonElement(tempResult.InputFieldAssets)
             };
             
-            //return l.Return(result, $"inputType:'{result.InputTypeInside}', version:'{result.Version}', editionsSupported:{result.EditionsSupported}");
             return l.Return(result, $"inputType:'{result.InputFieldInside}', version:'{result.Version}', editionsSupported:{result.EditionsSupported}");
         }
         catch (Exception ex)
@@ -86,7 +83,7 @@ public class ExtensionManifestService() : ServiceBase("Ext.ManSvc")
     private static JsonElement CloneJsonElement(JsonElement element)
     {
         // If the element is undefined/null, return it as-is to keep semantics
-        if (element.ValueKind == JsonValueKind.Undefined || element.ValueKind == JsonValueKind.Null)
+        if (element.ValueKind is JsonValueKind.Undefined or JsonValueKind.Null)
             return element;
 
         // Clone by parsing its raw text to a new document and cloning the root element
@@ -99,8 +96,9 @@ public class ExtensionManifestService() : ServiceBase("Ext.ManSvc")
     /// </summary>
     /// <param name="extensionFolder">The extension folder.</param>
     /// <returns>FileInfo for the manifest file (may not exist).</returns>
-    public FileInfo GetManifestFile(DirectoryInfo extensionFolder)
-        => new(Path.Combine(extensionFolder.FullName, FolderConstants.DataFolderProtected, FolderConstants.AppExtensionJsonFile));
+    public static FileInfo GetManifestFileInfo(string extensionFolder)
+        => new(Path.Combine(extensionFolder, FolderConstants.DataFolderProtected, FolderConstants.AppExtensionJsonFile));
+
 
     #region Helper Methods
 

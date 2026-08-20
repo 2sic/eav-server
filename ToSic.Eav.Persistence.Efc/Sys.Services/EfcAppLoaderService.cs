@@ -2,6 +2,7 @@
 using System.Text.Json;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.FileSystemState;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.LogSettings;
@@ -39,7 +40,7 @@ public class EfcAppLoaderService(
     DataAssembler dataAssembler,
     ContentTypeAssemblyKit ctAssemblyKit,
     Generator<IDataDeserializer> dataDeserializer,
-    Generator<IAppContentTypesLoader> appFileContentTypesLoader,
+    Generator<IAppContentTypesLoader, AppFileSystemLoaderOptions> appFileContentTypesLoader,
     Generator<IAppStateBuilder> appStateBuilder)
     : ServiceBase("Db.Efc11",
         connect:
