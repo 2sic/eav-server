@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ToSic.Eav.Apps.Sys.FileSystemState;
+namespace ToSic.Eav.Apps.Sys.Extensions;
 
 /// <summary>
 /// Manifest structure for extension.json files.

@@ -2,7 +2,7 @@ using System.Text.Json;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Apps.Sys.FileSystemState;
+namespace ToSic.Eav.Apps.Sys.Extensions;
 
 /// <summary>
 /// Service for loading and working with extension.json manifests.
