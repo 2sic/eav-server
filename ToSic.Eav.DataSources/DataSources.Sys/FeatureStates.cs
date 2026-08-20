@@ -35,6 +35,9 @@ public sealed class FeatureStates : CustomDataSource
     [Configuration(Fallback = "")]
     public string FeatureId => Configuration.GetThis<string>("");
 
+    [Configuration(Fallback = false)]
+    public bool All => Configuration.GetThis(false);
+
     [PrivateApi]
     public FeatureStates(Dependencies services, ISysFeaturesService featuresService)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [featuresService])
@@ -49,10 +52,12 @@ public sealed class FeatureStates : CustomDataSource
     {
         var filterIds = FeatureId.CsvToArrayWithoutEmpty();
 
-        if (!filterIds.Any())
+        if (filterIds.Any() is false && All is false)
             return [];
 
-        var features = featuresService.All.Where(feature => filterIds.Contains(feature.NameId, StringComparer.InvariantCultureIgnoreCase));
+        var features = filterIds.Any()
+            ? featuresService.All.Where(feature => filterIds.Contains(feature.NameId, StringComparer.InvariantCultureIgnoreCase))
+            : featuresService.All;
 
         return features
             .OrderBy(feature => feature.NameId)
