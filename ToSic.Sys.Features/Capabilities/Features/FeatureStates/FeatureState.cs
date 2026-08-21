@@ -1,10 +1,9 @@
 ﻿using ToSic.Sys.Capabilities.Aspects;
-using ToSic.Sys.Capabilities.SysFeatures;
 
 namespace ToSic.Sys.Capabilities.Features;
 
 /// <summary>
-/// Information about an enabled feature
+/// The state of a feature - both enabled/disabled and its internal definition + any custom configuration.
 /// </summary>
 [PrivateApi("no good reason to publish this")]
 [ShowApiWhenReleased(ShowApiMode.Never)]

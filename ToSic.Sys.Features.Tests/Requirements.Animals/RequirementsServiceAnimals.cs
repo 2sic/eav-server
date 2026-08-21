@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Sys.DI;
+﻿using ToSic.Sys.DI;
 using ToSic.Sys.Requirements;
 using static ToSic.Sys.Features.Requirements.Animals.MockAnimalRequirementsCheck;
 
@@ -9,8 +8,7 @@ public class RequirementsServiceAnimals(IRequirementsService requirementsService
 {
     public class Startup() : QuickStartup(services => services
         .AddSysCapabilitiesAndSysCore()
-        .AddTransient<IRequirementCheck, MockAnimalRequirementsCheck>()
-        // V22 - WIP - moving requirement checks to keyed services
+        // V22 - moving requirement checks to keyed services
         .AddKeyedTransientWithMarker<IRequirementCheck, MockAnimalRequirementsCheck>(Animal)
     );
 

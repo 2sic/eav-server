@@ -17,33 +17,32 @@ public class SysFeatureRequirementChecks(IRequirementsService requirementsServic
     {
         featuresSvc.UpdateFeatureList(new(), sysFeatLoader.Load());
     }
-    
-    [Theory]
+
 #if NETCOREAPP
-    [InlineData(true)]
+    private const bool NetCore = true;
 #else
-    [InlineData(false)]
+    private const bool NetCore = false;
 #endif
-    public void Requirement_DotNetCore_MatchesTestRuntime(bool expectsIsNull)
+
+
+    [Theory]
+    [InlineData(NetCore)]
+    public void Requirement_DotNetCore_MatchesTestRuntime(bool noIssueExpected)
     {
         LoadSysFeaturesFromAllAssemblies();
         
         var ok = requirementsService.CheckOneInternalTac(new(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetCore.DefStatic.NameId));
-        Equal(expectsIsNull, ok == null);
+        Equal(noIssueExpected, ok == null);
     }
 
     [Theory]
-#if NETCOREAPP
-    [InlineData(false)]
-#else
-    [InlineData(true)]
-#endif
-    public void Requirement_DotNetFramework_MatchesTestRuntime(bool expectsIsNull)
+    [InlineData(!NetCore)]
+    public void Requirement_DotNetFramework_MatchesTestRuntime(bool noIssueExpected)
     {
         LoadSysFeaturesFromAllAssemblies();
 
         var ok = requirementsService.CheckOneInternalTac(new(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetFramework.DefStatic.NameId));
-        Equal(expectsIsNull, ok == null);
+        Equal(noIssueExpected, ok == null);
     }
 
 }
