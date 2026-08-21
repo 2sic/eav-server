@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.Boot;
+using ToSic.Sys.Capabilities;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
@@ -32,6 +33,9 @@ public static class StartupSysCapabilities
         services.TryAddTransient<RequirementsService>();
         services.AddTransient<IRequirementCheck, FeatureRequirementCheck>();
         services.AddTransient<IRequirementCheck, SysFeatureRequirementCheck>();
+        // V22 - WIP - moving requirement checks to keyed services
+        services.AddKeyedTransientWithMarker<IRequirementCheck, FeatureRequirementCheck>(FeatureConstants.RequirementFeature);
+        services.AddKeyedTransientWithMarker<IRequirementCheck, SysFeatureRequirementCheck>(FeatureConstants.RequirementSysCapability);
 
         services.TryAddTransient<ILicenseService, LicenseService>();
 

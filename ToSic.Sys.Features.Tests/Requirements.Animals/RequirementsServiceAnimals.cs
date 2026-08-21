@@ -1,33 +1,33 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.DI;
 using ToSic.Sys.Requirements;
 using static ToSic.Sys.Features.Requirements.Animals.MockAnimalRequirementsCheck;
 
 namespace ToSic.Sys.Features.Requirements.Animals;
 
-public class RequirementsServiceAnimals(RequirementsService requirementsService)
+public class RequirementsServiceAnimals(RequirementsService requirementsService, IServiceProvider provider, Generator<IRequirementCheck> generator)
 {
     public class Startup() : QuickStartup(services => services
         .AddSysCapabilitiesAndSysCore()
         .AddTransient<IRequirementCheck, MockAnimalRequirementsCheck>()
         // V22 - WIP - moving requirement checks to keyed services
-        .TryAddKeyedTransient<IRequirementCheck, MockAnimalRequirementsCheck>(Animal)
+        .AddKeyedTransientWithMarker<IRequirementCheck, MockAnimalRequirementsCheck>(Animal)
     );
 
     private static Requirement RequiresElephant => new(Animal, Elephant);
     private static Requirement RequiresZebra => new(Animal, "Zebra");
 
     [Fact]
-    public void VerifySetup_HasOneMoreChecker()
-        => Equal(StartupHelpers.RequirementChecksInDiByDefault + 1, requirementsService.Checkers.Value.AllServices.Count);
+    public void VerifySetup_HasOneMoreKeyedChecker()
+        => Equal(StartupHelpers.RequirementChecksInDiByDefault + 1, provider.GetAllKeysForService<IRequirementCheck>().Count());
 
     [Fact]
     public void VerifySetup_HasAnimalChecker()
-        => NotNull(requirementsService.Checkers.Value.ByNameId(Animal));
+        => NotNull(generator.TryNew(Animal));
 
     [Fact]
     public void VerifySetup_NoForestChecker()
-        => Null(requirementsService.Checkers.Value.ByNameId("forest"));
+        => Null(generator.TryNew("forest"));
 
     [Fact]
     public void Requirement_Elephant_IsOk()

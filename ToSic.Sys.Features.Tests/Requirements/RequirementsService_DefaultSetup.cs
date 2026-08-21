@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Sys.DI;
-using ToSic.Sys.Requirements;
+﻿using ToSic.Sys.Requirements;
 
 namespace ToSic.Sys.Features.Requirements;
 
@@ -15,22 +13,8 @@ public class RequirementsService_DefaultSetup(RequirementsService requirementsSe
         // Arrange
         var requirementsList = new List<IHasRequirements>();
         // Act
-        var result = requirementsService.Check(requirementsList);
+        var result = requirementsService.CheckTac(requirementsList);
         // Assert
         Empty(result);
     }
-
-    [Fact]
-    public void ByDefault_Has2Checkers()
-        => Equal(StartupHelpers.RequirementChecksInDiByDefault, requirementsService.Checkers.Value.AllServices.Count);
-}
-
-
-public class RegisteredChecks(IServiceProvider provider)
-{
-    public class Startup() : QuickStartup(sc => sc.AddSysCapabilitiesAndSysCore());
-    
-    [Fact]
-    public void ByDefault_Has2Checkers()
-        => Equal(StartupHelpers.RequirementChecksInDiByDefault, provider.GetAllKeysForService<IRequirementCheck>().Count());
 }
