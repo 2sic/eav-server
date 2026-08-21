@@ -5,7 +5,7 @@ using static ToSic.Sys.Features.Requirements.Animals.MockAnimalRequirementsCheck
 
 namespace ToSic.Sys.Features.Requirements.Animals;
 
-public class RequirementsServiceAnimals(RequirementsService requirementsService, IServiceProvider provider, Generator<IRequirementCheck> generator)
+public class RequirementsServiceAnimals(IRequirementsService requirementsService, IServiceProvider provider, Generator<IRequirementCheck> generator)
 {
     public class Startup() : QuickStartup(services => services
         .AddSysCapabilitiesAndSysCore()
@@ -31,11 +31,11 @@ public class RequirementsServiceAnimals(RequirementsService requirementsService,
 
     [Fact]
     public void Requirement_Elephant_IsOk()
-        => Null(requirementsService.CheckTac(RequiresElephant));
+        => Null(requirementsService.CheckOneInternalTac(RequiresElephant));
 
     [Fact]
     public void Requirement_Zebra_IsNotOk()
-        => NotNull(requirementsService.CheckTac(RequiresZebra));
+        => NotNull(requirementsService.CheckOneInternalTac(RequiresZebra));
 
     [Fact]
     public void RequirementList_Elephant_IsOk()

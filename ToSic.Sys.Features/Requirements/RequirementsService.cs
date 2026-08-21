@@ -1,15 +1,14 @@
 ﻿namespace ToSic.Sys.Requirements;
 
-/// <summary>
-/// Internal service to check if a requirement has been met
-/// </summary>
+/// <inheritdoc cref="IRequirementsService"/>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class RequirementsService(Generator<IRequirementCheck> checkGenerator)
-    : ServiceBase("Lib.ReqSvc", connect: [checkGenerator])
+internal sealed class RequirementsService(Generator<IRequirementCheck> checkGenerator)
+    : ServiceBase("Lib.ReqSvc", connect: [checkGenerator]), IRequirementsService
 {
-    public IEnumerable<RequirementError> Check(IEnumerable<IHasRequirements> withRequirements)
+    /// <inheritdoc/>
+    public IEnumerable<RequirementIssue> Check(IEnumerable<IHasRequirements> withRequirements)
     {
-        var l = Log.Fn<IEnumerable<RequirementError>>();
+        var l = Log.Fn<IEnumerable<RequirementIssue>>();
 
         var list = Check(withRequirements
                 .SelectMany(r => r.Requirements)
@@ -19,23 +18,15 @@ public class RequirementsService(Generator<IRequirementCheck> checkGenerator)
         return l.Return(list, $"{list.Count} requirements failed");
     }
 
-    /// <summary>
-    /// Check all requirements of an object implementing IHasRequirements
-    /// </summary>
-    /// <param name="hasRequirements"></param>
-    /// <returns></returns>
-    public IEnumerable<RequirementError> Check(IHasRequirements hasRequirements) 
+    /// <inheritdoc/>
+    public IEnumerable<RequirementIssue> Check(IHasRequirements hasRequirements) 
         => Check(hasRequirements.Requirements);
 
-    /// <summary>
-    /// Check a list of requirements.
-    /// </summary>
-    /// <param name="requirements"></param>
-    /// <returns>A list of error objects or an empty list if all is ok</returns>
-    public IEnumerable<RequirementError> Check(IEnumerable<Requirement> requirements)
+    /// <inheritdoc/>
+    public IEnumerable<RequirementIssue> Check(IEnumerable<Requirement> requirements)
         => requirements
-            .Select(Check)
-            .OfType<RequirementError>()
+            .Select(CheckOneInternal)
+            .OfType<RequirementIssue>()
             .Distinct()
             .ToListOpt();
 
@@ -43,12 +34,12 @@ public class RequirementsService(Generator<IRequirementCheck> checkGenerator)
     /// Check a single requirement.
     /// </summary>
     /// <remarks>
-    /// IMPORTANT: This should remain internal.
+    /// IMPORTANT: This must remain internal.
     /// All calls should only use the signature which returns lists of possible issues,
     /// so that they never need to do null checks.
     /// </remarks>
     /// <returns>An error object or `null`</returns>
-    internal RequirementError? Check(Requirement requirement)
+    internal RequirementIssue? CheckOneInternal(Requirement requirement)
     {
         var checker = checkGenerator.TryNew(requirement.Type);
 

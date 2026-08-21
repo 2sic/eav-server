@@ -8,7 +8,7 @@ namespace ToSic.Sys.Features.SysFeatures;
 /// Test the RequirementsService using the registered detectors.
 /// </summary>
 /// <param name="requirementsService"></param>
-public class SysFeatureRequirementChecks(RequirementsService requirementsService)
+public class SysFeatureRequirementChecks(IRequirementsService requirementsService)
 {
     public class Startup() : QuickStartup(sc => sc.AddSysCapabilitiesAndSysCore());
 
@@ -20,7 +20,7 @@ public class SysFeatureRequirementChecks(RequirementsService requirementsService
 #endif
     public void Requirement_DotNetCore_MatchesTestRuntime(bool expectsIsNull)
     {
-        var ok = requirementsService.CheckTac(new Requirement(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetCore.DefStatic.NameId));
+        var ok = requirementsService.CheckOneInternalTac(new Requirement(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetCore.DefStatic.NameId));
         Equal(expectsIsNull, ok == null);
     }
 
@@ -32,7 +32,7 @@ public class SysFeatureRequirementChecks(RequirementsService requirementsService
 #endif
     public void Requirement_DotNetFramework_MatchesTestRuntime(bool expectsIsNull)
     {
-        var ok = requirementsService.CheckTac(new Requirement(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetFramework.DefStatic.NameId));
+        var ok = requirementsService.CheckOneInternalTac(new Requirement(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetFramework.DefStatic.NameId));
         Equal(expectsIsNull, ok == null);
     }
 

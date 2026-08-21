@@ -11,10 +11,6 @@ public abstract class RequirementCheckBase: IRequirementCheck
 {
     public abstract string NameId { get; }
 
-    public bool IsViable() => true;
-
-    public int Priority => 0;
-
     public abstract bool IsOk(Requirement requirement);
 
     public abstract string InfoIfNotOk(Requirement requirement);

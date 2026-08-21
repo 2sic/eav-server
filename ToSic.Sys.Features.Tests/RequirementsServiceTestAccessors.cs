@@ -4,15 +4,15 @@ namespace ToSic.Sys.Features;
 
 internal static class RequirementsServiceTestAccessors
 {
-    public static RequirementError? CheckTac(this RequirementsService reqSvc, Requirement requirement)
-        => reqSvc.Check(requirement);
+    public static RequirementIssue? CheckOneInternalTac(this IRequirementsService reqSvc, Requirement requirement)
+        => ((RequirementsService)reqSvc).CheckOneInternal(requirement);
 
-    public static IEnumerable<RequirementError> CheckTac(this RequirementsService reqSvc, IEnumerable<Requirement> requirements)
+    public static IEnumerable<RequirementIssue> CheckTac(this IRequirementsService reqSvc, IEnumerable<Requirement> requirements)
         => reqSvc.Check(requirements?.ToList());
 
-    public static IEnumerable<RequirementError> CheckTac(this RequirementsService reqSvc, IHasRequirements withRequirements)
+    public static IEnumerable<RequirementIssue> CheckTac(this IRequirementsService reqSvc, IHasRequirements withRequirements)
         => reqSvc.Check(withRequirements);
 
-    public static IEnumerable<RequirementError> CheckTac(this RequirementsService reqSvc, List<IHasRequirements> withRequirements)
+    public static IEnumerable<RequirementIssue> CheckTac(this IRequirementsService reqSvc, List<IHasRequirements> withRequirements)
         => reqSvc.Check(withRequirements);
 }

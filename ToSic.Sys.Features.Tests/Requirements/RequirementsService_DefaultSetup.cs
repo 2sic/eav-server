@@ -3,7 +3,7 @@
 namespace ToSic.Sys.Features.Requirements;
 
 // ReSharper disable once InconsistentNaming
-public class RequirementsService_DefaultSetup(RequirementsService requirementsService)
+public class RequirementsService_DefaultSetup(IRequirementsService requirementsService)
 {
     public class Startup() : QuickStartup(sc => sc.AddSysCapabilitiesAndSysCore());
 
