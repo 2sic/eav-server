@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Requirements;
 
-namespace ToSic.Sys.Features.Tests.RequirementsServiceTests;
+namespace ToSic.Sys.Features;
 
 internal static class RequirementsServiceTestAccessors
 {

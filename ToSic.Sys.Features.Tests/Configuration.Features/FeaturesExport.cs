@@ -1,11 +1,12 @@
 ﻿using System.Text.Json;
 using ToSic.Sys.Capabilities.Features;
 using Xunit.Abstractions;
+
 //using ToSic.Eav.Serialization.Sys.Json;
 
-namespace ToSic.Sys.Features.Tests.Configuration.Features;
+namespace ToSic.Sys.Features.Configuration.Features;
 
-public class Features(ITestOutputHelper output)
+public class FeaturesExport(ITestOutputHelper output)
 {
     [Fact]
     public void Features_Export_Test()

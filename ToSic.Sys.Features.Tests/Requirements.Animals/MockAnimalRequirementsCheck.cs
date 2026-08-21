@@ -1,7 +1,7 @@
 ﻿using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Requirements;
 
-namespace ToSic.Sys.Features.Tests.RequirementChecks.Mocks;
+namespace ToSic.Sys.Features.Requirements.Animals;
 
 internal class MockAnimalRequirementsCheck : RequirementCheckBase, IRequirementCheck
 {

@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Sys.Features.Tests.Configuration.Features;
+namespace ToSic.Sys.Features.Configuration.Features;
 
 /// <summary>
 /// Test object to reduce count on constructors of FeatureState
@@ -14,7 +14,8 @@ public record FeatureStateTestObject(
     bool AllowedByLicense,
     bool EnabledByDefault,
     bool? EnabledInConfiguration,
-    Dictionary<string, object>? Configuration) : FeatureState(
+    Dictionary<string, object>? Configuration
+) : FeatureState(
     Aspect,
     Expiration,
     Enabled,
@@ -23,4 +24,5 @@ public record FeatureStateTestObject(
     AllowedByLicense,
     EnabledByDefault,
     EnabledInConfiguration,
-    Configuration);
+    Configuration
+);

@@ -4,12 +4,13 @@
 
   <PropertyGroup>
     <!--WIP decide if we rename or not-->
-    <RootNamespace>ToSic.Sys.Features.Tests</RootNamespace>
+    <RootNamespace>ToSic.Sys.Features</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Features\ToSic.Sys.Features.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.TestHelpers\ToSic.Sys.TestHelpers.csproj" />
   </ItemGroup>
 
 </Project>
