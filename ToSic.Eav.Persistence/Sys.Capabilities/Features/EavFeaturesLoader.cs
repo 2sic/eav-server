@@ -4,7 +4,7 @@ using ToSic.Eav.Models;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Licenses;
-using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
+using ToSic.Sys.Capabilities.SysFeatures;
 
 namespace ToSic.Sys.Capabilities.Features;
 
@@ -15,9 +15,9 @@ public class EavFeaturesLoader(
     FeaturesIoHelper featuresIo,
     LicenseLoader licenseLoader,
     IGlobalDataService globalData,
-    SysFeaturesService sysFeaturesService)
+    SysFeaturesLoader sysFeaturesLoader)
     : ServiceBase($"{EavLogs.Eav}FtLdr",
-        connect: [globalData, featuresSvc, featurePersistenceService, featuresIo, licenseLoader, sysFeaturesService])
+        connect: [globalData, featuresSvc, featurePersistenceService, featuresIo, licenseLoader, sysFeaturesLoader])
 {
 
     /// <summary>
@@ -71,7 +71,7 @@ public class EavFeaturesLoader(
     {
         var l = Log.Fn<bool>();
         var stored = LoadFeaturesStored() ?? new FeatureStatesPersisted();
-        var status = featuresSvc.UpdateFeatureList(stored, sysFeaturesService.States);
+        var status = featuresSvc.UpdateFeatureList(stored, sysFeaturesLoader.Load());
 
         // Trigger any necessary feature state update code
         foreach (var featureState in featuresSvc.All)

@@ -8,27 +8,20 @@ using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Requirements;
 using ToSic.Sys.Utils;
 using static ToSic.Eav.Metadata.Requirements.Sys.RequirementDecorator;
-using SysFeaturesService = ToSic.Sys.Capabilities.SysFeatures.SysFeaturesService;
 
 namespace ToSic.Eav.Metadata.Requirements.Sys;
 
 /// <summary>
 /// Provides requirements from the metadata of anything.
 /// </summary>
-/// <param name="licenseService"></param>
-/// <param name="featsService"></param>
-/// <param name="platInfo"></param>
-/// <param name="licenseCatalog"></param>
-/// <param name="sysCapSvc"></param>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MetadataRequirementsService(
     LazySvc<ILicenseService> licenseService,
     LazySvc<ISysFeaturesService> featsService,
     LazySvc<IPlatformInfo> platInfo,
-    LicenseCatalog licenseCatalog,
-    LazySvc<SysFeaturesService> sysCapSvc)
-    : ServiceBase($"{AppConstants.LogName}.MdReq",
-        connect: [licenseService, featsService, platInfo, licenseCatalog, sysCapSvc]), IRequirementsService
+    LicenseCatalog licenseCatalog
+) : ServiceBase($"{AppConstants.LogName}.MdReq",
+        connect: [licenseService, featsService, platInfo, licenseCatalog]), IRequirementsService
 {
     public ICollection<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements)
     {
@@ -38,7 +31,7 @@ public class MetadataRequirementsService(
             return l.Return([], "empty requirements");
 
         var reqStatus = list
-            .Select(r => VerifySysCap(r.NameId))
+            .Select(r => VerifyFeature(r.NameId))
             .Where(pair => !pair.IsOk)
             .Select(pair => new RequirementStatus(false, pair.Aspect, ""))
             .ToListOpt();
@@ -151,18 +144,8 @@ public class MetadataRequirementsService(
 
 
     private (bool IsOk, Aspect Aspect) VerifySysCap(RequirementDecorator reqObj)
-        => VerifySysCap(reqObj.SystemCapability?.Trim());
+        => VerifyFeature(reqObj.SystemCapability?.Trim());
 
-    private (bool IsOk, Aspect Aspect) VerifySysCap(string? sysCap)
-    {
-        var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {sysCap}");
-        if (sysCap.IsEmptyOrWs())
-            return l.Return((true, Aspect.None), "no req. feature");
-
-        var enabled = sysCapSvc.Value.IsEnabled(sysCap);
-        var status = sysCapSvc.Value.GetDef(sysCap);
-        return l.Return((enabled, status ?? Aspect.None), $"enabled: {enabled}");
-    }
 
 
     private (bool IsOk, Aspect Aspect) VerifyLicense(RequirementDecorator reqObj)

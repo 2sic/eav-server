@@ -22,7 +22,7 @@ public static class StartupSysCapabilities
         services.AddSingleton<FeaturesCatalog>();   // Must be singleton
 
         // New SystemCapability
-        services.TryAddTransient<SysFeaturesService>();
+        services.TryAddTransient<SysFeaturesLoader>();
 
         // Features - 2024-05-31 changed to non-singleton
         services.TryAddTransient<ISysFeaturesService, LibSysFeaturesService>();    // this must come first!

@@ -1,19 +1,21 @@
 ﻿using ToSic.Sys.Capabilities.Features;
 
-// ReSharper disable ConvertToPrimaryConstructor
-
 namespace ToSic.Sys.Capabilities.SysFeatures;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class SysFeatureDetectorNetCore : SysFeatureDetector
+/// <summary>
+/// Detects if the current runtime is .NET Core.
+/// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+internal class SysFeatureDetectorNetCore() : SysFeatureDetector(DefStatic,
+#if NETFRAMEWORK
+    false
+#else
+    true
+#endif
+)
 {
-
-    /// <summary>
-    /// The feature definition.
-    /// </summary>
-    /// <remarks>
-    /// Internal for unit testing
-    /// </remarks>
+    /// <summary> The feature definition. </summary>
+    /// <remarks> Internal for unit testing </remarks>
     internal static readonly SysFeature DefStatic = new()
     {
         NameId = "NetCore",
@@ -21,12 +23,4 @@ public class SysFeatureDetectorNetCore : SysFeatureDetector
         Name = "Net Core",
         LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
-
-#if NETFRAMEWORK
-    public SysFeatureDetectorNetCore() : base(DefStatic, false) { }
-
-#else
-        public SysFeatureDetectorNetCore() : base(DefStatic, true) { }
-#endif
-
 }

@@ -20,17 +20,6 @@ public record FeatureState(
     Dictionary<string, object>? Configuration)
     : AspectState<Feature>(Feature, Enabled), IHasIdentityNameId
 {
-    public static FeatureState SysFeatureState(SysFeature definition, bool enabled)
-        => new(definition, 
-            LicenseConstants.UnlimitedExpiry,
-            enabled,
-            "System Feature",
-            "System Feature, managed by the system; can't be changed interactively.",
-            true,
-            true,
-            null,
-            null);
-
     public string NameId => Aspect.NameId;
 
     public FeatureSet.FeatureSet? License => _license.Get(() => Aspect.LicenseRulesList?.FirstOrDefault()?.FeatureSet);

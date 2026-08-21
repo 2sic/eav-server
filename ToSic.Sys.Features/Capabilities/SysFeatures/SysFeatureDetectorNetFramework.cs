@@ -1,18 +1,21 @@
 ﻿using ToSic.Sys.Capabilities.Features;
 
-// ReSharper disable ConvertToPrimaryConstructor
-
 namespace ToSic.Sys.Capabilities.SysFeatures;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class SysFeatureDetectorNetFramework : SysFeatureDetector
+/// <summary>
+/// Detects if the current runtime is .NET Framework.
+/// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+public class SysFeatureDetectorNetFramework() : SysFeatureDetector(DefStatic,
+#if NETFRAMEWORK
+    true
+#else
+    false
+#endif
+)
 {
-    /// <summary>
-    /// The feature definition.
-    /// </summary>
-    /// <remarks>
-    /// Internal for unit testing
-    /// </remarks>
+    /// <summary> The feature definition. </summary>
+    /// <remarks> Internal for unit testing </remarks>
     internal static SysFeature DefStatic { get; } = new()
     {
         NameId = "NetFramework",
@@ -20,10 +23,4 @@ public class SysFeatureDetectorNetFramework : SysFeatureDetector
         Name = "Dot Net Framework",
         LicenseRules = BuiltInLicenseRules.SystemEnabled,
     };
-#if NETFRAMEWORK
-    public SysFeatureDetectorNetFramework() : base(DefStatic, true) { }
-#else
-    public SysFeatureDetectorNetFramework() : base(DefStatic, false) { }
-#endif
-
 }
