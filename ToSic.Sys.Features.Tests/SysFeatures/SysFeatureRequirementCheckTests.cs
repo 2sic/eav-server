@@ -9,7 +9,7 @@ namespace ToSic.Sys.Features.SysFeatures;
 /// Test the RequirementsService using the registered detectors.
 /// </summary>
 /// <param name="requirementsService"></param>
-public class SysFeatureRequirementChecks(IRequirementsService requirementsService, ISysFeaturesService featuresSvc, SysFeaturesLoader sysFeatLoader)
+public class RequirementsServiceSysFeatures(IRequirementsService requirementsService, ISysFeaturesService featuresSvc, SysFeaturesLoader sysFeatLoader)
 {
     public class Startup() : QuickStartup(sc => sc.AddSysCapabilitiesAndSysCore());
 
@@ -18,31 +18,32 @@ public class SysFeatureRequirementChecks(IRequirementsService requirementsServic
         featuresSvc.UpdateFeatureList(new(), sysFeatLoader.Load());
     }
 
+    // Specify the IsNetCore test value depending on the .net framework being used for testing.
 #if NETCOREAPP
-    private const bool NetCore = true;
+    private const bool IsRunningNetCore = true;
 #else
-    private const bool NetCore = false;
+    private const bool IsRunningNetCore = false;
 #endif
 
 
     [Theory]
-    [InlineData(NetCore)]
+    [InlineData(IsRunningNetCore)]
     public void Requirement_DotNetCore_MatchesTestRuntime(bool noIssueExpected)
     {
         LoadSysFeaturesFromAllAssemblies();
         
-        var ok = requirementsService.CheckOneInternalTac(new(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetCore.DefStatic.NameId));
-        Equal(noIssueExpected, ok == null);
+        var ok = requirementsService.StatusInternalTac(new(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetCore.DefStatic.NameId));
+        Equal(noIssueExpected, ok.IsOk);
     }
 
     [Theory]
-    [InlineData(!NetCore)]
+    [InlineData(!IsRunningNetCore)]
     public void Requirement_DotNetFramework_MatchesTestRuntime(bool noIssueExpected)
     {
         LoadSysFeaturesFromAllAssemblies();
 
-        var ok = requirementsService.CheckOneInternalTac(new(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetFramework.DefStatic.NameId));
-        Equal(noIssueExpected, ok == null);
+        var ok = requirementsService.StatusInternalTac(new(FeatureConstants.RequirementSysCapability, SysFeatureDetectorNetFramework.DefStatic.NameId));
+        Equal(noIssueExpected, ok.IsOk);
     }
 
 }

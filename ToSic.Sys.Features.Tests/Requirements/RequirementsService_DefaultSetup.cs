@@ -13,7 +13,7 @@ public class RequirementsService_DefaultSetup(IRequirementsService requirementsS
         // Arrange
         var requirementsList = new List<IHasRequirements>();
         // Act
-        var result = requirementsService.CheckTac(requirementsList);
+        var result = requirementsService.StatusTac(requirementsList);
         // Assert
         Empty(result);
     }

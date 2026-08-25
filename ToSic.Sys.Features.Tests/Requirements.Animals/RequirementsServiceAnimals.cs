@@ -29,47 +29,47 @@ public class RequirementsServiceAnimals(IRequirementsService requirementsService
 
     [Fact]
     public void Requirement_Elephant_IsOk()
-        => Null(requirementsService.CheckOneInternalTac(RequiresElephant));
+        => True(requirementsService.StatusInternalTac(RequiresElephant).IsOk);
 
     [Fact]
     public void Requirement_Zebra_IsNotOk()
-        => NotNull(requirementsService.CheckOneInternalTac(RequiresZebra));
+        => NotNull(requirementsService.StatusInternalTac(RequiresZebra));
 
     [Fact]
     public void RequirementList_Elephant_IsOk()
-        => Empty(requirementsService.CheckTac([RequiresElephant]));
+        => Empty(requirementsService.StatusTac([RequiresElephant]));
 
     [Fact]
     public void RequirementList_Zebra_IsNotOk()
-        => Single(requirementsService.CheckTac([RequiresZebra]));
+        => Single(requirementsService.StatusTac([RequiresZebra]));
 
     [Fact]
     public void RequirementList_ElephantAndZebra_IsNotOk()
-        => Single(requirementsService.CheckTac([RequiresElephant, RequiresZebra]));
+        => Single(requirementsService.StatusTac([RequiresElephant, RequiresZebra]));
 
     [Fact]
     public void RequirementList_ZebraX2_ReturnSingleError()
-        => Single(requirementsService.CheckTac([RequiresZebra, RequiresZebra]));
+        => Single(requirementsService.StatusTac([RequiresZebra, RequiresZebra]));
 
     [Fact]
     public void HasRequirements_Elephant_IsOk()
-        => Empty(requirementsService.CheckTac(new MockHasRequirements([RequiresElephant])));
+        => Empty(requirementsService.StatusTac(new MockHasRequirements([RequiresElephant])));
 
     [Fact]
     public void HasRequirements_Zebra_IsNotOk()
-        => Single(requirementsService.CheckTac(new MockHasRequirements([RequiresZebra])));
+        => Single(requirementsService.StatusTac(new MockHasRequirements([RequiresZebra])));
 
     [Fact]
     public void HasRequirements_ElephantAndZebra_IsNotOk()
-        => Single(requirementsService.CheckTac(new MockHasRequirements([RequiresElephant, RequiresZebra])));
+        => Single(requirementsService.StatusTac(new MockHasRequirements([RequiresElephant, RequiresZebra])));
 
     [Fact]
     public void HasRequirements_ElephantAndZebraX2_ReturnSingleError()
-        => Single(requirementsService.CheckTac(new MockHasRequirements([RequiresElephant, RequiresZebra, RequiresZebra])));
+        => Single(requirementsService.StatusTac(new MockHasRequirements([RequiresElephant, RequiresZebra, RequiresZebra])));
 
     [Fact]
     public void HasRequirements_ManyIdentical_ReturnSingleError()
-        => Single(requirementsService.CheckTac([
+        => Single(requirementsService.StatusTac([
             new MockHasRequirements([RequiresElephant, RequiresZebra, RequiresZebra]),
             new MockHasRequirements([RequiresZebra]),
         ]));

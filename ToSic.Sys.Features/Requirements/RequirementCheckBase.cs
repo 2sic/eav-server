@@ -22,6 +22,6 @@ public abstract class RequirementCheckBase: IRequirementCheck
         var ok = IsOk(requirement);
         var aspect = GetAspect(requirement);
         var message = ok ? null : InfoIfNotOk(requirement);
-        return new(ok, aspect, message);
+        return new(ok, requirement, aspect, message);
     }
 }
