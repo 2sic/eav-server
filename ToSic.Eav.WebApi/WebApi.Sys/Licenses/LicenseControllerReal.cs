@@ -7,7 +7,6 @@ using ToSic.Eav.WebApi.Sys.Helpers.Validation;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Fingerprints;
-using ToSic.Sys.Capabilities.Licenses;
 using ToSic.Sys.Configuration;
 
 #if NETFRAMEWORK
@@ -18,16 +17,17 @@ namespace ToSic.Eav.WebApi.Sys.Licenses;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LicenseControllerReal(
-    LazySvc<ILicenseService> licenseServiceLazy,
-    LazySvc<ISysFeaturesService> featuresLazy,
+    // 2026-08-26 2dm disabled, was used in the LicenseControllerReal.Summary()
+    //LazySvc<ILicenseService> licenseServiceLazy,
+    //LazySvc<ISysFeaturesService> featuresLazy,
+    //LazySvc<LicenseCatalog> licenseCatalog,
     LazySvc<IGlobalConfiguration> globalConfiguration,
-    LazySvc<LicenseCatalog> licenseCatalog,
     SystemFingerprint fingerprint,
     LazySvc<EavFeaturesLoader> featuresLoader)
     : ServiceBase("Bck.Lics",
         connect:
         [
-            licenseServiceLazy, featuresLazy, globalConfiguration, licenseCatalog, fingerprint, featuresLoader
+            /*licenseServiceLazy, featuresLazy, licenseCatalog, */ globalConfiguration, fingerprint, featuresLoader
         ]), ILicenseController
 {
     // auto-download license file
@@ -49,44 +49,44 @@ public class LicenseControllerReal(
         }
     }
 
+    // 2026-08-26 2dm disabled, was used in the LicenseControllerReal.Summary()
+    ///// <inheritdoc />
+    //public IEnumerable<LicenseDto> Summary()
+    //{
+    //    var licSvc = licenseServiceLazy.Value;
+    //    var licenses = licenseCatalog.Value.List
+    //        .Where(l => !l.FeatureLicense)
+    //        .OrderBy(l => l.Priority);
 
-    /// <inheritdoc />
-    public IEnumerable<LicenseDto> Summary()
-    {
-        var licSvc = licenseServiceLazy.Value;
-        var licenses = licenseCatalog.Value.List
-            .Where(l => !l.FeatureLicense)
-            .OrderBy(l => l.Priority);
+    //    var allFeatures = featuresLazy.Value.All.ToListOpt();
 
-        var allFeatures = featuresLazy.Value.All.ToListOpt();
+    //    var dto = licenses
+    //        .Select(l =>
+    //        {
+    //            var state = licSvc.State(l);
+    //            var isEnabled = licSvc.IsEnabled(l);
 
-        var dto = licenses
-            .Select(l =>
-            {
-                var state = licSvc.State(l);
-                var isEnabled = licSvc.IsEnabled(l);
+    //            var features = allFeatures
+    //                .Where(f => f.Aspect.LicenseRules.Any(lr => lr.FeatureSet.Name == l.Name))
+    //                .OrderBy(f => f.NameId)
+    //                .Select(f => new FeatureStateDto(f))
+    //                .ToList();
 
-                var features = allFeatures
-                    .Where(f => f.Aspect.LicenseRules.Any(lr => lr.FeatureSet.Name == l.Name))
-                    .OrderBy(f => f.NameId)
-                    .Select(f => new FeatureStateDto(f))
-                    .ToList();
+    //            return new LicenseDto
+    //            {
+    //                Name = l.Name,
+    //                Priority = l.Priority,
+    //                Guid = l.Guid,
+    //                Description = l.Description,
+    //                AutoEnable = l.AutoEnable,
+    //                IsEnabled = isEnabled,
+    //                Expires = state?.Expiration,
+    //                Features = features,
+    //            };
+    //        });
 
-                return new LicenseDto
-                {
-                    Name = l.Name,
-                    Priority = l.Priority,
-                    Guid = l.Guid,
-                    Description = l.Description,
-                    AutoEnable = l.AutoEnable,
-                    IsEnabled = isEnabled,
-                    Expires = state?.Expiration,
-                    Features = features,
-                };
-            });
-
-        return dto;
-    }
+    //    return dto;
+    //}
 
 
 

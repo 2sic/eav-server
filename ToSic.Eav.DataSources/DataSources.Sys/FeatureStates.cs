@@ -42,22 +42,25 @@ public sealed class FeatureStates : CustomDataSource
     public FeatureStates(Dependencies services, ISysFeaturesService featuresService)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [featuresService])
     {
-        ProvideOutRaw(
-            () => GetList(featuresService),
-            options: () => new() { TypeName = "FeatureState" }
-        );
+        ProvideOutRaw(() => GetList(featuresService));
     }
 
     private IEnumerable<FeatureStateDetailedRaw> GetList(ISysFeaturesService featuresService)
     {
         var filterIds = FeatureId.CsvToArrayWithoutEmpty();
+        var hasFilterIds = filterIds.Any();
 
-        if (filterIds.Any() is false && All is false)
+        // We must have filterIDs or All to be true, otherwise return empty list
+        if (!hasFilterIds && !All)
             return [];
 
-        var features = filterIds.Any()
-            ? featuresService.All.Where(feature => filterIds.Contains(feature.NameId, StringComparer.InvariantCultureIgnoreCase))
-            : featuresService.All;
+        var features = featuresService.All;
+        
+        // Now either of the options must be set, but filterIds takes precedence over All
+        if (hasFilterIds)
+            features = features
+                .Where(feature => filterIds
+                    .Contains(feature.NameId, StringComparer.InvariantCultureIgnoreCase));
 
         return features
             .OrderBy(feature => feature.NameId)

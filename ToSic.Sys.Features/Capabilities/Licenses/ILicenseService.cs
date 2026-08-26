@@ -40,8 +40,10 @@ public interface ILicenseService
     bool IsEnabled(FeatureSet.FeatureSet license);
 
     FeatureSetState? State(FeatureSet.FeatureSet license);
+
     /// <summary>
-    /// Check if any license is valid.
+    /// Check if all registered licenses are invalid.
+    /// This would usually happen when a fingerprint changes.
     /// </summary>
-    bool HaveValidLicense { get;  }
+    bool AllRegisteredLicensesAreInvalid { get;  }
 }

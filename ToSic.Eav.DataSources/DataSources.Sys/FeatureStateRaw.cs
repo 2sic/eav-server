@@ -41,6 +41,10 @@ internal class FeatureStateRaw(FeatureState state)
     public bool IsPublic => State.IsPublic;
 }
 
+[ContentType(
+    Name = "FeatureState",
+    Guid = "456b1bf2-74c4-4832-9d5b-be1e86b87da5" // Random
+)]
 internal sealed class FeatureStateDetailedRaw(FeatureState state)
     : FeatureStateRaw(state)
 {
@@ -56,6 +60,10 @@ internal sealed class FeatureStateDetailedRaw(FeatureState state)
 /// <summary>
 /// Information about a license and its current state.
 /// </summary>
+[ContentType(
+    Name="Licenses",
+    Guid = "bf4e0072-6b05-4e4b-94a9-8474ec04919c" // Random
+)]
 internal sealed class FeatureSetStateRaw(FeatureSetState state) : IRawEntityAutoConvert
 {
     public Guid Guid => state.Aspect.Guid;

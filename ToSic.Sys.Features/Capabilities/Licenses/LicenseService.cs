@@ -17,6 +17,7 @@
 
 using System.Collections.Immutable;
 using ToSic.Sys.Capabilities.FeatureSet;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Sys.Capabilities.Licenses;
 
@@ -26,63 +27,64 @@ public class LicenseService : ILicenseService
     #region Public APIs
 
     /// <inheritdoc />
-    public IList<FeatureSetState> All => AllCache;
+    public IList<FeatureSetState> All => AllStaticCache;
 
     /// <inheritdoc />
     /// <remarks>
     /// We use the real static LicenseDefinition as an index, because this ensures that people can't inject other license objects to bypass security.
     /// </remarks>
     public IImmutableDictionary<Guid, FeatureSetState> Enabled
-        => EnabledCache;
+        => EnabledStaticCache;
 
     /// <inheritdoc />
     public bool IsEnabled(FeatureSet.FeatureSet license)
-        => EnabledCache.ContainsKey(license.Guid);
+        => EnabledStaticCache.ContainsKey(license.Guid);
 
     public FeatureSetState? State(FeatureSet.FeatureSet license)
-        => EnabledCache.TryGetValue(license.Guid, out var result) ? result : null;
+        => EnabledStaticCache.GetValueOrDefault(license.Guid);
 
     #endregion
 
     #region Internal stuff, caching, static
 
-    private static IList<FeatureSetState> AllCache { get; set; } = [];
+    private static IList<FeatureSetState> AllStaticCache { get; set; } = [];
 
 
-    private static IImmutableDictionary<Guid, FeatureSetState> EnabledCache { get; set; } =
-        new Dictionary<Guid, FeatureSetState>().ToImmutableDictionary();
+    private static IImmutableDictionary<Guid, FeatureSetState> EnabledStaticCache { get; set; }
+        = ImmutableDictionary<Guid, FeatureSetState>.Empty;
 
     public static long CacheTimestamp;
 
 
     public static void Update(IList<FeatureSetState> licenses)
     {
-        AllCache = licenses;
-        EnabledCache = licenses
+        AllStaticCache = licenses;
+        EnabledStaticCache = licenses
             .Where(l => l.IsEnabled)
-            .OrderByDescending(l => l.Expiration) // same feature license with longer expiration have priority
-            // must do Distinct = GroupBy+First to ensure we don't have duplicate keys
-            .GroupBy(l => l.Aspect)
-            .Select(g => g.First())
+            .DistinctByLongestExpiration()
             .ToImmutableDictionary(l => l.Aspect.Guid, l => l); ;
         CacheTimestamp = DateTime.Now.Ticks;
-        AllLicensesAreInvalid = AreAllLicensesInvalid();
+        
+        // On every license update, store if we have any valid licenses
+        // This is for faster checks on each module load, to verify we don't need to show
+        // upgrade warnings
+        _allRegisteredLicensesAreInvalid = !AreAnyRegisteredLicensesStillValid(licenses);
     }
 
-    public bool HaveValidLicense => !AllLicensesAreInvalid;
+    /// <inheritdoc/>
+    public bool AllRegisteredLicensesAreInvalid => _allRegisteredLicensesAreInvalid;
         
-    internal static bool AllLicensesAreInvalid = false;
+    private static bool _allRegisteredLicensesAreInvalid = true;
 
-    internal static bool AreAllLicensesInvalid()
+    private static bool AreAnyRegisteredLicensesStillValid(IList<FeatureSetState> licenses)
     {
-        // if we do not have license for validation, than it can not be invalid
-        if (AllCache.All(l => l.Aspect.AutoEnable)) return false;
-            
-        // any valid license?
-        foreach (var license in AllCache.Where(l => !l.Aspect.AutoEnable))
-            if (license.Valid)
-                return false;
-        return true;
+        // We must only check the registered ones (which are not auto-enabled)
+        var registeredLicenses = licenses
+            .Where(l => !l.Aspect.AutoEnable)
+            .ToListOpt();
+        // If there are no registered licenses, then everything is fine
+        // Otherwise check that there is at least 1 valid license
+        return registeredLicenses.SafeNone() || registeredLicenses.Any(license => license.Valid);
     }
     #endregion
 }
