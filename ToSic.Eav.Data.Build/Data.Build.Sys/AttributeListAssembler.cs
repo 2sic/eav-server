@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys;
+using ToSic.Sys.Capabilities.FeatureSet;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Build.Sys;
@@ -12,8 +13,8 @@ public class AttributeListAssembler(Generator<AttributeAssembler, DataAssemblerO
     
     private AttributeAssembler Attributes => field ??= attrAss.New(MyOptions);
 
-    public static readonly IImmutableDictionary<string, IAttribute> EmptyList =
-        new Dictionary<string, IAttribute>().ToImmutableDictionary();
+    public static readonly IImmutableDictionary<string, IAttribute> EmptyList
+        = ImmutableDictionary<string, IAttribute>.Empty;
     
     public IReadOnlyDictionary<string, IAttribute> CreateListForType(IContentType contentType, ILookup<string, IValue>? preparedValues)
     {

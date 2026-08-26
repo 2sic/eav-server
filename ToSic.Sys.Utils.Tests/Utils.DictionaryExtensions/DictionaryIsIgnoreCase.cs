@@ -23,6 +23,6 @@ public class DictionaryIsIgnoreCase
 
     [Fact]
     public void IsIgnoreCaseDetectsImmutableDefault()
-        => True(new Dictionary<string, int>().ToImmutableDictionary(InvariantCultureIgnoreCase).IsIgnoreCaseTac());
+        => True(ImmutableDictionary<string, int>.Empty.IsIgnoreCaseTac());
 
 }
