@@ -11,9 +11,10 @@ public class WorkContentTypesMod(
     public void Create(string nameId, string scope)
     {
         var l = Log.Fn();
-        var ct = MyOptions.DbStorage.ContentTypes.PrepareDbContentType(nameId, nameId, scope, false, MyOptions.AppId);
+        var db = MyOptions.DbStorage;
+        var ct = db.ContentTypes.PrepareDbContentType(nameId, nameId, scope, false, MyOptions.AppId);
         if (ct != null)
-            MyOptions.DbStorage.DoAndSaveWithoutChangeDetection(() => MyOptions.DbStorage.SqlDb.Add(ct));
+            db.DoAndSaveWithoutChangeDetection(() => db.SqlDb.Add(ct));
         l.Done();
     }
 
@@ -24,7 +25,7 @@ public class WorkContentTypesMod(
         if (name.IsEmptyOrWs())
             return l.ReturnFalse("name was empty, will cancel");
 
-        MyOptions.DbStorage.ContentType.AddOrUpdate(
+        MyOptions.NewDbStorage().ContentType.AddOrUpdate(
             staticName,
             scope,
             name,
@@ -41,7 +42,7 @@ public class WorkContentTypesMod(
     public bool CreateGhost(string sourceStaticName)
     {
         var l = Log.Fn<bool>($"create ghost a#{MyOptions.Show()}, type:{sourceStaticName}");
-        MyOptions.DbStorage.ContentType.CreateGhost(sourceStaticName);
+        MyOptions.NewDbStorage().ContentType.CreateGhost(sourceStaticName);
         return l.ReturnTrue();
     }
 
@@ -49,14 +50,14 @@ public class WorkContentTypesMod(
     public void SetTitle(int contentTypeId, int attributeId)
     {
         var l = Log.Fn($"set title type#{contentTypeId}, attrib:{attributeId}");
-        MyOptions.DbStorage.Attributes.SetTitleAttribute(attributeId, contentTypeId);
+        MyOptions.NewDbStorage().Attributes.SetTitleAttribute(attributeId, contentTypeId);
         l.Done();
     }
 
     public bool Delete(string staticName)
     {
         var l = Log.Fn<bool>($"delete a#{MyOptions.Show()}, name:{staticName}");
-        MyOptions.DbStorage.ContentType.Delete(staticName);
+        MyOptions.NewDbStorage().ContentType.Delete(staticName);
         return l.ReturnTrue();
     }
 

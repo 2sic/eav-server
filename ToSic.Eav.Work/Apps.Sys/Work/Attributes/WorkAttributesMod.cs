@@ -146,10 +146,11 @@ public class WorkAttributesMod(
         serializer.Initialize(MyOptions.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
-        MyOptions.DbStorage.DoAndSaveTracked(() =>
+        var db = MyOptions.DbStorage;
+        db.DoAndSaveTracked(() =>
         {
             // get field attributeId
-            var attribute = MyOptions.DbStorage.Attributes.GetTracked(attributeId)
+            var attribute = db.Attributes.GetTracked(attributeId)
                 ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
             contentTypeId = attribute.ContentTypeId;
 
@@ -183,10 +184,11 @@ public class WorkAttributesMod(
         serializer.Initialize(MyOptions.AppId, new List<IContentType>(), null);
 
         // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
-        MyOptions.DbStorage.DoAndSaveTracked(() =>
+        var db = MyOptions.DbStorage;
+        db.DoAndSaveTracked(() =>
         {
             // get field attributeId
-            var attribute = MyOptions.DbStorage.Attributes.GetTracked(attributeId)
+            var attribute = db.Attributes.GetTracked(attributeId)
                 ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
             contentTypeId = attribute.ContentTypeId;
 

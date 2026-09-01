@@ -24,6 +24,11 @@ public class AppWorkContext(IAppReader appReader, AppWorkContextService ctxSvc, 
         });
 
     [field: AllowNull, MaybeNull]
-    public DbStorage DbStorage => field ??= ctxSvc.DbGenerator.New(new(AppReader));
+    public DbStorage DbStorage => field ??= NewDbStorage();
+    
+    /// <inheritdoc />
+    public DbStorage NewDbStorage() => ctxSvc.DbGenerator.New(new(AppReader));
+
+    public IAppWorkContext FreshContext(IAppReader? freshReader = null) => ctxSvc.ContextNew(freshReader ?? AppReader);
 
 }

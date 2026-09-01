@@ -28,10 +28,17 @@ public class WorkEntityRecycle(
 
     public void Recycle(int transactionId)
     {
-        featuresService.ThrowIfNotEnabled("Feature Undelete not enabled.",BuiltInFeatures.EntityUndelete.Guid);
+        featuresService.ThrowIfNotEnabled("Feature Undelete not enabled.", BuiltInFeatures.EntityUndelete.Guid);
         RecycleInternal(transactionId);
     }
 
+
+    /// <summary>
+    /// Restore data which was deleted in a specific transaction.
+    /// This includes both soft-deleted and hard-deleted entities, as well as their relationships.
+    /// </summary>
+    /// <param name="transactionId">The ID of the delete-transaction.</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     internal void RecycleInternal(int transactionId)
     {
         var l = Log.Fn($"tx:{transactionId}");
@@ -39,7 +46,7 @@ public class WorkEntityRecycle(
         if (transactionId <= 0)
             throw new ArgumentOutOfRangeException(nameof(transactionId));
 
-        var db = MyOptions.DbStorage.SqlDb;
+        var db = MyOptions.NewDbStorage().SqlDb;
         EnsureTransactionExists(db, transactionId);
 
         var appId = MyOptions.AppId;
@@ -172,9 +179,8 @@ public class WorkEntityRecycle(
     {
         var restoredGuids = softDeletedEntities
             .Select(e => e.EntityGuid)
-            .Concat(historySnapshots.Select(h => h.SourceGuid).Where(g => g != null).Cast<Guid>())
-            .Distinct()
-            .ToList();
+            .Concat(historySnapshots.Select(h => h.SourceGuid).OfType<Guid>())
+            .ToHashSet();
 
         if (restoredGuids.Count == 0)
             return new();
@@ -216,7 +222,7 @@ public class WorkEntityRecycle(
 
     private static void RestoreRelationshipsWhereEntityWasParent(EavDbContext db, Dictionary<Guid, int> restoredEntitiesByGuid)
     {
-        var restoredEntityIds = restoredEntitiesByGuid.Values.Distinct().ToList();
+        var restoredEntityIds = restoredEntitiesByGuid.Values.ToHashSet();
         if (restoredEntityIds.Count == 0)
             return;
 
@@ -271,7 +277,7 @@ public class WorkEntityRecycle(
         if (entitiesWithParents.Count == 0)
             return;
 
-        var db = MyOptions.DbStorage.SqlDb;
+        var db = MyOptions.NewDbStorage().SqlDb;
 
         var childIdsByGuid = BuildChildIdsByGuid(appId, db, entitiesWithParents, restoredEntitiesByGuid);
         if (childIdsByGuid.Count == 0)
@@ -308,8 +314,7 @@ public class WorkEntityRecycle(
     {
         var childGuids = entitiesWithParents
             .Select(e => e.Guid)
-            .Distinct()
-            .ToList();
+            .ToHashSet();
 
         var childIdsByGuid = childGuids
             .Where(restoredEntitiesByGuid.ContainsKey)
@@ -318,7 +323,7 @@ public class WorkEntityRecycle(
         // If the caller-provided map doesn't contain the entity yet (depends on import/save timing), resolve from DB.
         var missingChildGuids = childGuids
             .Where(g => !childIdsByGuid.ContainsKey(g))
-            .ToList();
+            .ToHashSet();
 
         if (missingChildGuids.Count == 0)
             return childIdsByGuid;
@@ -337,25 +342,21 @@ public class WorkEntityRecycle(
                     .Select(x => x.EntityId)
                     .First());
 
-        foreach (var kvp in resolved)
-        {
-            if (!childIdsByGuid.ContainsKey(kvp.Key))
-                childIdsByGuid[kvp.Key] = kvp.Value;
-        }
+        foreach (var kvp in resolved.Where(kvp => !childIdsByGuid.ContainsKey(kvp.Key)))
+            childIdsByGuid[kvp.Key] = kvp.Value;
 
         return childIdsByGuid;
     }
 
-    private static List<Guid> CollectParentGuids(List<JsonEntity> entitiesWithParents)
+    private static HashSet<Guid> CollectParentGuids(List<JsonEntity> entitiesWithParents)
         => entitiesWithParents
             .SelectMany(e => e.Parents ?? [])
             .Select(p => p.Parent)
-            .Distinct()
-            .ToList();
+            .ToHashSet();
 
     private sealed record ParentLookup(int EntityId, int ContentTypeId);
 
-    private static Dictionary<Guid, ParentLookup> LoadParentsByGuid(int appId, EavDbContext db, List<Guid> parentGuids)
+    private static Dictionary<Guid, ParentLookup> LoadParentsByGuid(int appId, EavDbContext db, HashSet<Guid> parentGuids)
         => db.TsDynDataEntities
             .AsNoTracking()
             .IgnoreQueryFilters()
@@ -369,8 +370,7 @@ public class WorkEntityRecycle(
     {
         var parentContentTypeIds = parentsByGuid.Values
             .Select(p => p.ContentTypeId)
-            .Distinct()
-            .ToList();
+            .ToHashSet();
 
         if (parentContentTypeIds.Count == 0)
             return [];
@@ -423,9 +423,9 @@ public class WorkEntityRecycle(
 
     private static HashSet<(int ParentId, int ChildId, int AttributeId, int SortOrder)> LoadExistingRelationshipKeys(EavDbContext db, List<(int ParentId, int ChildId, int AttributeId, int SortOrder)> specs)
     {
-        var parentIds = specs.Select(s => s.ParentId).Distinct().ToList();
-        var childIds = specs.Select(s => s.ChildId).Distinct().ToList();
-        var attributeIds = specs.Select(s => s.AttributeId).Distinct().ToList();
+        var parentIds = specs.Select(s => s.ParentId).ToHashSet();
+        var childIds = specs.Select(s => s.ChildId).ToHashSet();
+        var attributeIds = specs.Select(s => s.AttributeId).ToHashSet();
 
         return db.TsDynDataRelationships
             .AsNoTracking()

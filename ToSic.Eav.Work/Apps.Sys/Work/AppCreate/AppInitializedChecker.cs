@@ -26,7 +26,7 @@ public class AppInitializedChecker(AppWorkQuick<AppInitializer> appInitGenerator
         if (appReader.IsHealthy)
         {
             l.A("the app is healthy, build missing parts");
-            appInitGenerator.New(appReader).InitializeApp(/*appReader,*/ newAppName, codeRefTrail.WithHere().AddMessage("Add Requested"));
+            appInitGenerator.New(appReader).InitializeApp(newAppName, codeRefTrail.WithHere().AddMessage("Add Requested"));
         }
         else
         {

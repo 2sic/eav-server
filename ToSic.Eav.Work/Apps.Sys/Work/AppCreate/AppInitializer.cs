@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Data.Build.Sys;
@@ -37,77 +38,81 @@ public class AppInitializer(
     /// <summary>
     /// Create app-describing entity for configuration and add Settings and Resources Content Type
     /// </summary>
-    /// <param name="appReader">The app State</param>
     /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
     /// <param name="codeRefTrail">Origin caller to better track down creation - see issue https://github.com/2sic/2sxc/issues/3203</param>
-    public bool InitializeApp(/*IAppReader appReader,*/ string? newAppName, CodeRefTrail codeRefTrail)
+    public bool InitializeApp(string? newAppName, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
         var appReader = MyOptions.AppReader;
         codeRefTrail.WithHere().AddMessage($"App: {appReader.AppId}");
+        
+        // If all parts already exist, exit early.
         if (AppInitializedChecker.CheckIfAllPartsExist(appReader, codeRefTrail, out var appConfig, out var appResources,
                 out var appSettings, Log))
             return l.ReturnTrue("ok");
 
         codeRefTrail.AddMessage($"Some parts missing: {nameof(appConfig)}: {appConfig}; {nameof(appResources)}: {appResources}: {nameof(appSettings)}; {appSettings}");
 
-        // Get appName from cache - stop if it's a "Default" app
+        // Get appName from cache/specs
         var appName = appReader.Specs.NameId;
 
-        // v10.25 from now on the DefaultApp can also have settings and resources
-        var folder = PickCorrectFolderName(newAppName, appName);
-
-        var addList = new List<AddContentTypeAndOrEntityTask>();
-        if (appConfig == null)
-            addList.Add(new(TypeAppConfig,
-                values: new()
+        // Start with the list of things to add
+        // If the appConfig is null, we need to add it, otherwise we don't.
+        List<AddContentTypeAndOrEntityTask> addList = appConfig != null
+            ? []
+            :
+            [
+                new(TypeAppConfig, Values: new()
                 {
                     { "DisplayName", newAppName.UseFallbackIfNoValue(appName) },
-                    { "Folder", folder },
-                    { "AllowTokenTemplates", "True" },
-                    { "AllowRazorTemplates", "True" },
+                    { "Folder", PickCorrectFolderName(newAppName, appName) },
+                    { AppConfigurationFields.FieldAllowToken, "True" },
+                    { AppConfigurationFields.FieldAllowRazor, "True" },
                     // always trailing with the version it was created with
                     // Note that v13 and 14 both report v13, only 15+ uses the real version
                     { "Version", $"00.00.{EavSystemInfo.Version.Major:00}" },
                     { "OriginalId", "" },
                     // 2023-11-08 2dm - https://github.com/2sic/2sxc/issues/3203
                     { "DebugLog", codeRefTrail.ToString() },
-                },
-                false));
+                }, false)
+            ];
 
 
         // Add new (empty) ContentType for Settings
         if (appSettings == null)
-            addList.Add(new(TypeAppSettings));
+            addList.Add(new(TypeAppSettings, []));
 
         // add new (empty) ContentType for Resources
         if (appResources == null)
-            addList.Add(new(TypeAppResources));
+            addList.Add(new(TypeAppResources, []));
 
-        // If the Types are missing, create these first
-        if (CreateAllMissingContentTypes(appReader, addList))
+        // If any of the type definitions are missing, create these first
+        if (CreateAllMissingContentTypes(addList))
         {
             // since the types were re-created, we must flush it from the cache
             // this is because other APIs may access the AppStates (though they shouldn't)
             CachePurger.Purge(appReader);
-            // get the latest app-state, but not-initialized so we can make changes
+            // get the latest app-state, but not fully initialized so we can make changes
             appReader = repoLoader.New().AppReaderRaw(appReader.AppId, codeRefTrail.WithHere());
         }
 
-        var entities = addList
-            .Select(task => MetadataEnsureTypeAndSingleEntity(appReader, task))
-            .ToListOpt();
-
-        if (entities.Any())
+        // Check if we have anything to add
+        // By reasoning it must always be true, otherwise we would have exited early
+        // so this condition is actually a bit irrelevant, but we're just making sure
+        if (addList.Any())
         {
-            var entSaver = entitySave.New(MyOptions);
-            var withOptions = entities.Select(e => new EntityPair<SaveOptions>(e, entSaver.SaveOptions())).ToListOpt();
-            entSaver.Save(withOptions);
-
+            // Create a new context and new DB connection, using the latest AppReader
+            var newContext = MyOptions.FreshContext(appReader);
+            var entSaver = entitySave.New(newContext);
+            var saveOptions = entSaver.SaveOptions();
+            
+            // Create list to add with save options
+            var entitySavePairs = addList
+                .Select(addTask => AppMetadataEnsureTypeAndConstructEntityToAdd(appReader, addTask))
+                .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
+                .ToListOpt();
+            entSaver.Save(entitySavePairs);
         }
-
-        //foreach (var task in addList)
-        //    MetadataEnsureTypeAndSingleEntity(appReader, task);
 
         // Reset App-State to ensure it's reloaded with the added configuration
         CachePurger.Purge(appReader);
@@ -126,13 +131,13 @@ public class AppInitializer(
         };
 
 
-    private bool CreateAllMissingContentTypes(IAppReader appReader, List<AddContentTypeAndOrEntityTask> newItems)
+    private bool CreateAllMissingContentTypes(List<AddContentTypeAndOrEntityTask> newItems)
     {
         var l = Log.Fn<bool>($"Check for {newItems.Count}");
         var typesMod = contentTypesMod.New(MyOptions);
         var addedTypes = false;
         foreach (var item in newItems)
-            if (item.InAppType && FindContentType(appReader, item.SetName, item.InAppType) == null)
+            if (item.InAppType && FindContentType(MyOptions.AppReader, item.SetName, item.InAppType) == null)
             {
                 l.A("couldn't find type, will create");
                 // create App-Man if not created yet
@@ -145,7 +150,7 @@ public class AppInitializer(
         return l.Return(addedTypes);
     }
         
-    private Entity MetadataEnsureTypeAndSingleEntity(IAppReader appReader, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
+    private Entity AppMetadataEnsureTypeAndConstructEntityToAdd(IAppReader appReader, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
     {
         var l = Log.Fn<Entity>($"{cTypeAndOrEntity.SetName} for app {appReader.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
         var ct = FindContentType(appReader, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
@@ -157,8 +162,7 @@ public class AppInitializer(
             throw l.Done(new Exception("something went wrong - can't find type in app, but it's not a global type, so I must cancel"));
         }
 
-        var values = cTypeAndOrEntity.Values ?? [];
-        var attrs = builder.Value.AttributeList.Finalize(values!);
+        var attrs = builder.Value.AttributeList.Finalize(cTypeAndOrEntity.Values!);
         var mdTarget = new Target((int)TargetTypes.App, "App", keyNumber: appReader.AppId);
         var newEnt = builder.Value.Entity
             .Create(appId: appReader.AppId, guid: Guid.NewGuid(), contentType: ct, attributes: attrs, metadataFor: mdTarget);
@@ -166,7 +170,15 @@ public class AppInitializer(
         return l.Return(newEnt);
     }
 
-    private IContentType? FindContentType(IAppReader appReader, string setName, bool inAppType)
+    /// <summary>
+    /// Get the content type.
+    /// WARNING: this is called once with the old reader, and once with new, so it must absolutely not use the appReader from MyOptions, but the one passed in as parameter
+    /// </summary>
+    /// <param name="currentReader">Current app reader</param>
+    /// <param name="typeName"></param>
+    /// <param name="inAppType"></param>
+    /// <returns></returns>
+    private IContentType? FindContentType(IAppReader currentReader, string typeName, bool inAppType)
     {
         // if it's an in-app type, it should check the app, otherwise it should check the global type
         // we're NOT asking the app for all types (which would be the normal way)
@@ -177,13 +189,13 @@ public class AppInitializer(
         // discuss w/2dm if you think you want to change this
 
         // Avoid recursive loading of the preset app (-42) which causes repeated DbContext creations and connection exhaustion
-        if (appReader.AppId == KnownAppsConstants.PresetAppId
-            || appReader.AppId == KnownAppsConstants.GlobalPresetAppId)
-            return appReader.TryGetContentType(setName);
+        if (currentReader.AppId == KnownAppsConstants.PresetAppId
+            || currentReader.AppId == KnownAppsConstants.GlobalPresetAppId)
+            return currentReader.TryGetContentType(typeName);
 
         var ct = inAppType
-            ? appReader.TryGetContentType(setName)
-            : appReaders.GetSystemPreset().TryGetContentType(setName);
+            ? currentReader.TryGetContentType(typeName)
+            : appReaders.GetSystemPreset().TryGetContentType(typeName);
         return ct;
     }
 
@@ -195,13 +207,5 @@ public class AppInitializer(
     }
 
 
-    private class AddContentTypeAndOrEntityTask(
-        string setName,
-        Dictionary<string, object>? values = null,
-        bool inAppType = true)
-    {
-        public readonly string SetName = setName;
-        public readonly Dictionary<string, object>? Values = values;
-        public readonly bool InAppType = inAppType;
-    }
+    private record AddContentTypeAndOrEntityTask(string SetName, Dictionary<string, object> Values, bool InAppType = true);
 }

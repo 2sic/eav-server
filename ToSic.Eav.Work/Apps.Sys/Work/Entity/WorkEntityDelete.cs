@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Sys.Utils;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -10,11 +11,21 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     : ServiceWithSetup<IAppWorkContext>("Wrk.EntDel", connect: [stateBuilder])
 {
-    public bool Delete(Guid guid, bool force = false)
+    //public bool Delete(Guid guid, bool force = false)
+    //{
+    //    var l = Log.Fn<bool>($"delete guid:{guid}");
+    //    // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
+    //    var idToDelete = MyOptions.DbStorage.Entities.GetStandaloneDbEntityStub(guid, preferUntracked: true).EntityId;
+    //    return l.Return(Delete([idToDelete], force: force));
+    //}
+    
+    public bool Delete(IEnumerable<Guid> guids, bool force = false)
     {
-        var l = Log.Fn<bool>($"delete guid:{guid}");
+        var l = Log.Fn<bool>($"delete guid:{guids}");
         // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
-        var idToDelete = MyOptions.DbStorage.Entities.GetStandaloneDbEntityStub(guid, preferUntracked: true).EntityId;
+        var idToDelete = guids
+            .Select(guid => MyOptions.DbStorage.Entities.GetStandaloneDbEntityStub(guid, preferUntracked: true).EntityId)
+            .ToArray();
         return l.Return(Delete(idToDelete, force: force));
     }
 
@@ -59,13 +70,13 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
 
         // Before deleting, persist a history snapshot which also captures inbound parent relations.
         // This is important because delete will remove inbound parent relationships.
-        SaveEntityHistoryWithInboundParents([.. deleteIds]);
+        var db = MyOptions.DbStorage;
+        SaveEntityHistoryWithInboundParents(db, [.. deleteIds]);
 
         // then delete entities with metadata without app cache purge
         var repositoryIds = deleteIds.ToArray();
         var ok = false;
-        var dc = MyOptions.DbStorage;
-        dc.DoButSkipAppCachePurge(() => ok = dc.Entities.DeleteEntities(repositoryIds, true, true));
+        db.DoButSkipAppCachePurge(() => ok = db.Entities.DeleteEntities(repositoryIds, true, true));
 
         // remove entity from cache
         // introduced in v15.05 to reduce work on entity delete
@@ -77,7 +88,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         return l.Return(ok);
     }
 
-    private void SaveEntityHistoryWithInboundParents(IReadOnlyCollection<int> entityIds)
+    private void SaveEntityHistoryWithInboundParents(DbStorage db, IReadOnlyCollection<int> entityIds)
     {
         var l = Log.Fn(timer: true);
         if (entityIds.Count == 0)
@@ -101,11 +112,11 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         if (items.Count == 0)
             return;
 
-        var historyEntries = MyOptions.DbStorage.Versioning.PrepareHistoryEntriesWithInboundParents(items);
+        var historyEntries = db.Versioning.PrepareHistoryEntriesWithInboundParents(items);
         if (historyEntries.Count == 0)
             return;
 
-        MyOptions.DbStorage.Versioning.Save(historyEntries);
+        db.Versioning.Save(historyEntries);
         l.Done();
     }
 
@@ -226,13 +237,12 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
             canDeleteList.Add(entityId, (messages.Any(), string.Join(" ", messages)));
         }
 
-        if (canDeleteList.Count != ids.Length)
-            throw new("Delete check failed, results doesn't match request");
-
-        return canDeleteList;
+        return canDeleteList.Count != ids.Length
+            ? throw new("Delete check failed, results doesn't match request")
+            : canDeleteList;
     }
 
-    private string TryToGetMoreInfosAboutDependency(IEntity dependency)
+    private static string TryToGetMoreInfosAboutDependency(IEntity dependency)
     {
         try
         {

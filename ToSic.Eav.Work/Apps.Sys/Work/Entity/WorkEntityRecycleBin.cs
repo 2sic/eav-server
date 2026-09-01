@@ -44,7 +44,7 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<Json
 
         var appId = MyOptions.AppId;
         var appRefId = DbVersioning.ParentRefForApp(appId)!;
-        var db = MyOptions.DbStorage.SqlDb;
+        var db = MyOptions.NewDbStorage().SqlDb;
 
         var softDeletedItems = LoadSoftDeletedRecycleBinItems(db, appId, appRefId, dateFrom, dateTo, contentType);
         var historyOnlyItems = LoadHistoryOnlyRecycleBinItems(db, appId, appRefId, dateFrom, dateTo, contentType);
