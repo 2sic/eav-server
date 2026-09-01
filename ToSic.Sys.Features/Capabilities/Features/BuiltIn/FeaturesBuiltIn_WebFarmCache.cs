@@ -9,7 +9,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature WebFarmCache = new()
     {
-        NameId = "WebFarmCache",
+        NameId = nameof(WebFarmCache),
         Guid = new("11c0fedf-16a7-4596-900c-59e860b47965"),
         Name = "Web Farm Cache",
         IsPublic = false,
@@ -20,7 +20,7 @@ public partial class BuiltInFeatures
 
     public static readonly Feature WebFarmCacheDebug = new()
     {
-        NameId = "WebFarmCacheDebug",
+        NameId = nameof(WebFarmCacheDebug),
         Guid = new("031cf718-271e-41de-89ca-d1dd4ecfe602"),
         Name = "Web Farm Cache with verbose debugging",
         IsPublic = false,
