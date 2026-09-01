@@ -220,8 +220,10 @@ public class WorkAttributesMod(
         // - second the source field guid
         // - note that the content-type wouldn't be necessary, but we want to have it to prevent mistakes if for some reason the guid is duplicate
         // - verify that the source fields exist, and really belong to the content-types they claim to be from
-        var fields = workAttributes.New(MyOptions).GetSharedFields(attributeId: default)
-            .Where(f => f.Type.NameId == sourceType && f.Field.Guid == sourceField).ToList();
+        var fields = workAttributes.New(MyOptions)
+            .GetSharedFields(attributeId: default)
+            .Where(f => f.Type.NameId == sourceType && f.Field.Guid == sourceField)
+            .ToList();
 
         // 1.2 Find the source fields and only keep the ones that are valid
         if (fields.Count == 0)

@@ -15,19 +15,6 @@ public class AppWorkContextService(
     Generator<DbStorage, StorageOptions> dbGen)
     : ServiceBase("App.WrkCtx", connect: [appReaders, dataSourceSvc, dbGen])
 {
-    ///// <summary>
-    ///// In rare cases this is helpful outside; for now we surface it, may change later
-    ///// </summary>
-    //public IAppReaderFactory AppReaders => appReaders.Value;
-    
-
-    //public IAppWorkCtx Context(int appId)
-    //    => new AppWorkCtx(appReaders.Value.Get(appId));
-
-    //public IAppWorkCtx Context(IAppIdentity appIdentity)
-    //    => new AppWorkCtx(appReaders.Value.GetOrKeep(appIdentity));
-    
-    
     public IDisposable WithContext(IAppReader appReader)
     {
         return OverrideService<IAppWorkContext>.Use(ContextNew(appReader));
@@ -39,24 +26,6 @@ public class AppWorkContextService(
         => ContextNew(appReaders.Value.Get(appId), showDrafts);
     public IAppWorkContext ContextNew(IAppIdentity appIdentity, bool? showDrafts = default)
         => ContextNew(appReaders.Value.GetOrKeep(appIdentity), showDrafts);
-
-
-    //public IAppWorkCtxPlus ContextPlus(int appId, bool? showDrafts = default, IDataSource? data = default)
-    //    => new AppWorkCtxPlus(dataSourceSvc.Value, appReader: appReaders.Value.Get(appId), showDrafts, data);
-
-    //public IAppWorkCtxPlus ContextPlus(IAppReader appReader, bool? showDrafts = default, IDataSource? data = default)
-    //    => new AppWorkCtxPlus(dataSourceSvc.Value, appReader, showDrafts, data);
-
-    //public IAppWorkCtxPlus ContextPlus(IAppIdentity appIdentity, bool? showDrafts = default, IDataSource? data = default)
-    //    => new AppWorkCtxPlus(dataSourceSvc.Value, appReaders.Value.GetOrKeep(appIdentity), showDrafts, data);
-
-    //public IAppWorkCtxWithDb CtxWithDb(IAppIdentity identity)
-    //    => CtxWithDb(Context(identity).AppReader);
-
-    //public IAppWorkCtxWithDb CtxWithDb(IAppReader appReader, DbStorage? existingDb = default)
-    //    => existingDb == null
-    //        ? new(dbGen, appReader)
-    //        : new AppWorkCtxWithDb(existingDb, appReader);
 
     internal Generator<DbStorage, StorageOptions> DbGenerator => dbGen;
     internal LazySvc<IDataSourcesService> DataSourcesSvc => dataSourceSvc;
