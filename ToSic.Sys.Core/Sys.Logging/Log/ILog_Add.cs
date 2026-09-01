@@ -7,7 +7,7 @@ namespace ToSic.Sys.Logging;
 /// Various extensions for <see cref="ILog"/> objects to add logs.
 /// They are all implemented as extension methods, so that they will not fail even if the log object is null.
 /// </summary>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming
 public static partial class ILog_Add

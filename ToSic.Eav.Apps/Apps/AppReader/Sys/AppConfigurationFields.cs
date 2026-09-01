@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Eav.Apps.AppReader.Sys;
 
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppConfigurationFields
 {
     public const string FieldAllowRazor = "AllowRazorTemplates";

@@ -117,12 +117,8 @@ public class Sql : CustomDataSourceAdvanced
     #region Constructor
 
     [PrivateApi]
-    public new class Dependencies(SqlPlatformInfo sqlPlatformInfo, CustomDataSourceAdvanced.Dependencies parentServices)
-        : DependenciesBase(connect: [sqlPlatformInfo])
-    {
-        public SqlPlatformInfo SqlPlatformInfo { get; } = sqlPlatformInfo;
-        public CustomDataSourceAdvanced.Dependencies ParentServices { get; } = parentServices;
-    }
+    public new record Dependencies(SqlPlatformInfo SqlPlatformInfo, CustomDataSourceAdvanced.Dependencies ParentServices)
+        : DependenciesBase(connect: [SqlPlatformInfo]);
 
     // Important: This constructor must come BEFORE the other constructors
     // because it is the one which the .net Core DI should use!

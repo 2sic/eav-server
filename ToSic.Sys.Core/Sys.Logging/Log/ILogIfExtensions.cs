@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Sys.Logging;
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ILogIfExtensions
 {
     /// <summary>

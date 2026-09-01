@@ -11,8 +11,11 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public class EntityAssembler(AttributeListAssembler attributeListAssembler)
+public class EntityAssembler(): ServiceWithSetup<DataAssemblerOptions>("DTA.Entity")
 {
+    protected override DataAssemblerOptions GetDefaultOptions() => new();
+
+
     public Entity Create(
         int appId,
         IContentType contentType,
@@ -56,20 +59,6 @@ public class EntityAssembler(AttributeListAssembler attributeListAssembler)
             PublishedEntityId = publishedId == 0 ? null : (int?)publishedId, // fix: #3070 convert 0 to null 
         };
     }
-
-    /// <summary>
-    /// Create an empty entity of a specific type.
-    /// Usually used in edit scenarios, where the presentation doesn't exist yet
-    /// </summary>
-    public Entity EmptyOfType(int appId, Guid entityGuid, int entityId, IContentType type) =>
-        Create(appId: appId,
-            entityId: entityId,
-            guid: entityGuid,
-            contentType: type,
-            attributes: attributeListAssembler.CreateListForType(type, null),
-            created: DateTime.MinValue,
-            modified: DateTime.Now, 
-            owner: "");
 
     /// <summary>
     /// Create a new Entity based on an Entity and replacing some of its properties

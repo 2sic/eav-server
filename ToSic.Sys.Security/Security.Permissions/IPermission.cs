@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Sys.Security.Permissions;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IPermission
 {
     /// <summary>

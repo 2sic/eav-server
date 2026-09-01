@@ -73,14 +73,14 @@ public class XmlImportPreparations(
     }
 
     /// <summary>
-    /// Get the attribute names in the content type.
+    /// Get the fieldDef names in the content type.
     /// </summary>
     public IEnumerable<string> AttributeNamesInContentType
         => contentType.Attributes.Select(item => item.Name).ToList();
 
 
     /// <summary>
-    /// Get the attribute names in the xml document.
+    /// Get the fieldDef names in the xml document.
     /// </summary>
     public IEnumerable<string> AttributeNamesInDocument =>
         xmlEntities

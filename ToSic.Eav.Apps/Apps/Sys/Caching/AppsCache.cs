@@ -8,8 +8,10 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// The default Apps Cache system running on a normal environment.
 /// </summary>
 [PrivateApi]
-internal class AppsCache(IRuntimeKeyService runtimeKeyService)
-    : AppsCacheBase(runtimeKeyService), IAppsCacheSwitchable
+internal class AppsCache(IAppCacheKeyService appCacheKeyService)
+#pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
+    : AppsCacheBase(appCacheKeyService), IAppsCacheSwitchable
+#pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
 {
     #region SwitchableService
 
@@ -29,9 +31,8 @@ internal class AppsCache(IRuntimeKeyService runtimeKeyService)
         if (!TryZoneCacheKey(out var cacheKey))
             return LoadZones(tools);
 
-        var lazy = ZoneAppCaches.GetOrAdd(cacheKey,
-            // Lazy ensures only one LoadZones per tenant key, even under concurrency.
-            _ => new Lazy<IReadOnlyDictionary<int, Zone>>(() => LoadZones(tools)));
+        // Lazy ensures only one LoadZones per tenant key, even under concurrency.
+        var lazy = ZoneAppCaches.GetOrAdd(cacheKey, _ => new(() => LoadZones(tools)));
         return lazy.Value;
     }
 
@@ -43,7 +44,7 @@ internal class AppsCache(IRuntimeKeyService runtimeKeyService)
             // Use a stable app identity with no DB lookup; tenant-aware runtimes will encode tenant here.
             var identity = new AppIdentity(KnownAppsConstants.DefaultZoneId, KnownAppsConstants.AppIdEmpty);
             // Use runtime key presence as the guard for safe, tenant-scoped caching.
-            cacheKey = runtimeKeyService.AppRuntimeKey(identity);
+            cacheKey = appCacheKeyService.AppCacheKey(identity);
             return cacheKey.HasValue();
         }
         catch

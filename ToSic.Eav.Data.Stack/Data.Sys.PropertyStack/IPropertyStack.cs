@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys.PropertyLookup;
-using ToSic.Sys.Data;
 
 namespace ToSic.Eav.Data.Sys.PropertyStack;
 

@@ -46,7 +46,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
         foreach (var file in filteredFiles)
         {
             var relativeFilePath = file.Replace(_root, "").TrimPrefixSlash();
-            var destinationFilePath = $"{destinationFolder}{Path.DirectorySeparatorChar}{relativeFilePath}";
+            var destinationFilePath = Path.Combine(destinationFolder, relativeFilePath.ToSystemPath());
             l.A($"relFilePath:{relativeFilePath},destFilePath:{destinationFilePath}");
 
             Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath) ?? string.Empty);
@@ -69,11 +69,11 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// Gets all files from a folder and subfolder, which fit the import/export filter criteria
     /// </summary>
     /// <returns></returns>
-    public ICollection<string> GetAllTransferableFiles(string? searchPattern = default)
+    public IEnumerable<string> GetAllTransferableFiles(string? searchPattern = default)
     {
         if (string.IsNullOrWhiteSpace(searchPattern))
             searchPattern = "*.*"; // default search pattern
-        var l = Log.Fn<ICollection<string>>();
+        var l = Log.Fn<IEnumerable<string>>($"{nameof(searchPattern)}: '{searchPattern}'");
         var hardcodedExcludedFolders = GetHardcodedExcludedFolders();
         l.A($"Hardcoded excluded folders count: {hardcodedExcludedFolders.Count}");
 

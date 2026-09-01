@@ -17,11 +17,12 @@ namespace ToSic.Eav.WebApi.Sys.Admin.Metadata;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MetadataControllerReal(
+    AppWorkContextService appWorkCtxSvc,
     IConvertToEavLight converter,
     IAppReaderFactory appReaders,
     ITargetTypeService metadataTargets,
-    LazySvc<RecommendedMetadataService> mdRead)
-    : Services_ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, appReaders, metadataTargets, mdRead]),
+    AppWorkChain<RecommendedMetadataService> mdRead)
+    : Services_ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [appWorkCtxSvc, converter, appReaders, metadataTargets, mdRead]),
         IMetadataController
 {
     public const string LogSuffix = "MetaDt";
@@ -32,9 +33,10 @@ public class MetadataControllerReal(
     public MetadataListDto Get(int appId, int targetType, string keyType, string key, string? contentType = null)
     {
         var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
-        var appReader = appReaders.Get(appId);
+        var ctx = appWorkCtxSvc.ContextNew(appId);
+        //var appReader = appReaders.Get(appId);
 
-        var (entityList, mdFor) = GetExistingEntitiesAndMd(targetType, keyType, key, contentType, appReader.Metadata);
+        var (entityList, mdFor) = GetExistingEntitiesAndMd(targetType, keyType, key, contentType, ctx.AppReader.Metadata);
 
         if (entityList == null)
         {
@@ -42,7 +44,8 @@ public class MetadataControllerReal(
             throw l.Done(new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel"));
         }
 
-        mdRead.Value.Setup(appReader, appId);
+        //mdRead.Value.Setup(appReader, appId);
+        var mdReader = mdRead.New(ctx);
 
         // When retrieving all items, make sure that permissions are _not_ included
         if (IsNullOrEmpty(contentType))
@@ -54,7 +57,7 @@ public class MetadataControllerReal(
         IEnumerable<MetadataRecommendation>? recommendations = null;
         try
         {
-            recommendations = mdRead.Value.GetAllowedRecommendations(targetType, key, contentType);
+            recommendations = mdReader.GetAllowedRecommendations(targetType, key, contentType);
         }
         catch (Exception e)
         {
@@ -64,7 +67,7 @@ public class MetadataControllerReal(
 
         try
         {
-            mdFor = mdFor with { Title = appReader.FindTargetTitle(targetType, key) };
+            mdFor = mdFor with { Title = ctx.AppReader.FindTargetTitle(targetType, key) };
             l.A($"title: '{mdFor.Title}'");
         }
         catch { /* experimental / ignore */ }

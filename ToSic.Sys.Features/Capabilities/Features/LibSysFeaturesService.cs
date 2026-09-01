@@ -35,7 +35,7 @@ public class LibSysFeaturesService(FeaturesCatalog featuresCatalog) : ISysFeatur
             .SelectMany(f => new[] { f.NameId, f.Aspect.Guid.ToString() })
             .Distinct(InvariantCultureIgnoreCase),
         InvariantCultureIgnoreCase);
-    private HashSet<string>? _enabledFeatures; // Do not use GetOnce, because of "Error Unable to marshal host object to interpreter space"
+    private HashSet<string>? _enabledFeatures; // Do not use LazyGet, because of "Error Unable to marshal host object to interpreter space"
 
     public IEnumerable<FeatureState> UiFeaturesForEditors
         => All.Where(f => f.IsEnabled && f.IsForEditUi);

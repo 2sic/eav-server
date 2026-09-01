@@ -1,5 +1,4 @@
-﻿
-using ToSic.Eav.WebApi.Sys.Dto;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -21,24 +20,9 @@ public interface ITypeController
     /// <returns></returns>
     bool Delete(int appId, string staticName);
 
-    /// <summary>
-    /// Get all content-types in the app
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <param name="scope"></param>
-    /// <param name="withStatistics"></param>
-    /// <returns></returns>
-    IEnumerable<ContentTypeDto> List(int appId, string? scope = null, bool withStatistics = false);
+    // Replaced by DataSource System.ContentTypes through query System.SysData.
+    //IEnumerable<ContentTypeDto> List(int appId, string? scope = null, bool withStatistics = false);
 
-    /// <summary>
-    /// Get one content-type
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <param name="contentTypeId"></param>
-    /// <param name="scope"></param>
-    /// <returns></returns>
-    ContentTypeDto Get(int appId, string contentTypeId, string? scope = null);
-        
     // 2019-11-15 2dm special change: item to be Dictionary<string, object> because in DNN 9.4
     // it causes problems when a content-type has metadata, where a value then is a deeper object
     // in future, the JS front-end should send something clearer and not the whole object

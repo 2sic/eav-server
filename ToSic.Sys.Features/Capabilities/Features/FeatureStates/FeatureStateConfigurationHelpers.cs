@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Capabilities.Features;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class FeatureStateConfigurationHelpers
 {
 

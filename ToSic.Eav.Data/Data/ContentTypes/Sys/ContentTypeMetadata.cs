@@ -1,0 +1,36 @@
+﻿using ToSic.Eav.Data.Sys.Entities.Sources;
+using ToSic.Eav.Metadata;
+using ToSic.Eav.Metadata.Sys;
+
+namespace ToSic.Eav.Data.ContentTypes.Sys;
+
+/// <summary>
+/// Provides metadata for a content type. This can be very special, because ContentTypes can be shared (ghosts),
+/// in which case the metadata must be retrieved from another "remote" location (where the original is defined). 
+/// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
+[method: PrivateApi]
+public class ContentTypeMetadata(string typeId, string title, IMetadataProvider source)
+    : Metadata<string>(targetType: (int)TargetTypes.ContentType, key: typeId, title: title, source: source)
+{
+    /// <summary>
+    /// Load / initialize - needed when building the cache.
+    /// Must usually be called a bit later, because the data is initialized from a cache, which in case of ghosts may be loaded a bit later.
+    /// </summary>
+    protected override ICollection<IEntity> LoadFromProviderInsideLock(IList<IEntity>? additions = null)
+    {
+        // add the guid metadata on entity if it has a real guid
+        // this is kind of wrong, because it should use the type MetadataForContentType
+        // but this slipped in a long time ago, and we cannot change it anymore
+        var hasProperGuid = Guid.TryParse(Key, out var ctGuid);
+        var mdUsingGuid = !hasProperGuid
+            ? null
+            : GetMetadataSource()?
+                .GetMetadata(TargetTypes.Entity, ctGuid)
+                .ToListOpt();
+
+        // combine with base string based metadata
+        return base.LoadFromProviderInsideLock(mdUsingGuid);
+    }
+}

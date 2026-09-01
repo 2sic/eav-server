@@ -4,5 +4,5 @@
 public class PairTypeWithAttribute
 {
     public required IContentType Type { get; init; }
-    public required IContentTypeAttribute Attribute { get; init; }
+    public required IContentTypeField Field { get; init; }
 }

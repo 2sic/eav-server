@@ -8,7 +8,7 @@ namespace ToSic.Eav.Repository.Efc.Sys;
 /// </summary>
 /// <param name="logStore"></param>
 /// <param name="typeSvc"></param>
-internal class BootWarmUpEavSql(ILogStore logStore, LazySvc<ITargetTypeService> typeSvc)
+internal sealed class BootWarmUpEavSql(ILogStore logStore, LazySvc<ITargetTypeService> typeSvc)
     : BootProcessBase("SqlWUp", bootPhase: BootPhase.Registrations, connect: [typeSvc])
 {
     /// <summary>

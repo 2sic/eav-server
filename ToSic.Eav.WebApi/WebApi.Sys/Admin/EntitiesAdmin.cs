@@ -1,0 +1,81 @@
+using ToSic.Eav.Context;
+using ToSic.Eav.Data.EntityDecorators.Sys;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.Serialization.Sys.Options;
+using ToSic.Eav.WebApi.Sys.Entities;
+using ToSic.Sys.Security.Permissions;
+
+namespace ToSic.Eav.WebApi.Sys.Admin;
+
+[PrivateApi]
+[VisualQuery(
+    NiceName = "Entities Admin",
+    NameId = "7dd4fe46-7a83-4cc6-b3d3-d506b335b290",
+    NameIds = ["System.EntitiesAdmin"],
+    Type = DataSourceType.System,
+    Audience = Audience.System,
+    DataConfidentiality = DataConfidentiality.Internal,
+    UiHint = "Admin list of entities for a content type"
+)]
+public class EntitiesAdmin : CustomDataSource
+{
+    #region Configuration Properties
+
+    /// <summary>
+    /// The static name of the content type.
+    /// </summary>
+    [Configuration(Fallback = "")]
+    public string ContentType => Configuration.GetThis(fallback: "");
+
+    #endregion
+
+    public EntitiesAdmin(
+        Dependencies services,
+        LazySvc<IContextOfSite> siteContext,
+        LazySvc<IAppsCatalog> appsCatalog,
+        LazySvc<EntityApi> entityApi)
+        : base(services, logName: "Eav.EntitiesAdmin", connect: [siteContext, appsCatalog, entityApi])
+    {
+        ProvideOut(() => GetEntities(siteContext.Value, appsCatalog.Value, entityApi.Value));
+    }
+
+    private IEnumerable<IEntity> GetEntities(IContextOfSite siteContext, IAppsCatalog appsCatalogValue, EntityApi entityApiValue)
+    {
+        var l = Log.Fn<IEnumerable<IEntity>>();
+
+        if (string.IsNullOrWhiteSpace(ContentType))
+            return l.Return([], "no content type");
+
+        var app = appsCatalogValue.AppIdentity(AppId);
+
+        var entities = entityApiValue
+            .InitOrThrowBasedOnGrants(siteContext, app, ContentType, GrantSets.ReadSomething)
+            .GetEntitiesForAdminStep1(ContentType);
+
+        // Attach serialization metadata.
+        // This matches ConvertToEavLight.ConfigureForAdminUse().
+        var decorator = new EntitySerializationDecorator
+        {
+            SerializeGuid = true,
+            WithPublishing = true,
+            SerializeMetadataFor = new() { Serialize = true },
+            SerializeMetadata = new SubEntitySerialization
+            {
+                Serialize = true,
+                SerializeId = true,
+                SerializeTitle = true,
+                SerializeGuid = true,
+            },
+            WithEditInfos = true,
+            LinksWithBothValues = true,
+        };
+
+        var result = entities
+            .Select(entity => new EntityWithDecorator<EntitySerializationDecorator>(entity, decorator))
+            .ToImmutableOpt();
+
+        return l.Return(result);
+    }
+}

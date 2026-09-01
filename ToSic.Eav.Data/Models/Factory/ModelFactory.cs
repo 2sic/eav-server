@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Models.Sys;
+﻿using ToSic.Eav.Models.Factory.Sys;
+using ToSic.Eav.Models.Sys;
 
 namespace ToSic.Eav.Models.Factory;
 
@@ -7,14 +8,11 @@ namespace ToSic.Eav.Models.Factory;
 /// </summary>
 internal class ModelFactory(IServiceProvider sp): IModelFactory
 {
-    [return: NotNullIfNotNull(nameof(source))]
-    public TModel? Create<TSource, TModel>(TSource? source)
-        where TModel : IModelFromEntity
-    {
-        var wrapper = sp.Build<TModel>();
-        var ok = (wrapper as IModelSetup<TSource>)?.SetupModel(source) ?? false;
-        return ok ? wrapper : default;
-    }
+    [return: NotNullIfNotNull(nameof(item))]
+    public TModel? Create<TSource, TModel>(TSource? item, ToModelOptions options)
+        where TModel : class, IModelFromEntity
+        => ModelFactoryShared.CreateStatic<TSource, TModel>(sp, item, options);
+
 
     [return: NotNullIfNotNull("item")]
     public TCustom? AsCustomFrom<TCustom, TData>(TData? item, ModelSettings? settings = default) where TCustom : class, IModelFromData

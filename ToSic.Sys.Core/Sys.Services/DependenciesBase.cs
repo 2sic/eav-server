@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Sys.Services;
 
+// Note: we can't call it `Dependencies` otherwise all inheriting dependencies would have to use the full namespace.
+
 /// <summary>
 /// Base class for all Dependency helpers on services.
 /// </summary>
@@ -12,7 +14,7 @@
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class DependenciesBase: IDependencies
+public abstract record DependenciesBase : IDependencies
 {
     // ReSharper disable once UnusedParameter.Local
     protected DependenciesBase(NoParamOrder npo = default, object[]? connect = default)
@@ -29,7 +31,7 @@ public abstract class DependenciesBase: IDependencies
     internal DependenciesLogHelper LogHelper { get; } = new();
 
     /// <summary>
-    /// Add objects to various queues to be auto-initialized when <see cref="ServiceDependenciesExtensions.ConnectServices{TDependencies}"/> is called later on
+    /// Add objects to various queues to be auto-initialized when <see cref="DependenciesExtensions.ConnectServices{TDependencies}"/> is called later on
     /// </summary>
     /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
     protected void ConnectLogs(object[] services)
@@ -43,20 +45,5 @@ public abstract class DependenciesBase: IDependencies
             return;
         LogHelper.SetLog(parentLog);
         InitDone = true;
-    }
-}
-
-[PrivateApi]
-public static class ServiceDependenciesExtensions
-{
-    /// <summary>
-    /// Auto-initialize the log on all dependencies.
-    /// Special format to allow command chaining, so it returns itself.
-    /// </summary>
-    public static TMyServices ConnectServices<TMyServices>(this TMyServices parent, ILog log)
-        where TMyServices : IDependencies
-    {
-        parent.SetLog(log);
-        return parent;
     }
 }

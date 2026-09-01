@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Work;
-using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -33,7 +33,7 @@ public class RecycleBin : CustomDataSource
 
     #endregion
 
-    public RecycleBin(Dependencies services, GenWorkDb<WorkEntityRecycleBin> recycleBin, FeaturesForDataSources featuresForDs)
+    public RecycleBin(Dependencies services, AppWorkQuick<WorkEntityRecycleBin> recycleBin, FeaturesForDataSources featuresForDs)
         : base(services, logName: "CDS.RecycleBin", connect: [recycleBin, featuresForDs])
     {
         ProvideOutRaw(
@@ -59,7 +59,7 @@ public class RecycleBin : CustomDataSource
 
     private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) _cache = (null!, null!); // temp null at start
 
-    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) GetList(GenWorkDb<WorkEntityRecycleBin> recycleBin)
+    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) GetList(AppWorkQuick<WorkEntityRecycleBin> recycleBin)
     {
         var l = Log.Fn<(IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes)>($"DateFrom:{DateFrom}, DateTo:{DateTo}, ContentType:{ContentType}");
 
@@ -75,21 +75,22 @@ public class RecycleBin : CustomDataSource
         : items.Where(i => i.TypeName.EqualsInsensitive(ct));
 
         var list = itemsOfContentType
-            .Select(r => new RawEntity(new()
-            {
-                { nameof(r.AppId), r.AppId },
-                { nameof(r.TypeNameId), r.TypeNameId },
-                { nameof(r.TypeName), r.TypeName },
-                { nameof(r.TransactionId), r.TransactionId },
-                { nameof(r.Deleted), r.Deleted },
-                { nameof(r.DeletedBy), r.DeletedBy },
-                { nameof(r.ParentRef), r.ParentRef },
-                { nameof(r.Json), r.Json },
-                { AttributeNames.TitleNiceName, $"{r.TypeName}({r.Id})" },
-            })
+            .Select(r => new RawEntity
             {
                 Id = r.Id,
                 Guid = r.Guid,
+                Values = new Dictionary<string, object?>
+                {
+                    { nameof(r.AppId), r.AppId },
+                    { nameof(r.TypeNameId), r.TypeNameId },
+                    { nameof(r.TypeName), r.TypeName },
+                    { nameof(r.TransactionId), r.TransactionId },
+                    { nameof(r.Deleted), r.Deleted },
+                    { nameof(r.DeletedBy), r.DeletedBy },
+                    { nameof(r.ParentRef), r.ParentRef },
+                    { nameof(r.Json), r.Json },
+                    { AttributeNames.TitleNiceName, $"{r.TypeName} ({r.Id})" },
+                },
             })
             .ToList();
 
@@ -99,13 +100,16 @@ public class RecycleBin : CustomDataSource
             .Select(c =>
             {
                 var first = c.First();
-                return new RawEntity(new()
+                return new RawEntity
                 {
-                    { AttributeNames.TitleNiceName, $"{first.TypeName} ({c.Count()})" },
-                    { "Name", first.TypeName },
-                    { AttributeNames.NameIdNiceName, first.TypeNameId },
-                    { "Count", c.Count() },
-                });
+                    Values = new Dictionary<string, object?>
+                    {
+                        { AttributeNames.TitleNiceName, $"{first.TypeName} ({c.Count()})" },
+                        { "Name", first.TypeName },
+                        { AttributeNames.NameIdNiceName, first.TypeNameId },
+                        { "Count", c.Count() },
+                    }
+                };
             })
             .ToList();
 

@@ -8,7 +8,6 @@
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 public class PrivateApi : Attribute
 {
     /// <summary>

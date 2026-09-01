@@ -42,7 +42,7 @@ public class SizeInfo(long bytes) : ISizeInfo
         < Factor * Factor * Factor => (Mb, "MB"),
         _ => (Gb, "GB")
     });
-    private readonly GetOnce<(decimal, string)> _bestSizeCache = new();
+    private readonly LazyGet<(decimal, string)> _bestSizeCache = new();
 
     public override string ToString() => $"{BestSize} {BestUnit}";
 

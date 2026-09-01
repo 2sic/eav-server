@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.Metadata;
@@ -88,7 +87,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAp
             if (mdFor.TargetType == (int)TargetTypes.ContentType)
             {
                 var contentTypeFactory =
-                    DataFactory.SpawnNew(options: ContentTypeUtil.Options with { AppId = AppId, WithMetadata = true });
+                    DataFactory.SpawnNew(options: new() { AppId = AppId, WithMetadata = true });
 
                 var key = mdFor.KeyString ?? mdFor.KeyGuid?.ToString();
                 if (key == null)
@@ -96,7 +95,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAp
                 var ct = appState.TryGetContentType(key);
                 if (ct == null)
                     return [];
-                var ctEntity = contentTypeFactory.Create(ContentTypeUtil.ToRaw(ct));
+                var ctEntity = contentTypeFactory.Create(new ContentTypeUtil.ContentTypeSummary(ct, items: 0));
                 return [ctEntity];
             }
 

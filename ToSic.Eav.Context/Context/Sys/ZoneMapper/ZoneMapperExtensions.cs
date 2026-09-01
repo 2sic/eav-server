@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ZoneMapperExtensions
 {
     /// <summary>

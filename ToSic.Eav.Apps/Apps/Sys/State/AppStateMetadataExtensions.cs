@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.Sys.Ancestors;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Sys.State;
@@ -44,12 +43,12 @@ public static class AppStateMetadataTargetExtensions
 
     extension(IEnumerable<IContentType> contentTypes)
     {
-        public (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(string? idString) 
+        public (IContentType ContentType, IContentTypeField Attribute) FindAttribute(string? idString) 
             => !int.TryParse(idString, out var keyInt)
                 ? default
                 : contentTypes.FindAttribute(keyInt);
 
-        private (IContentType ContentType, IContentTypeAttribute Attribute) FindAttribute(int id)
+        public (IContentType ContentType, IContentTypeField Attribute) FindAttribute(int id)
         {
             var allLocalCts = contentTypes
                 .Where(ct => !ct.HasAncestor());

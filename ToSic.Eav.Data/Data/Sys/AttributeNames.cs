@@ -67,6 +67,8 @@ public class AttributeNames
     public const string EntityFieldId = "entityid";
     public const string EntityFieldAutoSelect = "entity-title-id"; // Special code used in a data-source to auto-check title or id
     public const string EntityFieldGuid = "entityguid";
+    
+    // This one is used on entity-fields to find out the type of data they contain.
     public const string EntityFieldType = "entitytype";
     public const string EntityFieldIsPublished = "ispublished";
     public const string EntityFieldCreated = "created";
@@ -83,6 +85,24 @@ public class AttributeNames
     /// </summary>
     public const string EntityAppId = "appid";
 
+    #endregion
+
+    #region Picker Stuff - moved here v21.08
+
+    public static string[] PickerNames =
+    [
+        "entity-picker",
+        "number-picker",
+        "string-picker",
+    ];
+
+    public static string PickerFieldDataSources = "DataSources";
+    
+    public static string PickerDataSourceDataTypes = "ContentTypeNames";
+
+    public static string PickerDataSourceCreateTypes = "CreateTypes";
+
+    public static string EntityFieldAllowMulti = "AllowMultiValue";
     #endregion
 
     /// <summary>
@@ -119,20 +139,16 @@ public class AttributeNames
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static (bool isSpecial, ValueTypes fieldType) InternalOnlyIsSpecialEntityProperty(string name)
-    {
-        return name.ToLowerInvariant() switch
+    public static (bool isSpecial, ValueTypes fieldType) InternalOnlyIsSpecialEntityProperty(string name) =>
+        name.ToLowerInvariant() switch
         {
             EntityFieldTitle => (true, ValueTypes.String),
             EntityFieldId => (true, ValueTypes.Number),
-            EntityFieldGuid => (true, ValueTypes.Undefined),
-            EntityFieldType => (true, ValueTypes.Undefined),
+            EntityFieldGuid or EntityFieldType => (true, ValueTypes.Undefined),
             EntityFieldIsPublished => (true, ValueTypes.Boolean),
-            EntityFieldCreated => (true, ValueTypes.DateTime),
-            EntityFieldModified => (true, ValueTypes.DateTime),
+            EntityFieldCreated or EntityFieldModified => (true, ValueTypes.DateTime),
             _ => (false, ValueTypes.Undefined)
         };
-    }
 
     #region DB Field / Names Constants
 

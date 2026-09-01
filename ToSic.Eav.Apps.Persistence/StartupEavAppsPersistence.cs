@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.Sys.AppJson;
 using ToSic.Eav.Apps.Sys.AppStateInFolder;
+using ToSic.Eav.Apps.Sys.Extensions;
 using ToSic.Eav.Apps.Sys.FileSystemState;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Loaders;
@@ -23,7 +24,7 @@ public static class StartupEavAppsPersistence
         services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
 
         services.AddTransient<IBootProcess, BootWarmUpAssemblies>();
-        services.AddTransient<IBootProcess, EavBootLoadPresetApp>();
+        services.AddTransient<IBootProcess, BootPreloadPresetApp>();
         services.TryAddTransient<AppLoaderLogSettings>();   // new v20
         services.TryAddTransient<DataImportLogSettings>();   // new v20.00-03
 

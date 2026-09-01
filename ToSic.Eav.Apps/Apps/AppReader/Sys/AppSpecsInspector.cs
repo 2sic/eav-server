@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Apps.AppReader.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class AppSpecsInspector
 {
     public static bool IsContentApp(this IAppSpecs specs)

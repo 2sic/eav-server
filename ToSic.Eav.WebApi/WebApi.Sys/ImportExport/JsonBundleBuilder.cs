@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.ImportExport.Json.Sys;
+﻿using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.File;
@@ -9,7 +8,7 @@ internal class JsonBundleBuilder(IAppReader appReader, ILog parentLog) : HelperB
 {
     internal JsonBundle BundleBuild(ExportConfiguration export, JsonSerializer serializer)
     {
-        var l = Log.Fn<JsonBundle>($"build bundle for ExportConfiguration:{export.Guid}");
+        var l = Log.Fn<JsonBundle>($"build bundle for ExportConfiguration:{(export as ICanBeEntity).Entity.EntityId}");
 
         // loop through content types and add them to the bundle-list
         l.A($"count export content types:{export.ContentTypes.Count}");
@@ -19,7 +18,7 @@ internal class JsonBundleBuilder(IAppReader appReader, ILog parentLog) : HelperB
             CtAttributeIncludeInheritedMetadata = false
         };
 
-        // Content-Types contains the Content-Type as well entities referenced in CT-Attribute Metadata such as Formulas
+        // Content-Types contains the Content-Type as well entities referenced in CT-Field Metadata such as Formulas
         var bundleTypesRaw = export.ContentTypes
                 .Select(appReader.GetContentType)
                 .Select(ct => serializer.ToPackage(ct, serSettings))

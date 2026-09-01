@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
@@ -26,11 +25,11 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class AppInitializer(
     LazySvc<DataAssembler> builder,
     Generator<IAppsAndZonesLoaderWithRaw> repoLoader,
-    GenWorkDb<WorkEntitySave> entitySave,
-    GenWorkDb<WorkContentTypesMod> contentTypesMod,
+    AppWorkChain<WorkEntitySave> entitySave,
+    AppWorkChain<WorkContentTypesMod> contentTypesMod,
     AppCachePurger cachePurger,
     IAppReaderFactory appReaders)
-    : ServiceBase("Eav.AppBld", connect: [contentTypesMod, entitySave, builder, cachePurger, repoLoader, appReaders])
+    : ServiceWithSetup<IAppWorkContext>("Eav.AppBld", connect: [contentTypesMod, entitySave, builder, cachePurger, repoLoader, appReaders])
 {
 
     protected readonly AppCachePurger CachePurger = cachePurger;
@@ -41,9 +40,10 @@ public class AppInitializer(
     /// <param name="appReader">The app State</param>
     /// <param name="newAppName">The app-name (for new apps) which would be the folder name as well. </param>
     /// <param name="codeRefTrail">Origin caller to better track down creation - see issue https://github.com/2sic/2sxc/issues/3203</param>
-    public bool InitializeApp(IAppReader appReader, string? newAppName, CodeRefTrail codeRefTrail)
+    public bool InitializeApp(/*IAppReader appReader,*/ string? newAppName, CodeRefTrail codeRefTrail)
     {
         var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
+        var appReader = MyOptions.AppReader;
         codeRefTrail.WithHere().AddMessage($"App: {appReader.AppId}");
         if (AppInitializedChecker.CheckIfAllPartsExist(appReader, codeRefTrail, out var appConfig, out var appResources,
                 out var appSettings, Log))
@@ -100,7 +100,7 @@ public class AppInitializer(
 
         if (entities.Any())
         {
-            var entSaver = entitySave.New(appReader);
+            var entSaver = entitySave.New(MyOptions);
             var withOptions = entities.Select(e => new EntityPair<SaveOptions>(e, entSaver.SaveOptions())).ToListOpt();
             entSaver.Save(withOptions);
 
@@ -129,7 +129,7 @@ public class AppInitializer(
     private bool CreateAllMissingContentTypes(IAppReader appReader, List<AddContentTypeAndOrEntityTask> newItems)
     {
         var l = Log.Fn<bool>($"Check for {newItems.Count}");
-        var typesMod = contentTypesMod.New(appReader);
+        var typesMod = contentTypesMod.New(MyOptions);
         var addedTypes = false;
         foreach (var item in newItems)
             if (item.InAppType && FindContentType(appReader, item.SetName, item.InAppType) == null)

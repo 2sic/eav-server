@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Web.Sys;
@@ -16,7 +16,6 @@ using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Eav.WebApi.Sys.Languages;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Sys.Logs;
-using ToSic.Eav.WebApi.Sys.Zone;
 
 namespace ToSic.Eav;
 
@@ -36,7 +35,6 @@ public static class StartupWebApi
 
         // Various Backends
         services.TryAddTransient<LanguagesBackend>();
-        services.TryAddTransient<ZoneBackend>();
         services.TryAddTransient<SaveEntities>();
 
         // APIs
@@ -91,7 +89,7 @@ public static class StartupWebApi
     public static IServiceCollection AddEavWebApiTypedAfterEav(this IServiceCollection services)
     {
         // APIs
-        services.TryAddTransient<ApiExplorerControllerReal>();
+        services.TryAddTransient<AppWebApiControllerAnalyzer>();
         services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
         services.TryAddTransient<IAppExplorerControllerDependency, AppExplorerControllerDependencyUnknown>();
         // The ResponseMaker must be registered as generic, so that any specific registration will have priority

@@ -3,8 +3,14 @@
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
 
   <PropertyGroup>
-    <RootNamespace>ToSic.Lib.DI</RootNamespace>
+    <RootNamespace>ToSic</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Sys.DI.OverrideRequired\**" />
+    <EmbeddedResource Remove="Sys.DI.OverrideRequired\**" />
+    <None Remove="Sys.DI.OverrideRequired\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Xunit.Priority" Version="1.1.6" />
@@ -13,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.TestHelpers\ToSic.Sys.TestHelpers.csproj" />
   </ItemGroup>
 
 </Project>

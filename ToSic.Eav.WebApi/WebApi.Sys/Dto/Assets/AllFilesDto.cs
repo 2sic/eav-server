@@ -1,11 +1,11 @@
 ﻿namespace ToSic.Eav.WebApi.Sys.Dto;
 
-public class AllFilesDto
+public record AllFilesDto
 {
     public required IEnumerable<AllFileDto> Files = new List<AllFileDto>();
 }
 
-public class AllFileDto
+public record AllFileDto
 {
     public required string Path { get; init; }
 

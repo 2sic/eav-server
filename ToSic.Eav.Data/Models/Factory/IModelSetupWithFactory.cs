@@ -1,14 +1,6 @@
 ﻿namespace ToSic.Eav.Models.Factory;
 
 /// <summary>
-/// WIP - nothing done yet, just as a reminder.
-/// Goal is that some wrappers require a factory, and these should be marked as such,
-/// so that a simple wrapper helper can detect and warn about this.
-/// </summary>
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
-public interface IModelFactoryRequired;
-
-/// <summary>
 /// Marks objects such as custom items or data models, which can receive a _specific_ data-type (entity _or_ typed item) and wrap it.
 /// </summary>
 /// <remarks>
@@ -29,6 +21,7 @@ public interface IModelFactoryRequired;
 /// The data type which can be accepted.
 /// Must be <see cref="IEntity"/> or <see cref="ITypedItem"/> (other types not supported for now).
 /// </typeparam>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IModelSetupWithFactory<in TSource> : IModelFactoryRequired, IModelFromData
 {
     /// <summary>

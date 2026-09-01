@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Metadata;
 using ToSic.Sys.Caching.PiggyBack;
 
@@ -44,14 +44,14 @@ public interface IContentType: IAppIdentityLight, IHasMetadata, IHasPiggyBack
     /// As of v21, the order of attributes is preserved as defined in the content-type definition.
     /// Previously you had to manually sort using the .SortOrder property of the attribute.
     /// </remarks>
-    IEnumerable<IContentTypeAttribute> Attributes { get; }
+    IEnumerable<IContentTypeField> Attributes { get; }
 
     /// <summary>
     /// A simple indexer to get an attribute
     /// </summary>
     /// <param name="fieldName"></param>
-    /// <returns>The <see cref="IContentTypeAttribute"/> of the field name or `null` if not found</returns>
-    IContentTypeAttribute? this[string fieldName] { get; }
+    /// <returns>The <see cref="IContentTypeField"/> of the field name or `null` if not found</returns>
+    IContentTypeField? this[string fieldName] { get; }
 
     /// <summary>
     /// Information where the Content-Type was stored (file system, DB, etc.)

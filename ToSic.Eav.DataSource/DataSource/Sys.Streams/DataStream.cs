@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSource.Sys.Streams;
 /// <param name="listDelegate">Function which gets Entities</param>
 /// <param name="enableAutoCaching"></param>
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataStream(
     LazySvc<IDataSourceCacheService> cache,
     IDataSource source,
@@ -121,7 +122,7 @@ public class DataStream(
     /// <remarks>
     /// Where possible, it will be an ImmutableSmartList wrapping an ImmutableArray for maximum performance.
     /// </remarks>
-    private readonly GetOnce<IImmutableList<IEntity>> _list = new();
+    private readonly LazyGetAndReset<IImmutableList<IEntity>> _list = new();
 
     /// <summary>
     /// Assemble the list - from the initially configured ListDelegate
@@ -185,5 +186,5 @@ public class DataStream(
     public IDataSourceLink GetLink() =>
         _link.Get(() => new DataSourceLink { DataSource = Source, Stream = this, OutName = Name })!;
 
-    private readonly GetOnce<IDataSourceLink> _link = new();
+    private readonly LazyGet<IDataSourceLink> _link = new();
 }

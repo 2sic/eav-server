@@ -2,6 +2,7 @@
 
   <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Sys.props" />
 
+  <!-- As of 2026-06-28 2dm there is nothing in this DLL to publish, so we'll skip XML docs to save space in the installed ZIPs -->
   <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
 
   <PropertyGroup>
@@ -22,7 +23,7 @@
     <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 

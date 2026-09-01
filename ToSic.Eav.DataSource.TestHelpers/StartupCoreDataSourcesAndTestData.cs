@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.LookUp;
 using ToSic.Eav.Run.Startup;
-using ToSic.Eav.TestData;
 using ToSic.Eav.Testing;
 
 namespace ToSic.Eav;

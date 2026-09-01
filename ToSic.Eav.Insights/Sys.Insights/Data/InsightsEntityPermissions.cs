@@ -3,7 +3,7 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsEntityPermissions(GenWorkPlus<WorkEntities> workEntities)
+internal class InsightsEntityPermissions(AppWorkQuick<WorkEntities> workEntities)
     : InsightsProvider(new() { Name = Link, Title = "Entity Permissions" }, connect: [workEntities])
 {
     public static string Link = "EntityPermissions";

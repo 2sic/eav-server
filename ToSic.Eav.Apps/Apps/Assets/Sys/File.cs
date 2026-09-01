@@ -37,8 +37,7 @@ public abstract class File<TFolderId, TFileId>: IFile<TFolderId, TFileId>
 
     public int Size { get; init; }
 
-    public ISizeInfo SizeInfo => _sizeInfo.Get(() => new SizeInfo(Size))!;
-    private readonly GetOnce<ISizeInfo> _sizeInfo = new();
+    public ISizeInfo SizeInfo => field ??= new SizeInfo(Size);
 
     [JsonIgnore] // This should never get streamed to a json if people just return the object in a WebApi
     public required string PhysicalPath { get; init; }

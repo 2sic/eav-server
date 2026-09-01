@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Data.Raw;
-using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Build;
 
@@ -39,7 +38,7 @@ public record DataFactoryOptions
     /// </summary>
     public string? TypeName
     {
-        get => field ?? DataConstants.DataFactoryDefaultTypeName;
+        get;
 #if NETFRAMEWORK
         set;
 #else
@@ -54,7 +53,7 @@ public record DataFactoryOptions
     [field: AllowNull, MaybeNull]
     public string TitleField
     {
-        get => field.UseFallbackIfNoValue(AttributeNames.TitleNiceName);
+        get => field ?? ""; //.UseFallbackIfNoValue(AttributeNames.TitleNiceName);
 #if NETFRAMEWORK // #DnnNoInit - DNN uses c# 8 so it doesn't support init
         set;
 #else
@@ -90,6 +89,11 @@ public record DataFactoryOptions
 #endif
     } = 1;
 
+    /// <summary>
+    /// Special Flag (could be WIP) to determine if special data is allowed, such as object etc. which are not
+    /// a standard value type on an entity.
+    /// Default is `false` to ensure that only standard value types are used, which is the safest option.
+    /// </summary>
     public bool AllowUnknownValueTypes
     {
         get;

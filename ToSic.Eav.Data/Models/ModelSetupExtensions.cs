@@ -2,17 +2,18 @@
 
 // Must keep private for now, as it somehow ends up on every object in the docs
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ModelSetupExtensions
 {
     /// <summary>
     /// Helper to set up the data being wrapped, returning the wrapper for easy chaining.
     /// </summary>
-    [return: NotNullIfNotNull(nameof(source))]
-    public static TWrapper? Setup<TWrapper, TSource>(this TWrapper wrapper, TSource? source)
-        where TSource : class
-        where TWrapper : IModelSetup<TSource>
+    [return: NotNullIfNotNull(nameof(data))]
+    public static TModel? Setup<TData, TModel>(this TModel wrapper, TData? data)
+        where TData : class
+        where TModel : IModelSetup<TData>
     {
-        var ok = wrapper.SetupModel(source);
+        var ok = wrapper.SetupModel(data);
         return ok ? wrapper : default;
     }
 
@@ -20,25 +21,32 @@ public static class ModelSetupExtensions
     /// Helper to set up the data being wrapped, returning the wrapper for easy chaining.
     /// </summary>
     [return: NotNullIfNotNull(nameof(data))]
-    internal static TModel? SetupWithDataNullChecks<TModel, TData>(this TModel model, TData? data, ModelNullHandling nullHandling)
-        where TData : class
+    internal static TModel? SetupWithNullChecks<TData, TModel>(this TModel model, TData? data, NullHandling nullHandling)
         where TModel : IModelSetup<TData>
-    {
-        if (data == null)
+        => data switch
         {
-            if ((nullHandling & ModelNullHandling.DataNullAsNull) != 0)
-                return default;
-            if ((nullHandling & ModelNullHandling.DataNullThrows) != 0)
-                throw new InvalidCastException("data is null");
-        }
+            // data Null with throw
+            null when nullHandling == NullHandling.Throw
+                => throw new ArgumentNullException(nameof(data), "data is null and null handling does not allow nulls"),
 
-        var ok = model.SetupModel(data);
-        return ok
-            ? model
-            : (nullHandling & ModelNullHandling.DataNullForceConvert) != 0
-                ? model
-                : (nullHandling & ModelNullHandling.DataNullTryConvertOrThrow) != 0
-                    ? throw new InvalidCastException("data is null")
-                    : default;
-    }
+            // data Null with default / AsNull
+            null when nullHandling is NullHandling.Default or NullHandling.ReturnNull
+                => default,
+
+            // data Null with other or non-null
+            // Try to set up the model, and get feedback if it seems ok.
+            // then return based on ok status and conversion options.
+            _ => model.SetupModel(data) switch
+            {
+                true => model,
+                false => nullHandling switch
+                {
+                    NullHandling.ReturnModel => model,
+                    NullHandling.TryOrNull => default,
+                    NullHandling.TryOrThrow => throw new ArgumentNullException(nameof(data),
+                        $"Model setup failed. Data is probably null and null handling specifies {NullHandling.TryOrThrow}"),
+                    _ => default
+                }
+            }
+        };
 }

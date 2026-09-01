@@ -1,12 +1,12 @@
-﻿using ToSic.Eav.Models.Sys;
+﻿using ToSic.Eav.Models.Factory;
+using ToSic.Eav.Models.Sys;
+// ReSharper disable MethodOverloadWithOptionalParameter
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace ToSic.Eav.Models;
 
 public static partial class ToModelExtensions
 {
-
-    #region Generic
-    
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
     /// </summary>
@@ -14,50 +14,63 @@ public static partial class ToModelExtensions
     /// <param name="list">The collection of entities to search.</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
     public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list)
-        where TModel : class, IModelFromEntity, new()
-        => list.FirstModel<TModel>(typeName: null);
+        where TModel : class, IModelFromEntity
+        => FirstModelInternal<TModel>(list, options: default, factory: null);
 
+
+    
     /// <summary>
     /// Returns the first entity that matches the specified type name, or null if not found.
     /// </summary>
     /// <typeparam name="TModel">The target model to convert to.</typeparam>
     /// <param name="list">The collection of entities to search.</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="typeName">The name of the type to match.</param>
-    /// <param name="nullHandling"></param>
+    /// <param name="options">Conversion options</param>
     /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
-    public static TModel? FirstModel<TModel>(
-        this IEnumerable<IEntity>? list,
-        // ReSharper disable once MethodOverloadWithOptionalParameter
-        NoParamOrder npo = default,
-        string? typeName = default,
-        ModelNullHandling nullHandling = ModelNullHandling.Undefined
-    )
+    public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list, NoParamOrder npo = default, ToModelOptions? options = default)
+        where TModel : class, IModelFromEntity
+        => FirstModelInternal<TModel>(list, options: options, factory: null);
+
+
+    
+    /// <summary>
+    /// Returns the first entity that matches the specified type name, or null if not found.
+    /// </summary>
+    /// <typeparam name="TModel">The target model to convert to.</typeparam>
+    /// <param name="list">The collection of entities to search.</param>
+    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
+    /// <param name="factory">A factory to create the target model.</param>
+    /// <param name="options">Conversion options</param>
+    /// <returns>The first entity whose type matches the specified type name wrapped into the target model, or null if no matching entity is found.</returns>
+    public static TModel? FirstModel<TModel>(this IEnumerable<IEntity>? list, IModelFactory factory, NoParamOrder npo = default, ToModelOptions? options = null)
+        where TModel : class, IModelFromEntity
+        => FirstModelInternal<TModel>(list, options: options, factory: AssertFactory(factory));
+
+
+    
+    /// <summary>
+    /// Main work horse for FirstModel, used by both overloads.
+    /// It handles the common logic of filtering and selecting the first entity, and then delegates the final conversion to the provided function.
+    /// </summary>
+    private static TModel? FirstModelInternal<TModel>(IEnumerable<IEntity>? list, ToModelOptions? options, IModelFactory? factory)
         where TModel : class, IModelFromEntity
     {
-        if (nullHandling == ModelNullHandling.Undefined)
-            nullHandling = ModelNullHandling.Default;
+        var specs = ToModelSpecs<TModel>.List(list, options, null, factory);
+        if (specs.ExitEarly)
+            return specs.CreateFromNull();
 
-        if (list == null)
-            return (nullHandling & ModelNullHandling.ListNullThrows) != 0
-                ? throw new ArgumentNullException(nameof(list))
-                : ToModelIntern.FromNull<TModel>(trueType: null, nullHandling);
+        var nameList = ModelContentTypeNameExtractor.GetNames(specs).Names;
 
-        // Figure out the true type to create, based on Attribute
-        // This is important, in case an interface was passed in.
-        var trueType = ModelAnalyseUse.GetTargetType<TModel>();
+        var firstMatch = nameList
+            .Select(list!.First)
+            .OfType<IEntity>()
+            .FirstOrDefault();
 
-        var nameList = typeName != null
-            ? [typeName]
-            : DataModelAnalyzer.GetValidTypeNames(trueType);
-
-        var firstMatch = nameList.Select(list.First).OfType<IEntity>().FirstOrDefault();
-        return firstMatch != null
-            ? firstMatch.ToModelInternal<TModel>(trueType: trueType, skipTypeCheck: true, nullHandling: nullHandling)
-            // Nothing found
-            : ToModelIntern.FromNull<TModel>(trueType, nullHandling);
+        // Process result
+        var optionsSkipNameCheck = specs.OptionsDisableNameCheck();
+        return factory != null
+            ? factory.Create<IEntity, TModel>(firstMatch, optionsSkipNameCheck)
+            : ToModelInternal<TModel>(firstMatch, options: optionsSkipNameCheck, trueType: specs.TrueType);
     }
-
-    #endregion
 
 }

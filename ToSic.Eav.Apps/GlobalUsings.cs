@@ -7,6 +7,7 @@ global using System.Linq;
 global using ToSic.Eav.Apps.Sys;
 global using ToSic.Eav.Data;
 global using ToSic.Eav.Models;
+global using ToSic.Sys;
 global using ToSic.Sys.Coding;
 global using ToSic.Sys.DI;
 global using ToSic.Sys.Documentation;

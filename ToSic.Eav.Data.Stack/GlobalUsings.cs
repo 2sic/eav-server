@@ -2,6 +2,7 @@
 
 global using System;
 global using System.Collections.Generic;
+global using ToSic.Sys;
 global using ToSic.Sys.Documentation;
 global using ToSic.Sys.Data;
 global using ToSic.Sys.Logging;

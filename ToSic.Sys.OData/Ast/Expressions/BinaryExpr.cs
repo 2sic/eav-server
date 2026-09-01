@@ -1,5 +1,6 @@
 namespace ToSic.Sys.OData.Ast;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class BinaryExpr(Expr left, BinaryOp op, Expr right) : Expr
 {
     public Expr Left { get; } = left;

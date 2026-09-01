@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppInitializedChecker(Generator<AppInitializer> appInitGenerator) : ServiceBase("Eav.AppBld",
+public class AppInitializedChecker(AppWorkQuick<AppInitializer> appInitGenerator) : ServiceBase("Eav.AppBld",
     connect: [appInitGenerator]), IAppInitializedChecker
 {
     /// <inheritdoc />
@@ -26,7 +26,7 @@ public class AppInitializedChecker(Generator<AppInitializer> appInitGenerator) :
         if (appReader.IsHealthy)
         {
             l.A("the app is healthy, build missing parts");
-            appInitGenerator.New().InitializeApp(appReader, newAppName, codeRefTrail.WithHere().AddMessage("Add Requested"));
+            appInitGenerator.New(appReader).InitializeApp(/*appReader,*/ newAppName, codeRefTrail.WithHere().AddMessage("Add Requested"));
         }
         else
         {

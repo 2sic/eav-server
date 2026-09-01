@@ -5,6 +5,7 @@ namespace ToSic.Sys.Capabilities.SysFeatures;
 
 // TODO: probably move to the Sxc project or somewhere similar
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class SysFeatureDetectorRazor() : SysFeatureDetector(DefStatic, true)
 {
 

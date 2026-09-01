@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data.ContentTypes.Fields;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.Attributes;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.DataSource.Sys;
@@ -119,7 +119,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
                     builtIn: false,
                     contentTypeName: at.Type.Name,
                     // TODO: FILTER html
-                    description: at.Attribute.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)
+                    description: at.Attribute.Metadata.Get<string>(nameof(IFieldSettingsGeneral.Notes))
                 )
             )
             .ToList();
@@ -183,9 +183,9 @@ public sealed class Attributes: CustomDataSourceAdvanced
         // Find possible metadata for system fields.
         // This is mainly for system types like AppAssets which may want to tell the user that ID shouldn't be used
         var sysFieldAttributes = types
-            .Select(t => t.GetDecorator<ContentTypeVirtualAttributes>())
-            .Where(x => x != null)
-            .SelectMany(x => x!.VirtualAttributes)
+            .Select(t => t.GetDecorator<ContentTypeBuiltInAttributesDecorator>())
+            .OfType<ContentTypeBuiltInAttributesDecorator>()
+            .SelectMany(x => x.Attributes)
             .ToList();
 
         var additions = sysFieldsWhichWereNotAdded
@@ -193,7 +193,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
             {
                 var descriptionProvider = sysFieldAttributes
                     .FirstOrDefault(x => x.Key == sysField.Key).Value;
-                var description = descriptionProvider?.Metadata.Get<string>(AttributeMetadataConstants.DescriptionField)
+                var description = descriptionProvider?.Metadata.Get<string>(nameof(IFieldSettingsGeneral.Notes))
                                   ?? (AttributeNames.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
                                       ? desc
                                       : default);
@@ -233,7 +233,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
 
     /// <summary>
     /// Note: this could be done better with RazorBlade, but ATM we don't want to add dependencies just for this.
-    /// If we ever do add RazorBlade, then we should also correct &nbsp; etc.
+    /// If we ever do add RazorBlade, then we should also correct `&nbsp;` etc.
     /// </summary>
     /// <param name="html"></param>
     /// <returns></returns>

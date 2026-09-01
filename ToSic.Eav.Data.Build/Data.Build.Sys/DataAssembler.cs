@@ -3,49 +3,39 @@
 /// <summary>
 /// Internal data assembler to create entities, relationships, attributes and values.
 /// </summary>
-/// <param name="entityBuilder"></param>
-/// <param name="entityRelationshipBuilder"></param>
-/// <param name="attributeAssembler"></param>
-/// <param name="valueBuilder"></param>
-/// <param name="languageAssembler"></param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
 public class DataAssembler(
-    LazySvc<EntityAssembler> entityBuilder,
-    LazySvc<EntityConnectionBuilder> entityRelationshipBuilder,
+    Generator<EntityAssembler, DataAssemblerOptions> entityAssembler,
+    Generator<EntityConnectionBuilder, DataAssemblerOptions> entityConnectionBuilder,
     Generator<AttributeAssembler, DataAssemblerOptions> attributeAssembler,
     Generator<AttributeListAssembler, DataAssemblerOptions> attributeListAssembler,
-    Generator<ValueAssembler, DataAssemblerOptions> valueBuilder,
-    LanguageAssembler languageAssembler)
+    Generator<RelationshipAssembler, DataAssemblerOptions> relationshipAssembler)
     : ServiceWithSetup<DataAssemblerOptions>("DaB.MltBld", connect:
         [
-            entityBuilder, entityRelationshipBuilder, attributeAssembler, attributeListAssembler, valueBuilder, languageAssembler
+            entityAssembler, entityConnectionBuilder, attributeAssembler, attributeListAssembler, relationshipAssembler
         ])
 {
+    protected override DataAssemblerOptions GetDefaultOptions() => new();
 
-    public EntityAssembler Entity => entityBuilder.Value;
+    public EntityAssembler Entity => field ??= entityAssembler.New(MyOptions);
 
-
-    public EntityConnectionBuilder EntityConnection => entityRelationshipBuilder.Value;
-
-    [field: AllowNull, MaybeNull]
-    public AttributeAssembler Attribute => field
-        ??= attributeAssembler.New(MyOptions);
+    public EntityConnectionBuilder EntityConnection => field ??= entityConnectionBuilder.New(MyOptions);
 
     [field: AllowNull, MaybeNull]
-    public AttributeListAssembler AttributeList => field
-        ??= attributeListAssembler.New(MyOptions);
-
+    public AttributeAssembler Attribute => field ??= attributeAssembler.New(MyOptions);
 
     [field: AllowNull, MaybeNull]
-    public ValueAssembler Value => field
-        ??= valueBuilder.New(MyOptions);
+    public AttributeListAssembler AttributeList => field ??= attributeListAssembler.New(MyOptions);
 
     [field: AllowNull, MaybeNull]
-    public ValueListAssembler ValueList => field ??= new();
+    public ValueAssembler Value => field ??= Attribute.Values;
 
-    public RelationshipAssembler Relationship => new();
+    [field: AllowNull, MaybeNull]
+    public ValueListAssembler ValueList => field ??= Attribute.ValueList;
 
-    public LanguageAssembler Language => languageAssembler;
-    
+    public RelationshipAssembler Relationship => field ??= relationshipAssembler.New(MyOptions);
+
+    public LanguageAssembler Language => field ??= Attribute.Languages;
+
 }

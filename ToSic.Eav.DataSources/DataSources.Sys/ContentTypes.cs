@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Apps;
+using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.DataSource.Sys;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -25,6 +25,7 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "37b25044-29bb-4c78-85e4-7b89f0abaa2c",
     NameIds =
     [
+        "System.ContentTypes",
         "ToSic.Eav.DataSources.System.ContentTypes, ToSic.Eav.Apps",
         // not sure if this was ever used...just added it for safety for now
         // can probably remove again, if we see that all system queries use the correct name
@@ -59,50 +60,65 @@ public sealed class ContentTypes: CustomDataSource
     /// Constructs a new ContentTypes DS
     /// </summary>
     [PrivateApi]
-    public ContentTypes(Dependencies services, IAppReaderFactory appReaders): base(services, $"{DataSourceConstantsInternal.LogPrefix}.CTypes", connect: [appReaders])
+    public ContentTypes(Dependencies services, IAppReaderFactory appReaders)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.CTypes", connect: [appReaders])
     {
         _appReaders = appReaders;
-        ProvideOut(GetList, options: () => ContentTypeUtil.Options with { AppId = OfAppId, WithMetadata = true });
+        ProvideOutRaw(GetList, options: () => new()
+        {
+            AppId = OfAppId,
+            WithMetadata = true,
+            AllowUnknownValueTypes = true
+        });
     }
     private readonly IAppReaderFactory _appReaders;
 
-    private IEnumerable<IRawEntity> GetList()
+    private IEnumerable<ContentTypeUtil.ContentTypeSummary> GetList()
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        var l = Log.Fn<IEnumerable<ContentTypeUtil.ContentTypeSummary>>();
 
         var appId = OfAppId;
         // Get the scope. Make sure that an empty string will be ignored and "Default" is used
-        var scp = Scope.UseFallbackIfNoValue(ScopeConstants.Default);
+        var scope = Scope.UseFallbackIfNoValue(ScopeConstants.Default);
 
-        var types = _appReaders.Get(appId).ContentTypes.OfScope(scp, includeAttributeTypes: true);
+        var appReader = _appReaders.Get(appId);
+        var types = appReader.ContentTypes.OfScope(scope, includeAttributeTypes: true);
 
         // Deduplicate, in case we have identical types on current app and inherited
         var deDuplicate = types
-            .GroupBy(t => t.NameId)
-            .Select(g =>
+            .GroupBy(type => type.NameId)
+            .Select(group =>
             {
                 // Just 1
-                if (g.Count() == 1) return g.First();
+                if (group.Count() == 1)
+                    return group.First();
 
                 // More than 1, prioritize of the current app before parent-apps; SQL before File-System
-                var ofCurrentApp = g
-                    .Where(t => t.AppId == appId)
+                var ofCurrentApp = group
+                    .Where(type => type.AppId == appId)
                     .ToList();
                 if (ofCurrentApp.Any())
                     return ofCurrentApp
-                               .FirstOrDefault(t => t.RepositoryType == RepositoryTypes.Sql)
+                               .FirstOrDefault(type => type.RepositoryType == RepositoryTypes.Sql)
                            ?? ofCurrentApp.First();
 
                 // Fallback: just return 1
-                return g.First();
+                return group.First();
             })
             .ToList();
 
-        var list = deDuplicate
-            .OrderBy(t => t.Name)
-            .Select(ContentTypeUtil.ToRaw)
-            .ToList();
+        var itemCounts = appReader.List
+            .GroupBy(entity => entity.Type.NameId)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(entity => entity.EntityId).Distinct().Count());
 
+        var list = deDuplicate
+            .OrderBy(type => type.Name)
+            .Select(type => new ContentTypeUtil.ContentTypeSummary(
+                type,
+                itemCounts.TryGetValue(type.NameId, out var itemCount) ? itemCount : 0))
+            .ToList();
 
         return l.Return(list, $"{list.Count}");
     }

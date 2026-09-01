@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Configuration;
@@ -14,28 +15,32 @@ namespace ToSic.Eav.DataSource;
 public class CustomDataSource: CustomDataSourceAdvanced
 {
     /// <summary>
-    /// The Services of CustomDataSource.
+    /// The Services of <see cref="CustomDataSource"/> - explicitly implemented for API stability.
+    /// </summary>
+    /// <remarks>
     /// Note that it is the same as the base MyServices,
     /// but it's still important to have an own class.
     /// This is in case some day it will need more dependencies.
     /// Otherwise, compiled code would break when we need additional dependencies just for the CustomDataSource.
-    /// </summary>
+    /// </remarks>
     [PrivateApi]
-    public new class Dependencies(
-        IDataSourceConfiguration configuration,
-        LazySvc<DataSourceErrorHelper> errorHandler,
-        ConfigurationDataLoader configDataLoader,
-        LazySvc<IDataSourceCacheService> cacheService,
-        IDataFactory dataFactory
+    public new record Dependencies(
+        IDataSourceConfiguration Configuration,
+        LazySvc<DataSourceErrorHelper> ErrorHandler,
+        ConfigurationDataLoader ConfigDataLoader,
+        LazySvc<IDataSourceCacheService> CacheService,
+        IDataFactory DataFactory
         )
-        : CustomDataSourceAdvanced.Dependencies(configuration, errorHandler, configDataLoader, cacheService, dataFactory);
+        : CustomDataSourceAdvanced.Dependencies(Configuration, ErrorHandler, ConfigDataLoader, CacheService, DataFactory);
 
     /// <summary>
     /// Constructor for creating a Custom DataSource.
     /// </summary>
     /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.Dependencies)</param>
     /// <param name="logName">Optional name for logging such as `My.JsonDS`</param>
-    protected internal CustomDataSource(Dependencies services, string? logName = null, object[]? connect = null) : base(services, logName ?? "Ds.CustLt", connect: connect)
+    /// <param name="connect"></param>
+    protected internal CustomDataSource(Dependencies services, string? logName = null, object[]? connect = null)
+        : base(services, logName ?? "Ds.CustLt", connect: connect)
     {
         // Provide a default out, in case the overriding class doesn't
         base.ProvideOut(() => GetRaw(GetDefault, null));
@@ -46,13 +51,6 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// </summary>
     public override bool Immutable => true;
 
-    [field: AllowNull, MaybeNull]
-    private DataFactoryOptions Options
-    {
-        get => field ??= new() { TypeName = "Custom" };
-        set;
-    }
-
     protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
 
     /// <summary>
@@ -60,7 +58,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// This is a very generic version which takes any function that generates a list of something.
     /// Internally it will try to detect what the data was and convert it to the final format.
     ///
-    /// Note that the `source` must create a list (`IEnumerable`) of any of the following (all items must have the same type):
+    /// Note that the `source` must create a list (`IEnumerable`) of the following (all items must have the same type):
     /// * <see cref="IEntity"/>
     /// * <see cref="IRawEntity"/>
     ///
@@ -83,13 +81,12 @@ public class CustomDataSource: CustomDataSourceAdvanced
         NoParamOrder npo = default,
         string name = StreamDefaultName,
         Func<DataFactoryOptions>? options = default
-    ) where T : IRawEntity
+    ) where T : class, IRawData
         => base.ProvideOut(() => GetRaw(data, options), name);
 
     private IImmutableList<IEntity> GetAny(Func<object>? source, Func<DataFactoryOptions>? options)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
 
         // Call the Generator and handle errors/null
         object? funcResult;
@@ -131,18 +128,26 @@ public class CustomDataSource: CustomDataSourceAdvanced
         if (data.All(i => i is IEntity))
             return l.Return(data.Cast<IEntity>().ToImmutableOpt(), "IEntities");
 
+        
         // If all are Anonymous, convert to Raw
         if (data.All(d => d.IsAnonymous()))
         {
             l.A("Was anonymous, converted to raw");
-            data = data.Select(d => new RawFromAnonymous(d, Log)).Cast<object>().ToList();
+            var converter = new RawFromAnonymousHelper(Log);
+            var rawFromAnon = data.Select(converter.Convert).ToList();
+            var result = DataFactory
+                .SpawnNew(options: GetBestOptions(options))
+                .Create(rawFromAnon);
+            return l.Return(result, "was anonymous, converted to RawEntity");
         }
 
-        // Handle raw
+        // Handle data is already IRawEntity
         if (data.All(i => i is IRawEntity))
         {
-            var raw = data.Cast<IRawEntity>().ToList();
-            var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
+            var rawEntities = data.Cast<IRawEntity>().ToList();
+            var result = DataFactory
+                .SpawnNew(options: GetBestOptions(options))
+                .Create(rawEntities);
             return l.Return(result, "was IRawEntity");
         }
         
@@ -155,14 +160,13 @@ public class CustomDataSource: CustomDataSourceAdvanced
         return l.ReturnAsError(err);
     }
 
-    private DataFactoryOptions GetBest(Func<DataFactoryOptions>? options)
-        => options?.Invoke() ?? Options;
+    private static DataFactoryOptions GetBestOptions(Func<DataFactoryOptions>? options)
+        => options?.Invoke() ?? new();
 
     private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>>? source, Func<DataFactoryOptions>? options)
-        where T: IRawEntity
+        where T: class, IRawData
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
 
         // Get raw entities - from _source or from override method
         var raw = source?.Invoke()?.ToList();
@@ -172,7 +176,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
             return l.Return([], "no items returned");
 
         // Transform result to IEntity
-        var result = DataFactory.SpawnNew(options: GetBest(options)).Create(raw);
+        var result = DataFactory.SpawnNew(options: GetBestOptions(options)).Create(raw);
         return l.Return(result, $"Got {result.Count} items");
     }
 

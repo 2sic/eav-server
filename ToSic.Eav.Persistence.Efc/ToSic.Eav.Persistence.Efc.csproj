@@ -11,7 +11,7 @@
   <!--<Import Project="../SharedImports/CsProj.Props/Reference/RazorBlade.props" />-->
 
   <!-- Entity Framework for net451 (DNN) should be 1.1.1 because of DI, but newer version for MVC-->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.1">
       <PrivateAssets>all</PrivateAssets>

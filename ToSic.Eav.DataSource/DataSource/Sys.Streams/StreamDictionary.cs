@@ -52,5 +52,5 @@ public class StreamDictionary
         => new DataStream(_dsCache, source, name, () => stream.List) { Scope = stream.Scope };
 
     public IReadOnlyDictionary<string, IDataStream> AsReadOnly() => _ro.Get(() => new ReadOnlyDictionary<string, IDataStream>(_inner))!;
-    private readonly GetOnce<IReadOnlyDictionary<string, IDataStream>> _ro = new();
+    private readonly LazyGetAndReset<IReadOnlyDictionary<string, IDataStream>> _ro = new();
 }

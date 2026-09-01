@@ -5,7 +5,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 /// <summary>
 /// API Keys to use in the UI - such as Google Maps, Google Translate etc.
 /// </summary>
-public class ContextApiKeyDto : IHasIdentityNameId
+public record ContextApiKeyDto : IHasIdentityNameId
 {
     public required string NameId { get; init; }
 

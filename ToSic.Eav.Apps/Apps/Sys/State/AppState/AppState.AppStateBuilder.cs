@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Utils;
 
@@ -11,7 +10,7 @@ partial class AppState
     /// <summary>
     /// The builder must be a subclass of AppState, so it can access its private properties.
     /// </summary>
-    internal class AppStateBuilder(IAppReaderFactory appReaderFactory, IRuntimeKeyService runtimeKeys) : ServiceBase("App.SttBld"), IAppStateBuilder
+    internal class AppStateBuilder(IAppReaderFactory appReaderFactory, IAppCacheKeyService appCacheKeyService) : ServiceBase("App.SttBld"), IAppStateBuilder
     {
         #region Constructor / DI / Init (2 variants)
 
@@ -23,16 +22,16 @@ partial class AppState
 
         public IAppStateBuilder InitForPreset()
         {
-            var runtimeKey = runtimeKeys.AppRuntimeKey(KnownAppsConstants.PresetIdentity);
-            AppStateTyped = new(new(null, false, false), KnownAppsConstants.PresetIdentity, KnownAppsConstants.PresetName, runtimeKey, Log);
+            var cacheKey = appCacheKeyService.AppCacheKey(KnownAppsConstants.PresetIdentity);
+            AppStateTyped = new(new(null, false, false), KnownAppsConstants.PresetIdentity, KnownAppsConstants.PresetName, cacheKey, Log);
             MemoryCacheService.Notify(AppStateTyped);
             return this;
         }
 
         public IAppStateBuilder InitForNewApp(IParentAppState parentApp, IAppIdentity identity, string nameId, ILog parentLog)
         {
-            var runtimeKey = runtimeKeys.AppRuntimeKey(identity.PureIdentity());
-            AppStateTyped = new((ParentAppState)parentApp, identity, nameId, runtimeKey, parentLog);
+            var cacheKey = appCacheKeyService.AppCacheKey(identity.PureIdentity());
+            AppStateTyped = new((ParentAppState)parentApp, identity, nameId, cacheKey, parentLog);
             MemoryCacheService.Notify(AppStateTyped);
             return this;
         }

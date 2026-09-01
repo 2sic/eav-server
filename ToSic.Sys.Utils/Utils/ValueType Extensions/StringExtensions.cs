@@ -50,6 +50,9 @@ public static class StringExtensions
     public static string[] CsvToArrayWithoutEmpty(this string? original)
         => original?.Split(',').TrimmedAndWithoutEmpty() ?? [];
 
+    public static string[] CsvToArrayPreserveEmpty(this string? original)
+        => original?.Split(',').Select(n => n.Trim()).ToArray() ?? [];
+    
     public static string[] LinesToArrayWithoutEmpty(this string? original)
         => original?.SplitNewLine().TrimmedAndWithoutEmpty() ?? [];
 

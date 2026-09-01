@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Metadata.Targets;
@@ -8,7 +8,8 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 partial class DbContentType
 {
     public void AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
-        => DbStore.DoAndSaveTracked(() =>
+    {
+        DbStore.DoAndSaveTracked(() =>
         {
             var ct = TryGetTypeByStaticTracked(staticName);
 
@@ -24,6 +25,7 @@ partial class DbContentType
             // If not exists, create new
             DbStore.SqlDb.Add(PrepareNew(name, scope, usesConfigurationOfOtherSet, alwaysShareConfig));
         });
+    }
 
     private TsDynDataContentType PrepareNew(string name, string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
         => new()

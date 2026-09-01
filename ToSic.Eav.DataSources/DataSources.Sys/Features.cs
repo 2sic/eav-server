@@ -21,12 +21,13 @@ namespace ToSic.Eav.DataSources.Sys;
 public sealed class Features : CustomDataSource
 {
     [PrivateApi]
-    public Features(Dependencies services, ISysFeaturesService featuresService) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Feats", connect: [featuresService])
+    public Features(Dependencies services, ISysFeaturesService featuresService)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Feats", connect: [featuresService])
     {
         ProvideOutRaw(
             () => featuresService.All
-                .OrderBy(f => f.NameId)
-                .Select(f => f.ToRawEntity()),
+                .OrderBy(feature => feature.NameId)
+                .Select(feature => new FeatureStateRaw(feature)),
             options: () => new() { TypeName = "Feature" }
         );
     }

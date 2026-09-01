@@ -8,9 +8,9 @@ public class DataFactoryTest(IDataFactory dataFactoryGenerator)
     {
         var builder = dataFactoryGenerator.SpawnNew(new());
 
-        var parentRaw = new RawItemWithOneParentAndManyChildren(1, Guid.Empty, 0, [101, 102]);
+        var parentRaw = new MockRawWithOneParentAndManyChildren(1, Guid.Empty, 0, [101, 102]);
 
-        var allRaw = new List<RawItemWithOneParentAndManyChildren>
+        var allRaw = new List<MockRawWithOneParentAndManyChildren>
         {
             // the parent
             parentRaw,

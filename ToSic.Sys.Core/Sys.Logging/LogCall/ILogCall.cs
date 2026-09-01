@@ -11,7 +11,7 @@ namespace ToSic.Sys.Logging;
 /// <remarks>
 /// Normal code will never create this object, but get such an object when calling `ILog.Fn(...)` extensions <see cref="ILogExtensions"/>.
 /// </remarks>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ILogCall: ILog, IHasLog
 {

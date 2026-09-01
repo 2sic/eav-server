@@ -76,6 +76,11 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
         SerializeMetadata = serializeMetadata ?? original?.SerializeMetadata;
         SerializeRelationships = serializeRelationships ?? original?.SerializeRelationships;
         SerializeType = serializeType ?? original?.SerializeType;
+
+        // v22 SysData WIP
+        WithPublishing = original?.WithPublishing;
+        WithEditInfos = original?.WithEditInfos;
+        LinksWithBothValues = original?.LinksWithBothValues;
     }
 
     /// <summary>
@@ -182,4 +187,10 @@ public class EntitySerializationDecorator(): IDecorator<IEntity>, IEntityIdSeria
 
     #endregion
 
+    /// <summary>
+    /// WIP v22 move info if including publishing to here... for #SysData
+    /// </summary>
+    public bool? WithPublishing { get; init; }
+    public bool? WithEditInfos { get; init; }
+    public bool? LinksWithBothValues { get; init; }
 }

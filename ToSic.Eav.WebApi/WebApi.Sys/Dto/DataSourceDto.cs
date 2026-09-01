@@ -1,10 +1,12 @@
-﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Raw;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-public class DataSourceDto
+public class DataSourceDto : IRawEntityAutoConvert
 {
     public DataSourceDto(DataSourceInfo dsInfo, ICollection<string>? outNameList)
     {
@@ -12,7 +14,7 @@ public class DataSourceDto
         Name = noError ? dsInfo.Type.Name : dsInfo.NameId; // will override further down if dsInfo is provided
         Identifier = dsInfo.NameId;
 
-        // If we don't have more information from the attribute, exit early
+        // If we don't have more information from the fieldDef, exit early
         var dsAttribute = dsInfo.VisualQuery;
         if (dsAttribute == null)
             return;
@@ -61,6 +63,7 @@ public class DataSourceDto
     public bool DynamicIn { get; }
     public string? HelpLink { get; }
     public bool EnableConfig { get; }
+    [ContentTypeTitle]
     public string Name { get; }
     public string? UiHint { get; }
 

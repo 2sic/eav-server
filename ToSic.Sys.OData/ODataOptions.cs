@@ -1,5 +1,6 @@
 namespace ToSic.Sys.OData;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record ODataOptions
 {
     /// <summary>

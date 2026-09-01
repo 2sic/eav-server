@@ -17,8 +17,10 @@ namespace System.Runtime.CompilerServices
 
 namespace System.Runtime.CompilerServices
 {
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public class RequiredMemberAttribute : Attribute;
 
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     public class CompilerFeatureRequiredAttribute : Attribute
     {
         public CompilerFeatureRequiredAttribute(string name)
@@ -28,6 +30,7 @@ namespace System.Runtime.CompilerServices
 
 namespace System.Diagnostics.CodeAnalysis
 {
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     [AttributeUsage(AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
     public sealed class SetsRequiredMembersAttribute : Attribute;
 }

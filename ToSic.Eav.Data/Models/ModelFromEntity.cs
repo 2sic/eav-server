@@ -3,18 +3,19 @@
 namespace ToSic.Eav.Models;
 
 /// <summary>
-/// Foundation for a *record* which gets its data from an Entity. Completely empty, no public properties.
+/// Foundation for a *record* which gets its data from an Entity. **Completely empty**, no public properties.
 /// </summary>
 /// <remarks>
 /// This **Core** implementation has zero public properties, so no public `Id`, `Guid` or `Title` properties.
-/// If serialized or use otherwise it will not include anything which was not added explicitly.
+/// When serialized or used otherwise it will not include anything which was not added explicitly.
+/// If you want a base class which has these properties <see cref="ModelFromEntityFull"/>
 ///
 /// This is the **record** implementation, which is the preferred future way of creating models.
 /// To use the **class** based implementation (for example in DNN code not supporting c# 10), use the <see cref="ModelFromEntityClassic"/>
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract record ModelFromEntity
+public abstract partial record ModelFromEntity
     : IModelFromEntity,         // Model will be built using an entity
         IModelSetup<IEntity>,   // Allow setting up the wrapper with an entity
         ICanBeEntity            // Allow retrieving the entity directly if needed
@@ -22,7 +23,8 @@ public abstract record ModelFromEntity
     #region Constructors & Setup
 
     /// <summary>
-    /// Empty constructor, mainly for factories which must call the setup (otherwise risky to use)
+    /// Empty constructor, mainly for factories which **must** call the Setup(...)
+    /// _otherwise it's risky to use this_
     /// </summary>
     /// <remarks>
     /// This is the primary constructor used by most inheriting classes.

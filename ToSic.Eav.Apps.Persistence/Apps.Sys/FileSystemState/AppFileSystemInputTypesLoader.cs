@@ -1,8 +1,10 @@
 ﻿using System.Text.Json;
+using ToSic.Eav.Apps.Sys.Extensions;
 using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.Persistence.File;
+using ToSic.Eav.Sys;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
@@ -21,10 +23,10 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         var l = Log.Fn<ICollection<InputTypeInfo>>();
 
         // Local app paths
-        var inputTypes = GetInputTypes(ExtensionsPath, AppConstants.AppPathPlaceholder, ExtensionsFolder);
+        var inputTypes = GetInputTypes(ExtensionsPath, AppConstants.AppPathPlaceholder);
 
         // Shared app paths, merge in, but don't override any existing ones
-        inputTypes = MergeInputTypes(inputTypes, GetInputTypes(ExtensionsPathShared, AppConstants.AppPathSharedPlaceholder, ExtensionsFolderShared));
+        inputTypes = MergeInputTypes(inputTypes, GetInputTypes(ExtensionsPathShared, AppConstants.AppPathSharedPlaceholder));
 
         return l.Return(inputTypes, $"OK, count:{inputTypes.Count}");
 
@@ -48,7 +50,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
 
     #region Helpers
 
-    private ICollection<InputTypeInfo> GetInputTypes(string path, string placeholder, string folderName)
+    private ICollection<InputTypeInfo> GetInputTypes(string path, string placeholder)
     {
         var l = Log.Fn<ICollection<InputTypeInfo>>();
         var di = new DirectoryInfo(path);
@@ -58,10 +60,10 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         var types = new List<InputTypeInfo>();
         foreach (var extensionFolder in di.GetDirectories())
         {
-            var manifestFile = manifestService.GetManifestFile(extensionFolder);
+            var manifestFile = ExtensionManifestService.GetManifestFileInfo(extensionFolder.FullName);
             if (manifestFile.Exists)
             {
-                var manifestType = InputTypeFromManifest(manifestFile, extensionFolder, placeholder, folderName);
+                var manifestType = InputTypeFromManifest(manifestFile, extensionFolder, placeholder);
                 if (manifestType != null)
                 {
                     types.Add(manifestType);
@@ -76,7 +78,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
             if (!extensionFolder.GetFiles(JsFile).Any())
                 continue;
 
-            types.Add(CreateLegacyInputType(extensionFolder.Name, placeholder, folderName));
+            types.Add(CreateLegacyInputType(extensionFolder.Name, placeholder));
         }
 
         return l.Return(types, $"OK, count:{types.Count}");
@@ -94,7 +96,8 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         var caps = nameStack
             .Select(n =>
             {
-                if (string.IsNullOrWhiteSpace(n)) return "";
+                if (string.IsNullOrWhiteSpace(n))
+                    return "";
                 if (n.Length <= 1) return n;
                 return char.ToUpper(n[0]) + n.Substring(1);
             });
@@ -103,9 +106,9 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         return niceName;
     }
 
-    private InputTypeInfo? InputTypeFromManifest(FileInfo manifestFile, DirectoryInfo extensionFolder, string placeholder, string folderName)
+    private InputTypeInfo? InputTypeFromManifest(FileInfo manifestFile, DirectoryInfo extensionFolder, string placeholder)
     {
-        var l = Log.Fn<InputTypeInfo?>($"manifest:'{manifestFile.Name}', extension:'{extensionFolder.Name}', placeholder:'{placeholder}', folder:'{folderName}'");
+        var l = Log.Fn<InputTypeInfo?>($"manifest:'{manifestFile.Name}', extension:'{extensionFolder.Name}', placeholder:'{placeholder}'");
         
         var manifest = manifestService.LoadManifest(manifestFile);
         if (manifest?.InputFieldInside ?? true)
@@ -117,7 +120,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
 
         //l.A($"Building UI assets for inputType:'{manifest.InputTypeInside}'");
         l.A($"Building UI assets for inputType:'{manifest.InputFieldInside}'");
-        var assets = BuildUiAssets(manifest, extensionFolder, placeholder, folderName);
+        var assets = BuildUiAssets(manifest, extensionFolder, placeholder);
         
         var result = new InputTypeInfo
         {
@@ -134,13 +137,13 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         return l.Return(result, $"OK, type:'{result.Type}', assets count:{assets.Count}");
     }
 
-    private InputTypeInfo CreateLegacyInputType(string folderName, string placeholder, string folderNameContainer)
+    private InputTypeInfo CreateLegacyInputType(string folderName, string placeholder)
     {
-        var l = Log.Fn<InputTypeInfo>($"folder:'{folderName}', placeholder:'{placeholder}', container:'{folderNameContainer}'");
+        var l = Log.Fn<InputTypeInfo>($"folder:'{folderName}', placeholder:'{placeholder}'");
         
         var fullName = folderName.Substring(FieldFolderPrefix.Length);
         var niceName = InputTypeNiceName(folderName);
-        var defaultAssets = $"{placeholder}/{folderNameContainer}/{folderName}/{JsFile}";
+        var defaultAssets = $"{placeholder}/{FolderConstants.AppExtensionsFolder}/{folderName}/{JsFile}";
         
         l.A($"Legacy type: fullName='{fullName}', niceName='{niceName}', assets='{defaultAssets}'");
         
@@ -167,9 +170,8 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     /// <param name="manifest">The manifest of the primary extension</param>
     /// <param name="extensionFolder">The directory of the primary extension (e.g., /Extensions/field-string-font-icon)</param>
     /// <param name="placeholder">Path placeholder token (e.g., [App:Path])</param>
-    /// <param name="folderName">'Extensions' folder</param>
     /// <returns>Dictionary mapping edition names to asset paths</returns>
-    private Dictionary<string, string> BuildUiAssets(ExtensionManifest manifest, DirectoryInfo extensionFolder, string placeholder, string folderName)
+    private Dictionary<string, string> BuildUiAssets(ExtensionManifest manifest, DirectoryInfo extensionFolder, string placeholder)
     {
         var l = Log.Fn<Dictionary<string, string>>($"extension:{extensionFolder.Name}, editionsSupported:{manifest.EditionsSupported}");
         var assets = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -178,7 +180,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         var defaultAsset = AssetFromManifest(manifest, placeholder, extensionFolder.Name);
         assets[InputTypeInfo.DefaultAssets] = defaultAsset.HasValue()
             ? defaultAsset
-            : $"{placeholder}/{folderName}/{extensionFolder.Name}/{JsFile}";
+            : $"{placeholder}/{FolderConstants.AppExtensionsFolder}/{extensionFolder.Name}/{JsFile}";
 
         // If editions are not supported, return with just the default asset
         if (!manifest.EditionsSupported)
@@ -193,51 +195,45 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
             return l.Return(assets, $"no app root found, count:{assets.Count}");
         }
 
+        // Figure out possible folders which could be sub-editions, check if the manifest exists, load, etc.
+        var editionManifests = appRoot
+            .GetDirectories()
+            // Skip the current extensions root folder (don't process /Extensions as an edition)
+            .Where(dirInfo => !dirInfo.Name.EqualsInsensitive(extensionsRoot.Name))
+            // Get the FileInfo for the edition path, like /staging/Extensions/field-string-font-icon/extension.json
+            .Select(dirInfo => new
+            {
+                Edition = dirInfo.Name,
+                FileInfo = ExtensionManifestService.GetManifestFileInfo(Path.Combine(dirInfo.FullName, FolderConstants.AppExtensionsFolder, extensionFolder.Name))
+            })
+            // Verify it exists
+            .Where(f => f.FileInfo.Exists)
+            // Load the manifest
+            .Select(f => new
+            {
+                f.Edition,
+                Manifest = manifestService.LoadManifest(f.FileInfo)
+            })
+            // Verify not null
+            .Where(f => f.Manifest != null)
+            .ToListOpt();
+        
         // Look for edition folders at the app root level (e.g., /staging, /live, /dev)
         var editionCount = 0;
-        foreach (var editionFolder in appRoot.GetDirectories())
+        foreach (var editionAndManifest in editionManifests)
         {
-            // Skip the current extensions root folder (don't process /Extensions as an edition)
-            if (editionFolder.Name.EqualsInsensitive(extensionsRoot.Name))
-                continue;
-
-            // Check if this edition folder has a matching extensions subfolder
-            // e.g., /staging/Extensions/
-            var editionExtensionsPath = Path.Combine(editionFolder.FullName, folderName);
-            if (!Directory.Exists(editionExtensionsPath))
-                continue;
-
-            // Check if the specific extension exists in this edition
-            // e.g., /staging/Extensions/field-string-font-icon/
-            var editionExtensionFolder = new DirectoryInfo(Path.Combine(editionExtensionsPath, extensionFolder.Name));
-            if (!editionExtensionFolder.Exists)
-                continue;
-
-            // Check if there's a manifest file in the edition extension folder
-            var editionManifestFile = manifestService.GetManifestFile(editionExtensionFolder);
-            if (!editionManifestFile.Exists)
-                continue;
-
-            // Load and validate the edition manifest
-            var editionManifest = manifestService.LoadManifest(editionManifestFile);
-            //if (editionManifest?.InputTypeInside.IsEmpty() ?? true)
-            if (editionManifest?.InputFieldInside ?? true)
-                continue;
-            
             // Ensure the edition manifest references the same input type
-            //if (!editionManifest.InputTypeInside.Equals(manifest.InputTypeInside, StringComparison.OrdinalIgnoreCase))
-            if (editionManifest.InputFieldInside != manifest.InputFieldInside)
+            if (editionAndManifest.Manifest!.InputFieldInside != manifest.InputFieldInside)
             {
-                //l.A($"Edition {editionFolder.Name} has mismatched inputTypeInside: {editionManifest.InputTypeInside} != {manifest.InputTypeInside}");
-                l.A($"Edition {editionFolder.Name} has mismatched inputFieldInside: {editionManifest.InputFieldInside} != {manifest.InputFieldInside}");
+                l.A($"Edition {editionAndManifest.Edition} has mismatched inputFieldInside: {editionAndManifest.Manifest.InputFieldInside} != {manifest.InputFieldInside}");
                 continue;
             }
 
             // Build the asset path for this edition
-            var editionAsset = AssetFromManifest(editionManifest, placeholder, extensionFolder.Name, editionFolder.Name);
-            assets[editionFolder.Name] = editionAsset.HasValue()
+            var editionAsset = AssetFromManifest(editionAndManifest.Manifest, placeholder, extensionFolder.Name, editionAndManifest.Edition);
+            assets[editionAndManifest.Edition] = editionAsset.HasValue()
                 ? editionAsset
-                : $"{placeholder}/{editionFolder.Name}/{folderName}/{extensionFolder.Name}/{JsFile}";
+                : $"{placeholder}/{editionAndManifest.Edition}/{FolderConstants.AppExtensionsFolder}/{extensionFolder.Name}/{JsFile}";
             
             editionCount++;
         }
@@ -256,16 +252,11 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     private string? AssetFromManifest(ExtensionManifest manifest, string placeholder, string extensionName, string? editionName = null)
     {
         var l = Log.Fn<string?>($"extension:'{extensionName}', edition:'{editionName}', placeholder:'{placeholder}'");
-        
-        //var raw = manifest.InputTypeAssets.ValueKind switch
-        //{
-        //    JsonValueKind.String => manifest.InputTypeAssets.GetString(),
-        //    JsonValueKind.Object => manifest.InputTypeAssets.TryGetProperty(InputTypeInfo.DefaultAssets, out var def)
-        //        ? def.GetString()
-        //        : null,
-        //    JsonValueKind.Array => manifest.InputTypeAssets.EnumerateArray().FirstOrDefault().GetString(),
-        //    _ => null
-        //};
+
+        // Note: it's not clear why this is so complicated
+        // 2dm thinks (2026-08-20) that this is a left over when the `InputFieldAssets` could have had many types,
+        // but this is probably obsolete; needs verification
+        // TODO: @STV - pls check, and if it is not necessary anymore, simplify everything; otherwise add comments to clarify
         var raw = manifest.InputFieldAssets.ValueKind switch
         {
             JsonValueKind.String => manifest.InputFieldAssets.GetString(),
@@ -302,13 +293,6 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
         
         return l.Return(result, $"normalized: base='{basePath}', edition='{editionPrefix}', file='{normalized}'");
     }
-
-    private static readonly JsonSerializerOptions ManifestSerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        AllowTrailingCommas = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-    };
 
     #endregion
 }

@@ -6,6 +6,8 @@
 /// <param name="Enabled"></param>
 /// <param name="Summary"></param>
 /// <param name="Details"></param>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record LogSettings(
     bool Enabled = true,
     bool Summary = true,

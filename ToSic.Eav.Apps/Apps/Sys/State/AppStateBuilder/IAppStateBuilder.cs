@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppStateBuilder: IHasLog
 {
     IAppStateBuilder Init(IAppStateCache appState);

@@ -31,7 +31,7 @@ partial class XmlImportWithFiles
         var ctElement = xmlContentType.Element(XmlConstants.Attributes);
         var typeName = xmlContentType.Attribute(XmlConstants.Name)!.Value;
 
-        var attributes = new List<IContentTypeAttribute>();
+        var attributes = new List<IContentTypeField>();
         var metadataCount = 0;
         if (ctElement != null)
         {
@@ -71,7 +71,7 @@ partial class XmlImportWithFiles
                     guid = result;
                 var sysSettings = JsonDeserializeAttribute.SysSettings(nameId, xmlField.Attribute(XmlConstants.SysSettings)?.Value, Log);
 
-                var attribute = Services.TypeAssembler.Value.Attribute
+                var attribute = Services.TypeAssembler.Value.Field
                     .Create(
                         appId: AppId,
                         name: nameId,

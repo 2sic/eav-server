@@ -1,13 +1,8 @@
 ﻿namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IAppInputTypesLoader: IHasLog
+public interface IAppInputTypesLoader: IServiceWithSetup<AppFileSystemLoaderOptions>
 {
-    /// <summary>
-    /// Real constructor, after DI
-    /// </summary>
-    void Init(IAppReader reader, ToSic.Sys.Logging.LogSettings logSettings, string? optionalOverrideAppFolder = default);
-
     /// <summary>
     /// Load all the input types for this app from the folder
     /// </summary>

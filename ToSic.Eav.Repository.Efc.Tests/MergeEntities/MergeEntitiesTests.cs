@@ -17,7 +17,7 @@ namespace ToSic.Eav.Repository.Efc.Tests.MergeEntities;
 // TODO: THIS IS A VERY long test class - consider splitting it up into multiple classes
 
 [Startup(typeof(StartupTestsApps))]
-public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     [field: AllowNull, MaybeNull]
     private LanguageAssembler LanguageAssembler => field ??= new();
@@ -36,19 +36,19 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
     private const int AppId = KnownAppsConstants.TransientAppId;
     //ContentType _ctNull = null;
 
-    private IContentTypeAttribute ContentTypeAttribute(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
+    private IContentTypeField CreateField(int appId, string firstName, string dataType, bool isTitle, int attId, int index)
     {
-        return typeAssembler.Attribute.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
+        return ctAssemblyKit.Field.Create(appId: appId, name: firstName, type: ValueTypeHelpers.Get(dataType), isTitle: isTitle, id: attId, sortOrder: index);
     }
 
-    IContentType _ctPerson => typeAssembler.Type.CreateContentTypeTac(appId: AppId, name: "Person", attributes: new List<IContentTypeAttribute>
+    IContentType _ctPerson => ctAssemblyKit.Type.CreateContentTypeTac(appId: AppId, name: "Person", attributes: new List<IContentTypeField>
     {
-        ContentTypeAttribute(AppId, "FullName", "String", true, 0, 0),
-        ContentTypeAttribute(AppId, "FirstName", "String", true, 0, 0),
-        ContentTypeAttribute(AppId, "LastName", "String", true, 0, 0),
-        ContentTypeAttribute(AppId, "Birthday", "DateTime", true, 0, 0),
-        ContentTypeAttribute(AppId, "Husband", "String", true, 0, 0),
-        ContentTypeAttribute(AppId, "UnusedField", "String", true, 0,0)
+        CreateField(AppId, "FullName", "String", true, 0, 0),
+        CreateField(AppId, "FirstName", "String", true, 0, 0),
+        CreateField(AppId, "LastName", "String", true, 0, 0),
+        CreateField(AppId, "Birthday", "DateTime", true, 0, 0),
+        CreateField(AppId, "Husband", "String", true, 0, 0),
+        CreateField(AppId, "UnusedField", "String", true, 0,0)
     });
 
     readonly Entity _origENull = null;
@@ -61,7 +61,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
         {"Birthday", new DateTime(1981, 5, 14) }
     });
 
-    private Entity GirlMarried => dataAssembler.CreateEntityTac(appId: AppId, contentType: typeAssembler.Type.Transient("DynPerson"), values: new()
+    private Entity GirlMarried => dataAssembler.CreateEntityTac(appId: AppId, contentType: ctAssemblyKit.Type.Transient("DynPerson"), values: new()
     {
         {"FullName", "Sandra Unmarried-Married"},
         {"FirstName", "Sandra"},
@@ -140,11 +140,11 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
 
     #region Test Data ML
 
-    IContentType _ctMlProduct => typeAssembler.Type.CreateContentTypeTac(appId: -1, name: "Product", attributes: new List<IContentTypeAttribute>
+    IContentType _ctMlProduct => ctAssemblyKit.Type.CreateContentTypeTac(appId: -1, name: "Product", attributes: new List<IContentTypeField>
         {
-            ContentTypeAttribute(AppId, AttributeNames.TitleNiceName, "String", true, 0, 0),
-            ContentTypeAttribute(AppId, "Teaser", "String", false, 0, 0),
-            ContentTypeAttribute(AppId, "Image", "Hyperlink", false, 0, 0),
+            CreateField(AppId, AttributeNames.TitleNiceName, "String", true, 0, 0),
+            CreateField(AppId, "Teaser", "String", false, 0, 0),
+            CreateField(AppId, "Image", "Hyperlink", false, 0, 0),
         }
     );
 
@@ -173,7 +173,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
             dataAssembler.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn }),
         });
 
-        return dataAssembler.CreateEntityTac(appId: AppId, entityId: 3006, contentType: typeAssembler.Type.Transient("Product"), values: new()
+        return dataAssembler.CreateEntityTac(appId: AppId, entityId: 3006, contentType: ctAssemblyKit.Type.Transient("Product"), values: new()
         {
             {title.Name, title},
             {teaser.Name, teaser},
@@ -215,7 +215,7 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
             dataAssembler.Value.BuildTac(ValueTypes.String, "File EN, lang en + ch RW", new List<ILanguage> { langEn, langDeCh }),
         });
 
-        return dataAssembler.CreateEntityTac(appId: AppId, entityId: 430, contentType: typeAssembler.Type.Transient("Product"), values: new()
+        return dataAssembler.CreateEntityTac(appId: AppId, entityId: 430, contentType: ctAssemblyKit.Type.Transient("Product"), values: new()
         {
             {title.Name, title},
             {teaser.Name, teaser},

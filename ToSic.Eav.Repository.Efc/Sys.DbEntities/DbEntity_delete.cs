@@ -1,11 +1,9 @@
-﻿using ToSic.Sys.Data;
-
-namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
+﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
     private int DeleteTransactionId => _deleteTransactionId.Get(() => DbStore.Versioning.GetTransactionId());
-    private readonly GetOnce<int> _deleteTransactionId = new();
+    private readonly LazyGet<int> _deleteTransactionId = new();
 
     /// <summary>
     /// Delete one or more Entities

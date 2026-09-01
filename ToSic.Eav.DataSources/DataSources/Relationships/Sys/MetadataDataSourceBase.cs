@@ -3,6 +3,7 @@
 /// <summary>
 /// Base class for Children and Parents - since they share a lot of code
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class MetadataDataSourceBase : CustomDataSourceAdvanced
 {
     /// <remarks>

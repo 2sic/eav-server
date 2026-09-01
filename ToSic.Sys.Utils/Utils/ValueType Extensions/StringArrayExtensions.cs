@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Utils;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class StringArrayExtensions
 {
     /// <summary>
@@ -20,7 +21,7 @@ public static class StringArrayExtensions
         if (cleaned.SafeNone())
             return preferNullToEmpty
                 ? null
-                : new Dictionary<string, string>().ToImmutableDictionary();
+                : ImmutableDictionary<string, string>.Empty;
 
         var valDic = cleaned
             .Select(v => v.Split('='))

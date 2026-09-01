@@ -8,7 +8,7 @@ public class AdamItemDto
     /// Optional error message, should normally be null if no error
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Error { get; set; }
+    public string? Error { get; init; }
 
     /// <summary>
     /// The file name
@@ -18,27 +18,27 @@ public class AdamItemDto
     /// <summary>
     /// This contains the code like "file:2742"
     /// </summary>
-    public string? ReferenceId { get; set; }
+    public string? ReferenceId { get; init; }
 
     /// <summary>
     /// Normal url to access the resource
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Url { get; set; }
+    public string? Url { get; init; }
 
     /// <summary>
     /// The Adam type, such as "folder", "image" etc.
     /// </summary>
-    public string? Type { get; set; }
+    public string? Type { get; init; }
 
     public bool IsFolder { get; }
-    public bool AllowEdit { get; set; }
-    public int Size { get; set; }
+    public bool AllowEdit { get; init; }
+    public int Size { get; init; }
 
     /// <summary>
     /// The Metadata for this ADAM item
     /// </summary>
-    public IEnumerable<MetadataOfDto>? Metadata { get; set; }
+    public IEnumerable<AdamMetadataOfDto>? Metadata { get; init; }
 
     public string? Path { get; set; }
 
@@ -49,13 +49,13 @@ public class AdamItemDto
     /// Small preview thumbnail
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? ThumbnailUrl { get; set; }
+    public string? ThumbnailUrl { get; init; }
 
     /// <summary>
     /// Large preview
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? PreviewUrl { get; set; }
+    public string? PreviewUrl { get; init; }
 
     public AdamItemDto(string error) => Error = error;
 

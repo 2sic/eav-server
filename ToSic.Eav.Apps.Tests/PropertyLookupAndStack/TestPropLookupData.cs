@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.PropertyLookup;
 using static ToSic.Eav.Apps.Tests.PropertyLookupAndStack.TestData;
 
@@ -30,12 +29,11 @@ internal class TestPropLookupData(string sourceId, string name)
         return values;
     }
 
-    public PropertyLookupDictionary Lookup => _lookup.Get(() => new(SourceId, Data()));
-    private readonly GetOnce<PropertyLookupDictionary> _lookup = new();
+    public PropertyLookupDictionary Lookup => field ??= new(SourceId, Data());
 
     public KeyValuePair<string, IPropertyLookup> StackPart =>
         _stackPart.Get(() => new(Lookup.NameId, Lookup));
 
-    private readonly GetOnce<KeyValuePair<string, IPropertyLookup>> _stackPart = new();
+    private readonly LazyGet<KeyValuePair<string, IPropertyLookup>> _stackPart = new();
 
 }

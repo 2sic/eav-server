@@ -1,10 +1,13 @@
 ﻿namespace ToSic.Sys.Requirements;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+/// <summary>
+/// Marks objects which have requirements, which are necessary for further use/processing.
+/// </summary>
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public interface IHasRequirements
 {
     /// <summary>
-    /// Optional requirements which are necessary for this feature to be used
+    /// Requirements which are necessary for this feature to be used
     /// </summary>
     List<Requirement> Requirements { get; }
 }

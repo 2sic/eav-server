@@ -1,5 +1,6 @@
 namespace ToSic.Sys.OData.Ast;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class CallExpr(string name, IReadOnlyList<Expr> args) : Expr
 {
     public string Name { get; } = name;

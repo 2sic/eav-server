@@ -26,11 +26,6 @@ public record PropReqSpecs(string Field, string?[]? Dimensions, bool DimsAreFina
             : ExtendDimsWithDefault(Dimensions)
         : EmptyDimensions;
     
-    /// <summary>
-    /// Log is null if no logging should happen, or a real logger if it's in use
-    /// </summary>
-    //public readonly ILog LogOrNull = logOrNull;
-
     public PropReqSpecs ForOtherField(string field)
         => this with { Field = field, DimsAreFinal = true };
 

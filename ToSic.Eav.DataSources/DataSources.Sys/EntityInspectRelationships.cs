@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Sys.Capabilities.Features;
 
@@ -15,6 +15,7 @@ namespace ToSic.Eav.DataSources.Sys;
 /// </remarks>
 /// <inheritdoc />
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [VisualQuery(
     NiceName = "Entity inspect Relationships",
     UiHint = "List all entity relationships",
@@ -43,8 +44,9 @@ public sealed class EntityInspectRelationships : CustomDataSource
     {
         // Main stream
         ProvideOutRaw(
-            () => GetRelationships(appReaders, featuresForDs.Features),
-            options: () => new() { TypeName = "EntityRelationship", AutoId = false }
+            () => GetRelationships(appReaders, featuresForDs.Features)//,
+            // WIP - ideally adding the type would not be necessary, but ATM not yet perfect
+            //options: () => new() { Type = typeof(EntityRelationship), AutoId = false }
         );
 
         // Feature State / Status
@@ -53,27 +55,29 @@ public sealed class EntityInspectRelationships : CustomDataSource
 
     }
 
-    private IEnumerable<IRawEntity> GetRelationships(IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
+    private IEnumerable<IRawData> GetRelationships(IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
     {
         var id = Id;
-        var l = Log.Fn<IEnumerable<IRawEntity>>($"Id: {id}");
+        var l = Log.Fn<IEnumerable<IRawData>>($"Id: {id}");
         if (id == 0)
             return l.Return([], "no id provided, []");
 
         // Check if Entity found
-        var entity = appReaders.Get(this.PureIdentity()).List.GetOne(Id);
+        var entity = appReaders.Get(this.PureIdentity()).List.GetOne(id);
         if (entity == null)
             return l.Return([], $"no entity with id {id} found, []");
 
         // Check if the feature is on, this changes what the user will see
         var featureEnabled = featuresSvc.IsEnabled(BuiltInFeatures.EntityInspectRelationships);
 
-
         // Get all the child relationships, incl. what field the data is in
         var childrenWithField = entity.Attributes
             .GetEntityAttributes()
-            .SelectMany(a => a.Value.TypedContents?
-                .Select(e => new RelInfo(e, Field: a.Key, IsChild: true)) ?? [])
+            .SelectMany(a => a.Value
+                                 .TypedContents?
+                                 .Select(e => new EntityRelationship(Field: a.Key, IsChild: true) { Entity = e, FeatEnabled = featureEnabled })
+                             ?? []
+            )
             .ToList();
 
         // Get all the parent relationships, incl. what field the data is in
@@ -82,42 +86,86 @@ public sealed class EntityInspectRelationships : CustomDataSource
             .SelectMany(parent => parent.Attributes
                 .GetEntityAttributes()
                 .Where(pAttribs => pAttribs.Value.TypedContents?.Any(child => child.EntityId == id) == true)
-                .Select(a => new RelInfo(parent, Field: a.Key, IsChild: false))
+                .Select(a => new EntityRelationship(Field: a.Key, IsChild: false) { Entity = parent, FeatEnabled = featureEnabled })
             )
             .ToList();
 
         // Merge, convert and return
-        var merged = childrenWithField.Union(parentsWithField).ToList();
+        var merged = childrenWithField
+            .Union(parentsWithField)
+            .OfType<IRawData>()
+            .ToList();
 
-        var converted = merged.Select(m => m.ToRawEntity(featureEnabled));
-
-        return converted;
+        return l.Return(merged);
     }
 
-    private record RelInfo(IEntity Entity, string Field, bool IsChild)
+    [ContentType(
+        Guid = "9878be6e-93d9-4d91-82a3-31ca4da436c3",
+        Description = "Entity Relationship",
+        Name = MyContentTypeName
+    )]
+    private record EntityRelationship(
+        string Field,
+        bool IsChild
+    ) : /*RawEntityRecordBase,*/ IRawEntityAutoConvert
     {
-        public RawEntity ToRawEntity(bool featureEnabled) =>
-            new()
-            {
-                Guid = featureEnabled ? Entity.EntityGuid : Guid.Empty,
-                Id = featureEnabled ? Entity.EntityId : 0,
-                Values = new Dictionary<string, object?>
-                {
-                    { AttributeNames.TitleNiceName, featureEnabled ? Entity.GetBestTitle() ?? "unknown" : FeatureNotEnabledMessage },
-                    { "Field", Field },
-                    { "IsChild", IsChild },
-                    { "ContentTypeName", featureEnabled ? Entity.Type.Name : "must enable feature" },
-                    { "ContentTypeNameId", featureEnabled ? Entity.Type.NameId : "must enable feature" }
-                }
-            };
+        private const string MyContentTypeName = "EntityRelationship";
+        
+        [ContentTypeIgnore]
+        internal required IEntity Entity { get; init; }
+        
+        [ContentTypeIgnore]
+        internal required bool FeatEnabled { get; init; }
 
+        public int Id => FeatEnabled ? Entity.EntityId : 0;
+        
+        public Guid Guid => FeatEnabled ? Entity.EntityGuid : Guid.Empty;
+
+        public string Title => FeatEnabled ? Entity.GetBestTitle() ?? "unknown" : FeatureNotEnabledMessage;
+
+        public string ContentTypeName => FeatEnabled ? Entity.Type.Name : MustEnableFeature;
+        
+        public string ContentTypeNameId => FeatEnabled ? Entity.Type.NameId : MustEnableFeature;
+
+        private const string MustEnableFeature = "must enable feature";
         private static readonly string FeatureNotEnabledMessage =
             $"hidden, feature {BuiltInFeatures.EntityInspectRelationships.NameId} not enabled";
-    }
 
-    private static IEnumerable<IRawEntity> GetList(ISysFeaturesService featureSvc) =>
-    [
-        featureSvc.Get(BuiltInFeatures.EntityInspectRelationships.NameId)!
-            .ToRawEntity(detailed: true)
-    ];
+        #region Original using IRawEntity (commented out, but keeping as a sample)
+
+        //public override IDictionary<string, object?> Values => new Dictionary<string, object?>
+        //    {
+        //        { AttributeNames.TitleNiceName, Title },
+        //        { nameof(Field), Field },
+        //        { nameof(IsChild), IsChild },
+        //        { nameof(ContentTypeName), ContentTypeName },
+        //        { nameof(ContentTypeNameId), ContentTypeNameId }
+        //    };
+
+        //public override IDictionary<string, object?> Attributes(RawConvertOptions options) => Values;
+
+        #endregion
+
+        #region Second iteration using IRawEntityConvertible.GetConverter (commented out, but keeping sample)
+
+        //IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
+
+        //private static IRawEntityConverter Converter { get; } =
+        //    new RawEntityConverterFactory<EntityRelationship>((source, _) =>
+        //        new RawEntity
+        //        {
+        //            Id = source.Id,
+        //            Guid = source.Guid,
+        //            Values = new Dictionary<string, object?>
+        //            {
+        //                { AttributeNames.TitleNiceName, source.Title },
+        //                { nameof(Field), source.Field },
+        //                { nameof(IsChild), source.IsChild },
+        //                { nameof(ContentTypeName), source.ContentTypeName },
+        //                { nameof(ContentTypeNameId), source.ContentTypeNameId }
+        //            },
+        //        });
+
+        #endregion
+    }
 }

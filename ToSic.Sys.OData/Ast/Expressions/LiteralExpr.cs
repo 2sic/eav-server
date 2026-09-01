@@ -1,5 +1,6 @@
 namespace ToSic.Sys.OData.Ast;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class LiteralExpr(object? value) : Expr
 {
     public object? Value { get; } = value;

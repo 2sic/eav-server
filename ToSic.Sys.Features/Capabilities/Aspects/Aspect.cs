@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.Data;
+﻿using System.ComponentModel;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Sys.Capabilities.Aspects;
 
@@ -24,7 +25,20 @@ public record Aspect(): IHasIdentityNameId
         => new() { NameId = NameId, Guid = Guid, Name = Name ?? NameId, Description = Description ?? "" };
     // ReSharper restore InconsistentNaming
 
-    public static Aspect None = new() { NameId = "None", Guid = Guid.Empty, Name = "None" };
+    //public static Aspect None = new() { NameId = "None", Guid = Guid.Empty, Name = "None" };
+    public static Aspect UnknownChecker(string name) => new() { NameId = "UnknownChecker", Guid = Guid.Empty, Name = name };
+    public static Aspect UnknownAspect(string type, string? name) => new()
+    {
+        NameId = "UnknownAspect",
+        Guid = Guid.TryParse(name, out var guid) ? guid : Guid.Empty,
+        Name = name.NullIfNoValue() ?? "empty-name"
+    };
+    public static Aspect EmptyAspect(string type) => new()
+    {
+        NameId = "UnknownAspect",
+        Guid = Guid.Empty,
+        Name = "empty-name"
+    };
 
     /// <summary>
     /// GUID Identifier for this Aspect.

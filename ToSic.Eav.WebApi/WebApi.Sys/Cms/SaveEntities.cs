@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Build.Sys;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -8,14 +7,14 @@ using ToSic.Eav.WebApi.Sys.Dto;
 namespace ToSic.Eav.WebApi.Sys.Cms;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class SaveEntities(EntityAssembler entityAssembler, GenWorkDb<WorkEntitySave> workEntSave)
+public class SaveEntities(EntityAssembler entityAssembler, AppWorkChain<WorkEntitySave> workEntSave)
     : ServiceBase("Eav.SavHlp", connect: [entityAssembler, workEntSave])
 {
-    public void UpdateGuidAndPublishedAndSaveMany(IAppWorkCtx appCtx, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
+    public void UpdateGuidAndPublishedAndSaveMany(IAppWorkContext appCtx, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
     {
         var l = Log.Fn($"will save {itemsToImport.Count} items");
 
-        var saver = workEntSave.New(appCtx.AppReader);
+        var saver = workEntSave.New(appCtx);
         var saveOptions = saver.SaveOptions();
 
         var entitiesToImport = itemsToImport
@@ -44,7 +43,7 @@ public class SaveEntities(EntityAssembler entityAssembler, GenWorkDb<WorkEntityS
             {
                 var foundEntity = workEntities.Get(e.Header.Guid);
                 var state = foundEntity == null ? "not found" : foundEntity.IsPublished ? "published" : "draft";
-                var draft = foundEntity  == null ? null : workEntities.AppWorkCtx.AppReader.GetDraft(foundEntity);
+                var draft = foundEntity  == null ? null : workEntities.MyOptions.AppReader.GetDraft(foundEntity);
                 l.A($"draft check: entity {e.Header.Guid} ({state}) - additional draft: {draft != null} - will return the draft");
                 return draft ?? foundEntity; // return the draft (that would be the latest), or the found, or null if not found
             })

@@ -2,6 +2,8 @@
 using System.Collections.Immutable;
 
 namespace ToSic.Sys.Performance;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ToDicExtensions
 {
     public static IReadOnlyDictionary<TKey, TValue> ToImmutableDicSafe<TSource, TKey, TValue>(

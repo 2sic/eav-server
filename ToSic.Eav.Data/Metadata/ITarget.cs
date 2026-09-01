@@ -3,11 +3,16 @@ using ToSic.Eav.Metadata.Targets;
 
 namespace ToSic.Eav.Metadata;
 
+// Docs notes:
+// Was public till 16.09
+// Then private till v21
+// Made Internal for v22
+
 /// <summary>
 /// Reference to target. Usually used on <see cref="IEntity"/> to define what thing it provides additional metadata for.
 /// Basically it contains all the references necessary to identify what it belongs to.
 /// </summary>
-[PrivateApi("was public till 16.09")]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ITarget
 {

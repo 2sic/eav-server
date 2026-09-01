@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Apps;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppReadContentTypes
 {
     /// <summary>

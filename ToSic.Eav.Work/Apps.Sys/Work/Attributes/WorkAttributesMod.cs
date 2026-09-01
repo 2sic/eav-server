@@ -1,71 +1,62 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.Processing;
-using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Utils;
 using static ToSic.Sys.Capabilities.Features.BuiltInFeatures;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkAttributesMod(
-    GenWorkDb<WorkMetadata> workMetadata,
-    GenWorkBasic<WorkAttributes> workAttributes,
-    ContentTypeAttributeAssembler attributeAssembler,
+    AppWorkChain<WorkMetadata> workMetadata,
+    AppWorkChain<WorkAttributes> workAttributes,
+    Generator<ContentTypeFieldAssembler, DataAssemblerOptions> fieldAssembler,
     Generator<IDataDeserializer> dataDeserializer,
     LazySvc<ISysFeaturesService> features,
-    LazySvc<ContentTypeDataProcessorRunner> contentTypeDataProcessorRunner)
-    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.AttMod",
-        connect: [attributeAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeDataProcessorRunner])
+    LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions)
+    : ServiceWithSetup<IAppWorkContext>("Wrk.AttMod",
+        connect: [fieldAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeChangeActions])
 {
-    #region Getters which don't modify, but need the DB
-
-    /// <summary>
-    /// Get all known data types, like "String", "Number" etc. from DB.
-    /// It should actually not be in the ...Mod because it doesn't modify anything, but it's here because it needs the DB.
-    /// </summary>
-    /// <returns></returns>
-    public string[] DataTypes()
-    {
-        var l = Log.Fn<string[]>();
-        var result = AppWorkCtx.DbStorage.Attributes.DataTypeNames();
-        return l.Return(result, $"{result.Length}");
-    }
-
-    #endregion
 
     #region Add Field
 
     public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder, bool triggerPostSave = true)
     {
         var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
-        var attDef = attributeAssembler.Create(
-            appId: AppWorkCtx.AppId,
-            name: staticName,
-            type: ValueTypeHelpers.Get(type),
-            isTitle: false,
-            id: 0,
-            sortOrder: sortOrder
-        );
-        var id = AddFieldToDbAndInitGeneralMetadata(contentTypeId, attDef, inputType);
+        var attDef = fieldAssembler.New(new())
+            .Create(
+                appId: MyOptions.AppId,
+                name: staticName,
+                type: ValueTypeHelpers.Get(type),
+                isTitle: false,
+                id: 0,
+                sortOrder: sortOrder
+            );
+        // Suppress while saving, because the app-reader is stale here (adding the field purged the cache),
+        // so only this method can resolve the content-type reliably - from the id it was given.
+        var id = 0;
+        contentTypeChangeActions.Value.DoWithoutActions(
+            () => id = AddFieldToDbAndInitGeneralMetadata(contentTypeId, attDef, inputType));
         if (triggerPostSave)
             // Field definition changed => generated models may have new/removed properties.
-            TriggerPostSaveForContentType(contentTypeId);
+            TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.Return(id);
     }
 
 
     /// <summary>
-    /// Append a new Attribute to an ContentType
+    /// Append a new Field to an ContentType
     /// Simple overload returning int, so it can be used from outside
     /// </summary>
-    private int AddFieldToDbAndInitGeneralMetadata(int contentTypeId, IContentTypeAttribute attDef, string inputType)
+    private int AddFieldToDbAndInitGeneralMetadata(int contentTypeId, IContentTypeField attDef, string inputType)
     {
         var l = Log.Fn<int>($"type:{contentTypeId}, input:{inputType}");
-        var newAttribute = AppWorkCtx.DbStorage.Attributes.AddAttributeAndSave(contentTypeId, attDef);
+        var newAttribute = MyOptions.DbStorage.Attributes.AddAttributeAndSave(contentTypeId, attDef);
 
         // set the nice name and input type, important for newly created attributes
         InitializeNameAndInputType(attDef.Name, inputType, newAttribute);
@@ -81,10 +72,10 @@ public class WorkAttributesMod(
         {
             { "VisibleInEditUI", true },
             { "Name", staticName },
-            { AttributeMetadataConstants.GeneralFieldInputType, inputType }
+            { nameof(IFieldSettingsGeneral.InputType), inputType }
         };
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
+        workMetadata.New(MyOptions).SaveMetadata(meta, IFieldSettingsGeneral.Constants.ContentTypeName, newValues);
         l.Done();
     }
 
@@ -95,31 +86,35 @@ public class WorkAttributesMod(
     public bool SetInputType(int attributeId, string inputType)
     {
         var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
-        // Capture content-type before mutation because this path only receives attribute id.
-        var contentTypeId = TryResolveContentTypeIdByAttribute(attributeId);
-        var newValues = new Dictionary<string, object> { { AttributeMetadataConstants.GeneralFieldInputType, inputType } };
+        // Capture content-type before mutation because this path only receives fieldDef id.
+        var attribute = MyOptions.DbStorage.Attributes.GetTracked(attributeId)
+                        ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
+        var contentTypeId = attribute.ContentTypeId;
+
+        var newValues = new Dictionary<string, object> { { nameof(IFieldSettingsGeneral.InputType), inputType } };
 
         var meta = new Target((int)TargetTypes.Attribute, null, keyNumber: attributeId);
-        workMetadata.New(AppWorkCtx).SaveMetadata(meta, AttributeMetadataConstants.TypeGeneral, newValues);
-        if (contentTypeId.HasValue)
-            TriggerPostSaveForContentType(contentTypeId.Value);
+        // Suppress during save, so the trigger below is the single one, using the id we already know.
+        contentTypeChangeActions.Value.DoWithoutActions(
+            () => workMetadata.New(MyOptions).SaveMetadata(meta, IFieldSettingsGeneral.Constants.ContentTypeName, newValues));
+        TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
     public bool Rename(int contentTypeId, int attributeId, string newName)
     {
-        var l = Log.Fn<bool>($"rename attribute type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
-        AppWorkCtx.DbStorage.Attributes.RenameAttribute(attributeId, contentTypeId, newName);
-        TriggerPostSaveForContentType(contentTypeId);
+        var l = Log.Fn<bool>($"rename fieldDef type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
+        MyOptions.DbStorage.Attributes.RenameAttribute(attributeId, contentTypeId, newName);
+        TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
     public bool Reorder(int contentTypeId, string orderCsv)
     {
         var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{orderCsv}");
-        var sortOrderList = orderCsv.Split(',').Select(int.Parse).ToList();
-        AppWorkCtx.DbStorage.ContentType.SortAttributes(contentTypeId, sortOrderList);
-        TriggerPostSaveForContentType(contentTypeId);
+        var sortOrderList = orderCsv.CsvToArrayWithoutEmpty().Select(int.Parse).ToList();
+        MyOptions.DbStorage.ContentType.SortAttributes(contentTypeId, sortOrderList);
+        TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
@@ -127,10 +122,10 @@ public class WorkAttributesMod(
     public bool Delete(int contentTypeId, int attributeId)
     {
         var l = Log.Fn<bool>($"delete field type#{contentTypeId}, attrib:{attributeId}");
-        var success = AppWorkCtx.DbStorage.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
+        var success = MyOptions.DbStorage.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
         // Trigger only when delete succeeded; failed delete should not cause code regeneration.
         if (success)
-            TriggerPostSaveForContentType(contentTypeId);
+            TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.Return(success);
     }
 
@@ -148,14 +143,14 @@ public class WorkAttributesMod(
             l.W("Setting up field share but feature is not enabled / licensed.");
 
         var serializer = dataDeserializer.New();
-        serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
+        serializer.Initialize(MyOptions.AppId, new List<IContentType>(), null);
 
-        // Update DB, and then flush the app-cache as necessary, same as any other attribute change
-        AppWorkCtx.DbStorage.DoAndSaveTracked(() =>
+        // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
+        MyOptions.DbStorage.DoAndSaveTracked(() =>
         {
             // get field attributeId
-            var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
-                ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+            var attribute = MyOptions.DbStorage.Attributes.GetTracked(attributeId)
+                ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
             contentTypeId = attribute.ContentTypeId;
 
             // ensure GUID: update the field definition in the DB to ensure it has a GUID (but don't change if it already has one)
@@ -171,7 +166,7 @@ public class WorkAttributesMod(
 
         if (contentTypeId > 0)
             // Sharing alters effective schema behavior and should re-run generators.
-            TriggerPostSaveForContentType(contentTypeId);
+            TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
@@ -185,14 +180,14 @@ public class WorkAttributesMod(
 
         // Prepare serializer
         var serializer = dataDeserializer.New();
-        serializer.Initialize(AppWorkCtx.AppId, new List<IContentType>(), null);
+        serializer.Initialize(MyOptions.AppId, new List<IContentType>(), null);
 
-        // Update DB, and then flush the app-cache as necessary, same as any other attribute change
-        AppWorkCtx.DbStorage.DoAndSaveTracked(() =>
+        // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
+        MyOptions.DbStorage.DoAndSaveTracked(() =>
         {
             // get field attributeId
-            var attribute = AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)
-                ?? throw new ArgumentException($"Attribute with id {attributeId} does not exist.");
+            var attribute = MyOptions.DbStorage.Attributes.GetTracked(attributeId)
+                ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
             contentTypeId = attribute.ContentTypeId;
 
             // set InheritMetadataOf to the guid above(as string)
@@ -207,7 +202,7 @@ public class WorkAttributesMod(
 
         if (triggerPostSave && contentTypeId > 0)
             // Allow caller to suppress trigger when this method is part of a larger multi-step operation.
-            TriggerPostSaveForContentType(contentTypeId);
+            TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
     }
 
@@ -225,8 +220,8 @@ public class WorkAttributesMod(
         // - second the source field guid
         // - note that the content-type wouldn't be necessary, but we want to have it to prevent mistakes if for some reason the guid is duplicate
         // - verify that the source fields exist, and really belong to the content-types they claim to be from
-        var fields = workAttributes.New(AppWorkCtx.AppId).GetSharedFields(attributeId: default)
-            .Where(f => f.Type.NameId == sourceType && f.Attribute.Guid == sourceField).ToList();
+        var fields = workAttributes.New(MyOptions).GetSharedFields(attributeId: default)
+            .Where(f => f.Type.NameId == sourceType && f.Field.Guid == sourceField).ToList();
 
         // 1.2 Find the source fields and only keep the ones that are valid
         if (fields.Count == 0)
@@ -240,18 +235,18 @@ public class WorkAttributesMod(
 
         // 2.1 find the index for adding fields
         // - get the content-type
-        var contentType = AppWorkCtx.AppReader.GetContentTypeOptional(contentTypeId);
+        var contentType = MyOptions.AppReader.GetContentTypeOptional(contentTypeId);
         if (contentType == null)
             return l.ReturnFalse($"error: wrong contentTypeId {contentTypeId}");
-        // - make sure we have the attribute-count to add more fields
+        // - make sure we have the fieldDef-count to add more fields
 
         // 2.2 create the attributes based on the original data
         // - name is the key in the dictionary
         // - probably just call AddField code above
         // - of course increment the start-index for each field
         var newAttributeId = AddField(contentTypeId, name,
-            type: pairTypeWithAttribute.Attribute.Type.ToString(),
-            inputType: pairTypeWithAttribute.Attribute.InputType,
+            type: pairTypeWithAttribute.Field.Type.ToString(),
+            inputType: pairTypeWithAttribute.Field.InputType,
             sortOrder: contentType.Attributes.Count() + 1,
             triggerPostSave: false);
 
@@ -259,26 +254,34 @@ public class WorkAttributesMod(
         FieldInherit(newAttributeId, inheritMetadataOf: sourceField, triggerPostSave: false);
 
         // AddInheritedField is one logical schema operation, so trigger generation once.
-        TriggerPostSaveForContentType(contentTypeId);
+        TriggerPostSaveForContentType(contentType);
 
         return l.ReturnTrue();
     }
 
-    private int? TryResolveContentTypeIdByAttribute(int attributeId)
-        => AppWorkCtx.DbStorage.Attributes.GetTracked(attributeId)?.ContentTypeId;
+    private IContentType? GetContentType(int contentTypeId)
+        => MyOptions.AppReader.GetContentTypeOptional(contentTypeId);
 
-    private void TriggerPostSaveForContentType(int contentTypeId)
+    private void TriggerPostSaveForContentType(IContentType? contentType)
     {
-        // Field schema updates currently use the standard IDataProcessor pipeline
-        // and mark the source so the configured handler can distinguish the process.
-        // Runner is intentionally best-effort so editor save is never blocked by generation issues.
-        contentTypeDataProcessorRunner.Value.RunFor(
-            AppWorkCtx.AppId,
-            contentTypeId,
-            context: new()
-            {
-                Source = DataProcessingContextSources.ContentTypeField
-            });
+        if (contentType == null)
+        {
+            Log.A("No content-type found, so no post-save actions will run.");
+            return;
+        }
+
+        // Runner is intentionally best-effort so editor save is never blocked by optional generation issues.
+        try
+        {
+            contentTypeChangeActions.Value.RunFor(
+                MyOptions.AppId,
+                contentType.NameId,
+                source: ContentTypeChangeSources.ContentTypeField);
+        }
+        catch (Exception ex)
+        {
+            Log.Ex($"Error running post-save actions for '{contentType.NameId}'; the save itself is not affected.", ex);
+        }
     }
 
     #endregion

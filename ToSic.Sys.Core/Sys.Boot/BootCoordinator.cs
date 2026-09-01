@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Sys.Boot;
 
 /// <summary>
-/// The main / overall loader which will coordinate all the loaders.
+/// During boot, this will get all <see cref="IBootProcess"/> services and ensure that they are triggered in the correct order.
 /// </summary>
 /// <remarks>
 /// It will run pre-loaders first, then the main loader.
@@ -11,6 +11,9 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class BootCoordinator : ServiceBase
 {
+    /// <summary>
+    /// Constructor, don't call, use DI.
+    /// </summary>
     public BootCoordinator(ILogStore logStore, IEnumerable<IBootProcess> bootProcesses)
         : base("B8T.SysLdr", connect: [bootProcesses])
     {
@@ -21,6 +24,9 @@ public class BootCoordinator : ServiceBase
 
     private readonly IEnumerable<IBootProcess> _bootProcesses;
 
+    /// <summary>
+    /// This should be called by the runtime environment upon start.
+    /// </summary>
     public void StartUp()
     {
         var l = Log.Fn(timer: true);

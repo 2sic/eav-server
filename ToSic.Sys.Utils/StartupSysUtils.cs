@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.HookUp;
 using ToSic.Sys.Security.Encryption;
 
 // ReSharper disable once CheckNamespace
@@ -21,4 +22,14 @@ public static class StartupSysUtils
         return services;
     }
 
+    public static IServiceCollection AddHookUp(this IServiceCollection services)
+    {
+        services.TryAddTransient<IHookUp, HookUpBase>();
+        services.TryAddTransient(typeof(RemoteWork<,,>));
+        services.TryAddTransient(typeof(WorkSequenceManual<,>));
+        services.TryAddTransient(typeof(IWorkSequenceManual<,>), typeof(WorkSequenceManual<,>));
+        services.TryAddTransient(typeof(WorkSequence<,>));
+        services.TryAddTransient(typeof(IWorkSequence<,>), typeof(WorkSequence<,>));
+        return services;
+    }
 }

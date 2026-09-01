@@ -4,6 +4,7 @@ using ToSic.Eav.Metadata.Sys;
 
 namespace ToSic.Eav.Apps.AppReader.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppReader() : ServiceBase("App.Reader"), IAppReader
 {
     internal AppReader Init(AppState appState, ILog? parentLog)
@@ -68,9 +69,11 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
 
     public IContentType? GetContentTypeOptional(int contentTypeId)
         => _appState.TryGetContentType(contentTypeId);
-    public IContentType GetContentTypeRequired(int contentTypeId)
-        => _appState.TryGetContentType(contentTypeId)
-           ?? throw new ArgumentException($@"Can't find content type with name '{contentTypeId}'", nameof(contentTypeId));
+    
+    // 2026-06-25 2dm disabled, not in use any more; may reactivate some day if relevant
+    //public IContentType GetContentTypeRequired(int contentTypeId)
+    //    => _appState.TryGetContentType(contentTypeId)
+    //       ?? throw new ArgumentException($@"Can't find content type with name '{contentTypeId}'", nameof(contentTypeId));
 
     #endregion
 

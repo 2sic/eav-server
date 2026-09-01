@@ -1,0 +1,10 @@
+﻿namespace ToSic.Sys.HookUp;
+
+/// <summary>
+/// Package without generic type - not sure if we need / keep this.
+/// </summary>
+public interface IPackage
+{
+    ResultState Decision { get; init; }
+    List<Exception> Exceptions { get; init; }
+}

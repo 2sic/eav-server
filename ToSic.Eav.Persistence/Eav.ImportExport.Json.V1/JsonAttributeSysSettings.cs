@@ -1,8 +1,9 @@
 ﻿
 
-// ReSharper disable once CheckNamespace
 
-using ToSic.Eav.Data.Sys.ContentTypes;
+
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
+// ReSharper disable once CheckNamespace
 
 namespace ToSic.Eav.ImportExport.Json.V1;
 
@@ -42,7 +43,7 @@ public record JsonAttributeSysSettings
     // future
     //public bool ShareHidden { get; set; }
 
-    public static JsonAttributeSysSettings? FromSysSettings(ContentTypeAttributeSysSettings? sysSettings)
+    public static JsonAttributeSysSettings? FromSysSettings(ContentTypeFieldSysSettings? sysSettings)
         => sysSettings == null 
             ? null 
             : new JsonAttributeSysSettings
@@ -56,7 +57,7 @@ public record JsonAttributeSysSettings
             };
 
 
-    public ContentTypeAttributeSysSettings ToSysSettings() =>
+    public ContentTypeFieldSysSettings ToSysSettings() =>
         new()
         {
             Share = Share,

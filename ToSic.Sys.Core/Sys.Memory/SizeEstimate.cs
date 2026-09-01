@@ -17,14 +17,26 @@ public record SizeEstimate(
     bool IsError = false
 )
 {
+    /// <summary>
+    /// Total size, combining known and estimated sizes.
+    /// </summary>
     public int Total => Known + Estimated;
 
+    /// <summary>
+    /// Size indication icon, which can be a warning, unknown, or check mark depending on the precision.
+    /// </summary>
     public string Icon => IsError
         ? "⚠️"
         : IsUnknown || Known == 0
             ? "❔"
             : "✅";
 
+    /// <summary>
+    /// Add two size estimates together. The known and estimated sizes are added, and the unknown and error flags are combined with a logical OR.
+    /// </summary>
+    /// <param name="a">The first size estimate.</param>
+    /// <param name="b">The second size estimate.</param>
+    /// <returns>The combined size estimate.</returns>
     public static SizeEstimate operator +(SizeEstimate a, SizeEstimate b) => new(
         Known: a.Known + b.Known,
         Estimated: a.Estimated + b.Estimated,
@@ -33,6 +45,12 @@ public record SizeEstimate(
         IsError: a.IsError || b.IsError
     );
 
+    /// <summary>
+    /// Subtract one size estimate from another. The known and estimated sizes are subtracted, and the unknown and error flags are combined with a logical OR.
+    /// </summary>
+    /// <param name="a">The first size estimate.</param>
+    /// <param name="b">The second size estimate.</param>
+    /// <returns>The resulting size estimate after subtraction.</returns>
     public static SizeEstimate operator -(SizeEstimate a, SizeEstimate b) => new(
         Known: a.Known - b.Known,
         Estimated: a.Estimated - b.Estimated,

@@ -8,7 +8,7 @@ using ToSic.Eav.LookUp.TestHelpers;
 namespace ToSic.Eav.LookUp.Entity;
 
 [Startup(typeof(StartupTestsEavDataBuildWithTestData))]
-public class LookUpEngineTests(DataAssembler dataAssembler, ContentTypeAssembler typeAssembler, LookUpTestData lookUpTestData)
+public class LookUpEngineTests(DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit, LookUpTestData lookUpTestData)
 {
     #region Constants
 

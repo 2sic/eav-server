@@ -28,20 +28,18 @@ public record FeatureSet :  Aspect
 {
     public FeatureSet() { }
 
-    public FeatureSet(
-        string NameId,
-        int Priority,
-        string Name,
-        Guid Guid,
-        string Description,
-        bool FeatureLicense = false)
-        : base(NameId ?? Guid.ToString(), Guid, Name, Description ?? "")
-    {
-        this.Priority = Priority;
-        this.FeatureLicense = FeatureLicense;
-    }
-
-    public const string ConditionIsLicense = "license";
+    //public FeatureSet(
+    //    string NameId,
+    //    int Priority,
+    //    string Name,
+    //    Guid Guid,
+    //    string Description,
+    //    bool FeatureLicense = false)
+    //    : base(NameId ?? Guid.ToString(), Guid, Name, Description ?? "")
+    //{
+    //    this.Priority = Priority;
+    //    this.FeatureLicense = FeatureLicense;
+    //}
 
     public int Priority { get; init; }
 
@@ -51,5 +49,5 @@ public record FeatureSet :  Aspect
 
     public bool FeatureLicense { get; init; }
 
-    public Requirement Requirement => field ??= new(ConditionIsLicense, Guid.ToString());
+    public Requirement Requirement => field ??= new(FeatureConstants.ReqLicense, Guid.ToString());
 }

@@ -53,30 +53,31 @@ public class ImportApp(
         }
     }
 
-    public ImportResultDto Import(string zipPath, int zoneId, string renameApp, int? inheritAppId = null)
-    {
-        var l = Log.Fn<ImportResultDto>($"start import app from:{zipPath} with inheritAppId:{inheritAppId}");
-        var result = new ImportResultDto();
+    // 2026-07-03 2dm - very duplicate code, but seems to be unused
+    //public ImportResultDto Import(string zipPath, int zoneId, string renameApp, int? inheritAppId = null)
+    //{
+    //    var l = Log.Fn<ImportResultDto>($"start import app from:{zipPath} with inheritAppId:{inheritAppId}");
+    //    var result = new ImportResultDto();
 
-        if (!string.IsNullOrEmpty(renameApp))
-            l.A($"new app name: {renameApp}");
+    //    if (!string.IsNullOrEmpty(renameApp))
+    //        l.A($"new app name: {renameApp}");
 
-        try
-        {
-            zipImport.Init(zoneId, null, user.IsSystemAdmin);
-            var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
-            result.Success = zipImport.ImportZip(zipPath, temporaryDirectory, renameApp, inheritAppId);
-            result.Messages.AddRange(zipImport.Messages);
-            return l.ReturnAsOk(result);
-        }
-        catch (Exception ex)
-        {
-            envLogger.LogException(ex);
-            result.Success = false;
-            result.Messages.AddRange(zipImport.Messages);
-            return l.ReturnAsError(result);
-        }
-    }
+    //    try
+    //    {
+    //        zipImport.Init(zoneId, null, user.IsSystemAdmin);
+    //        var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
+    //        result.Success = zipImport.ImportZip(zipPath, temporaryDirectory, renameApp, inheritAppId);
+    //        result.Messages.AddRange(zipImport.Messages);
+    //        return l.ReturnAsOk(result);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        envLogger.LogException(ex);
+    //        result.Success = false;
+    //        result.Messages.AddRange(zipImport.Messages);
+    //        return l.ReturnAsError(result);
+    //    }
+    //}
 
     /// <summary>
     /// Get list of pending apps.
@@ -116,7 +117,7 @@ public class ImportApp(
             try
             {
                 var importer = xmlImpExpFiles.New().Init(null, false);
-                var importXmlReader = new ImportXmlReader(appXml, importer, Log);
+                var importXmlReader = new ImportXmlReader(appXml, importer, l);
                 var pendingAppDto = new PendingAppDto
                 {
                     ServerFolder = folderName,

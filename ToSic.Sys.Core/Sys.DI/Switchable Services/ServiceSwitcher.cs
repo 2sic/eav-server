@@ -20,7 +20,7 @@ public class ServiceSwitcher<T>(IEnumerable<T> allServices) : ServiceBase($"{Log
 
 
     public T Value => _preferredService.Get(FindServiceInSwitcher)!;
-    private readonly GetOnce<T> _preferredService = new();
+    private readonly LazyGet<T> _preferredService = new();
 
     private T FindServiceInSwitcher()
     {

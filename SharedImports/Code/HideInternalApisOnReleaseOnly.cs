@@ -12,8 +12,8 @@ global using ShowApiMode = System.ComponentModel.EditorBrowsableState;
 
 #else
 
-// Development situation, where we want to use our own attribute to prevent Visual Studio
-// from hiding APIs
+// Development situation, where we want to use our custom/fake attribute
+// This is to prevent Visual Studio from hiding APIs as we're developing
 
 global using ShowApiWhenReleased = FixEditorBrowsable.FakeEditorBrowsableAttribute;
 global using ShowApiMode = FixEditorBrowsable.FakeEditorBrowsableState;

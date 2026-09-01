@@ -18,7 +18,7 @@ namespace ToSic.Eav.Work.Tests.RecycleBin;
 [Startup(typeof(StartupTestWork))]
 public class WorkEntityRecycleBinTests(
     Generator<DbStorage, StorageOptions> dbDataGenerator,
-    GenWorkDb<WorkEntityRecycleBin> workEntityRecycleBin,
+    AppWorkQuick<WorkEntityRecycleBin> workEntityRecycleBin,
     ImportService importService,
     DataAssembler dataAssembler)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>

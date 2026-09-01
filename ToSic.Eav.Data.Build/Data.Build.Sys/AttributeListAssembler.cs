@@ -1,15 +1,20 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys;
+using ToSic.Sys.Capabilities.FeatureSet;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Build.Sys;
 
-public class AttributeListAssembler(AttributeAssembler attributeAssembler, ValueAssembler valueAssembler)
-    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld", connect: [attributeAssembler, valueAssembler])
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public class AttributeListAssembler(Generator<AttributeAssembler, DataAssemblerOptions> attrAss)
+    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld", connect: [attrAss])
 {
+    protected override DataAssemblerOptions GetDefaultOptions() => new();
+    
+    private AttributeAssembler Attributes => field ??= attrAss.New(MyOptions);
 
-    public static readonly IImmutableDictionary<string, IAttribute> EmptyList =
-        new Dictionary<string, IAttribute>().ToImmutableDictionary();
+    public static readonly IImmutableDictionary<string, IAttribute> EmptyList
+        = ImmutableDictionary<string, IAttribute>.Empty;
     
     public IReadOnlyDictionary<string, IAttribute> CreateListForType(IContentType contentType, ILookup<string, IValue>? preparedValues)
     {
@@ -24,7 +29,7 @@ public class AttributeListAssembler(AttributeAssembler attributeAssembler, Value
                     var values = preparedValues?.Contains(a.Name) == true
                         ? preparedValues[a.Name].ToListOpt()
                         : null;
-                    var entityAttribute = attributeAssembler.Create(a.Name, a.Type, values ?? []);
+                    var entityAttribute = Attributes.Create(a.Name, a.Type, values ?? []);
                     return entityAttribute;
                 }, InvariantCultureIgnoreCase);
         return attributes;
@@ -70,11 +75,11 @@ public class AttributeListAssembler(AttributeAssembler attributeAssembler, Value
                 var valuesModelList = new List<IValue>();
                 if (pair.Value != null)
                 {
-                    var valueModel = valueAssembler.Create(attributeType, pair.Value, languages);
+                    var valueModel = Attributes.Values.Create(attributeType, pair.Value, languages);
                     valuesModelList.Add(valueModel);
                 }
 
-                var attributeModel = attributeAssembler.Create(pair.Key, attributeType, valuesModelList);
+                var attributeModel = Attributes.Create(pair.Key, attributeType, valuesModelList);
 
                 return attributeModel;
             },
@@ -106,5 +111,4 @@ public class AttributeListAssembler(AttributeAssembler attributeAssembler, Value
     }
 
     #endregion
-
 }

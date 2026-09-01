@@ -3,7 +3,7 @@
 /// <summary>
 /// Extensions for <see cref="ILogCall"/> objects which don't need to return a value.
 /// </summary>
-[PublicApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 // ReSharper disable once InconsistentNaming
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static partial class ILogCallExtensions

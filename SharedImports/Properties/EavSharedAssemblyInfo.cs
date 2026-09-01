@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using ToSic.Sys.Documentation;
 using static ToSic.Sys.Assembly.SharedAssemblyInfo;
 
 // Use the globally defined assembly version information in all projects
@@ -21,16 +22,18 @@ namespace ToSic.Sys.Assembly;
 /// <summary>
 /// Contains information for all assemblies to use
 /// </summary>
+[PrivateApi]
+[System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
 public static class SharedAssemblyInfo
 {
     // Important: These must be constants!
     // This is because the version etc. may be compiled into Oqtane DLLs
     // which will run in the browser, and shouldn't have to include these DLLs to work
     // If it's a constant, the value will be added to the compiled code, so no real dependency will exist at runtime
-    public const string AssemblyVersion = "21.07.00";
+    public const string AssemblyVersion = "22.00.00";
     public const string Company = "2sic internet solutions GmbH, Switzerland";
     public const string Product = "2sic Sys/Lib Core Parts";
-    public const string Copyright = "Copyright AGPL © 2sic 2025";
+    public const string Copyright = "Copyright AGPL © 2sic 2026";
 }
 
 

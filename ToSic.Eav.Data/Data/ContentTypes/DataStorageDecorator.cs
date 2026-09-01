@@ -2,6 +2,8 @@
 
 namespace ToSic.Eav.Data.ContentTypes;
 
+// TODO: CREATE INTERFACE, THEN MAKE PRIVATE
+
 public record DataStorageDecorator: ModelFromEntity
 {
     public string StoreType => GetThis("");

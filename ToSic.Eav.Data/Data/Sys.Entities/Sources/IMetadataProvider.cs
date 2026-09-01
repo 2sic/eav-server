@@ -9,6 +9,7 @@ namespace ToSic.Eav.Data.Sys.Entities.Sources;
 /// 2. from an app (the usual case)
 /// 3. from a deferred app source (like when the app isn't known yet during init, or it's from another app)
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IMetadataProvider : ICacheExpiring, ICacheDependent
 {
     /// <summary>

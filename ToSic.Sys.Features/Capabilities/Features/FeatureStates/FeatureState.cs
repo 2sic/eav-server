@@ -1,11 +1,9 @@
 ﻿using ToSic.Sys.Capabilities.Aspects;
-using ToSic.Sys.Capabilities.SysFeatures;
-using ToSic.Sys.Data;
 
 namespace ToSic.Sys.Capabilities.Features;
 
 /// <summary>
-/// Information about an enabled feature
+/// The state of a feature - both enabled/disabled and its internal definition + any custom configuration.
 /// </summary>
 [PrivateApi("no good reason to publish this")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -21,21 +19,10 @@ public record FeatureState(
     Dictionary<string, object>? Configuration)
     : AspectState<Feature>(Feature, Enabled), IHasIdentityNameId
 {
-    public static FeatureState SysFeatureState(SysFeature definition, bool enabled)
-        => new(definition, 
-            LicenseConstants.UnlimitedExpiry,
-            enabled,
-            "System Feature",
-            "System Feature, managed by the system; can't be changed interactively.",
-            true,
-            true,
-            null,
-            null);
-
     public string NameId => Aspect.NameId;
 
     public FeatureSet.FeatureSet? License => _license.Get(() => Aspect.LicenseRulesList?.FirstOrDefault()?.FeatureSet);
-    private readonly GetOnce<FeatureSet.FeatureSet?> _license = new();
+    private readonly LazyGet<FeatureSet.FeatureSet?> _license = new();
 
     /// <summary>
     /// Feature is enabled and hasn't expired yet.

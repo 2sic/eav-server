@@ -377,6 +377,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         if (IsDeletedOrInvalid(file?.RelativePath))
             return null;
 
+        file!.RelativePath = file.RelativePath!.ForwardSlash();
         ReferencedFiles.Add(file!);
 
         return new(XmlConstants.FileNode,
@@ -389,7 +390,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
     private XElement? GetFolderXElement(int folderId)
     {
-        var path = ResolveFolderId(folderId);
+        var path = ResolveFolderId(folderId).ForwardSlash();
 
         if (IsDeletedOrInvalid(path))
             return null;

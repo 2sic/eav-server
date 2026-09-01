@@ -2,7 +2,7 @@
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Sys.Ancestors;
-using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.ImportExport.Sys.XmlExport;
 using ToSic.Eav.Persistence.Sys.Logging;
@@ -21,53 +21,88 @@ public class ZipExport(
     IGlobalConfiguration globalConfiguration,
     ISysFeaturesService features
     )
-    : ServiceBase(EavLogs.Eav + ".ZipExp",
+    : ServiceWithSetup<ZipExport.Options>(EavLogs.Eav + ".ZipExp",
         connect: [appReaders, xmlExporter, globalConfiguration, fileManagerGenerator, features])
 {
-    private int _appId;
-    private int _zoneId;
+    public record Options : IAppIdentity
+    {
+        public int ZoneId { get; init; }
+        public int AppId { get; init; }
+        public string AppFolder { get; init; } = "";
+        public string PhysicalAppPath { get; init; } = "";
+        public string PhysicalPathGlobal { get; init; } = "";
+    }
+
+    // 2026-08-07 2dm - believe that options are always required
+    //protected override Options GetDefaultOptions() => new();
+
+
     private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
     private const string SourceControlDataFolder = FolderConstants.DataFolderProtected;
     private const string SourceControlDataFile = FolderConstants.AppDataFile;
-    private readonly string _blankGuid = Guid.Empty.ToString();
 
-    public AppFileManager AppFileManager = null!;
-    private string _physicalAppPath = null!;
-    private string _appFolder = null!;
+    private AppFileManager AppFileManager => field
+        ??= fileManagerGenerator.New().SetFolder(MyOptions.AppId, MyOptions.PhysicalAppPath);
 
-    public AppFileManager AppFileManagerGlobal = null!;
-    private string _physicalPathGlobal = null!;
+    private AppFileManager AppFileManagerGlobal => field
+        ??= fileManagerGenerator.New().SetFolder(MyOptions.AppId, MyOptions.PhysicalPathGlobal);
 
-    #region DI Constructor
-
-    public ZipExport Init(int zoneId, int appId, string appFolder, string physicalAppPath, string physicalPathGlobal)
+    public int CountFiles(bool withGlobal, Func<AppFileManager, IEnumerable<string>> countFn)
     {
-        _appId = appId;
-        _zoneId = zoneId;
-        _appFolder = appFolder;
-        _physicalAppPath = physicalAppPath;
-        _physicalPathGlobal = physicalPathGlobal;
-
-        AppFileManager = fileManagerGenerator.New().SetFolder(appId, _physicalAppPath);
-        AppFileManagerGlobal = fileManagerGenerator.New().SetFolder(appId, physicalPathGlobal);
-        
-        var appIdentity = new AppIdentity(_zoneId, _appId);
-        _appReader = appReaders.Get(appIdentity);
-        return this;
+        return countFn(AppFileManager).Count() + (withGlobal ? countFn(AppFileManagerGlobal).Count() : 0);
     }
 
-    private IAppReader _appReader = null!;
-    #endregion
+    public PathCasePreflightResult PathCasePreflight(
+        AppExportSpecs specs,
+        IEnumerable<PathCaseItem> appReferences,
+        IEnumerable<PathCaseItem> sharedAppReferences)
+    {
+        var l = Log.Fn<PathCasePreflightResult>(specs.Dump());
+        var result = PathCasePreflight(GenerateExportXml(specs), appReferences, sharedAppReferences);
+        return l.Return(result, $"{result.Issues.Count} issues");
+    }
+
+    private PathCasePreflightResult PathCasePreflight(
+        XmlExporter xmlExport,
+        IEnumerable<PathCaseItem> appReferences,
+        IEnumerable<PathCaseItem> sharedAppReferences)
+    {
+        var l = Log.Fn<PathCasePreflightResult>();
+        var validator = new PathCasePreflightValidator(l);
+        var results = new List<PathCasePreflightResult>();
+
+        results.Add(validator.Validate(
+            PathCasePreflightValidator.ScopeAppFiles,
+            appReferences,
+            ActualAppPathsOrEmpty(AppFileManager, MyOptions.PhysicalAppPath)));
+
+        results.Add(validator.Validate(
+            PathCasePreflightValidator.ScopeSharedAppFiles,
+            sharedAppReferences,
+            ActualAppPathsOrEmpty(AppFileManagerGlobal, MyOptions.PhysicalPathGlobal)));
+
+        var referencedFiles = xmlExport.ReferencedFiles
+            .Where(file => file.RelativePath.HasValue())
+            .ToList();
+        results.Add(validator.Validate(
+            PathCasePreflightValidator.ScopeDatabaseAssets,
+            referencedFiles.Select(file => new PathCaseItem(file.RelativePath!)),
+            referencedFiles.SelectMany(ActualReferencedFiles)));
+
+        var result = new PathCasePreflightResult(results.SelectMany(item => item.Issues).ToList());
+        result = validator.LogResult(result);
+        return l.Return(result, $"{result.Issues.Count} issues");
+    }
 
     public void ExportForSourceControl(AppExportSpecs specs)
     {
         var l = Log.Fn(specs.Dump());
-        var appDataPath = Path.Combine(_physicalAppPath, SourceControlDataFolder);
+        var appDataPath = Path.Combine(MyOptions.PhysicalAppPath, SourceControlDataFolder);
         l.A($"Target Path: {appDataPath}");
 
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
-        ZipImport.MigrateOldAppDataFile(_physicalAppPath);
+        ZipImport.MigrateOldAppDataFile(MyOptions.PhysicalAppPath);
 
         // create App_Data unless exists
         Directory.CreateDirectory(appDataPath);
@@ -81,7 +116,7 @@ public class ZipExport(
             var appDataDirectory = new DirectoryInfo(appDataPath);
 
             // 1. Copy app global templates folder for version control
-            if (Directory.Exists(_physicalPathGlobal))
+            if (Directory.Exists(MyOptions.PhysicalPathGlobal))
             {
                 // Sometimes delete is locked by external process
                 try
@@ -131,14 +166,30 @@ public class ZipExport(
         l.Done();
     }
 
-    public MemoryStream ExportApp(AppExportSpecs specs)
+    public MemoryStream ExportApp(
+        AppExportSpecs specs,
+        IEnumerable<PathCaseItem> appReferences,
+        IEnumerable<PathCaseItem> sharedAppReferences)
     {
+        var l = Log.Fn<MemoryStream>(specs.Dump());
+
         // generate the XML
         var xmlExport = GenerateExportXml(specs);
 
+        // This audit is informational and must never prevent an export.
+        try
+        {
+            _ = PathCasePreflight(xmlExport, appReferences, sharedAppReferences);
+        }
+        catch (Exception e)
+        {
+            l.W("Path case preflight failed; export will continue");
+            l.Ex(e);
+        }
+
         // migrate old .data to App_Data also here
         // to ensure that older export is overwritten
-        ZipImport.MigrateOldAppDataFile(_physicalAppPath);
+        ZipImport.MigrateOldAppDataFile(MyOptions.PhysicalAppPath);
 
         #region Copy needed files to temporary directory
 
@@ -152,20 +203,20 @@ public class ZipExport(
         AddInstructionsToPackageFolder(temporaryDirectoryPath);
 
         var tempDirectory = new DirectoryInfo(temporaryDirectoryPath);
-        var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + _appFolder + "/");
+        var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + MyOptions.AppFolder + "/");
 
         var sexyDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForAppStuff);
         var globalSexyDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForGlobalAppStuff);
         var siteFilesDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForPortalFiles);
 
         // Copy app folder
-        if (Directory.Exists(_physicalAppPath))
+        if (Directory.Exists(MyOptions.PhysicalAppPath))
             AppFileManager.CopyAllFiles(sexyDirectory.FullName, false, messages);
 
         // Copy global app folder only for ParentApp
         var parentAppGuid = xmlExport.AppReader.GetParentCache()?.NameId;
         if (parentAppGuid == null || AppStateExtensions.AppGuidIsAPreset(parentAppGuid))
-            if (Directory.Exists(_physicalPathGlobal))
+            if (Directory.Exists(MyOptions.PhysicalPathGlobal))
                 AppFileManagerGlobal.CopyAllFiles(globalSexyDirectory.FullName, false, messages);
 
         // Copy SiteFiles
@@ -181,11 +232,11 @@ public class ZipExport(
         File.WriteAllText(Path.Combine(tmpAppDataProtectedFolder, FolderConstants.AppDataFile), xml);
 
         // Zip directory and return as stream
-        var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName + "\\");
+        var stream = new Zipping(Log).ZipDirectoryIntoStream(tempDirectory.FullName);
 
         Zipping.TryToDeleteDirectory(temporaryDirectoryPath, Log);
 
-        return stream;
+        return l.Return(stream, $"{stream.Length} bytes");
     }
 
     private void CopyPortalFiles(XmlExporter xmlExport, DirectoryInfo siteFilesDirectory, bool assetsAdam, bool assetsSite)
@@ -197,14 +248,15 @@ public class ZipExport(
         foreach (var file in xmlExport.ReferencedFiles)
         {
             var relPath = file.RelativePath ?? throw new NullReferenceException("File relative path is null, this should not happen in export.");
-            var portalFilePath = Path.Combine(siteFilesDirectory.FullName, Path.GetDirectoryName(relPath)!);
+            var physicalRelativePath = relPath.ToSystemPath();
+            var portalFilePath = Path.Combine(siteFilesDirectory.FullName, Path.GetDirectoryName(physicalRelativePath) ?? string.Empty);
 
             Directory.CreateDirectory(portalFilePath);
 
             if (!File.Exists(file.Path))
                 continue;
 
-            var fullPath = Path.Combine(siteFilesDirectory.FullName, relPath);
+            var fullPath = Path.Combine(siteFilesDirectory.FullName, physicalRelativePath);
             try
             {
                 var pathStartWithAdam = relPath.StartsWith("adam");
@@ -219,12 +271,39 @@ public class ZipExport(
         }
     }
 
+    private static IEnumerable<PathCaseItem> ActualAppPathsOrEmpty(AppFileManager fileManager, string root)
+        => !Directory.Exists(root)
+            ? []
+            : fileManager.GetAllTransferableFiles()
+                .Select(path => new PathCaseItem(RelativeToRoot(root, path)))
+                .Concat(fileManager.GetAllTransferableFolders()
+                    .Select(path => new PathCaseItem(RelativeToRoot(root, path), IsFolder: true)));
+
+    private static IEnumerable<PathCaseItem> ActualReferencedFiles(TenantFileItem file)
+    {
+        if (file.RelativePath == null)
+            return [];
+
+        var relativeParts = file.RelativePath.ForwardSlash()
+            .Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+        return PathCasePreflightValidator.FindActualPaths(file.Path)
+            .Select(actualPath => actualPath.ForwardSlash().Split(['/'], StringSplitOptions.RemoveEmptyEntries))
+            .Where(actualParts => actualParts.Length >= relativeParts.Length)
+            .Select(actualParts => new PathCaseItem(
+                string.Join("/", actualParts.Skip(actualParts.Length - relativeParts.Length))));
+    }
+
+    private static string RelativeToRoot(string root, string path)
+        => path.Substring(root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Length)
+            .TrimPrefixSlash()
+            .ForwardSlash();
+
 
     private XmlExporter GenerateExportXml(AppExportSpecs specs)
     {
-            // Get Export XML
-        var appIdentity = new AppIdentity(_zoneId, _appId);
-        var contentTypes = _appReader.ContentTypes.OfScope(includeAttributeTypes: true);
+        var appReader = appReaders.Get(MyOptions);
+        // Get Export XML
+        var contentTypes = appReader.ContentTypes.OfScope(includeAttributeTypes: true);
         contentTypes = contentTypes
             .Where(a => !((a as IContentTypeShared)?.AlwaysShareConfiguration ?? false));
 
@@ -246,7 +325,7 @@ public class ZipExport(
             //    AppIdentityOrReader = appIdentity,
             //    ShowDrafts = true,
             //})
-            _appReader
+            appReader
             .List
             .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute)
             .ToList();
@@ -266,7 +345,7 @@ public class ZipExport(
             .Select(e => e.EntityId.ToString())
             .ToArray();
 
-        var xmlExport = xmlExporter.Init(specs, _appReader, true, contentTypeNames, entityIds);
+        var xmlExport = xmlExporter.Init(specs, appReader, true, contentTypeNames, entityIds);
 
         #region reset App Guid if necessary
 
@@ -276,7 +355,7 @@ public class ZipExport(
         // Reset the AppGuid in the xml export, so it can be used for a new app which will also have a new guid on import
         var root = xmlExport.ExportXDocument; //.Root;
         var appGuid = root.XPathSelectElement("/SexyContent/Header/App")!.Attribute(XmlConstants.Guid)!;
-        appGuid.Value = _blankGuid;
+        appGuid.Value = Guid.Empty.ToString();
         return xmlExport;
         #endregion
     }

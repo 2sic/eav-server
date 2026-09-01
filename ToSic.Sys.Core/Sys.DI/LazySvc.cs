@@ -23,45 +23,9 @@ public class LazySvc<TService>(IServiceProvider sp)
     : ILazyLike<TService>, IHasLog, ILazyInitLog
     where TService : class
 {
-    /// <summary>
-    /// Set the init-command as needed
-    /// </summary>
-    /// <param name="newInitCall"></param>
-    public LazySvc<TService> SetInit(Action<TService> newInitCall)
-    {
-#if DEBUG
-        // Warn if we're accidentally replacing init-call, but only do this on debug
-        // In most cases it has no consequences, but we should write code that avoids this
-        if (_initCall != null)
-            throw new($"You tried to call {nameof(SetInit)} twice. This should never happen");
-#endif
-        _initCall = newInitCall;
-        return this;
-    }
-    private Action<TService>? _initCall;
+    #region Logging
 
-    public TService Value => _valueGet.Get(() =>
-    {
-        var value = sp.Build<TService>(Log);
-        _initCall?.Invoke(value);
-        return value;
-    })!;
-    private readonly GetOnce<TService> _valueGet = new();
-
-    public bool IsValueCreated => _valueGet.IsValueCreated;
-
-    /// <summary>
-    /// EXPERIMENTAL - replace a service with an already prepared one, to bypass the default factory in edge cases
-    /// </summary>
-    /// <param name="replacement"></param>
-    public void Inject(TService replacement)
-        => _valueGet.Reset(replacement);
-
-    /// <summary>
-    /// Initializer to attach the log to the generator.
-    /// The log is later given to generated objects.
-    /// </summary>
-    /// <param name="parentLog"></param>
+    /// <inheritdoc/>
     void ILazyInitLog.SetLog(ILog? parentLog)
         => Log = parentLog;
 
@@ -71,4 +35,44 @@ public class LazySvc<TService>(IServiceProvider sp)
     /// </summary>
     public ILog? Log { get; private set; }
 
+    #endregion
+
+    
+    #region Get / New / Value
+
+    public TService Value => _valueGet.Get(() =>
+    {
+        var value = sp.Build<TService>(Log);
+        _initCall?.Invoke(value);
+        return value;
+    })!;
+    private readonly LazyGetAndReset<TService> _valueGet = new();
+
+    public bool IsValueCreated => _valueGet.IsValueCreated;
+
+    #endregion
+
+
+    #region SetInit
+
+    /// <summary>
+    /// Set the init-command as needed
+    /// </summary>
+    /// <param name="newInitCall"></param>
+    /// <param name="allowReplace">Allow replacing the set-init</param>
+    public LazySvc<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
+    {
+        _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
+        return this;
+    }
+    private Action<TService>? _initCall;
+
+    #endregion
+
+    /// <summary>
+    /// EXPERIMENTAL - replace a service with an already prepared one, to bypass the default factory in edge cases
+    /// </summary>
+    /// <param name="replacement"></param>
+    public void Inject(TService replacement)
+        => _valueGet.Set(replacement);
 }

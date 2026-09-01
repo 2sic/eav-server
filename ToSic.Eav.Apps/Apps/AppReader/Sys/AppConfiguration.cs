@@ -7,8 +7,10 @@ namespace ToSic.Eav.Apps.AppReader.Sys;
 /// </summary>
 [PrivateApi("Note: was public till 16.08")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal record AppConfiguration : ModelFromEntityBasic, IAppConfiguration
+internal record AppConfiguration : ModelFromEntity, IAppConfiguration
 {
+    public int Id => Entity?.EntityId ?? 0;
+    
     public Version Version => GetVersionOrDefault(nameof(Version));
 
     public string Name => Get(AppConfigurationFields.FieldName, EavConstants.NullNameId);

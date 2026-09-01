@@ -1,23 +1,24 @@
-﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Build.Sys;
-using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
-using ToSic.Eav.Data.Sys.EntityPair;
 
 namespace ToSic.Eav.Data.Build;
 
 [PrivateApi("hide implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class DataFactory(
+internal partial class DataFactory(
     Generator<DataAssembler, DataAssemblerOptions> dataAssembler,
-    LazySvc<ContentTypeTypeAssembler> typeAssembler,
-
-    Generator<IDataFactory, DataFactoryOptions> selfGenerator,
-    LazySvc<CodeContentTypesManager> ctFactoryLazy)
-    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, typeAssembler, selfGenerator, ctFactoryLazy]), IDataFactory
+    Generator<DataFactoryContentTypeHelper, DataFactoryOptions> contentTypeHelper,
+    Generator<IDataFactory, DataFactoryOptions> selfGenerator
+)
+    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, contentTypeHelper, selfGenerator]), IDataFactory
 {
+    /// <summary>
+    /// The data factory will often need options, but there could be cases (WIP) where it's called without...?
+    /// </summary>
+    /// <returns></returns>
+    [PrivateApi]
+    protected override DataFactoryOptions GetDefaultOptions() => new();
 
     #region Properties to configure Builder / Defaults
 
@@ -29,17 +30,21 @@ internal class DataFactory(
     }
     private int? _idCounter;
 
+    /// <summary>
+    /// Fixed date time so all data which receives a default date will have the same value.
+    /// </summary>
+    private DateTime FixedDateTime { get; } = DateTime.Now;
 
-    private DateTime Created { get; } = DateTime.Now;
-    private DateTime Modified { get; } = DateTime.Now;
+    [field: AllowNull, MaybeNull]
+    private DataFactoryContentTypeHelper ContentTypeHelper => field
+        ??= contentTypeHelper.New(MyOptions);
+
+    private string PreferredTitleFieldName => field ??= ContentTypeHelper.PreferredTitleFieldName;
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
-    public IContentType ContentType => field
-        ??= MyOptions.Type != null
-            ? ctFactoryLazy.Value.Get(MyOptions.Type)
-            : typeAssembler.Value.Transient(MyOptions.TypeName ?? DataConstants.DataFactoryDefaultTypeName);
-
+    public IContentType ContentType => field ??= ContentTypeHelper.PreferredContentType;
+    
     /// <summary>
     /// The DataBuilder used for this DataFactory.
     /// </summary>
@@ -48,9 +53,11 @@ internal class DataFactory(
     /// So once it's accessed, options cannot be updated anymore.
     /// </remarks>
     [field: AllowNull, MaybeNull]
-    private DataAssembler DataAssembler => field ??= dataAssembler.New(new() {
-        AllowUnknownValueTypes = MyOptions.AllowUnknownValueTypes
-    });
+    private DataAssembler EntityAssemblyKit => field
+        ??= dataAssembler.New(new()
+        {
+            AllowUnknownValueTypes = MyOptions.AllowUnknownValueTypes
+        });
 
 
 
@@ -64,87 +71,11 @@ internal class DataFactory(
 
     [field: AllowNull, MaybeNull]
     private RawRelationshipsConvertHelper RelsConvertHelper => field
-        ??= new(DataAssembler, Log);
+        ??= new(EntityAssemblyKit.Attribute, Log);
 
     #endregion
 
-    #region Create IRawEntity / WrapUp
-
-    /// <inheritdoc />
-    public IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : IRawEntity
-        => WrapUp(Prepare(list));
-
-    /// <inheritdoc />
-    public IImmutableList<IEntity> WrapUp(IEnumerable<ICanBeEntity> rawList)
-    {
-        var l = Log.Fn<IImmutableList<IEntity>>();
-
-        // Pre-process relationship keys, so they are added to the lookup
-        var list = rawList.ToListOpt();
-        if (Relationships is LazyLookup<object, IEntity> lazyRelationships)
-            RelsConvertHelper.AddRelationshipsToLookup(list, lazyRelationships, MyOptions.RawConvertOptions);
-
-        // Return entities as Immutable list
-        return l.Return(list.Select(set => set.Entity).ToImmutableOpt());
-    }
-
-    #endregion
-
-    #region Prepare One
-
-    /// <inheritdoc />
-    public EntityPair<T> Prepare<T>(T rawEntity) where T : IRawEntity
-        => new(Create(rawEntity), rawEntity);
-
-    #endregion
-
-
-    #region Prepare Many
-
-    /// <inheritdoc />
-    public IList<EntityPair<TNewEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list) where TNewEntity : IRawEntity
-    {
-        var all = list
-            .Select(raw =>
-            {
-                try
-                {
-                    var newEntity = Create(raw);
-                    return new EntityPair<TNewEntity>(newEntity, raw);
-                }
-                catch
-                {
-                    // Add null to filter out later and report the indexes
-                    return null;
-                }
-
-            })
-            .ToListOpt();
-
-        // if we have any nulls, take them out and remember the indexes
-        if (all.Any(p => p == null))
-        {
-            var indexes = all
-                .Select((pair, index) => (pair, index))
-                .Where(p => p.pair == null)
-                .Select(p => p.index)
-                .ToListOpt();
-            var msg = string.Join(",", indexes);
-            Log.A($"Error preparing: {indexes.Count} items failed to create, indexes: {msg}");
-            return all
-                .Where(p => p != null)
-                .Cast<EntityPair<TNewEntity>>()
-                .ToListOpt();
-        }
-
-        return all
-            .Cast<EntityPair<TNewEntity>>()
-            .ToListOpt();
-    }
-
-    #endregion
-
-    #region Create basic Dictionary
+    #region Create basic using values dictionary
 
     /// <inheritdoc />
     public IEntity Create(
@@ -156,10 +87,6 @@ internal class DataFactory(
         // experimental
         EntityPartsLazy? partsBuilder = default)
     {
-        // pre-process RawRelationships
-        values ??= new Dictionary<string, object?>();
-        var valuesWithRelationships = RelsConvertHelper.RelationshipsToAttributes(values, Relationships);
-
         // ID can be created in 3 ways
         // 1. An ID was specified, use that
         // 2. If the ID was 0 / not specified, and the options say to auto-count...
@@ -169,44 +96,34 @@ internal class DataFactory(
             ? (IdCounter < 0 ? IdCounter-- : IdCounter++) // negative means we're counting down
             : id;
 
-        var attributes = DataAssembler.AttributeList.Finalize(valuesWithRelationships);
-        var ent = DataAssembler.Entity.Create(
+        // Extra safety check to ensure we don't run into null-issues.
+        // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+        values ??= new Dictionary<string, object?>();
+        
+        // Process possible RawRelationships
+        var valuesWithRelationships = RelsConvertHelper.RelationshipsToAttributes(values, Relationships);
+        var attributes = EntityAssemblyKit.AttributeList.Finalize(valuesWithRelationships);
+
+        // Create final entity with all the data
+        var ent = EntityAssemblyKit.Entity.Create(
             appId: MyOptions.AppId,
             entityId: entityId,
             contentType: ContentType,
             attributes: attributes,
-            titleField: MyOptions.TitleField,
+            titleField: PreferredTitleFieldName,
             guid: guid,
-            created: created == default ? Created : created,
-            modified: modified == default ? Modified : modified,
+            created: created == default ? FixedDateTime : created,
+            modified: modified == default ? FixedDateTime : modified,
             partsBuilder: partsBuilder
         );
         return ent;
     }
 
 
-    /// <summary>
-    /// Internal create from raw
-    /// </summary>
-    /// <param name="rawEntity"></param>
-    /// <returns></returns>
-    public IEntity Create(IRawEntity rawEntity)
-    {
-        var partsBuilder = MyOptions.WithMetadata && rawEntity is RawEntity { Metadata: not null } typed
-            ? new EntityPartsLazy(null, (_, _) => typed.Metadata)
-            : null;
-        return Create(
-            rawEntity.Attributes(MyOptions.RawConvertOptions),
-            id: rawEntity.Id,
-            guid: rawEntity.Guid,
-            created: rawEntity.Created,
-            modified: rawEntity.Modified,
-            partsBuilder: partsBuilder
-        );
-    }
-
     #endregion
 
+    // #TODO: @2dm #RawEntity - #SpawnNewBadPattern
     public IDataFactory SpawnNew(DataFactoryOptions options)
         => selfGenerator.New(options);
+
 }

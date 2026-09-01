@@ -17,12 +17,12 @@ namespace ToSic.Eav.Apps.Sys.AppJson;
 public class AppJsonConfigurationService(
     LazySvc<IGlobalConfiguration> globalConfiguration,
     IAppReaderFactory appReaders,
-    IRuntimeKeyService runtimeKeyService,
+    IAppCacheKeyService appCacheKeyService,
     LazySvc<IAppsCatalog> appsCatalog,
     IAppPathsMicroSvc appPathsFactory,
     MemoryCacheService memoryCacheService
 )
-    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, appReaders, runtimeKeyService, appsCatalog, appPathsFactory, memoryCacheService]),
+    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, appReaders, appCacheKeyService, appsCatalog, appPathsFactory, memoryCacheService]),
         IAppJsonConfigurationService
 {
 
@@ -74,7 +74,7 @@ public class AppJsonConfigurationService(
     // Build a tenant-safe cache key when possible; otherwise disable caching to avoid cross-tenant bleed.
     private bool TryGetCacheKey(int appId, bool useShared, out string cacheKey)
     {
-        var runtimeKey = TryBuildRuntimeKey(appId);
+        var runtimeKey = TryBuildAppCacheKey(appId);
         if (runtimeKey.HasValue())
         {
             cacheKey = $"Eav-{nameof(AppJsonConfigurationService)}:app:{runtimeKey}:{nameof(useShared)}:{useShared}";
@@ -86,13 +86,13 @@ public class AppJsonConfigurationService(
         return false;
     }
 
-    private string? TryBuildRuntimeKey(int appId)
+    private string? TryBuildAppCacheKey(int appId)
     {
         try
         {
             // Avoid DB-backed app readers when just building a cache key.
             var identity = appsCatalog.Value.AppIdentity(appId);
-            return runtimeKeyService.AppRuntimeKey(identity);
+            return appCacheKeyService.AppCacheKey(identity);
         }
         catch
         {
@@ -175,13 +175,13 @@ public class AppJsonConfigurationService(
         try
         {
             var excludeList = appJson.Export.Exclude
-                .Select(e => e.ToString().Trim().Backslash())
+                .Select(e => e.ToString().Trim().ForwardSlash())
                 .Where(e => !string.IsNullOrEmpty(e)
                             && !e.StartsWith("#")) // ignore empty lines, or comment lines that start with #
                 .Select(e =>
-                    e.StartsWith(@"\")
-                        ? Path.Combine(sourceFolder, e.Substring(1))
-                        : e) // handle case with starting slash
+                    e.StartsWith("/")
+                        ? Path.Combine(sourceFolder, e.TrimStart('/').ToSystemPath())
+                        : e.ToSystemPath()) // handle case with starting slash
                 .Select(e => e.ToLowerInvariant())
                 .ToListOpt();
             return l.Return(excludeList, $"Found: {excludeList.Count}");

@@ -9,7 +9,10 @@ namespace ToSic.Sys.Caching.Monitors;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
 {
-    private readonly Hashtable _dirMonitors = Hashtable.Synchronized(new(StringComparer.OrdinalIgnoreCase));
+    private static readonly StringComparer FileSystemPathComparer =
+        Path.DirectorySeparatorChar == '\\' ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+
+    private readonly Hashtable _dirMonitors = Hashtable.Synchronized(new(FileSystemPathComparer));
     private readonly object _lock = new();
 
     public void StartMonitoring(string dirPath, OnChangedCallback onChangedCallback, out object state, out DateTimeOffset lastWriteTime, out long fileSize)
@@ -64,7 +67,7 @@ public class FolderChangeNotificationSystem : IFileChangeNotificationSystem
     }
 
     private static string GetKey(string dirPath, bool includeSubdirectories) 
-        => (includeSubdirectories ? $"{dirPath}*" : dirPath).Backslash();
+        => (includeSubdirectories ? $"{dirPath}*" : dirPath).ToSystemPath();
 
     // this is very slow in case of many subfolders and files, so we will not use it.
     //private static long GetDirectorySize(DirectoryInfo directoryInfo) => 

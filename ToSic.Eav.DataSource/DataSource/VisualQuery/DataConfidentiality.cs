@@ -38,10 +38,10 @@ public enum DataConfidentiality
     /// </summary>
     Confidential,
 
-    /// <summary>
-    /// Secret data; highly sensitive and restricted.
-    /// </summary>
-    Secret,
+    ///// <summary>
+    ///// Secret data; highly sensitive and restricted.
+    ///// </summary>
+    //Secret,
 
     /// <summary>
     /// System data; accessible only to system processes and host users.

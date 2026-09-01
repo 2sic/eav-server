@@ -22,7 +22,7 @@ public class WorkEntityRecycle(
     LazySvc<JsonSerializer> jsonSerializer,
     LazySvc<Compressor> compressor,
     ISysFeaturesService featuresService)
-    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService])
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService])
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
@@ -39,10 +39,10 @@ public class WorkEntityRecycle(
         if (transactionId <= 0)
             throw new ArgumentOutOfRangeException(nameof(transactionId));
 
-        var db = AppWorkCtx.DbStorage.SqlDb;
+        var db = MyOptions.DbStorage.SqlDb;
         EnsureTransactionExists(db, transactionId);
 
-        var appId = AppWorkCtx.AppId;
+        var appId = MyOptions.AppId;
         var softDeletedEntities = LoadSoftDeletedEntities(db, appId, transactionId);
         UndeleteSoftDeletedEntities(softDeletedEntities);
 
@@ -59,7 +59,7 @@ public class WorkEntityRecycle(
             RestoreParentRelationshipsFromHistory(appId, historyJsonEntities, restoredEntitiesByGuid);
 
         db.SaveChanges();
-        appCachePurger.Purge(AppWorkCtx);
+        appCachePurger.Purge(MyOptions.PureIdentity());
 
         l.Done();
     }
@@ -128,8 +128,8 @@ public class WorkEntityRecycle(
         if (historySnapshots.Count == 0)
             return [];
 
-        var serializer = jsonSerializer.Value.SetApp(AppWorkCtx.AppReader);
-        var importer = import.Value.Init(AppWorkCtx.ZoneId, AppWorkCtx.AppId, skipExistingAttributes: false, preserveUntouchedAttributes: false);
+        var serializer = jsonSerializer.Value.SetApp(MyOptions.AppReader);
+        var importer = import.Value.Init(MyOptions.ZoneId, MyOptions.AppId, skipExistingAttributes: false, preserveUntouchedAttributes: false);
 
         var jsonEntities = new List<JsonEntity>();
         var entitiesFromHistory = new List<Entity>();
@@ -271,7 +271,7 @@ public class WorkEntityRecycle(
         if (entitiesWithParents.Count == 0)
             return;
 
-        var db = AppWorkCtx.DbStorage.SqlDb;
+        var db = MyOptions.DbStorage.SqlDb;
 
         var childIdsByGuid = BuildChildIdsByGuid(appId, db, entitiesWithParents, restoredEntitiesByGuid);
         if (childIdsByGuid.Count == 0)

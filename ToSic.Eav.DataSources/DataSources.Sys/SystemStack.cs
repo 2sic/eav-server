@@ -16,7 +16,9 @@ namespace ToSic.Eav.DataSources.Sys;
     Icon = DataSourceIcons.Dns, // todo
     Type = DataSourceType.System,
     NameId = "60806cb1-0c76-4c1e-8dfe-dcec94726f8d",
+    NameIds = ["System.SystemStack"],
     Audience = Audience.Advanced,
+    DataConfidentiality = DataConfidentiality.Internal,
     ConfigurationType = "f9aca0f0-1b1b-4414-b42e-b337de124124"
     // HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes"
 )]
@@ -30,6 +32,9 @@ public class SystemStack: CustomDataSourceAdvanced
 
     [Configuration]
     public string Keys => Configuration.GetThis(fallback: "");
+
+    [Configuration]
+    public string View => Configuration.GetThis(fallback: "");
 
     [Configuration(Fallback = true)]
     public bool AddValues => Configuration.GetThis(true);
@@ -65,10 +70,11 @@ public class SystemStack: CustomDataSourceAdvanced
         var languages = _zoneCulture.SafeLanguagePriorityCodes();
 
         var stackName = SystemStackHelpers.GetStackNameOrNull(StackNames) ?? RootNameSettings;
+        var viewMixin = GetViewPart(appState, stackName);
 
         // TODO: option to get multiple stacks /etc.
         // Build Sources List
-        var settings = _dataStackService.Init(appState).GetStack(stackName);
+        var settings = _dataStackService.Init(appState).GetStack(stackName, viewMixin);
 
         // Dump results
         var dump = _dumpService.Dump(settings, new("irrelevant", languages, true, Log), "");
@@ -89,5 +95,16 @@ public class SystemStack: CustomDataSourceAdvanced
         var converted = stackFactory.Create(asRaw);
 
         return converted;
+    }
+
+    private IEntity? GetViewPart(IAppReadEntities appState, string stackName)
+    {
+        if (!Guid.TryParse(View, out var viewGuid))
+            return null;
+
+        var view = appState.List.GetOne(viewGuid)
+                   ?? throw new($"Tried to get view but not found. Guid was {viewGuid}");
+
+        return view.Children(stackName).FirstOrDefault();
     }
 }

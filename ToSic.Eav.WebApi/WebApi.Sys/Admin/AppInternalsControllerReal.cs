@@ -1,128 +1,130 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Apps.Sys.AppStack;
-using ToSic.Eav.Apps.Sys.State;
-using ToSic.Eav.Context;
-using ToSic.Eav.Data.Sys;
-using ToSic.Eav.WebApi.Sys.Admin.Metadata;
-using ToSic.Eav.WebApi.Sys.Dto;
-using ToSic.Eav.WebApi.Sys.Entities;
-using ToSic.Sys.Security.Permissions;
-using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
+﻿// Note: was replaced by #SysData DataSource AppEnhancements
 
-namespace ToSic.Eav.WebApi.Sys.Admin;
+//using ToSic.Eav.Apps.Sys;
+//using ToSic.Eav.Apps.Sys.AppStack;
+//using ToSic.Eav.Apps.Sys.State;
+//using ToSic.Eav.Context;
+//using ToSic.Eav.Data.Sys;
+//using ToSic.Eav.WebApi.Sys.Admin.Metadata;
+//using ToSic.Eav.WebApi.Sys.Dto;
+//using ToSic.Eav.WebApi.Sys.Entities;
+//using ToSic.Sys.Security.Permissions;
+//using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppInternalsControllerReal(
-    LazySvc<IContextOfSite> context,
-    LazySvc<ContentTypeDtoService> ctApiLazy,
-    IAppsCatalog appsCatalog,
-    LazySvc<IAppsCatalog> appCatalog,
-    LazySvc<EntityApi> entityApi,
-    LazySvc<MetadataControllerReal> metadataControllerReal)
-    : Services_ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appsCatalog, appCatalog, entityApi, metadataControllerReal]),
-        IAppInternalsController
-{
-    public const string LogSuffix = "AppInternals";
+//namespace ToSic.Eav.WebApi.Sys.Admin;
 
-    /// <inheritdoc/>
-    public AppInternalsDto Get(int appId)
-    {
-        var systemConfiguration = TypeListInternal(appId, ScopeConstants.SystemConfiguration)
-            .ToListOpt();
-        var settingsCustomExists = systemConfiguration.Any(ct => ct.Name == "SettingsCustom");
-        var resourcesCustomExists = systemConfiguration.Any(ct => ct.Name == "ResourcesCustom");
+//[ShowApiWhenReleased(ShowApiMode.Never)]
+//public class AppInternalsControllerReal(
+//    LazySvc<IContextOfSite> context,
+//    LazySvc<ContentTypeDtoService> ctApiLazy,
+//    IAppsCatalog appsCatalog,
+//    LazySvc<IAppsCatalog> appCatalog,
+//    LazySvc<EntityApi> entityApi,
+//    LazySvc<MetadataControllerReal> metadataControllerReal)
+//    : Services_ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appsCatalog, appCatalog, entityApi, metadataControllerReal]),
+//        IAppInternalsController
+//{
+//    public const string LogSuffix = "AppInternals";
 
-        var appState = appCatalog.Value.AppIdentity(appId);
-        var isGlobal = appState.IsGlobalSettingsApp();
-        var isPrimary = appState.AppId == appsCatalog.PrimaryAppIdentity(appState.ZoneId).AppId;
+//    /// <inheritdoc/>
+//    public AppInternalsDto Get(int appId)
+//    {
+//        var systemConfiguration = TypeListInternal(appId, ScopeConstants.SystemConfiguration)
+//            .ToListOpt();
+//        var settingsCustomExists = systemConfiguration.Any(ct => ct.Name == "SettingsCustom");
+//        var resourcesCustomExists = systemConfiguration.Any(ct => ct.Name == "ResourcesCustom");
 
-        var isGlobalOrPrimary = isGlobal || isPrimary;
+//        var appState = appCatalog.Value.AppIdentity(appId);
+//        var isGlobal = appState.IsGlobalSettingsApp();
+//        var isPrimary = appState.AppId == appsCatalog.PrimaryAppIdentity(appState.ZoneId).AppId;
 
-        return new()
-        {
-            // 1. .../api/2sxc/admin/type/list?appId=999&scope=System.Configuration
-            //SystemConfiguration = systemConfiguration,
+//        var isGlobalOrPrimary = isGlobal || isPrimary;
 
-            EntityLists = new Dictionary<string, IEnumerable<IDictionary<string, object>>?>
-            {
-                // 2. .../api/2sxc/admin/entity/list?appId=999&contentType=SettingsSystem
-                {
-                    AppStackConstants.Settings.SystemType,
-                    EntityListInternal(appId, AppStackConstants.Settings.SystemType)
-                },
+//        return new()
+//        {
+//            // 1. .../api/2sxc/admin/type/list?appId=999&scope=System.Configuration
+//            //SystemConfiguration = systemConfiguration,
 
-                // 3. .../api/2sxc/admin/entity/list?appId=999&contentType=App-Settings
-                {
-                    "AppSettings",
-                    isGlobalOrPrimary
-                        ? settingsCustomExists
-                            ? EntityListInternal(appId, "SettingsCustom", excludeAncestor: true)
-                            : null 
-                        : EntityListInternal(appId, AppLoadConstants.TypeAppSettings, excludeAncestor: true)
-                },
+//            EntityLists = new Dictionary<string, IEnumerable<IDictionary<string, object>>?>
+//            {
+//                // 2. .../api/2sxc/admin/entity/list?appId=999&contentType=SettingsSystem
+//                {
+//                    AppStackConstants.Settings.SystemType,
+//                    EntityListInternal(appId, AppStackConstants.Settings.SystemType)
+//                },
 
-                // 5. .../api/2sxc/admin/entity/list?appId=999&contentType=ResourcesSystem
-                {
-                    AppStackConstants.Resources.SystemType,
-                    EntityListInternal(appId, AppStackConstants.Resources.SystemType)
-                },
+//                // 3. .../api/2sxc/admin/entity/list?appId=999&contentType=App-Settings
+//                {
+//                    "AppSettings",
+//                    isGlobalOrPrimary
+//                        ? settingsCustomExists
+//                            ? EntityListInternal(appId, "SettingsCustom", excludeAncestor: true)
+//                            : null 
+//                        : EntityListInternal(appId, AppLoadConstants.TypeAppSettings, excludeAncestor: true)
+//                },
 
-                // 6. .../api/2sxc/admin/entity/list?appId=999&contentType=App-Resources
-                {
-                    "AppResources",
-                    isGlobalOrPrimary
-                        ? resourcesCustomExists
-                            ? EntityListInternal(appId, "ResourcesCustom", excludeAncestor: true)
-                            : null
-                        : EntityListInternal(appId, AppLoadConstants.TypeAppResources, excludeAncestor: true)
+//                // 5. .../api/2sxc/admin/entity/list?appId=999&contentType=ResourcesSystem
+//                {
+//                    AppStackConstants.Resources.SystemType,
+//                    EntityListInternal(appId, AppStackConstants.Resources.SystemType)
+//                },
 
-                },
+//                // 6. .../api/2sxc/admin/entity/list?appId=999&contentType=App-Resources
+//                {
+//                    "AppResources",
+//                    isGlobalOrPrimary
+//                        ? resourcesCustomExists
+//                            ? EntityListInternal(appId, "ResourcesCustom", excludeAncestor: true)
+//                            : null
+//                        : EntityListInternal(appId, AppLoadConstants.TypeAppResources, excludeAncestor: true)
 
-                // 8. .../api/2sxc/admin/entity/list?appId=999&contentType=2SexyContent-App
-                {
-                    "ToSxcContentApp",
-                    EntityListInternal(appId, AppLoadConstants.TypeAppConfig, excludeAncestor: true)
-                }
-            },
+//                },
 
-            FieldAll = new Dictionary<string, IEnumerable<ContentTypeFieldDto>?>
-            {
-                // 4. .../api/2sxc/admin/field/all?appid=999&staticName=App-Settings
-                {
-                    "AppSettings",
-                    isGlobalOrPrimary
-                        ? settingsCustomExists
-                            ? FieldAllInternal(appId, "SettingsCustom")
-                            : null
-                        : FieldAllInternal(appId, AppLoadConstants.TypeAppSettings)
-                },
+//                // 8. .../api/2sxc/admin/entity/list?appId=999&contentType=2SexyContent-App
+//                {
+//                    "ToSxcContentApp",
+//                    EntityListInternal(appId, AppLoadConstants.TypeAppConfig, excludeAncestor: true)
+//                }
+//            },
 
-                // 7. .../api/2sxc/admin/field/all?appid=999&staticName=App-Resources
-                {
-                    "AppResources",
-                    isGlobalOrPrimary
-                        ? resourcesCustomExists
-                            ? FieldAllInternal(appId, "ResourcesCustom")
-                            : null
-                        : FieldAllInternal(appId, AppLoadConstants.TypeAppResources)
-                }
-            },
+//            FieldAll = new Dictionary<string, IEnumerable<ContentTypeFieldDto>?>
+//            {
+//                // 4. .../api/2sxc/admin/field/all?appid=999&staticName=App-Settings
+//                {
+//                    "AppSettings",
+//                    isGlobalOrPrimary
+//                        ? settingsCustomExists
+//                            ? FieldAllInternal(appId, "SettingsCustom")
+//                            : null
+//                        : FieldAllInternal(appId, AppLoadConstants.TypeAppSettings)
+//                },
 
-            // 9. .../api/2sxc/admin/metadata/get?appId=999&targetType=3&keyType=number&key=999
-            MetadataList = MetadataListInternal(appId, 3, "number", appId.ToString())
-        };
-    }
+//                // 7. .../api/2sxc/admin/field/all?appid=999&staticName=App-Resources
+//                {
+//                    "AppResources",
+//                    isGlobalOrPrimary
+//                        ? resourcesCustomExists
+//                            ? FieldAllInternal(appId, "ResourcesCustom")
+//                            : null
+//                        : FieldAllInternal(appId, AppLoadConstants.TypeAppResources)
+//                }
+//            },
 
-    private IList<ContentTypeDto> TypeListInternal(int appId, string? scope = null, bool withStatistics = false)
-        => ctApiLazy.Value.List(appId, scope, withStatistics);
+//            // 9. .../api/2sxc/admin/metadata/get?appId=999&targetType=3&keyType=number&key=999
+//            MetadataList = MetadataListInternal(appId, 3, "number", appId.ToString())
+//        };
+//    }
 
-    private List<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
-        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appsCatalog.AppIdentity(appId), contentType, GrantSets.ReadSomething)
-            .GetEntitiesForAdmin(contentType, excludeAncestor);
+//    private IList<ContentTypeDto> TypeListInternal(int appId, string? scope = null, bool withStatistics = false)
+//        => ctApiLazy.Value.List(appId, scope, withStatistics);
 
-    private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string typeName)
-        => ctApiLazy.Value.GetFields(appId, typeName);
+//    private List<Dictionary<string, object>> EntityListInternal(int appId, string contentType, bool excludeAncestor = true)
+//        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appsCatalog.AppIdentity(appId), contentType, GrantSets.ReadSomething)
+//            .GetEntitiesForAdmin(contentType, excludeAncestor);
 
-    private MetadataListDto MetadataListInternal(int appId, int targetType, string keyType, string key, string? contentType = null)
-        => metadataControllerReal.Value.Get(appId, targetType, keyType, key, contentType);
-}
+//    private IEnumerable<ContentTypeFieldDto> FieldAllInternal(int appId, string typeName)
+//        => ctApiLazy.Value.GetFields(appId, typeName);
+
+//    private MetadataListDto MetadataListInternal(int appId, int targetType, string keyType, string key, string? contentType = null)
+//        => metadataControllerReal.Value.Get(appId, targetType, keyType, key, contentType);
+//}

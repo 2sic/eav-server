@@ -20,7 +20,7 @@ internal class AppSpecs(AppState appState): IAppSpecs
 
     public string Folder => appState.Folder ?? AppSpecConstants.ErrorAppFolderNotLoaded;
 
-    public string RuntimeKey => appState.RuntimeKey;
+    public string CacheKey => appState.CacheKey;
 
     public PiggyBack PiggyBack => appState.PiggyBack;
     
@@ -29,7 +29,12 @@ internal class AppSpecs(AppState appState): IAppSpecs
     /// Create the configuration reader on demand, since the underlying Entity could change.
     /// </summary>
     // public IAppConfiguration Configuration => new AppConfiguration(appState.SettingsInApp.AppConfiguration!);
-    public IAppConfiguration Configuration => appState.SettingsInApp.AppConfiguration.ToModel<AppConfiguration>(skipTypeCheck: true, /*nullIfNull: false,*/ nullHandling: ModelNullHandling.PreferModel)!;
+    public IAppConfiguration Configuration => appState.SettingsInApp.AppConfiguration
+        .ToModel<AppConfiguration>(options: new()
+        {
+            TypeName = ToModelOptions.TypeNameAny,
+            NullHandling = NullHandling.ReturnModel,
+        })!;
 
     public IMetadata Metadata => appState.Metadata;
 

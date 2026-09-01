@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.FileSystemState;
-using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Sys.InputTypes;
 using ToSic.Eav.Models;
 using ToSic.Sys.Utils;
@@ -9,10 +9,11 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkInputTypes(
+    LazySvc<AppWorkContextService> appWorkCtxSvc,
     LazySvc<IAppReaderFactory> appReaders,
-    LazySvc<IAppInputTypesLoader> appFileSystemLoaderLazy,
+    Generator<IAppInputTypesLoader, AppFileSystemLoaderOptions> appFileSystemLoaderLazy,
     LazySvc<AppWorkContextService> ctxSvc)
-    : WorkUnitBase<IAppWorkCtxPlus>("ApS.InpGet", connect: [appReaders, appFileSystemLoaderLazy, ctxSvc])
+    : ServiceWithSetup<IAppWorkContext>("ApS.InpGet", connect: [appWorkCtxSvc, appReaders, appFileSystemLoaderLazy, ctxSvc])
 {
     /// <summary>
     /// Retrieve a list of all input types known to the current system
@@ -44,7 +45,7 @@ public class WorkInputTypes(
         LogListOfInputTypes("Combined", inputTypes);
 
         // Merge input types registered in global metadata-app
-        var systemAppCtx = ctxSvc.Value.ContextPlus(KnownAppsConstants.MetaDataAppId);
+        var systemAppCtx = appWorkCtxSvc.Value.ContextNew(KnownAppsConstants.MetaDataAppId);
         var systemAppInputTypes = GetAppRegisteredInputTypes(systemAppCtx);
         systemAppInputTypes = MarkOldGlobalInputTypesAsObsolete(systemAppInputTypes);
         LogListOfInputTypes("Input Types in System App", systemAppInputTypes);
@@ -109,10 +110,11 @@ public class WorkInputTypes(
     /// </summary>
     /// <param name="overrideCtx">App context to use. Often the current app, but can be a custom one.</param>
     /// <returns></returns>
-    private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkCtxPlus? overrideCtx = default) =>
-        (overrideCtx ?? AppWorkCtx)
+    private ICollection<InputTypeInfo> GetAppRegisteredInputTypes(IAppWorkContext? overrideCtx = default) =>
+        (overrideCtx ?? MyOptions)
         .AppReader.List
         .GetModels<InputTypeDefinition>()
+        .OfType<InputTypeDefinition>()
         .Select(e => new InputTypeInfo(metadata: (e as ICanBeEntity)?.Entity.Metadata)
         {
             Type = e.Type,
@@ -135,8 +137,7 @@ public class WorkInputTypes(
         var l = Log.Fn<ICollection<InputTypeInfo>>();
         try
         {
-            var appLoader = appFileSystemLoaderLazy.Value;
-            appLoader.Init(AppWorkCtx.AppReader, new());
+            var appLoader = appFileSystemLoaderLazy.New(new(MyOptions.AppReader, new()));
             var inputTypes = appLoader.InputTypes();
             return l.Return(inputTypes, $"{inputTypes.Count}");
         }
@@ -172,18 +173,18 @@ public class WorkInputTypes(
             .Select(p => p)
             .ToListOpt();
 
-        // Temp 2dm
-        var spectrumType = presetApp.ContentTypes
-            .FirstOrDefault(p => p.Name == "@string-app-color-picker-spectrum-pro");
-        l.A("2dm: found spectrum type: " + (spectrumType != null));
-
         var typesWithMetadata = presetApp.ContentTypes
             .Where(p => p.Metadata.HasType(ContentTypeNameId))
             .ToListOpt();
-        l.A("2dm: found spectrum type based on metadata: " + typesWithMetadata.Count);
+        l.A("Types with input-type metadata: " + typesWithMetadata.Count);
 
         // Define priority of metadata to check
-        var typesToCheckInThisOrder = new[] { ContentTypeNameId, ContentTypeDetails.ContentTypeName, null };
+        var typesToCheckInThisOrder = new[]
+        {
+            ContentTypeNameId,
+            IContentTypeDetails.Constants.ContentTypeName,
+            null
+        };
         var inputsWithAt = types
             .Select(it =>
             {

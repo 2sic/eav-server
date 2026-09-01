@@ -23,8 +23,8 @@ public class Settings
         // Exclude old ".data"; it may still exist. Should be migrated to new location "App_Data/system", so no need for export for old ".data"
         FolderConstants.DataFolderOld,
         // Exclude zip temporary folders
-        $"{FolderConstants.DataFolderProtected}\\{FolderConstants.ZipFolderForSiteFiles}",
-        $"{FolderConstants.DataFolderProtected}\\{FolderConstants.ZipFolderForGlobalAppStuff}"
+        $"{FolderConstants.DataFolderProtected}{Path.DirectorySeparatorChar}{FolderConstants.ZipFolderForSiteFiles}",
+        $"{FolderConstants.DataFolderProtected}{Path.DirectorySeparatorChar}{FolderConstants.ZipFolderForGlobalAppStuff}"
     ];
 
     public const string TemplateContentType = "2SexyContent-Template";

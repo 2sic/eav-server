@@ -39,9 +39,9 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
         Generator<PassThrough> PassThrough,
         LazySvc<QueryDefinitionService> QueryDefSvc,
         Generator<IAppReaderFactory> AppStates,
-        GenWorkBasic<WorkQueryMod> WorkUnitQueryMod,
-        GenWorkBasic<WorkQueryCopy> WorkUnitQueryCopy)
-        : DependenciesRecord(connect:
+        AppWorkQuick<WorkQueryMod> WorkUnitQueryMod,
+        AppWorkQuick<WorkQueryCopy> WorkUnitQueryCopy)
+        : DependenciesBase(connect:
         [
             QueryFactory, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough,
             QueryDefSvc, AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
@@ -253,7 +253,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
         try
         {
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
-            var deser = Services.JsonSerializer.New().SetApp(workUnit.AppWorkCtx.AppReader);
+            var deser = Services.JsonSerializer.New().SetApp(workUnit.MyOptions.AppReader);
             var ents = deser.Deserialize(args.GetContentString());
             var qdef = Services.QueryDefSvc.Value.GetDefinition(args.AppId, ents);
             workUnit.SaveCopy(qdef);

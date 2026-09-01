@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Sys.Locking;
 
 namespace ToSic.Eav.Metadata.Sys;
@@ -101,6 +101,6 @@ partial class Metadata<T>
     /// <returns></returns>
     [PrivateApi]
     protected IMetadataSource? GetMetadataSource() => _mdsGetOnce.Get(() => Source.LookupSource?.MetadataSource);
-    private readonly GetOnce<IMetadataSource?> _mdsGetOnce = new();
+    private readonly LazyGet<IMetadataSource?> _mdsGetOnce = new();
 
 }

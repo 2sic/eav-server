@@ -10,6 +10,10 @@ public partial class Log
     /// <param name="name">optional new name</param>
     internal void LinkTo(ILog? newParent, string? name = default)
     {
+        // ILogCall is a wrapper around its Log, and entries propagate through Log parents.
+        // Unwrap it here so helper logs linked to an active call remain visible in the parent log.
+        newParent = newParent.GetRealLog();
+
         if (newParent == this)
             throw new("LOG ERROR - attaching a log to itself can't work");
 

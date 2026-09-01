@@ -5,6 +5,7 @@ namespace ToSic.Eav.DataSource;
 /// <summary>
 /// Special converter to take any kind of object and try to turn it into an <see cref="IDataSourceOptions"/>
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceOptionConverter
 {
     public DataSourceOptions Create(IDataSourceOptions? original, object? other)

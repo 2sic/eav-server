@@ -39,7 +39,7 @@ namespace ToSic.Eav.Models;
 /// ```
 /// </example>
 /// <remarks>
-/// This is much lighter than the [](xref:Custom.Data.CustomItem) which also wraps data, as it doesn't have any predefined properties and doesn't have the <see cref="ITypedItem"/> APIs.
+/// This is much lighter than the [](xref:Custom.Data.CustomItem) which also wraps data, as it doesn't have any predefined properties and doesn't have the [](xref:ToSic.Sxc.Data.ITypedItem) APIs.
 /// 
 /// History
 /// 
@@ -56,14 +56,6 @@ public abstract partial class ModelFromEntityClassic: IModelFromEntity, IModelSe
         Entity = source!;
         return true;
     }
-
-    //void IDataWrapperNeedingFactory<IEntity>.Setup(IEntity source, IModelFactory modelFactory)
-    //{
-    //    _entity = source;
-    //    _modelFactory = modelFactory;
-    //}
-
-    //private IModelFactory _modelFactory = null!;
 
     /// <summary>
     /// This is necessary so the object can be used in places where an IEntity is expected,

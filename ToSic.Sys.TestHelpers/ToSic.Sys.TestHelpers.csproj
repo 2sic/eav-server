@@ -2,8 +2,12 @@
 
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
 
+  <PropertyGroup>
+    <RootNamespace>ToSic.Sys</RootNamespace>
+  </PropertyGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\ToSic.Eav.LookUp.TestHelpers\ToSic.Eav.LookUp.TestHelpers.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -45,8 +45,7 @@ internal class ConnectionStream(
     }
 
     public IDataStream GetContents() => InnerStream;
-    private IDataStream InnerStream => _dataStream.Get(LoadStream)!;
-    private readonly GetOnce<IDataStream> _dataStream = new();
+    private IDataStream InnerStream => field ??= LoadStream();
 
 
     #region Simple properties linked to the underlying Stream

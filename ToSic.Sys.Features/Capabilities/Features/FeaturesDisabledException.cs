@@ -4,6 +4,7 @@
 /// Typed exception so code can check if the exception was a feature-exception
 /// </summary>
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeaturesDisabledException : Exception
 {
     public FeaturesDisabledException(string message): base(message) { }

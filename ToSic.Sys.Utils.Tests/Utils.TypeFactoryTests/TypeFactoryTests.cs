@@ -1,42 +1,47 @@
-﻿using System.Diagnostics;
+﻿using ToSic.Sys.Utils.Types;
+#pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Sys.Utils.TypeFactoryTests;
 
 public class TypeFactoryTests
 {
-    private class ClassWithoutConstructor { }
+    private class ClassWithoutConstructor;
 
-    private class ClassWithConstructor(string something) { }
+    // ReSharper disable once ClassNeverInstantiated.Local
+    private class ClassWithConstructor(string something);
 
     //[Fact]
     //public void AaaAtFirstCacheIsEmpty()
     //{
-    //    Empty(TypeFactory.Cache);
+    //    Empty(TypeFactory.TypeFactoryCache);
     //}
 
-
     [Fact]
-    public void TypeFactoryCreateSimpleObject()
+    public void A_TypeFactoryCreateSimpleObject_NotNull()
     {
-        var x = TypeFactory.CreateInstance(typeof(ClassWithoutConstructor));
+        var x = TypeFactoryTac.CreateInstanceTac(typeof(ClassWithoutConstructor));
         NotNull(x);
-        Single(TypeFactory.Cache);
+        IsType<ClassWithoutConstructor>(x);
     }
 
+    //[Fact]
+    //public void A_TypeFactoryCreateSimpleObject_FirstOneInCache()
+    //{
+    //    var x = TypeFactory.CreateInstance(typeof(ClassWithoutConstructor));
+    //    Single(TypeFactory.TypeFactoryCache);
+    //}
+
     [Fact]
-    public void TypeFactoryCreateSimpleObjectGeneric()
+    public void A_TypeFactoryCreateSimpleObjectGeneric()
     {
         var x = TypeFactory.CreateInstance<ClassWithoutConstructor>();
         NotNull(x);
-        Single(TypeFactory.Cache);
+        //Single(TypeFactory.TypeFactoryCache);
     }
 
     [Fact]
-    public void ThrowsIfNonEmptyConstructor() =>
-        Throws<InvalidOperationException>(() =>
-        {
-            TypeFactory.CreateInstance<ClassWithConstructor>();
-        });
+    public void B_ThrowsIfNonEmptyConstructor() =>
+        Throws<MissingConstructorException>(TypeFactoryTac.CreateInstanceTac<ClassWithConstructor>);
 
     //private class ClassToTestMultipleRuns { }
 

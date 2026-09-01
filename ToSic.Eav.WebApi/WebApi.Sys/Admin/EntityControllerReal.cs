@@ -27,9 +27,10 @@ public class EntityControllerReal(
 
 
     /// <inheritdoc/>
-    public IEnumerable<Dictionary<string, object>> List(int appId, string contentType)
-        => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appsCatalog.Value.AppIdentity(appId), contentType, GrantSets.ReadSomething)
-            .GetEntitiesForAdmin(contentType);
+    /// 2rb: replaced by EntitiesAdmin datasource
+    //public IEnumerable<Dictionary<string, object>> List(int appId, string contentType)
+    //    => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appsCatalog.Value.AppIdentity(appId), contentType, GrantSets.ReadSomething)
+    //        .GetEntitiesForAdmin(contentType);
 
 
     /// <inheritdoc/>

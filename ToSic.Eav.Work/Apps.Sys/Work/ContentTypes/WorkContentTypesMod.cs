@@ -5,76 +5,43 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkContentTypesMod(
-    LazySvc<ContentTypeDataProcessorRunner> dataProcessorRunner,
-    IAppReaderFactory appReaders)
-    : WorkUnitBase<IAppWorkCtxWithDb>("ApS.InpGet", connect: [dataProcessorRunner, appReaders])
+    LazySvc<ContentTypeChangeActionRunner> changeActions)
+    : ServiceWithSetup<IAppWorkContext>("ApS.InpGet", connect: [changeActions])
 {
     public void Create(string nameId, string scope)
     {
         var l = Log.Fn();
-        var ct = AppWorkCtx.DbStorage.ContentTypes.PrepareDbContentType(nameId, nameId, scope, false, AppWorkCtx.AppId);
+        var ct = MyOptions.DbStorage.ContentTypes.PrepareDbContentType(nameId, nameId, scope, false, MyOptions.AppId);
         if (ct != null)
-            AppWorkCtx.DbStorage.DoAndSaveWithoutChangeDetection(() => AppWorkCtx.DbStorage.SqlDb.Add(ct));
+            MyOptions.DbStorage.DoAndSaveWithoutChangeDetection(() => MyOptions.DbStorage.SqlDb.Add(ct));
         l.Done();
     }
 
     public bool AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet,
         bool alwaysShareConfig)
     {
-        var l = Log.Fn<bool>($"save {AppWorkCtx.Show()}");
+        var l = Log.Fn<bool>($"save {MyOptions.Show()}");
         if (name.IsEmptyOrWs())
             return l.ReturnFalse("name was empty, will cancel");
 
-        AppWorkCtx.DbStorage.ContentType.AddOrUpdate(staticName, scope, name, usesConfigurationOfOtherSet, alwaysShareConfig);
+        MyOptions.DbStorage.ContentType.AddOrUpdate(
+            staticName,
+            scope,
+            name,
+            usesConfigurationOfOtherSet,
+            alwaysShareConfig);
         // Schema changes on the type itself should immediately re-evaluate code-generation handlers.
-        ProcessContentTypePostSave(staticName, scope, name);
+        changeActions.Value.RunFor(
+            MyOptions.AppId,
+            staticName,
+            source: ContentTypeChangeSources.ContentType);
         return l.ReturnTrue();
     }
 
-    private void ProcessContentTypePostSave(string staticName, string scope, string name)
-    {
-        // Always evaluate post-save for schema updates; handler selection happens in the runner.
-        var afterSave = ResolveSavedContentType(staticName, scope, name);
-        if (afterSave == null)
-        {
-            Log.A("Skipping content-type post-save processors because saved type could not be resolved.");
-            return;
-        }
-
-        dataProcessorRunner.Value.RunFor(afterSave, context: new()
-        {
-            Source = DataProcessingContextSources.ContentType
-        });
-    }
-
-    private IContentType? ResolveSavedContentType(string? staticName, string? scope, string? name)
-    {
-        var freshReader = appReaders.Get(AppWorkCtx.AppId);
-
-        // StaticName is the strongest identifier and remains stable in normal rename scenarios.
-        if (staticName.HasValue() && freshReader.TryGetContentType(staticName) is { } byStaticName)
-            return byStaticName;
-
-        // For pre-save snapshot calls we may only have staticName and don't want fallback matching.
-        if (scope is null || name is null)
-            return null;
-
-        // Fallback by (Name + Scope) to recover edge cases where the static name changed or was not provided.
-        var normalizedScope = NormalizeScope(scope);
-        return freshReader.ContentTypes
-            .Where(ct => ct.Name.EqualsInsensitive(name))
-            .Where(ct => NormalizeScope(ct.Scope).EqualsInsensitive(normalizedScope))
-            .OrderByDescending(ct => ct.Id)
-            .FirstOrDefault();
-    }
-
-    private static string NormalizeScope(string? scope)
-        => scope?.Trim() ?? "";
-
     public bool CreateGhost(string sourceStaticName)
     {
-        var l = Log.Fn<bool>($"create ghost a#{AppWorkCtx.Show()}, type:{sourceStaticName}");
-        AppWorkCtx.DbStorage.ContentType.CreateGhost(sourceStaticName);
+        var l = Log.Fn<bool>($"create ghost a#{MyOptions.Show()}, type:{sourceStaticName}");
+        MyOptions.DbStorage.ContentType.CreateGhost(sourceStaticName);
         return l.ReturnTrue();
     }
 
@@ -82,14 +49,14 @@ public class WorkContentTypesMod(
     public void SetTitle(int contentTypeId, int attributeId)
     {
         var l = Log.Fn($"set title type#{contentTypeId}, attrib:{attributeId}");
-        AppWorkCtx.DbStorage.Attributes.SetTitleAttribute(attributeId, contentTypeId);
+        MyOptions.DbStorage.Attributes.SetTitleAttribute(attributeId, contentTypeId);
         l.Done();
     }
 
     public bool Delete(string staticName)
     {
-        var l = Log.Fn<bool>($"delete a#{AppWorkCtx.Show()}, name:{staticName}");
-        AppWorkCtx.DbStorage.ContentType.Delete(staticName);
+        var l = Log.Fn<bool>($"delete a#{MyOptions.Show()}, name:{staticName}");
+        MyOptions.DbStorage.ContentType.Delete(staticName);
         return l.ReturnTrue();
     }
 

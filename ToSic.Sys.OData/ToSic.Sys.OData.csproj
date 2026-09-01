@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Sys.props" />
+
+  <!-- As of 2026-06-28 2dm there is nothing in this DLL to publish, so we'll skip XML docs to save space in the installed ZIPs -->
   <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
 
   <PropertyGroup>

@@ -1,7 +1,6 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys.Work;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Data.Sys.Entities;
@@ -21,7 +20,7 @@ public partial class ImportListXml(
     LazySvc<ImportService> importerLazy,
     Generator<DataAssembler, DataAssemblerOptions> builderGenerator,
     LazySvc<IValueConverter> valueConverter,
-    GenWorkDb<WorkEntityDelete> entDelete)
+    AppWorkQuick<WorkEntityDelete> entDelete)
     : ServiceBase("App.ImpVtT", connect: [builderGenerator, valueConverter, importerLazy, entDelete])
 {
     private DataAssembler DataAssembler { get; set; } = null!;
@@ -287,7 +286,7 @@ public partial class ImportListXml(
                 // update languages on valExisting
                 var updatedValue2 = DataAssembler.Value.CreateFrom(valExisting, languages: DataAssembler.Language.Merge(valExisting.Languages, valueLanguages));
                 //var updatedValue2 = AttributeBuilder.Value.UpdateLanguages(valExisting, valueLanguages);
-                // TODO: update/replace value in existingEnt[attribute.Name]
+                // TODO: update/replace value in existingEnt[fieldDef.Name]
                 var values2 = DataAssembler.ValueList.Replace(attrExisting.Values, valExisting, updatedValue2);
                 var attribute2 = DataAssembler.Attribute.CreateFrom(attrExisting, values2);
                 entityAttributes = DataAssembler.AttributeList.Replace(entityAttributes, attribute2);

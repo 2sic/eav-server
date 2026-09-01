@@ -12,17 +12,17 @@ public class WorkQueryMod(
     LazySvc<AppCachePurger> systemManagerLazy,
     LazySvc<QueryDefinitionService> queryDefSvc,
     LazySvc<QueryDefinitionFactory> queryDefBuilder,
-    GenWorkDb<WorkEntityCreate> entCreate,
-    GenWorkDb<WorkEntityDelete> delete,
-    GenWorkDb<WorkEntityUpdate> entUpdate)
-    : WorkUnitBase<IAppWorkCtx>("AWk.QryMod",
+    AppWorkChain<WorkEntityCreate> entCreate,
+    AppWorkChain<WorkEntityDelete> delete,
+    AppWorkChain<WorkEntityUpdate> entUpdate)
+    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod",
         connect: [systemManagerLazy, queryDefSvc, queryDefBuilder, delete, entCreate, entUpdate])
 {
     public bool Delete(int id)
     {
-        var l = Log.Fn<bool>($"delete a#{AppWorkCtx.AppId}, id:{id}");
+        var l = Log.Fn<bool>($"delete a#{MyOptions.AppId}, id:{id}");
 
-        var entDelete = delete.New(AppWorkCtx.AppReader);
+        var entDelete = delete.New(MyOptions);
 
         var canDeleteResult = entDelete.CheckForDeletePreWarnings(id);
         if (canDeleteResult.HasMessages)
@@ -30,8 +30,8 @@ public class WorkQueryMod(
 
 
         // Get the Entity describing the Query and Query Parts (DataSources)
-        var qDef = queryDefSvc.Value.GetDefinition(AppWorkCtx.AppReader, id);
-        //var qDef = queryDefBuilder.Value.Create(AppWorkCtx.AppId, queryEntity);
+        var qDef = queryDefSvc.Value.GetDefinition(MyOptions.AppReader, id);
+        //var qDef = queryDefBuilder.Value.Create(MyOptions.AppId, queryEntity);
 
         var parts = qDef.Parts;
         var mdItems = parts
@@ -46,13 +46,13 @@ public class WorkQueryMod(
         entDelete.Delete(id);
 
         // flush cache
-        systemManagerLazy.Value.PurgeApp(AppWorkCtx.AppId);
+        systemManagerLazy.Value.PurgeApp(MyOptions.AppId);
 
         return l.ReturnTrue();
     }
 
     private QueryDefinition Get(int queryId)
-        => queryDefSvc.Value.GetDefinition(AppWorkCtx.AppReader, queryId);
+        => queryDefSvc.Value.GetDefinition(MyOptions.AppReader, queryId);
 
     /// <summary>
     /// Update an existing query in this app
@@ -111,11 +111,11 @@ public class WorkQueryMod(
                 dataSource[visualDesignerField] = designerJson.ToString() ?? ""; // serialize this JSON into string
 
             if (entityId != null)
-                entUpdate.New(AppWorkCtx.AppReader).UpdateParts(Convert.ToInt32(entityId), dataSource, new());
+                entUpdate.New(MyOptions).UpdateParts(Convert.ToInt32(entityId), dataSource, new());
             // Add new DataSource
             else
             {
-                var newSpecs = entCreate.New(AppWorkCtx.AppReader)
+                var newSpecs = entCreate.New(MyOptions)
                     .Create(QueryPartDefinition.TypeName, dataSource,
                     new Target((int)TargetTypes.Entity, null, keyGuid: queryEntityGuid));
                 newDataSources.Add(originalIdentity, newSpecs.EntityGuid);
@@ -140,7 +140,7 @@ public class WorkQueryMod(
     /// </summary>
     private void DeletedRemovedParts(IEnumerable<Guid> newEntityGuids, IEnumerable<Guid> newDataSources, QueryDefinition qDef)
     {
-        var l = Log.Fn($"delete part a#{AppWorkCtx.AppId}, pipe:{qDef.Guid}");
+        var l = Log.Fn($"delete part a#{MyOptions.AppId}, pipe:{qDef.Guid}");
         // Get EntityGuids currently stored in EAV
         var existingEntityGuids = qDef.Parts.Select(e => e.Guid);
 
@@ -149,7 +149,7 @@ public class WorkQueryMod(
             .Union(newDataSources)
             .ToListOpt();
 
-        var entDelete = delete.New(AppWorkCtx.AppReader);
+        var entDelete = delete.New(MyOptions);
         foreach (var entToDel in existingEntityGuids.Where(guid => !newGuidsWithMore.Contains(guid)))
             // force: true - force-delete the data-source part even if it still has metadata and stuff referencing it
             entDelete.Delete(entToDel, force: true);
@@ -167,7 +167,7 @@ public class WorkQueryMod(
     /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
     private void SaveHeader(int id, Dictionary<string, object> values, ICollection<QueryWire> wirings, IDictionary<string, Guid> renamedDataSources)
     {
-        var l = Log.Fn($"save pipe a#{AppWorkCtx.AppId}, pipe:{id}");
+        var l = Log.Fn($"save pipe a#{MyOptions.AppId}, pipe:{id}");
         wirings = RenameWiring(wirings, renamedDataSources, Log);
 
         // Validate Stream Wirings, as we should never save bad wirings
@@ -177,7 +177,7 @@ public class WorkQueryMod(
 
         // add to new object...then send to save/update
         values[nameof(QueryDefinition.StreamWiring)] = QueryWiringSerializer.Serialize(wirings);
-        entUpdate.New(AppWorkCtx.AppReader).UpdateParts(id, values, new());
+        entUpdate.New(MyOptions).UpdateParts(id, values, new());
         l.Done();
     }
 

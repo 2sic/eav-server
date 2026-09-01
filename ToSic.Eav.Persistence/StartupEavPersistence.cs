@@ -39,7 +39,7 @@ public static class StartupEavPersistence
         // Compression for SQL History
         services.TryAddTransient<Compressor>();
 
-        services.AddTransient<IBootProcess, EavBootLoadFeaturesAndLicenses>();
+        services.AddTransient<IBootProcess, BootLoadFeaturesAndLicenses>();
         services.TryAddTransient<EavFeaturesLoader>();  // new v20 separate class
         services.TryAddTransient<LicenseLoader>();
 

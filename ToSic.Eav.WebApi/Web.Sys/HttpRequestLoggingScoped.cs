@@ -6,6 +6,9 @@
 /// </summary>
 public class HttpRequestLoggingScoped(ILogStore logStore) : ServiceWithSetup<HttpRequestLoggingScoped.Opts>("Web.HttpReqLog")
 {
+    // 2026-08-07 2dm - believe that options are always required
+    //protected override Opts GetDefaultOptions() => new();
+
     /// <summary>
     /// Setup - may be called multiple times as we need a generator to get it, and it will always return the same (scoped) instance.
     /// </summary>
@@ -22,6 +25,7 @@ public class HttpRequestLoggingScoped(ILogStore logStore) : ServiceWithSetup<Htt
         
         StoreEntry = logStore.Add(MyOptions.Segment, RootLog);
     }
+
 
     private bool _setupWasAlreadyCalled;
 

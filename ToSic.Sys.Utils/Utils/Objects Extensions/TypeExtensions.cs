@@ -1,4 +1,6 @@
-﻿namespace ToSic.Sys.Utils;
+﻿using ToSic.Sys.Utils.Types;
+
+namespace ToSic.Sys.Utils;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class TypeExtensions
@@ -10,13 +12,13 @@ public static class TypeExtensions
     /// <returns></returns>
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static Type UnboxIfNullable(this Type t)
-        => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>)
+        => t.IsGenericTypeOf(typeof(Nullable<>))
             ? Nullable.GetUnderlyingType(t) ?? t
             : t;
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsNumeric(this object? o)
-        => o is not null && o.GetType().IsNumeric();
+        => o?.GetType().IsNumeric() == true;
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static bool IsNumeric(this Type t)
@@ -35,8 +37,4 @@ public static class TypeExtensions
             TypeCode.Single => true,
             _ => false
         };
-
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static T? GetDirectlyAttachedAttribute<T>(this Type type) where T : class
-        => type.GetCustomAttributes(typeof(T), false).FirstOrDefault() as T;
 }

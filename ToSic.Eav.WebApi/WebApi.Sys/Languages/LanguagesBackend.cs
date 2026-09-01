@@ -1,6 +1,5 @@
-﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys;
-using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.WebApi.Sys.Dto;
 using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 
@@ -8,29 +7,12 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LanguagesBackend(
-    LazySvc<IZoneMapper> zoneMapper,
     LazySvc<ZoneManager> zoneManager,
     ISite site,
     LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy)
-    : Services_ServiceBase("Bck.Admin", connect: [zoneManager, site, appUserLanguageCheckLazy, zoneMapper])
+    : Services_ServiceBase("Bck.Admin", connect: [zoneManager, site, appUserLanguageCheckLazy])
 {
-    public IList<SiteLanguageDto> GetLanguages()
-    {
-        var l = Log.Fn<IList<SiteLanguageDto>>($"{site.Id}");
-        // ReSharper disable once PossibleInvalidOperationException
-        var cultures = zoneMapper.Value.CulturesWithState(site)
-            .Select(c => new SiteLanguageDto
-            {
-                Code = c.Code,
-                Culture = c.Culture,
-                IsEnabled = c.IsEnabled,
-            })
-            .ToList();
-
-        return l.Return(cultures, "found:" + cultures.Count);
-    }
-
-    public List<SiteLanguageDto> GetLanguagesOfApp(IAppReader? appReaderOrNull, bool withCount = false)
+    public List<LanguageStatusRaw> GetLanguagesOfApp(IAppReader? appReaderOrNull, bool withCount = false)
     {
         try
         {
@@ -38,13 +20,13 @@ public class LanguagesBackend(
             var converted = langs
                 .Select(l =>
                 {
-                    var dto = new SiteLanguageDto
+                    var dto = new LanguageStatusRaw
                     {
                         Code = l.Code,
                         Culture = l.Culture,
                         IsAllowed = l.IsAllowed,
                         IsEnabled = l.IsEnabled,
-                        Permissions = (withCount) ? new() { Count = l.PermissionCount } : null,
+                        Permissions = withCount ? new() { Count = l.PermissionCount } : null,
                     };
                     return dto;
                 })

@@ -11,8 +11,10 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// Internal assembler to create relationship values.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class RelationshipAssembler
+public class RelationshipAssembler(): ServiceWithSetup<DataAssemblerOptions>("DTA.EntRel")
 {
+    protected override DataAssemblerOptions GetDefaultOptions() => new();
+
     public IEnumerable<IEntity?> ToSource(ICollection<int?> references, IEntitiesSource app)
         => new LazyEntitiesSource(app, references);
 

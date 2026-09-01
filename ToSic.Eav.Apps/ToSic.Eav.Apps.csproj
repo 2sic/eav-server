@@ -2,6 +2,7 @@
 
   <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Eav.props" />
 
+  <!-- As of 2026-06-28 2dm this should be exported again -->
   <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
   <PropertyGroup>
@@ -16,7 +17,7 @@
     <ProjectReference Include="..\ToSic.Sys.Utils\ToSic.Sys.Utils.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Web" />

@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.DataSource.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceConstantsInternal
 {
     /// <summary>

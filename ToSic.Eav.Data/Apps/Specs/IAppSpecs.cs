@@ -8,6 +8,7 @@ namespace ToSic.Eav.Apps;
 /// It's primarily used so helper functions can tell us more about the App
 /// by receiving a TODO object which has this hidden somewhere.
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppSpecs : IAppIdentity, IHasIdentityNameId
 {
     string Name { get; }
@@ -17,7 +18,7 @@ public interface IAppSpecs : IAppIdentity, IHasIdentityNameId
     /// <summary>
     /// Runtime key to uniquely identify this app across tenants/platforms.
     /// </summary>
-    string RuntimeKey { get; }
+    string CacheKey { get; }
 
     IAppConfiguration Configuration { get; }
 

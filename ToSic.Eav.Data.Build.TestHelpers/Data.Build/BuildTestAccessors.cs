@@ -11,7 +11,7 @@ public static class BuildTestAccessors
         int appId,
         IContentType contentType,
         NoParamOrder npo = default,
-        Dictionary<string, object>? values = default,
+        Dictionary<string, object?>? values = default,
         Dictionary<string, IAttribute>? typedValues = default,
         int entityId = default,
         int repositoryId = EavConstants.NullId,
@@ -54,7 +54,7 @@ public static class BuildTestAccessors
     //    int? id = default,
     //    string nameId = default,
     //    string scope = default,
-    //    IList<IContentTypeAttribute> attributes = default)
+    //    IList<IContentTypeField> attributes = default)
     //{
     //    return builder.Create(appId: appId,
     //        id: id ?? 0,

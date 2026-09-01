@@ -1,6 +1,4 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Dimensions;
@@ -214,7 +212,7 @@ partial class JsonSerializer
         return l.ReturnAsOk(result);
     }
 
-    private IList<IValue> GetValues(IContentTypeAttribute a, JsonAttributes jAttribs, IEntitiesSource? relationshipsSource)
+    private IList<IValue> GetValues(IContentTypeField a, JsonAttributes jAttribs, IEntitiesSource? relationshipsSource)
     {
         var relAssembler = Services.DataAssembler.Relationship;
         return a.Type switch
@@ -239,7 +237,7 @@ partial class JsonSerializer
         };
     }
 
-    private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>>? dic, IContentTypeAttribute attrDef)
+    private IList<IValue> BuildValues<T>(Dictionary<string, Dictionary<string, T>>? dic, IContentTypeField attrDef)
     {
         if (dic == null || !dic.ContainsKey(attrDef.Name))
             return new List<IValue>();

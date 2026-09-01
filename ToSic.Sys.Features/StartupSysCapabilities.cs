@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.Boot;
+using ToSic.Sys.Capabilities;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Capabilities.Licenses;
@@ -21,7 +22,7 @@ public static class StartupSysCapabilities
         services.AddSingleton<FeaturesCatalog>();   // Must be singleton
 
         // New SystemCapability
-        services.TryAddTransient<SysFeaturesService>();
+        services.TryAddTransient<SysFeaturesLoader>();
 
         // Features - 2024-05-31 changed to non-singleton
         services.TryAddTransient<ISysFeaturesService, LibSysFeaturesService>();    // this must come first!
@@ -29,9 +30,10 @@ public static class StartupSysCapabilities
 
 
         // V14 Requirements Checks - don't use try-add, as we'll add many
-        services.TryAddTransient<RequirementsService>();
-        services.AddTransient<IRequirementCheck, FeatureRequirementCheck>();
-        services.AddTransient<IRequirementCheck, SysFeatureRequirementCheck>();
+        services.TryAddTransient<IRequirementsService, RequirementsService>();
+        // V22 - moving requirement checks to keyed services
+        services.AddKeyedTransientWithMarker<IRequirementCheck, FeatureRequirementCheck>(FeatureConstants.RequirementFeature);
+        services.AddKeyedTransientWithMarker<IRequirementCheck, SysFeatureRequirementCheck>(FeatureConstants.RequirementSysCapability);
 
         services.TryAddTransient<ILicenseService, LicenseService>();
 
@@ -41,8 +43,8 @@ public static class StartupSysCapabilities
         services.TryAddTransient<SystemFingerprint>();
 
         // v20 Startup - Registration of Licenses and Features
-        services.AddTransient<IBootProcess, BootRegistrationEavFeatures>();
-        services.AddTransient<IBootProcess, BootRegistrationEavLicenses>();
+        services.AddTransient<IBootProcess, BootRegisterEavFeatures>();
+        services.AddTransient<IBootProcess, BootRegisterEavLicenses>();
 
 
         return services;

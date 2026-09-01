@@ -1,0 +1,80 @@
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
+using ToSic.Eav.Metadata;
+using ToSic.Sys.Security.Permissions;
+
+namespace ToSic.Eav.Data;
+
+[PrivateApi("Leftover of old days")]
+public interface IContentTypeAttribute
+{
+    ValueTypes Type { get; }
+}
+
+/// <summary>
+/// Represents an Attribute definition in a ContentType.
+/// This is the base for attributes in <see cref="IContentType"/>
+/// </summary>
+/// <remarks>
+/// * Was called `IContentTypeAttribute` up until v21
+/// * Probably will be renamed to `IContentTypeField` in v22 (breaking change)
+/// </remarks>
+[PublicApi]
+public interface IContentTypeField
+    : IHasPermissions, IAppIdentityLight, IHasMetadata,
+        IContentTypeAttribute
+{
+    /// <summary>
+    /// Name of the Attribute
+    /// </summary>
+    string Name { get; }
+
+    /// <summary>
+    /// The official type, as a controlled (enum) value.
+    /// </summary>
+    new ValueTypes Type { get; }
+
+    /// <summary>
+    /// additional info for the persistence layer
+    /// </summary>
+    int AttributeId { get; }
+
+    /// <summary>
+    /// position of this attribute in the list of attributes
+    /// </summary>
+    int SortOrder { get; }
+
+    /// <summary>
+    /// tells us if this attribute is the title
+    /// </summary>
+    bool IsTitle { get; }
+
+    /// <summary>
+    /// Attribute GUID to uniquely identify this attribute if it is being shared with other attributes.
+    /// #SharedFieldDefinition
+    /// </summary>
+    /// <remarks>
+    /// Created ca. v16, releasing ca. v18.02
+    /// </remarks>
+    [PrivateApi]
+    Guid? Guid { get; }
+
+    /// <summary>
+    /// System Settings for this attribute, mainly for field-definition sharing and inheriting.
+    /// #SharedFieldDefinition
+    /// </summary>
+    /// <remarks>
+    /// Can be null.
+    /// Created ca. v16, releasing ca. v18.02
+    /// </remarks>
+    [PrivateApi]
+    ContentTypeFieldSysSettings? SysSettings { get; }
+
+    /// <summary>
+    /// The input type as string, e.g. "string-text" or "number-default".
+    /// </summary>
+    /// <remarks>
+    /// New in v21.
+    /// </remarks>
+    string InputType { get; }
+}

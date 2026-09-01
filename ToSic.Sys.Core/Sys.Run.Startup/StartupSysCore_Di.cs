@@ -36,8 +36,10 @@ public static partial class StartupSysCore
     /// </summary>
     public static IServiceCollection AddSysCoreDiServiceSwitchers(this IServiceCollection services)
     {
+        // v22 - removing these; wait for AppsCache to be updated to remove all
+        // #DropServiceSwitcherV22
         services.TryAddTransient(typeof(ServiceSwitcher<>));
-        services.TryAddScoped(typeof(ServiceSwitcherScoped<>)); // note: it's for scoped, and we must use another object name here
+        //services.TryAddScoped(typeof(ServiceSwitcherScoped<>)); // note: it's for scoped, and we must use another object name here
         services.TryAddTransient(typeof(ServiceSwitcherSingleton<>)); // note: it's for singletons, but the service is transient on purpose!
         return services;
     }

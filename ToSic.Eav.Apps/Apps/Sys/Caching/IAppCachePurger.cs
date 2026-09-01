@@ -6,6 +6,7 @@
 /// <remarks>
 /// Also used in the database layer, so it cannot be in the Apps project.
 /// </remarks>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppCachePurger
 {
     /// <summary>

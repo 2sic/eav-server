@@ -16,9 +16,19 @@ public enum RepositoryTypes
     Unknown = 0,
 
     /// <summary>
-    /// Data or Content-Types are generated in code.
+    /// Data or Content-Types are generated in code using configuration (usually using c# attributes).
     /// </summary>
-    Code,
+    CodeConfiguration,
+
+    /// <summary>
+    /// Data or Content-Types are generated on the fly using reflection.
+    /// </summary>
+    CodeReflection,
+
+    /// <summary>
+    /// Data or Content-Types are generated in code, where the code explicitly defines the data or content-types.
+    /// </summary>
+    CodeExplicit,
 
     /// <summary>
     /// Data or Content-Types are from a folder (file system)

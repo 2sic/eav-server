@@ -2,19 +2,18 @@
 using ToSic.Eav.Apps.Sys.Stack;
 using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Eav.Data.Sys.PropertyStack;
+using ToSic.Sys.Caching.PiggyBack;
 using static ToSic.Eav.Apps.Sys.AppStack.AppStackConstants;
 
 namespace ToSic.Eav.Apps.Sys.AppStack;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppDataStackService(IAppReaderFactory appReaderFactory/*, ILogStore wipLogStore*/) : ServiceBase("App.Stack", connect: [appReaderFactory])
+public class AppDataStackService(IAppReaderFactory appReaderFactory) : ServiceBase("App.Stack", connect: [appReaderFactory])
 {
     public AppDataStackService Init(IAppReader appReader)
     {
         AppReader = appReader;
-
-        //wipLogStore.Add("wip", Log);
 
         return this;
     }
@@ -64,7 +63,7 @@ public class AppDataStackService(IAppReaderFactory appReaderFactory/*, ILogStore
         // Only then will a future access get the correct items.
         // Before v20, it did some more data filtering and stored a reduced list
         // but that resulting in disabling the SynchronizedObject, so changes often didn't get cache-busted anymore.
-        var sources = appState.PiggyBack.GetOrGenerate(
+        var sources = appState.PiggyBackGet(
             $"{PiggyBackId}{target.Target}",
             () => Create(target).FullStack(Log)
         );

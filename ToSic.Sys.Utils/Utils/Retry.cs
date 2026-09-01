@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Sys.Utils;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class Retry
 {
     public static bool RetryOnException(Action action, ILogCall logCall, int repeat = 10, int delay = 100,

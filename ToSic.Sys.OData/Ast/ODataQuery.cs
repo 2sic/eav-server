@@ -1,6 +1,7 @@
 namespace ToSic.Sys.OData.Ast;
 
 // Root container for parsed system query options
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class ODataQuery
 {
     public FilterClause? Filter { get; init; }

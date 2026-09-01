@@ -19,7 +19,7 @@ public class ScopeConstants
     /// <summary>
     /// The `Default` scope contains Content-Types which are usually used in this App
     /// </summary>
-    public static readonly string Default = "Default";
+    public const string Default = "Default";
     private const string DefaultOld = "2SexyContent";
 
 

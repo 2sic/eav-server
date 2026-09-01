@@ -56,7 +56,7 @@ public abstract record EntityLight //: IEntityLight
 
     /// <inheritdoc />
     public int OwnerId => _ownerId.Get(() => int.TryParse(Owner.After("="), out var o) ? o : -1);
-    private readonly GetOnce<int> _ownerId = new();
+    private readonly LazyGet<int> _ownerId = new();
     #endregion
 
 

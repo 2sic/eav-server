@@ -2,6 +2,7 @@
 
 namespace ToSic.Sys.Capabilities.SysFeatures;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class SysFeaturesServiceExtensions
 {
     public static void ThrowIfNotEnabled(this ISysFeaturesService featSer, string message, params Guid[] featureGuid)

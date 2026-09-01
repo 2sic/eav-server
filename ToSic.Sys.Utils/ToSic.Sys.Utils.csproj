@@ -2,7 +2,8 @@
 
   <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Sys.props" />
 
-  <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
+  <!-- As of 2026-06-28 2dm this was now enabled, but there is not much we're sharing ATM -->
+  <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
   <PropertyGroup>
     <RootNamespace>ToSic.Sys</RootNamespace>
@@ -14,10 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToSic.Sys.Core\ToSic.Sys.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="LowCode\" />
   </ItemGroup>
 
 </Project>

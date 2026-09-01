@@ -11,8 +11,9 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// WIP v21
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class EntityConnectionBuilder
+public class EntityConnectionBuilder(): ServiceWithSetup<DataAssemblerOptions>("DTA.EntCon")
 {
+    protected override DataAssemblerOptions GetDefaultOptions() => new();
 
     public EntityPartsLazy UseMetadata(IEnumerable<IEntity> metadata)
         => UseOptional(null, metadata);

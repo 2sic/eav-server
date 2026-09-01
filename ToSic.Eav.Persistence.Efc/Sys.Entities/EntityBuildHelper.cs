@@ -1,8 +1,6 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 using ToSic.Eav.Persistence.Efc.Sys.Values;
 using ToSic.Eav.Serialization;
@@ -13,7 +11,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityBuildHelper(
     DataAssembler dataAssembler,
-    ContentTypeAssembler typeAssembler,
+    ContentTypeAssemblyKit ctAssemblyKit,
     IAppReader appReader,
     IDataDeserializer serializer,
     Dictionary<int, ICollection<TempRelationshipList>> relatedEntities,
@@ -156,5 +154,5 @@ internal class EntityBuildHelper(
         return errorEntity;
     }
 
-    private IContentType ErrorContentType => field ??= typeAssembler.Type.Transient(DataConstants.ErrorTypeName);
+    private IContentType ErrorContentType => field ??= ctAssemblyKit.Type.Transient(DataConstants.ErrorTypeName);
 }

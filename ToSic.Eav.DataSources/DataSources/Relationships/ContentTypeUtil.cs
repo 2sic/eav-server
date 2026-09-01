@@ -1,61 +1,48 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Raw.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Metadata;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.DataSources.Sys;
 
-// TODO: THIS should be moved to the right place, using the new IRawEntity setup
 internal class ContentTypeUtil
 {
-    /// <summary>
-    /// Options to generate data - can't be placed in the ContentType class,
-    /// because the DataFactoryOptions doesn't exist at that level.
-    /// </summary>
-    public static DataFactoryOptions Options = new()
-    {
-        TitleField = nameof(IContentType.Name),
-        Type = typeof(ContentType)
-    };
+    private static Guid SafeConvertGuid(IContentType contentType)
+        => Guid.TryParse(contentType.NameId, out var guid)
+            ? guid
+            : Guid.Empty;
 
-
-    internal static Dictionary<string, object?> BuildDictionary(IContentType t) => new()
+    [ContentTypeUse(Type = typeof(ContentType))]
+    internal class ContentTypeSummary(IContentType contentType, int items)
+        : IRawEntityAutoConvert, IHasMetadata
     {
-        { nameof(IContentType.Name), t.Name },
+        internal record MetadataReference(int Id, string? Title, Guid Guid);
+        internal record CountInfo(int Count);
+
+        public int Id => contentType.Id;
+        public Guid Guid => SafeConvertGuid(contentType);
+
+        public IEnumerable<MetadataReference> Metadata => contentType.Metadata
+            .Select(entity => new MetadataReference(entity.EntityId, entity.GetBestTitle(), entity.EntityGuid));
+
+        IMetadata IHasMetadata.Metadata => contentType.Metadata;
+
+        [ContentTypeTitle]
+        public string Name => contentType.Name;
+
+        public string NameId => contentType.NameId;
+        public bool IsDynamic => contentType.IsDynamic;
+        public string Scope => contentType.Scope;
+        public int AttributesCount => contentType.Attributes.Count();
+        public CountInfo Permissions => new(contentType.Metadata.Permissions.Count());
+        public int Items => items;
+        public string RepositoryType => contentType.RepositoryType.ToString();
+        public string RepositoryAddress => contentType.RepositoryAddress;
+
         // 2024-10-29 v18.03 2dm disabled, as deprecated, must see if something breaks, but don't really expect it...
         // noticed that it's actually used quite a bit in our internal fields, would have to change that first...
         // I must also assume that it may have been used elsewhere too, but I don't really think so...
-        { "StaticName", t.NameId }, // TODO: This should be removed, but JS code still uses it, so it much be change first
-        { nameof(t.NameId), t.NameId },
-        { nameof(IContentType.IsDynamic), t.IsDynamic },
-
-        { nameof(IContentType.Scope), t.Scope },
-        { nameof(IContentType.Attributes) + "Count", t.Attributes.Count() },
-
-        { nameof(IContentType.RepositoryType), t.RepositoryType.ToString() },
-        { nameof(IContentType.RepositoryAddress), t.RepositoryAddress },
-    };
-
-    internal static RawEntity ToRaw(IContentType t) =>
-        new(BuildDictionary(t))
-        {
-            Id = t.Id,
-            Guid = SafeConvertGuid(t) ?? Guid.Empty,
-            Metadata = t.Metadata,
-        };
-
-    public static Guid? SafeConvertGuid(IContentType t)
-    {
-        try
-        {
-            if (Guid.TryParse(t.NameId, out var g))
-                return g;
-        }
-        catch
-        {
-            /* ignore */
-        }
-
-        return null;
+        public string StaticName => contentType.NameId; // TODO: This should be removed, but JS code still uses it, so it must be changed first
     }
 }

@@ -1,0 +1,43 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Sys.DI;
+using ToSic.Sys.Run.Startup;
+
+namespace ToSic.Sys.Services.Generator.Basic;
+
+public class BasicGenerator
+{
+    public class Startup() : QuickStartup(s => s
+        .AddTransient<TestObjectToGenerate>()
+        .AddSysCore()
+    );
+
+    private readonly Generator<TestObjectToGenerate> _generator;
+    private readonly Generator<TestObjectToGenerate> _generatorWithInit;
+
+    public BasicGenerator(Generator<TestObjectToGenerate> generator, Generator<TestObjectToGenerate> generateWithInit)
+    {
+        _generator = generator;
+        _generatorWithInit = generateWithInit.SetInit(obj => obj.ToggleToInit = true);
+    }
+
+    [Fact]
+    public void Generates1()
+        => IsType<TestObjectToGenerate>(_generator.New());
+
+
+    [Fact]
+    public void Generates2()
+    {
+        var obj1 = _generator.New();
+        var obj2 = _generator.New();
+        NotSame(obj1, obj2);
+    }
+
+    [Fact]
+    public void NoInitIsUnchanged()
+        => False(_generator.New().ToggleToInit);
+
+    [Fact]
+    public void InitIsSet()
+        => True(_generatorWithInit.New().ToggleToInit);
+}

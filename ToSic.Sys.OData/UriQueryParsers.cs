@@ -5,6 +5,7 @@ using ToSic.Sys.Utils;
 
 namespace ToSic.Sys.OData;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class UriQueryParser
 {
     // Entry: dictionary with keys like $filter, $orderby, etc.
@@ -236,7 +237,7 @@ public static class UriQueryParser
     }
 
     private static IEnumerable<string> SplitComma(string s)
-        => (s ?? string.Empty).Split(',').Select(p => p.Trim()).Where(p => p.Length > 0);
+        => (s ?? string.Empty).CsvToArrayWithoutEmpty();
 
     private static OrderByClause ParseOrderBy(string text)
     {

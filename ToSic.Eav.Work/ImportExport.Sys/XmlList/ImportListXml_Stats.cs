@@ -80,7 +80,7 @@ partial class ImportListXml
 
 
     ///// <summary>
-    ///// Get the attribute names in the content type.
+    ///// Get the fieldDef names in the content type.
     ///// </summary>
     //public IEnumerable<string> AttributeNamesInContentType
     //    => ContentType.Attributes.Select(item => item.Name).ToList();

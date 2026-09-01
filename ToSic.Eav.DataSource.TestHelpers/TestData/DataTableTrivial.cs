@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.Build.Sys;
+﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.LookUp;
@@ -7,7 +6,7 @@ using DataTable = ToSic.Eav.DataSources.DataTable;
 
 namespace ToSic.Eav.TestData;
 
-public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssembler typeAssembler, LookUpTestData lookUpTestData)
+public class DataTableTrivial(DataSourcesTstBuilder dsSvc, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit, LookUpTestData lookUpTestData)
 {
     private static readonly Dictionary<int, DataTable> CachedDs = new();
 

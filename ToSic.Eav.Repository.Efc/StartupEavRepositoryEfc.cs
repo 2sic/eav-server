@@ -19,6 +19,7 @@ public static class StartupEavRepositoryEfc
     {
         services.TryAddTransient<DbStorage>();
         services.TryAddTransient<ITargetTypesLoader, EfcMetadataTargetTypesLoaderService>();
+        services.TryAddTransient<IEavDbContextConfigurator, SqlServerEavDbContextConfigurator>();
 
         // transient lifetime is important, otherwise 2-3x slower!
         // note: https://docs.microsoft.com/en-us/ef/core/miscellaneous/configuring-dbcontext says we should use transient

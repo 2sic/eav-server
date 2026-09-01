@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields;
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
-using ToSic.Eav.Data.Sys.ContentTypes;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
@@ -8,13 +9,15 @@ using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
-using static ToSic.Eav.Data.Sys.Attributes.AttributeMetadataConstants;
-
 
 namespace ToSic.Eav.WebApi.Sys;
 
-public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, GenWorkPlus<WorkInputTypes> inputTypes, IAppReaderFactory appReaders, LazySvc<RecommendedMetadataService> mdRead)
-    : ServiceBase("Cnv.AtrDto", connect: [inputTypes, convertToLight, mdRead]),
+public class ConvertAttributeToDto(
+    LazySvc<IConvertToEavLight> convertToLight,
+    AppWorkChain<WorkInputTypes> genInputTypes,
+    LazySvc<AppWorkContextService> appWorkCtxSvc,
+    AppWorkChain<RecommendedMetadataService> genMdRead)
+    : ServiceBase("Cnv.AtrDto", connect: [genInputTypes, convertToLight, genMdRead]),
         IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
 {
     public ConvertAttributeToDto Init(int appId, bool withContentType)
@@ -27,6 +30,8 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
 
     private int _appId;
     private bool _withContentType;
+
+    private IAppWorkContext WorkCtx => field ??= appWorkCtxSvc.Value.ContextNew(_appId);
 
     public IEnumerable<ContentTypeFieldDto> Convert(IEnumerable<PairTypeWithAttribute> list)
     {
@@ -43,7 +48,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         if (item == null)
             return l.ReturnNull("no item")!;
 
-        var a = item.Attribute;
+        var a = item.Field;
         var type = item.Type;
         var ancestorDecorator = type.GetDecorator<IAncestor>();
         var inputType = FindInputTypeOrUnknownOld(a);
@@ -78,7 +83,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
             },
 
             // new in 12.01
-            IsEphemeral = a.Metadata.Get<bool>(MetadataFieldAllIsEphemeral, typeName: TypeGeneral),
+            IsEphemeral = a.Metadata.Get<bool>(nameof(IFieldSettingsGeneral.IsEphemeral), typeName: IFieldSettingsGeneral.Constants.ContentTypeName),
             HasFormulas = a.HasFormulas(Log),
 
             // Read-Only new in v13
@@ -100,19 +105,19 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
 
     [field: AllowNull, MaybeNull]
     private List<InputTypeInfo> AppInputTypes => field ??=
-        inputTypes.New(_appId)
+        genInputTypes.New(WorkCtx)
             .GetInputTypes()
             .OrderBy(it => it.Type) // order for easier debugging
             .ToList();
 
     private (IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)
-        GetInputTypesAndMetadata(string inputType, IContentTypeAttribute a, IContentType type, IAncestor? ancestorDecorator, IReadOnlyCollection<InputTypeInfo> appInputTypes)
+        GetInputTypesAndMetadata(string inputType, IContentTypeField a, IContentType type, IAncestor? ancestorDecorator, IReadOnlyCollection<InputTypeInfo> appInputTypes)
     {
         var l = Log.Fn<(IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)>();
         var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
 
         // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side effects
-        var attribMetadata = (ContentTypeAttributeMetadata)a.Metadata;
+        var attribMetadata = (ContentTypeFieldMetadata)a.Metadata;
         var mdToKeep = attribMetadata
             .Where(m => configTypes.Keys.Contains(m.Type.NameId) || configTypes.Keys.Contains(m.Type.Name))
             .ToList();
@@ -145,7 +150,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
     }
 
 
-    private static IDictionary<string, bool> KeepOnlyConfigTypesWhichAreNotInherited(IContentTypeAttribute a, IDictionary<string, bool> configTypes, ILog log)
+    private static IDictionary<string, bool> KeepOnlyConfigTypesWhichAreNotInherited(IContentTypeField a, IDictionary<string, bool> configTypes, ILog log)
     {
         var l = log.Fn<IDictionary<string, bool>>($"{nameof(configTypes)} {configTypes.Count}");
 
@@ -165,7 +170,7 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
         return l.Return(configTypes, $"{configTypes.Count}");
     }
 
-    private EavLightEntity InputMetadata(IContentType contentType, IContentTypeAttribute a, IEntity e, IAncestor? ancestor, IConvertToEavLight ser)
+    private EavLightEntity InputMetadata(IContentType contentType, IContentTypeField a, IEntity e, IAncestor? ancestor, IConvertToEavLight ser)
     {
         var result = ser.Convert(e);
         if (ancestor != null)
@@ -191,9 +196,9 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
     /// <remarks>
     /// It's important to NOT cache this result, because it can change during runtime, and then a cached info would be wrong. 
     /// </remarks>
-    private static string FindInputTypeOrUnknownOld(IContentTypeAttribute attribute)
+    private static string FindInputTypeOrUnknownOld(IContentTypeField fieldDef)
     {
-        var inputType = attribute.Metadata.Get<string>(GeneralFieldInputType, typeName: TypeGeneral);
+        var inputType = fieldDef.Metadata.Get<string>(nameof(IFieldSettingsGeneral.InputType), typeName: IFieldSettingsGeneral.Constants.ContentTypeName);
 
         // unknown will let the UI fallback on other mechanisms
         return inputType.IsEmpty()
@@ -239,21 +244,12 @@ public class ConvertAttributeToDto(LazySvc<IConvertToEavLight> convertToLight, G
 
     private bool IsRecommended(string targetIdentifier, string typeName)
     {
-        var mdRecommendations = MdRecommendations();
+        var mdRecommendations = MdRecommendations;
         var recommendations= mdRecommendations.GetRecommendations((int)TargetTypes.Attribute, targetIdentifier);
         return recommendations.Any(r => r.Name == typeName);
     }
 
-    private RecommendedMetadataService MdRecommendations()
-    {
-        if (_mdRecs != null)
-            return _mdRecs;
-        _mdRecs = mdRead.Value;
-        var appReader = appReaders.Get(_appId);
-        _mdRecs.Setup(appReader, _appId);
-        return _mdRecs;
-    }
-    private RecommendedMetadataService? _mdRecs;
+    private RecommendedMetadataService MdRecommendations => field ??= genMdRead.New(WorkCtx);
 
     #endregion
 }

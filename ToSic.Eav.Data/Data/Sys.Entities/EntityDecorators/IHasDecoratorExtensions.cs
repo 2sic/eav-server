@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Sys.Entities;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming
 public static class IHasDecoratorExtensions
 {

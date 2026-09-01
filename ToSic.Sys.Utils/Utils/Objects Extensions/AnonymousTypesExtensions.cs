@@ -16,7 +16,7 @@ public static class AnonymousTypesExtensions
         if (typeOrObject == null)
             return false;
 
-        var type = typeOrObject is Type isType ? isType : typeOrObject.GetType();
+        var type = typeOrObject as Type ?? typeOrObject.GetType();
             
         // Skip further checks if it's clearly a real object
         if (type.Namespace != null)
@@ -60,24 +60,4 @@ public static class AnonymousTypesExtensions
 #pragma warning restore CS8619
     }
 
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static bool IsSimpleType(this Type type)
-    {
-        return
-            type.IsPrimitive ||
-            new[] {
-                typeof(string),
-                typeof(decimal),
-                typeof(DateTime),
-                typeof(DateTimeOffset),
-                typeof(TimeSpan),
-                typeof(Guid)
-            }.Contains(type) ||
-            type.IsEnum ||
-            // Nullable
-            (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && IsSimpleType(type.GetGenericArguments()[0])) ||
-            // Specific object - but must check for anonymous object
-            Convert.GetTypeCode(type) != TypeCode.Object
-            ;
-    }
 }

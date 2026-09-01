@@ -1,6 +1,3 @@
-﻿using ToSic.Eav.WebApi.Sys.Dto;
-using ToSic.Eav.WebApi.Sys.Zone;
-
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
 /// <summary>
@@ -8,11 +5,11 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 /// </summary>
 public interface IZoneController
 {
-    /// <summary>
-    /// Get all languages of the current zone, with activation info
-    /// </summary>
-    /// <returns></returns>
-    IList<SiteLanguageDto> GetLanguages();
+    ///// <summary>
+    ///// Get all languages of the current zone, with activation info
+    ///// </summary>
+    ///// <returns></returns>
+    //IList<SiteLanguageDto> GetLanguages();
 
     /// <summary>
     /// Enable / disable a language in the EAV
@@ -24,5 +21,5 @@ public interface IZoneController
     /// Get a bunch of system-info to show in the Apps Management
     /// </summary>
     /// <returns></returns>
-    SystemInfoSetDto GetSystemInfo();
+    /// Moved to SystemInfo Datasource
 }

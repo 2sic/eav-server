@@ -16,7 +16,7 @@ public class AppsCacheCollection { }
 public class AppsCacheMultiTenantTests
 {
     [Fact]
-    public void ZonesAreIsolatedByRuntimeKey()
+    public void ZonesAreIsolatedByAppCacheKey()
     {
         var loaderTenantA = new FakeAppsAndZonesLoader(() => ZonesWithAppName("TenantA-App"));
         var loaderTenantB = new FakeAppsAndZonesLoader(() => ZonesWithAppName("TenantB-App"));
@@ -24,8 +24,8 @@ public class AppsCacheMultiTenantTests
         var toolsTenantA = new FakeAppLoaderTools(loaderTenantA);
         var toolsTenantB = new FakeAppLoaderTools(loaderTenantB);
 
-        var cacheTenantA = new AppsCache(new FixedRuntimeKeyService("tenant-a"));
-        var cacheTenantB = new AppsCache(new FixedRuntimeKeyService("tenant-b"));
+        var cacheTenantA = new AppsCache(new FixedAppCacheKeyService("tenant-a"));
+        var cacheTenantB = new AppsCache(new FixedAppCacheKeyService("tenant-b"));
 
         cacheTenantA.PurgeZones();
 
@@ -39,7 +39,7 @@ public class AppsCacheMultiTenantTests
     }
 
     [Fact]
-    public void ZonesDoNotCacheWhenRuntimeKeyMissing()
+    public void ZonesDoNotCacheWhenAppCacheKeyMissing()
     {
         var callCount = 0;
         var loader = new FakeAppsAndZonesLoader(() =>
@@ -49,7 +49,7 @@ public class AppsCacheMultiTenantTests
         });
 
         var tools = new FakeAppLoaderTools(loader);
-        var cache = new AppsCache(new ThrowingRuntimeKeyService());
+        var cache = new AppsCache(new ThrowingAppCacheKeyService());
 
         cache.PurgeZones();
 
@@ -65,7 +65,7 @@ public class AppsCacheMultiTenantTests
     {
         var loader = new FakeAppsAndZonesLoader(() => new Dictionary<int, Zone>());
         var tools = new FakeAppLoaderTools(loader);
-        var cache = new AppsCache(new FixedRuntimeKeyService("tenant"));
+        var cache = new AppsCache(new FixedAppCacheKeyService("tenant"));
 
         cache.PurgeZones();
 
@@ -86,8 +86,7 @@ public class AppsCacheMultiTenantTests
             { 11, "251c0000-eafe-2792-0001-000000000001" },
             { 12, appName }
         };
-        var zone = new Zone(1, 10, 11, new ReadOnlyDictionary<int, string>(apps), new List<DimensionDefinition>
-        {
+        var zone = new Zone(1, 10, 11, new ReadOnlyDictionary<int, string>(apps), [
             new()
             {
                 Active = true,
@@ -97,19 +96,19 @@ public class AppsCacheMultiTenantTests
                 Name = "English",
                 Parent = null
             }
-        });
+        ]);
         return new Dictionary<int, Zone> { { 1, zone } };
     }
 
-    private sealed class FixedRuntimeKeyService(string prefix) : IRuntimeKeyService
+    private sealed class FixedAppCacheKeyService(string prefix) : IAppCacheKeyService
     {
-        public string AppRuntimeKey(IAppIdentity appIdentity)
+        public string AppCacheKey(IAppIdentity appIdentity)
             => $"{prefix}:{appIdentity.ZoneId}-{appIdentity.AppId}";
     }
 
-    private sealed class ThrowingRuntimeKeyService : IRuntimeKeyService
+    private sealed class ThrowingAppCacheKeyService : IAppCacheKeyService
     {
-        public string AppRuntimeKey(IAppIdentity appIdentity) => throw new InvalidOperationException("No runtime key");
+        public string AppCacheKey(IAppIdentity appIdentity) => throw new InvalidOperationException("No runtime key");
     }
 
     private sealed class FakeAppLoaderTools(IAppsAndZonesLoader loader) : IAppLoaderTools

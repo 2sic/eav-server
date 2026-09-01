@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using ToSic.Eav.Data.Raw.Sys;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Raw;
@@ -8,9 +7,10 @@ namespace ToSic.Eav.Data.Raw;
 /// Options which may be needed to create new <see cref="IEntity"/>s from <see cref="IRawEntity"/>.
 /// </summary>
 /// <remarks>
-/// Added in 15.04
+/// Added in 15.04, accidentally marked [PublicApi]
+/// Re-publishing v22 as [WorkInProgressApi] to avoid confusion.
 /// </remarks>
-[PublicApi]
+[WorkInProgressApi("v22")]
 public class RawConvertOptions
 {
     public RawConvertOptions(

@@ -2,47 +2,27 @@
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-public class ItemIdentifier
+public record ItemIdentifier
 {
     /// <summary>
     /// simple entity identifier (to edit existing)...
     /// </summary>
-    public int EntityId { get; set; }
+    public int EntityId { get; init; }
 
     /// <summary>
     ///  the Guid
     /// </summary>
-    public Guid Guid { get; set; } 
+    public Guid Guid { get; init; } 
 
     /// <summary>
     /// the content-type (for new, and finding all fields etc.)
     /// </summary>
-    public string? ContentTypeName { get; set; }
+    public string? ContentTypeName { get; init; }
 
     /// <summary>
     /// Metadata key information
     /// </summary>
-    public JsonMetadataFor? For { get; set; }
-
-    #region Change v17.10 - stop passing Prefill and ClientData back and forth, let the UI remember using clientId
-
-    ///// <summary>
-    ///// Prefill information for the UI to add values to new / empty fields
-    ///// This is not needed on the server, but must be passed through,
-    ///// so it's still attached to this item if in use
-    ///// </summary>
-    //public dynamic Prefill { get; set; }
-
-    ///// <summary>
-    ///// Additional data to preserve during client requests.
-    ///// The contents of which is not important for the server,
-    ///// but the client should get it again on the identifier bundle.
-    ///// </summary>
-    ///// <remarks>Added v16.01</remarks>
-    //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    //public Dictionary<string, object> ClientData { get; set; }
-
-    #endregion
+    public JsonMetadataFor? For { get; init; }
 
     /// <summary>
     /// The client id of the item, used to identify it in the edit-ui.
@@ -52,9 +32,9 @@ public class ItemIdentifier
     /// Goal is to replace sending ClientData and prefill back and forth
     /// </summary>
     [JsonPropertyName("clientId")] // new JS-Case
-    public int ClientId { get; set; }
+    public int ClientId { get; init; }
 
-    public int? DuplicateEntity { get; set; }
+    public int? DuplicateEntity { get; init; }
 
     #region New features in 11.01 adding things in lists
 
@@ -66,21 +46,21 @@ public class ItemIdentifier
     /// or when editing / adding things to an entity-list like slides in a swiper.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Guid? Parent { get; set; }
+    public Guid? Parent { get; init; }
 
     /// <summary>
     /// The field on the parent where this item is anchored. <see cref="Parent"/>
     /// Must be an Entity-List. 
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Field { get; set; }
+    public string? Field { get; init; }
 
 
     /// <summary>
     /// Information if the item should be added to the list or not.
     /// It shouldn't be added if it was already there to begin with. 
     /// </summary>
-    public bool? Add { get; set; }
+    public bool? Add { get; init; }
 
     /// <summary>
     /// Safely access the Add property, with default to false
@@ -91,7 +71,7 @@ public class ItemIdentifier
     /// <summary>
     /// Position of an item inside a field containing an entity list. <see cref="Parent"/>
     /// </summary>
-    public int? Index { get; set; }
+    public int? Index { get; init; }
 
     public int IndexSafeOrFallback(int fallback = 0) => Index ?? fallback; // Fallback should be the max value
 
@@ -100,7 +80,7 @@ public class ItemIdentifier
 
     #region New EditInfo for v13 / Shared Apps
 
-    public EditInfoDto? EditInfo { get; set; }
+    public EditInfoDto? EditInfo { get; init; }
 
     #endregion
 
@@ -114,7 +94,7 @@ public class ItemIdentifier
     /// <remarks>
     /// Added in v14.09 to replace Group.SlotCanBeEmpty
     /// </remarks>
-    public bool IsEmptyAllowed { get; set; }
+    public bool IsEmptyAllowed { get; init; }
 
     /// <summary>
     /// LeaveBlank means that the slot - no matter if new or existing - should be blank and should NOT contain the entity
@@ -123,14 +103,14 @@ public class ItemIdentifier
     /// <remarks>
     /// Added in 14.09 to replace Group.SlotIsEmpty
     /// </remarks>
-    public bool IsEmpty { get; set; }
+    public bool IsEmpty { get; init; }
 
     /// <summary>
     /// If it's a content-block.
     /// Internal property so that we can detect this early on, and then re-use the status. 
     /// </summary>
     [JsonIgnore]
-    public bool IsContentBlockMode { get; set; } = false;
+    public bool IsContentBlockMode { get; init; } = false;
 
     /// <summary>
     /// ContentBlockAppId is currently not used by UI.
@@ -138,23 +118,23 @@ public class ItemIdentifier
     /// Moved from Group.ContentBlockAppId, because "Group" properties are flattened to its parent "Header".
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? ContentBlockAppId { get; set; }
+    public int? ContentBlockAppId { get; init; }
 
     #endregion
 }
 
-public class BundleWithHeader
+public record BundleWithHeader
 {
     public required ItemIdentifier Header { get; init; }     
 }
 
-public class BundleWithHeaderOptional<TEntity>
+public record BundleWithHeaderOptional<TEntity>
 {
-    public ItemIdentifier? Header { get; set; }     
-    public TEntity? Entity { get; set; }
+    public ItemIdentifier? Header { get; init; }     
+    public TEntity? Entity { get; init; }
 
 }
-public class BundleWithHeader<TEntity>: BundleWithHeader
+public record BundleWithHeader<TEntity>: BundleWithHeader
 {
     public required TEntity Entity { get; init; }
 
@@ -168,10 +148,8 @@ public static class ItemIdentifierExtension
     /// <remarks>
     /// ParentOrError property was converted to extension method to avoid exceptions on STJ json deserialization
     /// </remarks>
-    public static Guid GetParentEntityOrError(this ItemIdentifier itemIdentifier)
-    {
-        return itemIdentifier.Parent
-               ?? throw new ArgumentNullException(nameof(itemIdentifier.Parent),
-                   "Trying to access 'Parent' to save in list, but it's null");
-    }
+    public static Guid GetParentEntityOrError(this ItemIdentifier itemIdentifier) =>
+        itemIdentifier.Parent
+        ?? throw new ArgumentNullException(nameof(itemIdentifier.Parent),
+            "Trying to access 'Parent' to save in list, but it's null");
 }

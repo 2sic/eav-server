@@ -13,7 +13,7 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// Important: everything is **functional** meaning that object given in will never be modified.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class ValueListAssembler
+public class ValueListAssembler(): ServiceWithSetup<DataAssemblerOptions>("DTA.ValLst")
 {
     public IImmutableList<IValue> Replace(IEnumerable<IValue> values, IValue? oldValueOrNullToAdd, IValue newValue)
     {

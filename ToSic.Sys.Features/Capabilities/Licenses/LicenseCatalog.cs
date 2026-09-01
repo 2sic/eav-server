@@ -19,6 +19,7 @@ using ToSic.Sys.Run.GlobalState;
 
 namespace ToSic.Sys.Capabilities.Licenses;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LicenseCatalog(ILogStore logStore)
     : GlobalCatalogBase<FeatureSet.FeatureSet>(logStore, "Sys.LicCat", new())
 {

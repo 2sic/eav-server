@@ -11,7 +11,7 @@ using ToSic.Eav.Serialization.Sys;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
+public class WorkEntityVersioning : ServiceWithSetup<IAppWorkContext>
 {
     private readonly LazySvc<ImportService> _import;
     public AppCachePurger AppCachePurger { get; }
@@ -21,12 +21,12 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
         : base("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import])
     {
         AppCachePurger = appCachePurger;
-        _jsonSerializer = jsonSerializer.SetInit(j => j.SetApp(AppWorkCtx.AppReader));
-        _import = import.SetInit(i => i.Init(AppWorkCtx.ZoneId, AppWorkCtx.AppId, false, false));
+        _jsonSerializer = jsonSerializer.SetInit(j => j.SetApp(MyOptions.AppReader));
+        _import = import.SetInit(i => i.Init(MyOptions.ZoneId, MyOptions.AppId, false, false));
     }
 
 
-    public List<ItemHistory> VersionHistory(int id, bool includeData = true) => AppWorkCtx.DbStorage.Versioning.GetHistoryList(id, includeData);
+    public List<ItemHistory> VersionHistory(int id, bool includeData = true) => MyOptions.DbStorage.Versioning.GetHistoryList(id, includeData);
 
     /// <summary>
     /// Restore an Entity to the specified Version by creating a new Version using the Import
@@ -40,11 +40,11 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
         _import.Value.ImportIntoDb([], new List<Entity> { (Entity)newVersion });
 
         // Delete Draft (if any)
-        var entityDraft = AppWorkCtx.DbStorage.Publishing.GetDraftBranchEntityId(entityId);
+        var entityDraft = MyOptions.DbStorage.Publishing.GetDraftBranchEntityId(entityId);
         if (entityDraft.HasValue)
-            AppWorkCtx.DbStorage.Entities.DeleteEntities([entityDraft.Value]);
+            MyOptions.DbStorage.Entities.DeleteEntities([entityDraft.Value]);
 
-        AppCachePurger.Purge(AppWorkCtx);
+        AppCachePurger.Purge(MyOptions.PureIdentity());
     }
 
 
@@ -67,7 +67,7 @@ public class WorkEntityVersioning : WorkUnitBase<IAppWorkCtxWithDb>
     {
         try
         {
-            var timelineItem = AppWorkCtx.DbStorage.Versioning.GetItem(entityId, transactionId).Json;
+            var timelineItem = MyOptions.DbStorage.Versioning.GetItem(entityId, transactionId).Json;
             if (timelineItem != null) return timelineItem;
             throw new InvalidOperationException(
                 $"EntityId {entityId} with TransactionId {transactionId} not found in History.");

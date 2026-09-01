@@ -15,7 +15,9 @@ public interface IEntityController
     /// Needs edit-permissions, as the item-list can also be accessed from the toolbar in certain cases.
     /// Will do permission checks internally.
     /// </remarks>
-    IEnumerable<Dictionary<string, object>> List(int appId, string contentType);
+
+    // 2rb: replaced by EntitiesAdmin datasource
+    //IEnumerable<Dictionary<string, object>> List(int appId, string contentType);
 
     /// <summary>
     /// Delete an item from the admin-UI

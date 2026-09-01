@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Sys.Capabilities;
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LicenseConstants
 {
     public const int TestLicensesBaseId = 9000;

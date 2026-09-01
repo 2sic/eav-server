@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
 
@@ -114,7 +114,7 @@ public sealed class Apps: CustomDataSource
                 {
                     Id = app.Key,
                     Guid = guid ?? Guid.Empty,
-                    Values = appEnt
+                    Values = appEnt,
                 };
                 return raw;
             })

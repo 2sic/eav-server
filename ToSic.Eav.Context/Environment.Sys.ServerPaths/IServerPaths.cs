@@ -5,6 +5,7 @@ namespace ToSic.Eav.Environment.Sys.ServerPaths;
 /// Goal is that anything on this will be able to provide HttpContext operations as needed
 /// To abstract .net451 and .net core
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IServerPaths
 {
     /// <summary>

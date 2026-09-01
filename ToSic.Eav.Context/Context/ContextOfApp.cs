@@ -29,7 +29,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         LazySvc<AppUserLanguageCheck> LangChecks,
         Generator<IEnvironmentPermission> EnvironmentPermissions,
         LazySvc<AppDataStackService> SettingsStack)
-        : DependenciesRecord(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, SettingsStack]);
+        : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, SettingsStack]);
 
     /// <summary>
     /// Constructor for DI
@@ -67,10 +67,10 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         {
             field = value;
             _appReaderOrNull.Reset();
-            _appSettingsStack.Reset();
-            _settings.Reset();
-            _resources.Reset();
-            _userMayEditGet.Reset();
+            AppSettings = null!;
+            AppResources = null!;
+            AppDataStackService = null!;
+            _userMayEdit.Reset();
         }
     }
 
@@ -80,8 +80,8 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     EffectivePermissions ICurrentContextUserPermissions.Permissions
         => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: UserMayEdit || User.IsContentAdmin);
 
-    private bool UserMayEdit => _userMayEditGet.Get(GetUserMayEdit);
-    private readonly GetOnce<bool> _userMayEditGet = new();
+    private bool UserMayEdit => _userMayEdit.Get(GetUserMayEdit);
+    private readonly LazyGetAndReset<bool> _userMayEdit = new();
 
     private bool GetUserMayEdit()
     {
@@ -122,19 +122,33 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     #endregion
 
     public IAppReader? AppReaderOrNull => _appReaderOrNull.Get(() => AppIdentity == null! ? null : AppServices.AppReaders.TryGet(AppIdentity));
-    private readonly GetOnce<IAppReader?> _appReaderOrNull = new();
+    private readonly LazyGetAndReset<IAppReader?> _appReaderOrNull = new();
 
-    public IAppReader AppReaderRequired => AppReaderOrNull ?? throw new NullReferenceException($"Trying to get AppReader but AppIdentity is null");
+    public IAppReader AppReaderRequired => AppReaderOrNull
+                                           ?? throw new NullReferenceException("Trying to get AppReader but AppIdentity is null");
 
     #region Settings and Resources
 
-    public PropertyStack AppSettings => _settings.Get(() => AppDataStackService.GetStack(RootNameSettings))!;
-    private readonly GetOnce<PropertyStack> _settings = new();
-    public PropertyStack AppResources => _resources.Get(() => AppDataStackService.GetStack(RootNameResources))!;
-    private readonly GetOnce<PropertyStack> _resources = new();
+    [field: AllowNull, MaybeNull]
+    public PropertyStack AppSettings
+    {
+        get => field ??= AppDataStackService.GetStack(RootNameSettings);
+        private set;
+    }
 
-    private AppDataStackService AppDataStackService => _appSettingsStack.Get(() => AppServices.SettingsStack.Value.Init(AppReaderRequired))!;
-    private readonly GetOnce<AppDataStackService> _appSettingsStack = new();
+    [field: AllowNull, MaybeNull]
+    public PropertyStack AppResources
+    {
+        get => field ??= AppDataStackService.GetStack(RootNameResources);
+        private set;
+    }
+
+    [field: AllowNull, MaybeNull]
+    private AppDataStackService AppDataStackService
+    {
+        get => field ??= AppServices.SettingsStack.Value.Init(AppReaderRequired);
+        set;
+    }
 
     #endregion
 }

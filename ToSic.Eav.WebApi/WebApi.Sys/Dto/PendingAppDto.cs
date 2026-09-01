@@ -1,10 +1,14 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Raw;
 
-public class PendingAppDto
+namespace ToSic.Eav.WebApi.Sys.Dto;
+
+public class PendingAppDto : IRawEntityAutoConvert
 {
     // folder as it's stored on the server
     public required string ServerFolder { get; init; }
     // taken from the app.xml
+    [ContentTypeTitle]
     public required string Name { get; init; }
     // taken from the app.xml
     public required string Description { get; init; }

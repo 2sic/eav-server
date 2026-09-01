@@ -15,7 +15,7 @@ public class AppCreator(
     Generator<DbStorage, StorageOptions> db,
     IAppsAndZonesLoaderWithRaw appsAndZonesLoader,
     AppCachePurger appCachePurger,
-    Generator<AppInitializer> appInitGenerator)
+    AppWorkQuick<AppInitializer> appInitGenerator)
     : ServiceBase("Eav.AppBld", connect: [db, appInitGenerator, appCachePurger, appsAndZonesLoader])
 {
     #region Constructor / DI
@@ -37,16 +37,35 @@ public class AppCreator(
     /// <returns></returns>
     public void Create(string appName, string? appGuid = null, int? inheritAppId = null)
     {
-        // check if invalid app-name which should never be created like this
-        if (appName == KnownAppsConstants.ContentAppName || appName == KnownAppsConstants.DefaultAppGuid || string.IsNullOrEmpty(appName) || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$"))
+        var isDefaultAppName = appName is KnownAppsConstants.ContentAppName or KnownAppsConstants.DefaultAppGuid;
+        if (string.IsNullOrEmpty(appName) 
+            || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$") 
+            || isDefaultAppName && !inheritAppId.HasValue)
             throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
 
-        var appId = CreateInDb(appGuid ?? Guid.NewGuid().ToString(), inheritAppId);
+        var appId = isDefaultAppName
+            ? ConfigureExistingDefaultApp(inheritAppId!.Value)
+            : CreateInDb(appGuid ?? Guid.NewGuid().ToString(), inheritAppId);
 
         // must get app from DB directly, not from cache, so no State.Get(...)
-        var appState = appsAndZonesLoader.AppReaderRaw(appId, new());
+        var appReader = appsAndZonesLoader.AppReaderRaw(appId, new());
 
-        appInitGenerator.New().InitializeApp(appState, appName, new());
+        appInitGenerator.New(appReader).InitializeApp(/*appReader,*/ appName, new());
+    }
+
+    private int ConfigureExistingDefaultApp(int inheritAppId)
+    {
+        var l = Log.Fn<int>($"inherit:{inheritAppId}");
+        var dbStorage = db.New(new(_zoneId, null, inheritAppId));
+        var appId = dbStorage.SqlDb.TsDynDataApps
+            .Where(a => a.ZoneId == _zoneId && a.Name == KnownAppsConstants.DefaultAppGuid)
+            .Select(a => a.AppId)
+            .Single();
+
+        dbStorage.App.SetInheritanceAndSave(appId, inheritAppId);
+        appCachePurger.PurgeZoneList();
+        l.A($"default app configured a:{appId}, inherit:{inheritAppId}");
+        return l.Return(appId);
     }
 
     private int CreateInDb(string appGuid, int? inheritAppId)

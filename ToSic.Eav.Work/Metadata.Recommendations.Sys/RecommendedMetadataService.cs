@@ -20,19 +20,10 @@ namespace ToSic.Eav.Metadata.Recommendations.Sys;
 /// </summary>
 /// <remarks>new in v13.02</remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> requirements, GenWorkPlus<WorkInputTypes> inputTypes)
-    : ServiceBase($"{AppConstants.LogName}.MdRead", connect: [requirements])
+public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> requirements, AppWorkChain<WorkInputTypes> inputTypes)
+    : ServiceWithSetup<IAppWorkContext>($"{AppConstants.LogName}.MdRead", connect: [requirements])
 {
-    public void Setup(IAppReader appReader, int appId)
-    {
-        _appReader = appReader;
-        AppId = appId;
-    }
-
-    private IAppReader AppReader => _appReader ?? throw new("Can't use this Read class before setting AppState");
-    private IAppReader? _appReader;
-
-    private int AppId;
+    private IAppReader AppReader => MyOptions.AppReader;
 
 
     public IList<MetadataRecommendation> GetAllowedRecommendations(int targetTypeId, string key, string? recommendedTypeName = null)
@@ -79,7 +70,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
 
         // 2.2 Ask the target if it knows of expected types using `MetadataExpected`
         // Check if this object-type has a specific list of Content-Types which it expects
-        // For example a attribute which says "I want this kind of Metadata"
+        // For example a fieldDef which says "I want this kind of Metadata"
         // Not fully worked out yet...
         // TODO #metadata
         var attachedRecommendations = GetTargetsExpectations(targetTypeId, key)
@@ -114,7 +105,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     private ICollection<RecommendationInfos> TypesWhichDeclareTheyAreForTheTarget(int targetType, string targetKey)
     {
         var l = Log.Fn<ICollection<RecommendationInfos>>();
-        // for type/attribute path comparisons, make sure we have the slashes cleaned
+        // for type/fieldDef path comparisons, make sure we have the slashes cleaned
         var keyForward = (targetKey ?? "").ForwardSlash().Trim();
 
         // Do this #StepByStep to better debug in case of issues
@@ -126,7 +117,9 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 // and it's ServiceProvider is dead at that time, trying to debug
                 try
                 {
-                    var allForDecors = ct.Metadata.GetModels<MetadataForDecorator>()
+                    var allForDecors = ct.Metadata
+                        .GetModels<MetadataForDecorator>()
+                        .OfType<MetadataForDecorator>()
                         .ToListOpt();
                     var allForThisTargetType = allForDecors
                         .Where(dec => dec.TargetType == targetType)
@@ -206,26 +199,26 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
                 return l.ReturnNull("no target");
             case TargetTypes.Attribute:
                 if (!int.TryParse(key, out var attributeId))
-                    return l.ReturnNull("attribute: key is not int");
+                    return l.ReturnNull("fieldDef: key is not int");
 
                 var attribute = AppReader.ContentTypes
                     .SelectMany(ct => ct.Attributes)
                     .FirstOrDefault(attr => attr.AttributeId == attributeId);
 
                 if (attribute == null)
-                    return l.ReturnNull($"attribute '{attributeId}' not found");
+                    return l.ReturnNull($"fieldDef '{attributeId}' not found");
 
                 // figure out what field input type it is
                 var inputType = attribute.InputType;
 
                 // Find the input type definition
-                var inputTypeDef = inputTypes.New(AppId).GetInputTypes()
+                var inputTypeDef = inputTypes.New(MyOptions).GetInputTypes()
                     .FirstOrDefault(it => it.Type.EqualsInsensitive(inputType));
 
                 if (inputTypeDef == null)
                     return l.ReturnNull($"input type '{inputType}' not found");
 
-                var attrMdOnField = GetMetadataExpectedDecorators(inputTypeDef.Metadata, TargetTypes.Attribute, "attached to Attribute", PrioHigh);
+                var attrMdOnField = GetMetadataExpectedDecorators(inputTypeDef.Metadata, TargetTypes.Attribute, "attached to Field", PrioHigh);
 
 
                 return l.Return(attrMdOnField);
@@ -280,6 +273,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
 
         var all = md
             .GetModels<MetadataExpectedDecorator>()
+            .OfType<MetadataExpectedDecorator>()
             .ToListOpt();
 
         if (targetTypeFor > 0)

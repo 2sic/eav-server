@@ -1,5 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.Raw.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Catalog;
 using ToSic.Eav.DataSource.VisualQuery.Sys;
@@ -24,6 +24,7 @@ namespace ToSic.Eav.DataSources.Sys;
 /// </remarks>
 /// <inheritdoc />
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 [VisualQuery(
     NiceName = "System Data",
     NameId = "37cf83f7-5e57-4c4a-9798-a7e1440f99b3",
@@ -142,13 +143,16 @@ public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCa
 
         List<IEntity> result =
         [
-            dataFactory.Create(new RawEntity(new()
+            dataFactory.Create(new RawEntity
             {
-                { "Name", "SystemData DataSource - Error or Source/stream not found." },
-                { nameof(SysDataSource), $"'{SysDataSource}' ({(dsFound ? "" : "not ")}found)" },
-                { nameof(streamName), $"'{streamName}' ({(streamFound ? "" : "not ")}found)" },
-                { "Allowed", allowed ?? "unknown" }
-            }))
+                Values = new Dictionary<string, object?>
+                {
+                    { "Name", "SystemData DataSource - Error or Source/stream not found." },
+                    { nameof(SysDataSource), $"'{SysDataSource}' ({(dsFound ? "" : "not ")}found)" },
+                    { nameof(streamName), $"'{streamName}' ({(streamFound ? "" : "not ")}found)" },
+                    { "Allowed", allowed ?? "unknown" }
+                }
+            })
         ];
 
         return l.Return(result, $"{result.Count}");

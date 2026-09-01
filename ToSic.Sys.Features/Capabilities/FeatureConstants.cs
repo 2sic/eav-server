@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Sys.Capabilities;
 
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureConstants
 {
     //internal const bool AllowUnsignedFeatures = true; // testing mode!
@@ -32,9 +33,13 @@ public class FeatureConstants
 
     public const string RequirementFeature = "feature";
     public const string RequirementSysCapability = "systemcapability";
+    public const string ReqNone = "none";
+    public const string ReqUnknown = "unknown";
 
     // not yet implemented
     public const string ReqLicense = "license";
     public const string ReqPlatform = "platform";
 
+    // wip
+    public const string RequirementUserElevationPrefix = "sec-elevation-";
 }

@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Sys.Requirements;
 
-public interface IRequirementCheck: ISwitchableService
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public interface IRequirementCheck: IHasIdentityNameId
 {
     bool IsOk(Requirement requirement);
 

@@ -3,6 +3,7 @@
 /// <summary>
 /// Helpers used by OData and ConvertToEavLight
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class DataSourceConvertHelper
 {
     /// <summary>

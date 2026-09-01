@@ -4,7 +4,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
 
 public class EditInfoAttributeDto: EditInfoDto
 {
-    public EditInfoAttributeDto(IContentType contentType, IContentTypeAttribute attribute): base(contentType)
+    public EditInfoAttributeDto(IContentType contentType, IContentTypeField fieldDef): base(contentType)
     {
         // If ReadOnly is true, then the base call already found it to be read only, and we don't add anything
         if (ReadOnly)
@@ -16,13 +16,13 @@ public class EditInfoAttributeDto: EditInfoDto
             return;
         }
 
-        // Check if the attribute is inherited from elsewhere #SharedFieldDefinition
-        var sysSettings = attribute.SysSettings;
+        // Check if the fieldDef is inherited from elsewhere #SharedFieldDefinition
+        var sysSettings = fieldDef.SysSettings;
         if (sysSettings == null) return;
         ReadOnly = sysSettings.Inherit != null || sysSettings.InheritMetadataMainGuid != null;
         if (!ReadOnly) return;
 
-        ReadOnlyMessage = "this attribute inherits from another attribute";
+        ReadOnlyMessage = "this fieldDef inherits from another fieldDef";
         EnableInherit = true;
         DisableSort = false;
         DisableDelete = false;

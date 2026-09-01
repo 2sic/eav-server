@@ -8,6 +8,7 @@ namespace ToSic.Eav.DataSource.OData;
 /// <remarks>
 /// WARNING: This is called, but it appears that the result is never used!!!
 /// </remarks>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class ODataSelectForQueryEngineProbablyNotUsed
 {
     public ODataSelectForQueryEngineProbablyNotUsed(ICollection<string>? select)

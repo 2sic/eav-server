@@ -69,7 +69,7 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
                     break;
                 default:
                     throw new(
-                        $"Tried to create attribute '{attrName}' but the type is not known: '{attrDef.Type}'");
+                        $"Tried to create fieldDef '{attrName}' but the type is not known: '{attrDef.Type}'");
             }
 
             // todo: maybe one day get default-values and insert them if not supplied by JS
@@ -80,7 +80,7 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
         return cleanedNewItem;
     }
 
-    // add "PublishState" in "values" (before it can be removed when there is no "PublishState" attribute)
+    // add "PublishState" in "values" (before it can be removed when there is no "PublishState" fieldDef)
     private void AddPublishState(IDictionary<string, object?> values, IDictionary<string, object> cleaned)
     {
         if (!values.TryGetValue(SaveApiAttributes.SavePublishingState, out var value) || value == null)
@@ -91,11 +91,11 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
     /// <summary>
     /// In case of an error, show a nicer, consistent message
     /// </summary>
-    /// <param name="attributeDefinition"></param>
+    /// <param name="fieldDef"></param>
     /// <param name="foundValue"></param>
-    private static Exception ValueMappingError(IContentTypeAttribute attributeDefinition, object foundValue)
+    private static Exception ValueMappingError(IContentTypeField fieldDef, object foundValue)
         => new(
-            $"Tried to create {attributeDefinition.Name} and couldn't convert to correct {attributeDefinition.Type}: '{foundValue}'");
+            $"Tried to create {fieldDef.Name} and couldn't convert to correct {fieldDef.Type}: '{foundValue}'");
 
     /// <summary>
     /// Takes input from JSON which could be in many formats like Category=ID or Category={id=#} 

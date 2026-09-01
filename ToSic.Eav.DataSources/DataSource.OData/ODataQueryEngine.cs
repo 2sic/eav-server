@@ -9,6 +9,7 @@ namespace ToSic.Eav.DataSource.OData;
 /// Translates OData system query options into an EAV data-source pipeline using the existing ValueFilter / ValueSort components.
 /// The result contains both the filtered <see cref="IEntity"/> list and a lightweight projection honouring the select option.
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
 {
     private readonly DataSourceOptionConverter _optionConverter = new();
@@ -189,7 +190,7 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         if (options?.MyConfigValues == null)
             throw new InvalidOperationException("Failed to convert ValueFilter configuration to data-source options.");
 
-        return dataSourcesService.Create<ValueFilter>(/*attach: upstream, */options: options.WithAttach(upstream));
+        return dataSourcesService.Create<ValueFilter>(options: options.WithAttach(upstream));
     }
 
     private IDataSource ApplyOrderBy(IDataSource upstream, OrderByClause? clause)
@@ -217,7 +218,7 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
         if (options?.MyConfigValues == null)
             throw new InvalidOperationException("Failed to convert ValueSort configuration to data-source options.");
 
-        return dataSourcesService.Create<ValueSort>(/*attach: upstream,*/ options: options.WithAttach(upstream));
+        return dataSourcesService.Create<ValueSort>(options: options.WithAttach(upstream));
     }
 
     private static string ResolveIdentifier(Expr? expression)
@@ -266,6 +267,7 @@ public sealed class ODataQueryEngine(IDataSourcesService dataSourcesService)
 /// </summary>
 /// <param name="Items"></param>
 /// <param name="Projection"></param>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record QueryExecutionResult(IReadOnlyList<IEntity> Items, IReadOnlyList<IDictionary<string, object?>> Projection);
 
 

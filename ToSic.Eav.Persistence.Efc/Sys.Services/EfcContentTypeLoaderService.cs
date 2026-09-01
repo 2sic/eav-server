@@ -1,9 +1,9 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.Sys.FileSystemState;
 using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Apps.Sys.State;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Build.Sys;
-using ToSic.Eav.Data.Sys.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.ImportExport.Json.Sys;
@@ -16,9 +16,9 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 
 internal class EfcContentTypeLoaderService(
     EfcAppLoaderService efcAppLoader,
-    Generator<IAppContentTypesLoader> appFileContentTypesLoader,
+    Generator<IAppContentTypesLoader, AppFileSystemLoaderOptions> appFileContentTypesLoader,
     Generator<IDataDeserializer> dataDeserializer,
-    ContentTypeAssembler typeAssembler,
+    ContentTypeAssemblyKit ctAssemblyKit,
     IAppStateCacheService appStates,
     ISysFeaturesService featuresSvc)
     : HelperBase(efcAppLoader.Log, "Efc.CtLdr")
@@ -66,8 +66,8 @@ internal class EfcContentTypeLoaderService(
     {
         var l = Log.Fn<PartialData>(timer: true);
         // must create a new loader for each app
-        var loader = appFileContentTypesLoader.New();
-        loader.Init(appReader, efcAppLoader.LogSettings);
+        var loader = appFileContentTypesLoader.New(new(appReader, efcAppLoader.LogSettings));
+        //loader.Init(new(appReader, efcAppLoader.LogSettings));
         var types = loader.TypesAndEntities(entitiesSource: appReader.GetCache());
         return l.ReturnAsOk(types);
     }
@@ -121,7 +121,7 @@ internal class EfcContentTypeLoaderService(
                 Attributes = set.TsDynDataAttributes
                     .Where(a => a.TransDeletedId == null) // only not-deleted attributes!
                     .OrderBy(a => a.SortOrder)
-                    .Select(a => typeAssembler.Attribute.Create(
+                    .Select(a => ctAssemblyKit.Field.Create(
                         appId: appId,
                         name: a.StaticName,
                         type: ValueTypeHelpers.Get(a.Type),
@@ -170,8 +170,8 @@ internal class EfcContentTypeLoaderService(
                 .ToDictionary(
                     s => s.ContentTypeId,
                     s => s.TsDynDataAttributes
-                        .Select(a => typeAssembler
-                            .Attribute.Create(
+                        .Select(a => ctAssemblyKit
+                            .Field.Create(
                                 appId: appId,
                                 name: a.StaticName,
                                 type: ValueTypeHelpers.Get(a.Type),
@@ -212,7 +212,7 @@ internal class EfcContentTypeLoaderService(
                 var metaSource = MetadataProvider.Create(metaSourceFinder);
                 var metaData = new ContentTypeMetadata(set.StaticName, title: set.Name, source: metaSource);
 
-                return typeAssembler.Type.Create(
+                return ctAssemblyKit.Type.Create(
                     appId: appId,
                     name: set.Name,
                     nameId: set.StaticName,

@@ -7,7 +7,6 @@
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
-[ShowApiWhenReleased(ShowApiMode.Never)]
 // ReSharper disable once InconsistentNaming
 public class InternalApi_DoNotUse_MayChangeWithoutNotice: Attribute
 {

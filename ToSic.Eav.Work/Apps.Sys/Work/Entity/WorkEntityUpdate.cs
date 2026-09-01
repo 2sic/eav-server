@@ -8,8 +8,8 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntityUpdate(
     DataAssembler dataAssembler,
     LazySvc<EntitySaver> entitySaverLazy,
-    GenWorkDb<WorkEntitySave> workEntSave)
-    : WorkUnitBase<IAppWorkCtxWithDb>("AWk.EntUpd", connect: [dataAssembler, entitySaverLazy, workEntSave])
+    AppWorkChain<WorkEntitySave> workEntSave)
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntUpd", connect: [dataAssembler, entitySaverLazy, workEntSave])
 {
     /// <summary>
     /// Update an entity
@@ -18,7 +18,7 @@ public class WorkEntityUpdate(
     /// <param name="values"></param>
     /// <param name="publishing">Optionally specify that it should be a draft change</param>
     public void UpdateParts(int id, Dictionary<string, object> values, EntitySavePublishing publishing) =>
-        Log.Do($"id:{id}", () => UpdatePartsFromValues(AppWorkCtx.AppReader.List.FindRepoId(id)!, values!, publishing));
+        Log.Do($"id:{id}", () => UpdatePartsFromValues(MyOptions.AppReader.List.FindRepoId(id)!, values!, publishing));
 
     /// <summary>
     /// Update an entity
@@ -27,7 +27,7 @@ public class WorkEntityUpdate(
     /// <param name="partialEntity"></param>
     /// <param name="publishing">specify that it should be a draft change</param>
     public void UpdateParts(int id, IEntity partialEntity, EntitySavePublishing publishing) =>
-        Log.Do($"id:{id}", () => UpdatePartFromEntity(AppWorkCtx.AppReader.List.FindRepoId(id)!, partialEntity, publishing));
+        Log.Do($"id:{id}", () => UpdatePartFromEntity(MyOptions.AppReader.List.FindRepoId(id)!, partialEntity, publishing));
 
 
     /// <summary>
@@ -59,7 +59,7 @@ public class WorkEntityUpdate(
         if (partialEntity == null)
             return l.ReturnFalse("nothing to import");
 
-        var entSaver = workEntSave.New(AppWorkCtx);
+        var entSaver = workEntSave.New(MyOptions);
         var saveOptions = entSaver.SaveOptions() with
         {
             PreserveUntouchedAttributes = true,
@@ -81,6 +81,6 @@ public class WorkEntityUpdate(
         if (values == null || !values.Any())
             return l.ReturnNull("nothing to save");
 
-        return l.Return(dataAssembler.Entity.Create(appId: AppWorkCtx.AppId, contentType: orig.Type, attributes: dataAssembler.AttributeList.Finalize(values!)), "ok");
+        return l.Return(dataAssembler.Entity.Create(appId: MyOptions.AppId, contentType: orig.Type, attributes: dataAssembler.AttributeList.Finalize(values!)), "ok");
     }
 }

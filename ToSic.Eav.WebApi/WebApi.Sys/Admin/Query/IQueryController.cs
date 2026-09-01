@@ -4,13 +4,15 @@ namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 
 public interface IQueryController
 {
+    // Replaced by DataSource System.DataSources through query System.SysData.
+    //IEnumerable<DataSourceDto> DataSources(int zoneId, int appId);
+
+    // Replaced by DataSource System.QueryDefinition through query System.SysData.
+    //QueryDefinitionDto Get(int appId, int? id = null);
+
     void Clone(int appId, int id);
 
     bool Delete(int appId, int id);
-
-    IEnumerable<DataSourceDto> DataSources(int zoneId, int appId);
-
-    QueryDefinitionDto Get(int appId, int? id = null);
 
     bool Import(EntityImportDto args);
 

@@ -10,6 +10,7 @@ namespace ToSic.Eav.LookUp.Sources.Sys;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [PrivateApi("doesn't seem to be used! note: used to be public, but it's not clear why anybody should use it. ATM not used in our code base - was only used for Queries, and that has a renamed copy LookUpInQueryMetadata")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LookUpInMetadata : LookUpInEntity
 {
     private readonly IMetadataSource _metaDataSource = null!; // dummy, code doesn't work yet

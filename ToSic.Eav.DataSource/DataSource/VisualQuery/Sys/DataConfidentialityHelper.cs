@@ -33,7 +33,7 @@ internal static class DataConfidentialityHelper
             DataConfidentiality.Public => true,
             // System & Secret requires system admin - already handled above, but keeping for clarity
             DataConfidentiality.System => user.IsSystemAdmin,
-            DataConfidentiality.Secret => user.IsSystemAdmin,
+            //DataConfidentiality.Secret => user.IsSystemAdmin,
             // Confidential requires at least site admin
             DataConfidentiality.Confidential => user.IsSiteAdmin,
             // Internal requires at least content editor

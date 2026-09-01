@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.Relationships;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
@@ -16,7 +15,7 @@ internal class EntityLoader(
     EfcAppLoaderService appLoader,
     Generator<IDataDeserializer> dataDeserializer,
     DataAssembler dataAssembler,
-    ContentTypeAssembler typeAssembler,
+    ContentTypeAssemblyKit ctAssemblyKit,
     ISysFeaturesService featuresSvc)
     : HelperBase(appLoader.Log, "Efc.EntLdr")
 {
@@ -89,7 +88,7 @@ internal class EntityLoader(
 
         var logDetails = appLoader.LogSettings is { Enabled: true, Details: true };
 
-        var buildHelper = new EntityBuildHelper(dataAssembler, typeAssembler, builder.Reader, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, Log);
+        var buildHelper = new EntityBuildHelper(dataAssembler, ctAssemblyKit, builder.Reader, serializer, relatedEntities, attributes, appLoader.PrimaryLanguage, Log);
 
         var entityTimer = Stopwatch.StartNew();
         foreach (var rawEntity in rawEntities)
@@ -129,7 +128,7 @@ internal class EntityLoader(
 
         if (appId == KnownAppsConstants.PresetAppId
             || appId == KnownAppsConstants.GlobalPresetAppId)
-            return l.Return(new List<TempEntity>(), "preset app, skip DB query");
+            return l.Return([], "preset app, skip DB query");
 
         var entitiesQuery = EntityQueries.EntitiesOfAppQuery(appId, entityIds, filterJsonType);
 

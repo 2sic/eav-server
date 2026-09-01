@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Sys;
 
 namespace ToSic.Eav.DataSource;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class DataSourceOptionsExtensions
 {
     public static IDataSourceOptions WithAttach(this IDataSourceOptions? options, IDataSourceLinkable? attach)

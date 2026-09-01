@@ -34,12 +34,13 @@ public static class StartupEavApps
         services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
         services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
         services.TryAddSingleton<IAppsCache, AppsCache>();
+        services.TryAddKeyedSingleton<IAppsCache, AppsCache>(AppsCache.DefaultNameId); // New v22, preparing to use Keyed instead of Switchable
         services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
         services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
 
         services.TryAddTransient<AppDataStackService>();
 
-        services.TryAddTransient<IRuntimeKeyService, RuntimeKeyServiceDefault>();
+        services.TryAddTransient<IAppCacheKeyService, AppCacheKeyServiceDefault>();
 
         return services;
     }

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
@@ -9,14 +10,17 @@ namespace ToSic.Eav.DataSources.Sys;
 // Note: ATM serves as Raw and as DTO, but should change soon.
 // once we adjust the front end to use the query
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
+[ContentType(
+    Guid = "8b668008-c6f9-47e5-a5b7-cb9b521192c3",
+    Description = "App Stack Value Information",
+    Name = TypeName
+)]
+public class AppStackDataRaw(PropertyDumpItem original) : IRawEntityConvertible
 {
     public const string TypeName = "AppStack";
-    public const string TitleFieldName = AttributeNames.TitleNiceName;
 
     public static DataFactoryOptions Options = new()
     {
-        TitleField = TitleFieldName,
         TypeName = TypeName,
     };
 
@@ -24,6 +28,7 @@ public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
 
     public int Priority { get; set; } = original.SourcePriority;
 
+    [ContentTypeTitle]
     public string Path { get; set; } = original.Path;
 
     public object? Value { get; set; } = original.Property?.Result;
@@ -35,18 +40,28 @@ public class AppStackDataRaw(PropertyDumpItem original) : RawEntityBase
                                                 .Count()
                                             ?? 0; // do not count "duplicate" by SourceName
 
-    public override IDictionary<string, object?> Attributes(RawConvertOptions options)
+
+    IRawEntityConverter IRawEntityConvertible.GetConverter() => Converter;
+
+    private static IRawEntityConverter Converter { get; } = new RawEntityConverterFactory<AppStackDataRaw>((source, options) =>
+        new RawEntity
+        {
+            Values = GetValues(source, options)
+        });
+
+    private static IDictionary<string, object?> GetValues(AppStackDataRaw data, RawConvertOptions options)
     {
         var attributes = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase)
         {
-            { AttributeNames.TitleNiceName, Path },
-            { nameof(Source), Source },
-            { nameof(Priority), Priority },
-            { nameof(Type), Type },
-            { nameof(TotalResults), TotalResults },
+            { AttributeNames.TitleNiceName, data.Path },
+            { nameof(Path), data.Path },
+            { nameof(Source), data.Source },
+            { nameof(Priority), data.Priority },
+            { nameof(Type), data.Type },
+            { nameof(TotalResults), data.TotalResults },
         };
         if (options.ShouldAddKey(nameof(Value)))
-            attributes[nameof(Value)] = Value;
+            attributes[nameof(Value)] = data.Value;
         return attributes;
     }
 }

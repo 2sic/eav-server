@@ -25,6 +25,9 @@ namespace ToSic.Sys.Capabilities.Fingerprints;
 /// <summary>
 /// Class responsible for generating the fingerprint
 /// </summary>
+/// <remarks>
+/// Must be `sealed` to prevent overriding, as that would allow changing the fingerprint generation and thus circumvent licensing features in EAV and 2sxc.
+/// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IGlobalConfiguration> globalConfig)
     : ServiceBase("Sys.SysFpr", connect: [platform]), IFingerprint

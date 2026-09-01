@@ -26,5 +26,5 @@ public record EnterpriseFingerprint
             ? (true, $"License ok; For: '{signatureOriginal}'")
             : (false, $"Fingerprint Stored/Signed: '{Fingerprint}'; Expected: '{expected}'");
     });
-    private readonly GetOnce<(bool Valid, string Message)> _validity = new();
+    private readonly LazyGet<(bool Valid, string Message)> _validity = new();
 }

@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.WebApi.Sys.Dto;
-
-namespace ToSic.Eav.WebApi.Sys.Admin;
+﻿namespace ToSic.Eav.WebApi.Sys.Admin;
 
 public interface IFieldController
 {
@@ -16,15 +13,7 @@ public interface IFieldController
     /// <param name="index">position in the field-list</param>
     /// <returns></returns>
     int Add(int appId, int contentTypeId, string staticName, string type, string inputType, int index);
-
-    /// <summary>
-    /// Request available data-types in this app
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <returns></returns>
-    string[] DataTypes(int appId);
-
-
+    
     /// <summary>
     /// Delete a field / attribute
     /// </summary>
@@ -34,32 +23,6 @@ public interface IFieldController
     /// <returns></returns>
     bool Delete(int appId, int contentTypeId, int attributeId);
 
-
-    /// <summary>
-    /// Get the fields of a content-type
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <param name="staticName"></param>
-    /// <returns></returns>
-    IEnumerable<ContentTypeFieldDto> All(int appId, string staticName);
-
-
-    /// <summary>
-    /// Get a list of all known input types in this app.
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <returns></returns>
-    /// <remarks>
-    /// It's important to note that each app could have its own additional input types.
-    /// </remarks>
-    ICollection<InputTypeInfo> InputTypes(int appId);
-
-    /// <summary>
-    /// Reserved field names which shouldn't be used in content-type fields. Also contains information why a name is reserved.
-    /// </summary>
-    /// <returns></returns>
-    Dictionary<string, string> ReservedNames();
-        
     /// <summary>
     /// Rename an field
     /// </summary>
@@ -89,8 +52,6 @@ public interface IFieldController
 
     #region Shared Field Definitions
 
-    IEnumerable<ContentTypeFieldDto> GetSharedFields(int appId, int attributeId = default);
-
     /// <summary>
     /// Configure field sharing settings WIP #SharedFieldDefinition
     /// </summary>
@@ -109,10 +70,6 @@ public interface IFieldController
     bool Inherit(int appId, int attributeId, Guid inheritMetadataOf);
 
     bool AddInheritedField(int appId, int contentTypeId, string sourceType, Guid sourceField, string name);
-
-    IEnumerable<ContentTypeFieldDto> GetAncestors(int appId, int attributeId);
-
-    IEnumerable<ContentTypeFieldDto> GetDescendants(int appId, int attributeId);
 
     #endregion
 }

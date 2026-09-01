@@ -14,7 +14,6 @@ using ToSic.Eav.WebApi.Sys.Security;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Users;
-using ToSic.Sys.Wrappers;
 
 #if NETFRAMEWORK
 using System.Web.Http;
@@ -39,11 +38,11 @@ public class ContentExportApi(
     public ContentExportApi Init(int appId)
     {
         var l = Log.Fn<ContentExportApi>($"For app: {appId}");
-        _appCtx = appWorkCtxSvc.Context(appId);
+        _appCtx = appWorkCtxSvc.ContextNew(appId);
         return l.Return(this);
     }
 
-    private IAppWorkCtx _appCtx = null!;
+    private IAppWorkContext _appCtx = null!;
 
     public (string FileContents, string FileName) ExportContent(IUser user,
         string language,
@@ -66,7 +65,7 @@ public class ContentExportApi(
         try
         {
             if (exportSelection == ExportSelection.Selection && !string.IsNullOrWhiteSpace(selectedIds))
-                ids = selectedIds!.Split(',').Select(int.Parse).ToArray();
+                ids = selectedIds.CsvToArrayWithoutEmpty().Select(int.Parse).ToArray();
         }
         catch (Exception e)
         {
@@ -200,7 +199,12 @@ public class ContentExportApi(
     private ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfigGuid)
     {
         var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfigGuid}");
-        var systemExportConfiguration = _appCtx.AppReader.List.GetModel<ExportConfiguration>(exportConfigGuid, /*nullIfNull: true,*/ nullHandling: ModelNullHandling.PreferNull);
+        var systemExportConfiguration = _appCtx.AppReader.List.GetModel<ExportConfiguration>(exportConfigGuid,
+            options: new()
+            {
+                NullHandling = NullHandling.ReturnNull,
+            }
+            /*nullHandling: ModelNullHandling.PreferNull*/);
         return systemExportConfiguration is not null
             ? l.ReturnAsOk(systemExportConfiguration)
             : throw l.Ex(new KeyNotFoundException($"ExportConfiguration:{exportConfigGuid} is missing"));

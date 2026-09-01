@@ -17,4 +17,6 @@ public interface IWrapper<out T>: IWrapperWip
     T? GetContents();
 }
 
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IWrapperWip;

@@ -1,0 +1,14 @@
+﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
+
+/// <summary>
+/// Special **Decorator** for Content-Types.
+/// If added, it can contain descriptions for system attributes such as "ID" which would otherwise
+/// just have a default description.
+/// </summary>
+/// <param name="vAttributes"></param>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public class ContentTypeBuiltInAttributesDecorator(IDictionary<string, IContentTypeField> vAttributes) : IDecorator<IContentType>
+{
+    public IDictionary<string, IContentTypeField> Attributes => vAttributes;
+}

@@ -8,13 +8,13 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
-    : WorkUnitBase<IAppWorkCtxWithDb>("Wrk.EntDel", connect: [stateBuilder])
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntDel", connect: [stateBuilder])
 {
     public bool Delete(Guid guid, bool force = false)
     {
         var l = Log.Fn<bool>($"delete guid:{guid}");
         // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
-        var idToDelete = AppWorkCtx.DbStorage.Entities.GetStandaloneDbEntityStub(guid, preferUntracked: true).EntityId;
+        var idToDelete = MyOptions.DbStorage.Entities.GetStandaloneDbEntityStub(guid, preferUntracked: true).EntityId;
         return l.Return(Delete(idToDelete, force: force));
     }
 
@@ -64,14 +64,14 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         // then delete entities with metadata without app cache purge
         var repositoryIds = deleteIds.ToArray();
         var ok = false;
-        var dc = AppWorkCtx.DbStorage;
+        var dc = MyOptions.DbStorage;
         dc.DoButSkipAppCachePurge(() => ok = dc.Entities.DeleteEntities(repositoryIds, true, true));
 
         // remove entity from cache
         // introduced in v15.05 to reduce work on entity delete
         // in past we PurgeApp in whole on each entity delete
         // this should be much faster, but side effects are possible.
-        var builder = stateBuilder.New().Init(AppWorkCtx.AppReader.GetCache());
+        var builder = stateBuilder.New().Init(MyOptions.AppReader.GetCache());
         builder.RemoveEntities(repositoryIds, true);
 
         return l.Return(ok);
@@ -85,10 +85,10 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
 
         // Reuse centralized versioning helper which enriches history JSON with inbound parents.
         // Must happen BEFORE delete, as delete will remove inbound parent relationships.
-        var parentRef = DbVersioning.ParentRefForApp(AppWorkCtx.AppId);
+        var parentRef = DbVersioning.ParentRefForApp(MyOptions.AppId);
 
         var items = entityIds
-            .Select(id => (Id: id, Entity: AppWorkCtx.AppReader.List.FindRepoId(id)))
+            .Select(id => (Id: id, Entity: MyOptions.AppReader.List.FindRepoId(id)))
             .Where(x => x.Entity != null)
             .Select(x => (
                 Entity: x.Entity!,
@@ -101,18 +101,18 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
         if (items.Count == 0)
             return;
 
-        var historyEntries = AppWorkCtx.DbStorage.Versioning.PrepareHistoryEntriesWithInboundParents(items);
+        var historyEntries = MyOptions.DbStorage.Versioning.PrepareHistoryEntriesWithInboundParents(items);
         if (historyEntries.Count == 0)
             return;
 
-        AppWorkCtx.DbStorage.Versioning.Save(historyEntries);
+        MyOptions.DbStorage.Versioning.Save(historyEntries);
         l.Done();
     }
 
 
     private void CollectMetaDataIdsRecursively(int id, ref List<int> metaDataIds)
     {
-        var childrenMetaDataIds = AppWorkCtx.AppReader.List.FindRepoId(id)!
+        var childrenMetaDataIds = MyOptions.AppReader.List.FindRepoId(id)!
             .Metadata
             .Select(md => md.EntityId)
             .ToList();
@@ -148,7 +148,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     {
         foreach (var id in ids)
         {
-            var found = AppWorkCtx.AppReader.List.FindRepoId(id)!;
+            var found = MyOptions.AppReader.List.FindRepoId(id)!;
             if (contentType != null && found.Type.Name != contentType && found.Type.NameId != contentType)
                 throw new KeyNotFoundException($"Can't find {id}of type '{contentType}', will not delete.");
         }
@@ -175,7 +175,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     {
         var canDeleteList = new Dictionary<int, (bool HasMessages, string Messages)>();
 
-        var relationships = AppWorkCtx.AppReader.GetRelationships();
+        var relationships = MyOptions.AppReader.GetRelationships();
 
         foreach (var entityId in ids)
         {
