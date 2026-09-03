@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.Boot;
 using ToSic.Sys.Configuration;
+using ToSic.Sys.Documentation;
 
 namespace ToSic.Sys.Run.Startup;
 
@@ -25,7 +26,6 @@ public static partial class StartupSysCore
         return services
             .AddSysCoreBoot()
             .AddSysCoreLogging()
-            .AddSysCoreDiServiceSwitchers()
             .AddSysCoreDi();
     }
 

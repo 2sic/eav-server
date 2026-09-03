@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.DI;
+using ToSic.Sys.Services;
 
 namespace ToSic.Sys.Run.Startup;
 
@@ -28,19 +30,6 @@ public static partial class StartupSysCore
         // Empty MyServices
         services.TryAddTransient<DependenciesEmpty>();
 
-        return services;
-    }
-
-    /// <summary>
-    /// Add Service Switchers
-    /// </summary>
-    public static IServiceCollection AddSysCoreDiServiceSwitchers(this IServiceCollection services)
-    {
-        // v22 - removing these; wait for AppsCache to be updated to remove all
-        // #DropServiceSwitcherV22
-        services.TryAddTransient(typeof(ServiceSwitcher<>));
-        //services.TryAddScoped(typeof(ServiceSwitcherScoped<>)); // note: it's for scoped, and we must use another object name here
-        services.TryAddTransient(typeof(ServiceSwitcherSingleton<>)); // note: it's for singletons, but the service is transient on purpose!
         return services;
     }
 }
