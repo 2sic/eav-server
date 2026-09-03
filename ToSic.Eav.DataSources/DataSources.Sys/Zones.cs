@@ -38,15 +38,11 @@ public sealed class Zones: CustomDataSourceAdvanced
     public Zones(Dependencies services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [zoneMapper, appsCatalog])
     {
-        _zoneMapper = zoneMapper;
-        _appsCatalog = appsCatalog;
-        ProvideOut(GetList);
+        ProvideOut(() => GetList(zoneMapper, appsCatalog));
     }
-    private readonly IZoneMapper _zoneMapper;
-    private readonly IAppsCatalog _appsCatalog;
 
 
-    private IImmutableList<IEntity> GetList()
+    private IImmutableList<IEntity> GetList(IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
         var dataFactory = DataFactory.SpawnNew(options: new()
@@ -57,12 +53,12 @@ public sealed class Zones: CustomDataSourceAdvanced
         });
         
         // Get cache, which manages a list of zones
-        var zones = _appsCatalog.Zones;
+        var zones = appsCatalog.Zones;
         var results = zones.Values
             .OrderBy(z => z.ZoneId)
             .Select(zone =>
             {
-                var site = _zoneMapper.SiteOfZone(zone.ZoneId);
+                var site = zoneMapper.SiteOfZone(zone.ZoneId);
 
                 // Assemble the entities
                 var znData = new Dictionary<string, object?>
