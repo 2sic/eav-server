@@ -14,18 +14,8 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class AppsCacheBase(IAppCacheKeyService appCacheKeyService) : IAppsCacheSwitchable
+public abstract class AppsCacheBase(IAppCacheKeyService appCacheKeyService) : IAppsCache
 {
-    #region Switchable
-
-    public virtual string NameId => "Base";
-
-    public virtual bool IsViable() => true;
-
-    public virtual int Priority => 0;
-
-    #endregion
-
     public abstract IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools);
 
     [PrivateApi]
