@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.ContentTypes;
+﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys;
@@ -18,11 +17,6 @@ namespace ToSic.Eav.DataSources.Sys;
 public class AppStackDataRaw(PropertyDumpItem original) : IRawEntityConvertible
 {
     public const string TypeName = "AppStack";
-
-    public static DataFactoryOptions Options = new()
-    {
-        TypeName = TypeName,
-    };
 
     public string Source { get; set; } = original.SourceName;
 

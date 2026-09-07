@@ -23,7 +23,7 @@ namespace ToSic.Eav.DataSources.Sys;
     // HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes"
 )]
 // ReSharper disable once UnusedMember.Global
-public class SystemStack: CustomDataSourceAdvanced
+public class SystemStack: CustomDataSource
 {
     #region Configuration
 
@@ -43,41 +43,44 @@ public class SystemStack: CustomDataSourceAdvanced
 
     #region Constructor / DI / Services
 
-    private readonly IAppReaderFactory _appReadFac;
-    private readonly IZoneCultureResolver _zoneCulture;
-    private readonly IPropertyDumpService _dumpService;
-    private readonly AppDataStackService _dataStackService;
 
     public SystemStack(Dependencies services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture, IPropertyDumpService dumpService)
         : base(services, "Ds.AppStk", connect: [appReadFac, zoneCulture, dataStackService, dumpService])
     {
-        _appReadFac = appReadFac;
-        _zoneCulture = zoneCulture;
-        _dumpService = dumpService;
-        _dataStackService = dataStackService;
-        ProvideOut(GetStack);
+        ProvideOutRaw(
+            () => GetStack(dataStackService, appReadFac, zoneCulture, dumpService),
+            options: () => new()
+            {
+                AppId = AppId,
+                RawConvertOptions = new(addKeys: AddValues ? [nameof(AppStackDataRaw.Value)] : null)
+            }
+        );
     }
 
     #endregion
 
 
-    private IImmutableList<IEntity> GetStack()
+    private IImmutableList<AppStackDataRaw> GetStack(
+        AppDataStackService dataStackService,
+        IAppReaderFactory appReadFac,
+        IZoneCultureResolver zoneCulture,
+        IPropertyDumpService dumpService)
     {
         Configuration.Parse();
 
-        var appState = _appReadFac.Get(this.PureIdentity());
+        var appState = appReadFac.Get(this.PureIdentity());
 
-        var languages = _zoneCulture.SafeLanguagePriorityCodes();
+        var languages = zoneCulture.SafeLanguagePriorityCodes();
 
         var stackName = SystemStackHelpers.GetStackNameOrNull(StackNames) ?? RootNameSettings;
         var viewMixin = GetViewPart(appState, stackName);
 
         // TODO: option to get multiple stacks /etc.
         // Build Sources List
-        var settings = _dataStackService.Init(appState).GetStack(stackName, viewMixin);
+        var settings = dataStackService.Init(appState).GetStack(stackName, viewMixin);
 
         // Dump results
-        var dump = _dumpService.Dump(settings, new("irrelevant", languages, true, Log), "");
+        var dump = dumpService.Dump(settings, new("irrelevant", languages, true, Log), "");
 
         dump = SystemStackHelpers.ApplyKeysFilter(dump, Keys);
 
@@ -86,15 +89,9 @@ public class SystemStack: CustomDataSourceAdvanced
             .ReducePropertiesToRelevantOnes(dump)
             .ToList();
 
-        var asRaw = res2
+        return res2
             .Select(r => new AppStackDataRaw(r))
-            .ToList();
-        // Note: must use configure here, because AppId and AddValues are properties that's not set in the constructor
-        var options = new RawConvertOptions(addKeys: AddValues ? new[] { "Value" } : null);
-        var stackFactory = DataFactory.SpawnNew(options: AppStackDataRaw.Options with { AppId = AppId, RawConvertOptions = options });
-        var converted = stackFactory.Create(asRaw);
-
-        return converted;
+            .ToImmutableOpt();
     }
 
     private IEntity? GetViewPart(IAppReadEntities appState, string stackName)
