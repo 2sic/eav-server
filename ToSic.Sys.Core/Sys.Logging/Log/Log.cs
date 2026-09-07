@@ -101,6 +101,8 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     {
         var e = new Entry(this, message, WrapDepth, code, options);
         AddEntry(e);
+        if (message != null)
+            LogEventBridge.Write(this, e);
         return e;
     }
 

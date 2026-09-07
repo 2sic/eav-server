@@ -45,16 +45,19 @@ public static class LogCallBaseExtensions
         if (logCall?.Log is not Log log)
             return;
 
+        var entry = logCall.Entry;
         log.WrapDepth--;
-        logCall.Entry?.AppendResult(message);
+        entry?.AppendResult(message);
         var final = log.AddInternalReuse(null!, null);
         final.WrapClose = true;
         final.AppendResult(message);
-        if (!logCall.Timer.IsRunning)
-            return;
-        logCall.Timer.Stop();
-        if (logCall.Entry != null)
-            logCall.Entry.Elapsed = logCall.Timer.Elapsed;
+        if (logCall.Timer.IsRunning && entry != null)
+        {
+            logCall.Timer.Stop();
+            entry.Elapsed = logCall.Timer.Elapsed;
+        }
+        if (entry != null)
+            LogEventBridge.Write(log, entry);
     }
 
 }
