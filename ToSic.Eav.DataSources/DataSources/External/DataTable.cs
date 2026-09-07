@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
 using SqlDataTable = System.Data.DataTable;
@@ -12,7 +13,7 @@ namespace ToSic.Eav.DataSources;
 /// This is not meant for VisualQuery, but for code which pre-processes data in a DataTable and then wants to provide it as entities. 
 /// </summary>
 [PublicApi]
-public class DataTable : CustomDataSourceAdvanced
+public class DataTable : CustomDataSource
 {
     // help Link: https://go.2sxc.org/DsDataTable
     #region Configuration-properties
@@ -78,7 +79,15 @@ public class DataTable : CustomDataSourceAdvanced
     [PrivateApi]
     public DataTable(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ExtTbl")
     {
-        ProvideOut(GetEntities);
+        ProvideOutRaw(
+            GetEntities,
+            options: () => new()
+            {
+                AppId = KnownAppsConstants.TransientAppId,
+                TitleField = TitleField,
+                TypeName = ContentType,
+            }
+        );
     }
 
     /// <summary>
@@ -108,37 +117,31 @@ public class DataTable : CustomDataSourceAdvanced
         return this;
     }
 
-    private IImmutableList<IEntity> GetEntities()
+    private IImmutableList<RawEntity> GetEntities()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<IImmutableList<RawEntity>>();
         Configuration.Parse();
 
         l.A($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
-        var result = ConvertToEntityDictionary(Source, ContentType, EntityIdField, TitleField, ModifiedField);
+        var result = ConvertToRaw(Source, EntityIdField, TitleField, ModifiedField);
         return l.Return(result, $"ok: {result.Count}");
     }
 
     /// <summary>
-    /// Convert a DataTable to a Dictionary of EntityModels
+    /// Convert a DataTable to raw entities
     /// </summary>
-    private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string? modifiedField = null)
+    private IImmutableList<RawEntity> ConvertToRaw(SqlDataTable source, string entityIdField, string titleField, string? modifiedField = null)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<IImmutableList<RawEntity>>();
         // Validate Columns
         if (!source.Columns.Contains(entityIdField))
             throw new($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");
         if (!source.Columns.Contains(titleField))
             throw new($"DataTable doesn't contain an EntityTitle Column with Name \"{titleField}\"");
 
-        var tblFactory = DataFactory.SpawnNew(options: new()
-        {
-            AppId = KnownAppsConstants.TransientAppId,
-            TitleField = titleField,
-            TypeName = contentType,
-        });
             
-        // Populate a new Dictionary with EntityModels
-        var result = new List<IEntity>();
+        // Populate raw entities
+        var result = new List<RawEntity>();
 
         foreach (DataRow row in source.Rows)
         {
@@ -156,7 +159,7 @@ public class DataTable : CustomDataSourceAdvanced
                           : values[modifiedField!] as DateTime?)
                       ?? DateTime.MinValue;
 
-            var entity = tblFactory.Create(values, id: entityId, modified: mod);
+            var entity = new RawEntity { Id = entityId, Modified = mod, Values = values };
             result.Add(entity);
         }
 
