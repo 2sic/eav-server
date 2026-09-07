@@ -6,7 +6,6 @@ using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.DataSource.Sys;
-using ToSic.Eav.DataSources.Sys.Types;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -31,13 +30,12 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
 
-public sealed class Attributes: CustomDataSourceAdvanced
+public sealed class Attributes: CustomDataSource
 {
 
     #region Configuration-properties
 
     private const string TypeNameFallbackToTryToUseInStream = "not-configured-try-in"; // can't be blank, otherwise tokens fail
-    private const string AttribContentTypeName = "Attribute";
 	    
     /// <summary>
     /// The content-type name
@@ -54,14 +52,12 @@ public sealed class Attributes: CustomDataSourceAdvanced
     public Attributes(IAppReaderFactory appReaders, Dependencies services)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders])
     {
-        _appReaders = appReaders;
-        ProvideOut(GetList);
+        ProvideOutRaw(() => GetList(appReaders));
     }
-    private readonly IAppReaderFactory _appReaders;
 
-    private IImmutableList<IEntity> GetList()
+    private IImmutableList<AttributeRaw> GetList(IAppReaderFactory appReaders)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<IImmutableList<AttributeRaw>>();
 
         // try to load the content-type - if it fails, return empty list
         var ctName = ContentTypeName;
@@ -77,7 +73,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
             ? In[StreamDefaultName]?.List.ToImmutableOpt()
             : null;
 
-        var appReader = _appReaders.Get(this);
+        var appReader = appReaders.Get(this);
         var firstEntityInStream = useStream
             ? optionalList?.FirstOrDefault()
             : null;
@@ -111,7 +107,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
 
         // todo: when supporting multiple types, consider adding more info what type they are from
         var list = attributes
-            .Select(at => AsDic(
+            .Select(at => AsRaw(
                     name: at.Name,
                     type: at.Attribute.Type,
                     isTitle: at.Attribute.IsTitle,
@@ -131,7 +127,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
             list = TypeNameFallbackToTryToUseInStream == ctName
                 ? firstEntityInStream?.Attributes
                     .OrderBy(atPair => atPair.Key)
-                    .Select(atPair => AsDic(
+                    .Select(atPair => AsRaw(
                             name: atPair.Key,
                             type: atPair.Value.Type,
                             isTitle: false,
@@ -150,9 +146,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
 
         // Create short list of all fields for use in finding additional system fields
         var foundFieldNames = list
-            .Select(dic => dic[nameof(IAttributeType.Name)] as string)
-            .Where(x => x != null)
-            .Cast<string>()
+            .Select(item => item.Name)
             .ToList();
 
         // Add descriptions of system fields such as Id, Created, Modified etc.
@@ -160,19 +154,10 @@ public sealed class Attributes: CustomDataSourceAdvanced
         // ...in reverse order, so ID etc. are on top in the end...
         list = sysFields.Concat(list).ToList();
 
-        // if it didn't work yet, maybe try from stream items
-        var dataFactory = DataFactory.SpawnNew(options: new()
-        {
-            TitleField = nameof(IAttributeType.Title),
-            TypeName = AttribContentTypeName,
-        });
-        var data = list
-            .Select(attribData => dataFactory.Create(attribData))
-            .ToImmutableOpt();
-        return l.Return(data, $"{data.Count}");
+        return l.Return(list.ToImmutableOpt(), $"{list.Count}");
     }
 
-    private static IEnumerable<Dictionary<string, object?>> GetSystemFields(List<IContentType> types, List<string> foundFieldNames)
+    private static IEnumerable<AttributeRaw> GetSystemFields(List<IContentType> types, List<string> foundFieldNames)
     {
         // New 2022-10-17 2dm - Add System fields such as Id, Created, Modified etc.
         // But only if they weren't already added by the content type, so if the ContentType had an "Id" field, we shouldn't override it here.
@@ -197,7 +182,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
                                   ?? (AttributeNames.SystemFieldDescriptions.TryGetValue(sysField.Key, out var desc)
                                       ? desc
                                       : default);
-                return AsDic(
+                return AsRaw(
                     sysField.Key,
                     ValueTypeHelpers.Get(sysField.Value),
                     false,
@@ -211,7 +196,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
         return additions;
     }
 
-    private static Dictionary<string, object?> AsDic(
+    private static AttributeRaw AsRaw(
         string name,
         ValueTypes type,
         bool isTitle,
@@ -219,17 +204,16 @@ public sealed class Attributes: CustomDataSourceAdvanced
         bool builtIn,
         string contentTypeName,
         string? description = default
-    ) => new()
-        {
-            [nameof(IAttributeType.Name)] = name,
-            [nameof(IAttributeType.Type)] = type.ToString(),
-            [nameof(IAttributeType.IsTitle)] = isTitle,
-            [nameof(IAttributeType.SortOrder)] = sortOrder,
-            [nameof(IAttributeType.IsBuiltIn)] = builtIn,
-            [nameof(IAttributeType.Title)] = $"{name} ({type}{(builtIn ? ", built-in" : "")})",
-            [nameof(IAttributeType.ContentType)] = contentTypeName,
-            [nameof(IAttributeType.Description)] = CleanDescription(description),
-        };
+    ) => new(
+        Name: name,
+        Type: type.ToString(),
+        IsTitle: isTitle,
+        SortOrder: sortOrder,
+        IsBuiltIn: builtIn,
+        Title: $"{name} ({type}{(builtIn ? ", built-in" : "")})",
+        ContentType: contentTypeName,
+        Description: CleanDescription(description)
+    );
 
     /// <summary>
     /// Note: this could be done better with RazorBlade, but ATM we don't want to add dependencies just for this.
