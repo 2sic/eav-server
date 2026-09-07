@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys;
@@ -33,7 +34,7 @@ namespace ToSic.Eav.DataSources;
     ],
     HelpLink = "https://go.2sxc.org/DsSql")]
 
-public class Sql : CustomDataSourceAdvanced
+public class Sql : CustomDataSource
 {
     // Note: of the standard SQL-terms, I will only allow exec|execute|select
     // Everything else shouldn't be allowed
@@ -117,7 +118,7 @@ public class Sql : CustomDataSourceAdvanced
     #region Constructor
 
     [PrivateApi]
-    public new record Dependencies(SqlPlatformInfo SqlPlatformInfo, CustomDataSourceAdvanced.Dependencies ParentServices)
+    public new record Dependencies(SqlPlatformInfo SqlPlatformInfo, CustomDataSource.Dependencies ParentServices)
         : DependenciesBase(connect: [SqlPlatformInfo]);
 
     // Important: This constructor must come BEFORE the other constructors
@@ -128,10 +129,17 @@ public class Sql : CustomDataSourceAdvanced
     [PrivateApi]
     public Sql(Dependencies services) : base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql", connect: [services])
     {
-        SqlServices = services;
-        ProvideOut(GetList);
+        ProvideOut(
+            () => GetList(services.SqlPlatformInfo),
+            options: () => new()
+            {
+                AppId = KnownAppsConstants.TransientAppId,
+                TitleField = _titleFieldForConversion,
+                TypeName = ContentType,
+            }
+        );
     }
-    [PrivateApi] protected readonly Dependencies SqlServices;
+    private string _titleFieldForConversion = "";
 
     #endregion
 
@@ -225,9 +233,9 @@ public class Sql : CustomDataSourceAdvanced
     }
 
 
-    private IImmutableList<IEntity> GetList()
+    private object GetList(SqlPlatformInfo sqlPlatformInfo)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<object>();
         CustomConfigurationParse();
 
         var selectSql = SelectCommand;
@@ -246,10 +254,10 @@ public class Sql : CustomDataSourceAdvanced
             {
                 var conStringName = conStringNameRaw.IsEmptyOrWs() ||
                                     conStringNameRaw.EqualsInsensitive(SqlPlatformInfo.DefaultConnectionPlaceholder)
-                    ? SqlServices.SqlPlatformInfo.DefaultConnectionStringName
+                    ? sqlPlatformInfo.DefaultConnectionStringName
                     : conStringNameRaw;
 
-                ConnectionString = SqlServices.SqlPlatformInfo.FindConnectionString(conStringName)
+                ConnectionString = sqlPlatformInfo.FindConnectionString(conStringName)
                     ?? throw new NullReferenceException("Can't find Connection String Name, returned value is null");
             }
             catch(Exception ex)
@@ -264,7 +272,7 @@ public class Sql : CustomDataSourceAdvanced
             return l.ReturnAsError(Error.Create(source: this, title: "Connection Problem",
                 message: "The ConnectionString property is empty / has not been initialized"));
 
-        var list = new List<IEntity>();
+        var list = new List<RawEntity>();
         using (var connection = new SqlConnection(ConnectionString))
         {
             connection.Open();
@@ -312,12 +320,7 @@ public class Sql : CustomDataSourceAdvanced
                                      ?? columNames.FirstOrDefault();
                     l.A($"will use '{casedTitle}' as title field");
 
-                    var sqlFactory = DataFactory.SpawnNew(options: new()
-                    {
-                        AppId = KnownAppsConstants.TransientAppId,
-                        TitleField = casedTitle ?? "Unknown",
-                        TypeName = ContentType,
-                    });
+                    _titleFieldForConversion = casedTitle ?? "Unknown";
 
                     #endregion
 
@@ -334,7 +337,7 @@ public class Sql : CustomDataSourceAdvanced
                             var value = reader[c];
                             return Convert.IsDBNull(value) ? null : value;
                         });
-                        var entity = sqlFactory.Create(values, id: entityId);
+                        var entity = new RawEntity { Id = entityId, Values = values };
                         list.Add(entity);
                     }
 
