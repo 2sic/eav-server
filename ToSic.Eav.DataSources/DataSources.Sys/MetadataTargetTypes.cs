@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource.Sys;
+﻿using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -27,12 +26,12 @@ public class MetadataTargetTypes : CustomDataSource
 
     public MetadataTargetTypes(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
     {
-        ProvideOut(GetList);
+        ProvideOutRaw(GetList);
     }
 
-    private IImmutableList<IEntity> GetList()
+    private IImmutableList<MetadataTargetTypeRaw> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<IImmutableList<MetadataTargetTypeRaw>>();
 
         var publicTargetTypes = Enum
             .GetValues(typeof(TargetTypes))
@@ -57,24 +56,12 @@ public class MetadataTargetTypes : CustomDataSource
             .OrderBy(s => (s.Title.StartsWith("Custom") ? "ZZ" : "") + s.Title)
             .ToList();
 
-        var dataFactory = DataFactory.SpawnNew(options: new()
-        {
-            AppId = 0,
-            TitleField = AttributeNames.TitleNiceName,
-            TypeName = "MetadataTargetTypes",
-        });
-
-
         var list = publicTargetTypes
-            .Select(set => dataFactory.Create(
-                    new Dictionary<string, object?>
-                    {
-                        { AttributeNames.TitleNiceName, set.Title },
-                        { AttributeNames.NameIdNiceName, set.TargetType.ToString() }
-                    },
-                    id: (int)set.TargetType
-                )
-            )
+            .Select(set => new MetadataTargetTypeRaw(
+                Id: (int)set.TargetType,
+                Title: set.Title,
+                NameId: set.TargetType.ToString()
+            ))
             .ToImmutableOpt();
             
         return l.Return(list, $"{list.Count} items");
