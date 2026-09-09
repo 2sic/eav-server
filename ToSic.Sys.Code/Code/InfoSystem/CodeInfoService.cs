@@ -3,7 +3,7 @@
 namespace ToSic.Sys.Code.InfoSystem;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class CodeInfoService(LazySvc<CodeInfosInScope> scope) : ServiceBase("Lib.CodeCh")
+public partial class CodeInfoService(LazySvc<CodeInfosInScope> scope, ILogStore logStore) : ServiceBase("Lib.CodeCh")
 {
     public void Warn(CodeUse? use)
     {

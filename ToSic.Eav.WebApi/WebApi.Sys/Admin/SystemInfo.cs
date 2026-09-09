@@ -127,9 +127,9 @@ public class SystemInfo : CustomDataSource
 
     private int CountInsightsMessages(string prefix)
     {
-        return _logStore.Segments
+        return _logStore.SegmentCounts()
             .Where(s => s.Key.StartsWith(prefix))
-            .Select(s => s.Value.Count)
+            .Select(s => s.Value)
             .Sum();
     }
 }

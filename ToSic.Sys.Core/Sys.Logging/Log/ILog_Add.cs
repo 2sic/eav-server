@@ -69,7 +69,8 @@ public static partial class ILog_Add
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.AddInternal(LogConstants.WarningPrefix + message, CodeRef.Create(cPath!, cName!, cLine));
+    ) => log.AddInternal(LogConstants.WarningPrefix + message, CodeRef.Create(cPath!, cName!, cLine),
+        level: Microsoft.Extensions.Logging.LogLevel.Warning);
 
     /// <summary>
     /// Add an **error** to the log.
@@ -86,7 +87,8 @@ public static partial class ILog_Add
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.AddInternal(LogConstants.ErrorPrefix + message, CodeRef.Create(cPath!, cName!, cLine));
+    ) => log.AddInternal(LogConstants.ErrorPrefix + message, CodeRef.Create(cPath!, cName!, cLine),
+        level: Microsoft.Extensions.Logging.LogLevel.Error);
 
 
     [PrivateApi]

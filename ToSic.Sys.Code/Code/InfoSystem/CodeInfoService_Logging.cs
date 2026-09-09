@@ -58,7 +58,7 @@ partial class CodeInfoService
                 return l.Return(new(use));
 
             // Now we know that we'll keep it
-            var logEntry = new LogStoreLive().ForceAdd(CodeInfoConstants.ObsoleteNameInHistory, logWrapper);
+            var logEntry = logStore.ForceAdd(CodeInfoConstants.ObsoleteNameInHistory, logWrapper);
             infoInLogStore = new(use, logEntry);
 
             var msg = $"Obsolete: {longId} is deprecated in v{change.From} "

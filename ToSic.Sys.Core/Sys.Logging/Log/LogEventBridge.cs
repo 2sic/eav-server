@@ -17,7 +17,24 @@ public static class LogEventBridge
     /// </summary>
     public static void SetSink(ILogEventSink? sink) => Volatile.Write(ref _sink, sink);
 
-    internal static void Write(ILog log, Entry entry)
+    internal static void Write(Entry entry, Exception? exception = null)
+    {
+        if (Volatile.Read(ref _sink) == null || _isWriting)
+            return;
+        Write(LogEvent.FromEntry(entry, exception), exception);
+    }
+
+    // The compatibility API already retains pre-admission entries. Replay those through ILogger
+    // instead of maintaining a second provisional buffer. Insights never reads that buffer.
+    internal static void Replay(Log log)
+    {
+        if (Volatile.Read(ref _sink) == null || _isWriting)
+            return;
+        foreach (var entry in log.SnapshotEntries().Where(e => !e.WrapClose))
+            Write(LogEvent.FromEntry(entry) with { Replay = true });
+    }
+
+    internal static void Write(LogEvent entry, Exception? exception = null)
     {
         var sink = Volatile.Read(ref _sink);
         if (sink == null || _isWriting)
@@ -26,7 +43,7 @@ public static class LogEventBridge
         try
         {
             _isWriting = true;
-            sink.Write(log, entry);
+            sink.Write(entry, exception);
         }
         catch
         {

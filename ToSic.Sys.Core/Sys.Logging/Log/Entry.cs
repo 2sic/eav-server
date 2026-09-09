@@ -8,6 +8,14 @@ public class Entry: ICanEstimateSize
     public string? Message { get; }
     public string? Result { get; private set; }
     public TimeSpan Elapsed { get; set; }
+    internal long Sequence { get; } = NextSequence();
+    internal static long NextSequence() => Interlocked.Increment(ref _nextSequence);
+    private static long _nextSequence;
+    internal Entry? ParentOperation { get; set; }
+    internal Microsoft.Extensions.Logging.LogLevel Level { get; set; }
+    internal bool IsTimed { get; set; }
+    internal DateTime? Completed { get; set; }
+    internal Log? Owner => _log as Log;
     public int Depth;
 
     public bool WrapOpen;

@@ -17,9 +17,17 @@ public static class LogCallBaseExtensions
 
         logCall.A($"{nameof(DoInTimer)}; will consolidate times; previous time was: {logCall?.Timer.ElapsedMilliseconds}ms");
 
-        action();
-        if (!timerWasAlreadyRunning)
-            logCall?.Timer.Stop();
+        try
+        {
+            action();
+        }
+        finally
+        {
+            if (!timerWasAlreadyRunning)
+                logCall?.Timer.Stop();
+            if (logCall?.Entry is { } entry)
+                entry.IsTimed = true;
+        }
         logCall.A($"{nameof(DoInTimer)}; partial-time: {innerTime.ElapsedMilliseconds}ms");
     }
 
@@ -29,10 +37,17 @@ public static class LogCallBaseExtensions
         var timerWasAlreadyRunning = logCall is { Timer.IsRunning: true };
         if (!timerWasAlreadyRunning)
             logCall?.Timer.Start();
-        var result = action();
-        if (!timerWasAlreadyRunning)
-            logCall?.Timer.Stop();
-        return result;
+        try
+        {
+            return action();
+        }
+        finally
+        {
+            if (!timerWasAlreadyRunning)
+                logCall?.Timer.Stop();
+            if (logCall?.Entry is { } entry)
+                entry.IsTimed = true;
+        }
     }
 
 
@@ -46,18 +61,23 @@ public static class LogCallBaseExtensions
             return;
 
         var entry = logCall.Entry;
+        if (entry?.WrapOpenWasClosed == true)
+            return;
+        if (entry != null && log.CurrentOperation == entry)
+            log.CurrentOperation = entry.ParentOperation;
         log.WrapDepth--;
         entry?.AppendResult(message);
         var final = log.AddInternalReuse(null!, null);
         final.WrapClose = true;
         final.AppendResult(message);
-        if (logCall.Timer.IsRunning && entry != null)
+        if (entry != null)
         {
+            entry.IsTimed |= logCall.Timer.IsRunning || logCall.Timer.ElapsedTicks > 0;
             logCall.Timer.Stop();
             entry.Elapsed = logCall.Timer.Elapsed;
+            entry.Completed = DateTime.Now;
+            LogEventBridge.Write(entry);
         }
-        if (entry != null)
-            LogEventBridge.Write(log, entry);
     }
 
 }

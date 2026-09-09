@@ -43,7 +43,8 @@ internal class InsightsLogs : InsightsProvider
         Log.A($"debug log load for {key}/{position}");
         var msg = InsightsHtmlParts.PageStyles() + LogHtml.LogHeader($"{key}[{position}]", false);
 
-        if (!_logStore.Value.Segments.TryGetValue(key, out var set))
+        var set = _logStore.Value.Snapshot(key);
+        if (set.Count == 0)
             return msg + $"position {position} not found in log set {key}";
 
         if (set.Count < position - 1)
@@ -51,9 +52,9 @@ internal class InsightsLogs : InsightsProvider
 
         var bundle = set.Take(position).LastOrDefault();
 
-        return msg + (bundle?.Log == null
-            ? P("log is null").ToString()
-            : LogHtml.ShowSpecs(bundle) + LogHtml.DumpTree($"Log for {key}[{position}]", bundle.Log));
+        return msg + (bundle == null
+            ? P("log snapshot is unavailable").ToString()
+            : LogHtml.ShowSpecs(bundle) + LogHtml.DumpTree($"Log for {key}[{position}]", bundle));
     }
 
 

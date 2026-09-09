@@ -63,6 +63,9 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     /// </summary>
     internal string Id { get; } = Guid.NewGuid().ToString().Substring(0, 2);
 
+    /// <summary>Stable storage identity; NameId remains a short display label.</summary>
+    public string LogId { get; } = Guid.NewGuid().ToString("N");
+
     /// <summary>
     /// The topic this log belongs to, like Eav, Sxc, etc.
     /// Max length is 3 chars.
@@ -97,13 +100,41 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
         (Parent as Log)?.AddEntry(entry);
     }
 
-    Entry ILogInternal.CreateAndAdd(string? message, CodeRef? code, EntryOptions? options)
+    Entry ILogInternal.CreateAndAdd(string? message, CodeRef? code, EntryOptions? options, Entry? parent,
+        Microsoft.Extensions.Logging.LogLevel level, Exception? exception, bool publish)
     {
-        var e = new Entry(this, message, WrapDepth, code, options);
+        var e = new Entry(this, message, WrapDepth, code, options)
+        {
+            ParentOperation = parent ?? CurrentOperation,
+            Level = level,
+        };
         AddEntry(e);
-        if (message != null)
-            LogEventBridge.Write(this, e);
+        if (publish && message != null)
+            LogEventBridge.Write(e, exception);
         return e;
+    }
+
+    // Compatibility Fn/Done lifetimes are logger-owned, not request-wide ILogger scopes.
+    // Explicit ILogCall parents also work when calls complete out of order.
+    internal Entry? CurrentOperation
+    {
+        get
+        {
+            var current = _currentOperation.Value;
+            while (current?.WrapOpenWasClosed == true)
+                current = current.ParentOperation;
+            return current ?? (Parent as Log)?.CurrentOperation;
+        }
+        set => _currentOperation.Value = value;
+    }
+    private readonly AsyncLocal<Entry?> _currentOperation = new();
+
+    internal Entry? AttachmentOperation { get; private set; }
+
+    internal Entry[] SnapshotEntries()
+    {
+        lock (Entries)
+            return Entries.ToArray();
     }
 
     #endregion

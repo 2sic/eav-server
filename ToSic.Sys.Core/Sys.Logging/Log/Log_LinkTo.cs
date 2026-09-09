@@ -12,6 +12,7 @@ public partial class Log
     {
         // ILogCall is a wrapper around its Log, and entries propagate through Log parents.
         // Unwrap it here so helper logs linked to an active call remain visible in the parent log.
+        var parentOperation = (newParent as ILogCall)?.Entry ?? (newParent as Log)?.CurrentOperation;
         newParent = newParent.GetRealLog();
 
         if (newParent == this)
@@ -29,13 +30,16 @@ public partial class Log
             if (Parent == null || !Entries.Any())
             {
                 Parent = newParent;
+                AttachmentOperation = parentOperation;
                 Depth = newParentTyped?.Depth + 1 ?? 0;
                 if (Depth > MaxParentDepth)
                     throw new($"🪵 LOGGER ERROR - Adding parent to logger exceeded max depth of {MaxParentDepth}");
 
                 // If we have any entries that were added before, add them to the parent now
                 if (Entries.Any() && newParentTyped != null)
-                    Entries.ForEach(newParentTyped.AddEntry);
+                    foreach (var entry in SnapshotEntries())
+                        newParentTyped.AddEntry(entry);
+                LogEventBridge.Replay(this);
             }
 
             // show info if the new parent is different from the old one

@@ -1,92 +1,143 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 
 namespace ToSic.Sys.Logging;
 
-/// <inheritdoc />
+/// <summary>Compatibility admission API and read selection; ILogger owns the new storage path.</summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class LogStoreLive : ILogStoreLive
+public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvider? provider = null) : ILogStoreLive
 {
-    [PrivateApi]
+    public const string StoreConfigurationKey = "Logging:2sxc:Store";
+    private readonly InsightsLogStore _insights = insights ?? new();
+    private readonly object _sync = new();
+    private readonly ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> _segments = new();
     public int MaxItems => LogConstants.LiveStoreMaxItems;
-
-    /// <inheritdoc />
+    public LogStoreMode Mode { get; private set; }
+    public string Status => Mode == LogStoreMode.Legacy ? "Legacy store" : _insights.Status;
     public int SegmentSize
     {
-        get => _segmentSize; 
-        set => _segmentSize = value;
-    } 
-    private static int _segmentSize = LogConstants.LiveStoreSegmentSize;
-
-    /// <inheritdoc />
-    public ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> Segments => StaticSegments;
-    private static readonly ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> StaticSegments = new();
-
-    #region Pause
-
-    [PrivateApi]
-    public bool Pause
-    {
-        get => _pause;
+        get => _segmentSize;
         set
         {
-            _pause = value;
-            AddCount = 0;
+            if (value < 1 || value > InsightsLogStore.MaxLogs)
+                throw new ArgumentOutOfRangeException(nameof(value));
+            _segmentSize = value;
+            if (provider != null)
+                provider.SegmentSize = value;
         }
     }
-    private static bool _pause;
+    private int _segmentSize = LogConstants.LiveStoreSegmentSize;
 
-    #endregion
-
-    /// <inheritdoc />
+    public bool Pause
+    {
+        get { lock (_sync) return _pause; }
+        set
+        {
+            lock (_sync)
+            {
+                _pause = value;
+                AddCount = 0;
+            }
+        }
+    }
+    private bool _pause;
     public int AddCount { get; private set; }
 
-    #region Add
+    /// <summary>Call once at startup, after installing the bridge sink.</summary>
+    public string Configure(string? mode, bool bridgeEnabled)
+    {
+        if (!Enum.TryParse(mode ?? nameof(LogStoreMode.Legacy), true, out LogStoreMode selected)
+            || !Enum.IsDefined(typeof(LogStoreMode), selected))
+            return "Unknown logging store; retaining Legacy.";
+        if (selected != LogStoreMode.Legacy && !bridgeEnabled)
+            return "ILogger store requires Logging:2sxc:Enabled=true; retaining Legacy.";
+        lock (_sync)
+        {
+            Mode = selected;
+            _insights.Enabled = selected != LogStoreMode.Legacy;
+            if (!_insights.Enabled)
+                return Status;
+            // Bootstrap admissions may precede installation of the host's logger factory.
+            foreach (var segment in _segments)
+                foreach (var entry in segment.Value.ToArray())
+                    PublishAdmission(segment.Key, entry);
+            if (Mode == LogStoreMode.ILogger)
+                _segments.Clear();
+            return Status;
+        }
+    }
 
-    /// <inheritdoc />
-    public LogStoreEntry? Add(string segment, ILog log)
-        => AddInternal(segment, log, false);
+    public LogStoreEntry? Add(string segment, ILog log) => AddInternal(segment, log, false);
+    public LogStoreEntry? ForceAdd(string key, ILog log) => AddInternal(key, log, true);
 
-    [PrivateApi("shouldn't be visible outside")]
-    public LogStoreEntry? ForceAdd(string key, ILog log)
-        => AddInternal(key, log, true);
-
-    [PrivateApi]
     private LogStoreEntry? AddInternal(string key, ILog log, bool force)
     {
-        // Check exit clauses if not forced
-        if (!force)
+        if (string.IsNullOrWhiteSpace(key) || key.Length > 256)
+            throw new ArgumentException("A segment name of at most 256 characters is required.", nameof(key));
+        if (log.GetRealLog() is not Log realLog)
+            return null;
+        lock (_sync)
         {
-            // only add if not paused
-            if (Pause)
+            if (!force && (_pause || !realLog.Preserve))
                 return null;
-
-            // don't keep in journal if it shouldn't be preserved
-            if ((log as Log)?.Preserve != true)
-                return null;
+            LogStoreEntry? entry = null;
+            if (Mode != LogStoreMode.ILogger)
+            {
+                var queue = _segments.GetOrAdd(key, _ => new(SegmentSize));
+                entry = queue.ToArray().FirstOrDefault(e => e.Log == realLog);
+                if (entry == null)
+                    queue.Enqueue(entry = new() { Log = realLog, Segment = key });
+            }
+            entry ??= new() { Log = realLog, Segment = key };
+            if (Mode != LogStoreMode.Legacy)
+                PublishAdmission(key, entry);
+            if (++AddCount >= MaxItems)
+                _pause = true;
+            return entry;
         }
-
-        // auto-pause after 1000 logs were run through this, till someone decides to unpause again
-        if (AddCount++ > MaxItems) Pause = true;
-
-        // make sure we have a queue
-        if (!Segments.ContainsKey(key))
-            Segments.TryAdd(key, new(SegmentSize));
-
-        // add the current item if it's not already in the queue
-        var entry = new LogStoreEntry { Log = log };
-        if (Segments.TryGetValue(key, out var queue) && queue.ToArray().All(x => x.Log != log))
-            queue.Enqueue(entry);
-        return entry;
     }
 
+    private static void PublishAdmission(string segment, LogStoreEntry entry)
+    {
+        if (entry.Log is not Log log)
+            return;
+        LogEventBridge.Write(LogEvent.ForLog(log) with { Kind = "Admission", Segment = segment });
+        LogEventBridge.Replay(log);
+        entry.PublishSpecs();
+    }
 
-    #endregion
+    public IReadOnlyDictionary<string, int> SegmentCounts() => Mode == LogStoreMode.Legacy
+        ? _segments.ToDictionary(p => p.Key, p => p.Value.Count)
+        : _insights.SegmentCounts();
 
-    [PrivateApi]
+    public IReadOnlyList<LogSnapshot> Snapshot(string segment)
+    {
+        if (Mode != LogStoreMode.Legacy)
+            return _insights.Snapshot(segment);
+        return !_segments.TryGetValue(segment, out var entries) ? []
+            : entries.ToArray().Where(e => e.Log is Log)
+                .Select(e => LogSnapshot.FromLegacy((Log)e.Log!, e.Specs)).ToArray();
+    }
+
+    public LogSnapshot? Snapshot(ILog? log)
+    {
+        if (log.GetRealLog() is not Log typed)
+            return null;
+        return Mode == LogStoreMode.Legacy
+            ? LogSnapshot.FromLegacy(typed)
+            : _insights.Find(typed.LogId);
+    }
+
     public void FlushSegment(string segment)
     {
-        if (Segments.ContainsKey(segment))
-            Segments.TryRemove(segment, out var _);
+        lock (_sync)
+        {
+            _segments.TryRemove(segment, out _);
+            _insights.Flush(segment);
+        }
     }
 }
+
+/// <summary>Startup selection. Compare retains both stores and renders the ILogger snapshot.</summary>
+[PrivateApi]
+public enum LogStoreMode { Legacy, Compare, ILogger }

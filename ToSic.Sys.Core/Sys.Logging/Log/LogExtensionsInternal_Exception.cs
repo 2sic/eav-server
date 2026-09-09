@@ -31,7 +31,8 @@ partial class LogExtensionsInternal
                 return ex;
             }
                 
-            realLog.A($"Depth {recursion} in {loopEx.Source}: {loopEx}"); // use the default ToString of an exception
+            l.AddInternal($"Depth {recursion} in {loopEx.Source}: {loopEx}", codeRef,
+                level: Microsoft.Extensions.Logging.LogLevel.Error, exception: loopEx);
 
             if (loopEx.InnerException != null)
             {

@@ -12,5 +12,5 @@ public interface ILogEventSink
     /// <summary>
     /// Export an entry. Implementations must not write back to 2sxc logging.
     /// </summary>
-    void Write(ILog log, Entry entry);
+    void Write(LogEvent entry, Exception? exception = null);
 }

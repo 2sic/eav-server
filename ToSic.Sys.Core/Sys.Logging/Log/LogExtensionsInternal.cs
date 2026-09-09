@@ -18,10 +18,12 @@ internal static partial class LogExtensionsInternal
     /// Add a message if we're actually logging something, otherwise skip.
     /// Return the entry as it may be used again - if we actually had a real logger.
     /// </summary>
-    internal static Entry? AddInternal(this ILog? log, string? message, CodeRef? code, EntryOptions? options = default)
+    internal static Entry? AddInternal(this ILog? log, string? message, CodeRef? code, EntryOptions? options = default,
+        Microsoft.Extensions.Logging.LogLevel level = Microsoft.Extensions.Logging.LogLevel.Trace,
+        Exception? exception = null, bool publish = true)
         => log.GetRealLog() is not ILogInternal realLog
             ? null
-            : realLog.CreateAndAdd(message, code, options);
+            : realLog.CreateAndAdd(message, code, options, (log as ILogCall)?.Entry, level, exception, publish);
 
     internal static Entry AddInternalReuse(this ILog? log, string message, CodeRef? code) 
         => log.AddInternal(message, code)

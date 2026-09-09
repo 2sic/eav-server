@@ -48,11 +48,12 @@ public class LogEventBridgeTests
     {
         public List<(bool IsCompletion, string? Result)> Events { get; } = [];
 
-        public void Write(ILog log, Entry entry) => Events.Add((entry.WrapOpenWasClosed, entry.Result));
+        public void Write(LogEvent entry, Exception? exception = null)
+            => Events.Add((entry.WrapOpenWasClosed, entry.Result));
     }
 
     private sealed class ThrowingLogEventSink : ILogEventSink
     {
-        public void Write(ILog log, Entry entry) => throw new InvalidOperationException();
+        public void Write(LogEvent entry, Exception? exception = null) => throw new InvalidOperationException();
     }
 }

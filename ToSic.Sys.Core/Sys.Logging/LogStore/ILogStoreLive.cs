@@ -20,7 +20,17 @@ public interface ILogStoreLive: ILogStore, ILogShouldNeverConnect
     /// <summary>
     /// All segments, each containing one or more logs.
     /// </summary>
-    ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> Segments { get; }
+    IReadOnlyDictionary<string, int> SegmentCounts();
+
+    IReadOnlyList<LogSnapshot> Snapshot(string segment);
+
+    LogSnapshot? Snapshot(ILog? log);
+
+    LogStoreMode Mode { get; }
+
+    string Status { get; }
+
+    string Configure(string? mode, bool bridgeEnabled);
 
     [PrivateApi]
     bool Pause { get; set; }

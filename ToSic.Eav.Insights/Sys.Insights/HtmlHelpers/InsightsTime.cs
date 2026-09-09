@@ -13,22 +13,41 @@ internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
         return ShowTime(firstWithTime, default, log.Created);
     }
 
+    public string ShowTime(LogSnapshot? log)
+    {
+        if (log == null)
+            return "";
+        return ShowTime(log.Entries.FirstOrDefault(e => e.IsTimed), default, log.Created);
+    }
+
     public string ShowTime(Entry? e, TimeSpan parentTime, DateTime mainStart)
     {
         if (e == null)
             return "";
-        
-        var (secondsText, style) = PercentString(e, mainStart);
+        return ShowTime(e.Created, e.Elapsed, e.Elapsed != TimeSpan.Zero, parentTime, mainStart);
+    }
 
-        if (e.Elapsed == TimeSpan.Zero)
+    public string ShowTime(LogEvent? entry, TimeSpan parentTime, DateTime mainStart)
+    {
+        if (entry == null)
+            return "";
+        return ShowTime(entry.Created, entry.Elapsed, entry.IsTimed, parentTime, mainStart);
+    }
+
+    private string ShowTime(DateTime created, TimeSpan elapsed, bool isTimed, TimeSpan parentTime, DateTime mainStart)
+    {
+        
+        var (secondsText, style) = PercentString(created, elapsed, mainStart);
+
+        if (!isTimed)
             return Span(secondsText + " since " + HtmlEncode("▶️"))
                 .Class("time")
                 .Style(style)
                 //.Style("text-align: right")
                 .ToString();
 
-        var seconds = e.Elapsed.TotalSeconds;
-        var ms = e.Elapsed.TotalMilliseconds;
+        var seconds = elapsed.TotalSeconds;
+        var ms = elapsed.TotalMilliseconds;
         var number = ms < 1000 ? ms : seconds;
         var time = number > 100
             ? $"{(int)number}"
@@ -61,15 +80,15 @@ internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
     /// <param name="e"></param>
     /// <param name="mainStart"></param>
     /// <returns></returns>
-    private (string secondsText, string style) PercentString(Entry e, DateTime mainStart)
+    private (string secondsText, string style) PercentString(DateTime created, TimeSpan elapsed, DateTime mainStart)
     {
-        var sinceStart = e.Created - mainStart;
+        var sinceStart = created - mainStart;
         var secSinceStart = sinceStart.TotalSeconds;
         var secText = $"{secSinceStart:F}";
         var max = fullTime == default ? 5 : fullTime.TotalSeconds;
         var perSinceStart = (int)(secSinceStart / max * 100);
 
-        var secElapsedSinceStart = e.Elapsed.TotalSeconds + secSinceStart;
+        var secElapsedSinceStart = elapsed.TotalSeconds + secSinceStart;
         var perElapsed = (int)(secElapsedSinceStart / max * 100);
 
 

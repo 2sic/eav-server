@@ -31,9 +31,12 @@ public class LogCallBase : ILogCall
         var openingMessage = $"{code.Name}{(isProperty ? "" : $"({parameters})")}";
         if (!IsNullOrWhiteSpace(message)) 
             openingMessage += (IsNullOrWhiteSpace(openingMessage) ? "" : " ") + $"{message}";
-        var entry = Entry = Log.AddInternalReuse(openingMessage, code);
+        var entry = Entry = log.AddInternal(openingMessage, code, publish: false)!;
         entry.WrapOpen = true;
+        entry.IsTimed = timer;
+        typedLog.CurrentOperation = entry;
         typedLog.WrapDepth++;
+        LogEventBridge.Write(entry);
     }
 
     public ILog? Log { get; }

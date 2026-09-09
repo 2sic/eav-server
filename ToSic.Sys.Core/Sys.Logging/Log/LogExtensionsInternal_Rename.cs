@@ -20,6 +20,7 @@ partial class LogExtensionsInternal
             realLog.Scope = dot > 0 ? name.Substring(0, Math.Min(dot, LogConstants.ScopeMaxLength)) : "";
             var rest = dot > 0 ? name.Substring(dot + 1) : name;
             realLog.Name = rest.Substring(0, Math.Min(rest.Length, LogConstants.NameMaxLength));
+            LogEventBridge.Replay(realLog);
             // 2022-10-25 2dm disable this next line, doesn't look useful
             //realLog.Name = Name.Substring(0, Math.Min(Name.Length, LogConstants.MaxNameLen));
         }

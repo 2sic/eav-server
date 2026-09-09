@@ -11,9 +11,11 @@
   <!-- Different DI for .net 4.5 (using .net core 1.1) and .net Standard 2 -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" /><!-- from Oqtane.Shared.csproj -->
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
