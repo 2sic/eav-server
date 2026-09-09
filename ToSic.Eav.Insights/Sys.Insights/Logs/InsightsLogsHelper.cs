@@ -110,7 +110,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                              return RowFields([
                                  (index + 1).ToString(),
                                  Linker.LinkTo(snapshot.Created.ToUniversalTime().ToString("O").Substring(5), InsightsLogs.Link,
-                                     key: key, more: $"position={index + 1}"),
+                                     key: key, nameId: snapshot.LogId),
                                  !hasApp ? null : SpecialField.Right(GetVal(snapshot.Specs, nameof(IAppIdentity.AppId)), tooltip: GetVal(snapshot.Specs, "AppName")),
                                  !hasSite ? null : SpecialField.Right(GetVal(snapshot.Specs, "SiteId")),
                                  !hasPage ? null : SpecialField.Right(GetVal(snapshot.Specs, "PageId")),

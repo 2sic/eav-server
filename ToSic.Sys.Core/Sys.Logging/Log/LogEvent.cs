@@ -43,12 +43,9 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
 
     internal static LogEvent ForLog(Log log)
     {
-        var ancestors = ImmutableArray.CreateBuilder<string>();
-        for (var parent = log.Parent as Log; parent != null; parent = parent.Parent as Log)
-            ancestors.Add(parent.LogId);
         return new()
         {
-            LogId = log.LogId, Ancestors = ancestors.ToImmutable(), Source = log.FullIdentifier,
+            LogId = log.LogId, Ancestors = GetAncestors(log), Source = log.FullIdentifier,
             ShortSource = log.NameId, Scope = log.Scope, Name = log.Name, Created = log.Created,
         };
     }
@@ -57,8 +54,10 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
     {
         var log = entry.Owner!;
         var parentId = (entry.ParentOperation ?? log.AttachmentOperation)?.Sequence;
-        return ForLog(log) with
+        return new()
         {
+            LogId = log.LogId, Ancestors = GetAncestors(log), Source = log.FullIdentifier,
+            ShortSource = log.NameId, Scope = log.Scope, Name = log.Name,
             Kind = entry.WrapOpenWasClosed ? "Completion" : entry.WrapOpen ? "Start" : "Entry",
             Sequence = entry.Sequence, Created = entry.Created, Completed = entry.Completed,
             OperationId = entry.WrapOpen ? entry.Sequence : parentId,
@@ -70,6 +69,17 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
             ShowNewLines = entry.Options?.ShowNewLines == true,
             ExceptionType = exception?.GetType().FullName, ExceptionText = exception?.ToString(),
         };
+    }
+
+    private static ImmutableArray<string> GetAncestors(Log log)
+    {
+        Log? parent = log.Parent as Log;
+        if (parent == null)
+            return [];
+        var ancestors = ImmutableArray.CreateBuilder<string>();
+        for (; parent != null; parent = parent.Parent as Log)
+            ancestors.Add(parent.LogId);
+        return ancestors.ToImmutable();
     }
 
     /// <summary>Standard ILogger structured state, also readable by other providers.</summary>

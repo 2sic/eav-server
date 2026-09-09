@@ -135,6 +135,7 @@ App_Data/*.ldf
 
 #LightSwitch generated files
 GeneratedArtifacts/
+BenchmarkDotNet.Artifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 

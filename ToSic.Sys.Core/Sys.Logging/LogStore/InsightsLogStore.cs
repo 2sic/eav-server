@@ -9,7 +9,7 @@ public sealed class InsightsLogStore
 {
     public const int MaxLogs = 500;
     public const int MaxSegments = 64;
-    public const int MaxEntriesPerLog = 2048;
+    public const int MaxEntriesPerLog = 4096;
     public const int MaxTextLength = 4096;
     public const int MaxProperties = 32;
     public const long MaxEstimatedBytes = 16 * 1024 * 1024;
@@ -57,16 +57,21 @@ public sealed class InsightsLogStore
                 return;
             }
 
-            foreach (var id in data.Ancestors.Insert(0, data.LogId))
+            WriteToBundle(data.LogId);
+            foreach (var id in data.Ancestors)
+                WriteToBundle(id);
+            EnforceBudget();
+
+            void WriteToBundle(string id)
             {
                 if (!_logs.TryGetValue(id, out var bundle))
-                    continue;
+                    return;
                 var exists = bundle.Entries.TryGetValue(data.Sequence, out var old);
                 if (!exists && bundle.Entries.Count >= MaxEntriesPerLog)
                 {
                     bundle.Dropped++;
                     _dropped++;
-                    continue;
+                    return;
                 }
                 // Replays after late attachment must not erase completed data or exception details.
                 if (old != null)
@@ -79,7 +84,7 @@ public sealed class InsightsLogStore
                             .ToImmutableDictionary(StringComparer.OrdinalIgnoreCase),
                     };
                 if (old?.WrapOpenWasClosed == true && !data.WrapOpenWasClosed)
-                    continue;
+                    return;
                 var size = Measure(data);
                 var delta = size - (old == null ? 0 : Measure(old));
                 bundle.Bytes += delta;
@@ -88,7 +93,6 @@ public sealed class InsightsLogStore
                 if (data.Properties.ContainsKey("2sxc.Truncated") && old == null)
                     bundle.Truncated++;
             }
-            EnforceBudget();
         }
     }
 

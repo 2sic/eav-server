@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 
@@ -20,7 +21,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
     {
         if (!store.Enabled)
             return;
-        var properties = ImmutableDictionary.CreateBuilder<string, string>(StringComparer.OrdinalIgnoreCase);
+        ImmutableDictionary<string, string>.Builder? properties = null;
         var truncated = false;
         string? Clip(string? value)
         {
@@ -35,29 +36,45 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
                 return;
             foreach (var pair in pairs.Take(InsightsLogStore.MaxProperties))
             {
-                if (properties.Count >= InsightsLogStore.MaxProperties && !properties.ContainsKey(pair.Key))
+                if (properties?.Count >= InsightsLogStore.MaxProperties && !properties.ContainsKey(pair.Key))
                 {
                     truncated = true;
                     break;
                 }
                 // Never retain arbitrary scope objects or invoke their custom ToString implementations.
                 if (pair.Value is string or bool or byte or short or int or long or float or double or decimal or Guid or DateTime)
-                    properties[Clip(pair.Key)!] = Clip(Convert.ToString(pair.Value, CultureInfo.InvariantCulture))!;
+                    (properties ??= ImmutableDictionary.CreateBuilder<string, string>(StringComparer.OrdinalIgnoreCase))
+                        [Clip(pair.Key)!] = Clip(Convert.ToString(pair.Value, CultureInfo.InvariantCulture))!;
             }
         }
-        _scopes.ForEachScope((scope, _) => Capture(scope), 0);
+        // Replay/admission describes earlier work, not the request which happens to publish it.
+        var captureContext = state is not LogEvent { Replay: true } && state is not LogEvent { Segment: not null };
+        if (captureContext)
+            _scopes.ForEachScope((scope, _) => Capture(scope), 0);
+        var activity = captureContext ? Activity.Current : null;
+        if (activity != null)
+        {
+            properties ??= ImmutableDictionary.CreateBuilder<string, string>(StringComparer.OrdinalIgnoreCase);
+            properties["TraceId"] = activity.TraceId.ToString();
+            properties["SpanId"] = activity.SpanId.ToString();
+            properties["ParentSpanId"] = activity.ParentSpanId.ToString();
+        }
         LogEvent data;
         if (state is LogEvent bridge)
         {
+            var ambientLogId = properties?.TryGetValue(LogExecution.AmbientLogIdKey, out var id) == true ? id : null;
             foreach (var pair in bridge.Properties.Take(InsightsLogStore.MaxProperties))
-                properties[Clip(pair.Key)!] = Clip(pair.Value)!;
-            data = bridge;
+                (properties ??= ImmutableDictionary.CreateBuilder<string, string>(StringComparer.OrdinalIgnoreCase))
+                    [Clip(pair.Key)!] = Clip(pair.Value)!;
+            data = ambientLogId == null || ambientLogId == bridge.LogId || bridge.Ancestors.Contains(ambientLogId)
+                ? bridge
+                : bridge with { Ancestors = bridge.Ancestors.Add(ambientLogId) };
         }
         else
         {
             Capture(state);
             // Native logs opt into an admitted bundle via a structured scope.
-            if (!properties.TryGetValue("2sxc.LogId", out var logId))
+            if (properties?.TryGetValue(LogExecution.LogIdKey, out var logId) != true || logId == null)
                 return;
             data = new()
             {
@@ -67,13 +84,29 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
                 ExceptionType = exception?.GetType().FullName, ExceptionText = exception?.ToString(),
             };
         }
-        data = data with
+        var message = Clip(data.Message);
+        var result = Clip(data.Result);
+        var source = Clip(data.Source)!;
+        var shortSource = Clip(data.ShortSource)!;
+        var exceptionText = Clip(data.ExceptionText);
+        var code = data.Code;
+        if (code != null)
         {
-            Message = Clip(data.Message), Result = Clip(data.Result), Source = Clip(data.Source)!,
-            ShortSource = Clip(data.ShortSource)!, ExceptionText = Clip(data.ExceptionText),
-            Code = data.Code == null ? null : CodeRef.Create(Clip(data.Code.Path)!, Clip(data.Code.Name)!, data.Code.Line),
-            Properties = properties.Take(InsightsLogStore.MaxProperties).ToImmutableDictionary(StringComparer.OrdinalIgnoreCase),
-        };
+            var path = Clip(code.Path)!;
+            var name = Clip(code.Name)!;
+            if (path != code.Path || name != code.Name)
+                code = CodeRef.Create(path, name, code.Line);
+        }
+        var finalProperties = properties == null
+            ? data.Properties
+            : properties.Take(InsightsLogStore.MaxProperties).ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+        if (message != data.Message || result != data.Result || source != data.Source || shortSource != data.ShortSource
+            || exceptionText != data.ExceptionText || code != data.Code || finalProperties != data.Properties)
+            data = data with
+            {
+                Message = message, Result = result, Source = source, ShortSource = shortSource,
+                ExceptionText = exceptionText, Code = code, Properties = finalProperties,
+            };
         if (truncated)
             data = data with { Properties = data.Properties.SetItem("2sxc.Truncated", "true") };
         store.Write(data, SegmentSize);

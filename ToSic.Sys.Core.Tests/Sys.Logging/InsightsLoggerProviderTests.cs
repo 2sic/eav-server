@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.Logging;
@@ -110,6 +111,174 @@ public class InsightsLoggerProviderTests
             var remaining = store.Snapshot("module");
             Equal(2, remaining.Count);
             DoesNotContain(remaining, snapshot => snapshot.LogId == root.LogId);
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
+    [Fact]
+    public async Task Store_AmbientScope_AttachesUnlinkedLogsAcrossAwaitWithoutContextLeak()
+    {
+        var memory = new InsightsLogStore();
+        var provider = new InsightsLoggerProvider(memory);
+        using var factory = LoggerFactory.Create(builder => builder
+            .SetMinimumLevel(LogLevel.Trace)
+            .AddProvider(provider));
+        var store = new LogStoreLive(memory, provider);
+        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
+        using var source = new ActivitySource("Test.2sxc.Scope");
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = candidate => candidate.Name == source.Name,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData,
+        };
+        ActivitySource.AddActivityListener(listener);
+        try
+        {
+            store.Configure("ILogger", bridgeEnabled: true);
+            var rootA = new Log("Tst.RootA");
+            var rootB = new Log("Tst.RootB");
+            store.Add("scope", rootA);
+            store.Add("scope", rootB);
+            var logger = factory.CreateLogger("Test.Scope");
+
+            await Task.WhenAll(WriteInScope(rootA, "child-a"), WriteInScope(rootB, "child-b"));
+            await ThrowsAsync<InvalidOperationException>(() => ThrowInScope(rootA));
+            logger.LogInformation("outside scope");
+
+            var snapshotA = Single(store.Snapshot("scope"), snapshot => snapshot.LogId == rootA.LogId);
+            var snapshotB = Single(store.Snapshot("scope"), snapshot => snapshot.LogId == rootB.LogId);
+            Contains(snapshotA.Entries, entry => entry.Message == "child-a" && entry.Ancestors.Contains(rootA.LogId));
+            DoesNotContain(snapshotA.Entries, entry => entry.Message is "child-b" or "outside scope");
+            Contains(snapshotB.Entries, entry => entry.Message == "child-b" && entry.Properties.ContainsKey("TraceId"));
+
+            async Task WriteInScope(Log root, string message)
+            {
+                using var scope = logger.BeginExecution(root, source, "pilot", moduleId: 333);
+                await Task.Yield();
+                var child = new Log("Tst.Unlinked");
+                Null(child.Parent);
+                child.A(message);
+                logger.LogInformation("native {Message}", message);
+            }
+
+            async Task ThrowInScope(Log root)
+            {
+                using var scope = logger.BeginExecution(root, source, "throws");
+                await Task.Yield();
+                throw new InvalidOperationException("expected");
+            }
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
+    [Fact]
+    public async Task Store_AmbientScope_CancellationDoesNotLeakToLaterBackgroundWork()
+    {
+        var memory = new InsightsLogStore();
+        var provider = new InsightsLoggerProvider(memory);
+        using var factory = LoggerFactory.Create(builder => builder
+            .SetMinimumLevel(LogLevel.Trace)
+            .AddProvider(provider));
+        var store = new LogStoreLive(memory, provider);
+        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
+        try
+        {
+            store.Configure("ILogger", bridgeEnabled: true);
+            var root = new Log("Tst.Cancelled");
+            store.Add("scope", root);
+            var logger = factory.CreateLogger("Test.Scope");
+
+            await ThrowsAnyAsync<OperationCanceledException>(async () =>
+            {
+                using var scope = logger.BeginScope(new Dictionary<string, object?>
+                {
+                    ["2sxc.LogId"] = root.LogId,
+                    ["2sxc.AmbientLogId"] = root.LogId,
+                });
+                logger.LogInformation("before cancellation");
+                await Task.Yield();
+                throw new OperationCanceledException();
+            });
+            await Task.Run(() => logger.LogInformation("background after cancellation"));
+
+            var snapshot = Single(store.Snapshot("scope"));
+            Contains(snapshot.Entries, entry => entry.Message == "before cancellation");
+            DoesNotContain(snapshot.Entries, entry => entry.Message == "background after cancellation");
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
+    [Fact]
+    public async Task Store_AmbientScope_SuppressedExecutionContextDetachesBackgroundWork()
+    {
+        var memory = new InsightsLogStore();
+        var provider = new InsightsLoggerProvider(memory);
+        using var factory = LoggerFactory.Create(builder => builder
+            .SetMinimumLevel(LogLevel.Trace)
+            .AddProvider(provider));
+        var store = new LogStoreLive(memory, provider);
+        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
+        try
+        {
+            store.Configure("ILogger", bridgeEnabled: true);
+            var root = new Log("Tst.Detached");
+            store.Add("scope", root);
+            var logger = factory.CreateLogger("Test.Scope");
+            Task background;
+
+            using (logger.BeginScope(new Dictionary<string, object?>
+                   {
+                       ["2sxc.LogId"] = root.LogId,
+                       ["2sxc.AmbientLogId"] = root.LogId,
+                   }))
+            {
+                logger.LogInformation("inside request");
+                using (ExecutionContext.SuppressFlow())
+                    background = Task.Run(() => logger.LogInformation("detached background"));
+            }
+            await background;
+
+            var snapshot = Single(store.Snapshot("scope"));
+            Contains(snapshot.Entries, entry => entry.Message == "inside request");
+            DoesNotContain(snapshot.Entries, entry => entry.Message == "detached background");
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
+    [Fact]
+    public void Store_CapsOneBundleAtConfiguredEntryLimit()
+    {
+        var memory = new InsightsLogStore();
+        var provider = new InsightsLoggerProvider(memory);
+        using var factory = LoggerFactory.Create(builder => builder
+            .SetMinimumLevel(LogLevel.Trace)
+            .AddProvider(provider));
+        var store = new LogStoreLive(memory, provider);
+        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
+        try
+        {
+            store.Configure("ILogger", bridgeEnabled: true);
+            var log = new Log("Tst.Cap");
+            store.Add("cap", log);
+
+            for (var i = 0; i <= InsightsLogStore.MaxEntriesPerLog; i++)
+                log.A("entry");
+
+            var snapshot = Single(store.Snapshot("cap"));
+            Equal(InsightsLogStore.MaxEntriesPerLog, snapshot.Entries.Length);
+            Equal(1, snapshot.DroppedEntries);
         }
         finally
         {

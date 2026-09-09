@@ -20,9 +20,11 @@ internal class InsightsLogs : InsightsProvider
     public override string HtmlBody()
         => Key == null
             ? Logs()
-            : Position == null
-                ? Logs(Key, Filter)
-                : Logs(Key, Position.Value);
+            : NameId.HasValue()
+                ? LogsById(Key, NameId!)
+                : Position == null
+                    ? Logs(Key, Filter)
+                    : Logs(Key, Position.Value);
 
     internal string Logs()
     {
@@ -47,8 +49,8 @@ internal class InsightsLogs : InsightsProvider
         if (set.Count == 0)
             return msg + $"position {position} not found in log set {key}";
 
-        if (set.Count < position - 1)
-            return msg + $"position ({position}) > count ({set.Count})";
+        if (position < 1 || position > set.Count)
+            return msg + $"position ({position}) outside log count ({set.Count})";
 
         var bundle = set.Take(position).LastOrDefault();
 
@@ -57,5 +59,13 @@ internal class InsightsLogs : InsightsProvider
             : LogHtml.ShowSpecs(bundle) + LogHtml.DumpTree($"Log for {key}[{position}]", bundle));
     }
 
+    private string LogsById(string key, string logId)
+    {
+        var bundle = _logStore.Value.Snapshot(key).FirstOrDefault(snapshot => snapshot.LogId == logId);
+        return InsightsHtmlParts.PageStyles() + LogHtml.LogHeader(key, false)
+            + (bundle == null
+                ? P("log snapshot is unavailable (expired or flushed)").ToString()
+                : LogHtml.ShowSpecs(bundle) + LogHtml.DumpTree($"Log for {key}", bundle));
+    }
 
 }

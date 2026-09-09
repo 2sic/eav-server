@@ -10,6 +10,7 @@ using ToSic.Eav.Testing.Scenarios;
 using ToSic.Testing.Performance.json;
 using ToSic.Testing.Performance.LazyFastAccess;
 using ToSic.Testing.Performance.LoadPresetApp;
+using ToSic.Testing.Performance.Logging;
 
 namespace ToSic.Testing.Performance;
 
@@ -24,11 +25,14 @@ class Program
 
     static void Main(string[] args)
     {
+        var currentTest = args.Length > 0 && Enum.TryParse(args[0], true, out PerformanceTestTypes selected)
+            ? selected
+            : CurrentTest;
         // When running in benchmark mode, we run the benchmarks and nothing else
         if (ModeBenchmark)
         {
             Summary summary = null;
-            switch (CurrentTest)
+            switch (currentTest)
             {
                 case PerformanceTestTypes.LazyFastAccessGetInt:
                     summary = BenchmarkRunner.Run<BenchmarkLazyFastAccessGetInt>();
@@ -43,6 +47,9 @@ class Program
                     // Benchmark for loading preset app
                     summary = BenchmarkRunner.Run<BenchmarkPresetApp>();
                     break;
+                case PerformanceTestTypes.LoggingPipeline:
+                    summary = BenchmarkRunner.Run<BenchmarkLoggingPipeline>();
+                    return;
             }
             Console.WriteLine(summary?.ToString());
         }
@@ -50,7 +57,7 @@ class Program
         else
         {
 
-            switch (CurrentTest)
+            switch (currentTest)
             {
                 case PerformanceTestTypes.LazyFastAccessGetInt:
                     var lfaTest = new BenchmarkLazyFastAccessGetInt();
@@ -127,4 +134,5 @@ public enum PerformanceTestTypes
     LoadPresetApp,
     LazyFastAccessGetInt,
     LazyFastAccessOfType,
+    LoggingPipeline,
 }

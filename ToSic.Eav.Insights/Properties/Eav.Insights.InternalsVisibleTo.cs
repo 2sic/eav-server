@@ -2,3 +2,4 @@
 
 [assembly: InternalsVisibleTo("ToSic.Sxc.Dnn.WebApi")]
 [assembly: InternalsVisibleTo("ToSic.Sxc.WebApi")]
+[assembly: InternalsVisibleTo("ToSic.Eav.WebApi.Tests")]
