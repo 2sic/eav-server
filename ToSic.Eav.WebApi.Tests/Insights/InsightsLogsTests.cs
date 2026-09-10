@@ -1,4 +1,6 @@
 using static Xunit.Assert;
+using ToSic.Eav.Sys.Insights.Logs;
+using ToSic.Sys.Logging;
 
 namespace ToSic.Eav.Insights;
 
@@ -39,6 +41,17 @@ public class InsightsLogsTests
 
         Contains("outside log count", detail);
         DoesNotContain("existing event", detail);
+    }
+
+    [Fact]
+    public void DumpTree_ShowsNotCapturedMessage_ForUnadmittedLog()
+    {
+        var store = new LogStoreLive();
+        store.Configure("ILogger", bridgeEnabled: true);
+
+        var html = new InsightsLogsHelper(store).DumpTree("Global Types", new Log("Tst.Types"));
+
+        Contains("not captured in this store — only admitted logs are retained", html);
     }
     #endregion
 }

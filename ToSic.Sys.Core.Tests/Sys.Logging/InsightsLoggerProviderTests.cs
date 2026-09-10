@@ -123,6 +123,8 @@ public class InsightsLoggerProviderTests
 
             Contains(Single(store.Snapshot("module")).Entries,
                 entry => entry.Message == "written before link" && entry.OperationId == call.Entry!.Sequence);
+            Contains(memory.Find(child.LogId)!.Entries, entry => entry.Message == "written before link");
+            Null(memory.Find("unknown"));
 
             var second = new Log("Tst.Two");
             var third = new Log("Tst.Three");
@@ -132,6 +134,7 @@ public class InsightsLoggerProviderTests
             var remaining = store.Snapshot("module");
             Equal(2, remaining.Count);
             DoesNotContain(remaining, snapshot => snapshot.LogId == root.LogId);
+            Null(memory.Find(child.LogId));
         }
         finally
         {

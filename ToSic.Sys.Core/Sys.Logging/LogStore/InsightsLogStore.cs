@@ -19,6 +19,7 @@ public sealed class InsightsLogStore
     // ponytail: one lock for the bounded diagnostic buffer; partition only if profiling warrants it.
     private readonly object _sync = new();
     private readonly Dictionary<string, Bundle> _logs = new();
+    private readonly Dictionary<string, string> _bundleByLog = new();
     private readonly Dictionary<string, List<string>> _segments = new(StringComparer.OrdinalIgnoreCase);
     private readonly LinkedList<string> _order = new();
     private long _bytes;
@@ -97,6 +98,11 @@ public sealed class InsightsLogStore
                 bundle.Bytes += delta;
                 _bytes += delta;
                 bundle.Entries[data.Sequence] = entry;
+                if (id != data.LogId && !_bundleByLog.ContainsKey(data.LogId))
+                {
+                    _bundleByLog[data.LogId] = id;
+                    bundle.IndexedLogs.Add(data.LogId);
+                }
                 if (entry.Properties.ContainsKey(TruncatedKey) && old?.Properties.ContainsKey(TruncatedKey) != true)
                     bundle.Truncated++;
             }
@@ -168,6 +174,8 @@ public sealed class InsightsLogStore
         if (bundle.Specs.Count != 0)
             return;
         _bytes -= bundle.Bytes + 256;
+        foreach (var logId in bundle.IndexedLogs)
+            _bundleByLog.Remove(logId);
         _logs.Remove(id);
         _order.Remove(id);
     }
@@ -201,16 +209,10 @@ public sealed class InsightsLogStore
     {
         lock (_sync)
         {
-            if (_logs.TryGetValue(logId, out var bundle))
-                return Snapshot(bundle, null);
-            var entries = _logs.Values.SelectMany(b => b.Entries.Values)
-                .Where(e => e.LogId == logId || e.Ancestors.Contains(logId))
-                .GroupBy(e => e.Sequence).Select(g => g.First()).OrderBy(e => e.Sequence).ToImmutableArray();
-            return entries.Length == 0 ? null : new LogSnapshot
-            {
-                LogId = logId, Created = entries[0].Created, Entries = entries,
-                EstimatedBytes = entries.Sum(Measure),
-            };
+            if (!_logs.TryGetValue(logId, out var bundle)
+                && (!_bundleByLog.TryGetValue(logId, out var bundleId) || !_logs.TryGetValue(bundleId, out bundle)))
+                return null;
+            return Snapshot(bundle, null);
         }
     }
 
@@ -236,6 +238,7 @@ public sealed class InsightsLogStore
         public string Id { get; } = id;
         public DateTime Created { get; } = created;
         public Dictionary<long, LogEvent> Entries { get; } = new();
+        public HashSet<string> IndexedLogs { get; } = [];
         public Dictionary<string, ImmutableDictionary<string, string>> Specs { get; } = new(StringComparer.OrdinalIgnoreCase);
         public long Bytes;
         public int Dropped;

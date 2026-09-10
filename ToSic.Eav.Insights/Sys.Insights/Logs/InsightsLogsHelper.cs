@@ -132,7 +132,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
     internal string DumpTree(string title, LogSnapshot? snapshot)
     {
         if (snapshot == null)
-            return P("log snapshot is unavailable").ToString();
+            return P("not captured in this store — only admitted logs are retained").ToString();
         if (snapshot.Entries.Length == 0)
             return "";
         _lastLogLabel = null;
