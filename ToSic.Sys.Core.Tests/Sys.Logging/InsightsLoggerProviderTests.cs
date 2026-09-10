@@ -336,4 +336,12 @@ public class InsightsLoggerProviderTests
             LogEventBridge.SetSink(null);
         }
     }
+
+    [Fact]
+    public void Configure_RemovedCompareMode_FallsBackToLegacy()
+    {
+        var store = new LogStoreLive();
+        Equal("Unknown logging store; retaining Legacy.", store.Configure("Compare", bridgeEnabled: true));
+        Equal(LogStoreMode.Legacy, store.Mode);
+    }
 }

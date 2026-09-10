@@ -81,7 +81,7 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
             if (!force && (_pause || !realLog.Preserve))
                 return null;
             LogStoreEntry? entry = null;
-            if (Mode != LogStoreMode.ILogger)
+            if (Mode == LogStoreMode.Legacy)
             {
                 var queue = _segments.GetOrAdd(key, _ => new(SegmentSize));
                 entry = queue.ToArray().FirstOrDefault(e => e.Log == realLog);
@@ -89,7 +89,7 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
                     queue.Enqueue(entry = new() { Log = realLog, Segment = key });
             }
             entry ??= new() { Log = realLog, Segment = key };
-            if (Mode != LogStoreMode.Legacy)
+            if (Mode == LogStoreMode.ILogger)
                 PublishAdmission(key, entry);
             if (++AddCount >= MaxItems)
                 _pause = true;
@@ -112,7 +112,7 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
 
     public IReadOnlyList<LogSnapshot> Snapshot(string segment)
     {
-        if (Mode != LogStoreMode.Legacy)
+        if (Mode == LogStoreMode.ILogger)
             return _insights.Snapshot(segment);
         return !_segments.TryGetValue(segment, out var entries) ? []
             : entries.ToArray().Where(e => e.Log is Log)
@@ -138,6 +138,6 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
     }
 }
 
-/// <summary>Startup selection. Compare retains both stores and renders the ILogger snapshot.</summary>
+/// <summary>Startup selection.</summary>
 [PrivateApi]
-public enum LogStoreMode { Legacy, Compare, ILogger }
+public enum LogStoreMode { Legacy, ILogger }
