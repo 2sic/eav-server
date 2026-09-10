@@ -9,6 +9,22 @@ namespace ToSic.Sys.Logging;
 public class InsightsLoggerProviderTests
 {
     [Fact]
+    public void StoreLogger_DisablesWrites_InLegacyMode()
+    {
+        var memory = new InsightsLogStore();
+        var provider = new InsightsLoggerProvider(memory);
+        var store = new LogStoreLive(memory, provider);
+        var logger = provider.CreateLogger("Test.Native");
+
+        store.Configure("ILogger", bridgeEnabled: true);
+        True(logger.IsEnabled(LogLevel.Information));
+
+        store.Configure("Legacy", bridgeEnabled: true);
+        False(logger.IsEnabled(LogLevel.Information));
+        False(logger.IsEnabled(LogLevel.None));
+    }
+
+    [Fact]
     public void Store_PreservesTreeTimingCodeAndLateSpecs_ThroughILogger()
     {
         var memory = new InsightsLogStore();

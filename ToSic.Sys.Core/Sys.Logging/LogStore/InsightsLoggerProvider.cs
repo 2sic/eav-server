@@ -33,7 +33,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
 
     private IExternalScopeProvider _scopes = new LoggerExternalScopeProvider();
     internal int SegmentSize { get; set; } = LogConstants.LiveStoreSegmentSize;
-    public ILogger CreateLogger(string categoryName) => new StoreLogger(this, categoryName);
+    public ILogger CreateLogger(string categoryName) => new StoreLogger(this, store, categoryName);
     public void SetScopeProvider(IExternalScopeProvider scopeProvider) => _scopes = scopeProvider;
     public void Dispose() { }
 
@@ -171,9 +171,9 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
             int.TryParse(line, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number) ? number : 0);
     }
 
-    private sealed class StoreLogger(InsightsLoggerProvider provider, string category) : ILogger
+    private sealed class StoreLogger(InsightsLoggerProvider provider, InsightsLogStore store, string category) : ILogger
     {
-        public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
+        public bool IsEnabled(LogLevel logLevel) => store.Enabled && logLevel != LogLevel.None;
         public IDisposable BeginScope<TState>(TState state) where TState : notnull => provider._scopes.Push(state);
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
