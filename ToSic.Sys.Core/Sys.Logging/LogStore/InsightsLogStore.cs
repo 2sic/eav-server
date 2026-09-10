@@ -34,6 +34,12 @@ public sealed class InsightsLogStore
         }
     }
 
+    internal bool Knows(string logId, ImmutableArray<string> ancestors)
+    {
+        lock (_sync)
+            return _logs.ContainsKey(logId) || ancestors.Any(_logs.ContainsKey);
+    }
+
     internal void Write(LogEvent data, int segmentSize)
     {
         if (!Enabled)

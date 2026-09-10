@@ -67,6 +67,7 @@ public class InsightsLoggerProviderTests
     {
         using var services = new ServiceCollection().AddSysCoreLogging().BuildServiceProvider();
         var store = services.GetRequiredService<ILogStoreLive>();
+        var memory = services.GetRequiredService<InsightsLogStore>();
         Same(store, services.GetRequiredService<ILogStore>());
         var factory = services.GetRequiredService<ILoggerFactory>();
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
@@ -74,8 +75,10 @@ public class InsightsLoggerProviderTests
         {
             store.Configure("ILogger", bridgeEnabled: true);
             var log = new Log("Tst.Late");
+            False(memory.Knows(log.LogId, []));
             log.A("before admission");
             store.Add("search", log);
+            True(memory.Knows(log.LogId, []));
             var logger = factory.CreateLogger("Test.Native");
             using (logger.BeginScope(new Dictionary<string, object?>
                    {

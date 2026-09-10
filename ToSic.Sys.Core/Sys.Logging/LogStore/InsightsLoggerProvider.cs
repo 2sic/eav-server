@@ -92,6 +92,13 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
             && long.TryParse(operationId, out var parsedOperationId) && parsedOperationId > 0
                 ? parsedOperationId
                 : (long?)null;
+        var ambientLogId = properties?.TryGetValue(LogExecution.AmbientLogIdKey, out var capturedLogId) == true
+            ? capturedLogId
+            : invocationLogId;
+        if (state is LogEvent { Kind: "Entry" or "Start" or "Completion" } bridgeEvent
+            && !store.Knows(bridgeEvent.LogId,
+                ambientLogId == null ? bridgeEvent.Ancestors : bridgeEvent.Ancestors.Add(ambientLogId)))
+            return;
         var activity = captureContext ? Activity.Current : null;
         if (activity != null)
         {
@@ -102,7 +109,6 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
         LogEvent data;
         if (state is LogEvent bridge)
         {
-            var ambientLogId = properties?.TryGetValue(LogExecution.AmbientLogIdKey, out var id) == true ? id : invocationLogId;
             foreach (var pair in bridge.Properties)
                 Set(pair.Key, pair.Value);
             data = ambientLogId == null || ambientLogId == bridge.LogId || bridge.Ancestors.Contains(ambientLogId)
