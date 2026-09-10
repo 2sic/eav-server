@@ -66,12 +66,14 @@ public class InsightsLoggerProviderTests
                        ["2sxc.LogId"] = log.LogId,
                        ["AppId"] = 42,
                    }))
-                logger.LogInformation("native {Value}", 7);
+                logger.Log(LogLevel.Information, new EventId(7, "Native.Kind"), "native {Value}", 7);
 
             var snapshot = Single(store.Snapshot("search"));
             Contains(snapshot.Entries, e => e.Message == "before admission");
             var native = Single(snapshot.Entries, e => e.Message == "native 7");
             Equal("42", native.Properties["AppId"]);
+            Equal("7", native.Properties["EventId"]);
+            Equal("Native.Kind", native.Properties["EventName"]);
         }
         finally
         {
@@ -250,6 +252,55 @@ public class InsightsLoggerProviderTests
             var snapshot = Single(store.Snapshot("scope"));
             Contains(snapshot.Entries, entry => entry.Message == "inside request");
             DoesNotContain(snapshot.Entries, entry => entry.Message == "detached background");
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
+    [Fact]
+    public void Store_KeepsFirstCapturedContext_AndDisclosesTruncation_WhenPropertyBudgetIsExhausted()
+    {
+        var memory = new InsightsLogStore();
+        var provider = new InsightsLoggerProvider(memory);
+        using var factory = LoggerFactory.Create(builder => builder
+            .SetMinimumLevel(LogLevel.Trace)
+            .AddProvider(provider));
+        var store = new LogStoreLive(memory, provider);
+        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
+        try
+        {
+            store.Configure("ILogger", bridgeEnabled: true);
+            var log = new Log("Tst.Budget");
+            var handle = store.Add("budget", log)!;
+            var logger = factory.CreateLogger("Test.Native");
+            var noise = Enumerable.Range(0, InsightsLogStore.MaxProperties * 2)
+                .ToDictionary(i => "Noise" + i, i => (object?)i);
+
+            using (logger.BeginScope(noise))
+            using (logger.BeginScope(new Dictionary<string, object?>
+                   {
+                       [LogExecution.LogIdKey] = log.LogId,
+                       [InsightsLoggerProvider.CodeMemberKey] = "Load",
+                       [InsightsLoggerProvider.CodeFileKey] = @"C:\Src\EditController.cs",
+                       [InsightsLoggerProvider.CodeLineKey] = 42,
+                   }))
+                logger.LogInformation("native beyond the property budget");
+
+            handle.AddSpec("SiteId", "1");
+            for (var i = 0; i < InsightsLogStore.MaxProperties * 2; i++)
+                handle.AddSpec("Spec" + i, i.ToString());
+
+            var snapshot = Single(store.Snapshot("budget"));
+            var native = Single(snapshot.Entries);
+            Equal("true", native.Properties[InsightsLogStore.TruncatedKey]);
+            Equal("Load", native.Code!.Name);
+            Equal(42, native.Code.Line);
+            Equal(@"C:\Src\EditController.cs", native.Code.Path);
+            // Late specs must not silently push out the identity captured at admission.
+            Equal("1", snapshot.Specs["SiteId"]);
+            Equal("true", snapshot.Specs[InsightsLogStore.TruncatedKey]);
         }
         finally
         {

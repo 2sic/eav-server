@@ -13,6 +13,7 @@ public sealed class InsightsLogStore
     public const int MaxTextLength = 4096;
     public const int MaxProperties = 32;
     public const long MaxEstimatedBytes = 16 * 1024 * 1024;
+    public const string TruncatedKey = "2sxc.Truncated";
     public bool Enabled { get; internal set; }
 
     // ponytail: one lock for the bounded diagnostic buffer; partition only if profiling warrants it.
@@ -48,8 +49,7 @@ public sealed class InsightsLogStore
             {
                 if (_logs.TryGetValue(data.LogId, out var bundle) && bundle.Specs.TryGetValue(data.Segment, out var specs))
                 {
-                    var merged = specs.SetItems(data.Properties.Take(MaxProperties)).Take(MaxProperties)
-                        .ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
+                    var merged = Merge(specs, data.Properties);
                     _bytes += Measure(merged) - Measure(specs);
                     bundle.Specs[data.Segment] = merged;
                     EnforceBudget();
@@ -66,6 +66,8 @@ public sealed class InsightsLogStore
             {
                 if (!_logs.TryGetValue(id, out var bundle))
                     return;
+                // Merging one bundle's history must not alter the event sent to other bundles.
+                var entry = data;
                 var exists = bundle.Entries.TryGetValue(data.Sequence, out var old);
                 if (!exists && bundle.Entries.Count >= MaxEntriesPerLog)
                 {
@@ -75,25 +77,42 @@ public sealed class InsightsLogStore
                 }
                 // Replays after late attachment must not erase completed data or exception details.
                 if (old != null)
-                    data = data with
+                    entry = data with
                     {
                         ExceptionType = data.ExceptionType ?? old.ExceptionType,
                         ExceptionText = data.ExceptionText ?? old.ExceptionText,
-                        Properties = old.Properties.SetItems(data.Properties)
-                            .Take(MaxProperties)
-                            .ToImmutableDictionary(StringComparer.OrdinalIgnoreCase),
+                        ParentOperationId = old.ParentOperationId ?? data.ParentOperationId,
+                        Properties = Merge(old.Properties, data.Properties),
                     };
                 if (old?.WrapOpenWasClosed == true && !data.WrapOpenWasClosed)
                     return;
-                var size = Measure(data);
+                var size = Measure(entry);
                 var delta = size - (old == null ? 0 : Measure(old));
                 bundle.Bytes += delta;
                 _bytes += delta;
-                bundle.Entries[data.Sequence] = data;
-                if (data.Properties.ContainsKey("2sxc.Truncated") && old == null)
+                bundle.Entries[data.Sequence] = entry;
+                if (entry.Properties.ContainsKey(TruncatedKey) && old?.Properties.ContainsKey(TruncatedKey) != true)
                     bundle.Truncated++;
             }
         }
+    }
+
+    /// <summary>
+    /// Keeps what was captured first, adds what still fits and discloses the rest.
+    /// A plain Take would drop already stored identity in unspecified dictionary order.
+    /// </summary>
+    private static ImmutableDictionary<string, string> Merge(ImmutableDictionary<string, string> stored, ImmutableDictionary<string, string> updates)
+    {
+        var merged = stored.ToBuilder();
+        var truncated = false;
+        foreach (var pair in updates)
+            if (merged.Count < MaxProperties || merged.ContainsKey(pair.Key))
+                merged[pair.Key] = pair.Value;
+            else
+                truncated = true;
+        if (truncated)
+            merged[TruncatedKey] = "true";
+        return merged.ToImmutable();
     }
 
     private void Admit(LogEvent data, int segmentSize)
