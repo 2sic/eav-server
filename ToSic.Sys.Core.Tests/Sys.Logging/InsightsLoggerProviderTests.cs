@@ -387,6 +387,25 @@ public class InsightsLoggerProviderTests
     }
 
     [Fact]
+    public void Store_ChargesDeepTreeEventOnce_AgainstByteBudget()
+    {
+        var memory = new InsightsLogStore { Enabled = true };
+        var logIds = Enumerable.Range(0, 5).Select(i => $"log-{i}").ToArray();
+        foreach (var logId in logIds)
+            memory.Write(new() { Kind = "Admission", LogId = logId, Segment = "depth" }, logIds.Length);
+        var message = new string('x', InsightsLogStore.MaxTextLength);
+
+        for (var sequence = 1; sequence <= 400; sequence++)
+            memory.Write(new()
+            {
+                LogId = logIds[4], Ancestors = [logIds[3], logIds[2], logIds[1], logIds[0]],
+                Sequence = sequence, Source = "Tst.Depth", ShortSource = "Tst.Depth", Message = message,
+            }, logIds.Length);
+
+        Equal(logIds.Length, memory.Snapshot("depth").Count);
+    }
+
+    [Fact]
     public void Configure_RemovedCompareMode_FallsBackToLegacy()
     {
         var store = new LogStoreLive();

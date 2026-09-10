@@ -20,6 +20,7 @@ public sealed class InsightsLogStore
     private readonly object _sync = new();
     private readonly Dictionary<string, Bundle> _logs = new();
     private readonly Dictionary<string, string> _bundleByLog = new();
+    private readonly Dictionary<long, (long Bytes, int References)> _eventUsage = new();
     private readonly Dictionary<string, List<string>> _segments = new(StringComparer.OrdinalIgnoreCase);
     private readonly LinkedList<string> _order = new();
     private long _bytes;
@@ -64,9 +65,25 @@ public sealed class InsightsLogStore
                 return;
             }
 
+            LogEvent? measuredEntry = null;
+            var newReferences = 0;
             WriteToBundle(data.LogId);
             foreach (var id in data.Ancestors)
                 WriteToBundle(id);
+            if (measuredEntry != null)
+            {
+                var size = Measure(measuredEntry);
+                if (_eventUsage.TryGetValue(data.Sequence, out var usage))
+                {
+                    _bytes += size - usage.Bytes;
+                    _eventUsage[data.Sequence] = (size, usage.References + newReferences);
+                }
+                else
+                {
+                    _bytes += size;
+                    _eventUsage[data.Sequence] = (size, newReferences);
+                }
+            }
             EnforceBudget();
 
             void WriteToBundle(string id)
@@ -96,8 +113,10 @@ public sealed class InsightsLogStore
                 var size = Measure(entry);
                 var delta = size - (old == null ? 0 : Measure(old));
                 bundle.Bytes += delta;
-                _bytes += delta;
                 bundle.Entries[data.Sequence] = entry;
+                measuredEntry ??= entry;
+                if (!exists)
+                    newReferences++;
                 if (id != data.LogId && !_bundleByLog.ContainsKey(data.LogId))
                 {
                     _bundleByLog[data.LogId] = id;
@@ -173,7 +192,18 @@ public sealed class InsightsLogStore
         bundle.Specs.Remove(segment);
         if (bundle.Specs.Count != 0)
             return;
-        _bytes -= bundle.Bytes + 256;
+        foreach (var sequence in bundle.Entries.Keys)
+        {
+            var usage = _eventUsage[sequence];
+            if (usage.References > 1)
+                _eventUsage[sequence] = (usage.Bytes, usage.References - 1);
+            else
+            {
+                _bytes -= usage.Bytes;
+                _eventUsage.Remove(sequence);
+            }
+        }
+        _bytes -= 256;
         foreach (var logId in bundle.IndexedLogs)
             _bundleByLog.Remove(logId);
         _logs.Remove(id);
