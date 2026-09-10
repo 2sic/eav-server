@@ -37,6 +37,16 @@ public class LogCreate: LogTestBase
     }
 
     [Fact]
+    public void CreateLog_UsesUtcTimestamp()
+    {
+        var log = new Log("Tst.Utc");
+        log.A("entry");
+
+        Equal(DateTimeKind.Utc, log.Created.Kind);
+        InRange((Single(log.Entries).Created - log.Created).TotalSeconds, 0, 1);
+    }
+
+    [Fact]
     public void AddThenLink()
     {
         var child = new Log("Tst.Child");

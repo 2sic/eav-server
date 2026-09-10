@@ -143,7 +143,7 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
 
     #region Properties
 
-    public DateTime Created { get; } = DateTime.Now;
+    public DateTime Created { get; } = DateTime.UtcNow;
 
     /// <summary>
     /// How many inner wraps are currently open (when creating child entries using .Fn(...)
