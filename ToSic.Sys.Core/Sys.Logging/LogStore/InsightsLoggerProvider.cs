@@ -133,7 +133,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
                 Set("EventName", eventId.Name);
             data = new()
             {
-                LogId = logId, Source = category, ShortSource = category, Created = DateTime.Now,
+                LogId = logId, Source = category, ShortSource = category, Created = DateTime.UtcNow,
                 Sequence = Entry.NextSequence(), Message = formatter(state, exception), Level = level,
                 OperationId = properties.TryGetValue(OperationIdKey, out var operation) && long.TryParse(operation, out var id) ? id : ambientOperationId,
                 Code = NativeCode(properties),

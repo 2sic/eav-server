@@ -88,8 +88,10 @@ public class InsightsLoggerProviderTests
                 logger.Log(LogLevel.Information, new EventId(7, "Native.Kind"), "native {Value}", 7);
 
             var snapshot = Single(store.Snapshot("search"));
-            Contains(snapshot.Entries, e => e.Message == "before admission");
+            var replayed = Single(snapshot.Entries, e => e.Message == "before admission");
+            Equal(DateTimeKind.Utc, replayed.Created.Kind);
             var native = Single(snapshot.Entries, e => e.Message == "native 7");
+            Equal(DateTimeKind.Utc, native.Created.Kind);
             Equal("42", native.Properties["AppId"]);
             Equal("7", native.Properties["EventId"]);
             Equal("Native.Kind", native.Properties["EventName"]);

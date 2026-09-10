@@ -37,7 +37,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
             return null;
         var specs = new Dictionary<string, string>(snapshot.Specs, StringComparer.InvariantCultureIgnoreCase)
         {
-            ["Z Timespan A-Start"] = snapshot.Created.Dump(),
+            ["Z Timespan A-Start"] = DumpLocal(snapshot.Created),
             ["Z Store A-LogId"] = snapshot.LogId,
             ["Z Store B-Dropped Entries"] = snapshot.DroppedEntries.ToString(),
             ["Z Store C-Truncated Entries"] = snapshot.TruncatedEntries.ToString(),
@@ -46,8 +46,8 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         {
             var first = snapshot.Entries[0].Created;
             var last = snapshot.Entries[snapshot.Entries.Length - 1].Created;
-            specs["Z Timespan B-First"] = first.Dump();
-            specs["Z Timespan C-Last"] = last.Dump();
+            specs["Z Timespan B-First"] = DumpLocal(first);
+            specs["Z Timespan C-Last"] = DumpLocal(last);
             specs["Z Timespan D-Duration SL"] = (last - snapshot.Created).ToString();
             specs["Z Timespan D-Duration FL"] = (last - first).ToString();
         }
@@ -98,7 +98,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         var totalBytes = materialized.Sum(s => s.EstimatedBytes);
         var result = P($"Logs Overview: {set.Count}\n")
                      + Table().Id("table").Wrap(
-                         HeadFields(["#", "Timestamp UTC", hasApp ? "App ↕" : null, hasSite ? "Site ↕" : null,
+                         HeadFields(["#", "Timestamp Local", hasApp ? "App ↕" : null, hasSite ? "Site ↕" : null,
                              hasPage ? "Page ↕" : null, hasModule ? "Mod ↕" : null, hasUser ? "Usr ↕" : null,
                              SpecialField.Right("Lines"), SpecialField.Right("Size ca."),
                              SpecialField.Left("Title / First Message"), "Info", "Time"]),
@@ -109,7 +109,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                              var trimmed = title.Length <= 150 ? title : title.Substring(0, 150) + "…";
                              return RowFields([
                                  (index + 1).ToString(),
-                                 Linker.LinkTo(snapshot.Created.ToUniversalTime().ToString("O").Substring(5), InsightsLogs.Link,
+                                 Linker.LinkTo(snapshot.Created.ToLocalTime().ToString("O").Substring(5), InsightsLogs.Link,
                                      key: key, nameId: snapshot.LogId),
                                  !hasApp ? null : SpecialField.Right(GetVal(snapshot.Specs, nameof(IAppIdentity.AppId)), tooltip: GetVal(snapshot.Specs, "AppName")),
                                  !hasSite ? null : SpecialField.Right(GetVal(snapshot.Specs, "SiteId")),
@@ -136,7 +136,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         if (snapshot.Entries.Length == 0)
             return "";
         _lastLogLabel = null;
-        var html = new StringBuilder(H1(title) + Div(snapshot.Created.Dump()) + "\n\n<ol>\n");
+        var html = new StringBuilder(H1(title) + Div(DumpLocal(snapshot.Created)) + "\n\n<ol>\n");
         var emitted = new HashSet<long>();
         AppendChildren(html, snapshot, null, "", default, emitted);
         // Keep malformed or interrupted calls visible instead of silently losing them.
@@ -177,6 +177,12 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
     {
         var last = snapshot.Entries.Last();
         return last.Created.Add(last.IsTimed ? last.Elapsed : default) - snapshot.Created;
+    }
+
+    private static string DumpLocal(DateTime value)
+    {
+        var local = value.ToLocalTime();
+        return $"Timestamp - Date/Time: {local:o}; Ticks: {local.Ticks:N0}";
     }
 
     private static string KeepOnlyLastSegmentOfPath(string label)
