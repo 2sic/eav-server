@@ -21,7 +21,7 @@ public static class LogEventBridge
     {
         if (!IsEnabled(entry.Level))
             return;
-        Write(LogEvent.FromEntry(entry, exception), exception);
+        Write(LogEvent.FromEntry(entry), exception);
     }
 
     // The compatibility API already retains pre-admission entries. Replay those through ILogger

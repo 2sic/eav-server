@@ -107,6 +107,8 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
         {
             ParentOperation = parent ?? CurrentOperation,
             Level = level,
+            ExceptionType = exception?.GetType().FullName,
+            ExceptionText = exception?.ToString(),
         };
         AddEntry(e);
         if (publish && message != null)

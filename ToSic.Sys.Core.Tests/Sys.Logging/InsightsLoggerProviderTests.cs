@@ -101,6 +101,33 @@ public class InsightsLoggerProviderTests
     }
 
     [Fact]
+    public void Store_ReplaysExceptionDetails_WhenAdmittedAfterThrow()
+    {
+        using var services = new ServiceCollection().AddSysCoreLogging().BuildServiceProvider();
+        var store = services.GetRequiredService<ILogStoreLive>();
+        var factory = services.GetRequiredService<ILoggerFactory>();
+        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
+        try
+        {
+            store.Configure("ILogger", bridgeEnabled: true);
+            var log = new Log("Tst.Error");
+            var exception = Throws<InvalidOperationException>((Action)(() =>
+                throw new InvalidOperationException("before admission")));
+            log.Ex(exception);
+
+            store.Add("exceptions", log);
+
+            var entry = Single(Single(store.Snapshot("exceptions")).Entries, e => e.ExceptionType != null);
+            Equal(exception.GetType().FullName, entry.ExceptionType);
+            Equal(exception.ToString(), entry.ExceptionText);
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
+    [Fact]
     public void Store_ReplaysLateChildLink_AndEvictsWholeOldLogFromSegment()
     {
         var memory = new InsightsLogStore();

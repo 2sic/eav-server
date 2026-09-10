@@ -13,6 +13,8 @@ public class Entry: ICanEstimateSize
     private static long _nextSequence;
     internal Entry? ParentOperation { get; set; }
     internal Microsoft.Extensions.Logging.LogLevel Level { get; set; }
+    internal string? ExceptionType { get; set; }
+    internal string? ExceptionText { get; set; }
     internal bool IsTimed { get; set; }
     internal DateTime? Completed { get; set; }
     internal Log? Owner => _log as Log;
@@ -73,7 +75,7 @@ public class Entry: ICanEstimateSize
         if (_estimate != null)
             return _estimate;
         var estimator = new MemorySizeEstimator(log);
-        _estimate = estimator.EstimateMany([Message, Result, Elapsed, Depth, WrapOpen, WrapClose, WrapOpenWasClosed])
+        _estimate = estimator.EstimateMany([Message, Result, ExceptionType, ExceptionText, Elapsed, Depth, WrapOpen, WrapClose, WrapOpenWasClosed])
             + new SizeEstimate(0, 10);
         return _estimate;
     }

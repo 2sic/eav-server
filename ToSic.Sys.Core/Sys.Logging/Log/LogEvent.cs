@@ -50,7 +50,7 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
         };
     }
 
-    internal static LogEvent FromEntry(Entry entry, Exception? exception = null)
+    internal static LogEvent FromEntry(Entry entry)
     {
         var log = entry.Owner!;
         var parentId = (entry.ParentOperation ?? log.AttachmentOperation)?.Sequence;
@@ -67,7 +67,7 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
             Elapsed = entry.Elapsed, IsTimed = entry.IsTimed, Code = entry.Code, Level = entry.Level,
             HideCodeReference = entry.Options?.HideCodeReference == true,
             ShowNewLines = entry.Options?.ShowNewLines == true,
-            ExceptionType = exception?.GetType().FullName, ExceptionText = exception?.ToString(),
+            ExceptionType = entry.ExceptionType, ExceptionText = entry.ExceptionText,
         };
     }
 
