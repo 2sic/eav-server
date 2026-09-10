@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections;
 using System.Diagnostics;
+using System.Reflection;
 using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.Logging;
@@ -405,6 +407,24 @@ public class InsightsLoggerProviderTests
             }, logIds.Length);
 
         Equal(logIds.Length, memory.Snapshot("depth").Count);
+    }
+
+    [Fact(Timeout = 2000)]
+    public async Task Store_EvictsSpecLessBundle_WithoutHanging()
+    {
+        var memory = new InsightsLogStore { Enabled = true };
+        const string logId = "spec-less";
+        memory.Write(new() { Kind = "Admission", LogId = logId, Segment = "test" }, 1);
+        const BindingFlags privateInstance = BindingFlags.Instance | BindingFlags.NonPublic;
+        var logs = (IDictionary)typeof(InsightsLogStore).GetField("_logs", privateInstance)!.GetValue(memory)!;
+        var bundle = logs[logId]!;
+        var specs = (IDictionary)bundle.GetType().GetProperty("Specs")!.GetValue(bundle)!;
+        specs.Clear();
+        typeof(InsightsLogStore).GetField("_bytes", privateInstance)!.SetValue(memory, InsightsLogStore.MaxEstimatedBytes + 1);
+
+        await Task.Run(() => typeof(InsightsLogStore).GetMethod("EnforceBudget", privateInstance)!.Invoke(memory, null));
+
+        Null(memory.Find(logId));
     }
 
     [Fact]

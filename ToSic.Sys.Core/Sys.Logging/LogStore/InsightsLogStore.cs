@@ -180,6 +180,8 @@ public sealed class InsightsLogStore
             var id = _order.First.Value;
             foreach (var segment in _logs[id].Specs.Keys.ToArray())
                 RemoveMembership(segment, id);
+            _logs.Remove(id);
+            _order.Remove(id);
             _evicted++;
         }
     }
