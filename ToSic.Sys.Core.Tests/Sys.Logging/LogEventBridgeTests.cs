@@ -44,16 +44,49 @@ public class LogEventBridgeTests
         }
     }
 
+    [Fact]
+    public void Write_SkipsLiveAndReplay_WhenSinkIsDisabled()
+    {
+        var sink = new DisabledLogEventSink();
+        LogEventBridge.SetSink(sink);
+        try
+        {
+            var log = new Log("Tst.Bridge");
+
+            log.A("message");
+            LogEventBridge.Replay(log);
+
+            Empty(sink.Events);
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
     private sealed class RecordingLogEventSink : ILogEventSink
     {
         public List<(bool IsCompletion, string? Result)> Events { get; } = [];
+
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
 
         public void Write(LogEvent entry, Exception? exception = null)
             => Events.Add((entry.WrapOpenWasClosed, entry.Result));
     }
 
+    private sealed class DisabledLogEventSink : ILogEventSink
+    {
+        public List<LogEvent> Events { get; } = [];
+
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => false;
+
+        public void Write(LogEvent entry, Exception? exception = null) => Events.Add(entry);
+    }
+
     private sealed class ThrowingLogEventSink : ILogEventSink
     {
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
+
         public void Write(LogEvent entry, Exception? exception = null) => throw new InvalidOperationException();
     }
 }

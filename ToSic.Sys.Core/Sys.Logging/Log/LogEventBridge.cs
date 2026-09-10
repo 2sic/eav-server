@@ -19,7 +19,7 @@ public static class LogEventBridge
 
     internal static void Write(Entry entry, Exception? exception = null)
     {
-        if (Volatile.Read(ref _sink) == null || _isWriting)
+        if (!IsEnabled(entry.Level))
             return;
         Write(LogEvent.FromEntry(entry, exception), exception);
     }
@@ -31,7 +31,27 @@ public static class LogEventBridge
         if (Volatile.Read(ref _sink) == null || _isWriting)
             return;
         foreach (var entry in log.SnapshotEntries().Where(e => !e.WrapClose))
+        {
+            if (!IsEnabled(entry.Level))
+                continue;
             Write(LogEvent.FromEntry(entry) with { Replay = true });
+        }
+    }
+
+    private static bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel)
+    {
+        var sink = Volatile.Read(ref _sink);
+        if (sink == null || _isWriting)
+            return false;
+        try
+        {
+            return sink.IsEnabled(logLevel);
+        }
+        catch
+        {
+            // External logging must never break the authoritative 2sxc logging path.
+            return false;
+        }
     }
 
     internal static void Write(LogEvent entry, Exception? exception = null)

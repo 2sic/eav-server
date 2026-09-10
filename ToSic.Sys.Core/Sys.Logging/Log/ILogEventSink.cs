@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using ToSic.Sys.Documentation;
 
 namespace ToSic.Sys.Logging;
@@ -9,6 +10,11 @@ namespace ToSic.Sys.Logging;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ILogEventSink
 {
+    /// <summary>
+    /// Determine whether any target is interested in entries at this level.
+    /// </summary>
+    bool IsEnabled(LogLevel logLevel);
+
     /// <summary>
     /// Export an entry. Implementations must not write back to 2sxc logging.
     /// </summary>

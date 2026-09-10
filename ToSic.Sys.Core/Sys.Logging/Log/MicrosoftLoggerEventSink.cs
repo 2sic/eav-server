@@ -12,6 +12,9 @@ public sealed class MicrosoftLoggerEventSink(ILoggerFactory loggerFactory) : ILo
     private readonly ILogger _logger = loggerFactory.CreateLogger(Category);
     private readonly ILogger _storeLogger = loggerFactory.CreateLogger(StoreCategory);
 
+    public bool IsEnabled(LogLevel logLevel)
+        => _logger.IsEnabled(logLevel) || _storeLogger.IsEnabled(logLevel);
+
     public void Write(LogEvent entry, Exception? exception = null)
     {
         var logger = entry.Replay || entry.Segment != null ? _storeLogger : _logger;
