@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data.Build;
 /// * v22 changed some internals to be more flexible, assume not intensively used so no issues expected
 /// </remarks>
 [PublicApi]
-public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>, IServiceWithSetup<DataFactoryOptions>
+public interface IDataFactory: IServiceWithSetup<DataFactoryOptions>
 {
     /// <summary>
     /// A counter for the ID in case the data provided doesn't have an ID to use.
@@ -81,5 +81,13 @@ public interface IDataFactory: IServiceRespawn<IDataFactory, DataFactoryOptions>
     IImmutableList<IEntity> Create<T>(IEnumerable<T> list) where T : class, IRawData;
 
     #endregion
-    
+
+    #region WIP
+
+    // #DropSpawnNew
+    [PrivateApi("Being deprecated")]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    public IDataFactory SpawnNew(DataFactoryOptions options);
+
+    #endregion
 }

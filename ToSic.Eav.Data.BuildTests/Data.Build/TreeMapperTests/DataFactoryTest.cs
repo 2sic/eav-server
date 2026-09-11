@@ -1,12 +1,12 @@
 ﻿namespace ToSic.Eav.Data.Build.TreeMapperTests;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class DataFactoryTest(IDataFactory dataFactoryGenerator)
+public class DataFactoryTest(Generator<IDataFactory, DataFactoryOptions> dataFactoryGenerator)
 {
     [Fact]
     public void ChildrenRelationships()
     {
-        var builder = dataFactoryGenerator.SpawnNew(new());
+        var builder = dataFactoryGenerator.New(new());
 
         var parentRaw = new MockRawWithOneParentAndManyChildren(1, Guid.Empty, 0, [101, 102]);
 
