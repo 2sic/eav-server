@@ -8,6 +8,9 @@ namespace ToSic.Sys.Logging;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class LogExecution
 {
+    public const string ActivitySourceName = MicrosoftLoggerEventSink.Category;
+    public const string ActivitySourceVersion = ToSic.Sys.Assembly.SharedAssemblyInfo.AssemblyVersion;
+
     public const string LogIdKey = "2sxc.LogId";
     public const string AmbientLogIdKey = "2sxc.AmbientLogId";
     public const string AmbientOperationIdKey = "2sxc.AmbientOperationId";
