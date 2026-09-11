@@ -1,20 +1,26 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Eav.Sys.Insights.Logs;
 using ToSic.Sys.DI;
 using ToSic.Sys.Logging;
+using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Eav.Insights;
 
 internal sealed class InsightsLogsTestContext : IDisposable
 {
-    private readonly LogStoreLive _store = new() { SegmentSize = 2 };
+    internal ILogStoreLive Store { get; }
     private readonly ServiceProvider _services;
     internal InsightsLogs View { get; }
 
-    internal InsightsLogsTestContext()
+    internal InsightsLogsTestContext(LogStoreMode mode = LogStoreMode.Legacy)
     {
-        _services = new ServiceCollection().AddSingleton<ILogStoreLive>(_store).BuildServiceProvider();
+        _services = new ServiceCollection().AddSysCoreLogging().BuildServiceProvider();
+        Store = _services.GetRequiredService<ILogStoreLive>();
+        Store.SegmentSize = 2;
+        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(_services.GetRequiredService<ILoggerFactory>()));
+        Store.Configure(mode.ToString(), bridgeEnabled: true);
         View = new(new LazySvc<ILogStoreLive>(_services));
     }
 
@@ -22,7 +28,7 @@ internal sealed class InsightsLogsTestContext : IDisposable
     {
         var log = new Log("Tst.View");
         log.A(message);
-        _store.Add("test", log)!.AddSpec("ModuleId", moduleId);
+        Store.Add("test", log)!.AddSpec("ModuleId", moduleId);
         return log;
     }
 
@@ -30,5 +36,9 @@ internal sealed class InsightsLogsTestContext : IDisposable
         => View.SetContext(new InsightsHtmlTable(), null, new Dictionary<string, object?>(),
             "test", position, null!, null, logId!, filter!);
 
-    public void Dispose() => _services.Dispose();
+    public void Dispose()
+    {
+        LogEventBridge.SetSink(null);
+        _services.Dispose();
+    }
 }

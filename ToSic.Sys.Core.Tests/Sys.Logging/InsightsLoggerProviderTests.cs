@@ -463,13 +463,116 @@ public class InsightsLoggerProviderTests
         var message = new string('x', InsightsLogStore.MaxTextLength);
 
         for (var sequence = 1; sequence <= 400; sequence++)
-            memory.Write(new()
+        {
+            var entry = new LogEvent
             {
                 LogId = logIds[4], Ancestors = [logIds[3], logIds[2], logIds[1], logIds[0]],
                 Sequence = sequence, Source = "Tst.Depth", ShortSource = "Tst.Depth", Message = message,
-            }, logIds.Length);
+                WrapOpen = true, OperationId = sequence,
+            };
+            memory.Write(entry, logIds.Length);
+            memory.Write(entry with { WrapOpenWasClosed = true, Result = message }, logIds.Length);
+        }
 
         Equal(logIds.Length, memory.Snapshot("depth").Count);
+        memory.Flush("depth");
+        Contains("~0 KB/", memory.Status);
+    }
+
+    [Fact]
+    public void Store_EnforcesRetainedPayloadBudget_AfterLateReplayWithoutScope()
+    {
+        using var ctx = new LogExecutionTestContext();
+        var root = ctx.Admit("Root");
+        var noise = Enumerable.Range(0, InsightsLogStore.MaxProperties)
+            .ToDictionary(i => "Noise" + i, _ => (object)new string('x', 4000));
+
+        for (var i = 0; i < 80; i++)
+        {
+            var child = new Log("Tst.Child");
+            using (ctx.Logger.BeginExecution(root, ctx.Source, "capture"))
+            using (ctx.Logger.BeginScope(noise))
+                child.A("scope-enriched event");
+            ctx.Store.Add("children", child);
+        }
+
+        // Replaying each sequence without its scope must not uncharge the root's large payloads.
+        Null(ctx.Store.Snapshot(root));
+        NotEmpty(ctx.Store.Snapshot("children"));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Find_PreservesLegacySubtree_ForUnadmittedParent(bool ownEntry)
+    {
+        using var ctx = new LogExecutionTestContext();
+        var root = ctx.Admit("Root");
+        var child = new Log("Tst.Child", root);
+        var leaf = new Log("Tst.Leaf", child);
+        if (ownEntry)
+            child.A("child entry");
+        leaf.Fn("leaf call", timer: true).Done("leaf result");
+        new Log("Tst.Sibling", root).A("sibling entry");
+
+        var legacy = new LogStoreLive().Snapshot(child)!;
+        var captured = ctx.Store.Snapshot(child)!;
+
+        Equal(child.LogId, captured.LogId);
+        Equal(legacy.Entries.Select(e => e.Sequence), captured.Entries.Select(e => e.Sequence));
+        Equal(legacy.Entries.Select(e => (e.OperationId, e.Result, e.Elapsed)),
+            captured.Entries.Select(e => (e.OperationId, e.Result, e.Elapsed)));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Find_KeepsSurvivingAncestorCapture_AfterFlushOrEviction(bool evict)
+    {
+        using var ctx = new LogExecutionTestContext();
+        ctx.Store.SegmentSize = 1;
+        var root = ctx.Admit("Root");
+        var middle = new Log("Tst.Middle", root);
+        ctx.Store.Add("middle", middle);
+        var leaf = new Log("Tst.Leaf", middle);
+        leaf.A("retained event");
+
+        if (evict)
+            ctx.Store.Add("middle", new Log("Tst.New"));
+        else
+            ctx.Store.FlushSegment("middle");
+
+        Equal("retained event", Single(ctx.Store.Snapshot(leaf)!.Entries).Message);
+        ctx.Store.FlushSegment("test");
+        Null(ctx.Store.Snapshot(leaf));
+    }
+
+    [Fact]
+    public void Find_CombinesRetainedCaptures_OfAnIndependentLogger()
+    {
+        using var ctx = new LogExecutionTestContext();
+        var first = ctx.Admit("First");
+        var second = ctx.Admit("Second");
+        var reused = new Log("Tst.Reused");
+        using (ctx.Logger.BeginExecution(first, ctx.Source, "first"))
+            reused.A("first event");
+        using (ctx.Logger.BeginExecution(second, ctx.Source, "second"))
+            reused.A("second event");
+
+        Equal(new[] { "first event", "second event" }, ctx.Store.Snapshot(reused)!.Entries.Select(e => e.Message));
+    }
+
+    [Fact]
+    public void Done_UsesUtcForCompletionAndCreation()
+    {
+        using var ctx = new LogExecutionTestContext();
+        var root = ctx.Admit("Utc");
+        root.Fn("timed", timer: true).Done();
+
+        var entry = Single(ctx.Store.Snapshot(root)!.Entries);
+        Equal(DateTimeKind.Utc, entry.Created.Kind);
+        Equal(DateTimeKind.Utc, entry.Completed!.Value.Kind);
+        True(entry.Completed >= entry.Created);
     }
 
     [Fact(Timeout = 2000)]
@@ -490,10 +593,14 @@ public class InsightsLoggerProviderTests
         Null(memory.Find(logId));
     }
 
-    [Fact]
-    public void Add_SkipsOrdinaryAdmission_WhilePaused()
+    [Theory]
+    [InlineData(LogStoreMode.Legacy)]
+    [InlineData(LogStoreMode.ILogger)]
+    public void Add_SkipsOrdinaryAdmission_WhilePaused(LogStoreMode mode)
     {
-        var store = new LogStoreLive { Pause = true };
+        using var ctx = new LogExecutionTestContext(mode);
+        var store = ctx.Store;
+        store.Pause = true;
 
         var result = store.Add("paused", new Log("Tst.Pause"));
 
@@ -502,10 +609,13 @@ public class InsightsLoggerProviderTests
         Equal(0, store.AddCount);
     }
 
-    [Fact]
-    public void Add_AutoPausesAtLimit_AndUnpauseResetsCount()
+    [Theory]
+    [InlineData(LogStoreMode.Legacy)]
+    [InlineData(LogStoreMode.ILogger)]
+    public void Add_AutoPausesAtLimit_AndUnpauseResetsCount(LogStoreMode mode)
     {
-        var store = new LogStoreLive();
+        using var ctx = new LogExecutionTestContext(mode);
+        var store = ctx.Store;
         var log = new Log("Tst.AutoPause");
 
         for (var i = 0; i < store.MaxItems; i++)
@@ -521,17 +631,23 @@ public class InsightsLoggerProviderTests
         Equal(0, store.AddCount);
     }
 
-    [Fact]
-    public void ForceAdd_BypassesPauseAndPreserve()
+    [Theory]
+    [InlineData(LogStoreMode.Legacy)]
+    [InlineData(LogStoreMode.ILogger)]
+    public void ForceAdd_BypassesPauseAndPreserve(LogStoreMode mode)
     {
-        var store = new LogStoreLive { Pause = true };
+        using var ctx = new LogExecutionTestContext(mode);
+        var store = ctx.Store;
+        store.Pause = true;
         var log = new Log("Tst.Force") { Preserve = false };
+        log.A("before forced admission");
 
         Null(store.Add("forced", log));
         var result = store.ForceAdd("forced", log);
 
         NotNull(result);
         Equal(log.LogId, Single(store.Snapshot("forced")).LogId);
+        Equal("before forced admission", Single(store.Snapshot(log)!.Entries).Message);
         Equal(1, store.AddCount);
     }
 

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 
 namespace ToSic.Sys.Logging;
 
@@ -19,8 +20,8 @@ public sealed class InsightsLogStore
     // ponytail: one lock for the bounded diagnostic buffer; partition only if profiling warrants it.
     private readonly object _sync = new();
     private readonly Dictionary<string, Bundle> _logs = new();
-    private readonly Dictionary<string, string> _bundleByLog = new();
-    private readonly Dictionary<long, (long Bytes, int References)> _eventUsage = new();
+    private readonly Dictionary<string, HashSet<Bundle>> _bundlesByLog = new();
+    private readonly Dictionary<LogEvent, (long Bytes, int References)> _eventUsage = new(new EventReferenceComparer());
     private readonly Dictionary<string, List<string>> _segments = new(StringComparer.OrdinalIgnoreCase);
     private readonly LinkedList<string> _order = new();
     private long _bytes;
@@ -65,25 +66,11 @@ public sealed class InsightsLogStore
                 return;
             }
 
-            LogEvent? measuredEntry = null;
-            var newReferences = 0;
+            LogEvent? previousOld = null;
+            LogEvent? previousMerged = null;
             WriteToBundle(data.LogId);
             foreach (var id in data.Ancestors)
                 WriteToBundle(id);
-            if (measuredEntry != null)
-            {
-                var size = Measure(measuredEntry);
-                if (_eventUsage.TryGetValue(data.Sequence, out var usage))
-                {
-                    _bytes += size - usage.Bytes;
-                    _eventUsage[data.Sequence] = (size, usage.References + newReferences);
-                }
-                else
-                {
-                    _bytes += size;
-                    _eventUsage[data.Sequence] = (size, newReferences);
-                }
-            }
             EnforceBudget();
 
             void WriteToBundle(string id)
@@ -100,30 +87,48 @@ public sealed class InsightsLogStore
                     return;
                 }
                 // Replays after late attachment must not erase completed data or exception details.
+                if (old?.WrapOpenWasClosed == true && !data.WrapOpenWasClosed)
+                    return;
                 if (old != null)
-                    entry = data with
+                {
+                    // Ancestor bundles normally share the same old event; share its replacement too.
+                    entry = ReferenceEquals(old, previousOld) ? previousMerged! : data with
                     {
                         ExceptionType = data.ExceptionType ?? old.ExceptionType,
                         ExceptionText = data.ExceptionText ?? old.ExceptionText,
                         ParentOperationId = old.ParentOperationId ?? data.ParentOperationId,
                         Properties = Merge(old.Properties, data.Properties),
                     };
-                if (old?.WrapOpenWasClosed == true && !data.WrapOpenWasClosed)
-                    return;
+                    previousOld = old;
+                    previousMerged = entry;
+                }
                 var size = Measure(entry);
                 var delta = size - (old == null ? 0 : Measure(old));
                 bundle.Bytes += delta;
-                bundle.Entries[data.Sequence] = entry;
-                measuredEntry ??= entry;
-                if (!exists)
-                    newReferences++;
-                if (id != data.LogId && !_bundleByLog.ContainsKey(data.LogId))
+                if (old != null)
+                    Release(old);
+                if (_eventUsage.TryGetValue(entry, out var usage))
+                    _eventUsage[entry] = (usage.Bytes, usage.References + 1);
+                else
                 {
-                    _bundleByLog[data.LogId] = id;
-                    bundle.IndexedLogs.Add(data.LogId);
+                    _eventUsage[entry] = (size, 1);
+                    _bytes += size;
                 }
+                bundle.Entries[data.Sequence] = entry;
+                Index(data.LogId);
+                foreach (var ancestor in entry.Ancestors)
+                    Index(ancestor);
                 if (entry.Properties.ContainsKey(TruncatedKey) && old?.Properties.ContainsKey(TruncatedKey) != true)
                     bundle.Truncated++;
+
+                void Index(string logId)
+                {
+                    if (logId == id || !bundle.IndexedLogs.Add(logId))
+                        return;
+                    if (!_bundlesByLog.TryGetValue(logId, out var bundles))
+                        _bundlesByLog[logId] = bundles = [];
+                    bundles.Add(bundle);
+                }
             }
         }
     }
@@ -194,22 +199,30 @@ public sealed class InsightsLogStore
         bundle.Specs.Remove(segment);
         if (bundle.Specs.Count != 0)
             return;
-        foreach (var sequence in bundle.Entries.Keys)
-        {
-            var usage = _eventUsage[sequence];
-            if (usage.References > 1)
-                _eventUsage[sequence] = (usage.Bytes, usage.References - 1);
-            else
-            {
-                _bytes -= usage.Bytes;
-                _eventUsage.Remove(sequence);
-            }
-        }
+        foreach (var entry in bundle.Entries.Values)
+            Release(entry);
         _bytes -= 256;
         foreach (var logId in bundle.IndexedLogs)
-            _bundleByLog.Remove(logId);
+        {
+            var bundles = _bundlesByLog[logId];
+            bundles.Remove(bundle);
+            if (bundles.Count == 0)
+                _bundlesByLog.Remove(logId);
+        }
         _logs.Remove(id);
         _order.Remove(id);
+    }
+
+    private void Release(LogEvent entry)
+    {
+        var usage = _eventUsage[entry];
+        if (usage.References > 1)
+            _eventUsage[entry] = (usage.Bytes, usage.References - 1);
+        else
+        {
+            _bytes -= usage.Bytes;
+            _eventUsage.Remove(entry);
+        }
     }
 
     public void Flush(string segment)
@@ -241,10 +254,19 @@ public sealed class InsightsLogStore
     {
         lock (_sync)
         {
-            if (!_logs.TryGetValue(logId, out var bundle)
-                && (!_bundleByLog.TryGetValue(logId, out var bundleId) || !_logs.TryGetValue(bundleId, out bundle)))
+            if (_logs.TryGetValue(logId, out var bundle))
+                return Snapshot(bundle, null);
+            if (!_bundlesByLog.TryGetValue(logId, out var bundles))
                 return null;
-            return Snapshot(bundle, null);
+            // Only inspect indexed captures; an unknown log never scans the retained store.
+            var entries = bundles.SelectMany(b => b.Entries.Values)
+                .Where(e => e.LogId == logId || e.Ancestors.Contains(logId))
+                .GroupBy(e => e.Sequence).Select(g => g.First()).OrderBy(e => e.Sequence).ToImmutableArray();
+            return entries.Length == 0 ? null : new LogSnapshot
+            {
+                LogId = logId, Created = entries[0].Created, Entries = entries,
+                EstimatedBytes = entries.Sum(Measure),
+            };
         }
     }
 
@@ -264,6 +286,13 @@ public sealed class InsightsLogStore
         ((e.Message?.Length ?? 0) + (e.Result?.Length ?? 0) + e.Source.Length + e.ShortSource.Length
          + (e.Code?.Path?.Length ?? 0) + (e.Code?.Name?.Length ?? 0) + (e.ExceptionText?.Length ?? 0)
          + (e.ExceptionType?.Length ?? 0) + e.Ancestors.Sum(id => id.Length)) + Measure(e.Properties);
+
+    // A replay can retain different payloads for the same sequence in different captures.
+    private sealed class EventReferenceComparer : IEqualityComparer<LogEvent>
+    {
+        public bool Equals(LogEvent? x, LogEvent? y) => ReferenceEquals(x, y);
+        public int GetHashCode(LogEvent obj) => RuntimeHelpers.GetHashCode(obj);
+    }
 
     private sealed class Bundle(string id, DateTime created)
     {

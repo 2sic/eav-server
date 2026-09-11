@@ -64,6 +64,48 @@ public class LogEventBridgeTests
         }
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void IsEnabled_SuppressesReentry_AndRestoresGuardAfterFailure(bool fail)
+    {
+        var sink = new ReentrantLogEventSink { Fail = fail };
+        LogEventBridge.SetSink(sink);
+        try
+        {
+            new Log("Tst.Bridge").A("outer");
+            Equal(1, sink.Checks);
+            Equal(fail ? 0 : 1, sink.Writes);
+
+            sink.Fail = false;
+            new Log("Tst.Bridge").A("after check");
+            Equal(2, sink.Checks);
+            Equal(fail ? 1 : 2, sink.Writes);
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
+    private sealed class ReentrantLogEventSink : ILogEventSink
+    {
+        internal bool Fail;
+        internal int Checks;
+        internal int Writes;
+
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel)
+        {
+            if (++Checks == 1)
+                new Log("Tst.Reentry").A("from IsEnabled");
+            if (Fail)
+                throw new InvalidOperationException("filter failure");
+            return true;
+        }
+
+        public void Write(LogEvent entry, Exception? exception = null) => Writes++;
+    }
+
     private sealed class RecordingLogEventSink : ILogEventSink
     {
         public List<(bool IsCompletion, string? Result)> Events { get; } = [];

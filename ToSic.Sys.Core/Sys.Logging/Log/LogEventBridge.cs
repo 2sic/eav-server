@@ -45,12 +45,17 @@ public static class LogEventBridge
             return false;
         try
         {
+            _isWriting = true;
             return sink.IsEnabled(logLevel);
         }
         catch
         {
             // External logging must never break the authoritative 2sxc logging path.
             return false;
+        }
+        finally
+        {
+            _isWriting = false;
         }
     }
 

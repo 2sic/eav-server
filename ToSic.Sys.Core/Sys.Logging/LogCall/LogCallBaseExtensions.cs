@@ -75,7 +75,7 @@ public static class LogCallBaseExtensions
             entry.IsTimed |= logCall.Timer.IsRunning || logCall.Timer.ElapsedTicks > 0;
             logCall.Timer.Stop();
             entry.Elapsed = logCall.Timer.Elapsed;
-            entry.Completed = DateTime.Now;
+            entry.Completed = DateTime.UtcNow;
             LogEventBridge.Write(entry);
         }
     }
