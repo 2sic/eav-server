@@ -428,6 +428,135 @@ public class InsightsLoggerProviderTests
     }
 
     [Fact]
+    public void Add_SkipsOrdinaryAdmission_WhilePaused()
+    {
+        var store = new LogStoreLive { Pause = true };
+
+        var result = store.Add("paused", new Log("Tst.Pause"));
+
+        Null(result);
+        Empty(store.Snapshot("paused"));
+        Equal(0, store.AddCount);
+    }
+
+    [Fact]
+    public void Add_AutoPausesAtLimit_AndUnpauseResetsCount()
+    {
+        var store = new LogStoreLive();
+        var log = new Log("Tst.AutoPause");
+
+        for (var i = 0; i < store.MaxItems; i++)
+            NotNull(store.Add("auto-pause", log));
+
+        True(store.Pause);
+        Equal(store.MaxItems, store.AddCount);
+        Null(store.Add("auto-pause", log));
+
+        store.Pause = false;
+
+        False(store.Pause);
+        Equal(0, store.AddCount);
+    }
+
+    [Fact]
+    public void ForceAdd_BypassesPauseAndPreserve()
+    {
+        var store = new LogStoreLive { Pause = true };
+        var log = new Log("Tst.Force") { Preserve = false };
+
+        Null(store.Add("forced", log));
+        var result = store.ForceAdd("forced", log);
+
+        NotNull(result);
+        Equal(log.LogId, Single(store.Snapshot("forced")).LogId);
+        Equal(1, store.AddCount);
+    }
+
+    [Fact]
+    public void FlushSegment_KeepsBundleOwnedByAnotherSegment()
+    {
+        var memory = new InsightsLogStore();
+        var store = new LogStoreLive(memory);
+        const string logId = "shared-log";
+        store.Configure("ILogger", bridgeEnabled: true);
+        memory.Write(new() { Kind = "Admission", LogId = logId, Segment = "first" }, 1);
+        memory.Write(new() { Kind = "Admission", LogId = logId, Segment = "second" }, 1);
+        memory.Write(new() { LogId = logId, Sequence = 1, Message = "retained" }, 1);
+
+        store.FlushSegment("first");
+
+        Empty(store.Snapshot("first"));
+        Equal("retained", Single(Single(store.Snapshot("second")).Entries).Message);
+
+        store.FlushSegment("second");
+
+        Null(memory.Find(logId));
+    }
+
+    [Fact]
+    public void Write_RejectsAdmissionsBeyondMaxSegments()
+    {
+        var memory = new InsightsLogStore { Enabled = true };
+        for (var i = 0; i < InsightsLogStore.MaxSegments; i++)
+            memory.Write(new() { Kind = "Admission", LogId = $"log-{i}", Segment = $"segment-{i}" }, 1);
+
+        memory.Write(new() { Kind = "Admission", LogId = "overflow", Segment = "overflow" }, 1);
+
+        Equal(InsightsLogStore.MaxSegments, memory.SegmentCounts().Count);
+        Null(memory.Find("overflow"));
+    }
+
+    [Fact]
+    public void Write_EvictsOldestBundle_WhenByteBudgetIsExceeded()
+    {
+        var memory = new InsightsLogStore { Enabled = true };
+        var message = new string('x', InsightsLogStore.MaxTextLength);
+        memory.Write(new() { Kind = "Admission", LogId = "old", Segment = "budget" }, 2);
+        memory.Write(new() { Kind = "Admission", LogId = "new", Segment = "budget" }, 2);
+        for (var sequence = 1; sequence <= 1024; sequence++)
+            memory.Write(new() { LogId = "old", Sequence = sequence, Message = message }, 2);
+
+        for (var sequence = 1025; sequence <= 2048; sequence++)
+            memory.Write(new() { LogId = "new", Sequence = sequence, Message = message }, 2);
+
+        Null(memory.Find("old"));
+        Equal("new", Single(memory.Snapshot("budget")).LogId);
+    }
+
+    [Fact]
+    public async Task Snapshot_IsSafe_DuringConcurrentWrites()
+    {
+        var memory = new InsightsLogStore { Enabled = true };
+        const string logId = "concurrent";
+        const int writerCount = 4;
+        const int entriesPerWriter = 250;
+        memory.Write(new() { Kind = "Admission", LogId = logId, Segment = "concurrent" }, 1);
+        using var start = new ManualResetEventSlim();
+        var writers = Enumerable.Range(0, writerCount).Select(writer => Task.Run(() =>
+        {
+            start.Wait();
+            for (var i = 1; i <= entriesPerWriter; i++)
+                memory.Write(new()
+                {
+                    LogId = logId,
+                    Sequence = writer * entriesPerWriter + i,
+                    Message = "entry",
+                }, 1);
+        })).ToArray();
+        var reader = Task.Run(() =>
+        {
+            start.Wait();
+            for (var i = 0; i < entriesPerWriter; i++)
+                memory.Snapshot("concurrent");
+        });
+
+        start.Set();
+        await Task.WhenAll(writers.Append(reader));
+
+        Equal(writerCount * entriesPerWriter, Single(memory.Snapshot("concurrent")).Entries.Length);
+    }
+
+    [Fact]
     public void Configure_RemovedCompareMode_FallsBackToLegacy()
     {
         var store = new LogStoreLive();
