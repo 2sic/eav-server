@@ -45,7 +45,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         if (snapshot.Entries.Length > 0)
         {
             var first = snapshot.Entries[0].Created;
-            var last = snapshot.Entries[snapshot.Entries.Length - 1].Created;
+            var last = LastTimestamp(snapshot);
             specs["Z Timespan B-First"] = DumpLocal(first);
             specs["Z Timespan C-Last"] = DumpLocal(last);
             specs["Z Timespan D-Duration SL"] = (last - snapshot.Created).ToString();
@@ -138,46 +138,43 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         _lastLogLabel = null;
         var html = new StringBuilder(H1(title) + Div(DumpLocal(snapshot.Created)) + "\n\n<ol>\n");
         var emitted = new HashSet<long>();
-        AppendChildren(html, snapshot, null, "", default, emitted);
+        var time = new InsightsTime(LastTimestamp(snapshot) - snapshot.Created);
+        AppendChildren(html, snapshot, null, "", default, emitted, time);
         // Keep malformed or interrupted calls visible instead of silently losing them.
         foreach (var orphan in snapshot.Entries.Where(e => !emitted.Contains(e.Sequence)))
-            AppendOne(html, snapshot, orphan, "", default, emitted);
+            AppendOne(html, snapshot, orphan, "", default, emitted, time);
         html.Append("</ol>end of log");
         return html.ToString();
     }
 
     private void AppendChildren(StringBuilder html, LogSnapshot snapshot, long? parentOperation,
-        string breadcrumb, TimeSpan parentTime, HashSet<long> emitted)
+        string breadcrumb, TimeSpan parentTime, HashSet<long> emitted, InsightsTime time)
     {
         foreach (var entry in snapshot.Entries.Where(e =>
                      (e.WrapOpen ? e.ParentOperationId : e.OperationId) == parentOperation))
-            AppendOne(html, snapshot, entry, breadcrumb, parentTime, emitted);
+            AppendOne(html, snapshot, entry, breadcrumb, parentTime, emitted, time);
     }
 
     private void AppendOne(StringBuilder html, LogSnapshot snapshot, LogEvent entry,
-        string breadcrumb, TimeSpan parentTime, HashSet<long> emitted)
+        string breadcrumb, TimeSpan parentTime, HashSet<long> emitted, InsightsTime time)
     {
         if (!emitted.Add(entry.Sequence))
             return;
         html.AppendLine("<li>");
-        html.AppendLine(TreeDumpOneLine(entry, breadcrumb, parentTime,
-            new InsightsTime(FullTimespan(snapshot)), snapshot.Created));
+        html.AppendLine(TreeDumpOneLine(entry, breadcrumb, parentTime, time, snapshot.Created));
         if (entry.WrapOpen)
         {
             if (!entry.WrapOpenWasClosed)
                 html.AppendLine(HtmlEncode("🪵⚠️ LOGGER WARNING: This logger was never closed"));
             html.AppendLine("<ol>");
-            AppendChildren(html, snapshot, entry.Sequence, entry.ShortSource, entry.Elapsed, emitted);
+            AppendChildren(html, snapshot, entry.Sequence, entry.ShortSource, entry.Elapsed, emitted, time);
             html.AppendLine("</ol>");
         }
         html.AppendLine("</li>");
     }
 
-    private static TimeSpan FullTimespan(LogSnapshot snapshot)
-    {
-        var last = snapshot.Entries.Last();
-        return last.Created.Add(last.IsTimed ? last.Elapsed : default) - snapshot.Created;
-    }
+    private static DateTime LastTimestamp(LogSnapshot snapshot)
+        => snapshot.Entries.Max(entry => entry.Completed ?? entry.Created);
 
     private static string DumpLocal(DateTime value)
     {

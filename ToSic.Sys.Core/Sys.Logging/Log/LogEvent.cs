@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Immutable;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 
 namespace ToSic.Sys.Logging;
@@ -85,7 +86,11 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
     /// <summary>Standard ILogger structured state, also readable by other providers.</summary>
     public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
     {
-        yield return new("{OriginalFormat}", "{2sxc.Source} {2sxc.Message}");
+        yield return new("{OriginalFormat}", WrapOpenWasClosed
+            ? IsTimed
+                ? "{2sxc.Source} completed {2sxc.Message} in {2sxc.DurationMs} ms: {2sxc.Result}"
+                : "{2sxc.Source} completed {2sxc.Message}: {2sxc.Result}"
+            : "{2sxc.Source} depth {2sxc.Depth}: {2sxc.Message}");
         yield return new("2sxc.Kind", Kind);
         yield return new("2sxc.LogId", LogId);
         yield return new("2sxc.RootLogId", RootLogId);
@@ -97,8 +102,8 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
         yield return new("2sxc.Name", Name);
         yield return new("2sxc.Source", Source);
         yield return new("2sxc.Depth", Depth);
-        yield return new("2sxc.Message", Message);
-        yield return new("2sxc.Result", Result);
+        yield return new("2sxc.Message", Message ?? "");
+        yield return new("2sxc.Result", Result ?? "");
         yield return new("2sxc.DurationMs", IsTimed ? Elapsed.TotalMilliseconds : null);
         yield return new("2sxc.Code.File", Code?.Path);
         yield return new("2sxc.Code.Member", Code?.Name);
@@ -112,6 +117,8 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public override string ToString() => WrapOpenWasClosed
-        ? $"{Source} completed {Message} in {Elapsed.TotalMilliseconds} ms: {Result}"
+        ? IsTimed
+            ? $"{Source} completed {Message} in {Elapsed.TotalMilliseconds.ToString(CultureInfo.InvariantCulture)} ms: {Result}"
+            : $"{Source} completed {Message}: {Result}"
         : $"{Source} depth {Depth}: {Message}";
 }

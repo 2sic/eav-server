@@ -1,4 +1,5 @@
 using static Xunit.Assert;
+using System.Text.RegularExpressions;
 using ToSic.Eav.Sys.Insights.Logs;
 using ToSic.Sys.Logging;
 
@@ -10,6 +11,42 @@ public sealed class InsightsLogsTestCollection;
 [Collection(nameof(InsightsLogsTests))]
 public class InsightsLogsTests
 {
+    [Theory]
+    [InlineData(10)]
+    [InlineData(1)]
+    public void DumpTree_UsesLatestCompletion_ForTotalTimeAndSpecs(int measuredSeconds)
+    {
+        var start = new DateTime(2026, 9, 11, 0, 0, 0, DateTimeKind.Utc);
+        var snapshot = new LogSnapshot
+        {
+            LogId = "timing",
+            Created = start,
+            Entries =
+            [
+                new()
+                {
+                    Sequence = 1, OperationId = 1, Source = "Root", Message = "outer",
+                    Created = start, Completed = start.AddSeconds(10),
+                    WrapOpen = true, WrapOpenWasClosed = true, IsTimed = true,
+                    Elapsed = TimeSpan.FromSeconds(measuredSeconds),
+                },
+                new() { Sequence = 2, OperationId = 1, Source = "Root", Message = "last message", Created = start.AddSeconds(2) },
+            ],
+        };
+        using var ctx = new InsightsLogsTestContext(LogStoreMode.ILogger);
+        ctx.Write(new() { Kind = "Admission", LogId = snapshot.LogId, Segment = "test", Created = start });
+        foreach (var entry in snapshot.Entries)
+            ctx.Write(entry with { LogId = snapshot.LogId });
+        ctx.SetContext(logId: snapshot.LogId);
+
+        var html = ctx.View.HtmlBody();
+
+        var percentage = Regex.Match(html, @"class=['""]time-of-total['""]>(\d+)%").Groups[1].Value;
+        Equal((measuredSeconds * 10).ToString(), percentage);
+        Contains(start.AddSeconds(10).ToLocalTime().ToString("o"), html);
+        Contains("00:00:10", html);
+    }
+
     #region Log selection
     [Theory]
     [InlineData(LogStoreMode.Legacy)]

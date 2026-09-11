@@ -13,7 +13,8 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
     private readonly ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> _segments = new();
     public int MaxItems => LogConstants.LiveStoreMaxItems;
     public LogStoreMode Mode { get; private set; }
-    public string Status => Mode == LogStoreMode.Legacy ? "Legacy store" : _insights.Status;
+    public string Status => _configurationError ?? (Mode == LogStoreMode.Legacy ? "Legacy store" : _insights.Status);
+    private string? _configurationError;
     public int SegmentSize
     {
         get => _segmentSize;
@@ -48,11 +49,12 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
     {
         if (!Enum.TryParse(mode ?? nameof(LogStoreMode.Legacy), true, out LogStoreMode selected)
             || !Enum.IsDefined(typeof(LogStoreMode), selected))
-            return "Unknown logging store; retaining Legacy.";
+            return _configurationError = $"Unknown logging store; retaining {Mode}.";
         if (selected != LogStoreMode.Legacy && !bridgeEnabled)
-            return "ILogger store requires Logging:2sxc:Enabled=true; retaining Legacy.";
+            return _configurationError = $"ILogger store requires Logging:2sxc:Enabled=true; retaining {Mode}.";
         lock (_sync)
         {
+            _configurationError = null;
             Mode = selected;
             _insights.Enabled = selected != LogStoreMode.Legacy;
             if (!_insights.Enabled)

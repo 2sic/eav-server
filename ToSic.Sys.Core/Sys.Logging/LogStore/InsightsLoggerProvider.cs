@@ -53,12 +53,18 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
         void Set(string key, string? value)
         {
             properties ??= ImmutableDictionary.CreateBuilder<string, string>(StringComparer.OrdinalIgnoreCase);
+            // Clipping a key could overwrite an unrelated property with the same prefix.
+            if (key.Length > InsightsLogStore.MaxTextLength)
+            {
+                truncated = true;
+                return;
+            }
             if (properties.Count >= InsightsLogStore.MaxProperties && !properties.ContainsKey(key) && !Reserved.Contains(key))
             {
                 truncated = true;
                 return;
             }
-            properties[Clip(key)!] = Clip(value)!;
+            properties[key] = Clip(value)!;
         }
         void Capture(object? value)
         {

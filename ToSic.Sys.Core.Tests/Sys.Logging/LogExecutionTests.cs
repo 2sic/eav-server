@@ -219,5 +219,44 @@ public class LogExecutionTests
         DoesNotContain(entries, e => e.Message == "inner message");
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task BeginExecution_StopsActivity_WhenScopeInitializationOrDisposalThrows(bool failBegin)
+    {
+        using var source = new ActivitySource("Test.ScopeFailure");
+        var stopped = 0;
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = candidate => candidate == source,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData,
+            ActivityStopped = _ => stopped++,
+        };
+        ActivitySource.AddActivityListener(listener);
+        using var parent = new Activity("parent").Start();
+        var logger = new FailingScopeLogger(failBegin);
+
+        var error = await ThrowsAsync<InvalidOperationException>(async () =>
+        {
+            using var scope = logger.BeginExecution(new Log("Tst.Failure"), source, "failure");
+            await Task.Yield();
+        });
+
+        Same(logger.Error, error);
+        Same(parent, Activity.Current);
+        Equal(1, stopped);
+    }
+
+    private sealed class FailingScopeLogger(bool failBegin) : ILogger, IDisposable
+    {
+        internal InvalidOperationException Error { get; } = new("scope failure");
+        public bool IsEnabled(LogLevel logLevel) => true;
+        public IDisposable BeginScope<TState>(TState state) where TState : notnull
+            => failBegin ? throw Error : this;
+        public void Dispose() => throw Error;
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+            Func<TState, Exception?, string> formatter) { }
+    }
+
     #endregion
 }

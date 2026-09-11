@@ -11,6 +11,62 @@ namespace ToSic.Sys.Logging;
 public class InsightsLoggerProviderTests
 {
     [Fact]
+    public void Store_DropsOversizedKeys_WithoutOverwritingExactKeys()
+    {
+        using var ctx = new LogExecutionTestContext();
+        var root = ctx.Admit("Keys");
+        var prefix = new string('x', InsightsLogStore.MaxTextLength - 1);
+        var exactKey = prefix + "…";
+
+        using (ctx.Logger.BeginScope(new Dictionary<string, object?>
+               {
+                   [LogExecution.LogIdKey] = root.LogId,
+                   [exactKey] = "outer",
+               }))
+            ctx.Logger.Log(LogLevel.Information, default,
+                new Dictionary<string, object?>
+                {
+                    [exactKey] = "event",
+                    [prefix + "first"] = "wrong first value",
+                    [prefix + "second"] = "wrong second value",
+                }, null, static (_, _) => "bounded keys");
+
+        var entry = Single(ctx.Store.Snapshot(root)!.Entries);
+        Equal("event", entry.Properties[exactKey]);
+        Equal(root.LogId, entry.Properties[LogExecution.LogIdKey]);
+        Equal("true", entry.Properties[InsightsLogStore.TruncatedKey]);
+        DoesNotContain(entry.Properties.Values, value => value.StartsWith("wrong"));
+    }
+
+    [Theory]
+    [InlineData("ILogger", false)]
+    [InlineData("Compare", true)]
+    public void Configure_KeepsRejectionVisible_UntilValidConfiguration(string mode, bool bridgeEnabled)
+    {
+        var store = new LogStoreLive();
+
+        var diagnostic = store.Configure(mode, bridgeEnabled);
+
+        Equal(LogStoreMode.Legacy, store.Mode);
+        Equal(diagnostic, store.Status);
+        store.Configure("Legacy", bridgeEnabled: false);
+        Equal("Legacy store", store.Status);
+    }
+
+    [Fact]
+    public void Store_DropsOversizedSpecKey_WhenNoOtherPropertiesRemain()
+    {
+        using var ctx = new LogExecutionTestContext();
+        var root = ctx.Admit("Specs");
+
+        ctx.Store.Add("test", root)!.AddSpec(new string('x', InsightsLogStore.MaxTextLength + 1), "value");
+
+        var specs = Single(ctx.Store.Snapshot("test")).Specs;
+        DoesNotContain(specs.Keys, key => key.Length > InsightsLogStore.MaxTextLength);
+        Equal("true", specs[InsightsLogStore.TruncatedKey]);
+    }
+
+    [Fact]
     public void StoreLogger_DisablesWrites_InLegacyMode()
     {
         var memory = new InsightsLogStore();

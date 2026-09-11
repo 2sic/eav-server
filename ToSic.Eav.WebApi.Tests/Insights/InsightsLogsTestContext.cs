@@ -32,6 +32,10 @@ internal sealed class InsightsLogsTestContext : IDisposable
         return log;
     }
 
+    internal void Write(LogEvent entry)
+        => _services.GetRequiredService<InsightsLoggerProvider>().CreateLogger(MicrosoftLoggerEventSink.StoreCategory)
+            .Log(entry.Level, default, entry, null, static (data, _) => data.ToString());
+
     internal void SetContext(string? logId = null, string? filter = null, int? position = null)
         => View.SetContext(new InsightsHtmlTable(), null, new Dictionary<string, object?>(),
             "test", position, null!, null, logId!, filter!);

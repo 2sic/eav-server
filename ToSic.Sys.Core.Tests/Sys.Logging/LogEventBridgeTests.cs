@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace ToSic.Sys.Logging;
 
 [CollectionDefinition(nameof(LogEventBridgeTests), DisableParallelization = true)]
@@ -6,6 +8,45 @@ public sealed class LogEventBridgeTestCollection;
 [Collection(nameof(LogEventBridgeTests))]
 public class LogEventBridgeTests
 {
+    [Theory]
+    [InlineData(false, false, false)]
+    [InlineData(true, true, false)]
+    [InlineData(true, false, false)]
+    [InlineData(true, true, true)]
+    [InlineData(true, false, true)]
+    public void StructuredTemplate_MatchesFormatter_AndOmitsUntimedDuration(bool completed, bool timed, bool noResult)
+    {
+        var entry = new LogEvent
+        {
+            Source = "Tst.Template", Message = "work", Result = noResult ? null : "done", Depth = 2,
+            WrapOpenWasClosed = completed, IsTimed = timed, Elapsed = TimeSpan.FromMilliseconds(12.5),
+        };
+        var properties = entry.ToDictionary(pair => pair.Key, pair => pair.Value);
+        var template = (string)properties["{OriginalFormat}"]!;
+        var values = completed
+            ? timed
+                ? new[] { properties["2sxc.Source"], properties["2sxc.Message"], properties["2sxc.DurationMs"], properties["2sxc.Result"] }
+                : new[] { properties["2sxc.Source"], properties["2sxc.Message"], properties["2sxc.Result"] }
+            : new[] { properties["2sxc.Source"], properties["2sxc.Depth"], properties["2sxc.Message"] };
+        var logger = new FormattingLogger();
+
+        // Render the advertised template using MEL's formatter, not a replacement parser.
+        logger.Log(LogLevel.Trace, template, values);
+
+        Equal(entry.ToString(), logger.Message);
+        if (completed && !timed)
+            DoesNotContain(" ms", logger.Message);
+    }
+
+    private sealed class FormattingLogger : ILogger
+    {
+        internal string Message = "";
+        public bool IsEnabled(LogLevel logLevel) => true;
+        public IDisposable BeginScope<TState>(TState state) where TState : notnull => null!;
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+            Func<TState, Exception?, string> formatter) => Message = formatter(state, exception);
+    }
+
     [Fact]
     public void Write_ExportsEntryAndCompletion_InRealTime()
     {
