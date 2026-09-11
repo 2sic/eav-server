@@ -2,7 +2,6 @@
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.Metadata;
-using ToSic.Eav.Services;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSources;
@@ -26,9 +25,8 @@ namespace ToSic.Eav.DataSources;
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 public class MetadataTargets(
     CustomDataSourceAdvanced.Dependencies services,
-    IAppReaderFactory appReaders,
-    IDataSourceGenerator<ContentTypes> contentTypes)
-    : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders, contentTypes])
+    IAppReaderFactory appReaders)
+    : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders])
 {
     /// <summary>
     /// Optional TypeName restrictions to only get **Targets** of this Content Type.
@@ -44,7 +42,7 @@ public class MetadataTargets(
 
     protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string? typeName)
     {
-        var getTargetFunc = GetTargetsFunctionGenerator(contentTypes);
+        var getTargetFunc = GetTargetsFunctionGenerator();
 
         var relationships = originals
             .SelectMany(getTargetFunc);
@@ -63,10 +61,9 @@ public class MetadataTargets(
     /// </summary>
     /// <returns></returns>
     [PrivateApi]
-    private Func<IEntity, IEnumerable<IEntity>> GetTargetsFunctionGenerator(IDataSourceGenerator<ContentTypes> contentTypes)
+    private Func<IEntity, IEnumerable<IEntity>> GetTargetsFunctionGenerator()
     {
         var appState = appReaders.Get(this);
-        var contentTypesByScope = new Dictionary<string, IImmutableList<IEntity>>();
         return o =>
         {
             var mdFor = o.MetadataFor;
@@ -97,23 +94,9 @@ public class MetadataTargets(
                 var ct = appState.TryGetContentType(key);
                 if (ct == null)
                     return [];
-                if (!contentTypesByScope.TryGetValue(ct.Scope, out var typeEntities))
-                {
-                    var typesSource = contentTypes.New(options: new DataSourceOptions()
-                    {
-                        AppIdentityOrReader = this,
-                        Attach = this,
-                        MyConfigValues = new
-                        {
-                            AppId,
-                            Scope = ct.Scope,
-                        }.ToDicInvariantInsensitive().ToDicStringStringImInv(),
-                    });
-                    contentTypesByScope[ct.Scope] = typeEntities = typesSource.List.ToImmutableOpt();
-                }
-
-                var ctEntity = typeEntities.FirstOrDefault(entity => entity.EntityId == ct.Id);
-                return ctEntity != null ? [ctEntity] : [];
+                var contentTypeFactory = DataFactory.SpawnNew(options: new() { AppId = AppId, WithMetadata = true });
+                var ctEntity = contentTypeFactory.Create(new ContentTypeUtil.ContentTypeSummary(ct, items: 0));
+                return [ctEntity];
             }
 
             return [];

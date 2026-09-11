@@ -4,6 +4,7 @@ using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Configuration;
+using ToSic.Eav.DataSource.Sys.Errors;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource;
@@ -83,6 +84,18 @@ public class CustomDataSource: CustomDataSourceAdvanced
         Func<DataFactoryOptions>? options = default
     ) where T : class, IRawData
         => base.ProvideOut(() => GetRaw(data, options), name);
+
+    /// <summary>
+    /// Provide raw data which may instead contain an already prepared error stream.
+    /// </summary>
+    [PrivateApi]
+    protected internal void ProvideOutRaw<T>(
+        Func<ResultOrError<IEnumerable<T>>> data,
+        NoParamOrder npo = default,
+        string name = StreamDefaultName,
+        Func<DataFactoryOptions>? options = default
+    ) where T : class, IRawData
+        => base.ProvideOut(() => GetRawOrError(data, options), name);
 
     private IImmutableList<IEntity> GetAny(Func<object>? source, Func<DataFactoryOptions>? options)
     {
@@ -178,6 +191,17 @@ public class CustomDataSource: CustomDataSourceAdvanced
         // Transform result to IEntity
         var result = DataFactory.SpawnNew(options: GetBestOptions(options)).Create(raw);
         return l.Return(result, $"Got {result.Count} items");
+    }
+
+    private IImmutableList<IEntity> GetRawOrError<T>(
+        Func<ResultOrError<IEnumerable<T>>> source,
+        Func<DataFactoryOptions>? options)
+        where T : class, IRawData
+    {
+        var result = source();
+        return result.IsOk
+            ? GetRaw(() => result.Result, options)
+            : result.ErrorsSafe();
     }
 
 }
