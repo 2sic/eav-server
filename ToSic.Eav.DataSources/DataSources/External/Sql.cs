@@ -9,6 +9,7 @@ using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Errors;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.LookUp.Sys;
 using static System.StringComparison;
@@ -129,7 +130,7 @@ public class Sql : CustomDataSource
     [PrivateApi]
     public Sql(Dependencies services) : base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql", connect: [services])
     {
-        ProvideOut(
+        ProvideOutRaw(
             () => GetList(services.SqlPlatformInfo),
             options: () => new()
             {
@@ -233,9 +234,9 @@ public class Sql : CustomDataSource
     }
 
 
-    private object GetList(SqlPlatformInfo sqlPlatformInfo)
+    private ResultOrError<IEnumerable<RawEntity>> GetList(SqlPlatformInfo sqlPlatformInfo)
     {
-        var l = Log.Fn<object>();
+        var l = Log.Fn<ResultOrError<IEnumerable<RawEntity>>>();
         CustomConfigurationParse();
 
         var selectSql = SelectCommand;
@@ -243,8 +244,8 @@ public class Sql : CustomDataSource
 
         // Check if SQL contains forbidden terms
         if (ForbiddenTermsInSelect.IsMatch(selectSql))
-            return l.ReturnAsError(Error.Create(source: this, title: ErrorTitleForbiddenSql,
-                message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue."));
+            return l.Return(new(false, null, Error.Create(source: this, title: ErrorTitleForbiddenSql,
+                message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue.")), "error");
 
 
         // Load ConnectionString by Name (if specified)
@@ -262,15 +263,15 @@ public class Sql : CustomDataSource
             }
             catch(Exception ex)
             {
-                return l.ReturnAsError(Error.Create(source: this, exception: ex,
+                return l.Return(new(false, null, Error.Create(source: this, exception: ex,
                     title: "Can't find Connection String Name",
-                    message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message."));
+                    message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message.")), "error");
             }
 
         // make sure we have one - often it's empty, if the query hasn't been configured yet
         if (string.IsNullOrWhiteSpace(ConnectionString))
-            return l.ReturnAsError(Error.Create(source: this, title: "Connection Problem",
-                message: "The ConnectionString property is empty / has not been initialized"));
+            return l.Return(new(false, null, Error.Create(source: this, title: "Connection Problem",
+                message: "The ConnectionString property is empty / has not been initialized")), "error");
 
         var list = new List<RawEntity>();
         using (var connection = new SqlConnection(ConnectionString))
@@ -292,9 +293,9 @@ public class Sql : CustomDataSource
                 }
                 catch(Exception ex)
                 {
-                    return l.ReturnAsError(Error.Create(source: this, exception: ex,
+                    return l.Return(new(false, null, Error.Create(source: this, exception: ex,
                         title: "Can't read from Database",
-                        message: "Something failed trying to read from the Database."));
+                        message: "Something failed trying to read from the Database.")), "error");
                 }
 
                 var casedTitle = TitleField;
@@ -352,6 +353,6 @@ public class Sql : CustomDataSource
             }
         }
 
-        return l.Return(list.ToImmutableOpt(), $"found:{list.Count}");
+        return l.Return(new(true, list.ToImmutableOpt()), $"found:{list.Count}");
     }
 }
