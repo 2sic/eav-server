@@ -65,6 +65,69 @@ public class InsightsLoggerProviderTests
     }
 
     [Fact]
+    public void Snapshot_PreservesTreeResultsAndTimings_WhenReplayingOneCorpusIntoILogger()
+    {
+        var memory = new InsightsLogStore();
+        var provider = new InsightsLoggerProvider(memory);
+        using var factory = LoggerFactory.Create(builder => builder
+            .SetMinimumLevel(LogLevel.Trace)
+            .AddProvider(provider));
+        var store = new LogStoreLive(memory, provider);
+        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
+        try
+        {
+            var root = new Log("Tst.Parity");
+            store.Add("parity", root);
+            var outer = root.Fn(message: "outer", timer: true);
+            outer.A("root entry");
+            var child = new Log("Tst.Child", outer);
+            var inner = child.Fn(message: "inner", timer: true);
+            inner.A("child entry");
+            inner.Done("inner result");
+            outer.Done("outer result");
+
+            var legacy = Single(store.Snapshot("parity"));
+
+            Equal("ILogger", store.Configure("ILogger", bridgeEnabled: true).Split(' ')[0]);
+            var modern = Single(store.Snapshot("parity"));
+
+            var legacyEntries = legacy.Entries.Select(entry => new
+            {
+                entry.LogId,
+                Ancestors = string.Join(">", entry.Ancestors),
+                entry.Sequence,
+                entry.OperationId,
+                entry.ParentOperationId,
+                entry.Depth,
+                entry.Message,
+                entry.Result,
+                entry.Elapsed,
+                entry.IsTimed,
+            }).ToArray();
+            var modernEntries = modern.Entries.Select(entry => new
+            {
+                entry.LogId,
+                Ancestors = string.Join(">", entry.Ancestors),
+                entry.Sequence,
+                entry.OperationId,
+                entry.ParentOperationId,
+                entry.Depth,
+                entry.Message,
+                entry.Result,
+                entry.Elapsed,
+                entry.IsTimed,
+            }).ToArray();
+
+            Equal(2, legacy.Entries.Count(entry => entry.IsTimed));
+            Equal(legacyEntries, modernEntries);
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
+    [Fact]
     public void Store_ReplaysEntriesCreatedBeforeAdmission_AndCapturesNativeScope()
     {
         using var services = new ServiceCollection().AddSysCoreLogging().BuildServiceProvider();
