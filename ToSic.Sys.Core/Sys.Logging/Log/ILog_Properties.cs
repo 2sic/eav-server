@@ -33,7 +33,7 @@ public static class ILog_Properties
         [CallerLineNumber] int cLine = default
     )
     {
-        var l = enabled
+        using var l = enabled
             ? new LogCall<TProperty>(log, Create(cPath!, $"{GetPrefix}{cName}", cLine), true, parameters, message, timer)
             : null;
         var result = getter();

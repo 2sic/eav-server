@@ -37,6 +37,7 @@ public class LogCallBase : ILogCall
         typedLog.CurrentOperation = entry;
         typedLog.WrapDepth++;
         LogEventBridge.Write(entry);
+        _operationScope = LogEventBridge.BeginOperation(entry);
     }
 
     public ILog? Log { get; }
@@ -46,6 +47,24 @@ public class LogCallBase : ILogCall
 
     /// <inheritdoc />
     public Stopwatch Timer { get; }
+
+    private IDisposable? _operationScope;
+
+    internal void CloseOperationScope()
+    {
+        var scope = Interlocked.Exchange(ref _operationScope, null);
+        try
+        {
+            scope?.Dispose();
+        }
+        catch
+        {
+            // Logging cleanup must never replace application failure.
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose() => this.DoneInternal(null);
 
     [PrivateApi("will probably remove")]
     public string NameId => Log?.NameId ?? "no-name";

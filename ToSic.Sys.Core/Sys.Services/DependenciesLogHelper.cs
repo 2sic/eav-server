@@ -38,6 +38,13 @@ internal class DependenciesLogHelper
     /// </summary>
     public void SetLog(ILog? log)
     {
+        if (LogEventBridge.UsesExecutionContext)
+        {
+            // Preserve callback-owned admission behavior without retaining dependency log chains.
+            foreach (var callback in HasLogs.OfType<ILogWasConnected>())
+                callback.LogWasConnected();
+            return;
+        }
         LazyInitLogs.ForEach(s => s.SetLog(log));
         HasLogs.ForEach(hl => hl.LinkLog(log));
     }

@@ -163,9 +163,9 @@ public class LogExecutionTests
         using (ctx.Logger.BeginExecution(second, ctx.Source, "second", moduleId: 333))
             ctx.Store.Add("test", child);
 
-        DoesNotContain(ctx.Store.Snapshot(second)!.Entries, e => e.Message == "historical event");
+        Null(ctx.Store.Snapshot(second));
         Equal("331", Single(ctx.Store.Snapshot(first)!.Entries).Properties["2sxc.ModuleId"]);
-        False(Single(ctx.Store.Snapshot(child)!.Entries).Properties.ContainsKey("2sxc.ModuleId"));
+        Equal("331", Single(ctx.Store.Snapshot(child)!.Entries).Properties["2sxc.ModuleId"]);
     }
 
     [Fact]
@@ -187,15 +187,17 @@ public class LogExecutionTests
     }
 
     [Fact]
-    public void BeginExecution_UsesAdmittedRoot_ForLinkedBoundaryLogger()
+    public void BeginExecution_UsesExactAdmission_AndIgnoresLinkedBoundaryOwnership()
     {
         using var ctx = new LogExecutionTestContext();
-        var root = ctx.Admit("Root");
+        var admission = ctx.AdmitEntry("Root");
+        var root = (Log)admission.Log!;
         var boundary = new Log("Tst.Boundary", parent: root);
 
-        using (ctx.Logger.BeginExecution(boundary, ctx.Source, "boundary"))
+        using (ctx.Logger.BeginExecution(admission, ctx.Source, "boundary"))
             boundary.A("inside linked boundary");
 
+        Null(boundary.Parent);
         Contains(ctx.Store.Snapshot(root)!.Entries, e => e.Message == "inside linked boundary");
     }
 
@@ -315,10 +317,8 @@ public class LogExecutionTests
         DoesNotContain(entries, e => e.Message == "inner message");
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task BeginExecution_StopsActivity_WhenScopeInitializationOrDisposalThrows(bool failBegin)
+    [Fact]
+    public async Task BeginExecution_StopsActivity_WhenScopeInitializationThrows()
     {
         using var source = new ActivitySource("Test.ScopeFailure");
         var stopped = 0;
@@ -330,7 +330,7 @@ public class LogExecutionTests
         };
         ActivitySource.AddActivityListener(listener);
         using var parent = new Activity("parent").Start();
-        var logger = new FailingScopeLogger(failBegin);
+        var logger = new FailingScopeLogger(failBegin: true);
 
         var error = await ThrowsAsync<InvalidOperationException>(async () =>
         {
@@ -339,6 +339,28 @@ public class LogExecutionTests
         });
 
         Same(logger.Error, error);
+        Same(parent, Activity.Current);
+        Equal(1, stopped);
+    }
+
+    [Fact]
+    public async Task BeginExecution_SwallowsScopeDisposalFailure_AndStopsActivity()
+    {
+        using var source = new ActivitySource("Test.ScopeDisposalFailure");
+        var stopped = 0;
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = candidate => candidate == source,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData,
+            ActivityStopped = _ => stopped++,
+        };
+        ActivitySource.AddActivityListener(listener);
+        using var parent = new Activity("parent").Start();
+        var logger = new FailingScopeLogger(failBegin: false);
+
+        using (var scope = logger.BeginExecution(new Log("Tst.Failure"), source, "failure"))
+            await Task.Yield();
+
         Same(parent, Activity.Current);
         Equal(1, stopped);
     }

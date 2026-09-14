@@ -24,7 +24,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
     private static readonly HashSet<string> Reserved = new(StringComparer.OrdinalIgnoreCase)
     {
         LogExecution.LogIdKey, LogExecution.AmbientLogIdKey, LogExecution.AmbientOperationIdKey,
-        LogExecution.InvocationLogIdKey, OperationIdKey,
+        LogExecution.InvocationLogIdKey, LogExecution.SourceLogIdKey, OperationIdKey,
         CodeFileKey, CodeMemberKey, CodeLineKey, "TraceId", "SpanId", "ParentSpanId",
     };
 
@@ -43,6 +43,9 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
             return;
         ImmutableDictionary<string, string>.Builder? properties = null;
         var truncated = false;
+        string? executionLogId = null;
+        HashSet<long>? activeOperationIds = null;
+        string? invocationLogId = null;
         string? Clip(string? value)
         {
             if (value == null || value.Length <= InsightsLogStore.MaxTextLength)
@@ -66,7 +69,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
             }
             properties[key] = Clip(value)!;
         }
-        void Capture(object? value)
+        void Capture(object? value, bool scope = false)
         {
             if (value is not IEnumerable<KeyValuePair<string, object?>> pairs)
                 return;
@@ -79,32 +82,51 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
                     break;
                 }
                 // Never retain arbitrary scope objects or invoke their custom ToString implementations.
-                if (pair.Value is string or bool or byte or short or int or long or float or double or decimal or Guid or DateTime)
-                    Set(pair.Key, Convert.ToString(pair.Value, CultureInfo.InvariantCulture));
+                if (pair.Value is not (string or bool or byte or short or int or long or float or double or decimal or Guid or DateTime))
+                    continue;
+                var text = Convert.ToString(pair.Value, CultureInfo.InvariantCulture);
+                Set(pair.Key, text);
+                if (!scope || string.IsNullOrEmpty(text))
+                    continue;
+                if (pair.Key.Equals(LogExecution.AmbientLogIdKey, StringComparison.OrdinalIgnoreCase)
+                    )
+                    executionLogId = text;
+                else if (pair.Key.Equals(LogExecution.InvocationLogIdKey, StringComparison.OrdinalIgnoreCase))
+                    invocationLogId ??= text;
+                else if (pair.Key.Equals(LogExecution.AmbientOperationIdKey, StringComparison.OrdinalIgnoreCase)
+                         && long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var activeOperationId)
+                         && activeOperationId > 0)
+                    (activeOperationIds ??= []).Add(activeOperationId);
             }
         }
         // Replay/admission describes earlier work, not the request which happens to publish it.
         var captureContext = state is not LogEvent { Replay: true } && state is not LogEvent { Segment: not null };
-        string? invocationLogId = null;
         if (captureContext)
             _scopes.ForEachScope((scope, _) =>
             {
-                Capture(scope);
-                // Without an execution boundary, the outermost invocation owns the bundle.
-                if (invocationLogId == null && properties?.TryGetValue(LogExecution.InvocationLogIdKey, out var ownerId) == true)
-                    invocationLogId = ownerId;
+                Capture(scope, scope: true);
             }, 0);
-        var ambientOperationId = properties?.TryGetValue(LogExecution.AmbientOperationIdKey, out var operationId) == true
+        long? ambientOperationId = properties?.TryGetValue(LogExecution.AmbientOperationIdKey, out var operationId) == true
             && long.TryParse(operationId, out var parsedOperationId) && parsedOperationId > 0
                 ? parsedOperationId
-                : (long?)null;
-        var ambientLogId = properties?.TryGetValue(LogExecution.AmbientLogIdKey, out var capturedLogId) == true
-            ? capturedLogId
-            : invocationLogId;
-        if (state is LogEvent { Kind: "Entry" or "Start" or "Completion" } bridgeEvent
-            && !store.Knows(bridgeEvent.LogId,
-                ambientLogId == null ? bridgeEvent.Ancestors : bridgeEvent.Ancestors.Add(ambientLogId)))
-            return;
+                : LogOperationContext.Current?.Entry.Sequence;
+        var membership = executionLogId ?? invocationLogId ?? LogOperationContext.Current?.ExecutionId;
+        // A bridge entry owns the execution captured when it was created. A late completion must not
+        // inherit the unrelated scope which merely happens to publish it.
+        var mismatchedCapturedExecution = state is LogEvent { Ancestors.Length: > 0 } owned
+            && membership != null
+            && !owned.RootLogId.Equals(membership, StringComparison.Ordinal);
+        if (mismatchedCapturedExecution)
+        {
+            properties = null;
+            truncated = false;
+            executionLogId = null;
+            invocationLogId = null;
+            activeOperationIds = null;
+            membership = null;
+            ambientOperationId = null;
+            captureContext = false;
+        }
         var activity = captureContext ? Activity.Current : null;
         if (activity != null)
         {
@@ -117,10 +139,22 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
         {
             foreach (var pair in bridge.Properties)
                 Set(pair.Key, pair.Value);
-            data = ambientLogId == null || ambientLogId == bridge.LogId || bridge.Ancestors.Contains(ambientLogId)
-                ? bridge
-                : bridge with { Ancestors = bridge.Ancestors.Add(ambientLogId) };
-            if (data.WrapOpen && data.OperationId != ambientOperationId && !data.ParentOperationId.HasValue && ambientOperationId.HasValue)
+            var operationContext = mismatchedCapturedExecution ? null : LogOperationContext.Current;
+            data = LogEventBridge.UsesExecutionContext && captureContext
+                && (membership != null || operationContext != null || activeOperationIds != null)
+                ? bridge with
+                {
+                    Ancestors = bridge.Ancestors.Length > 0 || membership == null
+                        ? bridge.Ancestors
+                        : membership == bridge.LogId ? [] : [membership],
+                    Depth = bridge.WrapOpenWasClosed ? bridge.Depth
+                        : Math.Max(bridge.Depth, operationContext != null
+                            ? operationContext.Depth + 1
+                            : activeOperationIds?.Count ?? 0),
+                }
+                : bridge;
+            if (data.WrapOpen && !data.WrapOpenWasClosed && data.OperationId != ambientOperationId
+                && !data.ParentOperationId.HasValue && ambientOperationId.HasValue)
                 data = data with { ParentOperationId = ambientOperationId };
             else if (!data.WrapOpen && !data.OperationId.HasValue && ambientOperationId.HasValue)
                 data = data with { OperationId = ambientOperationId };
@@ -129,7 +163,8 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
         {
             Capture(state);
             // Native logs opt into an admitted bundle via a structured scope.
-            var logId = properties?.TryGetValue(LogExecution.LogIdKey, out var scopedId) == true ? scopedId : invocationLogId;
+            var logId = membership
+                ?? (properties?.TryGetValue(LogExecution.LogIdKey, out var scopedId) == true ? scopedId : invocationLogId);
             if (properties == null || logId == null)
                 return;
             // The bridge carries its kind in LogEvent.Kind; only native callers need MEL event identity.
@@ -140,6 +175,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
             data = new()
             {
                 LogId = logId, Source = category, ShortSource = category, Created = DateTime.UtcNow,
+                Ancestors = [],
                 Sequence = Entry.NextSequence(), Message = formatter(state, exception), Level = level,
                 OperationId = properties.TryGetValue(OperationIdKey, out var operation) && long.TryParse(operation, out var id) ? id : ambientOperationId,
                 Code = NativeCode(properties),

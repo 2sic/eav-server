@@ -57,9 +57,10 @@ public class InsightsLoggerProviderTests
     public void Store_DropsOversizedSpecKey_WhenNoOtherPropertiesRemain()
     {
         using var ctx = new LogExecutionTestContext();
-        var root = ctx.Admit("Specs");
+        var root = new Log("Tst.Specs");
+        var admission = ctx.Store.Add("test", root)!;
 
-        ctx.Store.Add("test", root)!.AddSpec(new string('x', InsightsLogStore.MaxTextLength + 1), "value");
+        admission.AddSpec(new string('x', InsightsLogStore.MaxTextLength + 1), "value");
 
         var specs = Single(ctx.Store.Snapshot("test")).Specs;
         DoesNotContain(specs.Keys, key => key.Length > InsightsLogStore.MaxTextLength);
@@ -120,67 +121,31 @@ public class InsightsLoggerProviderTests
         }
     }
 
-    [Fact]
-    public void Snapshot_PreservesTreeResultsAndTimings_WhenReplayingOneCorpusIntoILogger()
+    [Theory]
+    [InlineData(LogStoreMode.Legacy)]
+    [InlineData(LogStoreMode.ILogger)]
+    public void Snapshot_PreservesTreeResultsAndTimings_InEachStartupMode(LogStoreMode mode)
     {
-        var memory = new InsightsLogStore();
-        var provider = new InsightsLoggerProvider(memory);
-        using var factory = LoggerFactory.Create(builder => builder
-            .SetMinimumLevel(LogLevel.Trace)
-            .AddProvider(provider));
-        var store = new LogStoreLive(memory, provider);
-        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
-        try
-        {
-            var root = new Log("Tst.Parity");
-            store.Add("parity", root);
-            var outer = root.Fn(message: "outer", timer: true);
-            outer.A("root entry");
-            var child = new Log("Tst.Child", outer);
-            var inner = child.Fn(message: "inner", timer: true);
-            inner.A("child entry");
-            inner.Done("inner result");
-            outer.Done("outer result");
+        using var ctx = new LogExecutionTestContext(mode);
+        var root = ctx.Admit("Parity");
+        using var execution = mode == LogStoreMode.ILogger
+            ? ctx.Logger.BeginExecution(root, ctx.Source, "parity")
+            : null;
+        using var outer = root.Fn(message: "outer", timer: true)!;
+        outer.A("root entry");
+        var child = new Log("Tst.Child", outer);
+        using var inner = child.Fn(message: "inner", timer: true)!;
+        inner.A("child entry");
+        inner.Done("inner result");
+        outer.Done("outer result");
 
-            var legacy = Single(store.Snapshot("parity"));
-
-            Equal("ILogger", store.Configure("ILogger", bridgeEnabled: true).Split(' ')[0]);
-            var modern = Single(store.Snapshot("parity"));
-
-            var legacyEntries = legacy.Entries.Select(entry => new
-            {
-                entry.LogId,
-                Ancestors = string.Join(">", entry.Ancestors),
-                entry.Sequence,
-                entry.OperationId,
-                entry.ParentOperationId,
-                entry.Depth,
-                entry.Message,
-                entry.Result,
-                entry.Elapsed,
-                entry.IsTimed,
-            }).ToArray();
-            var modernEntries = modern.Entries.Select(entry => new
-            {
-                entry.LogId,
-                Ancestors = string.Join(">", entry.Ancestors),
-                entry.Sequence,
-                entry.OperationId,
-                entry.ParentOperationId,
-                entry.Depth,
-                entry.Message,
-                entry.Result,
-                entry.Elapsed,
-                entry.IsTimed,
-            }).ToArray();
-
-            Equal(2, legacy.Entries.Count(entry => entry.IsTimed));
-            Equal(legacyEntries, modernEntries);
-        }
-        finally
-        {
-            LogEventBridge.SetSink(null);
-        }
+        var snapshot = Single(ctx.Store.Snapshot("test"));
+        Equal(4, snapshot.Entries.Length);
+        Equal(2, snapshot.Entries.Count(entry => entry.IsTimed));
+        Equal("outer result", Single(snapshot.Entries, entry => entry.Message!.Contains("outer")).Result);
+        var nested = Single(snapshot.Entries, entry => entry.Message!.Contains("inner"));
+        Equal("inner result", nested.Result);
+        NotNull(nested.ParentOperationId);
     }
 
     [Fact]
@@ -322,9 +287,11 @@ public class InsightsLoggerProviderTests
             await ThrowsAsync<InvalidOperationException>(() => ThrowInScope(rootA));
             logger.LogInformation("outside scope");
 
-            var snapshotA = Single(store.Snapshot("scope"), snapshot => snapshot.LogId == rootA.LogId);
-            var snapshotB = Single(store.Snapshot("scope"), snapshot => snapshot.LogId == rootB.LogId);
-            Contains(snapshotA.Entries, entry => entry.Message == "child-a" && entry.Ancestors.Contains(rootA.LogId));
+            var snapshotA = Single(store.Snapshot("scope"), snapshot => snapshot.Entries.Any(entry => entry.Message == "child-a"));
+            var snapshotB = Single(store.Snapshot("scope"), snapshot => snapshot.Entries.Any(entry => entry.Message == "child-b"));
+            NotEqual(rootA.LogId, snapshotA.LogId);
+            NotEqual(rootB.LogId, snapshotB.LogId);
+            Contains(snapshotA.Entries, entry => entry.Message == "child-a" && entry.Ancestors.Contains(snapshotA.LogId));
             DoesNotContain(snapshotA.Entries, entry => entry.Message is "child-b" or "outside scope");
             Contains(snapshotB.Entries, entry => entry.Message == "child-b" && entry.Properties.ContainsKey("TraceId"));
 
@@ -560,7 +527,7 @@ public class InsightsLoggerProviderTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void Find_PreservesLegacySubtree_ForUnadmittedParent(bool ownEntry)
+    public void Find_DoesNotTreatLegacyConnectionsAsILoggerMembership(bool ownEntry)
     {
         using var ctx = new LogExecutionTestContext();
         var root = ctx.Admit("Root");
@@ -571,13 +538,11 @@ public class InsightsLoggerProviderTests
         leaf.Fn("leaf call", timer: true).Done("leaf result");
         new Log("Tst.Sibling", root).A("sibling entry");
 
-        var legacy = new LogStoreLive().Snapshot(child)!;
-        var captured = ctx.Store.Snapshot(child)!;
+        var captured = ctx.Store.Snapshot(child);
 
-        Equal(child.LogId, captured.LogId);
-        Equal(legacy.Entries.Select(e => e.Sequence), captured.Entries.Select(e => e.Sequence));
-        Equal(legacy.Entries.Select(e => (e.OperationId, e.Result, e.Elapsed)),
-            captured.Entries.Select(e => (e.OperationId, e.Result, e.Elapsed)));
+        Null(child.Parent);
+        Null(leaf.Parent);
+        Null(captured);
     }
 
     [Theory]
@@ -591,7 +556,8 @@ public class InsightsLoggerProviderTests
         var middle = new Log("Tst.Middle", root);
         ctx.Store.Add("middle", middle);
         var leaf = new Log("Tst.Leaf", middle);
-        leaf.A("retained event");
+        using (ctx.Logger.BeginExecution(root, ctx.Source, "root"))
+            leaf.A("retained event");
 
         if (evict)
             ctx.Store.Add("middle", new Log("Tst.New"));
@@ -702,7 +668,8 @@ public class InsightsLoggerProviderTests
         var result = store.ForceAdd("forced", log);
 
         NotNull(result);
-        Equal(log.LogId, Single(store.Snapshot("forced")).LogId);
+        Equal(mode == LogStoreMode.ILogger ? result!.ExecutionId : log.LogId,
+            Single(store.Snapshot("forced")).LogId);
         Equal("before forced admission", Single(store.Snapshot(log)!.Entries).Message);
         Equal(1, store.AddCount);
     }

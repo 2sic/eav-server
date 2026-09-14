@@ -15,10 +15,35 @@ public static class LogEventBridge
     /// <summary>
     /// Set or clear the process-wide sink used by new log entries.
     /// </summary>
-    public static void SetSink(ILogEventSink? sink) => Volatile.Write(ref _sink, sink);
+    public static void SetSink(ILogEventSink? sink)
+    {
+        Volatile.Write(ref _sink, sink);
+        if (sink == null)
+            SetMode(LogStoreMode.Legacy);
+    }
+
+    internal static bool UsesExecutionContext => Volatile.Read(ref _mode) == (int)LogStoreMode.ILogger;
+
+    internal static void SetMode(LogStoreMode mode) => Volatile.Write(ref _mode, (int)mode);
+
+    internal static IDisposable? BeginOperation(Entry? entry)
+    {
+        if (!UsesExecutionContext || entry is not { Owner: { } })
+            return null;
+        try
+        {
+            return LogOperationContext.Begin(entry);
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     internal static void Write(Entry entry, Exception? exception = null)
     {
+        if (Volatile.Read(ref _sink) != null)
+            entry.BridgePublicationAttempted = true;
         if (!IsEnabled(entry.Level))
             return;
         Write(LogEvent.FromEntry(entry), exception);
@@ -30,11 +55,15 @@ public static class LogEventBridge
     {
         if (Volatile.Read(ref _sink) == null || _isWriting)
             return;
-        foreach (var entry in log.SnapshotEntries().Where(e => !e.WrapClose))
+        foreach (var entry in log.SnapshotEntries().Where(e => !e.WrapClose && (!UsesExecutionContext || !e.BridgePublicationAttempted)))
         {
+            entry.BridgePublicationAttempted = true;
             if (!IsEnabled(entry.Level))
                 continue;
-            Write(LogEvent.FromEntry(entry) with { Replay = true });
+            var replay = LogEvent.FromEntry(entry) with { Replay = true };
+            if (UsesExecutionContext && replay.Ancestors.Length == 0 && log.LatestExecutionId is { } executionId)
+                replay = replay with { Ancestors = [executionId] };
+            Write(replay);
         }
     }
 
@@ -81,6 +110,7 @@ public static class LogEventBridge
     }
 
     private static ILogEventSink? _sink;
+    private static int _mode;
 
     [ThreadStatic]
     private static bool _isWriting;

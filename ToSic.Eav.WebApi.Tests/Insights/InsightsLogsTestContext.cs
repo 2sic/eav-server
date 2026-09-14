@@ -10,6 +10,7 @@ namespace ToSic.Eav.Insights;
 
 internal sealed class InsightsLogsTestContext : IDisposable
 {
+    private readonly Dictionary<Log, string> _moduleIds = [];
     internal ILogStoreLive Store { get; }
     private readonly ServiceProvider _services;
     internal InsightsLogs View { get; }
@@ -28,9 +29,16 @@ internal sealed class InsightsLogsTestContext : IDisposable
     {
         var log = new Log("Tst.View");
         log.A(message);
-        Store.Add("test", log)!.AddSpec("ModuleId", moduleId);
+        var admission = Store.Add("test", log)!;
+        admission.AddSpec("ModuleId", moduleId);
+        _moduleIds[log] = moduleId;
         return log;
     }
+
+    internal string StoredId(Log log)
+        => Store.Mode == LogStoreMode.Legacy
+            ? log.LogId
+            : Store.Snapshot("test").Single(snapshot => snapshot.Specs["ModuleId"] == _moduleIds[log]).LogId;
 
     internal void Write(LogEvent entry)
         => _services.GetRequiredService<InsightsLoggerProvider>().CreateLogger(MicrosoftLoggerEventSink.StoreCategory)

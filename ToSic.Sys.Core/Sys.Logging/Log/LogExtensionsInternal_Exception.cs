@@ -12,7 +12,7 @@ partial class LogExtensionsInternal
         if (log.GetRealLog() is not Log realLog)
             return ex;
 
-        var l = realLog.FnCode(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
+        using var l = realLog.FnCode(message: $"{LogConstants.ErrorPrefix}Will log Exception Details next", code: codeRef);
         var recursion = 1;
         Exception? loopEx = ex;
         while (true)

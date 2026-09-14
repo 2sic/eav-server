@@ -57,26 +57,33 @@ public static class LogCallBaseExtensions
     [ShowApiWhenReleased(ShowApiMode.Never)]
     internal static void DoneInternal(this ILogCall? logCall, string? message)
     {
-        if (logCall?.Log is not Log log)
-            return;
-
-        var entry = logCall.Entry;
-        if (entry?.WrapOpenWasClosed == true)
-            return;
-        if (entry != null && log.CurrentOperation == entry)
-            log.CurrentOperation = entry.ParentOperation;
-        log.WrapDepth--;
-        entry?.AppendResult(message);
-        var final = log.AddInternalReuse(null!, null);
-        final.WrapClose = true;
-        final.AppendResult(message);
-        if (entry != null)
+        try
         {
-            entry.IsTimed |= logCall.Timer.IsRunning || logCall.Timer.ElapsedTicks > 0;
-            logCall.Timer.Stop();
-            entry.Elapsed = logCall.Timer.Elapsed;
-            entry.Completed = DateTime.UtcNow;
-            LogEventBridge.Write(entry);
+            if (logCall?.Log is not Log log)
+                return;
+
+            var entry = logCall.Entry;
+            if (entry?.WrapOpenWasClosed == true)
+                return;
+            if (entry != null && log.CurrentOperation == entry)
+                log.CurrentOperation = entry.ParentOperation;
+            log.WrapDepth--;
+            entry?.AppendResult(message);
+            var final = log.AddInternalReuse(null!, null);
+            final.WrapClose = true;
+            final.AppendResult(message);
+            if (entry != null)
+            {
+                entry.IsTimed |= logCall.Timer.IsRunning || logCall.Timer.ElapsedTicks > 0;
+                logCall.Timer.Stop();
+                entry.Elapsed = logCall.Timer.Elapsed;
+                entry.Completed = DateTime.UtcNow;
+                LogEventBridge.Write(entry);
+            }
+        }
+        finally
+        {
+            (logCall as LogCallBase)?.CloseOperationScope();
         }
     }
 

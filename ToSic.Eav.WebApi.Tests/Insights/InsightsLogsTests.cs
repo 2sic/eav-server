@@ -56,13 +56,14 @@ public class InsightsLogsTests
         using var ctx = new InsightsLogsTestContext(mode);
         ctx.Add("unselected", "1");
         var selected = ctx.Add("selected event", "2");
+        var selectedId = ctx.StoredId(selected);
         ctx.SetContext(filter: "ModuleId=2");
 
         var list = ctx.View.HtmlBody();
 
-        Contains($"nameId={selected.LogId}", list);
+        Contains($"nameId={selectedId}", list);
         DoesNotContain("position=1", list);
-        ctx.SetContext(logId: selected.LogId);
+        ctx.SetContext(logId: selectedId);
         Contains("selected event", ctx.View.HtmlBody());
         ctx.Add("replacement one", "3");
         ctx.Add("replacement two", "4");
@@ -102,25 +103,27 @@ public class InsightsLogsTests
     {
         using var ctx = new InsightsLogsTestContext(LogStoreMode.ILogger);
         var root = ctx.Add("root entry", "1");
-        var middle = new Log("Tst.Middle", root);
-        ctx.Store.Add("middle", middle);
-        var leaf = new Log("Tst.Leaf", middle);
-        leaf.Fn("leaf entry", timer: true).Done("leaf result");
-        new Log("Tst.Sibling", root).A("sibling entry");
+        var leaf = new Log("Tst.Leaf");
+        using (var parent = root.Fn("parent"))
+        using (var child = leaf.Fn("leaf entry", timer: true))
+        {
+            child.Done("leaf result");
+            parent.Done();
+        }
+        ctx.Store.Add("middle", leaf);
         ctx.Store.FlushSegment("middle");
 
         var helper = new InsightsLogsHelper(ctx.Store);
-        var html = helper.DumpTree("Subtree", middle);
-        var snapshot = ctx.Store.Snapshot(middle)!;
+        var html = helper.DumpTree("Subtree", leaf);
+        var snapshot = ctx.Store.Snapshot(leaf)!;
 
         Contains("leaf entry", html);
         Contains("leaf result", html);
-        DoesNotContain("sibling entry", html);
         DoesNotContain("root entry", html);
         Contains(snapshot.Created.ToLocalTime().ToString("o"), html);
         Contains(root.Created.ToLocalTime().ToString("O").Substring(5), helper.LogHistoryList("test", ""));
         ctx.Store.FlushSegment("test");
-        Contains("not captured in this store", helper.DumpTree("Subtree", middle));
+        Contains("not captured in this store", helper.DumpTree("Subtree", leaf));
     }
     #endregion
 }

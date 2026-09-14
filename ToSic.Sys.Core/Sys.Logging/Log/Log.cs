@@ -96,6 +96,8 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
         lock (Entries)
         {
             Entries.Add(entry);
+            if (LogEventBridge.UsesExecutionContext && Entries.Count > InsightsLogStore.MaxEntriesPerLog)
+                Entries.RemoveAt(0);
         }
         (Parent as Log)?.AddEntry(entry);
     }
@@ -103,9 +105,15 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     Entry ILogInternal.CreateAndAdd(string? message, CodeRef? code, EntryOptions? options, Entry? parent,
         Microsoft.Extensions.Logging.LogLevel level, Exception? exception, bool publish)
     {
-        var e = new Entry(this, message, WrapDepth, code, options)
+        var parentOperation = parent ?? LogOperationContext.Current?.Entry ?? CurrentOperation;
+        if (LogEventBridge.UsesExecutionContext)
+            parentOperation ??= AttachmentOperation;
+        var depth = LogEventBridge.UsesExecutionContext && parentOperation != null
+            ? Math.Max(WrapDepth, parentOperation.Depth + 1)
+            : WrapDepth;
+        var e = new Entry(this, message, depth, code, options)
         {
-            ParentOperation = parent ?? CurrentOperation,
+            ParentOperation = parentOperation,
             Level = level,
             ExceptionType = exception?.GetType().FullName,
             ExceptionText = exception?.ToString(),
@@ -145,6 +153,9 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
 
     internal Entry? AttachmentOperation { get; private set; }
 
+    /// <summary>Latest compatibility admission; exact boundaries pass their LogStoreEntry instead.</summary>
+    internal string? LatestExecutionId { get; set; }
+
     internal Entry[] SnapshotEntries()
     {
         lock (Entries)
@@ -160,7 +171,19 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     /// <summary>
     /// How many inner wraps are currently open (when creating child entries using .Fn(...)
     /// </summary>
-    internal int WrapDepth;
+    internal int WrapDepth
+    {
+        get => LogEventBridge.UsesExecutionContext ? _contextWrapDepth.Value : _legacyWrapDepth;
+        set
+        {
+            if (LogEventBridge.UsesExecutionContext)
+                _contextWrapDepth.Value = value;
+            else
+                _legacyWrapDepth = value;
+        }
+    }
+    private int _legacyWrapDepth;
+    private readonly AsyncLocal<int> _contextWrapDepth = new();
 
     /// <summary>
     /// Entries of this log and all children

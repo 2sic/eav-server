@@ -63,7 +63,7 @@ public static class ILog_Actions
         [CallerLineNumber] int cLine = default
     )
     {
-        var l = enabled
+        using var l = enabled
             ? new LogCall(log, Create(cPath!, cName!, cLine), false, parameters, message, timer)
             : null;
         action();
@@ -122,7 +122,7 @@ public static class ILog_Actions
         [CallerLineNumber] int cLine = default
     )
     {
-        var l = new LogCall(enabled ? log : null, Create(cPath!, cName!, cLine), false, parameters, message, timer);
+        using var l = new LogCall(enabled ? log : null, Create(cPath!, cName!, cLine), false, parameters, message, timer);
         action(l);
         if (enabled) l.Done();
     }
@@ -182,7 +182,7 @@ public static class ILog_Actions
         [CallerLineNumber] int cLine = default
     )
     {
-        var l = new LogCall(enabled ? log : null, Create(cPath!, cName!, cLine), false, parameters, message, timer);
+        using var l = new LogCall(enabled ? log : null, Create(cPath!, cName!, cLine), false, parameters, message, timer);
         var msg = action();
         if (enabled) l.Done(msg);
     }

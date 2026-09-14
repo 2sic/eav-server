@@ -26,7 +26,7 @@ public static class ILog_Func
         //  #duplicateFuncResult<TResult> - Make sure we keep it in sync
         // This section is a duplicate of other implementations
         // We're keeping the code duplicate so the call stack doesn't get too deep when debugging
-        var l = enabled
+        using var l = enabled
             ? log.FnCode<TResult>(parameters, message, timer, Create(cPath!, cName!, cLine))
             : null;
         var result = func();

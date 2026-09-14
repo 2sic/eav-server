@@ -22,10 +22,12 @@ internal sealed class LogExecutionTestContext : IDisposable
     }
 
     internal Log Admit(string name)
+        => (Log)AdmitEntry(name).Log!;
+
+    internal LogStoreEntry AdmitEntry(string name)
     {
         var log = new Log("Tst." + name);
-        Store.Add("test", log);
-        return log;
+        return Store.Add("test", log)!;
     }
 
     public void Dispose()

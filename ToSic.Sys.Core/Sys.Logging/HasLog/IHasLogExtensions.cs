@@ -25,6 +25,10 @@ public static class IHasLogExtensions
                 return null!; // Ignore fact that it returns null, since the problem is on the caller
             case ILogShouldNeverConnect when !forceConnect:
                 return thingWithLog;
+            case not null when LogEventBridge.UsesExecutionContext:
+                // Preserve callback-only lifecycle behavior without retaining a log chain.
+                (thingWithLog as ILogWasConnected)?.LogWasConnected();
+                return thingWithLog;
             case ILazyInitLog logConnector:
                 logConnector.SetLog(parentLog);
                 return thingWithLog;

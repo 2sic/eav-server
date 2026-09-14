@@ -13,7 +13,7 @@ namespace ToSic.Sys.Logging;
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface ILogCall: ILog, IHasLog
+public interface ILogCall: ILog, IHasLog, IDisposable
 {
     /// <summary>
     /// The main log-entry for this call, which will also receive the final value at the end of the call.

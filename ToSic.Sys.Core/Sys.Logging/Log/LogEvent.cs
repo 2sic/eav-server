@@ -55,9 +55,12 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
     {
         var log = entry.Owner!;
         var parentId = (entry.ParentOperation ?? log.AttachmentOperation)?.Sequence;
+        var ancestors = GetAncestors(log);
+        if (LogEventBridge.UsesExecutionContext && entry.ExecutionId is { } executionId && executionId != log.LogId)
+            ancestors = [executionId];
         return new()
         {
-            LogId = log.LogId, Ancestors = GetAncestors(log), Source = log.FullIdentifier,
+            LogId = log.LogId, Ancestors = ancestors, Source = log.FullIdentifier,
             ShortSource = log.NameId, Scope = log.Scope, Name = log.Name,
             Kind = entry.WrapOpenWasClosed ? "Completion" : entry.WrapOpen ? "Start" : "Entry",
             Sequence = entry.Sequence, Created = entry.Created, Completed = entry.Completed,

@@ -12,11 +12,21 @@ public partial class Log
     {
         // ILogCall is a wrapper around its Log, and entries propagate through Log parents.
         // Unwrap it here so helper logs linked to an active call remain visible in the parent log.
-        var parentOperation = (newParent as ILogCall)?.Entry ?? (newParent as Log)?.CurrentOperation;
+        var explicitParentOperation = (newParent as ILogCall)?.Entry;
+        var parentOperation = explicitParentOperation ?? (newParent as Log)?.CurrentOperation;
         newParent = newParent.GetRealLog();
 
         if (newParent == this)
             throw new("LOG ERROR - attaching a log to itself can't work");
+
+        if (LogEventBridge.UsesExecutionContext)
+        {
+            // A deliberately supplied call remains an explicit operation token without retaining a log parent.
+            AttachmentOperation = explicitParentOperation;
+            if (name != null)
+                this.Rename(name);
+            return;
+        }
 
         // only attach new parent if it didn't already have an old one
         // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something

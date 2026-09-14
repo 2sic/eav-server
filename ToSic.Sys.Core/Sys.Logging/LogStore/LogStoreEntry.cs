@@ -15,6 +15,9 @@ public class LogStoreEntry
 
     public ILog? Log { get; internal set; }
 
+    /// <summary>Fresh identity of this admitted execution/history item.</summary>
+    internal string ExecutionId { get; } = Guid.NewGuid().ToString("N");
+
     internal string? Segment { get; init; }
 
     public IDictionary<string, string>? Specs { get; internal set; }
@@ -51,6 +54,7 @@ public class LogStoreEntry
         if (Log is Log log && Segment != null && Specs != null)
             LogEventBridge.Write(LogEvent.ForLog(log) with
             {
+                LogId = LogEventBridge.UsesExecutionContext ? ExecutionId : log.LogId,
                 Kind = "Specs",
                 Segment = Segment,
                 Properties = Specs.ToImmutableDictionary(InvariantCultureIgnoreCase),

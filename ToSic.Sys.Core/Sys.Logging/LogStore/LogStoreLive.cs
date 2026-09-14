@@ -56,13 +56,18 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
         {
             _configurationError = null;
             Mode = selected;
+            LogEventBridge.SetMode(selected);
             _insights.Enabled = selected != LogStoreMode.Legacy;
             if (!_insights.Enabled)
                 return Status;
             // Bootstrap admissions may precede installation of the host's logger factory.
             foreach (var segment in _segments)
                 foreach (var entry in segment.Value.ToArray())
+                {
+                    if (entry.Log is Log log)
+                        log.LatestExecutionId = entry.ExecutionId;
                     PublishAdmission(segment.Key, entry);
+                }
             if (Mode == LogStoreMode.ILogger)
                 _segments.Clear();
             return Status;
@@ -92,7 +97,10 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
             }
             entry ??= new() { Log = realLog, Segment = key };
             if (Mode == LogStoreMode.ILogger)
+            {
+                realLog.LatestExecutionId = entry.ExecutionId;
                 PublishAdmission(key, entry);
+            }
             if (++AddCount >= MaxItems)
                 _pause = true;
             return entry;
@@ -103,7 +111,15 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
     {
         if (entry.Log is not Log log)
             return;
-        LogEventBridge.Write(LogEvent.ForLog(log) with { Kind = "Admission", Segment = segment });
+        var admission = LogEvent.ForLog(log);
+        if (LogEventBridge.UsesExecutionContext)
+            admission = admission with
+            {
+                LogId = entry.ExecutionId,
+                Ancestors = [],
+                Properties = admission.Properties.SetItem(LogExecution.SourceLogIdKey, log.LogId),
+            };
+        LogEventBridge.Write(admission with { Kind = "Admission", Segment = segment });
         LogEventBridge.Replay(log);
         entry.PublishSpecs();
     }
@@ -127,7 +143,9 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
             return null;
         return Mode == LogStoreMode.Legacy
             ? LogSnapshot.FromLegacy(typed)
-            : _insights.Find(typed.LogId);
+            : typed.LatestExecutionId is { } executionId && _insights.Find(executionId) is { Entries.Length: > 0 } current
+                ? current
+                : _insights.Find(typed.LogId);
     }
 
     public void FlushSegment(string segment)
