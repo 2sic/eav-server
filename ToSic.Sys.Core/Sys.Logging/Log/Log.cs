@@ -116,8 +116,8 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
         return e;
     }
 
-    // Compatibility Fn/Done lifetimes are logger-owned, not request-wide ILogger scopes.
-    // Explicit ILogCall parents also work when calls complete out of order.
+    // Compatibility Fn/Done lifetimes follow the newest active call in the connected log tree.
+    // Explicit ILogCall parents also work across flow boundaries and when calls complete out of order.
     internal Entry? CurrentOperation
     {
         get
@@ -125,9 +125,21 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
             var current = _currentOperation.Value;
             while (current?.WrapOpenWasClosed == true)
                 current = current.ParentOperation;
-            return current ?? (Parent as Log)?.CurrentOperation;
+
+            var parentCurrent = (Parent as Log)?.CurrentOperation;
+            if (current == null)
+                return parentCurrent;
+
+            return parentCurrent?.Sequence > current.Sequence
+                ? parentCurrent
+                : current;
         }
-        set => _currentOperation.Value = value;
+        set
+        {
+            _currentOperation.Value = value;
+            if (Parent is Log parent)
+                parent.CurrentOperation = value;
+        }
     }
     private readonly AsyncLocal<Entry?> _currentOperation = new();
 
