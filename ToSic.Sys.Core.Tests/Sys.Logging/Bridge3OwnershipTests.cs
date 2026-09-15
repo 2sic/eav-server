@@ -310,6 +310,26 @@ public class Bridge3OwnershipTests
     }
 
     [Fact]
+    public void AdmissionInsideUnadmittedFn_AdoptsPlainPreAdmissionEntry()
+    {
+        LogEventBridge.SetSink(null);
+        var unadmitted = new Log("Tst.UnadmittedPlain");
+        using var outer = unadmitted.Fn("outer")!;
+        using var ctx = new LogExecutionTestContext();
+
+        var admittedLog = new Log("Tst.InsideUnadmittedPlain");
+        admittedLog.A("before admission");
+        var admitted = ctx.Store.Add("test", admittedLog)!;
+
+        var snapshot = Single(ctx.Store.Snapshot("test"));
+        var entry = Single(snapshot.Entries, item => item.Message == "before admission");
+        Equal(admitted.ExecutionId, entry.RootLogId);
+        Null(entry.OperationId);
+        Equal(0, entry.Depth);
+        Contains($"0/{InsightsLogStore.MaxPendingEntries} pending", ctx.Store.Status);
+    }
+
+    [Fact]
     public void AdmissionInsideUnadmittedFn_OwnsFollowingEntriesWithoutPending()
     {
         LogEventBridge.SetSink(null);

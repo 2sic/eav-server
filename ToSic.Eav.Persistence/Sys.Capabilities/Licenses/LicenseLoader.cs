@@ -21,7 +21,6 @@ using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.FeatureSet;
 using ToSic.Sys.Capabilities.Fingerprints;
 using ToSic.Sys.Configuration;
-using ToSic.Sys.Run.GlobalState;
 using ToSic.Sys.Security.Encryption;
 
 namespace ToSic.Sys.Capabilities.Licenses;
@@ -35,7 +34,7 @@ public sealed class LicenseLoader(
     LicenseCatalog licenseCatalog,
     SystemFingerprint sysFingerprint,
     LazySvc<IGlobalConfiguration> globalConfiguration)
-    : LoaderBase(logStore, $"{EavLogs.Eav}LicLdr")
+    : ServiceBase($"{EavLogs.Eav}LicLdr")
 {
     internal void Init(IList<EnterpriseFingerprint> entFingerprints)
     {
@@ -48,6 +47,7 @@ public sealed class LicenseLoader(
     [PrivateApi]
     internal void LoadLicenses()
     {
+        logStore.Add(LogNames.LogStoreStartUp, Log);
         using var l = this.Log.Fn(message: "start", timer: true);
         var fingerprint1 = sysFingerprint.GetFingerprint();
         l.A($"fingerprint:{fingerprint1.Length}");

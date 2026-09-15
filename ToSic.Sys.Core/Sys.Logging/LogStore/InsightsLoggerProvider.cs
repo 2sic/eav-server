@@ -157,10 +157,10 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
                             : activeOperationIds?.Count ?? 0),
                 }
                 : bridge;
-            if (data.WrapOpen && !data.WrapOpenWasClosed && data.OperationId != ambientOperationId
+            if (captureContext && data.WrapOpen && !data.WrapOpenWasClosed && data.OperationId != ambientOperationId
                 && !data.ParentOperationId.HasValue && ambientOperationId.HasValue)
                 data = data with { ParentOperationId = ambientOperationId };
-            else if (!data.WrapOpen && !data.OperationId.HasValue && ambientOperationId.HasValue)
+            else if (captureContext && !data.WrapOpen && !data.OperationId.HasValue && ambientOperationId.HasValue)
                 data = data with { OperationId = ambientOperationId };
         }
         else
