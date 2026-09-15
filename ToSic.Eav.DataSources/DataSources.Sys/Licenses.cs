@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Sys.Capabilities.Licenses;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -22,7 +22,7 @@ public sealed class Licenses : CustomDataSource
 {
     [PrivateApi]
     public Licenses(Dependencies services, ILicenseService licenseService)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Lics", connect: [licenseService])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Lics")
     {
         
         ProvideOutRaw(() => licenseService.All

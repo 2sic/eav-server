@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
@@ -11,7 +11,7 @@ public class WorkFieldEntityInspectType(): ServiceBase("Eav.AtInTy")
 {
     public string PrimaryTypeName(IContentTypeField definition, bool modeCreate, bool tryOtherModes = false)
     {
-        var l = Log.Fn<string>($"attribute: {definition.Name}; {nameof(modeCreate)}: {modeCreate}; {nameof(tryOtherModes)}: {tryOtherModes}");
+        using var l = Log.Fn<string>($"attribute: {definition.Name}; {nameof(modeCreate)}: {modeCreate}; {nameof(tryOtherModes)}: {tryOtherModes}");
         var name = PrimaryTypeNames(definition, modeCreate, tryOtherModes).FirstOrDefault() ?? "";
         return l.Return(name, $"first on {nameof(modeCreate)} {modeCreate}: '{name}'");
     }
@@ -25,7 +25,7 @@ public class WorkFieldEntityInspectType(): ServiceBase("Eav.AtInTy")
     /// <returns>A list of primary entity-type names.</returns>
     public IList<string> PrimaryTypeNames(IContentTypeField definition, bool modeCreate, bool tryOtherModes = false)
     {
-        var l = Log.Fn<IList<string>>($"attribute: {definition.Name}; {nameof(modeCreate)}: {modeCreate}; {nameof(tryOtherModes)}: {tryOtherModes}");
+        using var l = Log.Fn<IList<string>>($"attribute: {definition.Name}; {nameof(modeCreate)}: {modeCreate}; {nameof(tryOtherModes)}: {tryOtherModes}");
         // Make sure it's the right initial type
         if (!definition.IsEntity())
             return l.Return([], "empty");

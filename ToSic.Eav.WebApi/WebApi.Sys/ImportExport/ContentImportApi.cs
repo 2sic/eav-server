@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys.XmlList;
@@ -22,13 +22,13 @@ public class ContentImportApi(
     IAppsCatalog appsCatalog,
     IAppReaderFactory appReaders,
     DataImportLogSettings importLogSettings
-) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appsCatalog, appReaders, importLogSettings])
+) : ServiceBase("Api.EaCtIm")
 {
     private IAppReader _appReader = null!;
 
     public ContentImportApi Init(int appId)
     {
-        var l = Log.Fn<ContentImportApi>($"app: {appId}");
+        using var l = Log.Fn<ContentImportApi>($"app: {appId}");
         _appReader = appReaders.Get(appId);
         return l.Return(this);
     }
@@ -44,7 +44,7 @@ public class ContentImportApi(
     [HttpPost]
     public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
     {
-        var l = Log.Fn<ContentImportResultDto>("eval content - start" + args.DebugInfo);
+        using var l = Log.Fn<ContentImportResultDto>("eval content - start" + args.DebugInfo);
 
         var import = GetXmlImport(args);
         if (import.ErrorLog.HasErrors)
@@ -68,7 +68,7 @@ public class ContentImportApi(
     [HttpPost]
     public ContentImportResultDto XmlImport(ContentImportArgsDto args)
     {
-        var l = Log.Fn<ContentImportResultDto>(args.DebugInfo);
+        using var l = Log.Fn<ContentImportResultDto>(args.DebugInfo);
         
         var import = GetXmlImport(args);
         if (!import.ErrorLog.HasErrors)
@@ -82,7 +82,7 @@ public class ContentImportApi(
 
     private ImportListXml GetXmlImport(ContentImportArgsDto args)
     {
-        var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
+        using var l = Log.Fn<ImportListXml>("get xml import " + args.DebugInfo);
         var contextLanguages = appsCatalog
             .Zone(_appReader.ZoneId)
             .LanguagesActive
@@ -106,7 +106,7 @@ public class ContentImportApi(
     [HttpPost]
     public bool Import(EntityImportDto args)
     {
-        var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
+        using var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
         try
         {
             var deserializer = jsonSerializerLazy.Value.SetApp(_appReader);

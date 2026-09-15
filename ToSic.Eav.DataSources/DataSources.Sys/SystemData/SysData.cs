@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Catalog;
@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSources.Sys;
 )]
 // ReSharper disable once UnusedMember.Global
 public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCatalog catalog, IDataSourcesService dataSourceFactory, IUser user)
-    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.SysDat", connect: [catalog, dataSourceFactory])
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.SysDat")
 {
     #region Configuration-properties
 
@@ -133,7 +133,7 @@ public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCa
 
     private IEnumerable<IEntity> GetTrivialMessage(bool dsFound, string streamName, bool streamFound, string? allowed = default)
     {
-        var l = Log.Fn<IEnumerable<IEntity>>();
+        using var l = Log.Fn<IEnumerable<IEntity>>();
 
         var dataFactory = DataFactory.SpawnNew(options: new()
         {

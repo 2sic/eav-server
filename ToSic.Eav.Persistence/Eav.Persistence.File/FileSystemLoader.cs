@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.ImportExport.Json.Sys;
@@ -14,7 +14,7 @@ namespace ToSic.Eav.Persistence.File;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
-    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataAssembler, ctAssemblyKit]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
+    : ServiceBase($"{EavLogs.Eav}.FsLoad"), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
 {
     private FileSystemLoaderOptions Options { get; set; } = null!;
 
@@ -41,7 +41,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         var ser = NewSerializer();
 
         var entitySource = Options.EntitiesSource;
-        var l = Log.Fn<JsonSerializer>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
+        using var l = Log.Fn<JsonSerializer>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
         // #SharedFieldDefinition
         // Also provide AppState if possible, for new #SharedFieldDefinition
         if (entitySource is IHasMetadataSourceAndExpiring withAppState)
@@ -74,7 +74,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
     public IList<IEntity> Entities(string folder, IEntitiesSource relationships)
     {
-        var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{EntityIdSeed}", timer: true);
+        using var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{EntityIdSeed}", timer: true);
             
         // #1. check that folder exists
         var subPath = Path.Combine(Options.Path, folder);
@@ -138,14 +138,14 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     /// <returns></returns>
     public ICollection<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source)
     {
-        var l = Log.Fn<IList<IContentType>>($"ContentTypes in {appId}");
+        using var l = Log.Fn<IList<IContentType>>($"ContentTypes in {appId}");
         var contentTypes = ContentTypesWithEntities().ContentTypes;
         return l.Return(contentTypes, $"{contentTypes.Count}");
     }
 
     public (IList<IContentType> ContentTypes, IList<IEntity> Entities) ContentTypesWithEntities()
     {
-        var l = Log.Fn<(IList<IContentType> ContentTypes, IList<IEntity> Entities)>($"ContentTypes in {Options.AppId}", timer: true);
+        using var l = Log.Fn<(IList<IContentType> ContentTypes, IList<IEntity> Entities)>($"ContentTypes in {Options.AppId}", timer: true);
             
         // #1. check that folder exists
         var pathCt = ContentTypePath;
@@ -201,7 +201,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     /// <returns></returns>
     private IContentType? LoadAndBuildCt(JsonSerializer ser, string path)
     {
-        var l = Log.Fn<IContentType?>($"Path: {path}", timer: true);
+        using var l = Log.Fn<IContentType?>($"Path: {path}", timer: true);
         var infoIfError = "couldn't read type-file";
         try
         {
@@ -248,7 +248,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     /// <returns></returns>
     private IEntity? LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource? relationshipSource = null)
     {
-        var l = Log.Fn<IEntity>($"Loading {path}");
+        using var l = Log.Fn<IEntity>($"Loading {path}");
         try
         {
             var json = System.IO.File.ReadAllText(path);
@@ -276,7 +276,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     /// <returns></returns>
     private bool CheckPathExists(string path)
     {
-        var l = Log.Fn<bool>($"Check path exists: {path}");
+        using var l = Log.Fn<bool>($"Check path exists: {path}");
         if (Directory.Exists(path)) return l.ReturnTrue("ok");
         if (!Options.IgnoreMissing)
             throw new DirectoryNotFoundException("directory '" + path + "' not found, and couldn't ignore");

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
 
@@ -9,7 +9,7 @@ namespace ToSic.Sys.Security.Permissions;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependencies services, string logName, object[]? connect = default)
-    : ServiceBase<PermissionCheckBase.Dependencies>(services, logName, connect: connect), IPermissionCheck
+    : ServiceBase<PermissionCheckBase.Dependencies>(services, logName), IPermissionCheck
 {
     // ReSharper disable once InconsistentNaming
     private readonly Dependencies services = services;
@@ -17,7 +17,7 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
     #region MyServices
 
     public record Dependencies(ISysFeaturesService Features, IEnvironmentPermission EnvironmentPermission)
-        : DependenciesBase(connect: [Features, EnvironmentPermission])
+        : DependenciesBase()
     {
         //public ISysFeaturesService Features { get; } = Features;
         //public IEnvironmentPermission EnvironmentPermission { get; } = EnvironmentPermission;
@@ -40,7 +40,7 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
 
     private List<IPermission> BuildPermissionList()
     {
-        var l = Log.Fn<List<IPermission>>();
+        using var l = Log.Fn<List<IPermission>>();
 
         List<IPermission> list =
         [
@@ -85,7 +85,7 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
     //}
     protected void InitTargets(IHasPermissions? typePermissions = default, IHasPermissions? itemPermissions = default, string? targetOwner = default, IEnumerable<IPermission>? permissions = default) 
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
 
         _additionalPermissions = permissions?.ToList() ?? [];
         
@@ -98,7 +98,7 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
 
     public PermissionCheckInfo UserMay(List<Grants> grants)
     {
-        var l = Log.Fn<PermissionCheckInfo>(Log.Try(() => $"[{string.Join(",", grants)}]"));
+        using var l = Log.Fn<PermissionCheckInfo>(Log.Try(() => $"[{string.Join(",", grants)}]"));
 
         var envPermissions = services.EnvironmentPermission.EnvironmentAllows(grants);
         if (envPermissions.Allowed)
@@ -116,7 +116,7 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
     /// <returns></returns>
     public PermissionCheckInfo PermissionsAllow(IReadOnlyCollection<Grants> grants)
     {
-        var l = Log.Fn<PermissionCheckInfo>(Log.Try(() => $"[{string.Join(", ", grants)}]"), Log.Try(() => $"for {PermissionList.Count()} permission items"));
+        using var l = Log.Fn<PermissionCheckInfo>(Log.Try(() => $"[{string.Join(", ", grants)}]"), Log.Try(() => $"for {PermissionList.Count()} permission items"));
 
         // Loop through permissions, and check if any of them allows the desired action
         foreach (var permission in PermissionList)
@@ -139,7 +139,7 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
     /// <returns></returns>
     private PermissionCheckInfo PermissionAllows(IPermission permissionEntity, char[] desiredActionCode)
     {
-        var l = Log.Fn<PermissionCheckInfo>($"{new string(desiredActionCode)}");
+        using var l = Log.Fn<PermissionCheckInfo>($"{new string(desiredActionCode)}");
         // Check if it's a grant for the desired action - otherwise stop here
         var grant = permissionEntity.Grant;
         // If Grant doesn't contain desired action, stop here

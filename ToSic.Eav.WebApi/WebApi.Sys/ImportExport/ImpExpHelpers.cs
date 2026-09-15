@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Context;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Sys.ImportExport;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImpExpHelpers(IAppReaderFactory appReadFac, IUser user, ISite site, IAppPathsMicroSvc appPathSvc)
-    : ServiceBase("Sxc.ImExHl", connect: [appReadFac, user, site, appPathSvc])
+    : ServiceBase("Sxc.ImExHl")
 {
     /// <summary>
     /// Get an app - but only allow zone change if super-user
@@ -24,7 +24,7 @@ public class ImpExpHelpers(IAppReaderFactory appReadFac, IUser user, ISite site,
     /// <returns></returns>
     internal IAppReader GetReaderAfterZoneSwitchPermissionCheck(IAppIdentity appIdentity)
     {
-        var l = Log.Fn<IAppReader>($"superuser: {user.IsSystemAdmin}; appIdentity: {appIdentity.Show()}");
+        using var l = Log.Fn<IAppReader>($"superuser: {user.IsSystemAdmin}; appIdentity: {appIdentity.Show()}");
         
         // Always do additional security checks, as some calls are opened as a new browser window
         // where API-attribute checks can't be done with certainty

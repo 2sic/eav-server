@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys;
 
@@ -66,7 +66,7 @@ public sealed class TreeModeler : DataSourceBase
     /// Initializes this data source
     /// </summary>
     [PrivateApi]
-    public TreeModeler(Dependencies services, ITreeMapper treeMapper) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Tree", connect: [treeMapper])
+    public TreeModeler(Dependencies services, ITreeMapper treeMapper) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Tree")
     {
         _treeMapper = treeMapper;
         // Specify what out-streams this data-source provides. Usually just one, called "Default"
@@ -79,7 +79,7 @@ public sealed class TreeModeler : DataSourceBase
     /// <returns></returns>
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         var source = TryGetIn();

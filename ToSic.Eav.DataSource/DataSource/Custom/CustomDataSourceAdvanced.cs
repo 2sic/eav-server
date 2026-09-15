@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Configuration;
 
@@ -34,7 +34,7 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
             IDataFactory dataFactory)
             : base(configuration, errorHandler, configDataLoader, cacheService)
         {
-            ConnectLogs([DataFactory = dataFactory]);
+            DataFactory = dataFactory;
         }
     }
 
@@ -52,7 +52,7 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
     /// but renew when it is updates
     /// </remarks>
     protected CustomDataSourceAdvanced(Dependencies services, string? logName = null, object[]? connect = null)
-        : base(services, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: connect)
+        : base(services, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern")
     {
         DataFactory = services.DataFactory;
     }

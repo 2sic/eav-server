@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Persistence.Efc.Sys.TempModels;
+using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Values;
 
@@ -47,7 +47,7 @@ internal class ConvertValuesToAttributes(string primaryLanguage, ILog? parentLog
 
     internal Dictionary<int, ICollection<TempAttributeWithValues>> EavValuesToTempAttributesBeta(ICollection<LoadingValue> allValues)
     {
-        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>(timer: true);
+        using var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>(timer: true);
 
         var primaryLower = primaryLanguage.ToLowerInvariant();
 

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Services;
@@ -13,7 +13,7 @@ public class AppWorkContextService(
     LazySvc<IDataSourcesService> dataSourceSvc,
     LazySvc<IAppReaderFactory> appReaders,
     Generator<DbStorage, StorageOptions> dbGen)
-    : ServiceBase("App.WrkCtx", connect: [appReaders, dataSourceSvc, dbGen])
+    : ServiceBase("App.WrkCtx")
 {
     public IDisposable WithContext(IAppReader appReader)
     {

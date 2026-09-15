@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys.Caching;
+using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.LookUp.Sys.Engines;
 using static System.String;
@@ -17,7 +17,7 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> queryBuilder, LazySvc<QueryDefinitionFactory> queryDefBuilder)
-    : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.Query", connect: [queryBuilder, queryDefBuilder]), IQuery,
+    : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.Query"), IQuery,
         ICacheAlsoAffectsOut
 {
     #region Configuration-properties
@@ -54,7 +54,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
     [PrivateApi]
     public void Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine? lookUpEngineOrNull, IDataSource? source = null)
     {
-        var l = Log.Fn($"{zoneId}/{appId}");
+        using var l = Log.Fn($"{zoneId}/{appId}");
 
         ZoneId = zoneId;
         AppId = appId;
@@ -89,7 +89,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
     /// </summary>
     private (IDataSource Source, StreamDictionary Out) CreateOutWithAllStreams()
     {
-        var l = Log.Fn<(IDataSource Source, StreamDictionary Out)>(message: $"Query: '{Definition.Title}'", timer: true);
+        using var l = Log.Fn<(IDataSource Source, StreamDictionary Out)>(message: $"Query: '{Definition.Title}'", timer: true);
 
         var queryInfos = queryBuilder.Value.CreateWithParams(Definition, Configuration.LookUpEngine);
         var outWritable = new StreamDictionary(this, Services.CacheService, streams: queryInfos.Main.Out);
@@ -100,7 +100,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
     /// <inheritdoc />
     public void Params(string key, string? value)
     {
-        var l = Log.Fn($"{key}, {value}");
+        using var l = Log.Fn($"{key}, {value}");
         if (IsNullOrWhiteSpace(key))
             throw new ArgumentNullException(nameof(key));
         // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
@@ -140,7 +140,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
     [PrivateApi("should be removed soon")]
     public void Reset()
     {
-        var l = Log.Fn("Reset query and update RequiresRebuildOfOut");
+        using var l = Log.Fn("Reset query and update RequiresRebuildOfOut");
         Definition.Reset();
         _requiresRebuildOfOut = true;
         l.Done();

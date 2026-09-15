@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -55,7 +55,7 @@ public sealed class Shuffle: DataSourceBase
 
     private IImmutableList<IEntity> GetShuffle()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>($"Take: {Take}");
+        using var l = Log.Fn<IImmutableList<IEntity>>($"Take: {Take}");
         Configuration.Parse();
 
         var source = TryGetIn();
@@ -69,7 +69,7 @@ public sealed class Shuffle: DataSourceBase
 
     private IImmutableList<T> ShuffleInternal<T>(List<T> sequence, int take)
     {
-        var l = Log.Fn<IImmutableList<T>>();
+        using var l = Log.Fn<IImmutableList<T>>();
         // check if there is actually any data
         if (!sequence.Any())
             return l.Return(sequence.ToImmutableOpt(), "0 items found to shuffle");

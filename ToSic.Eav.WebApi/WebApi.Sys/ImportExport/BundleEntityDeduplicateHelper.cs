@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Json.V1;
+using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.WebApi.Sys.ImportExport;
 internal class BundleEntityDeduplicateHelper(ILog parentLog) : HelperBase(parentLog, "Eav.BDHlp")
@@ -6,7 +6,7 @@ internal class BundleEntityDeduplicateHelper(ILog parentLog) : HelperBase(parent
 
     internal JsonBundle CleanBundle(JsonBundle withDuplicates)
     {
-        var l = Log.Fn<JsonBundle>($"deduplicate entities in bundle, count types:{withDuplicates.ContentTypes?.Count}, count entities:{withDuplicates.Entities?.Count}");
+        using var l = Log.Fn<JsonBundle>($"deduplicate entities in bundle, count types:{withDuplicates.ContentTypes?.Count}, count entities:{withDuplicates.Entities?.Count}");
         var bundleTypesRaw = withDuplicates.ContentTypes ?? [];
         var bundleEntitiesRaw = withDuplicates.Entities ?? [];
         // Find duplicate related entities

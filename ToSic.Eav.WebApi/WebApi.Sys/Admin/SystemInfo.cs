@@ -40,7 +40,7 @@ public class SystemInfo : CustomDataSource
         ISite site,
         LazySvc<ILicenseService> licenseService,
         ILogStoreLive logStore)
-        : base(services, logName: "Sxc.SysInfo", connect: [appsCatalog, fingerprint, zoneMapper, platform, site, licenseService, logStore])
+        : base(services, logName: "Sxc.SysInfo")
     {
         _appsCatalog = appsCatalog;
         _fingerprint = fingerprint;
@@ -61,7 +61,7 @@ public class SystemInfo : CustomDataSource
 
     private IEnumerable<SiteStatsRaw> GetSite()
     {
-        var l = Log.Fn<IEnumerable<SiteStatsRaw>>($"{_site.Id}");
+        using var l = Log.Fn<IEnumerable<SiteStatsRaw>>($"{_site.Id}");
         var zoneId = _site.ZoneId;
 
         var entity = new SiteStatsRaw(
@@ -76,7 +76,7 @@ public class SystemInfo : CustomDataSource
 
     private IEnumerable<SystemInfoRaw> GetSystem()
     {
-        var l = Log.Fn<IEnumerable<SystemInfoRaw>>();
+        using var l = Log.Fn<IEnumerable<SystemInfoRaw>>();
 
         var sysInfo = new SystemInfoRaw(
             Fingerprint: _fingerprint.GetFingerprint(),
@@ -91,7 +91,7 @@ public class SystemInfo : CustomDataSource
 
     private IEnumerable<LicenseInfoRaw> GetLicense()
     {
-        var l = Log.Fn<IEnumerable<LicenseInfoRaw>>();
+        using var l = Log.Fn<IEnumerable<LicenseInfoRaw>>();
         var licenses = _licenseService.Value;
 
         var owner = string.Join(", ", licenses.All
@@ -111,7 +111,7 @@ public class SystemInfo : CustomDataSource
 
     private IEnumerable<MessagesRaw> GetMessages()
     {
-        var l = Log.Fn<IEnumerable<MessagesRaw>>();
+        using var l = Log.Fn<IEnumerable<MessagesRaw>>();
 
         var warningsObsolete = CountInsightsMessages(CodeInfoConstants.ObsoleteNameInHistory);
         var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;

@@ -15,8 +15,8 @@ public class BenchmarkLoggingPipeline
     private const int OwnershipCount = 100;
 
     [Params(
-        LoggingPipelineMode.BridgeOff,
-        LoggingPipelineMode.ILoggerNoProvider,
+        LoggingPipelineMode.DiagnosticNoSink,
+        LoggingPipelineMode.DiagnosticNoStoreProvider,
         LoggingPipelineMode.InsightsOneBundle,
         LoggingPipelineMode.InsightsParentAndChild)]
     public LoggingPipelineMode Mode { get; set; }
@@ -39,13 +39,13 @@ public class BenchmarkLoggingPipeline
         _reused = new("Perf.Reused");
         _expectedEntries = -1;
 
-        if (Mode == LoggingPipelineMode.BridgeOff)
+        if (Mode == LoggingPipelineMode.DiagnosticNoSink)
         {
             CreateFactory();
             return;
         }
 
-        if (Mode == LoggingPipelineMode.ILoggerNoProvider)
+        if (Mode == LoggingPipelineMode.DiagnosticNoStoreProvider)
         {
             EnableBridge();
             return;
@@ -55,12 +55,12 @@ public class BenchmarkLoggingPipeline
         var provider = new InsightsLoggerProvider(memory);
         EnableBridge(provider);
         _store = new(memory, provider);
-        _store.Configure("ILogger", bridgeEnabled: true);
+        _store.Configure(null);
         _execution = _store.Add("http-request", root);
         if (Mode == LoggingPipelineMode.InsightsOneBundle)
             return;
 
-        _log = new Log("Perf.Child", root);
+        _log = new Log("Perf.Child");
         _execution = _store.Add("module", _log);
     }
 
@@ -166,8 +166,8 @@ public class BenchmarkLoggingPipeline
 
 public enum LoggingPipelineMode
 {
-    BridgeOff,
-    ILoggerNoProvider,
+    DiagnosticNoSink,
+    DiagnosticNoStoreProvider,
     InsightsOneBundle,
     InsightsParentAndChild,
 }

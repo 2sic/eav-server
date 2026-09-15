@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
@@ -62,7 +62,7 @@ public sealed class ValueSort : DataSourceBase
     /// Constructs a new ValueSort
     /// </summary>
     [PrivateApi]
-    public ValueSort(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValSrt", connect: [valLanguages])
+    public ValueSort(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValSrt")
     {
         _valLanguages = valLanguages;
 
@@ -87,7 +87,7 @@ public sealed class ValueSort : DataSourceBase
         // todo: maybe do something about languages?
         // todo: test decimal / number types
 
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         l.A("will apply value-sort");

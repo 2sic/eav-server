@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Ancestors;
+using ToSic.Eav.Data.Sys.Ancestors;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -7,7 +7,7 @@ public class WorkAttributes() : ServiceWithSetup<IAppWorkContext>("Wrk.Attrib")
 {
     public List<PairTypeWithAttribute> GetFields(string staticName)
     {
-        var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{MyOptions.Show()}, type:{staticName}");
+        using var l = Log.Fn<List<PairTypeWithAttribute>>($"a#{MyOptions.Show()}, type:{staticName}");
 
         if (MyOptions.AppReader.TryGetContentType(staticName) is not { } type)
             return l.Return([], $"error, type:{staticName} is null. Missing or not a ContentType.");
@@ -30,7 +30,7 @@ public class WorkAttributes() : ServiceWithSetup<IAppWorkContext>("Wrk.Attrib")
     /// <returns></returns>
     public List<PairTypeWithAttribute> GetSharedFields(int attributeId = 0)
     {
-        var l = Log.Fn<List<PairTypeWithAttribute>>($"get shared fields {MyOptions.Show()}");
+        using var l = Log.Fn<List<PairTypeWithAttribute>>($"get shared fields {MyOptions.Show()}");
 
         // If we know what AttributeId it's for, then filter
         var attributeType = ValueTypes.Undefined;
@@ -60,7 +60,7 @@ public class WorkAttributes() : ServiceWithSetup<IAppWorkContext>("Wrk.Attrib")
 
     public List<PairTypeWithAttribute> GetAncestors(int attributeId)
     {
-        var l = Log.Fn<List<PairTypeWithAttribute>>($"fieldDef: {attributeId}");
+        using var l = Log.Fn<List<PairTypeWithAttribute>>($"fieldDef: {attributeId}");
         var attribute = GetAttribute(attributeId);
         if (attribute == null)
             return l.Return([], $"fieldDef {attributeId} not found");
@@ -81,7 +81,7 @@ public class WorkAttributes() : ServiceWithSetup<IAppWorkContext>("Wrk.Attrib")
 
     public List<PairTypeWithAttribute> GetDescendants(int attributeId)
     {
-        var l = Log.Fn<List<PairTypeWithAttribute>>($"fieldDef: {attributeId}");
+        using var l = Log.Fn<List<PairTypeWithAttribute>>($"fieldDef: {attributeId}");
         var attribute = GetAttribute(attributeId);
         if (attribute == null)
             return l.Return([], $"fieldDef {attributeId} not found");

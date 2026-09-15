@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources.Sys;
+namespace ToSic.Eav.DataSources.Sys;
 
 /// <summary>
 /// Base class for Children and Parents - since they share a lot of code
@@ -22,7 +22,7 @@ public abstract class MetadataDataSourceBase : CustomDataSourceAdvanced
 
     private IImmutableList<IEntity> GetMetadata()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         // Make sure we have an In - otherwise error

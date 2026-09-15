@@ -54,7 +54,7 @@ public class LogStoreEntry
         if (Log is Log log && Segment != null && Specs != null)
             LogEventBridge.Write(LogEvent.ForLog(log) with
             {
-                LogId = LogEventBridge.UsesExecutionContext ? ExecutionId : log.LogId,
+                LogId = ExecutionId,
                 Kind = "Specs",
                 Segment = Segment,
                 Properties = Specs.ToImmutableDictionary(InvariantCultureIgnoreCase),

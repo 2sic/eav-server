@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.HookUp;
+namespace ToSic.Sys.HookUp;
 
 /// <inheritdoc cref="IWorkSequence{TWork,TData}"/>
 internal class WorkSequence<TWork, TData>(IEnumerable<TWork> works)
@@ -29,7 +29,7 @@ internal class WorkSequenceBase<TWork, TData>(IEnumerable<TWork> works, Func<Wor
             return Log.Quick(() => package, message: "Error: works is null");
 
         var workList = works.ToList();
-        var l = Log.Fn<Package<TData>>($"For {workList.Count} works");
+        using var l = Log.Fn<Package<TData>>($"For {workList.Count} works");
 
         // Exit early if no work is found
         if (!workList.Any())

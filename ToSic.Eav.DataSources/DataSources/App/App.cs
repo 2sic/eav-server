@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.Services;
@@ -86,13 +86,13 @@ public partial class App : DataSourceBase
         IAppReaderFactory AppReaders,
         IDataSourcesService DataSourceFactory,
         ICurrentContextUserPermissionsService UserPermissions)
-        : DependenciesBase(connect: [AppReaders, DataSourceFactory, UserPermissions]);
+        : DependenciesBase();
 
     /// <summary>
     /// Constructs a new App DataSource
     /// </summary>
     [PrivateApi]
-    public App(Dependencies services): base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.EavApp", connect: [services])
+    public App(Dependencies services): base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.EavApp")
     {
         _services = services;
         // this one is unusual, so don't pre-attach a default data stream to out

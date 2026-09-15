@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.Services;
+namespace ToSic.Sys.Services;
 
 /// <summary>
 /// Base class for any service which expects a Dependencies class
@@ -17,7 +17,7 @@ public abstract class ServiceBase<TServices>: ServiceBase where TServices : IDep
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="connect">Optional array of services to connect the logs to.</param>
     protected ServiceBase(TServices services, string logName, NoParamOrder npo = default, object[]? connect = default)
-        : base(logName, connect: connect)
+        : base(logName)
     {
         Services = services.ConnectServices(Log);
     }

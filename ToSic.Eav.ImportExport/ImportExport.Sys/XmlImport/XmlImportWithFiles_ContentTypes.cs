@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
@@ -14,7 +14,7 @@ partial class XmlImportWithFiles
 
     private List<IContentType> GetImportContentTypes(IReadOnlyCollection<XElement> list)
     {
-        var l = Log.Fn<List<IContentType>>($"for {list.Count} items");
+        using var l = Log.Fn<List<IContentType>>($"for {list.Count} items");
         // Loop through AttributeSets
         var importTypes = list
             .Select(BuildContentTypeFromXml)
@@ -27,7 +27,7 @@ partial class XmlImportWithFiles
 
     private IContentType? BuildContentTypeFromXml(XElement xmlContentType)
     {
-        var l = LogSummary.Fn<IContentType>();
+        using var l = LogSummary.Fn<IContentType>();
         var ctElement = xmlContentType.Element(XmlConstants.Attributes);
         var typeName = xmlContentType.Attribute(XmlConstants.Name)!.Value;
 

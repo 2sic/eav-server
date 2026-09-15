@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Apps.Sys.State;
 using ToSic.Razor.Blade;
 using ToSic.Sys.Caching;
 using static ToSic.Razor.Blade.Tag;
@@ -6,7 +6,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.App;
 
 internal class InsightsAppStats(IAppStateCacheService appStates)
-    : InsightsProvider(new() { Name = Link }, connect: [appStates])
+    : InsightsProvider(new() { Name = Link })
 {
     public static string Link = "AppStats";
 

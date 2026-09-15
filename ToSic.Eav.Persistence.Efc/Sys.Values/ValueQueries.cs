@@ -1,4 +1,4 @@
-﻿
+
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 
@@ -36,7 +36,7 @@ internal class ValueQueries(EfcAppLoaderService appLoader, ILog parentLog): Help
     /// </remarks>
     internal IQueryable<TsDynDataValue> ChunkValuesQuery(ICollection<int> entityIds)
     {
-        var l = Log.IfSummary(appLoader.LogSettings).Fn<IQueryable<TsDynDataValue>>(timer: true);
+        using var l = Log.IfSummary(appLoader.LogSettings).Fn<IQueryable<TsDynDataValue>>(timer: true);
 
         //var dimensions = context.TsDynDataDimensions.ToList(); // materialise (very fast)
 

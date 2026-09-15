@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Code.Infos;
+using ToSic.Sys.Code.Infos;
 
 namespace ToSic.Sys.Code.InfoSystem;
 
@@ -22,9 +22,9 @@ partial class CodeInfoService
     /// <param name="use"></param>
     private CodeInfoInLogStore WarnObsolete(CodeUse use)
     {
-        var logWrapper = new Log("Cod.Obsolete", Log);
+        var logWrapper = new Log("Cod.Obsolete");
         var change = use.Change;
-        var l = logWrapper.Fn<CodeInfoInLogStore>($"'{change.NameId}' will be removed {(change.To == null ? null : "v" + change.To)}");
+        using var l = logWrapper.Fn<CodeInfoInLogStore>($"'{change.NameId}' will be removed {(change.To == null ? null : "v" + change.To)}");
         CodeInfoInLogStore? infoInLogStore = null;
         try
         {

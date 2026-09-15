@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.LogSettings;
@@ -27,7 +27,7 @@ public class WorkEntitySave(
     DataImportLogSettings importLogSettings,
     LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions
     )
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntSav", connect: [dataAssembler, appsCache, environmentLazy, contentTypeChangeActions])
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntSav")
 {
     // Note: Singleton
 
@@ -58,7 +58,7 @@ public class WorkEntitySave(
 
     public ICollection<EntityIdentity> Save(ICollection<EntityPair<SaveOptions>> entities)
     {
-        var l = Log.Fn<ICollection<EntityIdentity>>($"save count:{entities.Count}");
+        using var l = Log.Fn<ICollection<EntityIdentity>>($"save count:{entities.Count}");
 
         // Note the metadata targets before saving, as InnerSaveInLock replaces the entity objects.
         var metadataTargets = entities
@@ -176,7 +176,7 @@ public class WorkEntitySave(
     /// <param name="entity"></param>
     private IImmutableDictionary<string, IAttribute>? AttributesWithEmptyEphemerals(IEntity entity)
     {
-        var l = Log.Fn<IImmutableDictionary<string, IAttribute>>();
+        using var l = Log.Fn<IImmutableDictionary<string, IAttribute>>();
         var attributes = entity.Type?.Attributes?.ToListOpt();
         if (attributes == null || !attributes.Any())
             return l.ReturnNull("no attributes");

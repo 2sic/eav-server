@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys.PropertyDump;
 public class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceBase("Eav.DpmSvc"), IPropertyDumpService
@@ -10,7 +10,7 @@ public class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceB
     /// <returns></returns>
     public (IPropertyDumper? Dumper, int Ranking) GetBestDumper(object? source)
     {
-        var l = Log.Fn<(IPropertyDumper? Dumper, int Ranking)>("bestDumper");
+        using var l = Log.Fn<(IPropertyDumper? Dumper, int Ranking)>("bestDumper");
         if (source == null || !dumpers.Any())
             return l.Return((null, 0), "no source or no dumpers");
 
@@ -29,7 +29,7 @@ public class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceB
 
     public List<PropertyDumpItem> Dump(object target, PropReqSpecs specs, string path)
     {
-        var l = Log.Fn<List<PropertyDumpItem>>();
+        using var l = Log.Fn<List<PropertyDumpItem>>();
 
         // If it's self dumping for an important reason, use that.
         if (target is IPropertyDumpCustom selfDumping)

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Json.Sys;
+using ToSic.Eav.ImportExport.Json.Sys;
 
 namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 
@@ -6,7 +6,7 @@ partial class AppStateInFolderLoader
 {
     private (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) LoadGlobalContentTypes(IAppStateCache appState)
     {
-        var l = Log.Fn<(ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities)>(timer: true);
+        using var l = Log.Fn<(ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities)>(timer: true);
 
         // 1. Set TypeID seed for loader so each loaded type has a unique ID
         var loaderIndex = 1;

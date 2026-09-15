@@ -1,11 +1,11 @@
-﻿using ToSic.Eav.ImportExport.Sys.Xml;
+using ToSic.Eav.ImportExport.Sys.Xml;
 
 #pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Eav.ImportExport.Sys.XmlExport;
 
 internal sealed class XmlExporterUnknown(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, WarnUseOfUnknown<XmlExporterUnknown> _)
-    : XmlExporter(xmlSerializer, appsCatalog, LogScopes.NotImplemented, connect: []), IIsUnknown
+    : XmlExporter(xmlSerializer, appsCatalog, LogScopes.NotImplemented), IIsUnknown
 {
 
     public override XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)

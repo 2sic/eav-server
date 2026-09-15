@@ -53,8 +53,10 @@ public class LogFn: LogTestBase
     [MemberData(nameof(SimpleMessages))]
     public void NoAdd(string testName, string expected, string message, string result, int depth)
     {
-        AssertDepthAndEntryCount(testName, LogFactory().RealLog!, LogDepth, 1);
-        AssertEntry(testName, LogFactory().RealLog!.Entries[0], WrapperSignature, result, depth);
+        var log = LogFactory();
+        using var call = log.LogForAdd as IDisposable;
+        AssertDepthAndEntryCount(testName, log.RealLog!, LogDepth, 1);
+        AssertEntry(testName, log.RealLog!.Entries[0], WrapperSignature, result, depth);
     }
 
     [Theory]
@@ -62,6 +64,7 @@ public class LogFn: LogTestBase
     public void A_NotEnabled(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
+        using var call = log.LogForAdd as IDisposable;
         log.LogForAdd.A(false, message);
         Finish(log);
         AssertDepthAndEntryCount(testName, log.RealLog!, LogDepth, EntryCount - 1);
@@ -75,6 +78,7 @@ public class LogFn: LogTestBase
     public void A_String(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
+        using var call = log.LogForAdd as IDisposable;
         log.LogForAdd.A(message);
         Finish(log);
         AssertDepthAndEntryCount(testName, log.RealLog!, LogDepth, EntryCount);
@@ -89,6 +93,7 @@ public class LogFn: LogTestBase
     public void A_StringFunction(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
+        using var call = log.LogForAdd as IDisposable;
         log.LogForAdd.A(log.LogForAdd.Try(() => message));
         Finish(log);
         AssertDepthAndEntryCount(testName, log.RealLog!, LogDepth, EntryCount);
@@ -102,6 +107,7 @@ public class LogFn: LogTestBase
     public void W_String(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
+        using var call = log.LogForAdd as IDisposable;
         log.LogForAdd.W(message);
         Finish(log);
         AssertDepthAndEntryCount(testName, log.RealLog, LogDepth, EntryCount);
@@ -115,6 +121,7 @@ public class LogFn: LogTestBase
     public void E_String(string testName, string expected, string message, string result, int depth)
     {
         var log = LogFactory();
+        using var call = log.LogForAdd as IDisposable;
         log.LogForAdd.E(message);
         Finish(log);
         AssertDepthAndEntryCount(testName, log.RealLog!, LogDepth, EntryCount);

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
@@ -17,12 +17,12 @@ public class ConvertAttributeToDto(
     AppWorkChain<WorkInputTypes> genInputTypes,
     LazySvc<AppWorkContextService> appWorkCtxSvc,
     AppWorkChain<RecommendedMetadataService> genMdRead)
-    : ServiceBase("Cnv.AtrDto", connect: [genInputTypes, convertToLight, genMdRead]),
+    : ServiceBase("Cnv.AtrDto"),
         IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
 {
     public ConvertAttributeToDto Init(int appId, bool withContentType)
     {
-        var l = Log.Fn<ConvertAttributeToDto>($"{appId}, withContentType:{withContentType}");
+        using var l = Log.Fn<ConvertAttributeToDto>($"{appId}, withContentType:{withContentType}");
         _appId = appId;
         _withContentType = withContentType;
         return l.Return(this);
@@ -35,7 +35,7 @@ public class ConvertAttributeToDto(
 
     public IEnumerable<ContentTypeFieldDto> Convert(IEnumerable<PairTypeWithAttribute> list)
     {
-        var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>();
+        using var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>();
         var result = list
             .Select(Convert)
             .ToList();
@@ -44,7 +44,7 @@ public class ConvertAttributeToDto(
 
     public ContentTypeFieldDto Convert(PairTypeWithAttribute? item)
     {
-        var l = Log.Fn<ContentTypeFieldDto>();
+        using var l = Log.Fn<ContentTypeFieldDto>();
         if (item == null)
             return l.ReturnNull("no item")!;
 
@@ -113,7 +113,7 @@ public class ConvertAttributeToDto(
     private (IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)
         GetInputTypesAndMetadata(string inputType, IContentTypeField a, IContentType type, IAncestor? ancestorDecorator, IReadOnlyCollection<InputTypeInfo> appInputTypes)
     {
-        var l = Log.Fn<(IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)>();
+        using var l = Log.Fn<(IDictionary<string, bool> ConfigTypes, Dictionary<string, EavLightEntity> InputMetadata)>();
         var configTypes = GetFieldConfigTypes(inputType, appInputTypes);
 
         // Note 2023-11-09 2dm - restricting what metadata is loaded - could have side effects
@@ -152,7 +152,7 @@ public class ConvertAttributeToDto(
 
     private static IDictionary<string, bool> KeepOnlyConfigTypesWhichAreNotInherited(IContentTypeField a, IDictionary<string, bool> configTypes, ILog log)
     {
-        var l = log.Fn<IDictionary<string, bool>>($"{nameof(configTypes)} {configTypes.Count}");
+        using var l = log.Fn<IDictionary<string, bool>>($"{nameof(configTypes)} {configTypes.Count}");
 
         // Check if we're inheriting any metadata, as we don't want to give the 
         // inherited MD to the user to edit.
@@ -218,7 +218,7 @@ public class ConvertAttributeToDto(
     /// <returns>Dictionary with name/required - ATM all required are set to true</returns>
     private IDictionary<string, bool> GetFieldConfigTypes(string inputTypeName, IReadOnlyCollection<InputTypeInfo> inputTypes)
     {
-        var l = Log.Fn<IDictionary<string, bool>>();
+        using var l = Log.Fn<IDictionary<string, bool>>();
 
         var inputType = FindInputType(inputTypeName);
         if (inputType == null)

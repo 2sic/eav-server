@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Repositories.Sys;
@@ -17,7 +17,7 @@ partial class XmlImportWithFiles
     /// <returns>AppId of the new imported app</returns>
     public bool ImportApp(int zoneId, XDocument doc, int? inheritAppId, out int appId)
     {
-        var l = Log.Fn<bool>($"zone:{zoneId}");
+        using var l = Log.Fn<bool>($"zone:{zoneId}");
 
         appId = 0;
         int? parentAppId = null;
@@ -69,7 +69,7 @@ partial class XmlImportWithFiles
 
     private int? GetParentAppId(XElement? xmlSource, IStorage eavDc)
     {
-        var l = Log.Fn<int?>();
+        using var l = Log.Fn<int?>();
         var parentAppXElement = xmlSource
             ?.Element(XmlConstants.Header)
             ?.Element(XmlConstants.ParentApp);

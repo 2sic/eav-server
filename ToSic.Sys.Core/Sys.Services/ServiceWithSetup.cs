@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.Services;
+namespace ToSic.Sys.Services;
 
 // #NoEditorBrowsableBecauseOfInheritance
 //[ShowApiWhenReleased(ShowApiMode.Never)]
@@ -6,7 +6,7 @@
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP as of v22")]
 public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder npo = default, object[]? connect = default)
-    : ServiceBase(logName, npo, connect: connect),
+    : ServiceBase(logName, npo),
         IHasOptions<TOptions>,
         IServiceWithSetup<TOptions>
         where TOptions : class //, new()

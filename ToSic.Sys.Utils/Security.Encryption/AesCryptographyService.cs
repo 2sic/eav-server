@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ToSic.Sys.Security.Encryption;
@@ -19,7 +19,7 @@ public class AesCryptographyService(Rfc2898Generator keyGen) : ServiceBase("Eav.
 
     private EncryptionResult<byte[]> Encrypt(string value, AesConfiguration? configuration = default)
     {
-        var l = Log.Fn<EncryptionResult<byte[]>>(enabled: Debug);
+        using var l = Log.Fn<EncryptionResult<byte[]>>(enabled: Debug);
         configuration ??= new();
         var saltBytes = configuration.SaltBytes();
         var valueBytes = Encoding.UTF8.GetBytes(value);
@@ -54,7 +54,7 @@ public class AesCryptographyService(Rfc2898Generator keyGen) : ServiceBase("Eav.
 
     public string DecryptFromBase64(string value, AesConfiguration configuration)
     {
-        var l = Log.Fn<string>(enabled: Debug);
+        using var l = Log.Fn<string>(enabled: Debug);
         l.A(Debug, $"IV: {Log.Dump(configuration.InitializationVectorBytes())} from '{configuration.InitializationVector64 ?? configuration.InitializationVector}'");
         l.A(Debug, $"Salt: {Log.Dump(configuration.SaltBytes())} from '{configuration.Salt64 ?? configuration.Salt}'");
         return Decrypt(Convert.FromBase64String(value), configuration);
@@ -62,7 +62,7 @@ public class AesCryptographyService(Rfc2898Generator keyGen) : ServiceBase("Eav.
 
     private string Decrypt(byte[] value, AesConfiguration configuration)
     {
-        var l = Log.Fn<string>(enabled: Debug);
+        using var l = Log.Fn<string>(enabled: Debug);
         using var cipher = Aes.Create();
         cipher.Mode = CipherMode.CBC;
         try

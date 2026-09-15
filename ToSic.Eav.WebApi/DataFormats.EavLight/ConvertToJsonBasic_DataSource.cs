@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Convert;
 using static System.String;
@@ -28,7 +28,7 @@ partial class ConvertToEavLight
     [PrivateApi("not public yet, as the signature is not final yet")]
     public IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, IEnumerable<string>? streams, string[]? filterGuids, IDictionary<string, ICollection<string>>? selectFields)
     {
-        var l = Log.Fn<IDictionary<string, IEnumerable<EavLightEntity>>>(timer: true);
+        using var l = Log.Fn<IDictionary<string, IEnumerable<EavLightEntity>>>(timer: true);
 
         var streamsList = streams?.ToArray()
             ?? source.Out.Select(p => p.Key).ToArray();

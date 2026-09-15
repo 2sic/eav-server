@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using ToSic.Eav.Data.Sys.Global;
 using ToSic.Eav.Models;
 using ToSic.Eav.Serialization.Sys.Json;
@@ -16,8 +16,7 @@ public class EavFeaturesLoader(
     LicenseLoader licenseLoader,
     IGlobalDataService globalData,
     SysFeaturesLoader sysFeaturesLoader)
-    : ServiceBase($"{EavLogs.Eav}FtLdr",
-        connect: [globalData, featuresSvc, featurePersistenceService, featuresIo, licenseLoader, sysFeaturesLoader])
+    : ServiceBase($"{EavLogs.Eav}FtLdr")
 {
 
     /// <summary>
@@ -25,7 +24,7 @@ public class EavFeaturesLoader(
     /// </summary>
     public void LoadLicenseAndFeatures()
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
         try
         {
             var list = globalData.ListRequired;
@@ -69,7 +68,7 @@ public class EavFeaturesLoader(
     [PrivateApi]
     internal bool ReloadFeatures()
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         var stored = LoadFeaturesStored() ?? new FeatureStatesPersisted();
         var status = featuresSvc.UpdateFeatureList(stored, sysFeaturesLoader.Load());
 
@@ -87,7 +86,7 @@ public class EavFeaturesLoader(
     /// <returns></returns>
     internal FeatureStatesPersisted? LoadFeaturesStored()
     {
-        var l = Log.Fn<FeatureStatesPersisted?>();
+        using var l = Log.Fn<FeatureStatesPersisted?>();
         try
         {
             var (_, fileContent) = featuresIo.Load();
@@ -113,7 +112,7 @@ public class EavFeaturesLoader(
     [PrivateApi]
     public bool UpdateFeatures(List<FeatureStateChange> changes)
     {
-        var l = Log.Fn<bool>($"c:{changes.Count}");
+        using var l = Log.Fn<bool>($"c:{changes.Count}");
         var saved = featurePersistenceService.ApplyUpdatesAndSave(changes);
         var ok = ReloadFeatures();
         return l.ReturnAndLog(saved && ok, "ok, updated");

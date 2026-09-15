@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
@@ -10,7 +10,7 @@ internal class PublishingHelper(EfcAppLoaderService appLoader): HelperBase(appLo
 
     public int[] AddEntityIdOfPartnerEntities(int[] publishedIds)
     {
-        var l = Log.IfDetails(appLoader.LogSettings).Fn<int[]>(timer: true);
+        using var l = Log.IfDetails(appLoader.LogSettings).Fn<int[]>(timer: true);
 
         var relatedIds = EntityQueries
             .EntitiesOfAdditionalDrafts(publishedIds)

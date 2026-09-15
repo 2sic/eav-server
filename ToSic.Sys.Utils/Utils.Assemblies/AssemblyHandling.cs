@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using static System.StringComparison;
 
 namespace ToSic.Sys.Utils.Assemblies;
@@ -24,7 +24,7 @@ public class AssemblyHandling
     /// <returns></returns>
     public static bool HasType(string typeFullName, ILog? log = null)
     {
-        var l = log.Fn<bool>(message: $"HasType {typeFullName}");
+        using var l = log.Fn<bool>(message: $"HasType {typeFullName}");
         return l.ReturnAsOk(GetTypes(log).Any(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1));
     }
 
@@ -36,7 +36,7 @@ public class AssemblyHandling
     /// <returns></returns>
     public static Type? GetTypeOrNull(string typeFullName, ILog? log = null)
     {
-        var l = log.Fn<Type?>(message: $"HasType {typeFullName}");
+        using var l = log.Fn<Type?>(message: $"HasType {typeFullName}");
         var type = GetTypes(log).FirstOrDefault(t => (t.FullName?.IndexOf(typeFullName, OrdinalIgnoreCase) ?? -1) > -1);
         return l.Return(type, type == null ? "not found": "found");
     }
@@ -46,9 +46,9 @@ public class AssemblyHandling
         if (_typeCache != null)
             return _typeCache;
 
-        var bl = BootLog.Log.Fn("Creating list of Types", timer: true);
+        using var bl = BootLog.Log.Fn("Creating list of Types", timer: true);
 
-        var l = log.Fn<List<Type>>(timer: true);
+        using var l = log.Fn<List<Type>>(timer: true);
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         l.A($"GetTypes() - found {assemblies.Length} assemblies");
 
@@ -69,7 +69,7 @@ public class AssemblyHandling
     /// </remarks>
     private static List<Type> GetLoadableTypes(System.Reflection.Assembly assembly, ILog? log = null)
     {
-        var l = log.Fn<List<Type>>($"GetLoadableTypes(assembly: {assembly?.FullName})", timer: true);
+        using var l = log.Fn<List<Type>>($"GetLoadableTypes(assembly: {assembly?.FullName})", timer: true);
         try
         {
             var list = assembly!.GetTypes().ToList();

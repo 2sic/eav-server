@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys.PropertyStack;
 
@@ -10,7 +10,7 @@ partial class PropertyStack
 
     public IPropertyStack GetStack(ILog? log, params string[] names)
     {
-        var l = log.Fn<IPropertyStack>();
+        using var l = log.Fn<IPropertyStack>();
         // Get all required names in the order they were requested
         var newSources = new List<KeyValuePair<string, IPropertyLookup>>();
         foreach (var name in names)

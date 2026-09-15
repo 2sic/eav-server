@@ -1,7 +1,7 @@
-﻿namespace ToSic.Eav.Sys.Insights.Logs;
+namespace ToSic.Eav.Sys.Insights.Logs;
 
 internal class InsightsLogsFlush(LazySvc<ILogStoreLive> logStore)
-    : InsightsProvider(new() { Name = Link, Title = "Flush Logs" }, connect: [logStore])
+    : InsightsProvider(new() { Name = Link, Title = "Flush Logs" })
 {
     public static string Link = "LogsFlush";
 

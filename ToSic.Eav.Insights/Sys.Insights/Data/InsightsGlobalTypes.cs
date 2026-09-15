@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
@@ -6,7 +6,7 @@ internal class InsightsGlobalTypes(IAppReaderFactory appReadFac) : InsightsTypes
 {
     public override string HtmlBody()
     {
-        var l = Log.Fn<string>();
+        using var l = Log.Fn<string>();
         var globTypes = AppReadFac.GetSystemPreset().ContentTypes;
         var msg = TypesTable(KnownAppsConstants.PresetAppId, globTypes, []);
 

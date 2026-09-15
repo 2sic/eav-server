@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2025 by 2sic internet solutions in Switzerland - www.2sic.com
  *
  * This file and the code IS COPYRIGHTED.
@@ -35,7 +35,7 @@ public sealed class LicenseLoader(
     LicenseCatalog licenseCatalog,
     SystemFingerprint sysFingerprint,
     LazySvc<IGlobalConfiguration> globalConfiguration)
-    : LoaderBase(logStore, $"{EavLogs.Eav}LicLdr", connect: [licenseCatalog, sysFingerprint, globalConfiguration])
+    : LoaderBase(logStore, $"{EavLogs.Eav}LicLdr")
 {
     internal void Init(IList<EnterpriseFingerprint> entFingerprints)
     {
@@ -48,7 +48,7 @@ public sealed class LicenseLoader(
     [PrivateApi]
     internal void LoadLicenses()
     {
-        var l = this.Log.Fn(message: "start", timer: true);
+        using var l = this.Log.Fn(message: "start", timer: true);
         var fingerprint1 = sysFingerprint.GetFingerprint();
         l.A($"fingerprint:{fingerprint1.Length}");
 
@@ -82,7 +82,7 @@ public sealed class LicenseLoader(
     /// <returns></returns>
     private IList<LicensesPersisted> LoadLicensesInConfigFolder()
     {
-        var l = Log.Fn<IList<LicensesPersisted>>();
+        using var l = Log.Fn<IList<LicensesPersisted>>();
         // ensure that path to store files already exits
         var configFolder = globalConfiguration.Value.ConfigFolder();
         Directory.CreateDirectory(configFolder);
@@ -101,7 +101,7 @@ public sealed class LicenseLoader(
 
     private IList<FeatureSetState> LicensesStateBuilder(LicensesPersisted? licensesPersisted, string fingerprint, IList<EnterpriseFingerprint> validEntFps)
     {
-        var l = Log.Fn<IList<FeatureSetState>>();
+        using var l = Log.Fn<IList<FeatureSetState>>();
         if (licensesPersisted == null)
             return l.Return([], "null");
 

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Repositories.Sys;
@@ -18,7 +18,7 @@ partial class DbEntity
             throw new ArgumentNullException(nameof(newEnt));
 
         var so = entityOptionPair.Partner;
-        var l = LogDetails.Fn<EntityIdentity>($"id:{newEnt.EntityId}/{newEnt.EntityGuid}, logDetails:{logDetails}");
+        using var l = LogDetails.Fn<EntityIdentity>($"id:{newEnt.EntityId}/{newEnt.EntityGuid}, logDetails:{logDetails}");
 
         #region Step 1: Do some initial error checking and preparations
 
@@ -88,7 +88,7 @@ partial class DbEntity
             // is New vs. Update
             if (isNew)
             {
-                var l2 = l.Fn("Create new", timer: true);
+                using var l2 = l.Fn("Create new", timer: true);
                 if (newEnt.EntityGuid == Guid.Empty)
                 {
                     if (logDetails)
@@ -106,7 +106,7 @@ partial class DbEntity
 
                 if (saveJson)
                 {
-                    var l3 = l2.Fn($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
+                    using var l3 = l2.Fn($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
                     dbEnt.Json = jsonExport;
                     dbEnt.ContentType = newEnt.Type.NameId;
                     DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Update(dbEnt),

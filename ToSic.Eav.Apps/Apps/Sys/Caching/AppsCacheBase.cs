@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Persistence.Sys.AppState;
 using ToSic.Eav.Sys;
@@ -177,7 +177,7 @@ public abstract class AppsCacheBase(IAppCacheKeyService appCacheKeyService) : IA
     public virtual void Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
     {
         var entityIds = entities.ToArray();
-        var l = log.Fn($"{appIdentity}, {entityIds.Length} entities");
+        using var l = log.Fn($"{appIdentity}, {entityIds.Length} entities");
         // if it's not cached yet, ignore the request as partial update won't be necessary
         if (!Has(appIdentity)) 
             l.Done("not cached, won't update; probably updating an app in the process of being created.");

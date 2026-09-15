@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Apps.Sys.LogSettings;
 
@@ -15,7 +15,7 @@ internal class EavFeaturesLogSettingsHelper(EavFeaturesLoader featuresLoader, IL
 
     internal ToSic.Sys.Logging.LogSettings GetLogSettings()
     {
-        var l = Log.Fn<ToSic.Sys.Logging.LogSettings>();
+        using var l = Log.Fn<ToSic.Sys.Logging.LogSettings>();
 
         var features = featuresLoader
             .LoadFeaturesStored()

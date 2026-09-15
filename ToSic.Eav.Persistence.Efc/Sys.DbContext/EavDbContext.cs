@@ -1,4 +1,4 @@
-﻿#if !NETFRAMEWORK
+#if !NETFRAMEWORK
 using Microsoft.EntityFrameworkCore.Diagnostics;
 #endif
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -39,7 +39,7 @@ public partial class EavDbContext(
     {
         // Note: this only takes a few MS, but is called many times, so logging is disabled again
         //logStore.Add("boot-log", Log);
-        var l = Log.Fn("starting with options builder", timer: true);
+        using var l = Log.Fn("starting with options builder", timer: true);
 
         var connectionString = globalConfig.ConnectionString(); // dbConfig.ConnectionString;
 
@@ -64,7 +64,7 @@ public partial class EavDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         logStore.Add("boot-log", Log);
-        var l = Log.Fn(timer: true);
+        using var l = Log.Fn(timer: true);
 
         modelBuilder.Entity<TsDynDataDimension>(dimension =>
         {
@@ -545,12 +545,12 @@ public partial class EavDbContext(
 
         l.Done("done with own code");
 
-        l = Log.Fn($"calling internal code {nameof(OnModelCreatingPartial)}", timer: true);
+        using var lPartial = Log.Fn($"calling internal code {nameof(OnModelCreatingPartial)}", timer: true);
         OnModelCreatingPartial(modelBuilder);
 #if !NETFRAMEWORK
         RewriteDatabaseNames(modelBuilder);
 #endif
-        l.Done();
+        lPartial.Done();
     }
 
 #if !NETFRAMEWORK

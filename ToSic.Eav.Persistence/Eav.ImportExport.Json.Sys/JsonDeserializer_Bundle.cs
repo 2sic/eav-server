@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization.Sys.Json;
@@ -24,7 +24,7 @@ public partial class JsonSerializer
 
     public IList<ContentTypeWithEntities> GetContentTypesFromBundles(JsonFormat package)
     {
-        var l = LogDsSummary.Fn<IList<ContentTypeWithEntities>>();
+        using var l = LogDsSummary.Fn<IList<ContentTypeWithEntities>>();
         if (package.Bundles.SafeNone())
             return l.Return([], "none found");
 
@@ -46,7 +46,7 @@ public partial class JsonSerializer
 
     public IList<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource? relationshipSource = null)
     {
-        var l = LogDsDetails.Fn<IList<IEntity>>();
+        using var l = LogDsDetails.Fn<IList<IEntity>>();
         if (package.Bundles.SafeNone())
             return l.Return([], "none found");
 

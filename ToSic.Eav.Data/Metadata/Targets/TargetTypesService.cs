@@ -1,7 +1,7 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 
 namespace ToSic.Eav.Metadata.Targets;
-internal class TargetTypesService(LazySvc<ITargetTypesLoader> loader): ServiceBase("MDa.TTSvc", connect: [loader]), ITargetTypeService
+internal class TargetTypesService(LazySvc<ITargetTypesLoader> loader): ServiceBase("MDa.TTSvc"), ITargetTypeService
 {
     private const string ReservedType = "Reserved";
     
@@ -11,7 +11,7 @@ internal class TargetTypesService(LazySvc<ITargetTypesLoader> loader): ServiceBa
     /// <inheritdoc />
     public int GetId(string targetTypeName)
     {
-        var l = Log.Fn<int>(targetTypeName, enabled: EnableLog);
+        using var l = Log.Fn<int>(targetTypeName, enabled: EnableLog);
         
         if (TargetTypesByName.TryGetValue(targetTypeName, out var key))
             return l.Return(key, "found by name");
@@ -26,7 +26,7 @@ internal class TargetTypesService(LazySvc<ITargetTypesLoader> loader): ServiceBa
     /// <inheritdoc />
     public string GetName(int typeId)
     {
-        var l = Log.Fn<string>(typeId.ToString(), enabled: EnableLog);
+        using var l = Log.Fn<string>(typeId.ToString(), enabled: EnableLog);
         if (!TargetTypes.TryGetValue(typeId, out var result))
             throw l.Ex(new ArgumentException($"Tried to get TargetType name of '{typeId}' but couldn't find it in the list.", nameof(typeId)));
 

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.Entities;
@@ -24,7 +24,7 @@ partial class JsonSerializer
 
     public JsonFormat ToPackage(IContentType contentType, JsonSerializationSettings settings)
     {
-        var l = Log.Fn<JsonFormat>(contentType.Name);
+        using var l = Log.Fn<JsonFormat>(contentType.Name);
         var package = new JsonFormat
         {
             ContentType = ToJson(contentType, settings)
@@ -193,7 +193,7 @@ partial class JsonSerializer
 
     internal static string? Serialize(ContentTypeFieldSysSettings? sysSettings, ILog? log)
     {
-        var l = log.Fn<string>($"serialize {sysSettings} to json string");
+        using var l = log.Fn<string>($"serialize {sysSettings} to json string");
         if (sysSettings == null)
             return l.ReturnNull("null sysSettings");
         try

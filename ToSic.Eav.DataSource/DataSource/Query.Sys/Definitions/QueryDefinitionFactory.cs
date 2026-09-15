@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys.Catalog;
+using ToSic.Eav.DataSource.Sys.Catalog;
 using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.DataSource.Query.Sys;
@@ -11,7 +11,7 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 /// </remarks>
 /// <param name="dsCatalog"></param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class QueryDefinitionFactory(DataSourceCatalog dsCatalog) : ServiceBase("Eav.QDefBl", connect: [dsCatalog])
+public class QueryDefinitionFactory(DataSourceCatalog dsCatalog) : ServiceBase("Eav.QDefBl")
 {
     /// <summary>
     /// Create a <see cref="QueryDefinition"/> based on the given query definition entity.
@@ -31,7 +31,7 @@ public class QueryDefinitionFactory(DataSourceCatalog dsCatalog) : ServiceBase("
 
     private List<QueryPartDefinition> GenerateParts(IEntity entity)
     {
-        var l = Log.Fn<List<QueryPartDefinition>>();
+        using var l = Log.Fn<List<QueryPartDefinition>>();
 
         var partEntities = entity.Metadata
             .Where(m => m.Type.Is(QueryPartDefinition.TypeName))

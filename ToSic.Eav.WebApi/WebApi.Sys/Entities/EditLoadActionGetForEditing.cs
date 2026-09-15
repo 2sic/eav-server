@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.Sys.Entities;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, EntityAssembler entityAssembler)
-    : ServiceBase("Api.Entity", connect: [appWorkCtxSvc, entityAssembler])
+    : ServiceBase("Api.Entity")
 {
     // Note: reworked this 2026-05-15 2dm to make the objects immutable, hope no side effects #ImmutableIsTheNewBlack
     public List<BundleWithHeaderOptional<IEntity>> Run(WorkContext actionCtx, List<ItemIdentifier> items)

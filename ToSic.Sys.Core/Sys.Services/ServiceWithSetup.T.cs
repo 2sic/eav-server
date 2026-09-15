@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.Services;
+namespace ToSic.Sys.Services;
 
 // #NoEditorBrowsableBecauseOfInheritance
 //[ShowApiWhenReleased(ShowApiMode.Never)]
@@ -17,7 +17,7 @@ public abstract class ServiceWithSetup<TServices, TOptions> : ServiceBase,
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
     /// <param name="connect">Optional array of services to connect the logs to.</param>
     protected ServiceWithSetup(TServices services, string logName, NoParamOrder npo = default, object[]? connect = default)
-        : base(logName, connect: connect)
+        : base(logName)
     {
         Services = services.ConnectServices(Log);
     }

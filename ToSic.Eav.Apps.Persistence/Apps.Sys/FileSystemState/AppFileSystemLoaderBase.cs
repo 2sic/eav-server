@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Paths;
+using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.Sys;
@@ -9,7 +9,7 @@ public record AppFileSystemLoaderOptions(IAppReader AppReader, ToSic.Sys.Logging
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class AppFileSystemLoaderBase(ISite siteDraft, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper, object[]? connect = default)
-    : ServiceWithSetup<AppFileSystemLoaderOptions>(EavLogs.Eav + ".AppFSL", connect: [..connect ?? [], siteDraft, appPathsLazy, zoneMapper])
+    : ServiceWithSetup<AppFileSystemLoaderOptions>(EavLogs.Eav + ".AppFSL")
 {
     #region Constants
 

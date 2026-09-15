@@ -161,7 +161,7 @@ public class PathCasePreflightValidator(ILog? parentLog) : HelperBase(parentLog,
 
     public PathCasePreflightResult LogResult(PathCasePreflightResult result)
     {
-        var l = Log.Fn<PathCasePreflightResult>($"{result.Issues.Count} issues");
+        using var l = Log.Fn<PathCasePreflightResult>($"{result.Issues.Count} issues");
 
         if (!result.IsValid)
             foreach (var issue in result.Issues)

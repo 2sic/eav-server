@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Persistence.Efc.Sys.TempModels;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
@@ -24,7 +24,7 @@ internal class EntityDetailsLoadSpecs(int appId, bool loadAll, List<TempEntity> 
             if (field != null)
                 return field;
 
-            var l = Log.Fn<List<int>>(timer: true);
+            using var l = Log.Fn<List<int>>(timer: true);
             // Get the EntityIDs to load the relationships / values for these entities
             // But skip all entities which have JSON, since for these all the data is already loaded
             // This pre-clean can dramatically reduce the time needed to load the data
@@ -48,7 +48,7 @@ internal class EntityDetailsLoadSpecs(int appId, bool loadAll, List<TempEntity> 
             if (field != null)
                 return field;
 
-            var l = Log.Fn<List<List<int>>>(timer: true);
+            using var l = Log.Fn<List<List<int>>>(timer: true);
             field = IdsToLoad.ChunkBy(ChunkSize);
             return l.Return(field, $"Chunked into {field.Count} chunks");
         }

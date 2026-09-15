@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Repositories.Sys;
@@ -16,7 +16,7 @@ public class AppCreator(
     IAppsAndZonesLoaderWithRaw appsAndZonesLoader,
     AppCachePurger appCachePurger,
     AppWorkQuick<AppInitializer> appInitGenerator)
-    : ServiceBase("Eav.AppBld", connect: [db, appInitGenerator, appCachePurger, appsAndZonesLoader])
+    : ServiceBase("Eav.AppBld")
 {
     #region Constructor / DI
 
@@ -55,7 +55,7 @@ public class AppCreator(
 
     private int ConfigureExistingDefaultApp(int inheritAppId)
     {
-        var l = Log.Fn<int>($"inherit:{inheritAppId}");
+        using var l = Log.Fn<int>($"inherit:{inheritAppId}");
         var dbStorage = db.New(new(_zoneId, null, inheritAppId));
         var appId = dbStorage.SqlDb.TsDynDataApps
             .Where(a => a.ZoneId == _zoneId && a.Name == KnownAppsConstants.DefaultAppGuid)
@@ -70,7 +70,7 @@ public class AppCreator(
 
     private int CreateInDb(string appGuid, int? inheritAppId)
     {
-        var l = Log.Fn<int>("create new app");
+        using var l = Log.Fn<int>("create new app");
 
         var app = db.New(new(_zoneId, null, inheritAppId))
             .App.AddAppAndSave(_zoneId, appGuid, inheritAppId);

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Save;
 
@@ -9,7 +9,7 @@ public class WorkEntityUpdate(
     DataAssembler dataAssembler,
     LazySvc<EntitySaver> entitySaverLazy,
     AppWorkChain<WorkEntitySave> workEntSave)
-    : ServiceWithSetup<IAppWorkContext>("AWk.EntUpd", connect: [dataAssembler, entitySaverLazy, workEntSave])
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntUpd")
 {
     /// <summary>
     /// Update an entity
@@ -38,7 +38,7 @@ public class WorkEntityUpdate(
     /// <param name="publishing">Optionally specify that it should be a draft change</param>
     internal bool UpdatePartsFromValues(IEntity orig, Dictionary<string, object?> values, EntitySavePublishing publishing)
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         var tempEnt = CreatePartialEntityOld(orig, values);
         if (tempEnt == null)
             return l.ReturnFalse("nothing to import");
@@ -55,7 +55,7 @@ public class WorkEntityUpdate(
     /// <param name="publishing">Optionally specify that it should be a draft change</param>
     private bool UpdatePartFromEntity(IEntity orig, IEntity? partialEntity, EntitySavePublishing? publishing)
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         if (partialEntity == null)
             return l.ReturnFalse("nothing to import");
 
@@ -77,7 +77,7 @@ public class WorkEntityUpdate(
 
     private Entity? CreatePartialEntityOld(IEntity orig, Dictionary<string, object?>? values)
     {
-        var l = Log.Fn<Entity>();
+        using var l = Log.Fn<Entity>();
         if (values == null || !values.Any())
             return l.ReturnNull("nothing to save");
 

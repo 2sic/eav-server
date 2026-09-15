@@ -14,7 +14,7 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
         IReadOnlyCollection<(IEntity Entity, int EntityId, Guid EntityGuid, string? ParentRef)> items,
         int metadataDepth = 0)
     {
-        var l = LogDetails.Fn<List<TsDynDataHistory>>(timer: true);
+        using var l = LogDetails.Fn<List<TsDynDataHistory>>(timer: true);
         if (items.Count == 0)
             return l.Return([]);
 
@@ -182,7 +182,7 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
     /// <param name="queue"></param>
     internal void Save(ICollection<TsDynDataHistory> queue)
     {
-        var l = LogDetails.Fn(timer: true);
+        using var l = LogDetails.Fn(timer: true);
         DbStore.DoAndSaveWithoutChangeDetection(
             () => DbStore.SqlDb.TsDynDataHistories.AddRange(queue)
         );

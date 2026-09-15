@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -24,11 +24,7 @@ public class LicenseControllerReal(
     LazySvc<IGlobalConfiguration> globalConfiguration,
     SystemFingerprint fingerprint,
     LazySvc<EavFeaturesLoader> featuresLoader)
-    : ServiceBase("Bck.Lics",
-        connect:
-        [
-            /*licenseServiceLazy, featuresLazy, licenseCatalog, */ globalConfiguration, fingerprint, featuresLoader
-        ]), ILicenseController
+    : ServiceBase("Bck.Lics"), ILicenseController
 {
     // auto-download license file
     private const string DefaultLicenseFileName = "default.license.json";
@@ -110,7 +106,7 @@ public class LicenseControllerReal(
     /// <exception cref="ArgumentException"></exception>
     public LicenseFileResultDto Upload(HttpUploadedFile uploadInfo)
     {
-        var l = Log.Fn<LicenseFileResultDto>();
+        using var l = Log.Fn<LicenseFileResultDto>();
         if (!uploadInfo.HasFiles())
             return l.ReturnAndLog(new() { Success = false, Message = "no file in upload" },
                 "no file in upload");
@@ -137,7 +133,7 @@ public class LicenseControllerReal(
     /// <inheritdoc />
     public LicenseFileResultDto Retrieve()
     {
-        var l = Log.Fn<LicenseFileResultDto>();
+        using var l = Log.Fn<LicenseFileResultDto>();
         var fingerprint1 = fingerprint.GetFingerprint();
         var url = $"{Aspect.PatronsUrl}/api/license/get?fingerprint={fingerprint1}&version={EavSystemInfo.Version.Major}";
         l.A($"retrieve license from url:{url}");
@@ -176,7 +172,7 @@ public class LicenseControllerReal(
 
     private bool SaveLicenseFile(string fileName, string content)
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         var filePath = Path.Combine(ConfigurationsPath, fileName);
 
         try

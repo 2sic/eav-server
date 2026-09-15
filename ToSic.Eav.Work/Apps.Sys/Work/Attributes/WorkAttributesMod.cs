@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Values;
@@ -19,15 +19,14 @@ public class WorkAttributesMod(
     Generator<IDataDeserializer> dataDeserializer,
     LazySvc<ISysFeaturesService> features,
     LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.AttMod",
-        connect: [fieldAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeChangeActions])
+    : ServiceWithSetup<IAppWorkContext>("Wrk.AttMod")
 {
 
     #region Add Field
 
     public int AddField(int contentTypeId, string staticName, string type, string inputType, int sortOrder, bool triggerPostSave = true)
     {
-        var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
+        using var l = Log.Fn<int>($"add field type#{contentTypeId}, name:{staticName}, type:{type}, input:{inputType}, order:{sortOrder}");
         var attDef = fieldAssembler.New(new())
             .Create(
                 appId: MyOptions.AppId,
@@ -55,7 +54,7 @@ public class WorkAttributesMod(
     /// </summary>
     private int AddFieldToDbAndInitGeneralMetadata(int contentTypeId, IContentTypeField attDef, string inputType)
     {
-        var l = Log.Fn<int>($"type:{contentTypeId}, input:{inputType}");
+        using var l = Log.Fn<int>($"type:{contentTypeId}, input:{inputType}");
         var newAttribute = MyOptions.DbStorage.Attributes.AddAttributeAndSave(contentTypeId, attDef);
 
         // set the nice name and input type, important for newly created attributes
@@ -66,7 +65,7 @@ public class WorkAttributesMod(
 
     private void InitializeNameAndInputType(string staticName, string inputType, int attributeId)
     {
-        var l = Log.Fn($"attrib:{attributeId}, name:{staticName}, input:{inputType}");
+        using var l = Log.Fn($"attrib:{attributeId}, name:{staticName}, input:{inputType}");
         // new: set the inputType - this is a bit tricky because it needs an attached entity of type @All to set the value to...
         var newValues = new Dictionary<string, object>
         {
@@ -85,7 +84,7 @@ public class WorkAttributesMod(
 
     public bool SetInputType(int attributeId, string inputType)
     {
-        var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
+        using var l = Log.Fn<bool>($"attrib:{attributeId}, input:{inputType}");
         // Capture content-type before mutation because this path only receives fieldDef id.
         var attribute = MyOptions.DbStorage.Attributes.GetTracked(attributeId)
                         ?? throw new ArgumentException($"Field with id {attributeId} does not exist.");
@@ -103,7 +102,7 @@ public class WorkAttributesMod(
 
     public bool Rename(int contentTypeId, int attributeId, string newName)
     {
-        var l = Log.Fn<bool>($"rename fieldDef type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
+        using var l = Log.Fn<bool>($"rename fieldDef type#{contentTypeId}, attrib:{attributeId}, name:{newName}");
         MyOptions.DbStorage.Attributes.RenameAttribute(attributeId, contentTypeId, newName);
         TriggerPostSaveForContentType(GetContentType(contentTypeId));
         return l.ReturnTrue();
@@ -111,7 +110,7 @@ public class WorkAttributesMod(
 
     public bool Reorder(int contentTypeId, string orderCsv)
     {
-        var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{orderCsv}");
+        using var l = Log.Fn<bool>($"reorder type#{contentTypeId}, order:{orderCsv}");
         var sortOrderList = orderCsv.CsvToArrayWithoutEmpty().Select(int.Parse).ToList();
         MyOptions.DbStorage.ContentType.SortAttributes(contentTypeId, sortOrderList);
         TriggerPostSaveForContentType(GetContentType(contentTypeId));
@@ -121,7 +120,7 @@ public class WorkAttributesMod(
 
     public bool Delete(int contentTypeId, int attributeId)
     {
-        var l = Log.Fn<bool>($"delete field type#{contentTypeId}, attrib:{attributeId}");
+        using var l = Log.Fn<bool>($"delete field type#{contentTypeId}, attrib:{attributeId}");
         var success = MyOptions.DbStorage.Attributes.RemoveAttributeAndAllValuesAndSave(attributeId);
         // Trigger only when delete succeeded; failed delete should not cause code regeneration.
         if (success)
@@ -136,7 +135,7 @@ public class WorkAttributesMod(
 
     public bool FieldShare(int attributeId, bool share, bool hide = false)
     {
-        var l = Log.Fn<bool>($"attributeId:{attributeId}, share:{share}, hide:{hide}");
+        using var l = Log.Fn<bool>($"attributeId:{attributeId}, share:{share}, hide:{hide}");
         var contentTypeId = 0;
 
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
@@ -173,7 +172,7 @@ public class WorkAttributesMod(
 
     public bool FieldInherit(int attributeId, Guid inheritMetadataOf, bool triggerPostSave = true)
     {
-        var l = Log.Fn<bool>($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
+        using var l = Log.Fn<bool>($"attributeId:{attributeId}, inheritMetadataOf:{inheritMetadataOf}");
         var contentTypeId = 0;
 
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
@@ -210,7 +209,7 @@ public class WorkAttributesMod(
 
     public bool AddInheritedField(int contentTypeId, string sourceType, Guid sourceField, string name)
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
 
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
             l.W("Setting up field share but feature is not enabled / licensed.");

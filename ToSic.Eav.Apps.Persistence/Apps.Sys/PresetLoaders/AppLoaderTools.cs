@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Apps.Sys.Loaders;
 
 namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 
@@ -11,8 +11,8 @@ namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 /// </summary>
 /// <param name="repoFactory"></param>
 internal class AppLoaderTools(Generator<IAppsAndZonesLoader> repoFactory)
-    : ServiceBase("Eav.LodTls", connect: [repoFactory]), IAppLoaderTools
+    : ServiceBase("Eav.LodTls"), IAppLoaderTools
 {
     public IAppsAndZonesLoader RepositoryLoader(ILog? parentLog)
-        => repoFactory.New().LinkLog(parentLog ?? Log);
+        => repoFactory.New();
 }

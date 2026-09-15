@@ -38,7 +38,7 @@ public class ExtensionManifestService() : ServiceBase("Ext.ManSvc")
     /// <returns>The deserialized <see cref="ExtensionManifest"/> or <c>null</c> if loading/parsing fails.</returns>
     public ExtensionManifest? LoadManifest(FileInfo manifestFile)
     {
-        var l = Log.Fn<ExtensionManifest?>($"file:'{manifestFile.Name}'");
+        using var l = Log.Fn<ExtensionManifest?>($"file:'{manifestFile.Name}'");
         try
         {
             // Read JSON content

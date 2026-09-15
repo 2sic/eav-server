@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.FileSystemState;
+using ToSic.Eav.Apps.Sys.FileSystemState;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Sys.InputTypes;
 using ToSic.Eav.Models;
@@ -13,7 +13,7 @@ public class WorkInputTypes(
     LazySvc<IAppReaderFactory> appReaders,
     Generator<IAppInputTypesLoader, AppFileSystemLoaderOptions> appFileSystemLoaderLazy,
     LazySvc<AppWorkContextService> ctxSvc)
-    : ServiceWithSetup<IAppWorkContext>("ApS.InpGet", connect: [appWorkCtxSvc, appReaders, appFileSystemLoaderLazy, ctxSvc])
+    : ServiceWithSetup<IAppWorkContext>("ApS.InpGet")
 {
     /// <summary>
     /// Retrieve a list of all input types known to the current system
@@ -21,7 +21,7 @@ public class WorkInputTypes(
     /// <returns></returns>
     public ICollection<InputTypeInfo> GetInputTypes()
     {
-        var l = Log.Fn<ICollection<InputTypeInfo>>();
+        using var l = Log.Fn<ICollection<InputTypeInfo>>();
 
         // Initial list is the global, file-system based types
         var globalDef = GetPresetInputTypesBasedOnContentTypes();
@@ -60,7 +60,7 @@ public class WorkInputTypes(
         // Inner helper to log each intermediate state
         void LogListOfInputTypes(string title, ICollection<InputTypeInfo> inputsToLog)
         {
-            var lInner = Log.Fn($"{title}, {inputsToLog.Count}");
+            using var lInner = Log.Fn($"{title}, {inputsToLog.Count}");
             try
             {
                 lInner.Done(string.Join(",", inputsToLog.Select(it => it.Type)));
@@ -134,7 +134,7 @@ public class WorkInputTypes(
     /// <returns></returns>
     private ICollection<InputTypeInfo> GetAppExtensionInputTypes()
     {
-        var l = Log.Fn<ICollection<InputTypeInfo>>();
+        using var l = Log.Fn<ICollection<InputTypeInfo>>();
         try
         {
             var appLoader = appFileSystemLoaderLazy.New(new(MyOptions.AppReader, new()));
@@ -156,7 +156,7 @@ public class WorkInputTypes(
     /// <returns></returns>
     private ICollection<InputTypeInfo> GetPresetInputTypesBasedOnContentTypes()
     {
-        var l = Log.Fn<ICollection<InputTypeInfo>>(timer: true);
+        using var l = Log.Fn<ICollection<InputTypeInfo>>(timer: true);
         if (_presetInpTypeCache != null)
             return l.Return(_presetInpTypeCache, $"cached {_presetInpTypeCache.Count}");
 

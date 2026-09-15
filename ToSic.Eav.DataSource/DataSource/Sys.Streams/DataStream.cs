@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource.Sys.Caching;
@@ -102,7 +102,7 @@ public class DataStream(
 
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", timer: true);
+        using var l = Log.Fn<IImmutableList<IEntity>>($"{nameof(Name)}:{Name}", timer: true);
         // Check if it's in the cache - and if yes, if it's still valid and should be re-used --> return if found
         if (!AutoCaching)
             return l.Return(ReadUnderlyingList(), $"read; no {nameof(AutoCaching)}");
@@ -130,7 +130,7 @@ public class DataStream(
     /// <returns></returns>
     private IImmutableList<IEntity> ReadUnderlyingList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         // try to use the built-in Entities-Delegate, but if not defined, use other delegate; just make sure we test both, to prevent infinite loops
 
         IImmutableList<IEntity> CreateErr(string title, string message, Exception? ex = default)

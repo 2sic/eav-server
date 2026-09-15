@@ -1,4 +1,4 @@
-﻿// Note: was replaced by #SysData DataSource AppEnhancements
+// Note: was replaced by #SysData DataSource AppEnhancements
 
 //using ToSic.Eav.Apps.Sys;
 //using ToSic.Eav.Apps.Sys.AppStack;
@@ -21,7 +21,7 @@
 //    LazySvc<IAppsCatalog> appCatalog,
 //    LazySvc<EntityApi> entityApi,
 //    LazySvc<MetadataControllerReal> metadataControllerReal)
-//    : Services_ServiceBase("Api.AppInternalsRl", connect: [context, ctApiLazy, appsCatalog, appCatalog, entityApi, metadataControllerReal]),
+//    : Services_ServiceBase("Api.AppInternalsRl"),
 //        IAppInternalsController
 //{
 //    public const string LogSuffix = "AppInternals";

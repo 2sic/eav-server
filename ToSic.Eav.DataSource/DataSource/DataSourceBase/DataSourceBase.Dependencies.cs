@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys.Caching;
+using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Configuration;
 
 namespace ToSic.Eav.DataSource;
@@ -24,5 +24,5 @@ partial class DataSourceBase
         LazySvc<DataSourceErrorHelper> ErrorHandler,
         ConfigurationDataLoader ConfigDataLoader,
         LazySvc<IDataSourceCacheService> CacheService)
-        : DependenciesBase(connect: [Configuration, ErrorHandler, ConfigDataLoader, CacheService]);
+        : DependenciesBase();
 }

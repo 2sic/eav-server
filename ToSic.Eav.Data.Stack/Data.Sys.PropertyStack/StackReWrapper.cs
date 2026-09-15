@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.EntityStack;
+using ToSic.Eav.Data.Sys.EntityStack;
 using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys.PropertyStack;
@@ -12,7 +12,7 @@ internal class StackReWrapper(StackAddress stackAddress, ILog? parentLog) : Help
 
     public PropReqResult ReWrapIfPossible(PropReqResult reqResult)
     {
-        var l = Log.Fn<PropReqResult>();
+        using var l = Log.Fn<PropReqResult>();
         var result = reqResult.Result;
 
         // Skip if not relevant
@@ -59,7 +59,7 @@ internal class StackReWrapper(StackAddress stackAddress, ILog? parentLog) : Help
         Func<TOriginal, StackAddress, TResult> factory
     ) where TOriginal : IPropertyLookup
     {
-        var l = Log.Fn<PropReqResult>();
+        using var l = Log.Fn<PropReqResult>();
         reqResult.ResultOriginal = reqResult.Result;
 
         var children = dicChildren.ToArray();

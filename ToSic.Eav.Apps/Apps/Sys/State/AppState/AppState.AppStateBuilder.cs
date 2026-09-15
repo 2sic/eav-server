@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Utils;
@@ -59,16 +59,16 @@ partial class AppState
         {
             var st = AppStateTyped;
             var msg = $"zone/app:{st.Show()} - Hash: {st.GetHashCode()}";
-            var l = Log.Fn($"{msg} {message}", timer: true);
-            var bl = _loggedLoadToBootLog ? null : BootLog.Log.Fn($"{msg} {message}", timer: true);
+            using var l = Log.Fn($"{msg} {message}", timer: true);
+            using var bl = _loggedLoadToBootLog ? null : BootLog.Log.Fn($"{msg} {message}", timer: true);
 
-            var lState = st.Log.Fn(message, timer: true);
+            using var lState = st.Log.Fn(message, timer: true);
             try
             {
                 // first set a lock, to ensure that only one update/load is running at the same time
                 lock (this)
                 {
-                    var lInLock = l.Fn($"loading: {st._loading} (app loading start in lock)");
+                    using var lInLock = l.Fn($"loading: {st._loading} (app loading start in lock)");
                         // only if loading is true will the AppState object accept changes
                         st._loading = true;
                         loader.Invoke(st);
@@ -113,7 +113,7 @@ partial class AppState
         public bool EnsureNameAndFolderInitialized(Func<(string? Name, string? Path)> getNameAndPath, bool useErrorNameIfNoValue)
         {
             var st = AppStateTyped;
-            var l = st.Log.Fn<bool>();
+            using var l = st.Log.Fn<bool>();
 
             // Before we do anything, check primary App
             // Otherwise other checks (like is name empty) will fail, because it's not empty
@@ -163,7 +163,7 @@ partial class AppState
 
         internal (string? Name, string? Path) LoadAppPathFromEntitiesList()
         {
-            var l = Log.Fn<(string?, string?)>("Trying to load Name/Folder from App package entity");
+            using var l = Log.Fn<(string?, string?)>("Trying to load Name/Folder from App package entity");
             // note: we sometimes have a (still unsolved) problem, that the AppConfig is generated multiple times
             // so the OfType().OrderBy() should ensure that we really only take the first=oldest one.
             var config = AppStateTyped.Entities.ImmutableList
@@ -188,7 +188,7 @@ partial class AppState
         private bool RemoveObsoleteDraft(IEntity newEntity, bool log)
         {
             var st = AppStateTyped;
-            var l = log ? st.Log.Fn<bool>() : null;
+            using var l = log ? st.Log.Fn<bool>() : null;
             var previous = st.Entities.Index.TryGetValue(newEntity.EntityId, out var prev)
                 ? prev
                 : null;
@@ -253,7 +253,7 @@ partial class AppState
         public void RemoveAllItems()
         {
             var st = AppStateTyped;
-            var l = Log.Fn($"for a#{st.AppId}");
+            using var l = Log.Fn($"for a#{st.AppId}");
             if (!st._loading)
                 throw new("trying to init metadata, but not in loading state. set that first!");
             st.Log.A("remove all items");
@@ -351,7 +351,7 @@ partial class AppState
         public void InitContentTypes(ICollection<IContentType> contentTypes)
         {
             var st = AppStateTyped;
-            var l = st.Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
+            using var l = st.Log.Fn($"contentTypes count: {contentTypes?.Count}", timer: true);
 
             if (!st._loading)
                 throw new("trying to set content-types, but not in loading state. set that first!");
@@ -382,7 +382,7 @@ partial class AppState
 
         private static IDictionary<string, IContentType> BuildCacheForTypesByName(IImmutableList<IContentType> allTypes, ILog log)
         {
-            var l = log.Fn<IDictionary<string, IContentType>>(message: $"build cache for type names for {allTypes.Count} items", timer: true);
+            using var l = log.Fn<IDictionary<string, IContentType>>(message: $"build cache for type names for {allTypes.Count} items", timer: true);
 
             var appTypesByName = new Dictionary<string, IContentType>(StringComparer.InvariantCultureIgnoreCase);
 

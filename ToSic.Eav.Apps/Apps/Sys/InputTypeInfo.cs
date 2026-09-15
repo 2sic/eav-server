@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.Sys.InputTypes;
 using ToSic.Eav.Metadata;
@@ -133,7 +133,7 @@ public record InputTypeInfo
         if (_configTypesDic != null)
             return _configTypesDic;
 
-        var l = log.Fn<IDictionary<string, bool>>();
+        using var l = log.Fn<IDictionary<string, bool>>();
 
         var newDic = NewDefaultConfigTypesDic();
 

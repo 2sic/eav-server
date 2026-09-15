@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Sys.Configuration;
 
 namespace ToSic.Sys.Capabilities.Features;
@@ -39,7 +39,7 @@ public class FeaturesIoHelper(IGlobalConfiguration globalConfiguration) : Servic
     /// </summary>
     internal bool Save(string fileContent)
     {
-        var l = Log.Fn<bool>($"fp={FeatureFilePath}");
+        using var l = Log.Fn<bool>($"fp={FeatureFilePath}");
         try
         {
             File.WriteAllText(FeatureFilePath, fileContent);

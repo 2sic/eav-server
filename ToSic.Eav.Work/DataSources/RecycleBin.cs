@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Work;
+using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
@@ -34,7 +34,7 @@ public class RecycleBin : CustomDataSource
     #endregion
 
     public RecycleBin(Dependencies services, AppWorkQuick<WorkEntityRecycleBin> recycleBin, FeaturesForDataSources featuresForDs)
-        : base(services, logName: "CDS.RecycleBin", connect: [recycleBin, featuresForDs])
+        : base(services, logName: "CDS.RecycleBin")
     {
         ProvideOutRaw(
             () => GetList(recycleBin).Entities,
@@ -61,7 +61,7 @@ public class RecycleBin : CustomDataSource
 
     private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) GetList(AppWorkQuick<WorkEntityRecycleBin> recycleBin)
     {
-        var l = Log.Fn<(IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes)>($"DateFrom:{DateFrom}, DateTo:{DateTo}, ContentType:{ContentType}");
+        using var l = Log.Fn<(IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes)>($"DateFrom:{DateFrom}, DateTo:{DateTo}, ContentType:{ContentType}");
 
         if (_cache.Entities != null)
             return l.Return(_cache, "from cache");

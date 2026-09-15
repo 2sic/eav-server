@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
@@ -41,7 +41,7 @@ public abstract class EavImportExportEnvironmentBase(ISite site, IAppsCatalog ap
 
     public SaveOptions SaveOptions(int zoneId)
     {
-        var l = Log.Fn<SaveOptions>($"{nameof(zoneId)}:{zoneId}");
+        using var l = Log.Fn<SaveOptions>($"{nameof(zoneId)}:{zoneId}");
 
         var langs = appsCatalog.Zone(zoneId).Languages;
         var opts = new SaveOptions

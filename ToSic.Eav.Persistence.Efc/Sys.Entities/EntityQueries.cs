@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Sys.Capabilities.Features;
 using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
 
@@ -17,7 +17,7 @@ internal class EntityQueries(EavDbContext db, ISysFeaturesService featuresSvc, I
     {
         var filterIds = entityIds.Length > 0;
         var filterByJsonType = filterJsonType != null;
-        var l = Log.Fn<IQueryable<TsDynDataEntity>>(
+        using var l = Log.Fn<IQueryable<TsDynDataEntity>>(
             $"app: {appId}, ids: {entityIds.Length}, filter: {filterIds}; {nameof(filterJsonType)}: '{filterJsonType}'",
             timer: true);
 
@@ -43,7 +43,7 @@ internal class EntityQueries(EavDbContext db, ISysFeaturesService featuresSvc, I
 
     public IQueryable<TsDynDataEntity> EntitiesOfAdditionalDrafts(int[] publishIds)
     {
-        var l = Log.Fn<IQueryable<TsDynDataEntity>>(timer: true);
+        using var l = Log.Fn<IQueryable<TsDynDataEntity>>(timer: true);
 
         var relatedIds = db.TsDynDataEntities
             .AsNoTrackingOptional(featuresSvc)

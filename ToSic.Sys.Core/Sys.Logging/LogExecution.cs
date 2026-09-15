@@ -21,6 +21,9 @@ public static class LogExecution
         }
     }
 
+    /// <summary>True while the current async flow is already owned by an admitted execution.</summary>
+    public static bool HasActiveExecution => CurrentExecutionId != null;
+
     public const string ActivitySourceName = MicrosoftLoggerEventSink.Category;
     public const string ActivitySourceVersion = ToSic.Sys.Assembly.SharedAssemblyInfo.AssemblyVersion;
 
@@ -44,7 +47,7 @@ public static class LogExecution
     public static IDisposable? BeginExecution(this ILogger logger, LogStoreEntry? entry, ActivitySource source,
         string operation, int? siteId = null, int? pageId = null, int? moduleId = null, int? appId = null)
         => BeginExecution(logger, entry?.Log,
-            LogEventBridge.UsesExecutionContext ? entry?.ExecutionId : null, source, operation,
+            entry?.ExecutionId, source, operation,
             siteId, pageId, moduleId, appId);
 
     private static IDisposable? BeginExecution(ILogger logger, ILog? log, string? executionId, ActivitySource source,
@@ -52,8 +55,6 @@ public static class LogExecution
     {
         if (log.GetRealLog() is not Log root)
             return null;
-        while (!LogEventBridge.UsesExecutionContext && root.Parent is Log parent)
-            root = parent;
         executionId ??= root.LogId;
 
         var properties = new Dictionary<string, object>

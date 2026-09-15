@@ -1,4 +1,4 @@
-﻿
+
 
 using ToSic.Eav.DataSource.Sys;
 
@@ -66,7 +66,7 @@ public sealed class StreamPick : DataSourceBase
 
     private IImmutableList<IEntity> StreamPickList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
         var name = StreamName;
         l.A($"StreamName to Look for: '{name}'");

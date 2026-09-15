@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.EntityPair;
@@ -62,7 +62,7 @@ internal class RawRelationshipsConvertHelper(AttributeAssembler attributeAssembl
     /// <param name="lazyRelationships"></param>
     internal void AddRelationshipsToLookup(IList<EntityPair<IRawEntity>> list, LazyLookup<object, IEntity> lazyRelationships)
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
         
         var itemsWithKeys = list
             .Select(pair =>

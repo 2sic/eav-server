@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
@@ -110,7 +110,7 @@ public class DataTable : CustomDataSourceAdvanced
 
     private IImmutableList<IEntity> GetEntities()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         l.A($"get type:{ContentType}, id:{EntityIdField}, title:{TitleField}, modified:{ModifiedField}");
@@ -123,7 +123,7 @@ public class DataTable : CustomDataSourceAdvanced
     /// </summary>
     private IImmutableList<IEntity> ConvertToEntityDictionary(SqlDataTable source, string contentType, string entityIdField, string titleField, string? modifiedField = null)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         // Validate Columns
         if (!source.Columns.Contains(entityIdField))
             throw new($"DataTable doesn't contain an EntityId Column with Name \"{entityIdField}\"");

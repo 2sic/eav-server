@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.ImportHelpers;
 using ToSic.Eav.ImportExport.Sys.XmlImport;
@@ -23,7 +23,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         Generator<XmlImportWithFiles> XmlImpExpFiles,
         AppCachePurger AppCachePurger,
         IAppsCatalog AppsCatalog)
-        : DependenciesBase(connect: [FileManagerGenerator, Environment, XmlImpExpFiles, AppCachePurger, AppsCatalog]);
+        : DependenciesBase();
 
 
     public ZipImport Init(int zoneId, int? appId, bool allowCode)
@@ -57,7 +57,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
 
     private bool ImportZipInternal(string temporaryDirectory, string? newName = null, Stream? zipStream = null, string? zipPath = null, int? inheritAppId = null)
     {
-        var l = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(newName)}:{newName}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
+        using var l = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(newName)}:{newName}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
         Exception? finalException = null;
 
         try
@@ -136,7 +136,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     /// <param name="inheritAppId">optional inherit appId</param>
     public bool ImportApp(string? reName, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
     {
-        var l = Log.Fn<bool>($"{nameof(reName)}:'{reName}', {nameof(appDirectory)}:'{appDirectory}', ...");
+        using var l = Log.Fn<bool>($"{nameof(reName)}:'{reName}', {nameof(appDirectory)}:'{appDirectory}', ...");
         try
         {
             // migrate old app.xml and 2sexy/.data/app.xml to 2sexy/App_Data
@@ -157,7 +157,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
 
     private void ImportAppXmlAndFiles(string? reName, string appDirectory, List<Message> importMessages, bool pendingApp, int? inheritAppId = null)
     {
-        var l = Log.Fn($"{nameof(reName)}:'{reName}' {nameof(appDirectory)}:'{appDirectory}', ...");
+        using var l = Log.Fn($"{nameof(reName)}:'{reName}' {nameof(appDirectory)}:'{appDirectory}', ...");
 
         int appId;
         var importer = Services.XmlImpExpFiles.New().Init(null, false);
@@ -256,7 +256,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     /// <remarks>The zip file still uses the old "2sexy" folder name instead of "2sxc"</remarks>
     private void CopyAppFiles(List<Message> importMessages, int appId, string tempFolder)
     {
-        var l = Log.Fn($"..., {appId}, {tempFolder}");
+        using var l = Log.Fn($"..., {appId}, {tempFolder}");
         var templateRoot = Services.Environment.TemplatesRoot(_zoneId, appId);
         var appTemplateRoot = Path.Combine(tempFolder, FolderConstants.ZipFolderForAppStuff);
         if (Directory.Exists(appTemplateRoot))
@@ -275,7 +275,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     /// <remarks>The zip file still uses the "2sexyGlobal" folder name instead of "2sxcGlobal"</remarks>
     public void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder, bool deleteGlobalTemplates = false, bool overwriteFiles = false)
     {
-        var l = Log.Fn($"..., {appId}, {tempFolder}, {deleteGlobalTemplates}, {overwriteFiles}");
+        using var l = Log.Fn($"..., {appId}, {tempFolder}, {deleteGlobalTemplates}, {overwriteFiles}");
         var globalTemplatesRoot = Services.Environment.GlobalTemplatesRoot(_zoneId, appId);
         var appTemplateRoot = Path.Combine(tempFolder, FolderConstants.ZipFolderForGlobalAppStuff);
         if (Directory.Exists(appTemplateRoot))
@@ -293,7 +293,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
 
     private void HandlePortalFilesFolder(string appDirectory, bool pendingApp)
     {
-        var l = Log.Fn($"{nameof(appDirectory)}:'{appDirectory}', {nameof(pendingApp)}:{pendingApp}");
+        using var l = Log.Fn($"{nameof(appDirectory)}:'{appDirectory}', {nameof(pendingApp)}:{pendingApp}");
         // Handle PortalFiles/SiteFiles folder
         var portalTempRoot = pendingApp
             ? Path.Combine(appDirectory, FolderConstants.DataFolderProtected, FolderConstants.ZipFolderForSiteFiles)

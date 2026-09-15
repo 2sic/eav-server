@@ -43,7 +43,7 @@ public class RawFromAnonymousHelper(ILog parentLog) : HelperBase(parentLog, "Raw
 
     public IRawEntity Convert(object? original)
     {
-        var l = Log.Fn<IRawEntity>();
+        using var l = Log.Fn<IRawEntity>();
 
         var basic = ConvertBasics(original);
 
@@ -70,7 +70,7 @@ public class RawFromAnonymousHelper(ILog parentLog) : HelperBase(parentLog, "Raw
     /// <returns>A tuple containing the remaining values and the list of relationship keys.</returns>
     internal (IDictionary<string, object?> values, IList<object> relationshipKeys) ExtractRelationshipKeys(int id, IDictionary<string, object?> dic)
     {
-        var l = Log.Fn<(IDictionary<string, object?> values, IList<object> relationshipKeys)>($"{id}");
+        using var l = Log.Fn<(IDictionary<string, object?> values, IList<object> relationshipKeys)>($"{id}");
 
         const string relKeysField = nameof(IRelationshipKeys.RelationshipKeys);
 
@@ -106,7 +106,7 @@ public class RawFromAnonymousHelper(ILog parentLog) : HelperBase(parentLog, "Raw
     /// <returns>A dictionary with strongly typed relationships.</returns>
     internal IDictionary<string, object?> StrongTypeRelationships(IDictionary<string, object?> dic)
     {
-        var l = Log.Fn<IDictionary<string, object?>>();
+        using var l = Log.Fn<IDictionary<string, object?>>();
         var replacements = ExtractRelationships(dic);
         if (replacements.Count == 0)
             return l.Return(dic, "no relationships");
@@ -126,7 +126,7 @@ public class RawFromAnonymousHelper(ILog parentLog) : HelperBase(parentLog, "Raw
     /// <returns>A dictionary of typed relationships.</returns>
     internal IDictionary<string, RawRelationship> ExtractRelationships(IDictionary<string, object?> dic)
     {
-        var l = Log.Fn<IDictionary<string, RawRelationship>>();
+        using var l = Log.Fn<IDictionary<string, RawRelationship>>();
 
         // Scan relationships in values dictionary
         var replacements = dic

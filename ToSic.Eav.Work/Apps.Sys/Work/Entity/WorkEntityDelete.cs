@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Sys.Utils;
@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntDel", connect: [stateBuilder])
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntDel")
 {
     //public bool Delete(Guid guid, bool force = false)
     //{
@@ -21,7 +21,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     
     public bool Delete(IEnumerable<Guid> guids, bool force = false)
     {
-        var l = Log.Fn<bool>($"delete guid:{guids}");
+        using var l = Log.Fn<bool>($"delete guid:{guids}");
         // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
         var idToDelete = guids
             .Select(guid => MyOptions.DbStorage.Entities.GetStandaloneDbEntityStub(guid, preferUntracked: true).EntityId)
@@ -52,7 +52,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     /// <exception cref="Exception"></exception>
     public bool Delete(int[] ids, string? contentType = null, bool force = false, bool skipIfCant = false, int? parentId = null, string? parentField = null) 
     {
-        var l = Log.Fn<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true);
+        using var l = Log.Fn<bool>($"delete id:{ids.Length}, type:{contentType}, force:{force}", timer: true);
         // do optional type-check and if necessary, throw error
         BatchCheckTypesMatch(ids, contentType);
 
@@ -90,7 +90,7 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
 
     private void SaveEntityHistoryWithInboundParents(DbStorage db, IReadOnlyCollection<int> entityIds)
     {
-        var l = Log.Fn(timer: true);
+        using var l = Log.Fn(timer: true);
         if (entityIds.Count == 0)
             return;
 

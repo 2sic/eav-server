@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Sys.Xml;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -11,7 +11,7 @@ partial class XmlImportWithFiles
 {
     public string? IsCompatible(XDocument doc, bool skipSxcVersionCheck)
     {
-        var l = Log.Fn<string>();
+        using var l = Log.Fn<string>();
         var rootNodeList = doc.Elements(XmlConstants.RootNode);
         var rootNode = doc.Element(XmlConstants.RootNode);
         // Return if no Root Node "SexyContent"
@@ -46,7 +46,7 @@ partial class XmlImportWithFiles
 
     private bool IsCompatibleSingleVersion(XElement rootNode, string versionNodeName, Version currentVersion, string versionInfo)
     {
-        var l = Log.Fn<bool>($"version to check: {versionInfo}");
+        using var l = Log.Fn<bool>($"version to check: {versionInfo}");
         // Return if Version does not match
         var hasNoMinEnvVersionInXml = rootNode
             .Attributes()

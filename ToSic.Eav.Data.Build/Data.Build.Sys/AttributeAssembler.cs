@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys.Attributes;
 
 namespace ToSic.Eav.Data.Build.Sys;
@@ -15,7 +15,7 @@ public class AttributeAssembler(
     Generator<ValueAssembler, DataAssemblerOptions> valAss,
     Generator<ValueListAssembler, DataAssemblerOptions> valListAss
 )
-    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld", connect: [langAss, valAss, valListAss])
+    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld")
 {
     protected override DataAssemblerOptions GetDefaultOptions() => new();
 
@@ -79,7 +79,7 @@ public class AttributeAssembler(
         bool languageReadOnly = false
     )
     {
-        var l = Log.IfDetails(MyOptions.LogSettings).Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
+        using var l = Log.IfDetails(MyOptions.LogSettings).Fn<IAttribute>($"name:{name}, value:{value}, type:{type}, lang:{language}");
         var valueLanguages = Languages.GetBestValueLanguages(language, languageReadOnly);
 
         var valueWithLanguages = Values.Create(type, value, valueLanguages.ToImmutableOpt());

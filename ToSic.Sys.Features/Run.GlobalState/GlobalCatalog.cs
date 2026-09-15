@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 
 namespace ToSic.Sys.Run.GlobalState;
@@ -51,7 +51,7 @@ public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect 
     /// <param name="items"></param>
     public void Register(params T?[] items)
     {
-        var l = Log.Fn($"Will add {items.Length} items");
+        using var l = Log.Fn($"Will add {items.Length} items");
         // add all features if it doesn't yet exist, otherwise update
         foreach (var f in items)
             if (f != null)

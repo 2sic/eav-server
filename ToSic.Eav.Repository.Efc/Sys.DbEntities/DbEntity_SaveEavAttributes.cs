@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Dimensions;
+using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Data.Sys.Save;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
@@ -12,7 +12,7 @@ partial class DbEntity
     /// <param name="entityId"></param>
     private bool ClearValuesInDbUntracked(int entityId)
     {
-        var l = LogDetails.Fn<bool>(timer: true);
+        using var l = LogDetails.Fn<bool>(timer: true);
         var val = DbStore.SqlDb.TsDynDataValues
             .Include(v => v.TsDynDataValueDimensions)
             .Where(v => v.EntityId == entityId)
@@ -45,12 +45,12 @@ partial class DbEntity
         List<DimensionDefinition> zoneLangs,
         bool logDetails)
     {
-        var lMain = LogDetails.Fn<ICollection<TsDynDataValue>>($"id:{newEnt.EntityId}", timer: true);
+        using var lMain = LogDetails.Fn<ICollection<TsDynDataValue>>($"id:{newEnt.EntityId}", timer: true);
 
         var listOfChanges = newEnt.Attributes.Values
             .SelectMany(value =>
             {
-                var l = lMain.Fn<TsDynDataValue>($"InnerAttribute:{value.Name}");
+                using var l = lMain.Fn<TsDynDataValue>($"InnerAttribute:{value.Name}");
 
                 // find attribute definition
                 var attribDef = dbAttributes
@@ -126,7 +126,7 @@ partial class DbEntity
 
     internal void SaveAttributeChanges(ICollection<TsDynDataValue> changes)
     {
-        var l = LogSummary.Fn($"Attributes: {changes.Count}", timer: true);
+        using var l = LogSummary.Fn($"Attributes: {changes.Count}", timer: true);
         DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.TsDynDataValues.AddRange(changes));
         l.Done();
     }

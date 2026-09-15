@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys.PropertyStack;
 
@@ -26,7 +26,7 @@ partial class PropertyStack
     public static PropReqResult TraversePath(PropReqSpecs specs, PropertyLookupPath path,
         IPropertyLookup initialSource, string? prefixToIgnore = null)
     {
-        var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
+        using var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
         var fields = SplitPathIntoParts(specs.Field, prefixToIgnore);
         PropReqResult? result = null;
         var currentSource = initialSource;

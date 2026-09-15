@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.Metadata;
 
@@ -32,7 +32,7 @@ public class MetadataTargetTypes : CustomDataSource
 
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
 
         var publicTargetTypes = Enum
             .GetValues(typeof(TargetTypes))

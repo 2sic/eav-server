@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Repository.Efc.Sys.DbParts;
+using ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 
@@ -19,7 +19,7 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
 
     private List<TsDynDataContentType> GetDbContentTypesUntracked(int appId, string name, bool alsoCheckNiceName = false)
     {
-        var l = LogSummary.Fn<List<TsDynDataContentType>>($"{nameof(appId)}: {appId}; {nameof(name)}: {name}; {nameof(alsoCheckNiceName)}: {alsoCheckNiceName}");
+        using var l = LogSummary.Fn<List<TsDynDataContentType>>($"{nameof(appId)}: {appId}; {nameof(name)}: {name}; {nameof(alsoCheckNiceName)}: {alsoCheckNiceName}");
         var byStaticName = GetDbContentTypeWithAttributesUntracked(appId)
             .Where(s => s.StaticName == name)
             .ToList();
@@ -36,7 +36,7 @@ internal class DbContentTypes(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttSe
 
     internal int GetDbContentTypeId(string name)
     {
-        var l = LogDetails.Fn<int>($"{nameof(name)}: {name}");
+        using var l = LogDetails.Fn<int>($"{nameof(name)}: {name}");
         try
         {
             var preparedError = $"too many or too few content types found for the content-type '{name}'.";

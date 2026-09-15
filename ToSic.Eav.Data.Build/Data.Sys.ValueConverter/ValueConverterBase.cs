@@ -1,11 +1,11 @@
-﻿namespace ToSic.Eav.Data.Sys.ValueConverter;
+namespace ToSic.Eav.Data.Sys.ValueConverter;
 
 /// <summary>
 /// Trivial value converter - doesn't convert anything.
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class ValueConverterBase(string logName, object[]? connect = null) : ServiceBase(logName, connect: connect), IValueConverter
+public abstract class ValueConverterBase(string logName, object[]? connect = null) : ServiceBase(logName), IValueConverter
 {
     public const string PrefixPage = "page";
     public const string PrefixFile = "file";

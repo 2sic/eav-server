@@ -60,8 +60,6 @@ internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataAssembler da
             //new Process6Versioning(),
         ];
 
-        foreach (var process in processors)
-            process.LinkLog(Services.LogDetails);
         return processors;
     }
     private List<IEntityProcess> GetStandardProcessBatch2()
@@ -73,8 +71,6 @@ internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataAssembler da
             new Process6Versioning(),
         ];
 
-        foreach (var process in processors)
-            process.LinkLog(Services.LogDetails);
         return processors;
     }
 }

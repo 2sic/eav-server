@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context;
 using ToSic.Eav.Environment.Sys.ServerPaths;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Configuration;
@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.Sys.Paths;
 ///   But that is a bit difficult, because there are also some services like the IPage which should be shared across modules
 /// </remarks>
 internal class AppPathsMicroSvc(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config, LazySvc<ISite> siteLazy)
-    : ServiceBase($"{EavLogs.Eav}.AppPth", connect: [serverPaths, config]), IAppPathsMicroSvc
+    : ServiceBase($"{EavLogs.Eav}.AppPth"), IAppPathsMicroSvc
 {
     public IAppPaths Get(IAppReader appReader)
         => new AppPaths(serverPaths, config, siteLazy, null, appReader);

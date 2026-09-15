@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.EntityPair;
+using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
@@ -19,7 +19,7 @@ partial class DbEntity
         //var useNewSave = DbContext.Features.IsEnabled(BuiltInFeatures.DataImportParallel);
         var useParallel = DbStore.Features.IsEnabled(BuiltInFeatures.DatabaseWriteOptimized);
 
-        var l = LogSummary.Fn<List<EntityIdentity>>($"count:{entityOptionPairs.Count}; Optimized: {useParallel}");
+        using var l = LogSummary.Fn<List<EntityIdentity>>($"count:{entityOptionPairs.Count}; Optimized: {useParallel}");
 
         if (entityOptionPairs.Count == 0)
             return l.Return([], "Entities to save are empty, skip");
@@ -42,7 +42,7 @@ partial class DbEntity
     /// <returns></returns>
     internal List<EntityIdentity> SaveEntitiesParallel(SaveEntityProcess saveProcess, ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = LogSummary.Fn<List<EntityIdentity>>();
+        using var l = LogSummary.Fn<List<EntityIdentity>>();
 
         var data = entityOptionPairs
             .Select((eop, i) => EntityProcessData.CreateInstance(eop, i < DbConstant.MaxToLogDetails))
@@ -72,7 +72,7 @@ partial class DbEntity
     /// <returns></returns>
     internal List<EntityIdentity> SaveEntitiesSerialNew(SaveEntityProcess saveProcess, ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = LogSummary.Fn<List<EntityIdentity>>();
+        using var l = LogSummary.Fn<List<EntityIdentity>>();
         var ids = new List<EntityIdentity>();
         var idx = 0;
 
@@ -113,7 +113,7 @@ partial class DbEntity
     /// <returns></returns>
     internal List<EntityIdentity> SaveEntitiesSerialOld(SaveEntityProcess saveProcess, ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = LogSummary.Fn<List<EntityIdentity>>();
+        using var l = LogSummary.Fn<List<EntityIdentity>>();
         var ids = new List<EntityIdentity>();
         var idx = 0;
 

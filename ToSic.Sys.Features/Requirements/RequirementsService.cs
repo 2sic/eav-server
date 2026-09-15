@@ -1,16 +1,16 @@
-﻿using ToSic.Sys.Capabilities.Aspects;
+using ToSic.Sys.Capabilities.Aspects;
 
 namespace ToSic.Sys.Requirements;
 
 /// <inheritdoc cref="IRequirementsService"/>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal sealed class RequirementsService(Generator<IRequirementCheck> checkGenerator)
-    : ServiceBase("Lib.ReqSvc", connect: [checkGenerator]), IRequirementsService
+    : ServiceBase("Lib.ReqSvc"), IRequirementsService
 {
     /// <inheritdoc/>
     public IEnumerable<RequirementStatus> Status(IEnumerable<IHasRequirements> withRequirements)
     {
-        var l = Log.Fn<IEnumerable<RequirementStatus>>();
+        using var l = Log.Fn<IEnumerable<RequirementStatus>>();
 
         var list = Status(withRequirements.SelectMany(r => r.Requirements))
             .ToListOpt();

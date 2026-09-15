@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource;
@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
-    : ServiceWithSetup<IAppWorkContext>("ApS.EnRead", connect: [dataSourceFactory])
+    : ServiceWithSetup<IAppWorkContext>("ApS.EnRead")
 {
     /// <summary>
     /// All entities in the app - this also includes system entities like data-source configuration etc.
@@ -28,7 +28,7 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     /// </summary>
     public IEnumerable<IEntity> OnlyContent(bool withConfiguration)
     {
-        var l = Log.Fn<IEnumerable<IEntity>>();
+        using var l = Log.Fn<IEnumerable<IEntity>>();
         var scopes = withConfiguration
             ? [ScopeConstants.Default, ScopeConstants.SystemConfiguration]
             : new[] { ScopeConstants.Default };
@@ -73,7 +73,7 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
 
     public IEnumerable<IEntity> GetWithParentAppsExperimental(string contentTypeName)
     {
-        var l = Log.Fn<IEnumerable<IEntity>>($"{nameof(contentTypeName)}: {contentTypeName}");
+        using var l = Log.Fn<IEnumerable<IEntity>>($"{nameof(contentTypeName)}: {contentTypeName}");
         var appWithParents = dataSourceFactory.Value.Create<AppWithParents>(DataSourceOptions.OfDataSource(MyOptions.Data));
 
         return l.Return(Get(appWithParents, contentTypeName));

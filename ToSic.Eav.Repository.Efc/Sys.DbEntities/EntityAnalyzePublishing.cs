@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 
@@ -21,7 +21,7 @@ internal class EntityAnalyzePublishing(DbStorage.DbStorage dbStorage, DataAssemb
     internal (int? ExistingDraftId, bool HasDraft, IEntity Entity) GetDraftAndCorrectIdAndBranching(IEntity newEnt,
         SaveOptions so, bool logDetails)
     {
-        var l = Log.Fn<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true);
+        using var l = Log.Fn<(int?, bool, IEntity)>($"entity:{newEnt.EntityId}", timer: true);
 
         // If ID == 0, it's new, so only continue, if we were given an EntityId
         if (newEnt.EntityId <= 0)

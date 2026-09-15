@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Utils;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys;
 
@@ -11,7 +11,7 @@ public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appRea
     /// </summary>
     public int FindAppId(int zoneId, string? appName, bool alsoCheckFolderName = false) 
     {
-        var l = Log.Fn<int>($"{nameof(zoneId)}:{zoneId}, {nameof(appName)}:{appName}, {nameof(alsoCheckFolderName)}:{alsoCheckFolderName}");
+        using var l = Log.Fn<int>($"{nameof(zoneId)}:{zoneId}, {nameof(appName)}:{appName}, {nameof(alsoCheckFolderName)}:{alsoCheckFolderName}");
         try
         {
             if (appName.IsEmptyOrWs())
@@ -41,7 +41,7 @@ public sealed class AppFinder(IAppsCatalog appsCatalog, IAppReaderFactory appRea
     /// </summary>
     public int AppIdFromFolderName(int zoneId, string folderName)
     {
-        var l = Log.Fn<int>($"{nameof(zoneId)}: {zoneId}; {nameof(folderName)}: {folderName}");
+        using var l = Log.Fn<int>($"{nameof(zoneId)}: {zoneId}; {nameof(folderName)}: {folderName}");
         try
         {
             foreach (var p in appsCatalog.Apps(zoneId))

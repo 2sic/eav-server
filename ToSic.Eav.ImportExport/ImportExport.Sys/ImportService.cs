@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.LogSettings;
+using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
@@ -23,7 +23,7 @@ public class ImportService(
     DataAssembler dataAssembler,
     ContentTypeAssemblyKit ctAssemblyKit,
     DataImportLogSettings logSettings)
-    : ServiceBase("Eav.Import", connect: [storageFactory, importExportEnvironment, entitySaverLazy, dataAssembler, ctAssemblyKit, logSettings])
+    : ServiceBase("Eav.Import")
 {
     #region Detailed Logging
 
@@ -83,7 +83,7 @@ public class ImportService(
     /// </summary>
     public void ImportIntoDb(IList<IContentType> newTypes, IList<Entity> newEntities) 
     {
-        var l = LogSummary.Fn($"types: {newTypes.Count}; entities: {newEntities.Count}", timer: true);
+        using var l = LogSummary.Fn($"types: {newTypes.Count}; entities: {newEntities.Count}", timer: true);
         Storage.DoWithDelayedCacheInvalidation(() =>
         {
             #region import Content-Types if any were included but rollback transaction if necessary
@@ -114,7 +114,7 @@ public class ImportService(
                             .ToList();
                     });
 
-                    var lInner = l.Fn(message: "Import Types in non-Sys scopes", timer: true);
+                    using var lInner = l.Fn(message: "Import Types in non-Sys scopes", timer: true);
                     if (nonSysTypes.Any())
                     {
                         // now reload the app state as it has new content-types
@@ -185,7 +185,7 @@ public class ImportService(
 
     private void MergeAndSaveContentTypes(IAppReader appReader, List<IContentType> contentTypes)
     {
-        var l = LogSummary.Fn(timer: true);
+        using var l = LogSummary.Fn(timer: true);
         // Here's the problem! #badmergeofmetadata
         var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appReader, type));
         var so = importExportEnvironment.SaveOptions(_zoneId) with
@@ -206,7 +206,7 @@ public class ImportService(
 
     private IContentType MergeContentTypeUpdateWithExisting(IAppReader appReader, IContentType contentType)
     {
-        var l = LogDetails.Fn<IContentType>();
+        using var l = LogDetails.Fn<IContentType>();
 
         l.A("New CT, must reset attributes");
 
@@ -285,7 +285,7 @@ public class ImportService(
     private IEntityPair<SaveOptions>? CreateMergedForSaving<T>(IEntity update, T appState, SaveOptions saveOptions)
         where T : IAppReadEntities, IAppReadContentTypes
     {
-        var l = LogDetails.Fn<IEntityPair<SaveOptions>>();
+        using var l = LogDetails.Fn<IEntityPair<SaveOptions>>();
         _mergeCountToStopLogging++;
         var logDetails = LogSettings.Details && _mergeCountToStopLogging <= LogMaxMerges;
         if (_mergeCountToStopLogging == LogMaxMerges)

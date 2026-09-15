@@ -39,18 +39,18 @@ public class InsightsLoggerProviderTests
     }
 
     [Theory]
-    [InlineData("ILogger", false)]
-    [InlineData("Compare", true)]
-    public void Configure_KeepsRejectionVisible_UntilValidConfiguration(string mode, bool bridgeEnabled)
+    [InlineData("Legacy")]
+    [InlineData("ILogger")]
+    [InlineData("Compare")]
+    [InlineData("invalid")]
+    public void Configure_ReportsObsoleteSelection_WithoutChangingTheStore(string obsoleteStore)
     {
         var store = new LogStoreLive();
 
-        var diagnostic = store.Configure(mode, bridgeEnabled);
+        var diagnostic = store.Configure(obsoleteStore);
 
-        Equal(LogStoreMode.Legacy, store.Mode);
-        Equal(diagnostic, store.Status);
-        store.Configure("Legacy", bridgeEnabled: false);
-        Equal("Legacy store", store.Status);
+        Contains($"{LogStoreLive.StoreConfigurationKey}={obsoleteStore} is obsolete", diagnostic);
+        Contains("ILogger store", store.Status);
     }
 
     [Fact]
@@ -68,18 +68,14 @@ public class InsightsLoggerProviderTests
     }
 
     [Fact]
-    public void StoreLogger_DisablesWrites_InLegacyMode()
+    public void StoreLogger_IsAlwaysEnabledForLocalCapture()
     {
         var memory = new InsightsLogStore();
         var provider = new InsightsLoggerProvider(memory);
         var store = new LogStoreLive(memory, provider);
         var logger = provider.CreateLogger("Test.Native");
 
-        store.Configure("ILogger", bridgeEnabled: true);
         True(logger.IsEnabled(LogLevel.Information));
-
-        store.Configure("Legacy", bridgeEnabled: true);
-        False(logger.IsEnabled(LogLevel.Information));
         False(logger.IsEnabled(LogLevel.None));
     }
 
@@ -95,7 +91,7 @@ public class InsightsLoggerProviderTests
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
         try
         {
-            Equal("ILogger", store.Configure("ILogger", bridgeEnabled: true).Split(' ')[0]);
+            Contains("ILogger store", store.Configure(null));
             var log = new Log("Tst.Store");
             var handle = store.Add("module", log)!;
             var outer = log.Fn(message: "outer", timer: true);
@@ -121,16 +117,12 @@ public class InsightsLoggerProviderTests
         }
     }
 
-    [Theory]
-    [InlineData(LogStoreMode.Legacy)]
-    [InlineData(LogStoreMode.ILogger)]
-    public void Snapshot_PreservesTreeResultsAndTimings_InEachStartupMode(LogStoreMode mode)
+    [Fact]
+    public void Snapshot_PreservesTreeResultsAndTimings()
     {
-        using var ctx = new LogExecutionTestContext(mode);
+        using var ctx = new LogExecutionTestContext();
         var root = ctx.Admit("Parity");
-        using var execution = mode == LogStoreMode.ILogger
-            ? ctx.Logger.BeginExecution(root, ctx.Source, "parity")
-            : null;
+        using var execution = ctx.Logger.BeginExecution(root, ctx.Source, "parity");
         using var outer = root.Fn(message: "outer", timer: true)!;
         outer.A("root entry");
         var child = new Log("Tst.Child", outer);
@@ -159,7 +151,7 @@ public class InsightsLoggerProviderTests
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
         try
         {
-            store.Configure("ILogger", bridgeEnabled: true);
+            store.Configure(null);
             var log = new Log("Tst.Late");
             False(memory.Knows(log.LogId, []));
             log.A("before admission");
@@ -197,7 +189,7 @@ public class InsightsLoggerProviderTests
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
         try
         {
-            store.Configure("ILogger", bridgeEnabled: true);
+            store.Configure(null);
             var log = new Log("Tst.Error");
             var exception = Throws<InvalidOperationException>((Action)(() =>
                 throw new InvalidOperationException("before admission")));
@@ -227,7 +219,7 @@ public class InsightsLoggerProviderTests
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
         try
         {
-            store.Configure("ILogger", bridgeEnabled: true);
+            store.Configure(null);
             var root = new Log("Tst.Root");
             store.Add("module", root);
             var call = root.Fn(message: "parent");
@@ -276,7 +268,7 @@ public class InsightsLoggerProviderTests
         ActivitySource.AddActivityListener(listener);
         try
         {
-            store.Configure("ILogger", bridgeEnabled: true);
+            store.Configure(null);
             var rootA = new Log("Tst.RootA");
             var rootB = new Log("Tst.RootB");
             store.Add("scope", rootA);
@@ -330,7 +322,7 @@ public class InsightsLoggerProviderTests
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
         try
         {
-            store.Configure("ILogger", bridgeEnabled: true);
+            store.Configure(null);
             var root = new Log("Tst.Cancelled");
             store.Add("scope", root);
             var logger = factory.CreateLogger("Test.Scope");
@@ -370,7 +362,7 @@ public class InsightsLoggerProviderTests
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
         try
         {
-            store.Configure("ILogger", bridgeEnabled: true);
+            store.Configure(null);
             var root = new Log("Tst.Detached");
             store.Add("scope", root);
             var logger = factory.CreateLogger("Test.Scope");
@@ -410,7 +402,7 @@ public class InsightsLoggerProviderTests
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
         try
         {
-            store.Configure("ILogger", bridgeEnabled: true);
+            store.Configure(null);
             var log = new Log("Tst.Budget");
             var handle = store.Add("budget", log)!;
             var logger = factory.CreateLogger("Test.Native");
@@ -459,7 +451,7 @@ public class InsightsLoggerProviderTests
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
         try
         {
-            store.Configure("ILogger", bridgeEnabled: true);
+            store.Configure(null);
             var log = new Log("Tst.Cap");
             store.Add("cap", log);
 
@@ -479,7 +471,7 @@ public class InsightsLoggerProviderTests
     [Fact]
     public void Store_ChargesDeepTreeEventOnce_AgainstByteBudget()
     {
-        var memory = new InsightsLogStore { Enabled = true };
+        var memory = new InsightsLogStore();
         var logIds = Enumerable.Range(0, 5).Select(i => $"log-{i}").ToArray();
         foreach (var logId in logIds)
             memory.Write(new() { Kind = "Admission", LogId = logId, Segment = "depth" }, logIds.Length);
@@ -600,7 +592,7 @@ public class InsightsLoggerProviderTests
     [Fact(Timeout = 2000)]
     public async Task Store_EvictsSpecLessBundle_WithoutHanging()
     {
-        var memory = new InsightsLogStore { Enabled = true };
+        var memory = new InsightsLogStore();
         const string logId = "spec-less";
         memory.Write(new() { Kind = "Admission", LogId = logId, Segment = "test" }, 1);
         const BindingFlags privateInstance = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -615,12 +607,10 @@ public class InsightsLoggerProviderTests
         Null(memory.Find(logId));
     }
 
-    [Theory]
-    [InlineData(LogStoreMode.Legacy)]
-    [InlineData(LogStoreMode.ILogger)]
-    public void Add_SkipsOrdinaryAdmission_WhilePaused(LogStoreMode mode)
+    [Fact]
+    public void Add_SkipsOrdinaryAdmission_WhilePaused()
     {
-        using var ctx = new LogExecutionTestContext(mode);
+        using var ctx = new LogExecutionTestContext();
         var store = ctx.Store;
         store.Pause = true;
 
@@ -631,12 +621,10 @@ public class InsightsLoggerProviderTests
         Equal(0, store.AddCount);
     }
 
-    [Theory]
-    [InlineData(LogStoreMode.Legacy)]
-    [InlineData(LogStoreMode.ILogger)]
-    public void Add_AutoPausesAtLimit_AndUnpauseResetsCount(LogStoreMode mode)
+    [Fact]
+    public void Add_AutoPausesAtLimit_AndUnpauseResetsCount()
     {
-        using var ctx = new LogExecutionTestContext(mode);
+        using var ctx = new LogExecutionTestContext();
         var store = ctx.Store;
         var log = new Log("Tst.AutoPause");
 
@@ -653,12 +641,10 @@ public class InsightsLoggerProviderTests
         Equal(0, store.AddCount);
     }
 
-    [Theory]
-    [InlineData(LogStoreMode.Legacy)]
-    [InlineData(LogStoreMode.ILogger)]
-    public void ForceAdd_BypassesPauseAndPreserve(LogStoreMode mode)
+    [Fact]
+    public void ForceAdd_BypassesPauseAndPreserve()
     {
-        using var ctx = new LogExecutionTestContext(mode);
+        using var ctx = new LogExecutionTestContext();
         var store = ctx.Store;
         store.Pause = true;
         var log = new Log("Tst.Force") { Preserve = false };
@@ -668,8 +654,7 @@ public class InsightsLoggerProviderTests
         var result = store.ForceAdd("forced", log);
 
         NotNull(result);
-        Equal(mode == LogStoreMode.ILogger ? result!.ExecutionId : log.LogId,
-            Single(store.Snapshot("forced")).LogId);
+        Equal(result!.ExecutionId, Single(store.Snapshot("forced")).LogId);
         Equal("before forced admission", Single(store.Snapshot(log)!.Entries).Message);
         Equal(1, store.AddCount);
     }
@@ -680,7 +665,7 @@ public class InsightsLoggerProviderTests
         var memory = new InsightsLogStore();
         var store = new LogStoreLive(memory);
         const string logId = "shared-log";
-        store.Configure("ILogger", bridgeEnabled: true);
+        store.Configure(null);
         memory.Write(new() { Kind = "Admission", LogId = logId, Segment = "first" }, 1);
         memory.Write(new() { Kind = "Admission", LogId = logId, Segment = "second" }, 1);
         memory.Write(new() { LogId = logId, Sequence = 1, Message = "retained" }, 1);
@@ -698,7 +683,7 @@ public class InsightsLoggerProviderTests
     [Fact]
     public void Write_RejectsAdmissionsBeyondMaxSegments()
     {
-        var memory = new InsightsLogStore { Enabled = true };
+        var memory = new InsightsLogStore();
         for (var i = 0; i < InsightsLogStore.MaxSegments; i++)
             memory.Write(new() { Kind = "Admission", LogId = $"log-{i}", Segment = $"segment-{i}" }, 1);
 
@@ -711,7 +696,7 @@ public class InsightsLoggerProviderTests
     [Fact]
     public void Write_EvictsOldestBundle_WhenByteBudgetIsExceeded()
     {
-        var memory = new InsightsLogStore { Enabled = true };
+        var memory = new InsightsLogStore();
         var message = new string('x', InsightsLogStore.MaxTextLength);
         memory.Write(new() { Kind = "Admission", LogId = "old", Segment = "budget" }, 2);
         memory.Write(new() { Kind = "Admission", LogId = "new", Segment = "budget" }, 2);
@@ -728,7 +713,7 @@ public class InsightsLoggerProviderTests
     [Fact]
     public async Task Snapshot_IsSafe_DuringConcurrentWrites()
     {
-        var memory = new InsightsLogStore { Enabled = true };
+        var memory = new InsightsLogStore();
         const string logId = "concurrent";
         const int writerCount = 4;
         const int entriesPerWriter = 250;
@@ -758,11 +743,72 @@ public class InsightsLoggerProviderTests
         Equal(writerCount * entriesPerWriter, Single(memory.Snapshot("concurrent")).Entries.Length);
     }
 
-    [Fact]
-    public void Configure_RemovedCompareMode_FallsBackToLegacy()
+    private sealed class RecordingLoggerProvider : ILoggerProvider
+    {
+        internal List<string> Messages { get; } = [];
+        public ILogger CreateLogger(string categoryName) => new RecordingLogger(Messages);
+        public void Dispose() { }
+
+        private sealed class RecordingLogger(List<string> messages) : ILogger
+        {
+            public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
+            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+                Func<TState, Exception?, string> formatter) => messages.Add(formatter(state, exception));
+        }
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void Configure_MissingSelection_UsesTheILoggerStore(string? obsoleteStore)
     {
         var store = new LogStoreLive();
-        Equal("Unknown logging store; retaining Legacy.", store.Configure("Compare", bridgeEnabled: true));
-        Equal(LogStoreMode.Legacy, store.Mode);
+
+        Equal(store.Status, store.Configure(obsoleteStore));
+    }
+
+    [Theory]
+    [InlineData(false, 0)]
+    [InlineData(true, 1)]
+    public void Store_AlwaysCapturesLocally_AndForwardsExternallyOnlyWhenEnabled(bool forwardExternally, int externalCount)
+    {
+        var external = new RecordingLoggerProvider();
+        var services = new ServiceCollection().AddSysCoreLogging();
+        services.AddSingleton<ILoggerProvider>(external);
+        using var provider = services.BuildServiceProvider();
+        var store = provider.GetRequiredService<ILogStoreLive>();
+        var factory = provider.GetRequiredService<ILoggerFactory>();
+        LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory, forwardExternally));
+        try
+        {
+            var log = new Log("Tst.External");
+            store.Add("external", log);
+
+            log.W("one event");
+
+            Equal("WARNING: one event", Single(Single(store.Snapshot("external")).Entries).Message);
+            Equal(externalCount, external.Messages.Count);
+        }
+        finally
+        {
+            LogEventBridge.SetSink(null);
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Sink_UsesOneFactoryDispatchPerBridgeEvent(bool forwardExternally)
+    {
+        var recording = new RecordingLoggerProvider();
+        using var factory = LoggerFactory.Create(builder => builder
+            .SetMinimumLevel(LogLevel.Trace)
+            .AddProvider(recording));
+
+        new MicrosoftLoggerEventSink(factory, forwardExternally).Write(LogEvent.ForLog(new Log("Tst.OneDp")));
+
+        Equal(1, recording.Messages.Count);
     }
 }

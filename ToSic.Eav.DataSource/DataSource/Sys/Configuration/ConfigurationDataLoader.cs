@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.DataSource.Sys.Configuration;
@@ -19,7 +19,7 @@ public class ConfigurationDataLoader() : ServiceBase(EavLogs.Eav + "CnfLdr")
     /// <returns></returns>
     internal List<ConfigMaskInfo> GetTokens(Type type)
     {
-        var l = Log.Fn<List<ConfigMaskInfo>>();
+        using var l = Log.Fn<List<ConfigMaskInfo>>();
         if (Cache.TryGetValue(type, out var cachedResult))
             return l.Return(cachedResult, "cached");
 
@@ -32,7 +32,7 @@ public class ConfigurationDataLoader() : ServiceBase(EavLogs.Eav + "CnfLdr")
 
     internal List<ConfigMaskInfo> GenerateTokens(Type type)
     {
-        var l = Log.Fn<List<ConfigMaskInfo>>();
+        using var l = Log.Fn<List<ConfigMaskInfo>>();
         var configProps = type
             .GetProperties()
             .Where(p => Attribute.IsDefined(p, typeof(ConfigurationAttribute), true))

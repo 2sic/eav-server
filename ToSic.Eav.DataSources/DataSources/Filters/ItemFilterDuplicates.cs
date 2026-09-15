@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Streams;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -42,7 +42,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
     /// <returns></returns>
     private IImmutableList<IEntity> GetUnique()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         if (!In.HasStreamWithItems(StreamDefaultName)) 
             return l.Return([], "no in stream with name");
 
@@ -63,7 +63,7 @@ public sealed class ItemFilterDuplicates: DataSourceBase
     /// <returns></returns>
     private IImmutableList<IEntity> GetDuplicates()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         if (!In.HasStreamWithItems(StreamDefaultName)) 
             return l.ReturnAsError([], "no in-stream with name");
 

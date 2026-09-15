@@ -11,9 +11,7 @@ public class ZipFromUrlImport: ZipImport
 
     public ZipFromUrlImport(Dependencies services, IGlobalConfiguration globalConfiguration) : base(services)
     {
-        ConnectLogs([
-            _globalConfiguration = globalConfiguration
-        ]);
+        _globalConfiguration = globalConfiguration;
     }
 
     private readonly IGlobalConfiguration _globalConfiguration;

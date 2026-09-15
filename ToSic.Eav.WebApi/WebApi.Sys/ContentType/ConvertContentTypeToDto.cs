@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.Entities;
@@ -9,13 +9,13 @@ using ToSic.Eav.WebApi.Sys.Dto;
 namespace ToSic.Eav.WebApi.Sys;
 
 public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLight)
-    : ServiceBase("Cnv.TypDto", connect: [convertToEavLight]), IConvert<IContentType, ContentTypeDto>
+    : ServiceBase("Cnv.TypDto"), IConvert<IContentType, ContentTypeDto>
 {
     public bool Debug { get; set; }
 
     public IEnumerable<ContentTypeDto> Convert(IEnumerable<IContentType> list)
     {
-        var l = Log.Fn<IEnumerable<ContentTypeDto>>();
+        using var l = Log.Fn<IEnumerable<ContentTypeDto>>();
         var result = list.Select(i => Convert(i)).ToList();
         return l.Return(result, $"{result.Count}");
     }
@@ -26,7 +26,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
 
     public ContentTypeDto Convert(IContentType cType, int itemCount)
     {
-        var l = Log.Fn<ContentTypeDto>($"for json app:{cType.AppId}, type:'{cType.Name}' / '{cType.NameId}'; iteration: {_convertIteration++}");
+        using var l = Log.Fn<ContentTypeDto>($"for json app:{cType.AppId}, type:'{cType.Name}' / '{cType.NameId}'; iteration: {_convertIteration++}");
 
         // Note 2024-03-04 2dm - had errors with expired IServiceProvide getting deeper Metadata
         // This should just make it quiet, but there could be a deeper underlying issue.

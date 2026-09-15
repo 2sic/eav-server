@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 
 namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
@@ -7,8 +7,8 @@ namespace ToSic.Eav.Context.Sys.ZoneMapper;
 /// Has prepared code which should be the same across implementations. 
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class ZoneMapperBase(IAppsCatalog appsCatalog, string logName, object[] connect)
-    : ServiceBase(logName, connect: [appsCatalog, ..connect]), IZoneMapper
+public abstract class ZoneMapperBase(IAppsCatalog appsCatalog, string logName, object[]? connect = null)
+    : ServiceBase(logName), IZoneMapper
 {
     protected readonly IAppsCatalog AppsCatalog = appsCatalog;
 
@@ -21,7 +21,7 @@ public abstract class ZoneMapperBase(IAppsCatalog appsCatalog, string logName, o
     /// <inheritdoc />
     public ISite SiteOfApp(int appId)
     {
-        var l = Log.Fn<ISite>($"{appId}");
+        using var l = Log.Fn<ISite>($"{appId}");
         var appIdentifier = AppsCatalog.AppIdentity(appId);
         var site = SiteOfZone(appIdentifier.ZoneId);
         return l.Return(site);

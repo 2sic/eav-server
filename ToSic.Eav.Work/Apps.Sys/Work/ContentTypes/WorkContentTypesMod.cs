@@ -6,11 +6,11 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkContentTypesMod(
     LazySvc<ContentTypeChangeActionRunner> changeActions)
-    : ServiceWithSetup<IAppWorkContext>("ApS.InpGet", connect: [changeActions])
+    : ServiceWithSetup<IAppWorkContext>("ApS.InpGet")
 {
     public void Create(string nameId, string scope)
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
         var db = MyOptions.DbStorage;
         var ct = db.ContentTypes.PrepareDbContentType(nameId, nameId, scope, false, MyOptions.AppId);
         if (ct != null)
@@ -21,7 +21,7 @@ public class WorkContentTypesMod(
     public bool AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet,
         bool alwaysShareConfig)
     {
-        var l = Log.Fn<bool>($"save {MyOptions.Show()}");
+        using var l = Log.Fn<bool>($"save {MyOptions.Show()}");
         if (name.IsEmptyOrWs())
             return l.ReturnFalse("name was empty, will cancel");
 
@@ -41,7 +41,7 @@ public class WorkContentTypesMod(
 
     public bool CreateGhost(string sourceStaticName)
     {
-        var l = Log.Fn<bool>($"create ghost a#{MyOptions.Show()}, type:{sourceStaticName}");
+        using var l = Log.Fn<bool>($"create ghost a#{MyOptions.Show()}, type:{sourceStaticName}");
         MyOptions.NewDbStorage().ContentType.CreateGhost(sourceStaticName);
         return l.ReturnTrue();
     }
@@ -49,14 +49,14 @@ public class WorkContentTypesMod(
 
     public void SetTitle(int contentTypeId, int attributeId)
     {
-        var l = Log.Fn($"set title type#{contentTypeId}, attrib:{attributeId}");
+        using var l = Log.Fn($"set title type#{contentTypeId}, attrib:{attributeId}");
         MyOptions.NewDbStorage().Attributes.SetTitleAttribute(attributeId, contentTypeId);
         l.Done();
     }
 
     public bool Delete(string staticName)
     {
-        var l = Log.Fn<bool>($"delete a#{MyOptions.Show()}, name:{staticName}");
+        using var l = Log.Fn<bool>($"delete a#{MyOptions.Show()}, name:{staticName}");
         MyOptions.NewDbStorage().ContentType.Delete(staticName);
         return l.ReturnTrue();
     }

@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using ToSic.Eav.LookUp;
 using ToSic.Eav.LookUp.Sources;
 
@@ -27,7 +27,7 @@ internal class QueryDefinitionParams
     [PrivateApi]
     public static IDictionary<string, string> GenerateParamsDic(string? paramsText, ILog? log)
     {
-        var l = log.Fn<IDictionary<string, string>>();
+        using var l = log.Fn<IDictionary<string, string>>();
 
         var paramsDic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -66,7 +66,7 @@ internal class QueryDefinitionParams
     /// <returns></returns>
     internal static List<ILookUp> GenerateTestValueLookUps(string? testParameters, ILog? log = default)
     {
-        var l = log.Fn<List<ILookUp>>();
+        using var l = log.Fn<List<ILookUp>>();
         // Parse Test-Parameters in Format [Token:Property]=Value
         if (testParameters == null)
             return l.Return([], "no test params");

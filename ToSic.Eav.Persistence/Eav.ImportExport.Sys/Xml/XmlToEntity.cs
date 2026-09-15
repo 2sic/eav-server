@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
@@ -15,7 +15,7 @@ namespace ToSic.Eav.ImportExport.Sys.Xml;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
-    : ServiceBase("Imp.XmlEnt", connect: [dataAssembler, globalData])
+    : ServiceBase("Imp.XmlEnt")
 {
 
     public XmlToEntity Init(int appId, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang,
@@ -54,7 +54,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
 
     private ICollection<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(ICollection<DimensionDefinition> envLanguages, string envDefLang, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang)
     {
-        var l = LogDetails.Fn<ICollection<TargetLanguageToSourceLanguage>>($"Env has {envLanguages.Count} languages");
+        using var l = LogDetails.Fn<ICollection<TargetLanguageToSourceLanguage>>($"Env has {envLanguages.Count} languages");
         ICollection<TargetLanguageToSourceLanguage> result;
         // if the environment doesn't have languages defined, we'll create a temp-entry for the main language to allow mapping
         if (envLanguages.Any())
@@ -156,7 +156,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
     /// <param name="mdTarget"></param>
     internal Entity BuildEntityFromXml(XElement xEntity, Target mdTarget)
     {
-        var wrap = LogDetails.Fn<Entity>();
+        using var wrap = LogDetails.Fn<Entity>();
         var finalAttributes = new Dictionary<string, IAttribute>();
 
         // Group values by StaticName
@@ -180,7 +180,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
         // Process each attribute (values grouped by StaticName)
         foreach (var sourceAttrib in valuesGroupedByStaticName)
         {
-            var lAttrib = LogDetails.Fn(sourceAttrib.StaticName);
+            using var lAttrib = LogDetails.Fn(sourceAttrib.StaticName);
             //var xmlValuesOfAttrib = sourceAttrib.Values;
             //var tempTargetValues = new List<XmlValueToImport>();
 

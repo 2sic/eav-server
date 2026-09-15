@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Sys.Caching.Synchronized;
 
@@ -148,7 +148,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource? app, IEn
     /// <inheritdoc />
     public IEnumerable<IEntity> FindChildren(string? field = null, string? type = null, ILog? log = null) 
     {
-        var l = log.Fn<IEnumerable<IEntity>>($"field:{field}; type:{type}");
+        using var l = log.Fn<IEnumerable<IEntity>>($"field:{field}; type:{type}");
 
         ICollection<IEntity> rels;
         if (field == null || string.IsNullOrEmpty(field))
@@ -182,7 +182,7 @@ internal class EntityRelationships(IEntity entity, IRelationshipSource? app, IEn
     /// <inheritdoc />
     public IEnumerable<IEntity> FindParents(string? type = null, string? field = null, ILog? log = null) 
     {
-        var l = log.Fn<IEnumerable<IEntity>>($"type:{type}; field:{field}");
+        using var l = log.Fn<IEnumerable<IEntity>>($"type:{type}; field:{field}");
 
         // Start with all parent relationships
         var allParents = ParentRelationships();

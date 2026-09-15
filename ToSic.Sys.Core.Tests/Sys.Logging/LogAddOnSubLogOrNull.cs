@@ -16,5 +16,5 @@ public class LogAddOnSubLogOrNull : LogAdd
         return (log, log);
     }
 
-    protected override int LogDepth => 1;
+    protected override int LogDepth => 0;
 }

@@ -1,4 +1,4 @@
-﻿using System.Xml.XPath;
+using System.Xml.XPath;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Sys.Ancestors;
@@ -21,8 +21,7 @@ public class ZipExport(
     IGlobalConfiguration globalConfiguration,
     ISysFeaturesService features
     )
-    : ServiceWithSetup<ZipExport.Options>(EavLogs.Eav + ".ZipExp",
-        connect: [appReaders, xmlExporter, globalConfiguration, fileManagerGenerator, features])
+    : ServiceWithSetup<ZipExport.Options>(EavLogs.Eav + ".ZipExp")
 {
     public record Options : IAppIdentity
     {
@@ -57,7 +56,7 @@ public class ZipExport(
         IEnumerable<PathCaseItem> appReferences,
         IEnumerable<PathCaseItem> sharedAppReferences)
     {
-        var l = Log.Fn<PathCasePreflightResult>(specs.Dump());
+        using var l = Log.Fn<PathCasePreflightResult>(specs.Dump());
         var result = PathCasePreflight(GenerateExportXml(specs), appReferences, sharedAppReferences);
         return l.Return(result, $"{result.Issues.Count} issues");
     }
@@ -67,7 +66,7 @@ public class ZipExport(
         IEnumerable<PathCaseItem> appReferences,
         IEnumerable<PathCaseItem> sharedAppReferences)
     {
-        var l = Log.Fn<PathCasePreflightResult>();
+        using var l = Log.Fn<PathCasePreflightResult>();
         var validator = new PathCasePreflightValidator(l);
         var results = new List<PathCasePreflightResult>();
 
@@ -96,7 +95,7 @@ public class ZipExport(
 
     public void ExportForSourceControl(AppExportSpecs specs)
     {
-        var l = Log.Fn(specs.Dump());
+        using var l = Log.Fn(specs.Dump());
         var appDataPath = Path.Combine(MyOptions.PhysicalAppPath, SourceControlDataFolder);
         l.A($"Target Path: {appDataPath}");
 
@@ -171,7 +170,7 @@ public class ZipExport(
         IEnumerable<PathCaseItem> appReferences,
         IEnumerable<PathCaseItem> sharedAppReferences)
     {
-        var l = Log.Fn<MemoryStream>(specs.Dump());
+        using var l = Log.Fn<MemoryStream>(specs.Dump());
 
         // generate the XML
         var xmlExport = GenerateExportXml(specs);

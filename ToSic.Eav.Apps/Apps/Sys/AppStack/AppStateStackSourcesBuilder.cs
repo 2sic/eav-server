@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Stack;
+using ToSic.Eav.Apps.Sys.Stack;
 using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Caching.Synchronized;
@@ -47,7 +47,7 @@ internal class AppStateStackSourcesBuilder(
     /// <returns></returns>
     internal SynchronizedObject<ICollection<KeyValuePair<string, IPropertyLookup>>> FullStack(ILog buildLog)
     {
-        var l = buildLog.Fn<SynchronizedObject<ICollection<KeyValuePair<string, IPropertyLookup>>>>();
+        using var l = buildLog.Fn<SynchronizedObject<ICollection<KeyValuePair<string, IPropertyLookup>>>>();
         if (_fullStackSynced != null)
         {
             if (!_fullStackSynced.CacheChanged())
@@ -63,7 +63,7 @@ internal class AppStateStackSourcesBuilder(
 
     private SynchronizedObject<ICollection<KeyValuePair<string, IPropertyLookup>>> BuildCachedStack(ILog buildLog)
     {
-        var l = buildLog.Fn<SynchronizedObject<ICollection<KeyValuePair<string, IPropertyLookup>>>>();
+        using var l = buildLog.Fn<SynchronizedObject<ICollection<KeyValuePair<string, IPropertyLookup>>>>();
 
         var cacheExpiry = GetMultiSourceCacheExpiry(buildLog);
         // 2022-03-11 2dm - we're currently including the build log
@@ -80,7 +80,7 @@ internal class AppStateStackSourcesBuilder(
 
     private CacheExpiringMultiSource GetMultiSourceCacheExpiry(ILog buildLog)
     {
-        var l = buildLog.Fn<CacheExpiringMultiSource>($"WithSite: {SiteOrNull != null}");
+        using var l = buildLog.Fn<CacheExpiringMultiSource>($"WithSite: {SiteOrNull != null}");
         ITimestamped[] cacheExpires = SiteOrNull == null
             ? [Owner, Global]
             : [Owner, SiteOrNull, Global];
@@ -96,7 +96,7 @@ internal class AppStateStackSourcesBuilder(
 
     private ICollection<KeyValuePair<string, IPropertyLookup>> RebuildStack(AppThingsToStack thingType, ILog? buildLog = null)
     {
-        var l = buildLog.Fn<ICollection<KeyValuePair<string, IPropertyLookup>>>();
+        using var l = buildLog.Fn<ICollection<KeyValuePair<string, IPropertyLookup>>>();
 
         // List of the 5 segments, each containing up to 2 sources; if all are stacked, it would have max 9 sources
         var parts = new List<(string Name, IAppStateCache? Source, string? KeyCustom, string KeySystem)>

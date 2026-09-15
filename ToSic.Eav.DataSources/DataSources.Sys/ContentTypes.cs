@@ -61,7 +61,7 @@ public sealed class ContentTypes: CustomDataSource
     /// </summary>
     [PrivateApi]
     public ContentTypes(Dependencies services, IAppReaderFactory appReaders)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.CTypes", connect: [appReaders])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.CTypes")
     {
         _appReaders = appReaders;
         ProvideOutRaw(GetList, options: () => new()
@@ -75,7 +75,7 @@ public sealed class ContentTypes: CustomDataSource
 
     private IEnumerable<ContentTypeUtil.ContentTypeSummary> GetList()
     {
-        var l = Log.Fn<IEnumerable<ContentTypeUtil.ContentTypeSummary>>();
+        using var l = Log.Fn<IEnumerable<ContentTypeUtil.ContentTypeSummary>>();
 
         var appId = OfAppId;
         // Get the scope. Make sure that an empty string will be ignored and "Default" is used

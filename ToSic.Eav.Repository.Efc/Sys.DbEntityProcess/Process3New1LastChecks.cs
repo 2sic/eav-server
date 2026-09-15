@@ -1,9 +1,9 @@
-﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class Process3New1LastChecks() : Process0Base("DB.EPr3n1")
 {
     public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
-        var l = services.LogDetails.Fn<EntityProcessData>();
+        using var l = services.LogDetails.Fn<EntityProcessData>();
 
         if (!data.IsNew)
             return l.Return(data, "not new, not my job");

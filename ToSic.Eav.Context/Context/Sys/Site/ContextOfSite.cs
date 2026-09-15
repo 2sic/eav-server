@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Permissions;
+using ToSic.Eav.Apps.Sys.Permissions;
 using ToSic.Sys.Users;
 using ToSic.Sys.Users.Permissions;
 using ToSic.Sys.Utils;
@@ -16,7 +16,7 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
     #region Constructor / DI
 
     public record Dependencies(ISite Site, IUser User, Generator<AppPermissionCheck> AppPermissionCheck)
-        : DependenciesBase(connect: [Site, User, AppPermissionCheck]);
+        : DependenciesBase();
 
     /// <summary>
     /// Constructor for DI
@@ -24,7 +24,7 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
     /// <param name="services"></param>
     public ContextOfSite(Dependencies services) : this(services, null) { }
 
-    protected ContextOfSite(Dependencies services, string? logName, object[]? connect = default) : base(services, logName ?? "Eav.CtxSte", connect: connect)
+    protected ContextOfSite(Dependencies services, string? logName, object[]? connect = default) : base(services, logName ?? "Eav.CtxSte")
     {
         Site = Services.Site;
     }
@@ -60,5 +60,5 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
 
     /// <inheritdoc />
     public virtual IContextOfSite Clone(ILog parentLog)
-        => new ContextOfSite(Services, Log.NameId).LinkLog(parentLog);
+        => new ContextOfSite(Services, Log.NameId);
 }

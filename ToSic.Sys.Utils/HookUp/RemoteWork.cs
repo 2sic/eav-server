@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.DI;
+using ToSic.Sys.DI;
 
 namespace ToSic.Sys.HookUp;
 
@@ -17,7 +17,7 @@ public class RemoteWork<TWork, TData, TResult>(Generator<TWork> generator) : Ser
 {
     public async Task<Package<TResult>> Handle(WorkContext context, Package<DoNamedInput<TData, TResult>> package)
     {
-        var l = Log.Fn<Package<TResult>>();
+        using var l = Log.Fn<Package<TResult>>();
         var service = generator.TryNew(package.Data.Action);
         if (service == null)
             return l.Return(package.RePackage(package.Data.Fallback), "service not found");

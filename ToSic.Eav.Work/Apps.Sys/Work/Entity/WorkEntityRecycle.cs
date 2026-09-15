@@ -22,7 +22,7 @@ public class WorkEntityRecycle(
     LazySvc<JsonSerializer> jsonSerializer,
     LazySvc<Compressor> compressor,
     ISysFeaturesService featuresService)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService])
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcl")
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
@@ -41,7 +41,7 @@ public class WorkEntityRecycle(
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     internal void RecycleInternal(int transactionId)
     {
-        var l = Log.Fn($"tx:{transactionId}");
+        using var l = Log.Fn($"tx:{transactionId}");
 
         if (transactionId <= 0)
             throw new ArgumentOutOfRangeException(nameof(transactionId));
@@ -271,7 +271,7 @@ public class WorkEntityRecycle(
 
     private void RestoreParentRelationshipsFromHistory(int appId, List<JsonEntity> historyJsonEntities, Dictionary<Guid, int> restoredEntitiesByGuid)
     {
-        var l = Log.Fn(timer: true);
+        using var l = Log.Fn(timer: true);
 
         var entitiesWithParents = FilterEntitiesWithParents(historyJsonEntities);
         if (entitiesWithParents.Count == 0)

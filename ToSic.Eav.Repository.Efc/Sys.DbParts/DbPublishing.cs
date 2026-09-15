@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
@@ -12,7 +12,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
     /// <returns>The published Entity</returns>
     internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson)
     {
-        var l = LogDetails.Fn($"{nameof(entityId)}:{entityId}");
+        using var l = LogDetails.Fn($"{nameof(entityId)}:{entityId}");
         var unpublishedDbEnt = DbStore.Entities.GetDbEntityFull(entityId, preferUntracked: true);
         if (!unpublishedDbEnt.IsPublished)
             l.A("found item is draft, will use this to publish");
@@ -98,7 +98,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
     /// <returns></returns>
     internal TsDynDataEntity ClearDraftBranchAndSetPublishedState(TsDynDataEntity publishedEntity, int? draftId = null, bool newPublishedState = true)
     {
-        var l = LogDetails.Fn<TsDynDataEntity>($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
+        using var l = LogDetails.Fn<TsDynDataEntity>($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
         var unpublishedEntityId = draftId ?? DbStore.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
 
         // if additional draft exists, must clear that first
@@ -130,7 +130,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
     /// <param name="entityIds">EntityId of the Published Entity</param>
     internal Dictionary<int, int?> GetDraftBranchMap(List<int> entityIds)
     {
-        var l = LogDetails.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
+        using var l = LogDetails.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
         var nullList = entityIds.Cast<int?>().ToList();
         var ids = DbStore.SqlDb.TsDynDataEntities
             .Where(e => nullList.Contains(e.PublishedEntityId) && !e.TransDeletedId.HasValue)

@@ -1,4 +1,4 @@
-﻿using System.Runtime.Caching;
+using System.Runtime.Caching;
 using ToSic.Sys.Caching.Policies;
 
 namespace ToSic.Sys.Caching;
@@ -48,7 +48,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     /// <param name="func"></param>
     public void Set(string key, object value, Func<IPolicyMaker, IPolicyMaker>? func = default)
     {
-        var l = Log.Fn($"key: '{key}'");
+        using var l = Log.Fn($"key: '{key}'");
         try
         {
             var specs = NewPolicyMaker();
@@ -71,7 +71,7 @@ public class MemoryCacheService() : ServiceBase("Eav.MemCacheSrv")
     /// <param name="policyMaker"></param>
     public void Set(string key, object? value, IPolicyMaker policyMaker)
     {
-        var l = Log.Fn($"key: '{key}'");
+        using var l = Log.Fn($"key: '{key}'");
         try
         {
             var policy = policyMaker.CreateResult();

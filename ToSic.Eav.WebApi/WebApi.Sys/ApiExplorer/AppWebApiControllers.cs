@@ -29,7 +29,7 @@ public class AppWebApiControllers : CustomDataSource
         Dependencies services,
         IUser user,
         LazySvc<IAppExplorerControllerDependency> appFileController)
-        : base(services, logName: "Eav.ApiExplorer", connect: [user, appFileController])
+        : base(services, logName: "Eav.ApiExplorer")
     {
         _user = user;
         _appFileController = appFileController;
@@ -39,7 +39,7 @@ public class AppWebApiControllers : CustomDataSource
 
     private IEnumerable<AppWebApiFileRaw> GetApiFiles()
     {
-        var l = Log.Fn<IEnumerable<AppWebApiFileRaw>>($"list all api files a#{AppId}");
+        using var l = Log.Fn<IEnumerable<AppWebApiFileRaw>>($"list all api files a#{AppId}");
 
         var mask = $"*{EavConstants.ApiControllerSuffix}.cs";
 
@@ -106,7 +106,7 @@ public class AppWebApiControllers : CustomDataSource
 
     private string GetEdition(string path)
     {
-        var l = Log.Fn<string>($"{nameof(path)}:'{path}'");
+        using var l = Log.Fn<string>($"{nameof(path)}:'{path}'");
 
         var edition = path.Split(['/'], StringSplitOptions.RemoveEmptyEntries)[0];
 

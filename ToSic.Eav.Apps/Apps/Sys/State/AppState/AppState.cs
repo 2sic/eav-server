@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.State.Managers;
+using ToSic.Eav.Apps.Sys.State.Managers;
 using ToSic.Eav.Data.Sys.Relationships;
 
 namespace ToSic.Eav.Apps.Sys.State;
@@ -16,7 +16,7 @@ internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConn
     private static bool _loggedToBootLog;
 
     [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, string cacheKey, ILog parentLog): base(new(), $"App.St-{id.AppId}", connect: [])
+    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, string cacheKey, ILog parentLog): base(new(), $"App.St-{id.AppId}")
     {
         // Track first time an app was built...
         if (!_loggedToBootLog)
@@ -27,8 +27,7 @@ internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConn
                 _loggedToBootLog = true;
         }
 
-        var l = Log.Fn($"AppState for App {id.AppId}");
-        this.LinkLog(parentLog, forceConnect: true);
+        using var l = Log.Fn($"AppState for App {id.AppId}");
         InitAppBaseIds(id);
 
         ParentApp = parentApp;

@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.Sys;
@@ -22,7 +22,7 @@ public class AppJsonConfigurationService(
     IAppPathsMicroSvc appPathsFactory,
     MemoryCacheService memoryCacheService
 )
-    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc", connect: [globalConfiguration, appReaders, appCacheKeyService, appsCatalog, appPathsFactory, memoryCacheService]),
+    : ServiceBase($"{EavLogs.Eav}.AppJsonSvc"),
         IAppJsonConfigurationService
 {
 
@@ -41,7 +41,7 @@ public class AppJsonConfigurationService(
     /// <inheritdoc />
     public AppJsonConfiguration? GetAppJson(int appId, bool useShared = false)
     {
-        var l = Log.Fn<AppJsonConfiguration?>($"{nameof(appId)}: '{appId}'");
+        using var l = Log.Fn<AppJsonConfiguration?>($"{nameof(appId)}: '{appId}'");
 
         var hasCacheKey = TryGetCacheKey(appId, useShared, out var cacheKey);
         l.A($"cache key: {cacheKey}");
@@ -111,7 +111,7 @@ public class AppJsonConfigurationService(
     /// <returns>list with single item</returns>
     private List<string> GetExistingParent(string filePath)
     {
-        var l = Log.Fn<List<string>>($"{nameof(filePath)}:'{filePath}'");
+        using var l = Log.Fn<List<string>>($"{nameof(filePath)}:'{filePath}'");
 
         var parentPath = Path.GetDirectoryName(filePath);
 
@@ -137,7 +137,7 @@ public class AppJsonConfigurationService(
 
     private AppJsonConfiguration? GetAppJsonInternal(string pathToAppJson)
     {
-        var l = Log.Fn<AppJsonConfiguration>($"{nameof(pathToAppJson)}:'{pathToAppJson}'");
+        using var l = Log.Fn<AppJsonConfiguration>($"{nameof(pathToAppJson)}:'{pathToAppJson}'");
 
         if (!File.Exists(pathToAppJson))
             return l.ReturnNull($"file '{FolderConstants.AppJsonFile}' not found");
@@ -166,7 +166,7 @@ public class AppJsonConfigurationService(
     /// <inheritdoc />
     public ICollection<string> ExcludeSearchPatterns(string sourceFolder, int appId, bool useShared = false)
     {
-        var l = Log.Fn<ICollection<string>>($"{nameof(sourceFolder)}:'{sourceFolder}', {nameof(appId)}:{appId}, {nameof(useShared)}:{useShared}");
+        using var l = Log.Fn<ICollection<string>>($"{nameof(sourceFolder)}:'{sourceFolder}', {nameof(appId)}:{appId}, {nameof(useShared)}:{useShared}");
 
         var appJson = GetAppJson(appId, useShared);
         if (appJson?.Export?.Exclude == null)

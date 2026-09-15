@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys;
@@ -13,14 +13,14 @@ public class ContentTypeDtoService(
     AppWorkChain<WorkAttributes> attributes,
     Generator<ConvertAttributeToDto> convAttrDto,
     ConvertContentTypeToDto convTypeDto)
-    : ServiceWithSetup<IAppWorkContext>("Api.EavCTC", connect: [attributes, convAttrDto, convTypeDto, workEntities])
+    : ServiceWithSetup<IAppWorkContext>("Api.EavCTC")
 {
 
     #region Content-Type Get, Delete, Save
 
     public IList<ContentTypeDto> List(int appId, string? scope = null, bool withStatistics = false)
     {
-        var l = Log.Fn<IList<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
+        using var l = Log.Fn<IList<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
         //var appCtxPlus = workEntities.CtxSvc.ContextPlus(appId);
 
         // should use app-manager and return each type 1x only

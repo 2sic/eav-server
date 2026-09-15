@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using ToSic.Eav.Apps.Sys.Extensions;
 using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Context;
@@ -15,12 +15,12 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     LazySvc<IAppPathsMicroSvc> appPathsLazy,
     LazySvc<IZoneMapper> zoneMapper,
     ExtensionManifestService manifestService)
-    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator, manifestService]), IAppInputTypesLoader
+    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper), IAppInputTypesLoader
 {
     /// <inheritdoc />
     public ICollection<InputTypeInfo> InputTypes()
     {
-        var l = Log.Fn<ICollection<InputTypeInfo>>();
+        using var l = Log.Fn<ICollection<InputTypeInfo>>();
 
         // Local app paths
         var inputTypes = GetInputTypes(ExtensionsPath, AppConstants.AppPathPlaceholder);
@@ -52,7 +52,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
 
     private ICollection<InputTypeInfo> GetInputTypes(string path, string placeholder)
     {
-        var l = Log.Fn<ICollection<InputTypeInfo>>();
+        using var l = Log.Fn<ICollection<InputTypeInfo>>();
         var di = new DirectoryInfo(path);
         if (!di.Exists)
             return l.Return([], "directory not found");
@@ -108,7 +108,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
 
     private InputTypeInfo? InputTypeFromManifest(FileInfo manifestFile, DirectoryInfo extensionFolder, string placeholder)
     {
-        var l = Log.Fn<InputTypeInfo?>($"manifest:'{manifestFile.Name}', extension:'{extensionFolder.Name}', placeholder:'{placeholder}'");
+        using var l = Log.Fn<InputTypeInfo?>($"manifest:'{manifestFile.Name}', extension:'{extensionFolder.Name}', placeholder:'{placeholder}'");
         
         var manifest = manifestService.LoadManifest(manifestFile);
         if (manifest?.InputFieldInside ?? true)
@@ -139,7 +139,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
 
     private InputTypeInfo CreateLegacyInputType(string folderName, string placeholder)
     {
-        var l = Log.Fn<InputTypeInfo>($"folder:'{folderName}', placeholder:'{placeholder}'");
+        using var l = Log.Fn<InputTypeInfo>($"folder:'{folderName}', placeholder:'{placeholder}'");
         
         var fullName = folderName.Substring(FieldFolderPrefix.Length);
         var niceName = InputTypeNiceName(folderName);
@@ -173,7 +173,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     /// <returns>Dictionary mapping edition names to asset paths</returns>
     private Dictionary<string, string> BuildUiAssets(ExtensionManifest manifest, DirectoryInfo extensionFolder, string placeholder)
     {
-        var l = Log.Fn<Dictionary<string, string>>($"extension:{extensionFolder.Name}, editionsSupported:{manifest.EditionsSupported}");
+        using var l = Log.Fn<Dictionary<string, string>>($"extension:{extensionFolder.Name}, editionsSupported:{manifest.EditionsSupported}");
         var assets = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         
         // Always add the default asset
@@ -251,7 +251,7 @@ public class AppFileSystemInputTypesLoader(ISite siteDraft,
     /// <returns>Normalized asset path or null</returns>
     private string? AssetFromManifest(ExtensionManifest manifest, string placeholder, string extensionName, string? editionName = null)
     {
-        var l = Log.Fn<string?>($"extension:'{extensionName}', edition:'{editionName}', placeholder:'{placeholder}'");
+        using var l = Log.Fn<string?>($"extension:'{extensionName}', edition:'{editionName}', placeholder:'{placeholder}'");
 
         // Note: it's not clear why this is so complicated
         // 2dm thinks (2026-08-20) that this is a left over when the `InputFieldAssets` could have had many types,

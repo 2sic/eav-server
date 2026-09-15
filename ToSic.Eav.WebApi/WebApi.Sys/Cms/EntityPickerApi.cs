@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context.Sys.ZoneCulture;
+using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Users;
 using static System.String;
@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.Sys.Cms;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityPickerApi(AppWorkQuick<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user)
-    : ServiceBase("Api.EntPck", connect: [cultureResolver, workEntities, user])
+    : ServiceBase("Api.EntPck")
 {
     /// <summary>
     /// Returns a list of entities, optionally filtered by contentType.
@@ -16,7 +16,7 @@ public class EntityPickerApi(AppWorkQuick<WorkEntities> workEntities, IZoneCultu
     // 2dm 2023-01-22 #maybeSupportIncludeParentApps
     public List<EntityForPickerDto> GetForEntityPicker(int appId, ICollection<string> items, string? contentTypeName, bool? withDrafts = default, bool allowFromAllScopes = default)
     {
-        var l = Log.Fn<List<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Count}, type:{contentTypeName}");
+        using var l = Log.Fn<List<EntityForPickerDto>>($"Get entities for a#{appId}, items⋮{items?.Count}, type:{contentTypeName}");
 
         var appEnts = workEntities.New(appId, showDrafts: withDrafts);
         IContentType? contentType = null;

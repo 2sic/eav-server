@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Security.Permissions;
@@ -8,7 +8,7 @@ namespace ToSic.Eav.Environment.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class EnvironmentPermission(string logPrefix, object[]? connect = default)
-    : ServiceBase($"{logPrefix}.EnvPrm", connect: connect), IEnvironmentPermission, IEnvironmentPermissionSetup
+    : ServiceBase($"{logPrefix}.EnvPrm"), IEnvironmentPermission, IEnvironmentPermissionSetup
 {
     // Constant keys for security, historic from Dnn
     protected const string SalPrefix = "SecurityAccessLevel";
@@ -43,7 +43,7 @@ public abstract class EnvironmentPermission(string logPrefix, object[]? connect 
     /// <returns></returns>
     protected virtual bool EnvironmentOk(List<Grants> grants)
     {
-        var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(",", grants)}]"));
+        using var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(",", grants)}]"));
         if (UserIsAnonymous())
             return l.ReturnFalse("user anonymous");
         var ok = UserIsSystemAdmin(); // superusers are always ok
@@ -100,7 +100,7 @@ public abstract class EnvironmentPermission(string logPrefix, object[]? connect 
     /// <returns></returns>
     protected bool CurrentZoneMatchesSiteZone()
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         // Check if we are running out-of http-context
         if (SiteOrNull == null || SiteOrNull.Id == EavConstants.NullId)
             return l.ReturnFalse("no");

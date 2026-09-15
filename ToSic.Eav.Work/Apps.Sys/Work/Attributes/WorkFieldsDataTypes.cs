@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Sys.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkFieldsDataTypes(): ServiceWithSetup<IAppWorkContext>("Wrk.FDT")
@@ -9,7 +9,7 @@ public class WorkFieldsDataTypes(): ServiceWithSetup<IAppWorkContext>("Wrk.FDT")
     /// <returns></returns>
     public string[] DataTypes()
     {
-        var l = Log.Fn<string[]>();
+        using var l = Log.Fn<string[]>();
         var result = MyOptions.NewDbStorage().Attributes.DataTypeNames();
         return l.Return(result, $"{result.Length}");
     }

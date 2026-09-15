@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Apps.Sys.State;
 using Callback = System.Func<ToSic.Eav.Apps.Sys.Work.CoupledIdLists, System.Collections.Generic.Dictionary<string, object?>>;
 
 
@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkFieldList(AppWorkChain<WorkEntityUpdate> entityUpdate)
-    : ServiceWithSetup<IAppWorkContext>("AWk.EntFL", connect: [entityUpdate])
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntFL")
 {
     public void FieldListUpdate(IEntity target, string[] fields, bool asDraft, Callback callback)
     {

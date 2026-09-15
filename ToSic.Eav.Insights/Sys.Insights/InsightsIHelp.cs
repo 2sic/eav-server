@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Sys.Insights.App;
+using ToSic.Eav.Sys.Insights.App;
 using ToSic.Eav.Sys.Insights.Data;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Eav.Sys.Insights.Logs;
@@ -19,7 +19,7 @@ internal class InsightsHelp(LazySvc<IEnumerable<IInsightsProvider>> insightsProv
 
     public override string HtmlBody()
     {
-        var l = Log.Fn<string>();
+        using var l = Log.Fn<string>();
 
         // ReSharper disable IdentifierTypo
         // ReSharper disable StringLiteralTypo

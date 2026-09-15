@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.Data.Sys.Entities;
 
 namespace ToSic.Eav.DataFormats.EavLight;
 
@@ -9,7 +9,7 @@ partial class ConvertToEavLight
     /// <inheritdoc/>
     public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntity> entities)
     {
-        var l = Log.Fn<IEnumerable<EavLightEntity>>(timer: true);
+        using var l = Log.Fn<IEnumerable<EavLightEntity>>(timer: true);
         var topEntities = MaxItems == 0
             ? entities
             : entities.Take(MaxItems);
@@ -22,7 +22,7 @@ partial class ConvertToEavLight
     /// <inheritdoc/>
     public EavLightEntity Convert(IEntity entity)
     {
-        var l = Log.Fn<EavLightEntity>(timer: true);
+        using var l = Log.Fn<EavLightEntity>(timer: true);
         var result = entity == null!
             ? null!
             : GetDictionaryFromEntity(entity);

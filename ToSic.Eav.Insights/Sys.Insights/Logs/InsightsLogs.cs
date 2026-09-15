@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Sys.Insights.HtmlHelpers;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Logs;
@@ -11,7 +11,7 @@ internal class InsightsLogs : InsightsProvider
     private InsightsLogsHelper LogHtml => field ??= new(_logStore.Value);
     private readonly LazySvc<ILogStoreLive> _logStore;
 
-    public InsightsLogs(LazySvc<ILogStoreLive> logStore) : base(new() { Name = Link, Teaser = "Logs of Modules, APIs and more", HelpCategory = "Logging", Title = "Insights into Logs" }, connect: [logStore])
+    public InsightsLogs(LazySvc<ILogStoreLive> logStore) : base(new() { Name = Link, Teaser = "Logs of Modules, APIs and more", HelpCategory = "Logging", Title = "Insights into Logs" })
     {
         _logStore = logStore;
         BootLog.AddToStore(logStore.Value);

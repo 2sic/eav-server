@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys.PropertyStack;
 
@@ -6,7 +6,7 @@ partial class PropertyStackNavigator
 {
     private PropReqResult GetResultOfSibling(PropReqSpecs specs, ILog? logOrNull, PropertyLookupPath path)
     {
-        var l = logOrNull.Fn<PropReqResult>(specs.Dump());
+        using var l = logOrNull.Fn<PropReqResult>(specs.Dump());
         var earliestNextSibling = StackAddress.Index + 1;
         path = path.Add("StackSibling", earliestNextSibling.ToString(), specs.Field);
         var sibling = StackAddress.Source.GetNextInStack(specs, earliestNextSibling, path);

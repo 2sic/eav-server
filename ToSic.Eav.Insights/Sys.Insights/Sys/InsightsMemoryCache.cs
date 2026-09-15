@@ -1,4 +1,4 @@
-﻿using System.Runtime.Caching;
+using System.Runtime.Caching;
 using ToSic.Eav.Apps.Assets.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Blade;
@@ -47,7 +47,7 @@ internal class InsightsMemoryCache()
 
     internal string MemoryTable(string? filterPrefix, string? filterType)
     {
-        var l = Log.Fn<string>();
+        using var l = Log.Fn<string>();
 
         var all = MemoryCache.Default
             .OrderBy(pair => pair.Key)

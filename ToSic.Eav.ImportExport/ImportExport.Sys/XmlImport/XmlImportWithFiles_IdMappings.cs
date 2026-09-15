@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Sys.Xml;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
@@ -15,7 +15,7 @@ partial class XmlImportWithFiles
 
     private bool PrepareFileIdCorrectionList(XElement sexyContentNode)
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         if (!sexyContentNode.Elements(XmlConstants.PortalFiles).Any())
             return l.ReturnTrue();
 
@@ -34,7 +34,7 @@ partial class XmlImportWithFiles
 
     private bool PrepareFolderIdCorrectionListAndCreateMissingFolders(XElement sexyContentNode)
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         if (!sexyContentNode.Elements(XmlConstants.FolderGroup).Any())
             return l.ReturnTrue();
 

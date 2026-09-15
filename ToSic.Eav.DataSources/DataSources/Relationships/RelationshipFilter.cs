@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Errors;
 using ToSic.Eav.DataSource.Sys.Streams;
@@ -143,7 +143,7 @@ public sealed class RelationshipFilter : DataSourceBase
     /// Constructs a new RelationshipFilter
     /// </summary>
     [PrivateApi]
-    public RelationshipFilter(Dependencies services/*, ICurrentContextUserPermissionsService userPermissions*/) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [/*userPermissions*/])
+    public RelationshipFilter(Dependencies services/*, ICurrentContextUserPermissionsService userPermissions*/) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil")
     {
         //_userPermissions = userPermissions;
         ProvideOut(GetRelationshipsOrFallback);
@@ -155,7 +155,7 @@ public sealed class RelationshipFilter : DataSourceBase
 
     private IImmutableList<IEntity> GetRelationshipsOrFallback()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var res = GetEntities();
         if (!res.Any() && In.HasStreamWithItems(StreamFallbackName))
             return l.Return(In[StreamFallbackName].List.ToImmutableOpt(), "fallback");
@@ -165,7 +165,7 @@ public sealed class RelationshipFilter : DataSourceBase
 
     private IImmutableList<IEntity> GetEntities()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         // todo: maybe do something about languages on properties?
         Configuration.Parse();
 
@@ -272,7 +272,7 @@ public sealed class RelationshipFilter : DataSourceBase
     /// <returns></returns>
     private ResultOrError<Func<IEntity, bool>> PickMode(string modeToPick, string relationship, Func<IEntity, string, bool> internalCompare, string[] valuesToFind)
     {
-        var l = Log.Fn<ResultOrError<Func<IEntity, bool>>>();
+        using var l = Log.Fn<ResultOrError<Func<IEntity, bool>>>();
         switch (modeToPick)
         {
             case CompareModeContains:
@@ -353,7 +353,7 @@ public sealed class RelationshipFilter : DataSourceBase
 
     private ResultOrError<Func<IEntity, string?>> GetFieldValue(CompareType type, string fieldName)
     {
-        var l = Log.Fn<ResultOrError<Func<IEntity, string?>>>();
+        using var l = Log.Fn<ResultOrError<Func<IEntity, string?>>>();
         return type switch
         {
             CompareType.Any => l.Return(new(true, e =>

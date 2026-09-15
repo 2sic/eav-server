@@ -1,10 +1,10 @@
-﻿using ToSic.Eav.Apps.Sys.Work;
+using ToSic.Eav.Apps.Sys.Work;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsEntityMetadata(AppWorkQuick<WorkEntities> workEntities) 
-    : InsightsProvider(new() { Name = Link, Title = "Entity Metadata" }, connect: [workEntities])
+    : InsightsProvider(new() { Name = Link, Title = "Entity Metadata" })
 {
     public static string Link = "EntityMetadata";
 

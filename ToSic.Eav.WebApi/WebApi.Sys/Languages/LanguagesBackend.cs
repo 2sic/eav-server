@@ -10,7 +10,7 @@ public class LanguagesBackend(
     LazySvc<ZoneManager> zoneManager,
     ISite site,
     LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy)
-    : Services_ServiceBase("Bck.Admin", connect: [zoneManager, site, appUserLanguageCheckLazy])
+    : Services_ServiceBase("Bck.Admin")
 {
     public List<LanguageStatusRaw> GetLanguagesOfApp(IAppReader? appReaderOrNull, bool withCount = false)
     {

@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using ToSic.Eav.DataSource.Sys.Streams;
 using static System.StringComparer;
 
@@ -93,7 +93,7 @@ partial class DataSourceBase
     [PublicApi]
     public IDataStream? GetStream(string? name = null, NoParamOrder npo = default, bool nullIfNotFound = false, bool emptyIfNotFound = false)
     {
-        var l = Log.Fn<IDataStream>($"{nameof(name)}: {name}; {nameof(nullIfNotFound)}: {nullIfNotFound}; {nameof(emptyIfNotFound)}: {emptyIfNotFound}");
+        using var l = Log.Fn<IDataStream>($"{nameof(name)}: {name}; {nameof(nullIfNotFound)}: {nullIfNotFound}; {nameof(emptyIfNotFound)}: {emptyIfNotFound}");
 
         // Check if streamName was not provided
         if (string.IsNullOrEmpty(name))
@@ -141,7 +141,7 @@ partial class DataSourceBase
     private void Connect(IDataSourceLink connections)
     {
         var list = connections.Flatten().ToList();
-        var l = Log.Fn($"{nameof(connections)}: {list.Count}");
+        using var l = Log.Fn($"{nameof(connections)}: {list.Count}");
         DoWhileOverrideImmutable(() =>
         {
             foreach (var link in list)
@@ -184,7 +184,7 @@ partial class DataSourceBase
 
     private void Attach(DataSourceConnection connection)
     {
-        var l = Log.Fn($"{nameof(connection)}: {connection.SourceStream} to {connection.TargetStream}");
+        using var l = Log.Fn($"{nameof(connection)}: {connection.SourceStream} to {connection.TargetStream}");
         if (Immutable && !_overrideImmutable)
             throw l.Done(new Exception($"This data source is Immutable. Attaching more sources after creation is not allowed. DataSource: {GetType().Name}"));
         _in[connection.TargetStream] = new ConnectionStream(Services.CacheService, connection, Error);

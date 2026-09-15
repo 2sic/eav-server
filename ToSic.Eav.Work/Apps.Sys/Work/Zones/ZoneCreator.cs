@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
@@ -10,12 +10,12 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZoneCreator(Generator<DbStorage, StorageOptions> db, AppCachePurger appCachePurger)
-    : ServiceBase("Eav.AppBld", connect: [db, appCachePurger])
+    : ServiceBase("Eav.AppBld")
 {
 
     public int Create(string name) 
     {
-        var l = Log.Fn<int>($"create zone:{name}");
+        using var l = Log.Fn<int>($"create zone:{name}");
         var zoneId = db.New(new(null, null))
             .Zone.AddZone(name);
         appCachePurger.PurgeZoneList();

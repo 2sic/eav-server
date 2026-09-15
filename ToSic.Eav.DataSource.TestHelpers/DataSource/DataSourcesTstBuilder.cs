@@ -1,10 +1,10 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp.Sys.Engines;
 using ToSic.Eav.Services;
 
 namespace ToSic.Eav.DataSource;
 
-public class DataSourcesTstBuilder(IDataSourcesService dataSourcesService): ServiceBase("Tst.DsFHlp", connect: [dataSourcesService])
+public class DataSourcesTstBuilder(IDataSourcesService dataSourcesService): ServiceBase("Tst.DsFHlp")
 {
     public IDataSourcesService DataSourceSvc => dataSourcesService;
 

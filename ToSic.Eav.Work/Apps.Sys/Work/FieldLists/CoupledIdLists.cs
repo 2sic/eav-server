@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Sys.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// This is responsible for managing / changing list-pairs of entities.
@@ -60,7 +60,7 @@ public class CoupledIdLists: HelperBase
     /// <returns></returns>
     public Dictionary<string, object?> Move(int sourceIndex, int targetIndex)
     {
-        var l = Log.Fn<Dictionary<string, object?>>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
+        using var l = Log.Fn<Dictionary<string, object?>>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
         var hasChanges = Lists.Values
             .Aggregate(false, (prev, lstItem) => lstItem.Move(sourceIndex, targetIndex) || prev);
         return hasChanges
@@ -75,7 +75,7 @@ public class CoupledIdLists: HelperBase
     /// <returns></returns>
     public Dictionary<string, object?> Reorder(int[] newSequence)
     {
-        var l = Log.Fn<Dictionary<string, object?>>($"seq:[{string.Join(",", newSequence)}]");
+        using var l = Log.Fn<Dictionary<string, object?>>($"seq:[{string.Join(",", newSequence)}]");
         // some error checks
         if (newSequence.Length != Lists.First().Value.Count)
         {
@@ -110,7 +110,7 @@ public class CoupledIdLists: HelperBase
     /// <returns></returns>
     public Dictionary<string, object?> Replace(int index, (bool, int?)[] values)
     {
-        var l = Log.Fn<Dictionary<string, object?>>($"index: {index}");
+        using var l = Log.Fn<Dictionary<string, object?>>($"index: {index}");
         if (index == -1)
             throw l.Ex(new Exception("Sort order is never -1 any more; deprecated"));
 

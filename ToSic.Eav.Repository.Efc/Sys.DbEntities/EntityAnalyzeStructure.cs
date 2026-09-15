@@ -1,9 +1,9 @@
-﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
+namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 internal class EntityAnalyzeStructure(DbStorage.DbStorage dbStorage, ILog? log) : HelperBase(log, "Db.AzStrc")
 {
     internal (int ContentTypeId, List<TsDynDataAttribute> Attributes) GetContentTypeAndAttribIds(bool saveJson, IEntity newEnt, bool logDetails)
     {
-        var l = Log.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
+        using var l = Log.Fn<(int, List<TsDynDataAttribute>)>($"json: {saveJson}");
         if (saveJson)
             return l.Return((DbConstant.RepoIdForJsonEntities, []), $"json - no attributes, CT: {DbConstant.RepoIdForJsonEntities}");
 

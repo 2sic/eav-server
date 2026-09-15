@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys.Insights.Data;
@@ -9,7 +9,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.App;
 
 internal class InsightsAppsCache(LazySvc<IAppsCatalog> appsCatalog, LazySvc<IAppStateCacheService> appStates, LazySvc<IAppReaderFactory> appReaders)
-    : InsightsProvider(new() { Name = Link }, connect: [appsCatalog, appStates, appReaders])
+    : InsightsProvider(new() { Name = Link })
 {
     public static string Link = "AppsCache";
 

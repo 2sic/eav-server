@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.ContentTypes.Sys;
@@ -52,7 +52,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
     /// Constructs a new Attributes DS
     /// </summary>
     public Attributes(IAppReaderFactory appReaders, Dependencies services)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib")
     {
         _appReaders = appReaders;
         ProvideOut(GetList);
@@ -61,7 +61,7 @@ public sealed class Attributes: CustomDataSourceAdvanced
 
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
 
         // try to load the content-type - if it fails, return empty list
         var ctName = ContentTypeName;

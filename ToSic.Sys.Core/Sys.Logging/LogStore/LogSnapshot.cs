@@ -17,16 +17,4 @@ public sealed record LogSnapshot
     public int DroppedEntries { get; init; }
     public int TruncatedEntries { get; init; }
 
-    internal static LogSnapshot FromLegacy(Log log, IDictionary<string, string>? specs = null)
-        => new()
-        {
-            LogId = log.LogId, Created = log.Created,
-            Entries = log.SnapshotEntries()
-                .Where(e => !e.WrapClose)
-                .Select(e => LogEvent.FromEntry(e))
-                .ToImmutableArray(),
-            Specs = specs?.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase)
-                ?? ImmutableDictionary.Create<string, string>(StringComparer.OrdinalIgnoreCase),
-            EstimatedBytes = log.EstimateSize().Total,
-        };
 }

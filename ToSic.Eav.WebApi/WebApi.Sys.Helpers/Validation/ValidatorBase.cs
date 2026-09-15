@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.WebApi.Sys.Helpers.Http;
+using ToSic.Eav.WebApi.Sys.Helpers.Http;
 
 namespace ToSic.Eav.WebApi.Sys.Helpers.Validation;
 
@@ -12,7 +12,7 @@ public abstract class ValidatorBase(ILog parentLog, string logName) : HelperBase
     /// <returns></returns>
     public static HttpExceptionAbstraction? BuildExceptionIfHasIssues(string errors, ILog? log, string? logMessage = null)
     {
-        var l = log.Fn<HttpExceptionAbstraction?>();
+        using var l = log.Fn<HttpExceptionAbstraction?>();
         var hasErrors = errors != "";
         var preparedException = hasErrors ? HttpException.BadRequest(errors) : null;
         if (logMessage != null)
@@ -29,7 +29,7 @@ public abstract class ValidatorBase(ILog parentLog, string logName) : HelperBase
     /// <param name="addition"></param>
     protected void Add(string addition)
     {
-        var l = Log.Fn($"Add problem to list:{addition}");
+        using var l = Log.Fn($"Add problem to list:{addition}");
         Errors += (Errors == string.Empty ? "" : "\n") + addition;
         l.Done();
     }

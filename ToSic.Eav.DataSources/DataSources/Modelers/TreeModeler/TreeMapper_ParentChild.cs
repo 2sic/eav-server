@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Entities.Sources;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.EntityPair;
 
 namespace ToSic.Eav.DataSources;
@@ -14,7 +14,7 @@ partial class TreeMapper
         string? newParentField = default,
         LazyLookup<object, IEntity>? lookup = default)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         // Make sure we have field names in case they were not provided & full-clone entities/relationships
         newParentField ??= DefaultParentFieldName;
         newChildrenField ??= DefaultChildrenFieldName;
@@ -73,7 +73,7 @@ partial class TreeMapper
     /// <returns></returns>
     private object? GetKey(IEntity e, string attribute)
     {
-        var l = Log.Fn<object?>(enabled: Debug);
+        using var l = Log.Fn<object?>(enabled: Debug);
         try
         {
             var val = e.Get(attribute);

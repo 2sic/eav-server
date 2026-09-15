@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Permissions;
+using ToSic.Eav.Apps.Sys.Permissions;
 using ToSic.Eav.Context;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.DataFormats.EavLight;
@@ -15,9 +15,10 @@ public class EntityApi(
     AppWorkChain<WorkEntityDelete> entDelete,
     Generator<IConvertToEavLight> entitiesToDicLazy,
     Generator<MultiPermissionsTypes, MultiPermissionsTypes.Options> multiPermissionsTypes)
-    : ServiceBase("Api.Entity",
-        connect: [appWorkCtxSvc, workEntities, entDelete, entitiesToDicLazy.SetInit(etd => etd.WithGuid = true), multiPermissionsTypes])
+    : ServiceBase("Api.Entity")
 {
+    private readonly Generator<IConvertToEavLight> _entitiesToDicLazy
+        = entitiesToDicLazy.SetInit(etd => etd.WithGuid = true);
 
     #region DI Constructor & Init
 
@@ -48,7 +49,7 @@ public class EntityApi(
     public IEnumerable<IDictionary<string, object>> GetEntities(IAppReader appReader, string contentType, /*bool showDrafts,*/ Uri? fullRequest)
     {
         var list = workEntities.New(_appWorkCtxPlus /*appReader, showDrafts*/).Get(contentType, fullRequest: fullRequest);
-        var converter= entitiesToDicLazy.New();
+        var converter= _entitiesToDicLazy.New();
 
         if (fullRequest is not null)
         {
@@ -88,7 +89,7 @@ public class EntityApi(
 
     public List<IEntity> GetEntitiesForAdminStep1(string contentType, bool excludeAncestor = false)
     {
-        var l = Log.Fn<List<IEntity>>(timer: true);
+        using var l = Log.Fn<List<IEntity>>(timer: true);
 
         var ofType = workEntities.New(_appWorkCtxPlus)
             .Get(contentType)

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys.Entities;
 
@@ -15,7 +15,7 @@ static class IEntitySubListNavigation
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static PropReqResult? TryToNavigateToEntityInList(this IEntity entity, PropReqSpecs specs, object parentDynEntity, PropertyLookupPath path) 
     {
-        var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
+        using var l = specs.LogOrNull.Fn<PropReqResult>(specs.Field);
         var field = specs.Field;
         // Check if we have a configuration for dynamic children
         var dynChildField = entity.Type?.DynamicChildrenField;

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -71,7 +71,7 @@ public sealed class Paging: CustomDataSourceAdvanced
 
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var itemsToSkip = (PageNumber - 1) * PageSize;
 
         var source = TryGetIn();
@@ -87,7 +87,7 @@ public sealed class Paging: CustomDataSourceAdvanced
 
     private IImmutableList<IEntity> GetPaging()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
 
         // Calculate any additional stuff
         var source = TryGetIn();

@@ -1,10 +1,10 @@
-﻿using ToSic.Eav.Sys.Insights.HtmlHelpers;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsAttributes(LazySvc<IAppReaderFactory> appReaders)
-    : InsightsProvider(new() { Name = Link, Title = "Attributes of Type"}, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, Title = "Attributes of Type"})
 {
     public static string Link = "Attributes";
 

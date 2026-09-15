@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZoneManager(Generator<DbStorage, StorageOptions> dbLazy, LazySvc<AppCachePurger> appCachePurger)
-    : ServiceBase("App.Zone", connect: [dbLazy, appCachePurger]), IZoneIdentity
+    : ServiceBase("App.Zone"), IZoneIdentity
 {
 
     public int ZoneId { get; private set; }
@@ -33,7 +33,7 @@ public class ZoneManager(Generator<DbStorage, StorageOptions> dbLazy, LazySvc<Ap
 
     public void SaveLanguage(string cultureCode, string cultureText, bool active)
     {
-        var l = Log.Fn($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
+        using var l = Log.Fn($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
         DbStorage.Dimensions.AddOrUpdateZoneDimension(cultureCode, cultureText, active);
         appCachePurger.Value.PurgeZoneList();
         l.Done();

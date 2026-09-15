@@ -22,7 +22,7 @@ public class InputTypes : CustomDataSource
         AppWorkContextService appWorkContextService,
         AppWorkChain<WorkInputTypes> inputTypes,
         AppWorkChain<WorkFieldsDataTypes> fieldsDataTypes)
-        : base(services, logName: "Sxc.InpTyp", connect: [appWorkContextService, inputTypes, fieldsDataTypes])
+        : base(services, logName: "Sxc.InpTyp")
     {
         var ctx = new Lazy<IAppWorkContext>(() => appWorkContextService.ContextNew(AppId));
         
@@ -40,7 +40,7 @@ public class InputTypes : CustomDataSource
 
     private IEnumerable<InputTypeInfoRaw> GetInputTypes(WorkInputTypes inputTypes)
     {
-        var l = Log.Fn<IEnumerable<InputTypeInfoRaw>>($"{AppId}");
+        using var l = Log.Fn<IEnumerable<InputTypeInfoRaw>>($"{AppId}");
 
         var entities = inputTypes
             .GetInputTypes()
@@ -65,7 +65,7 @@ public class InputTypes : CustomDataSource
 
     private IEnumerable<NameValueRaw> GetDataTypes(WorkFieldsDataTypes fieldsDataTypes)
     {
-        var l = Log.Fn<IEnumerable<NameValueRaw>>($"{AppId}");
+        using var l = Log.Fn<IEnumerable<NameValueRaw>>($"{AppId}");
 
         var entities = fieldsDataTypes
             .DataTypes()
@@ -76,7 +76,7 @@ public class InputTypes : CustomDataSource
 
     private IEnumerable<NameValueRaw> GetReservedNames()
     {
-        var l = Log.Fn<IEnumerable<NameValueRaw>>();
+        using var l = Log.Fn<IEnumerable<NameValueRaw>>();
 
         var entities = AttributeNames.ReservedNames
             .Select(reservedName => new NameValueRaw(Name: reservedName.Key, Value: reservedName.Value));

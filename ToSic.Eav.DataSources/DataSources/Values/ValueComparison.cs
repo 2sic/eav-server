@@ -1,4 +1,4 @@
-﻿using static System.DateTime;
+using static System.DateTime;
 using static System.Decimal;
 using static System.StringComparison;
 using static ToSic.Eav.DataSources.CompareOperators;
@@ -17,7 +17,7 @@ internal class ValueComparison: HelperBase
 
     public Func<IEntity, bool>? GetComparison(ValueTypes type, string fieldName, string operation, string[] languages, string expected)
     {
-        var l = Log.Fn<Func<IEntity, bool>?>();
+        using var l = Log.Fn<Func<IEntity, bool>?>();
         operation = operation.ToLowerInvariant();
 
         // First try to figure out based on known type
@@ -51,7 +51,7 @@ internal class ValueComparison: HelperBase
     /// </summary>
     private Func<IEntity?, bool>? StringComparison(string fieldName, string operation, string[] languages, string expected)
     {
-        var l = Log.Fn<Func<IEntity?, bool>>(expected);
+        using var l = Log.Fn<Func<IEntity?, bool>>(expected);
 
         var stringCompare = PickStringCompare(operation);
 
@@ -83,7 +83,7 @@ internal class ValueComparison: HelperBase
     /// </summary>
     private Func<IEntity, bool>? BoolComparison(string fieldName, string operation, string[] languages, string expected)
     {
-        var l = Log.Fn<Func<IEntity, bool>>(expected);
+        using var l = Log.Fn<Func<IEntity, bool>>(expected);
         var boolFilter = bool.Parse(expected);
 
         switch (operation)
@@ -103,7 +103,7 @@ internal class ValueComparison: HelperBase
     /// </summary>
     private Func<IEntity, bool>? NumberComparison(string fieldName, string operation, string[] languages, string expected)
     {
-        var l = Log.Fn<Func<IEntity, bool>>(expected);
+        using var l = Log.Fn<Func<IEntity, bool>>(expected);
 
         var minOrExpected = Decimal.MinValue;
         var max = Decimal.MaxValue;
@@ -165,7 +165,7 @@ internal class ValueComparison: HelperBase
 
     private Func<decimal, bool>? NumberInnerCompare(string operation, decimal expected, decimal expectedMax, List<decimal>? decimals = null)
     {
-        var l = Log.Fn<Func<decimal, bool>?>($"{expected}");
+        using var l = Log.Fn<Func<decimal, bool>?>($"{expected}");
 
         Func<decimal, bool>? finalFn = operation switch
         {
@@ -192,7 +192,7 @@ internal class ValueComparison: HelperBase
     /// </summary>
     private Func<IEntity, bool>? DateTimeComparison(string fieldName, string operation, string[] languages, string expected)
     {
-        var l = Log.Fn<Func<IEntity, bool>?>(expected);
+        using var l = Log.Fn<Func<IEntity, bool>?>(expected);
 
         var max = DateTime.MaxValue;
         var expectedDtm = DateTime.MinValue;
@@ -259,7 +259,7 @@ internal class ValueComparison: HelperBase
 
     private (bool useBetween, string start, string end) BetweenParts(string expected)
     {
-        var l = Log.Fn<(bool useBetween, string start, string end)>(expected);
+        using var l = Log.Fn<(bool useBetween, string start, string end)>(expected);
         expected = expected.ToLowerInvariant();
         var hasAnd = expected.IndexOf(" and ", Ordinal);
         string low = "", high = "";

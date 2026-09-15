@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.Persistence.Sys.Logging;
@@ -6,7 +6,7 @@ using ToSic.Eav.Persistence.Sys.Logging;
 namespace ToSic.Eav.Repository.Efc.Tests.Mocks;
 
 public class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
-    : ServiceBase("Mck.ImpExp", connect: [appsCatalog]), IImportExportEnvironment
+    : ServiceBase("Mck.ImpExp"), IImportExportEnvironment
 {
     // This should point to a subfolder in the bin, so that temp data is created there
     private string BasePath => TestFiles.GetTestPath("");

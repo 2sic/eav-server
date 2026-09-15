@@ -64,7 +64,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                      + P("Status: ", Strong(logStore.Pause ? "paused" : "collecting"),
                          ", toggle: ", Linker.LinkTo(HtmlEncode("▶"), InsightsPauseLogs.Link, more: "toggle=false"),
                          " | ", Linker.LinkTo(HtmlEncode("⏸"), InsightsPauseLogs.Link, more: "toggle=true"),
-                         $" collecting #{logStore.AddCount} of max {logStore.MaxItems} (keep max {logStore.SegmentSize} per set, then FIFO); {logStore.Mode}; {logStore.Status}"
+                         $" collecting #{logStore.AddCount} of max {logStore.MaxItems} (keep max {logStore.SegmentSize} per set, then FIFO); {logStore.Status}"
                          + (showFlush ? " " + Linker.LinkTo("flush " + key, InsightsLogsFlush.Link, key: key) : ""));
         if (showReset)
             result += Br() + Strong("This list has filters applied. ")

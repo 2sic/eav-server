@@ -1,15 +1,15 @@
-﻿using static ToSic.Razor.Blade.Tag;
+using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsTypeMetadata(LazySvc<IAppReaderFactory> appReaders)
-    : InsightsProvider(new() { Name = Link, Title = "Type Metadata" }, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, Title = "Type Metadata" })
 {
     public static string Link = "TypeMetadata";
 
     public override string HtmlBody()
     {
-        var l = Log.Fn<string>($"appId:{AppId}; Type: {Type}");
+        using var l = Log.Fn<string>($"appId:{AppId}; Type: {Type}");
 
         if (UrlParamsIncomplete(AppId, Type, out var message))
             return message;

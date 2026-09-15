@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Json.Sys;
@@ -16,7 +16,7 @@ public class WorkEntityVersioning(
     AppCachePurger appCachePurger,
     LazySvc<ImportService> import,
     LazySvc<JsonSerializer> jsonSerializer)
-    : ServiceWithSetup<IAppWorkContext>("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import])
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntCre")
 {
 
     public List<ItemHistory> VersionHistory(int id, bool includeData = true)

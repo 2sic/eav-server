@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Metadata.Targets;
@@ -20,7 +20,7 @@ partial class XmlImportWithFiles
     /// <returns></returns>
     private List<IEntity> BuildEntities(List<XElement> entities, int targetTypeId) 
     {
-        var l = LogDetails.Fn<List<IEntity>>($"for {entities?.Count}; type {targetTypeId}");
+        using var l = LogDetails.Fn<List<IEntity>>($"for {entities?.Count}; type {targetTypeId}");
         if (entities == null)
             return l.Return([], "empty");
         var result = entities
@@ -38,7 +38,7 @@ partial class XmlImportWithFiles
     /// <returns></returns>
     private IEntity BuildEntity(XElement entityNode, int targetType)
     {
-        var l = LogDetails.Fn<IEntity>($"assignment-type: {targetType}");
+        using var l = LogDetails.Fn<IEntity>($"assignment-type: {targetType}");
 
         #region retrieve optional metadata keys in the import - must happen before we apply corrections like AppId
 

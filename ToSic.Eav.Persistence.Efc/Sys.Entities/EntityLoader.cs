@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Build.Sys;
@@ -124,7 +124,7 @@ internal class EntityLoader(
 
     public List<TempEntity> LoadEntityHeadersFromDb(int appId, int[] entityIds, string? filterJsonType = null)
     {
-        var l = Log.IfSummary(appLoader.LogSettings).Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterJsonType)}: '{filterJsonType}'", timer: true);
+        using var l = Log.IfSummary(appLoader.LogSettings).Fn<List<TempEntity>>($"app: {appId}, ids: {entityIds.Length}, {nameof(filterJsonType)}: '{filterJsonType}'", timer: true);
 
         if (appId == KnownAppsConstants.PresetAppId
             || appId == KnownAppsConstants.GlobalPresetAppId)

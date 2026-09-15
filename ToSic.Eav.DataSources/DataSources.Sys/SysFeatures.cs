@@ -34,7 +34,6 @@
 //        [PrivateApi]
 //        public SysFeatures(MyServices services, SysFeaturesService sysCapabilities) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.SysCap")
 //        {
-//            ConnectLogs([sysCapabilities]);
 //            ProvideOutRaw(() => sysCapabilities.States.OrderBy(f => f.Aspect.NameId), options: () => new DataFactoryOptions
 //            {
 //                TypeName = "SystemFeatures"

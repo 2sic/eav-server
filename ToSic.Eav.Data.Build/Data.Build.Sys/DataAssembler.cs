@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Build.Sys;
+namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
 /// Internal data assembler to create entities, relationships, attributes and values.
@@ -11,10 +11,7 @@ public class DataAssembler(
     Generator<AttributeAssembler, DataAssemblerOptions> attributeAssembler,
     Generator<AttributeListAssembler, DataAssemblerOptions> attributeListAssembler,
     Generator<RelationshipAssembler, DataAssemblerOptions> relationshipAssembler)
-    : ServiceWithSetup<DataAssemblerOptions>("DaB.MltBld", connect:
-        [
-            entityAssembler, entityConnectionBuilder, attributeAssembler, attributeListAssembler, relationshipAssembler
-        ])
+    : ServiceWithSetup<DataAssemblerOptions>("DaB.MltBld")
 {
     protected override DataAssemblerOptions GetDefaultOptions() => new();
 

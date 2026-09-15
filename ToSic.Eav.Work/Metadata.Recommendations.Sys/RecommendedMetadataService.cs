@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.Work;
@@ -21,7 +21,7 @@ namespace ToSic.Eav.Metadata.Recommendations.Sys;
 /// <remarks>new in v13.02</remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> requirements, AppWorkChain<WorkInputTypes> inputTypes)
-    : ServiceWithSetup<IAppWorkContext>($"{AppConstants.LogName}.MdRead", connect: [requirements])
+    : ServiceWithSetup<IAppWorkContext>($"{AppConstants.LogName}.MdRead")
 {
     private IAppReader AppReader => MyOptions.AppReader;
 
@@ -47,7 +47,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
 
     public IEnumerable<MetadataRecommendation> GetRecommendations(int targetTypeId, string key, string? reqTypeName = null)
     {
-        var l = Log.Fn<IEnumerable<MetadataRecommendation>>($"targetType: {targetTypeId}");
+        using var l = Log.Fn<IEnumerable<MetadataRecommendation>>($"targetType: {targetTypeId}");
         // Option 1. Specified typeName
         // If a specific contentType was given, that's the only thing we'll recommend
         // This is the case for a Permissions dialog
@@ -104,7 +104,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
 
     private ICollection<RecommendationInfos> TypesWhichDeclareTheyAreForTheTarget(int targetType, string targetKey)
     {
-        var l = Log.Fn<ICollection<RecommendationInfos>>();
+        using var l = Log.Fn<ICollection<RecommendationInfos>>();
         // for type/fieldDef path comparisons, make sure we have the slashes cleaned
         var keyForward = (targetKey ?? "").ForwardSlash().Trim();
 
@@ -191,7 +191,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
 
     private ICollection<MetadataRecommendation>? GetTargetsExpectations(int targetType, string key)
     {
-        var l = Log.Fn<ICollection<MetadataRecommendation>>($"targetType: {targetType}");
+        using var l = Log.Fn<ICollection<MetadataRecommendation>>($"targetType: {targetType}");
         switch ((TargetTypes)targetType)
         {
             case TargetTypes.Undefined:
@@ -265,7 +265,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     /// <returns></returns>
     private ICollection<MetadataRecommendation> GetMetadataExpectedDecorators(IMetadata? md, TargetTypes targetTypeFor, string debug, int priority)
     {
-        var l = Log.Fn<ICollection<MetadataRecommendation>>($"for {targetTypeFor}");
+        using var l = Log.Fn<ICollection<MetadataRecommendation>>($"for {targetTypeFor}");
 
         // meta data is sometimes null
         if (md is null)
@@ -308,7 +308,7 @@ public class RecommendedMetadataService(LazySvc<MetadataRequirementsService> req
     /// <returns></returns>
     private MetadataRecommendation? TypeAsRecommendation(string? name, string debug, int priority, string? delWarning)
     {
-        var l = Log.Fn<MetadataRecommendation>($"name: {name}");
+        using var l = Log.Fn<MetadataRecommendation>($"name: {name}");
         if (IsNullOrWhiteSpace(name))
             return l.ReturnNull("empty name");
 

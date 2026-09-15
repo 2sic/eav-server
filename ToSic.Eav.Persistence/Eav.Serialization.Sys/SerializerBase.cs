@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Global;
@@ -17,7 +17,7 @@ public abstract class SerializerBase(SerializerBase.Dependencies services, strin
     #region MyServices
 
     public record Dependencies(ITargetTypeService MetadataTargets, DataAssembler DataAssembler, ContentTypeAssemblyKit ContentTypeAssemblyKit, IGlobalDataService GlobalData, object[]? Connect = default)
-        : DependenciesBase(connect: [MetadataTargets, DataAssembler, ContentTypeAssemblyKit, GlobalData, ..Connect ?? []]);
+        : DependenciesBase();
 
     #endregion
 
@@ -47,7 +47,7 @@ public abstract class SerializerBase(SerializerBase.Dependencies services, strin
 
     public void ConfigureLogging(LogSettings settings)
     {
-        var l = Log.Fn(settings.ToString());
+        using var l = Log.Fn(settings.ToString());
         _disableLogDetails = Log.IfDetails(settings) == null;
         _disableLogSummary = Log.IfSummary(settings) == null;
         l.Done();
@@ -76,7 +76,7 @@ public abstract class SerializerBase(SerializerBase.Dependencies services, strin
 
     protected IContentType? GetContentType(string staticName)
     {
-        var l = LogDsDetails.Fn<IContentType?>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", timer: true);
+        using var l = LogDsDetails.Fn<IContentType?>($"name: {staticName}, preferLocal: {PreferLocalAppTypes}", timer: true);
         // There is a complex lookup we must protocol to better detect issues, which is why we assemble a message
         var msg = "";
 

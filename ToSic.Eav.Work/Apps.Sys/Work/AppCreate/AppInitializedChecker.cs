@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Initializers;
+using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Metadata;
 using static ToSic.Eav.Apps.Sys.AppLoadConstants;
 
@@ -8,16 +8,15 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppInitializedChecker(AppWorkQuick<AppInitializer> appInitGenerator) : ServiceBase("Eav.AppBld",
-    connect: [appInitGenerator]), IAppInitializedChecker
+public class AppInitializedChecker(AppWorkQuick<AppInitializer> appInitGenerator) : ServiceBase("Eav.AppBld"), IAppInitializedChecker
 {
     /// <inheritdoc />
     public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppReader appReader, string? newAppName, CodeRefTrail codeRefTrail, ILog parentLog)
     {
-        var log = new Log("Eav.AppChk", parentLog);
+        var log = new Log("Eav.AppChk");
         codeRefTrail.WithHere();
 
-        var l = log.Fn<bool>($"..., {newAppName}");
+        using var l = log.Fn<bool>($"..., {newAppName}");
 
         if (CheckIfAllPartsExist(appReader, codeRefTrail, out _, out _, out _, log))
             return l.ReturnFalse("ok");
@@ -51,7 +50,7 @@ public class AppInitializedChecker(AppWorkQuick<AppInitializer> appInitGenerator
     /// <returns></returns>
     internal static bool CheckIfAllPartsExist(IAppReader appReader, CodeRefTrail codeRefTrail, out IEntity? appConfig, out IEntity? appResources, out IEntity? appSettings, ILog log)
     {
-        var l = log.Fn<bool>();
+        using var l = log.Fn<bool>();
         codeRefTrail.WithHere().AddMessage($"App: {appReader.AppId}");
         var appMd = appReader.Metadata;
         appConfig = appMd.GetMetadata(TargetTypes.App, appReader.AppId, TypeAppConfig).FirstOrDefault();

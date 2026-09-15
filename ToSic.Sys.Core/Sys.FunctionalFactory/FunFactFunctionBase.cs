@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.FunctionalFactory;
+namespace ToSic.Sys.FunctionalFactory;
 
 /// <summary>
 /// WIP fluid functional object factory.
@@ -27,7 +27,7 @@ public abstract class FunFactFunctionBase<T>(ILog? parentLog, IEnumerable<(strin
 
     protected T Apply(T initial)
     {
-        var l = Log.Fn<T>($"{Actions.Count} action");
+        using var l = Log.Fn<T>($"{Actions.Count} action");
         var result = Actions.Aggregate(initial, (current, action) =>
         {
             l.A(action.Info);

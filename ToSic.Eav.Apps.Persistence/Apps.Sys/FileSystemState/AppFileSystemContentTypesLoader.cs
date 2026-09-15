@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Paths;
+using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
@@ -12,12 +12,12 @@ namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSystemLoader, FileSystemLoaderOptions> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
-    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppContentTypesLoader
+    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper), IAppContentTypesLoader
 {
     /// <inheritdoc />
     public PartialData TypesAndEntities(IEntitiesSource entitiesSource)
     {
-        var l = Log.Fn<PartialData>();
+        using var l = Log.Fn<PartialData>();
         try
         {
             var extPaths = GetAllExtensionDataPaths();
@@ -51,7 +51,7 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
     private (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) LoadDataFromOneExtensionPath(
         string extensionPath, int seed, IEntitiesSource entitiesSource)
     {
-        var l = Log.IfSummary(LogSettings).Fn<(ICollection<IContentType>, ICollection<IEntity>)>(extensionPath);
+        using var l = Log.IfSummary(LogSettings).Fn<(ICollection<IContentType>, ICollection<IEntity>)>(extensionPath);
         var fsLoader = fslGenerator.New(options: new()
         {
             AppId = AppIdentity.AppId,
@@ -79,7 +79,7 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
 
     private ICollection<string> GetAllExtensionDataPaths()
     {
-        var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>(
+        using var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>(
             $"Roots: {ExtensionsPath};{ExtensionsPathShared}");
 
         var roots = new[]

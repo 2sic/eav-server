@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Relationships;
@@ -17,7 +17,7 @@ internal class RelationshipQueries(EfcAppLoaderService appLoader, ILog parentLog
     /// </remarks>
     public IQueryable<TsDynDataRelationship> RelationshipChunkQueryOptimized(int appId, List<int> entityIds)
     {
-        var l = Log.IfDetails(appLoader.LogSettings).Fn<IQueryable<TsDynDataRelationship>>($"app: {appId}, ids: {entityIds.Count}", timer: true);
+        using var l = Log.IfDetails(appLoader.LogSettings).Fn<IQueryable<TsDynDataRelationship>>($"app: {appId}, ids: {entityIds.Count}", timer: true);
         var relationships = appLoader.Context.TsDynDataRelationships
             .Where(rel => rel.ParentEntity.AppId == appId)
             .Where(r =>

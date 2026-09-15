@@ -1,4 +1,4 @@
-﻿
+
 
 using ToSic.Eav.DataSource.Sys;
 
@@ -51,7 +51,7 @@ public sealed class StreamMerge: DataSourceBase
 
     private IImmutableList<IEntity> GetAll()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var result = ValidInStreams
             .SelectMany(stm => stm)
             .ToImmutableOpt();
@@ -63,7 +63,7 @@ public sealed class StreamMerge: DataSourceBase
 
     private List<IEnumerable<IEntity>> GetValidInStreams()
     {
-        var l = Log.Fn<List<IEnumerable<IEntity>>>();
+        using var l = Log.Fn<List<IEnumerable<IEntity>>>();
 
         var inStreams = In
             .OrderBy(pair => pair.Key)
@@ -76,14 +76,14 @@ public sealed class StreamMerge: DataSourceBase
 
     private IImmutableList<IEntity> GetDistinct()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var result = List.Distinct().ToImmutableOpt();
         return l.Return(result, result.Count.ToString());
     }
 
     private IImmutableList<IEntity> GetAnd()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var streams = ValidInStreams;
         var streamCount = streams.Count;
         var firstList = streams.FirstOrDefault()?.ToList(); // must be separate, because we
@@ -114,7 +114,7 @@ public sealed class StreamMerge: DataSourceBase
 
     private IImmutableList<IEntity> GetXor()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var result = List
             .GroupBy(e => e)
             .Where(g => g.Count() == 1)

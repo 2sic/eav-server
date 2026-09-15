@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Query.Sys.Inspect;
+namespace ToSic.Eav.DataSource.Query.Sys.Inspect;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryInspectionService() : ServiceBase("Qry.Info")
@@ -25,7 +25,7 @@ public class QueryInspectionService() : ServiceBase("Qry.Info")
     /// </summary>
     private void GetStreamInfosRecursive(IDataSource target)
     {
-        var l = Log.Fn($"{target.Guid}[{target.In.Count}]", timer: true);
+        using var l = Log.Fn($"{target.Guid}[{target.In.Count}]", timer: true);
         foreach (var stream in target.In)
         {
             // First get all the streams (do this first so they stay together)

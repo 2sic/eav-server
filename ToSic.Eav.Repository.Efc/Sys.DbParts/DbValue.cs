@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
+namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 internal class DbValue(DbStorage.DbStorage db) : DbPartBase(db, "Db.Values")
 {
@@ -7,7 +7,7 @@ internal class DbValue(DbStorage.DbStorage db) : DbPartBase(db, "Db.Values")
     /// </summary>
     internal ICollection<TsDynDataValue> CloneEntitySimpleValuesAndQueueUntracked(TsDynDataEntity source, TsDynDataEntity target)
     {
-        var l = LogDetails.Fn<ICollection<TsDynDataValue>>($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
+        using var l = LogDetails.Fn<ICollection<TsDynDataValue>>($"CloneEntitySimpleValues({source.EntityId}, {target.EntityId})");
         
         // Clear values on target (including Dimensions). Must be done in separate steps, would cause un-allowed null-Foreign-Keys
         DbStore.SqlDb.RemoveRange(target.TsDynDataValues);
@@ -43,7 +43,7 @@ internal class DbValue(DbStorage.DbStorage db) : DbPartBase(db, "Db.Values")
 
     internal void CloneRelationshipsAndQueueUntracked(TsDynDataEntity source, TsDynDataEntity target)
     {
-        var l = LogDetails.Fn($"CloneRelationshipsAndSave({source.EntityId}, {target.EntityId})");
+        using var l = LogDetails.Fn($"CloneRelationshipsAndSave({source.EntityId}, {target.EntityId})");
 
         // note the related Entities are managed in the EntityParentRelationships. not sure why though
         // Delete all existing relationships - but not the target, just the relationship

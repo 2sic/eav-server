@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Sys.Caching.PiggyBack;
@@ -24,7 +24,7 @@ public static class IHasPiggyBackExtensions
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static TData? GetOrCreateInPiggyBack<TData>(this IPropertyLookup entryPoint, string field, Func<string, TData> factory, ILog logOrNull) where TData : class
     {
-        var l = logOrNull.Fn<TData>();
+        using var l = logOrNull.Fn<TData>();
         var advProperty = entryPoint.FindPropertyInternal(new(field), new());
 
         // Skip if nothing to process

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Json.Sys;
+using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.File;
@@ -8,7 +8,7 @@ internal class JsonBundleBuilder(IAppReader appReader, ILog parentLog) : HelperB
 {
     internal JsonBundle BundleBuild(ExportConfiguration export, JsonSerializer serializer)
     {
-        var l = Log.Fn<JsonBundle>($"build bundle for ExportConfiguration:{(export as ICanBeEntity).Entity.EntityId}");
+        using var l = Log.Fn<JsonBundle>($"build bundle for ExportConfiguration:{(export as ICanBeEntity).Entity.EntityId}");
 
         // loop through content types and add them to the bundle-list
         l.A($"count export content types:{export.ContentTypes.Count}");
@@ -54,7 +54,7 @@ internal class JsonBundleBuilder(IAppReader appReader, ILog parentLog) : HelperB
 
     private JsonContentType PreserveMarker(bool preserveMarkers, JsonContentType jsonContentType)
     {
-        var l = Log.Fn<JsonContentType>($"preserveMarkers:{preserveMarkers}");
+        using var l = Log.Fn<JsonContentType>($"preserveMarkers:{preserveMarkers}");
         if (preserveMarkers)
             return jsonContentType;
 

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Query.Sys;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Sys.Users.Permissions;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using static ToSic.Eav.DataSource.Sys.DataSourceConstantsInternal;
@@ -60,7 +60,7 @@ public class PublishingFilter : DataSourceBase
     /// Constructs a new PublishingFilter
     /// </summary>
     [PrivateApi]
-    public PublishingFilter(Dependencies services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{LogPrefix}.Publsh", connect: [userPermissions])
+    public PublishingFilter(Dependencies services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{LogPrefix}.Publsh")
     {
         _userPermissions = userPermissions;
         ProvideOut(PublishingFilterList);
@@ -71,7 +71,7 @@ public class PublishingFilter : DataSourceBase
     private IImmutableList<IEntity> PublishingFilterList()
     {
         var showDraftsSetting = ShowDrafts;
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var finalShowDrafts = showDraftsSetting
                               ?? _userPermissions.UserPermissions()?.ShowDraftData
                               ?? QueryConstants.ParamsShowDraftsDefault;

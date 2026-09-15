@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.DataSource.Sys;
 using static System.StringComparer;
 using static ToSic.Eav.DataSource.DataSourceConstants;
@@ -76,7 +76,7 @@ public class AttributeFilter : DataSourceBase
     /// <returns></returns>
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         var source = TryGetIn();

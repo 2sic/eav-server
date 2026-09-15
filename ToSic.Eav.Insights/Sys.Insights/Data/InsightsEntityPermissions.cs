@@ -1,10 +1,10 @@
-﻿using ToSic.Eav.Apps.Sys.Work;
+using ToSic.Eav.Apps.Sys.Work;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsEntityPermissions(AppWorkQuick<WorkEntities> workEntities)
-    : InsightsProvider(new() { Name = Link, Title = "Entity Permissions" }, connect: [workEntities])
+    : InsightsProvider(new() { Name = Link, Title = "Entity Permissions" })
 {
     public static string Link = "EntityPermissions";
 

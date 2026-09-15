@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Eav.WebApi.Sys.Entities;
@@ -19,8 +19,7 @@ public class EntityControllerReal(
     LazySvc<ContentImportApi> contentImport,
     LazySvc<IUser> user,
     IResponseMaker responseMaker)
-    : Services_ServiceBase("Api.EntityRl",
-        connect: [context, appsCatalog, entityApi, contentExport, contentImport, user, responseMaker]),
+    : Services_ServiceBase("Api.EntityRl"),
         IEntityController
 {
     public const string LogSuffix = "Entity";

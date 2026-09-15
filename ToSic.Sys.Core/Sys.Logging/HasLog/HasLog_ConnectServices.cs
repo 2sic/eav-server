@@ -11,9 +11,5 @@ public static class HasLog_ConnectServices
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static void ConnectLogs(this IHasLog parent, object[] services)
-    {
-        var depLogs = new DependenciesLogHelper();
-        depLogs.Add(services);
-        depLogs.SetLog(parent.Log);
-    }
+    { }
 }

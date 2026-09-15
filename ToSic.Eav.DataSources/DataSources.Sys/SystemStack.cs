@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.AppStack;
 using ToSic.Eav.Context.Sys.ZoneCulture;
@@ -49,7 +49,7 @@ public class SystemStack: CustomDataSourceAdvanced
     private readonly AppDataStackService _dataStackService;
 
     public SystemStack(Dependencies services, AppDataStackService dataStackService, IAppReaderFactory appReadFac, IZoneCultureResolver zoneCulture, IPropertyDumpService dumpService)
-        : base(services, "Ds.AppStk", connect: [appReadFac, zoneCulture, dataStackService, dumpService])
+        : base(services, "Ds.AppStk")
     {
         _appReadFac = appReadFac;
         _zoneCulture = zoneCulture;

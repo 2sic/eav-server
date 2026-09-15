@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.Stack;
 using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Eav.Data.Sys.PropertyStack;
@@ -9,7 +9,7 @@ namespace ToSic.Eav.Apps.Sys.AppStack;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppDataStackService(IAppReaderFactory appReaderFactory) : ServiceBase("App.Stack", connect: [appReaderFactory])
+public class AppDataStackService(IAppReaderFactory appReaderFactory) : ServiceBase("App.Stack")
 {
     public AppDataStackService Init(IAppReader appReader)
     {
@@ -37,7 +37,7 @@ public class AppDataStackService(IAppReaderFactory appReaderFactory) : ServiceBa
 
     public List<KeyValuePair<string, IPropertyLookup>> GetStack(AppThingsIdentifiers target, IEntity? viewPart = default)
     {
-        var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(
+        using var l = Log.Fn<List<KeyValuePair<string, IPropertyLookup>>>(
             $"target: {target.Target}, Has View: {viewPart != null}");
         // "View" Settings/Resources - always add, no matter if null, so the key always exists
         var sources = new List<KeyValuePair<string, IPropertyLookup>>();
@@ -56,7 +56,7 @@ public class AppDataStackService(IAppReaderFactory appReaderFactory) : ServiceBa
 
     private ICollection<KeyValuePair<string, IPropertyLookup>> GetOrGenerate(AppThingsIdentifiers target)
     {
-        var l = Log.Fn<ICollection<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
+        using var l = Log.Fn<ICollection<KeyValuePair<string, IPropertyLookup>>>(target.Target.ToString());
         var appState = AppReader.GetCache();
 
         // Note: the PiggyBack _must_ store the synchronized object, and NOT some List<...> with the resulting data
@@ -72,7 +72,7 @@ public class AppDataStackService(IAppReaderFactory appReaderFactory) : ServiceBa
 
     private AppStateStackSourcesBuilder Create(AppThingsIdentifiers target)
     {
-        var l = Log.Fn<AppStateStackSourcesBuilder>(target.Target.ToString());
+        using var l = Log.Fn<AppStateStackSourcesBuilder>(target.Target.ToString());
         // Site should be skipped on the global zone
         l.A($"Owner: {AppReader.Show()}");
         var siteAppReader = AppReader.ZoneId == KnownAppsConstants.DefaultZoneId

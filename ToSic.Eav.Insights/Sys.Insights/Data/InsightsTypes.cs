@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using static ToSic.Razor.Blade.Tag;
@@ -17,7 +17,7 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name, string? 
 
     public override string HtmlBody()
     {
-        var l = Log.Fn<string>();
+        using var l = Log.Fn<string>();
         if (AppId == null)
             return l.Return("please add appid to the url parameters");
 
@@ -31,7 +31,7 @@ internal class InsightsTypes(IAppReaderFactory appReadFac, string name, string? 
 
     internal string TypesTable(int appId, IEnumerable<IContentType> typesA, IReadOnlyCollection<IEntity> items)
     {
-        var l = Log.Fn<string>($"appId:{appId}");
+        using var l = Log.Fn<string>($"appId:{appId}");
 
         var html = new StringBuilder();
         try

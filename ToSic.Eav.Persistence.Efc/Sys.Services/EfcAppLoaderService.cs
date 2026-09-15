@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys;
@@ -42,12 +42,7 @@ public class EfcAppLoaderService(
     Generator<IDataDeserializer> dataDeserializer,
     Generator<IAppContentTypesLoader, AppFileSystemLoaderOptions> appFileContentTypesLoader,
     Generator<IAppStateBuilder> appStateBuilder)
-    : ServiceBase("Db.Efc11",
-        connect:
-        [
-            context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, sysFeaturesSvc, dataAssembler, ctAssemblyKit,
-            dataDeserializer, appFileContentTypesLoader, appStateBuilder
-        ]), IAppsAndZonesLoaderWithRaw
+    : ServiceBase("Db.Efc11"), IAppsAndZonesLoaderWithRaw
 {
     #region Setup, SQL Timer, Primary Language
     
@@ -73,7 +68,7 @@ public class EfcAppLoaderService(
         {
             if (field != null)
                 return field;
-            var l = Log.Fn<string>();
+            using var l = Log.Fn<string>();
             field = environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
             return l.Return(field, $"Primary language from Env (for value sorting): {field}");
         }
@@ -115,7 +110,7 @@ public class EfcAppLoaderService(
     /// <inheritdoc />
     IAppStateBuilder IAppsAndZonesLoaderWithRaw.AppStateRawBuilder(int appId, CodeRefTrail codeRefTrail)
     {
-        var l = Log.Fn<IAppStateBuilder>($"{appId}", timer: true);
+        using var l = Log.Fn<IAppStateBuilder>($"{appId}", timer: true);
         codeRefTrail.WithHere();
         var builder = LoadAppStateRawFromDb(appId, codeRefTrail);
         return l.ReturnAsOk(builder);
@@ -133,7 +128,7 @@ public class EfcAppLoaderService(
         // Note that to ensure the Content app works, we must perform the same check again in the 
         // API Endpoint which will edit this data
 
-        var l = Log.Fn<IAppStateCache>($"{appId}", timer: true);
+        using var l = Log.Fn<IAppStateCache>($"{appId}", timer: true);
 
         var builder = LoadAppStateRawFromDb(appId, codeRefTrail.WithHere().AddMessage("First Build"));
 
@@ -176,7 +171,7 @@ public class EfcAppLoaderService(
         var logStoreEntry = logStore.Add(EavLogs.LogStoreAppStateLoader, Log);
 
 
-        var l = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
+        using var l = Log.Fn<IAppStateBuilder>($"AppId: {appId}");
         var appIdentity = appsCatalog.AppIdentity(appId);
         var appGuidName = appsCatalog.AppNameId(appIdentity);
         logStoreEntry?.AddSpec("App", $"{appIdentity.Show()}");
@@ -225,13 +220,13 @@ public class EfcAppLoaderService(
     /// <inheritdoc />
     public IAppStateCache Update(IAppStateCache appStateOriginal, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds)
     {
-        var lMain = Log.Fn<IAppStateCache>(message: "What happens inside this is logged in the app-state loading log");
+        using var lMain = Log.Fn<IAppStateCache>(message: "What happens inside this is logged in the app-state loading log");
         codeRefTrail.WithHere().AddMessage($"App: {appStateOriginal.AppId}");
         var builder = appStateBuilder.New().Init(appStateOriginal);
         var hasIdFilter = entityIds.Any();
         builder.Load($"startAt: {startAt}, ids only: {!hasIdFilter}", state =>
         {
-            var l = Log.Fn();
+            using var l = Log.Fn();
             codeRefTrail.WithHere();
 
             // prepare core metadata lists & name/path of app
@@ -299,7 +294,7 @@ public class EfcAppLoaderService(
     /// <param name="builder"></param>
     private void AddExtensionEntities(ICollection<IEntity> fileEntities, IAppStateBuilder builder)
     {
-        var l = Log.Fn($"{fileEntities.Count}");
+        using var l = Log.Fn($"{fileEntities.Count}");
         foreach (var fileEntity in fileEntities)
         {
             var tryToFindType = builder.Reader.TryGetContentType(fileEntity.Type.Name);
@@ -316,7 +311,7 @@ public class EfcAppLoaderService(
     /// </summary>
     private int GetAncestorAppIdOrZero(int appId)
     {
-        var l = Log.Fn<int>($"{nameof(appId)}:{appId}");
+        using var l = Log.Fn<int>($"{nameof(appId)}:{appId}");
 
         // Preset app (-42) is not stored in DB; avoid DB lookup to prevent needless connections
         if (appId == KnownAppsConstants.PresetAppId)
@@ -348,7 +343,7 @@ public class EfcAppLoaderService(
     /// <returns></returns>
     private (string? Name, string? Path) PreLoadAppPath(int appId)
     {
-        var l = Log.Fn<(string? Name, string? Path)>($"{nameof(appId)}: {appId}");
+        using var l = Log.Fn<(string? Name, string? Path)>($"{nameof(appId)}: {appId}");
 
         if (appId == KnownAppsConstants.PresetAppId)
             return l.Return((KnownAppsConstants.PresetName, KnownAppsConstants.PresetName), "preset app");
@@ -414,7 +409,7 @@ public class EfcAppLoaderService(
 
     internal TimeSpan InitMetadataLists(IAppStateBuilder builder)
     {
-        var l = Log.Fn<TimeSpan>($"{builder.AppState.Show()}", timer: true);
+        using var l = Log.Fn<TimeSpan>($"{builder.AppState.Show()}", timer: true);
         builder.InitMetadata();
         return l.Return(l?.Timer.Elapsed ?? new TimeSpan(0));
     }

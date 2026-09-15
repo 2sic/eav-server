@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace ToSic.Sys.FunctionalFactory;
@@ -34,7 +34,7 @@ public abstract record FunFactActionsBase<T> : HelperRecordBase
 
     protected T Apply(T initial)
     {
-        var l = Log.Fn<T>($"{Actions.Count} actions");
+        using var l = Log.Fn<T>($"{Actions.Count} actions");
         foreach (var action in Actions)
         {
             l.A(action.Info);

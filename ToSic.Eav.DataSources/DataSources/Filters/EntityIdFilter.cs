@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Errors;
 using static ToSic.Eav.DataSource.DataSourceConstants;
@@ -48,7 +48,7 @@ public class EntityIdFilter : DataSourceBase
 
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var entityIdsOrError = this.CustomConfigurationParse(EntityIds);
         if (!entityIdsOrError.IsOk)
             return l.ReturnAsError(entityIdsOrError.ErrorsSafe());
@@ -103,7 +103,7 @@ internal static class EntityIdFilterExtensions
 {
     internal static ResultOrError<int[]> CustomConfigurationParse(this IDataSource dataSource, string entityIds)
     {
-        var l = dataSource.Log.Fn<ResultOrError<int[]>>();
+        using var l = dataSource.Log.Fn<ResultOrError<int[]>>();
 
         // clean up list of IDs to remove all white-space etc.
 

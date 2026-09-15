@@ -1,12 +1,12 @@
-﻿namespace ToSic.Eav.Apps.Sys;
+namespace ToSic.Eav.Apps.Sys;
 
 /// <summary>
 /// Base object for things that have a full app-identity (app-id and zone-id) and can also log their state.
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class AppBase<TServices>(TServices services, string logName, object[]? connect)
-    : ServiceBase<TServices>(services, logName ?? "App.Base", connect: connect), IAppIdentity
+public abstract class AppBase<TServices>(TServices services, string logName, object[]? connect = null)
+    : ServiceBase<TServices>(services, logName ?? "App.Base"), IAppIdentity
     where TServices : IDependencies
 {
     /// <inheritdoc />

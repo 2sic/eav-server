@@ -1,4 +1,4 @@
-﻿using System.Runtime.Caching;
+using System.Runtime.Caching;
 using ToSic.Sys.Caching.Monitors;
 using ToSic.Sys.FunctionalFactory;
 using static ToSic.Sys.Caching.MemoryCacheService;
@@ -24,7 +24,7 @@ public record CacheItemPolicyMaker : FunFactActionsBase<CacheItemPolicy>, IPolic
 
     public override CacheItemPolicy CreateResult()
     {
-        var l = Log.Fn<CacheItemPolicy>();
+        using var l = Log.Fn<CacheItemPolicy>();
         var policy = Apply(new());
 
         if (policy.AbsoluteExpiration != InfiniteAbsoluteExpiration || policy.SlidingExpiration != NoSlidingExpiration)

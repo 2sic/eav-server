@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using ToSic.Eav.Data.Sys.Dimensions;
 
 namespace ToSic.Eav.ImportExport.Sys.Xml;
@@ -63,7 +63,7 @@ internal class XmlValueListHelper(
     /// <param name="readOnly"></param>
     private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, TargetLanguageToSourceLanguage envLang, bool readOnly)
     {
-        var l = LogDetails.Fn();
+        using var l = LogDetails.Fn();
         var logText = "";
         var dimensionsToAdd = new List<ILanguage>();
         if (langMap.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
@@ -94,7 +94,7 @@ internal class XmlValueListHelper(
 
     private (XElement? Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, ICollection<XElement> xmlValuesOfAttrib)
     {
-        var l = LogDetails.Fn<(XElement? Element, bool ReadOnly)>(envLang.EnvironmentKey);
+        using var l = LogDetails.Fn<(XElement? Element, bool ReadOnly)>(envLang.EnvironmentKey);
         XElement? sourceValueNode = null;
         var readOnly = false;
 
@@ -128,7 +128,7 @@ internal class XmlValueListHelper(
 
     private XElement GetFallbackAttributeInXml(ICollection<XElement> xmlValuesOfAttrib)
     {
-        var l = LogDetails.Fn<XElement>();
+        using var l = LogDetails.Fn<XElement>();
         // First, try to take a fallback node without language assignments
         var sourceValueNode = xmlValuesOfAttrib
             .FirstOrDefault(xv =>

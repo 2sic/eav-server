@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
 
 namespace ToSic.Eav.Data.Build;
@@ -30,7 +30,7 @@ internal class DataFactoryContentTypeHelper(LazySvc<ContentTypesFromCodeManager>
     /// <returns></returns>
     internal IContentType GetPreferredContentType()
     {
-        var l = Log.Fn<IContentType>();
+        using var l = Log.Fn<IContentType>();
         // Priority 1: If the options have a type, use that
         if (MyOptions.Type is {} type)
             return l.Return(codeCtManager.Value.Get(type), $"Options.Type: {type.Name}");

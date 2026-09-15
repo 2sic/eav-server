@@ -20,7 +20,7 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 public class ZoneLanguages : CustomDataSource
 {
     public ZoneLanguages(Dependencies services, LazySvc<IZoneMapper> zoneMapper, ISite site)
-        : base(services, logName: "Sxc.ZoneLangs", connect: [zoneMapper, site])
+        : base(services, logName: "Sxc.ZoneLangs")
     {
         ProvideOutRaw(
             () => GetLanguages(zoneMapper.Value, site),
@@ -33,7 +33,7 @@ public class ZoneLanguages : CustomDataSource
 
     private IEnumerable<LanguageStatusRaw> GetLanguages(IZoneMapper zoneMapper, ISite site)
     {
-        var l = Log.Fn<IEnumerable<LanguageStatusRaw>>($"{site.Id}");
+        using var l = Log.Fn<IEnumerable<LanguageStatusRaw>>($"{site.Id}");
 
         var list = zoneMapper.CulturesWithState(site)
             .Select(c => new LanguageStatusRaw

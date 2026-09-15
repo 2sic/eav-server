@@ -1,11 +1,11 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Sys.Save;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class EntitySaver(DataAssembler dataAssembler) : ServiceBase("Dta.Saver", connect: [dataAssembler])
+public class EntitySaver(DataAssembler dataAssembler) : ServiceBase("Dta.Saver")
 {
     private LogSettings LogSettings { get; set; } = null!;
 
@@ -25,7 +25,7 @@ public class EntitySaver(DataAssembler dataAssembler) : ServiceBase("Dta.Saver",
     )
     {
         LogSettings = logSettings ?? new();
-        var l = Log.IfDetails(LogSettings).Fn<EntityPair<SaveOptions>>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
+        using var l = Log.IfDetails(LogSettings).Fn<EntityPair<SaveOptions>>($"entity#{original?.EntityId} update#{update?.EntityId} options:{saveOptions != null}", timer: true);
         
         if (saveOptions == null)
             throw new ArgumentNullException(nameof(saveOptions));
@@ -172,7 +172,7 @@ public class EntitySaver(DataAssembler dataAssembler) : ServiceBase("Dta.Saver",
     /// </remarks>
     private IDictionary<string, IAttribute> StripUnknownLanguages(IDictionary<string, IAttribute> allFields, SaveOptions saveOptions)
     {
-        var l = Log.IfDetails(LogSettings).Fn<IDictionary<string, IAttribute>>();
+        using var l = Log.IfDetails(LogSettings).Fn<IDictionary<string, IAttribute>>();
         var languages = saveOptions.Languages;
 
         var modified = allFields
@@ -241,7 +241,7 @@ public class EntitySaver(DataAssembler dataAssembler) : ServiceBase("Dta.Saver",
     /// <returns></returns>
     private IAttribute MergeAttribute(IAttribute original, IAttribute update, SaveOptions saveOptions)
     {
-        var l = Log.IfDetails(LogSettings).Fn<IAttribute>();
+        using var l = Log.IfDetails(LogSettings).Fn<IAttribute>();
         // everything in the update will be kept, and optionally some stuff in the original may be preserved
         var result = update.Values.ToList();
         foreach (var orgVal in ValuesOrderedForProcessing(original.Values, saveOptions))
@@ -275,7 +275,7 @@ public class EntitySaver(DataAssembler dataAssembler) : ServiceBase("Dta.Saver",
     
     private IDictionary<string, IAttribute> KeepOnlyKnownKeys(IDictionary<string, IAttribute> orig, IEnumerable<string> keys)
     {
-        var l = Log.IfDetails(LogSettings).Fn<IDictionary<string, IAttribute>>();
+        using var l = Log.IfDetails(LogSettings).Fn<IDictionary<string, IAttribute>>();
         var lowerKeys = keys
             .Select(k => k.ToLowerInvariant())
             .ToListOpt();
@@ -288,7 +288,7 @@ public class EntitySaver(DataAssembler dataAssembler) : ServiceBase("Dta.Saver",
     private (IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)
         CorrectPublishedAndGuidImports(IDictionary<string, IAttribute> values) 
     {
-        var l = Log.IfDetails(LogSettings).Fn<(IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)>();
+        using var l = Log.IfDetails(LogSettings).Fn<(IDictionary<string, IAttribute> Attributes, Guid? NewGuid, bool? NewIsPublished)>();
         // check IsPublished
         values.TryGetValue(AttributeNames.EntityFieldIsPublished, out var isPublishedAttr);
         var isPublished = isPublishedAttr?.Values.FirstOrDefault()?.ObjectContents;

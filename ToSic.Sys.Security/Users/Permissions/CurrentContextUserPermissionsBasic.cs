@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ToSic.Sys.Users.Permissions;
 
@@ -20,7 +20,7 @@ internal class CurrentContextUserPermissionsBasic(IUser user) : ServiceBase("Eav
 
     private bool UserMayAdmin()
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         if (user == null)
             return l.Return(false, "user unknown, false");
         return user.IsSystemAdmin 

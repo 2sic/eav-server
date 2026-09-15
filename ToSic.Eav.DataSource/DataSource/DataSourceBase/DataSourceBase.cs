@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 
 namespace ToSic.Eav.DataSource;
@@ -25,7 +25,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Depend
     /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
     /// <param name="connect"></param>
     [PrivateApi]
-    protected DataSourceBase(Dependencies services, string logName, object[]? connect = default) : base(services, logName, connect: connect)
+    protected DataSourceBase(Dependencies services, string logName, object[]? connect = default) : base(services, logName)
     {
         this.AutoLoadAllConfigMasks(GetType(), services.ConfigDataLoader);
     }

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Streams;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -47,7 +47,7 @@ public sealed class StreamFallback : DataSourceBase
 
     private IDataStream? FindIdealFallbackStream()
     {
-        var l = Log.Fn<IDataStream>("");
+        using var l = Log.Fn<IDataStream>("");
         Configuration.Parse();
 
         // Check if there is a default-stream in with content - if yes, try to return that

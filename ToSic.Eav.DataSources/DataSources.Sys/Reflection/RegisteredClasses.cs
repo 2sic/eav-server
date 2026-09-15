@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Raw;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -16,14 +16,14 @@ namespace ToSic.Eav.DataSources.Sys;
 public abstract class RegisteredClasses<TClassOrInterface>: CustomDataSource where TClassOrInterface: class
 {
     protected RegisteredClasses(Dependencies services, LazySvc<IEnumerable<TClassOrInterface>> servicesOfType)
-        : base(services, logName: $"{DataSourceConstantsInternal.LogPrefix}.C#Cls", connect: [servicesOfType])
+        : base(services, logName: $"{DataSourceConstantsInternal.LogPrefix}.C#Cls")
     {
         ProvideOutRaw(() => Generators(servicesOfType.Value));
     }
 
     private IEnumerable<IRawData> Generators(IEnumerable<TClassOrInterface> servicesOfType)
     {
-        var l = Log.Fn<IEnumerable<IRawData>>();
+        using var l = Log.Fn<IEnumerable<IRawData>>();
         var list = servicesOfType
             .Select(g => g.GetType())
             .Where(type => !type.IsAbstract && !type.IsInterface)

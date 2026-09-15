@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource.Sys;
@@ -276,7 +276,7 @@ public partial class Serialization : DataSourceBase
     /// <returns></returns>
     private IImmutableList<IEntity> GetList(string inStreamName = DataSourceConstants.StreamDefaultName)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
         var original = In[inStreamName].List.ToImmutableOpt();
         var enhanced = AddSerializationRules(original);
@@ -285,7 +285,7 @@ public partial class Serialization : DataSourceBase
 
     private IImmutableList<IEntity> AddSerializationRules(IImmutableList<IEntity> before)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         // Skip if no rules defined
         var noRules = string.IsNullOrWhiteSpace(string.Join("", Configuration));
         if (noRules)

@@ -27,7 +27,7 @@ public class AppWebApiControllerEndpoints : CustomDataSource
         Dependencies services,
         AppWebApiControllerAnalyzer analyzer,
         IAppWebApiControllerAssemblyLoader assemblyLoader)
-        : base(services, logName: "Eav.ApiCtlEp", connect: [analyzer, assemblyLoader])
+        : base(services, logName: "Eav.ApiCtlEp")
     {
         _analyzer = analyzer;
         _assemblyLoader = assemblyLoader;
@@ -40,7 +40,7 @@ public class AppWebApiControllerEndpoints : CustomDataSource
 
     private IEnumerable<AppWebApiEndpointRaw> GetEndpoints()
     {
-        var l = Log.Fn<IEnumerable<AppWebApiEndpointRaw>>();
+        using var l = Log.Fn<IEnumerable<AppWebApiEndpointRaw>>();
 
         if (string.IsNullOrWhiteSpace(Path))
             return l.Return([], "missing path");

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.State;
 using static ToSic.Eav.Apps.Sys.KnownAppsConstants;
 
@@ -12,13 +12,13 @@ internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCach
 
     public IAppReader? TryGet(IAppIdentity appIdentity)
     {
-        var l = Log.Fn<IAppReader?>(appIdentity.Show());
+        using var l = Log.Fn<IAppReader?>(appIdentity.Show());
         var state = appStates.Get(appIdentity);
         return l.ReturnAndLogIfNull(ToReader(state));
     }
     public IAppReader Get(IAppIdentity appIdentity)
     {
-        var l = Log.Fn<IAppReader?>(appIdentity.Show());
+        using var l = Log.Fn<IAppReader?>(appIdentity.Show());
         var state = appStates.Get(appIdentity);
         if (state == null)
             throw new NullReferenceException($"App '{appIdentity.Show()}' not found in cache, so it can't be read. This is a bug, please report it to the 2sxc team.");
@@ -34,7 +34,7 @@ internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCach
 
     public IAppReader Get(int appId)
     {
-        var l = Log.Fn<IAppReader?>($"{appId}");
+        using var l = Log.Fn<IAppReader?>($"{appId}");
         var state = appStates.Get(appId);
         if (state == null)
             throw new NullReferenceException($"App '{appId}' not found in cache, so it can't be read. This is a bug, please report it to the 2sxc team.");

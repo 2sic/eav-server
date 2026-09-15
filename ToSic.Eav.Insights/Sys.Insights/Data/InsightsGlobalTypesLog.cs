@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.AppStateInFolder;
+using ToSic.Eav.Apps.Sys.AppStateInFolder;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Eav.Sys.Insights.Logs;
 using static ToSic.Razor.Blade.Tag;
@@ -6,7 +6,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsGlobalTypesLog(LazySvc<ILogStoreLive> logStore)
-    : InsightsProvider(new() { Name = Link, Title = "Global Types Log" }, connect: [logStore])
+    : InsightsProvider(new() { Name = Link, Title = "Global Types Log" })
 {
     public static string Link = "GlobalTypesLog";
 

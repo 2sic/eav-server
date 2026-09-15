@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 
 internal class Process4JsonValues(): Process0Base("Db.EPr4JV")
@@ -8,7 +8,7 @@ internal class Process4JsonValues(): Process0Base("Db.EPr4JV")
         if (!data.SaveJson)
             return data;
 
-        var l = services.LogDetails.Fn<EntityProcessData>();
+        using var l = services.LogDetails.Fn<EntityProcessData>();
 
         // careful - this is different from before, but I believe the previous one was wrong...
         // but we didn't notice, because we didn't log details...

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -53,7 +53,7 @@ public class OwnerFilter : DataSourceBase
         // Get once to not re-access the property every time
         var identity = Identity;
 
-        var l = Log.Fn<IImmutableList<IEntity>>($"get for identity:{identity}");
+        using var l = Log.Fn<IImmutableList<IEntity>>($"get for identity:{identity}");
 
         if (string.IsNullOrWhiteSpace(identity))
             return l.ReturnAsError([], "no identity");

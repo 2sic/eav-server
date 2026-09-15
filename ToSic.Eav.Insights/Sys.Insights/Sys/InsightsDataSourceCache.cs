@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Blade;
@@ -12,7 +12,7 @@ namespace ToSic.Eav.Sys.Insights.Sys;
 public class InsightsDataSourceCache(
     LazySvc<IDataSourceCacheService> dsCacheSvc,
     IListCacheSvc listCacheSvc)
-    : ServiceBase("Ins.DsCache", connect: [dsCacheSvc, listCacheSvc])
+    : ServiceBase("Ins.DsCache")
 {
     internal InsightsHtmlBase Html = new();
 

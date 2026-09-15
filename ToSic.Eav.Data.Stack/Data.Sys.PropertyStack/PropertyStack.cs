@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Data.Sys.PropertyStack;
@@ -45,7 +45,7 @@ public partial class PropertyStack: IPropertyStack, IHasIdentityNameId
     public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path)
     {
         specs = specs.SubLog(EavLogs.Eav + ".PStack");
-        var l = specs.LogOrNull.Fn<PropReqResult>($"{specs.Dump()}, {nameof(startAtSource)}: {startAtSource}");
+        using var l = specs.LogOrNull.Fn<PropReqResult>($"{specs.Dump()}, {nameof(startAtSource)}: {startAtSource}");
         // Start with empty result, may be filled in later on
         var result = PropReqResult.Null(path);
         for (var sourceIndex = startAtSource; sourceIndex < SourcesReal.Count; sourceIndex++)

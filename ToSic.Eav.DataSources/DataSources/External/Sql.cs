@@ -1,4 +1,4 @@
-﻿#if NETFRAMEWORK
+#if NETFRAMEWORK
 using System.Data.SqlClient;
 #else
 using Microsoft.Data.SqlClient;
@@ -118,7 +118,7 @@ public class Sql : CustomDataSourceAdvanced
 
     [PrivateApi]
     public new record Dependencies(SqlPlatformInfo SqlPlatformInfo, CustomDataSourceAdvanced.Dependencies ParentServices)
-        : DependenciesBase(connect: [SqlPlatformInfo]);
+        : DependenciesBase();
 
     // Important: This constructor must come BEFORE the other constructors
     // because it is the one which the .net Core DI should use!
@@ -126,7 +126,7 @@ public class Sql : CustomDataSourceAdvanced
     /// Initializes a new instance of the SqlDataSource class
     /// </summary>
     [PrivateApi]
-    public Sql(Dependencies services) : base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql", connect: [services])
+    public Sql(Dependencies services) : base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql")
     {
         SqlServices = services;
         ProvideOut(GetList);
@@ -227,7 +227,7 @@ public class Sql : CustomDataSourceAdvanced
 
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         CustomConfigurationParse();
 
         var selectSql = SelectCommand;

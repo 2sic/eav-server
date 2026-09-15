@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Serialization.Sys.Json;
 
@@ -16,7 +16,7 @@ public class JsonDeserializeAttribute
         if (serialized.IsEmpty())
             return null;
 
-        var l = logOrNull.Fn<ContentTypeFieldSysSettings?>($"{nameForLog}: {serialized.Substring(0, Math.Min(50, serialized.Length))}...");
+        using var l = logOrNull.Fn<ContentTypeFieldSysSettings?>($"{nameForLog}: {serialized.Substring(0, Math.Min(50, serialized.Length))}...");
 
         try
         {

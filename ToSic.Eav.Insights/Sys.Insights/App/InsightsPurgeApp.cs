@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 
 namespace ToSic.Eav.Sys.Insights.App;
 
@@ -7,7 +7,7 @@ internal class InsightsPurgeApp(LazySvc<AppCachePurger> appCachePurger)
     {
         Name = Link,
         Title = "Flush Logs"
-    }, connect: [appCachePurger])
+    })
 {
     public static string Link = "PurgeApp";
 

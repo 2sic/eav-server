@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.LookUp.Sys.Engines;
 
@@ -7,7 +7,7 @@ namespace ToSic.Eav.Services;
 internal class DataSourcesService(
     IServiceProvider serviceProvider,
     LazySvc<ILookUpEngineResolver> lookupResolveLazy)
-    : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.Factry", connect: [/* never! serviceProvider,*/ lookupResolveLazy]),
+    : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.Factry"),
         IDataSourcesService
 {
 
@@ -16,7 +16,7 @@ internal class DataSourcesService(
     /// <inheritdoc />
     public IDataSource Create(Type type, IDataSourceOptions? options = default)
     {
-        var l = Log.Fn<IDataSource>();
+        using var l = Log.Fn<IDataSource>();
         var newDs = serviceProvider.Build<IDataSource>(type, Log);
         newDs.Setup(options ?? DataSourceOptions.Empty());
         return l.Return(newDs);
@@ -58,7 +58,7 @@ internal class DataSourcesService(
     public TDataSource Create<TDataSource>(IDataSourceOptions? options = default)
         where TDataSource : IDataSource
     {
-        var l = Log.Fn<TDataSource>($"{typeof(TDataSource).Name}, attach:{options?.Attach?.GetLink()?.DataSource?.Show()}");
+        using var l = Log.Fn<TDataSource>($"{typeof(TDataSource).Name}, attach:{options?.Attach?.GetLink()?.DataSource?.Show()}");
 
         var primarySource = options?.Attach?.GetLink()?.DataSource;
 
@@ -89,7 +89,7 @@ internal class DataSourcesService(
             throw new ArgumentNullException(nameof(options));
         if (options.AppIdentityOrReader == null)
             throw new ArgumentNullException(nameof(IDataSourceOptions.AppIdentityOrReader));
-        var l = Log.Fn<IDataSource>($"#{options.AppIdentityOrReader.Show()}, draft:{options.ShowDrafts}, lookUp:{options.LookUp != null}");
+        using var l = Log.Fn<IDataSource>($"#{options.AppIdentityOrReader.Show()}, draft:{options.ShowDrafts}, lookUp:{options.LookUp != null}");
 
         var optionsSafe = OptionsWithLookUp(options);
         var appRoot = Create<IAppRoot>(options: optionsSafe);

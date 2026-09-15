@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
@@ -15,7 +15,7 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
     : ServiceBase<ContentTypesFromCodeBuilder.Dependencies>(services, "Eav.CtFact")
 {
     public record Dependencies(ContentTypeAssemblyKit TypeAssemblyKit, IDataFactory DataFactory)
-        : DependenciesBase(connect: [TypeAssemblyKit, DataFactory]);
+        : DependenciesBase();
 
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
@@ -23,7 +23,7 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
 
     internal IContentType Generate(Type type, string? name = default, string? nameId = default, string? scope = default, int appId = NoAppId)
     {
-        var l = Log.Fn<IContentType>(timer: true);
+        using var l = Log.Fn<IContentType>(timer: true);
 
         // 1. Get the content type specs from the attribute (if any) and process
         var ctSpecs = type.GetDirectlyAttachedAttribute<ContentTypeAttribute>();

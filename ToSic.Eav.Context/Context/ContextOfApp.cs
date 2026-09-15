@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.AppStack;
 using ToSic.Eav.Context.Sys;
@@ -29,7 +29,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         LazySvc<AppUserLanguageCheck> LangChecks,
         Generator<IEnvironmentPermission> EnvironmentPermissions,
         LazySvc<AppDataStackService> SettingsStack)
-        : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, SettingsStack]);
+        : DependenciesBase();
 
     /// <summary>
     /// Constructor for DI
@@ -42,7 +42,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     // For now, the code works, but we should continuously optimize and review again.
     // Also with the AppReaderOrNull which is null if AppIdentity is null
 #pragma warning disable CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
-    protected ContextOfApp(Dependencies services, string logName, object[] connect) : base(services.SiteServices, logName, connect: connect)
+    protected ContextOfApp(Dependencies services, string logName, object[]? connect = null) : base(services.SiteServices, logName)
     {
         AppServices = services;
     }
@@ -54,7 +54,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     public void ResetApp(IAppIdentity appIdentity)
     {
-        var l = Log.Fn(appIdentity.Show());
+        using var l = Log.Fn(appIdentity.Show());
         if (AppIdentity?.AppId != appIdentity.AppId)
             AppIdentity = appIdentity;
         l.Done();
@@ -85,7 +85,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
 
     private bool GetUserMayEdit()
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         // Case 1: Superuser always may
         if (User.IsSystemAdmin)
             return l.ReturnTrue("super");

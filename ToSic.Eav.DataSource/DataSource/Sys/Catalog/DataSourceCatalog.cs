@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys.AppDataSources;
+using ToSic.Eav.DataSource.Sys.AppDataSources;
 using ToSic.Eav.DataSource.VisualQuery.Sys;
 using ToSic.Sys.Caching;
 
@@ -13,7 +13,7 @@ public partial class DataSourceCatalog(
     IServiceProvider serviceProvider,
     LazySvc<IAppDataSourcesLoader> appDataSourcesLoader,
     MemoryCacheService memoryCacheService)
-    : ServiceBase("DS.DsCat", connect: [appDataSourcesLoader, memoryCacheService /*, never! add serviceProvider! - it will cause errors of already-disposed at random places */])
+    : ServiceBase("DS.DsCat")
 {
     /// <summary>
     /// Create Instance of DataSource to get In- and Out-Streams
@@ -22,7 +22,7 @@ public partial class DataSourceCatalog(
     /// <returns></returns>
     public ICollection<string>? GetOutStreamNames(DataSourceInfo dsInfo)
     {
-        var l = Log.Fn<ICollection<string>>();
+        using var l = Log.Fn<ICollection<string>>();
         try
         {
             // This MUST use Build (not GetService<>) since that will also create objects which are not registered

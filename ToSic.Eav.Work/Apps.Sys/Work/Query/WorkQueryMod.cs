@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.Metadata;
@@ -15,12 +15,11 @@ public class WorkQueryMod(
     AppWorkChain<WorkEntityCreate> entCreate,
     AppWorkChain<WorkEntityDelete> delete,
     AppWorkChain<WorkEntityUpdate> entUpdate)
-    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod",
-        connect: [systemManagerLazy, queryDefSvc, queryDefBuilder, delete, entCreate, entUpdate])
+    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod")
 {
     public bool Delete(int id)
     {
-        var l = Log.Fn<bool>($"delete a#{MyOptions.AppId}, id:{id}");
+        using var l = Log.Fn<bool>($"delete a#{MyOptions.AppId}, id:{id}");
 
         var entDelete = delete.New(MyOptions);
 
@@ -140,7 +139,7 @@ public class WorkQueryMod(
     /// </summary>
     private void DeletedRemovedParts(IEnumerable<Guid> newEntityGuids, IEnumerable<Guid> newDataSources, QueryDefinition qDef)
     {
-        var l = Log.Fn($"delete part a#{MyOptions.AppId}, pipe:{qDef.Guid}");
+        using var l = Log.Fn($"delete part a#{MyOptions.AppId}, pipe:{qDef.Guid}");
         // Get EntityGuids currently stored in EAV
         var existingEntityGuids = qDef.Parts.Select(e => e.Guid);
 
@@ -169,7 +168,7 @@ public class WorkQueryMod(
     /// <param name="renamedDataSources">Array with new DataSources and the unsavedName and final EntityGuid</param>
     private void SaveHeader(int id, Dictionary<string, object> values, ICollection<QueryWire> wirings, IDictionary<string, Guid> renamedDataSources)
     {
-        var l = Log.Fn($"save pipe a#{MyOptions.AppId}, pipe:{id}");
+        using var l = Log.Fn($"save pipe a#{MyOptions.AppId}, pipe:{id}");
         wirings = RenameWiring(wirings, renamedDataSources, Log);
 
         // Validate Stream Wirings, as we should never save bad wirings
@@ -192,7 +191,7 @@ public class WorkQueryMod(
     /// <returns></returns>
     private static ICollection<QueryWire> RenameWiring(ICollection<QueryWire> wirings, IDictionary<string, Guid>? renamedDataSources, ILog lg)
     {
-        var l = lg.Fn<ICollection<QueryWire>>();
+        using var l = lg.Fn<ICollection<QueryWire>>();
         if (renamedDataSources == null)
             return l.Return(wirings, "no renames, no changes");
 

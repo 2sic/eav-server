@@ -1,10 +1,10 @@
-﻿using ToSic.Sys.Boot;
+using ToSic.Sys.Boot;
 using static ToSic.Sys.Capabilities.Licenses.BuiltInLicenses;
 
 namespace ToSic.Sys.Capabilities.Licenses;
 
 internal sealed class BootRegisterEavLicenses(LicenseCatalog licenseCatalog)
-    : BootProcessBase("EavLic", bootPhase: BootPhase.Registrations, connect: [licenseCatalog])
+    : BootProcessBase("EavLic", bootPhase: BootPhase.Registrations)
 {
     /// <summary>
     /// Implementation of boot to register licenses

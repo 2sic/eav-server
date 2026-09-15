@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.Boot;
+namespace ToSic.Sys.Boot;
 
 /// <summary>
 /// Boot process base class, mainly to save a bit of code to create more bootloaders.
@@ -10,7 +10,7 @@
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class BootProcessBase(string logName, object[]? connect = default, BootPhase bootPhase = BootPhase.Registrations, int priority = 999)
-    : ServiceBase($"B8T.{logName}", connect: connect), IBootProcess
+    : ServiceBase($"B8T.{logName}"), IBootProcess
 {
     public string NameId => Log.NameId;
 

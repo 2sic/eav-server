@@ -1,10 +1,10 @@
-﻿using ToSic.Sys.Security.Permissions;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, LazySvc<IAppReaderFactory> appReaderFactory)
-    : MultiPermissionsApp(services, "Sec.MPTyps", connect: [appReaderFactory]),
+    : MultiPermissionsApp(services, "Sec.MPTyps"),
         IServiceWithSetup<MultiPermissionsTypes.Options>,
         IHasOptions<MultiPermissionsTypes.Options>
 {
@@ -59,7 +59,7 @@ public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, La
     /// <returns></returns>
     private IPermissionCheck BuildTypePermissionChecker(string typeName)
     {
-        var l = Log.Fn<IPermissionCheck>($"BuildTypePermissionChecker({typeName})");
+        using var l = Log.Fn<IPermissionCheck>($"BuildTypePermissionChecker({typeName})");
         // now do relevant security checks
         var appState = appReaderFactory.Value.GetOrKeep(MyOptions.App);
         var result = BuildPermissionChecker(appState.TryGetContentType(typeName));

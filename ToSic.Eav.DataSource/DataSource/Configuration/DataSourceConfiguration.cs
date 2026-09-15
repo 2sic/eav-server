@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.LookUp.Sources.Sys;
 using ToSic.Eav.LookUp;
@@ -17,7 +17,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies serv
 
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public record Dependencies(LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy)
-        : DependenciesBase(connect: [ZoneCultureResolverLazy]);
+        : DependenciesBase();
 
     #endregion
 
@@ -44,7 +44,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies serv
             return result;
 
         // on first call, get and log
-        var l = Log.Fn<string>($"{DataSourceForIn.GetType().Name}:{name}");
+        using var l = Log.Fn<string>($"{DataSourceForIn.GetType().Name}:{name}");
         var raw = GetRaw(name);
         var parsed = ParseToken(raw ?? "");
         _getThisCache[name] = parsed;

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.DataSource.Query.Sys;
@@ -15,7 +15,7 @@ public class WorkQueryCopy(
     LazySvc<DataAssembler> builder,
     LazySvc<JsonSerializer> jsonSerializer,
     AppWorkChain<WorkEntitySave> entSave)
-    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod", connect: [entSave, queryDefSvc, jsonSerializer, builder])
+    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod")
 {
     private LazySvc<JsonSerializer> Serializer => field ??= jsonSerializer.SetInit(j => j.SetApp(MyOptions.AppReader));
 
@@ -26,7 +26,7 @@ public class WorkQueryCopy(
 
     public void SaveCopy(QueryDefinition query)
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
         // Guid of the new query, which we'll need early on as target for the part-copies
         var newQueryGuid = Guid.NewGuid();
 
@@ -110,7 +110,7 @@ public class WorkQueryCopy(
 
     private IEntity CopyAndResetIds(IEntity original, Guid newGuid, Guid? newMetadataTarget = null)
     {
-        var l = Log.Fn<IEntity>();
+        using var l = Log.Fn<IEntity>();
         // todo: probably replace with clone as that should be reliable now...
         var newSer = Serializer.Value.Serialize(original);
         var newEnt = Serializer.Value.Deserialize(newSer);

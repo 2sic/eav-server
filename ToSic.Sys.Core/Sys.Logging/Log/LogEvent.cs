@@ -46,7 +46,7 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
     {
         return new()
         {
-            LogId = log.LogId, Ancestors = GetAncestors(log), Source = log.FullIdentifier,
+            LogId = log.LogId, Ancestors = [], Source = log.FullIdentifier,
             ShortSource = log.NameId, Scope = log.Scope, Name = log.Name, Created = log.Created,
         };
     }
@@ -55,8 +55,8 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
     {
         var log = entry.Owner!;
         var parentId = (entry.ParentOperation ?? log.AttachmentOperation)?.Sequence;
-        var ancestors = GetAncestors(log);
-        if (LogEventBridge.UsesExecutionContext && entry.ExecutionId is { } executionId && executionId != log.LogId)
+        ImmutableArray<string> ancestors = [];
+        if (entry.ExecutionId is { } executionId && executionId != log.LogId)
             ancestors = [executionId];
         return new()
         {
@@ -73,17 +73,6 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
             ShowNewLines = entry.Options?.ShowNewLines == true,
             ExceptionType = entry.ExceptionType, ExceptionText = entry.ExceptionText,
         };
-    }
-
-    private static ImmutableArray<string> GetAncestors(Log log)
-    {
-        Log? parent = log.Parent as Log;
-        if (parent == null)
-            return [];
-        var ancestors = ImmutableArray.CreateBuilder<string>();
-        for (; parent != null; parent = parent.Parent as Log)
-            ancestors.Add(parent.LogId);
-        return ancestors.ToImmutable();
     }
 
     /// <summary>Standard ILogger structured state, also readable by other providers.</summary>

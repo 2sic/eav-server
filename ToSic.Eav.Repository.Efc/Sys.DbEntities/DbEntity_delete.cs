@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
+namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 partial class DbEntity
 {
@@ -10,7 +10,7 @@ partial class DbEntity
     /// </summary>
     internal bool DeleteEntities(int[] repositoryId, bool autoSave = true, bool removeFromParents = false)
     {
-        var l = LogDetails.Fn<bool>($"DeleteEntity(rep-ids:{repositoryId.Length}, remove-from-parents:{removeFromParents}, auto-save:{autoSave})");
+        using var l = LogDetails.Fn<bool>($"DeleteEntity(rep-ids:{repositoryId.Length}, remove-from-parents:{removeFromParents}, auto-save:{autoSave})");
         if (repositoryId.Length == 0 || repositoryId.Contains(0))
             return l.ReturnFalse();
 

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Context;
 using ToSic.Eav.Environment.Sys.ServerPaths;
 using ToSic.Eav.Sys;
@@ -26,7 +26,7 @@ namespace ToSic.Eav.Apps.Sys.Paths;
 ///   But that is a bit difficult, because there are also some services like the IPage which should be shared across modules
 /// </remarks>
 internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfiguration> config, LazySvc<ISite> siteLazy, ISite? siteOrNull, IAppReader appReader)
-    : ServiceBase($"{EavLogs.Eav}.AppPth", connect: [serverPaths, config]), IAppPaths
+    : ServiceBase($"{EavLogs.Eav}.AppPth"), IAppPaths
 {
     private const bool Debug = true;
 
@@ -54,7 +54,7 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
     /// </summary>
     private void LogAppPathDetails(string property, string result)
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
         l.A($"App State: {appReader.Show()}");
         l.A($"Site: {Site.Id}; Zone: {Site.ZoneId};");
         l.A($"{property}: {result}");

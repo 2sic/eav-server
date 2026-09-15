@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Persistence.Efc.Sys;
+using ToSic.Eav.Persistence.Efc.Sys;
 
 using System.Linq.Expressions;
 
@@ -24,7 +24,7 @@ partial class DbEntity
     /// <returns>Entity or throws InvalidOperationException</returns>
     internal TsDynDataEntity GetDbEntityFull(int entityId, bool preferUntracked = false)
     {
-        var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
+        using var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
         var found = GetEntityQuery().Single(e => e.EntityId == entityId);
         return l.ReturnAsOk(found);
     }
@@ -35,7 +35,7 @@ partial class DbEntity
     /// <returns>Entity or throws InvalidOperationException</returns>
     internal TsDynDataEntity GetDbEntityStub(int entityId, bool preferUntracked = false)
     {
-        var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
+        using var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
         var found = DbStore.SqlDb.TsDynDataEntities
             .AsNoTrackingOptional(DbStore.Features, preferUntracked)
             .Single(e => e.EntityId == entityId);
@@ -48,7 +48,7 @@ partial class DbEntity
     /// <returns>Entity or throws InvalidOperationException</returns>
     internal TsDynDataEntity[] GetDbEntitiesWithChildren(int[] repositoryIds, bool preferUntracked = false)
     {
-        var l = LogDetails.Fn<TsDynDataEntity[]>($"Get {repositoryIds.Length}", timer: true);
+        using var l = LogDetails.Fn<TsDynDataEntity[]>($"Get {repositoryIds.Length}", timer: true);
         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
         // var found = EntityQuery.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
         //var found = EntityQuery
@@ -116,7 +116,7 @@ partial class DbEntity
     internal Dictionary<Guid, int> GetMostCurrentDbEntities(Guid[] entityGuids, bool preferUntracked = false)
     {
         // GetEntity should never return a draft entity that has a published version
-        var l = LogDetails.Fn<Dictionary<Guid, int>>($"Guids: {entityGuids.Length}; [{string.Join(",", entityGuids)}]; preferUntracked: {preferUntracked}", timer: true);
+        using var l = LogDetails.Fn<Dictionary<Guid, int>>($"Guids: {entityGuids.Length}; [{string.Join(",", entityGuids)}]; preferUntracked: {preferUntracked}", timer: true);
 
         var getEntityQuery = GetEntityStubsByGuid(entityGuids, preferUntracked);
         var dbEntityList = getEntityQuery.ToList(); // necessary for EF 3 - before GroupBy so it's then done in memory and not in SQL

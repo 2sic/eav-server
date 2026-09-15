@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
@@ -16,7 +16,7 @@ partial class FileSystemLoader
 
     public Dictionary<string, JsonFormat> GetJsonBundleBundles()
     {
-        var l = Log.Fn<Dictionary<string, JsonFormat>>();
+        using var l = Log.Fn<Dictionary<string, JsonFormat>>();
         // #1. check that folder exists
         if (!CheckPathExists(Options.Path) || !CheckPathExists(BundlesPath))
             return l.Return([], "path doesn't exist");
@@ -57,7 +57,7 @@ partial class FileSystemLoader
 
     public ICollection<ContentTypeWithEntities> ContentTypesInBundles()
     {
-        var l = Log.Fn<ICollection<ContentTypeWithEntities>>();
+        using var l = Log.Fn<ICollection<ContentTypeWithEntities>>();
         if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.ContentTypes.SafeAny()) != true))
             return l.Return([]);
 
@@ -78,7 +78,7 @@ partial class FileSystemLoader
     /// <returns></returns>
     private ICollection<ContentTypeWithEntities> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson)
     {
-        var l = Log.Fn<ICollection<ContentTypeWithEntities>>($"path: {path}");
+        using var l = Log.Fn<ICollection<ContentTypeWithEntities>>($"path: {path}");
         try
         {
             var contentTypes = ser.GetContentTypesFromBundles(bundleJson);
@@ -113,7 +113,7 @@ partial class FileSystemLoader
 
     public ICollection<IEntity> EntitiesInBundles(IEntitiesSource relationshipSource)
     {
-        var l = Log.Fn<ICollection<IEntity>>($"Entities in bundles");
+        using var l = Log.Fn<ICollection<IEntity>>($"Entities in bundles");
         if (JsonBundleBundles.All(jb => jb.Value.Bundles?.Any(b => b.Entities.SafeAny()) != true))
             return l.Return([], "no bundles have entities, return none");
 
@@ -135,7 +135,7 @@ partial class FileSystemLoader
     /// <returns></returns>
     private IEnumerable<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource)
     {
-        var l = Log.Fn<IEnumerable<IEntity>>($"Build entities from bundle json: {path}.");
+        using var l = Log.Fn<IEnumerable<IEntity>>($"Build entities from bundle json: {path}.");
         try
         {
             // WIP - Allow relationships between loaded items

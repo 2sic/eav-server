@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.DataSources.Sys;
@@ -84,7 +84,7 @@ public sealed class ValueFilter : DataSourceBase
     /// Constructs a new ValueFilter
     /// </summary>
     [PrivateApi]
-    public ValueFilter(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValFil", connect: [valLanguages])
+    public ValueFilter(ValueLanguages valLanguages, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.ValFil")
     {
         _valueLanguageService = valLanguages;
 
@@ -94,7 +94,7 @@ public sealed class ValueFilter : DataSourceBase
 
     private IImmutableList<IEntity> GetValueFilterOrFallback()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         // todo: maybe do something about languages?
         Configuration.Parse();
 
@@ -110,7 +110,7 @@ public sealed class ValueFilter : DataSourceBase
 
     private IImmutableList<IEntity> GetValueFilter()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         l.A("applying value filter...");
         var fieldName = Attribute;
 
@@ -170,7 +170,7 @@ public sealed class ValueFilter : DataSourceBase
 
     private IImmutableList<IEntity> GetFilteredWithLinq(IEnumerable<IEntity> originals, Func<IEntity, bool> compare)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         try
         {
             var results = originals.Where(compare);
@@ -189,7 +189,7 @@ public sealed class ValueFilter : DataSourceBase
 
     private IEnumerable<IEntity> ApplyTake(IEnumerable<IEntity> results)
     {
-        var l = Log.Fn<IEnumerable<IEntity>>();
+        using var l = Log.Fn<IEnumerable<IEntity>>();
         var valid = int.TryParse(Take, out var tk);
         return valid 
             ? l.Return(results.Take(tk), $"take {tk}")

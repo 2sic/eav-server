@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.ContentTypes.Sys;
@@ -42,7 +42,7 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
 
     private (IList<IContentTypeField> fields, IList<IContentTypeField> systemFields) ExtractFields(Type type)
     {
-        var l = Log.Fn<(IList<IContentTypeField>, IList<IContentTypeField>)>(timer: true);
+        using var l = Log.Fn<(IList<IContentTypeField>, IList<IContentTypeField>)>(timer: true);
 
         // 1. Get all properties of the type; exit early if none
         var properties = type.GetProperties();

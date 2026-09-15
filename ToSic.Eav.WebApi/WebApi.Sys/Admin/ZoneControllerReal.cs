@@ -8,7 +8,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZoneControllerReal(LazySvc<LanguagesBackend> languagesBackend)
-    : ServiceBase("Api.ZoneRl", connect: [languagesBackend]), IZoneController
+    : ServiceBase("Api.ZoneRl"), IZoneController
 {
     public const string LogSuffix = "Zone";
 

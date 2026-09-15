@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context;
 using ToSic.Eav.Environment.Sys.Permissions;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBase.Dependencies services)
-    : PermissionCheckBase(services, $"{AppConstants.LogName}.PrmChk", connect: [appReaders])
+    : PermissionCheckBase(services, $"{AppConstants.LogName}.PrmChk")
 {
     #region Constructor & DI
 
@@ -18,21 +18,21 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
 
     public AppPermissionCheck ForItem(IContextOfSite ctx, IAppIdentity appIdentity, IEntity targetItem)
     {
-        var l = Log.Fn<AppPermissionCheck>();
+        using var l = Log.Fn<AppPermissionCheck>();
         Init(ctx, appIdentity, targetItem?.Type, targetItem, includeApp: true);
         return l.Return(this);
     }
 
     public AppPermissionCheck ForType(IContextOfSite ctx, IAppIdentity appIdentity, IContentType targetType)
     {
-        var l = Log.Fn<AppPermissionCheck>();
+        using var l = Log.Fn<AppPermissionCheck>();
         Init(ctx, appIdentity, targetType);
         return l.Return(this);
     }
 
     public AppPermissionCheck For(string purpose, IContextOfSite ctx, IAppIdentity appIdentity, IEnumerable<IPermission>? permissions)
     {
-        var l = Log.Fn<AppPermissionCheck>($"For: {purpose}");
+        using var l = Log.Fn<AppPermissionCheck>($"For: {purpose}");
         Init(ctx, appIdentity, permissions: permissions);
         return l.Return(this);
     }
@@ -45,14 +45,14 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     /// <returns></returns>
     public AppPermissionCheck ForAppInInstance(IContextOfSite ctx, IAppIdentity appIdentity)
     {
-        var l = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity.Show()}");
+        using var l = Log.Fn<AppPermissionCheck>($"ctx, app: {appIdentity.Show()}");
         Init(ctx, appIdentity, includeApp: true);
         return l.Return(this);
     }
 
     public AppPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType? targetType, IEntity? targetItem)
     {
-        var l = Log.Fn<AppPermissionCheck>($"ctx, app: {app.Show()}, type: {targetType?.NameId}, item: {targetItem?.EntityId}");
+        using var l = Log.Fn<AppPermissionCheck>($"ctx, app: {app.Show()}, type: {targetType?.NameId}, item: {targetItem?.EntityId}");
         Init(ctx, app, targetType, targetItem, includeApp: true);
         return l.Return(this);
     }
@@ -70,7 +70,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
         IEnumerable<IPermission>? permissions = null,
         bool includeApp = false)
     {
-        var l = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity.Show()}, {nameof(includeApp)}: {includeApp}");
+        using var l = Log.Fn($"..., {targetItem?.EntityId}, app: {appIdentity.Show()}, {nameof(includeApp)}: {includeApp}");
 
         // New 2025-03-26 option to include App
         // ATM all cases where App Permissions are included will not have permissions passed in
@@ -96,7 +96,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     /// 
     private void LoadTargets(IContentType? targetType = default, IEntity? targetItem = default, IEnumerable<IPermission>? permissions = default)
     {
-        var l = Log.Fn($"type:{targetType?.NameId}, itm:{targetItem?.EntityGuid} ({targetItem?.EntityId})");
+        using var l = Log.Fn($"type:{targetType?.NameId}, itm:{targetItem?.EntityGuid} ({targetItem?.EntityId})");
 
         InitTargets(targetType?.Metadata, targetItem?.Metadata, targetItem?.Owner, permissions);
         l.Done();
@@ -109,7 +109,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     /// <returns></returns>
     private List<IPermission>? FindPermissionsOfApp(IAppIdentity? appIdentity)
     {
-        var l = Log.Fn<List<IPermission>?>();
+        using var l = Log.Fn<List<IPermission>?>();
         var permissions = appIdentity == null
             ? null
             : appReaders.GetOrKeep(appIdentity).Specs.Metadata.Permissions.ToList();

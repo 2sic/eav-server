@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Dimensions;
@@ -35,7 +35,7 @@ partial class JsonSerializer
 
     public JsonFormat UnpackAndTestGenericJsonV1(string? serialized)
     {
-        var l = LogDsDetails.Fn<JsonFormat>();
+        using var l = LogDsDetails.Fn<JsonFormat>();
 
         if (string.IsNullOrWhiteSpace(serialized))
             throw LogException(new ArgumentNullException(nameof(serialized), @"cannot deserialize json - empty or null string"));
@@ -59,14 +59,14 @@ partial class JsonSerializer
         Exception LogException(Exception ex)
         {
             // In case of an error, do make sure that we do actually log it - even if the log-details was null
-            var errLogger = l ?? Log.Fn<JsonFormat>();
+            using var errLogger = l ?? Log.Fn<JsonFormat>();
             return errLogger.Done(ex);
         }
     }
 
     public IEntity Deserialize(JsonEntity jEnt, bool allowDynamic, bool skipUnknownType, IEntitiesSource? dynRelationshipsSource = default)
     {
-        var l = LogDsDetails.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", timer: true);
+        using var l = LogDsDetails.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", timer: true);
         // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
         var contentType = GetContentType(jEnt.Type.Id)
                           ?? (allowDynamic || skipUnknownType
@@ -127,7 +127,7 @@ partial class JsonSerializer
 
     private Target DeserializeEntityTarget(JsonEntity jEnt)
     {
-        var l = LogDsDetails.Fn<Target>(timer: true);
+        using var l = LogDsDetails.Fn<Target>(timer: true);
         if (jEnt.For == null)
             return l.Return(new(), "no for found");
 
@@ -150,7 +150,7 @@ partial class JsonSerializer
 
     private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAttributes, IEntitiesSource? relationshipsSource = null)
     {
-        var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>(timer: true);
+        using var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>(timer: true);
         var valBuilder = Services.DataAssembler.Value;
         var relBuilder = Services.DataAssembler.Relationship;
         var attribs = new[]
@@ -198,7 +198,7 @@ partial class JsonSerializer
 
     private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfKnownType(JsonAttributes jAttributes, IContentType contentType, IEntitiesSource? relationshipsSource = null)
     {
-        var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>();
+        using var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>();
         var result = contentType.Attributes
             .ToImmutableDicSafe(
                 a => a.Name,
@@ -256,7 +256,7 @@ partial class JsonSerializer
 
     private Dictionary<string, Dictionary<string, string?>> ConvertReferences(Dictionary<string, Dictionary<string, string?>> links, Guid entityGuid)
     {
-        var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, string?>>>();
+        using var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, string?>>>();
         try
         {
             var converter = ((Dependencies)Services).ValueConverter.Value;
@@ -285,7 +285,7 @@ partial class JsonSerializer
     /// <returns></returns>
     private Dictionary<string, Dictionary<string, T?>> ToTypedDictionary<T>(IEnumerable<IAttribute> attribs)
     {
-        var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, T?>>>();
+        using var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, T?>>>();
         var result = new Dictionary<string, Dictionary<string, T?>>();
         var attribsTyped = attribs
             .Cast<IAttribute<T>>()

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 
@@ -16,7 +16,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
     #region Constructor and DI
 
     public AppStateInFolderLoader(IServiceProvider sp, Generator<FileSystemLoader, FileSystemLoaderOptions> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
-        : base("Eav.RunTme", connect: [/* sp (never) */ fslGenerator, stateBuilder])
+        : base("Eav.RunTme")
     {
         _serviceProvider = sp;
         _fslGenerator = fslGenerator;
@@ -44,7 +44,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 
     private List<string> GeneratePaths()
     {
-        var l = Log.Fn<List<string>>(message: "start building path-list");
+        using var l = Log.Fn<List<string>>(message: "start building path-list");
 
         var all = new List<string>();
         // find all RepositoryInfoOfFolder and let them tell us what paths to use
@@ -97,10 +97,10 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         LogSettings = logSettings;
 
         // Get BootLog to make sure it's part of that too
-        var bl = BootLog.Log.Fn("Load Full AppState", timer: true);
+        using var bl = BootLog.Log.Fn("Load Full AppState", timer: true);
 
         // Do normal logging
-        var lMain = Log.Fn<IAppStateBuilder>(timer: true);
+        using var lMain = Log.Fn<IAppStateBuilder>(timer: true);
         lMain.A($"🪵 Using LogSettings: {logSettings}");
 
         var builder = _stateBuilder.New().InitForPreset();
@@ -108,7 +108,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         var logDetails = LogSettings is { Enabled: true, Details: true };
         builder.Load("get app data package", appState =>
         {
-            var l = Log.Fn("load app data package");
+            using var l = Log.Fn("load app data package");
             // Prepare metadata lists & relationships etc.
             builder.InitMetadata();
             builder.SetNameAndFolder(KnownAppsConstants.PresetName, KnownAppsConstants.PresetName);

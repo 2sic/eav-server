@@ -1,4 +1,4 @@
-﻿using CsvHelper;
+using CsvHelper;
 using CsvHelper.Configuration;
 using System.Globalization;
 using ToSic.Eav.Apps.Sys;
@@ -50,7 +50,7 @@ public class Csv : CustomDataSourceAdvanced
     /// </summary>
     private string GetServerPath(string csvPath)
     {
-        var l = Log.Fn<string>($"{nameof(csvPath)}: {csvPath}");
+        using var l = Log.Fn<string>($"{nameof(csvPath)}: {csvPath}");
         // Handle cases where it's a "file:72"
         if (ValueConverterBase.CouldBeReference(csvPath))
         {
@@ -118,7 +118,7 @@ public class Csv : CustomDataSourceAdvanced
 
     [PrivateApi]
     public Csv(Dependencies services, IUser user, IServerPaths serverPaths)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv", connect: [user, serverPaths])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv")
     {
         _user = user;
         _serverPaths = serverPaths;
@@ -130,7 +130,7 @@ public class Csv : CustomDataSourceAdvanced
 
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
 
         // Collect parameters here, so we don't trigger logs on each access of each property
         var delimiter = Delimiter;

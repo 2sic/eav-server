@@ -1,16 +1,16 @@
-﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.ImportExport.Sys;
 
 namespace ToSic.Eav.WebApi.Sys.ImportExport;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ExportApp(ExportHelper exportHelper) : ServiceBase("Bck.Export", connect: [exportHelper])
+public class ExportApp(ExportHelper exportHelper) : ServiceBase("Bck.Export")
 {
     public PathCasePreflightResult PathCasePreflight(
         AppExportSpecs specs,
         Func<(IEnumerable<PathCaseItem> App, IEnumerable<PathCaseItem> Shared)>? getReferences = null)
     {
-        var l = Log.Fn<PathCasePreflightResult>(specs.Dump());
+        using var l = Log.Fn<PathCasePreflightResult>(specs.Dump());
         var (_, zipExport) = exportHelper.GetZipExportAndCheckZoneSwitchPermissions(specs);
         var (appReferences, sharedAppReferences) = ReferencesOrEmpty(getReferences);
         var result = zipExport.PathCasePreflight(specs, appReferences, sharedAppReferences);
@@ -21,7 +21,7 @@ public class ExportApp(ExportHelper exportHelper) : ServiceBase("Bck.Export", co
         AppExportSpecs specs,
         Func<(IEnumerable<PathCaseItem> App, IEnumerable<PathCaseItem> Shared)>? getReferences = null)
     {
-        var l = Log.Fn<FileToUploadToClient>(specs.Dump());
+        using var l = Log.Fn<FileToUploadToClient>(specs.Dump());
 
         var (appReader, zipExport) = exportHelper.GetZipExportAndCheckZoneSwitchPermissions(specs);
 

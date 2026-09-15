@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
@@ -30,7 +30,7 @@ public class AppInitializer(
     AppWorkChain<WorkContentTypesMod> contentTypesMod,
     AppCachePurger cachePurger,
     IAppReaderFactory appReaders)
-    : ServiceWithSetup<IAppWorkContext>("Eav.AppBld", connect: [contentTypesMod, entitySave, builder, cachePurger, repoLoader, appReaders])
+    : ServiceWithSetup<IAppWorkContext>("Eav.AppBld")
 {
 
     protected readonly AppCachePurger CachePurger = cachePurger;
@@ -42,7 +42,7 @@ public class AppInitializer(
     /// <param name="codeRefTrail">Origin caller to better track down creation - see issue https://github.com/2sic/2sxc/issues/3203</param>
     public bool InitializeApp(string? newAppName, CodeRefTrail codeRefTrail)
     {
-        var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
+        using var l = Log.Fn<bool>($"{nameof(newAppName)}: {newAppName}");
         var appReader = MyOptions.AppReader;
         codeRefTrail.WithHere().AddMessage($"App: {appReader.AppId}");
         
@@ -133,7 +133,7 @@ public class AppInitializer(
 
     private bool CreateAllMissingContentTypes(List<AddContentTypeAndOrEntityTask> newItems)
     {
-        var l = Log.Fn<bool>($"Check for {newItems.Count}");
+        using var l = Log.Fn<bool>($"Check for {newItems.Count}");
         var typesMod = contentTypesMod.New(MyOptions);
         var addedTypes = false;
         foreach (var item in newItems)
@@ -152,7 +152,7 @@ public class AppInitializer(
         
     private Entity AppMetadataEnsureTypeAndConstructEntityToAdd(IAppReader appReader, AddContentTypeAndOrEntityTask cTypeAndOrEntity)
     {
-        var l = Log.Fn<Entity>($"{cTypeAndOrEntity.SetName} for app {appReader.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
+        using var l = Log.Fn<Entity>($"{cTypeAndOrEntity.SetName} for app {appReader.AppId} - inApp: {cTypeAndOrEntity.InAppType}");
         var ct = FindContentType(appReader, cTypeAndOrEntity.SetName, cTypeAndOrEntity.InAppType);
 
         // if it's still null, we have a problem...

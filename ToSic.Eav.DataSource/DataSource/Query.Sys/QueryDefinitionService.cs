@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 
@@ -11,14 +11,14 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 public class QueryDefinitionService(
     LazySvc<IAppReaderFactory> appReaders,
     LazySvc<QueryDefinitionFactory> queryDefFactory)
-    : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.QryMan", connect: [appReaders, queryDefFactory])
+    : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.QryMan")
 {
     /// <summary>
     /// Get a query definition from the current app
     /// </summary>
     public QueryDefinition GetDefinition(IAppIdentity appIdentity, int queryId)
     {
-        var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
+        using var l = Log.Fn<QueryDefinition>($"{nameof(queryId)}:{queryId}");
         var app = appReaders.Value.GetOrKeep(appIdentity);
         var qEntity = GetQueryEntityOrThrow(app, queryId);
         return l.Return(GetDefinition(app.AppId, qEntity));
@@ -38,7 +38,7 @@ public class QueryDefinitionService(
     /// <param name="entityId">EntityId</param>
     private IEntity GetQueryEntityOrThrow(IAppIdentity appReaderOrId, int entityId)
     {
-        var l = Log.Fn<IEntity>($"{entityId}");
+        using var l = Log.Fn<IEntity>($"{entityId}");
         var app = appReaders.Value.GetOrKeep(appReaderOrId);
         try
         {
@@ -80,7 +80,7 @@ public class QueryDefinitionService(
 
     internal IImmutableList<IEntity> AllQueryEntities(IAppIdentity appIdOrReader, int recurseParents = 0)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
+        using var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
         var appReader = appReaders.Value.GetOrKeep(appIdOrReader)!;
         var queries = appReader.List
             .GetAll(QueryDefinition.TypeName)
@@ -112,7 +112,7 @@ public class QueryDefinitionService(
 
     internal IEntity? TryGetQueryEntity(IAppIdentity appIdentity, string? nameOrGuid, int recurseParents = 0) 
     {
-        var l = Log.Fn<IEntity?>($"{nameOrGuid}, recurse: {recurseParents}");
+        using var l = Log.Fn<IEntity?>($"{nameOrGuid}, recurse: {recurseParents}");
 
         if (nameOrGuid.IsEmptyOrWs())
             return l.ReturnNull("null - no name");

@@ -1,4 +1,4 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using System.Text;
 using ToSic.Eav.Security.Files;
 
@@ -37,7 +37,7 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 
     public void AddFile(ZipArchive archive, string sourcePath, string zipPath)
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
         var fileRelativePath = (zipPath.Length > 1 ? zipPath : string.Empty) + Path.GetFileName(sourcePath);
         archive.CreateEntryFromFile(sourcePath, fileRelativePath, CompressionLevel.Optimal);
         l.Done();
@@ -51,7 +51,7 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     /// <param name="files">Tuple of sourcePath and zipPath inside archive</param>
     public void AddFiles(ZipArchive archive, IEnumerable<(string sourcePath, string zipPath)> files)
     {
-        var l = Log.Fn($"{nameof(files)}:{files?.Count()}");
+        using var l = Log.Fn($"{nameof(files)}:{files?.Count()}");
         foreach (var (sourcePath, zipPath) in files ?? [])
         {
             var entry = archive.CreateEntry(zipPath, CompressionLevel.Optimal);
@@ -94,7 +94,7 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     public void ExtractZipStream(Stream zipStream, string outFolder, bool allowCodeImport, bool ignoreFolderEntries = false)
     {
 
-        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}, {nameof(ignoreFolderEntries)}:{ignoreFolderEntries}");
+        using var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}, {nameof(ignoreFolderEntries)}:{ignoreFolderEntries}");
 
         using var zipArchive = new ZipArchive(zipStream);
         ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport, ignoreFolderEntries);
@@ -107,7 +107,7 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     /// </summary>
     public void ExtractZipFile(string zipPath, string outFolder, bool allowCodeImport, bool ignoreFolderEntries = false)
     {
-        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}, {nameof(ignoreFolderEntries)}:{ignoreFolderEntries}");
+        using var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}, {nameof(ignoreFolderEntries)}:{ignoreFolderEntries}");
 
         using var zipArchive = ZipFile.OpenRead(zipPath);
         ExtractZipArchiveToFile(zipArchive, outFolder, allowCodeImport, ignoreFolderEntries);
@@ -117,7 +117,7 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
 
     private void ExtractZipArchiveToFile(ZipArchive zipArchive, string outFolder, bool allowCodeImport, bool ignoreFolderEntries = false)
     {
-        var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
+        using var l = Log.Fn($"{nameof(outFolder)}:'{outFolder}', {nameof(allowCodeImport)}:{allowCodeImport}");
 
         // Normalize the extraction root once and keep the trailing slash. The slash is important:
         // without it, a malicious target like "C:\temp-app-evil" could pass a naive StartsWith
@@ -347,7 +347,7 @@ internal class Zipping(ILog? parentLog) : HelperBase(parentLog, "Zip.Abstrc")
     /// <param name="log"></param>
     public static void TryToDeleteDirectory(string directoryPath, ILog? log)
     {
-        var l = log.Fn($"{nameof(directoryPath)}:'{directoryPath}'");
+        using var l = log.Fn($"{nameof(directoryPath)}:'{directoryPath}'");
         var retryDelete = 0;
 
         // Extraction temp folders can now contain long paths. Cleanup must use the same disk path

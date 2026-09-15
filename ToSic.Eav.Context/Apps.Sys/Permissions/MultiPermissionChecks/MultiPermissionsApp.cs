@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Context;
+using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
@@ -18,7 +18,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
         LazySvc<IZoneMapper> ZoneMapper,
         Generator<AppPermissionCheck> AppPermCheckGenerator,
         Generator<ISysFeaturesService> FeatIntGen)
-        : DependenciesBase(connect: [ZoneMapper, AppPermCheckGenerator, FeatIntGen]);
+        : DependenciesBase();
 
     public record Options
     {
@@ -50,7 +50,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
 
         var app = MyOptions.App;
         var context = MyOptions.SiteContext;
-        var l = Log.Fn($"..., appId: {app.AppId}, ...");
+        using var l = Log.Fn($"..., appId: {app.AppId}, ...");
 
         SamePortal = context.Site.ZoneId == app.ZoneId;
         SiteForSecurityCheck = SamePortal 
@@ -75,7 +75,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
         
     public bool ZoneIsOfCurrentContextOrUserIsSuper(out string? error)
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         var zoneSameOrSuperUser = SamePortal || MyOptions.SiteContext.User.IsSystemAdmin;
         error = zoneSameOrSuperUser
             ? null
@@ -93,7 +93,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
     /// <returns></returns>
     protected IPermissionCheck BuildPermissionChecker(IContentType? type = null, IEntity? item = null)
     {
-        var l = Log.Fn<IPermissionCheck>($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
+        using var l = Log.Fn<IPermissionCheck>($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 
         // user has edit permissions on this app, and it's the same app as the user is coming from
         var modifiedContext = MyOptions.SiteContext.Clone(Log);

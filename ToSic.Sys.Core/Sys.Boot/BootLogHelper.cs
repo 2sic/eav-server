@@ -10,7 +10,7 @@ public static class BootLogHelper
         GetLoggersForStandaloneLogs(ILogStore logStore, ILog log, string partName, string message, [CallerMemberName] string? cName = default)
     {
         // Create a new log for the standalone entry in the log store
-        var standaloneLog = new Log($"B8T.{partName}", null, message);
+        var standaloneLog = new Log($"B8T.{partName}", message: message);
 
         // Register the standalone log in the log store
         logStore.Add(LogNames.LogStoreStartUp, standaloneLog);

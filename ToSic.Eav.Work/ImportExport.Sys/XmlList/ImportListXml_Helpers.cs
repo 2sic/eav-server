@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Xml.Linq;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Sys.Options;
@@ -49,7 +49,7 @@ partial class ImportListXml
 
     private Entity? GetImportEntity(Guid entityGuid)
     {
-        var l = LogDetails.Fn<Entity?>();
+        using var l = LogDetails.Fn<Entity?>();
         var result = ImportEntities.FirstOrDefault(entity => entity.EntityGuid == entityGuid);
         return l.Return(result, result == null ? "null" : $"Will modify entity from existing import list {entityGuid}");
     }
@@ -60,7 +60,7 @@ partial class ImportListXml
     private Entity AppendEntity(int appId, IContentType contentType, Guid entityGuid,
         IDictionary<string, IAttribute> values)
     {
-        var l = LogDetails.Fn<Entity>();
+        using var l = LogDetails.Fn<Entity>();
         if (_appendEntityCount++ < 100)
             l.A($"Add entity to import list {entityGuid}");
         if (_appendEntityCount == 100)

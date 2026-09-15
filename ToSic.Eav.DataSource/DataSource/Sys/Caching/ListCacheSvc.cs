@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using ToSic.Eav.DataSource.Sys.Errors;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Locking;
@@ -14,7 +14,7 @@ namespace ToSic.Eav.DataSource.Sys.Caching;
 /// </remarks>
 [PrivateApi("this is just fyi")]
 [method: PrivateApi]
-internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase("DS.LstCch", connect: [memoryCacheService]), IListCacheSvc
+internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase("DS.LstCch"), IListCacheSvc
 {
     /// <summary>
     /// The time a list stays in the cache by default - default is 3600 = 1 hour.
@@ -51,7 +51,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     private ListCacheItem? GetValidCacheItemOrNull(IDataStream dataStream)
     {
         var key = CacheKey(dataStream);
-        var l = Log.Fn<ListCacheItem?>($"key: {key}");
+        using var l = Log.Fn<ListCacheItem?>($"key: {key}");
         // Check if it's in the cache, and if it requires re-loading
         var itemInCache = Get(key);
         if (itemInCache == null) 
@@ -64,7 +64,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     /// <inheritdoc />
     public ListCacheItem GetOrBuild(IDataStream stream, Func<IImmutableList<IEntity>> builderFunc, int durationInSeconds, int errorInSeconds)
     {
-        var l = Log.Fn<ListCacheItem>();
+        using var l = Log.Fn<ListCacheItem>();
         var key = CacheKey(stream);
 
         var cacheItem = GetValidCacheItemOrNull(stream);
@@ -138,7 +138,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     {
         var key = CacheKey(stream);
         var hasStream = HasStream(stream);
-        var l = Log.Fn<ListCacheItem?>($"key: {key}; has: {hasStream}");
+        using var l = Log.Fn<ListCacheItem?>($"key: {key}; has: {hasStream}");
         var old = memoryCacheService.Remove(key) as ListCacheItem;
         return l.Return(old);
     }
@@ -150,7 +150,7 @@ internal class ListCacheSvc(MemoryCacheService memoryCacheService) : ServiceBase
     /// <inheritdoc />
     public void Set(string key, IImmutableList<IEntity> list, long sourceTimestamp, bool refreshOnSourceRefresh, int durationInSeconds = 0, bool slidingExpiration = true)
     {
-        var l = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
+        using var l = Log.Fn($"key: {key}; sourceTime: {sourceTimestamp}; duration:{durationInSeconds}; sliding: {slidingExpiration}");
         var duration = durationInSeconds > 0
             ? durationInSeconds
             : DefaultDuration;

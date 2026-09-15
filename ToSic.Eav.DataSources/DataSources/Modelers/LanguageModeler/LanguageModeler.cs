@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.DataSource.Sys;
 
 namespace ToSic.Eav.DataSources;
@@ -42,7 +42,7 @@ public sealed class LanguageModeler : DataSourceBase
     /// Initializes this data source
     /// </summary>
     [PrivateApi]
-    public LanguageModeler(DataAssembler dataAssembler, Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.LngMod", connect: [dataAssembler])
+    public LanguageModeler(DataAssembler dataAssembler, Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.LngMod")
     {
         _dataAssembler = dataAssembler;
         ProvideOut(MapLanguagesIntoValues);
@@ -57,7 +57,7 @@ public sealed class LanguageModeler : DataSourceBase
     /// <returns></returns>
     private IImmutableList<IEntity> MapLanguagesIntoValues()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         #region Load configuration and verify everything is ok - or return an error-stream

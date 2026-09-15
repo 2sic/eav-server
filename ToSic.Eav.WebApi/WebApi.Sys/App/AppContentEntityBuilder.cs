@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Apps.Sys.Api01;
@@ -104,7 +104,7 @@ internal class AppContentEntityBuilder(ILog parentLog) : HelperBase(parentLog, "
     /// <param name="foundValue"></param>
     private int? CreateSingleRelationshipItem(object foundValue)
     {
-        var l = Log.Fn<int?>($"{foundValue}");
+        using var l = Log.Fn<int?>($"{foundValue}");
         try
         {
             // the object foundNumber is either just an Id, or an Id/Title combination

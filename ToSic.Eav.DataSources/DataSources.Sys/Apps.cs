@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
@@ -56,7 +56,7 @@ public sealed class Apps: CustomDataSource
     /// </summary>
     [PrivateApi]
     public Apps(Dependencies services, IAppsCatalog appsCatalog, IAppReaderFactory appReaders)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Apps", connect: [appsCatalog, appReaders])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Apps")
     {
         ProvideOutRaw(
             () => GetDefault(appsCatalog, appReaders),
@@ -72,7 +72,7 @@ public sealed class Apps: CustomDataSource
 
     private IEnumerable<IRawEntity> GetDefault(IAppsCatalog appsCatalog, IAppReaderFactory appReaders)
     {
-        var l = Log.Fn<IEnumerable<IRawEntity>>();
+        using var l = Log.Fn<IEnumerable<IRawEntity>>();
         // try to load the content-type - if it fails, return empty list
         var allZones = appsCatalog.Zones;
         if (!allZones.TryGetValue(OfZoneId, out var zone)) 

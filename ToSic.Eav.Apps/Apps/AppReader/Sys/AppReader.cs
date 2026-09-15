@@ -10,7 +10,6 @@ public class AppReader() : ServiceBase("App.Reader"), IAppReader
     internal AppReader Init(AppState appState, ILog? parentLog)
     {
         _appState = appState;
-        this.LinkLog(parentLog);
         return this;
     }
 

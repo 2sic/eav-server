@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
 
@@ -6,14 +6,14 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityPublish(AppsCacheSwitch appsCache)
-    : ServiceBase("AWk.EntPub", connect: [appsCache])
+    : ServiceBase("AWk.EntPub")
 {
     /// <summary>
     /// Publish many entities
     /// </summary>
     public void Publish(IAppWorkContext appWorkCtx, int[] entityIds)
     {
-        var l = Log.Fn(Log.Try(() => $"Publish({entityIds.Length} items [{string.Join(",", entityIds)}])"));
+        using var l = Log.Fn(Log.Try(() => $"Publish({entityIds.Length} items [{string.Join(",", entityIds)}])"));
         foreach (var eid in entityIds)
             try
             {
@@ -31,7 +31,7 @@ public class WorkEntityPublish(AppsCacheSwitch appsCache)
 
     private bool PublishWithoutPurge(IAppWorkContext appWorkCtx, int entityId)
     {
-        var l = Log.Fn<bool>($"{entityId}");
+        using var l = Log.Fn<bool>($"{entityId}");
 
         // 1. make sure we're publishing the draft, because the entityId might be the published one...
         var contEntity = appWorkCtx.AppReader.List.FindRepoId(entityId);

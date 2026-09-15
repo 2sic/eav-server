@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Metadata.Targets;
+using ToSic.Eav.Metadata.Targets;
 using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Services;
@@ -12,7 +12,7 @@ public class EfcMetadataTargetTypesLoaderService(LazySvc<EavDbContext> dbLazy) :
     public ImmutableDictionary<int, string> GetTargetTypes()
     {
         // Must debug why this simple code seems to take 1 second
-        var l = Log.Fn<ImmutableDictionary<int, string>>(timer: true);
+        using var l = Log.Fn<ImmutableDictionary<int, string>>(timer: true);
         var db = dbLazy.Value;
         
         l.A($"got db connection");

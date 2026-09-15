@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.ImportExport.Sys.Options;
@@ -11,7 +11,7 @@ namespace ToSic.Eav.ImportExport.Sys.XmlList;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportListXml(ExportImportValueConversion valueConverter)
-    : ServiceBase("App.LstExp", connect: [valueConverter])
+    : ServiceBase("App.LstExp")
 {
     #region Dependency Injection and Init
 
@@ -42,7 +42,7 @@ public class ExportListXml(ExportImportValueConversion valueConverter)
     /// <returns>A string containing the blank xml scheme</returns>
     public string? EmptyListTemplate()
     {
-        var l = Log.Fn<string?>("export schema xml");
+        using var l = Log.Fn<string?>("export schema xml");
         if (ContentType == null) 
             return null;
 

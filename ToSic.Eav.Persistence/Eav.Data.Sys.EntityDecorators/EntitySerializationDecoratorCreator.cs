@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using ToSic.Eav.Serialization.Sys;
 using static ToSic.Eav.Data.Sys.AttributeNames;
 
@@ -16,7 +16,7 @@ public class EntitySerializationDecoratorCreator(ICollection<string>? rawFields,
 {
     public EntitySerializationDecorator Generate(string part = ODataSelect.Main, bool? defaultAdd = false)
     {
-        var l = log.Fn<EntitySerializationDecorator>($"{nameof(rawFields)}: {rawFields}, {nameof(withGuid)}: {withGuid}");
+        using var l = log.Fn<EntitySerializationDecorator>($"{nameof(rawFields)}: {rawFields}, {nameof(withGuid)}: {withGuid}");
 
         var oDataSelect = new ODataSelect(rawFields);
 

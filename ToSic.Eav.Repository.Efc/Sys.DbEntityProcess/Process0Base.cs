@@ -15,7 +15,7 @@ internal abstract class Process0Base(string logName): HelperBase(null, logName),
     /// <returns></returns>
     public virtual ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
     {
-        var l = GetLogCall(services, logProcess);
+        using var l = GetLogCall(services, logProcess);
 
         var result = data
             .Select(d => ProcessOne(services, d))

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Data.Sys.Values;
@@ -14,7 +14,7 @@ partial class JsonSerializer
     public IContentType DeserializeContentType(string serialized)
     {
         // ReSharper disable once ReplaceSubstringWithRangeIndexer
-        var l = LogDsSummary.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...", timer: true);
+        using var l = LogDsSummary.Fn<IContentType>($"{serialized?.Substring(0, Math.Min(50, serialized.Length))}...", timer: true);
         try
         {
             var jsonPackage = UnpackAndTestGenericJsonV1(serialized);
@@ -32,7 +32,7 @@ partial class JsonSerializer
 
     public ContentTypeWithEntities ConvertContentType(JsonContentTypeSet json)
     {
-        var lMain = LogDsDetails.Fn<ContentTypeWithEntities>(timer: true);
+        using var lMain = LogDsDetails.Fn<ContentTypeWithEntities>(timer: true);
         var contentTypeSet = DirectEntitiesSource.Using(relationships =>
         {
             IEntitiesSource? preferredSource = AppReaderOrNull?.AppState;
@@ -50,7 +50,7 @@ partial class JsonSerializer
 
             IEntity ConvertPart(JsonEntity e) => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
 
-            var l = LogDsDetails.Fn<ContentTypeWithEntities>();
+            using var l = LogDsDetails.Fn<ContentTypeWithEntities>();
             try
             {
                 var directEntities = json.Entities

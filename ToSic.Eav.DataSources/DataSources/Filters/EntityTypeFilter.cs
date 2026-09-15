@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -56,7 +56,7 @@ public class EntityTypeFilter : DataSourceBase
 
     private IImmutableList<IEntity> GetList() 
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
         l.A($"get list with type:{TypeName}");
 

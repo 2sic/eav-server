@@ -1,15 +1,15 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityCreate(DataAssembler dataAssembler, AppWorkChain<WorkEntitySave> workEntSave)
-    : ServiceWithSetup<IAppWorkContext>("AWk.EntCre", connect: [workEntSave, dataAssembler])
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntCre")
 {
     public (int EntityId, Guid EntityGuid) Create(string typeName, Dictionary<string, object> values, ITarget? metadataFor = null)
     {
-        var l = Log.Fn<(int EntityId, Guid EntityGuid)>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
+        using var l = Log.Fn<(int EntityId, Guid EntityGuid)>($"type:{typeName}, val-count:{values.Count}, meta:{metadataFor}");
 
         var newEnt = dataAssembler.Entity.Create(appId: MyOptions.AppId, guid: Guid.NewGuid(),
             contentType: MyOptions.AppReader.GetContentType(typeName),
@@ -32,7 +32,7 @@ public class WorkEntityCreate(DataAssembler dataAssembler, AppWorkChain<WorkEnti
     /// <returns></returns>
     public int GetOrCreate(Guid newGuid, string typeName, Dictionary<string, object> values)
     {
-        var l = Log.Fn<int>($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
+        using var l = Log.Fn<int>($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
         var db = MyOptions.DbStorage;
         if (db.Entities.EntityExists(newGuid))
         {

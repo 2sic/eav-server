@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.ImportExport.Sys.Zip;
+using ToSic.Eav.ImportExport.Sys.Zip;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
 
@@ -7,7 +7,7 @@ namespace ToSic.Eav.WebApi.Sys.ImportExport;
 public class ExportHelper(
     Generator<ImpExpHelpers> impExpHelpers,
     Generator<ZipExport, ZipExport.Options> exportGenerator
-) : ServiceBase("Sxc.ImExHl", connect: [impExpHelpers, exportGenerator])
+) : ServiceBase("Sxc.ImExHl")
 {
 
     internal (IAppReader appReader, ZipExport zipExport) GetZipExportAndCheckZoneSwitchPermissions(IAppIdentity appIdentity)

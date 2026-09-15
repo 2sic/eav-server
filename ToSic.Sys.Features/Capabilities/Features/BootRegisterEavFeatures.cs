@@ -1,10 +1,10 @@
-﻿using ToSic.Sys.Boot;
+using ToSic.Sys.Boot;
 using static ToSic.Sys.Capabilities.Features.BuiltInFeatures;
 
 namespace ToSic.Sys.Capabilities.Features;
 
 internal sealed class BootRegisterEavFeatures(FeaturesCatalog featuresCatalog)
-    : BootProcessBase("EavFts", bootPhase: BootPhase.Registrations, connect: [featuresCatalog])
+    : BootProcessBase("EavFts", bootPhase: BootPhase.Registrations)
 {
     /// <summary>
     /// Register Eav features during boot

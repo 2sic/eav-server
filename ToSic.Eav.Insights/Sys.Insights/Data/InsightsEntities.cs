@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
@@ -8,7 +8,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsEntities(AppWorkQuick<WorkEntities> workEntities)
-    : InsightsProvider(new() { Name = Link, Title = "Entities" }, connect: [workEntities])
+    : InsightsProvider(new() { Name = Link, Title = "Entities" })
 {
     public static string Link = "Entities";
 

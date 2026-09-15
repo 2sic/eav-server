@@ -1,10 +1,10 @@
-﻿using ToSic.Sys.Caching;
+using ToSic.Sys.Caching;
 
 namespace ToSic.Eav.DataSource.Sys.Caching;
 
 [PrivateApi]
 internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheService cache)
-    : ServiceBase("Ds.CchSvc", connect: [listCache, cache]), IDataSourceCacheService
+    : ServiceBase("Ds.CchSvc"), IDataSourceCacheService
 {
     public const int MaxRecursions = 100;
     private const string ErrRecursions = "too many recursions on UnCache";
@@ -18,7 +18,7 @@ internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheServic
     /// <inheritdoc />
     public bool FlushAll()
     {
-        var l = Log.Fn<bool>();
+        using var l = Log.Fn<bool>();
         var keys = listCache.LoadLocks.Locks.Keys.ToList();
         foreach (var key in keys) FlushKey(key);
         listCache.LoadLocks.Locks.Clear();
@@ -28,7 +28,7 @@ internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheServic
     /// <inheritdoc />
     public bool Flush(string key)
     {
-        var l = Log.Fn<bool>(key);
+        using var l = Log.Fn<bool>(key);
         FlushKey(key);
         return l.ReturnTrue();
     }
@@ -38,7 +38,7 @@ internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheServic
 
     private bool FlushDs(IDataSource dataSource, int recursion, bool cascade = false)
     {
-        var l = Log.Fn<bool>($"{cascade} - on {dataSource.GetType().Name}, {nameof(recursion)}: {recursion}");
+        using var l = Log.Fn<bool>($"{cascade} - on {dataSource.GetType().Name}, {nameof(recursion)}: {recursion}");
         if (recursion > MaxRecursions) throw l.Ex(new ArgumentOutOfRangeException(nameof(recursion), ErrRecursions));
 
         var result = FlushStreamList(dataSource.In, recursion, cascade);
@@ -62,7 +62,7 @@ internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheServic
 
     private bool FlushStreamList(IReadOnlyDictionary<string, IDataStream> streams, int recursion, bool cascade)
     {
-        var l = Log.Fn<bool>($"Streams: {streams.Count}");
+        using var l = Log.Fn<bool>($"Streams: {streams.Count}");
         if (streams.SafeNone()) 
             return l.ReturnFalse("No streams found to clear");
 
@@ -75,7 +75,7 @@ internal class DataSourceCacheService(IListCacheSvc listCache, MemoryCacheServic
 
     private bool FlushStream(IDataStream stream, int recursion, bool cascade = false)
     {
-        var l = Log.Fn<bool>($"Stream: {stream.Name}, {nameof(cascade)}:{cascade}, {nameof(recursion)}: {recursion}");
+        using var l = Log.Fn<bool>($"Stream: {stream.Name}, {nameof(cascade)}:{cascade}, {nameof(recursion)}: {recursion}");
         if (recursion > MaxRecursions) throw l.Ex(new ArgumentOutOfRangeException(nameof(recursion), ErrRecursions));
 
         stream.ResetStream();

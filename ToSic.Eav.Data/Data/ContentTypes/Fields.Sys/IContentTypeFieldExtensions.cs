@@ -1,4 +1,4 @@
-﻿
+
 namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 [PrivateApi]
@@ -44,7 +44,7 @@ public static class IContentTypeFieldExtensions
         /// <returns></returns>
         public bool HasFormulas(ILog log)
         {
-            var l = log.Fn<bool>(definition.Name);
+            using var l = log.Fn<bool>(definition.Name);
             var allMd = definition.Metadata.First(typeName: IFieldSettingsGeneral.Constants.ContentTypeName);
             if (allMd == null)
                 return l.ReturnFalse("no @All");

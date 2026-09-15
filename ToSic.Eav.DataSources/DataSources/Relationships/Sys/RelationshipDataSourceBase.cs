@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Users.Permissions;
+using ToSic.Sys.Users.Permissions;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -32,7 +32,7 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
     /// <summary>
     /// Constructor
     /// </summary>
-    protected RelationshipDataSourceBase(Dependencies services, ICurrentContextUserPermissionsService userPermissions, string logName): base(services, logName, connect: [userPermissions])
+    protected RelationshipDataSourceBase(Dependencies services, ICurrentContextUserPermissionsService userPermissions, string logName): base(services, logName)
     {
         _userPermissions = userPermissions;
         ProvideOut(GetRelated);
@@ -42,7 +42,7 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
 
     private IImmutableList<IEntity> GetRelated()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         // Make sure we have an In - otherwise error

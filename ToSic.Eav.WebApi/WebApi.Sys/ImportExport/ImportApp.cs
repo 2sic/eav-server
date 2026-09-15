@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Identity;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.ImportHelpers;
@@ -24,12 +24,11 @@ public class ImportApp(
     ISite site,
     Generator<XmlImportWithFiles> xmlImpExpFiles,
     ISysFeaturesService features)
-    : ServiceBase("Bck.Export",
-        connect: [envLogger, zipImport, globalConfiguration, user, appFinder, site, xmlImpExpFiles, features])
+    : ServiceBase("Bck.Export")
 {
     public ImportResultDto Import(Stream stream, int zoneId, string renameApp)
     {
-        var l = Log.Fn<ImportResultDto>("start import app from stream");
+        using var l = Log.Fn<ImportResultDto>("start import app from stream");
         var result = new ImportResultDto();
 
         if (!string.IsNullOrEmpty(renameApp))
@@ -89,7 +88,7 @@ public class ImportApp(
     /// <returns></returns>
     public IEnumerable<PendingAppDto> GetPendingApps(int zoneId)
     {
-        var l = Log.Fn<IEnumerable<PendingAppDto>>($"list all app folders for zoneId.{zoneId}");
+        using var l = Log.Fn<IEnumerable<PendingAppDto>>($"list all app folders for zoneId.{zoneId}");
         var result = new List<PendingAppDto>();
 
         // loop through each app folder and find pending apps
@@ -146,7 +145,7 @@ public class ImportApp(
     /// <returns></returns>
     public ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppDto> pendingApps)
     {
-        var l = Log.Fn<ImportResultDto>("Install pending apps start");
+        using var l = Log.Fn<ImportResultDto>("Install pending apps start");
         var result = new ImportResultDto();
 
         // before installation, ensure that feature is enabled

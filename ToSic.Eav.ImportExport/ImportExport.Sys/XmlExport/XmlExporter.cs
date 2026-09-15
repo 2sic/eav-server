@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
@@ -16,8 +16,8 @@ namespace ToSic.Eav.ImportExport.Sys.XmlExport;
 // should all get it from cache only!
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, string logPrefix, object[] connect)
-    : ServiceBase(logPrefix + "XmlExp", connect: [..connect, appsCatalog, xmlSerializer])
+public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, string logPrefix, object[]? connect = null)
+    : ServiceBase(logPrefix + "XmlExp")
 {
 
     #region simple properties
@@ -46,7 +46,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
     protected void Constructor(AppExportSpecs specs, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, string defaultCultureCode)
     {
-        var l = Log.Fn(message: "start XML exporter using app-package");
+        using var l = Log.Fn(message: "start XML exporter using app-package");
         _specs = specs;
         ZoneId = specs.ZoneId;
         AppReader = appReader;

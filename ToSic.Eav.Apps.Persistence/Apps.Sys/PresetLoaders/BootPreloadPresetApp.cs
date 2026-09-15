@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Sys.Boot;
@@ -15,7 +15,7 @@ internal sealed class BootPreloadPresetApp(
     LazySvc<IAppStateLoader> appLoader,
     AppsCacheSwitch appsCache,
     EavFeaturesLoader featuresLoader)
-    : BootProcessBase("SqlWUp", bootPhase: BootPhase.Loading, priority: LoadAppPriority, connect: [logStore, appLoader, appsCache, featuresLoader])
+    : BootProcessBase("SqlWUp", bootPhase: BootPhase.Loading, priority: LoadAppPriority)
 {
     public const int LoadAppPriority = 100;
 
@@ -28,7 +28,7 @@ internal sealed class BootPreloadPresetApp(
 
         // Build the cache of all system-types. Must happen before everything else
         // This should use the lazy AppLoader, because the features should be loaded before it's created
-        var presetApp = appLoader.LinkLog(main).Value
+        var presetApp = appLoader.Value
             .LoadFullAppState(logSettings);
         appsCache.Value.Add(presetApp.AppState);
         lStandalone.Done();

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Paths;
+using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys;
@@ -32,12 +32,11 @@ public class ContentExportApi(
     IResponseMaker responseMaker,
     Generator<ExportListXml> exportListXmlGenerator,
     LazySvc<ISysFeaturesService> features)
-    : ServiceBase("Api.EaCtEx",
-        connect: [appPathSvc, appWorkCtxSvc, exportListXmlGenerator, appsCatalog, jsonSerializer, responseMaker, features])
+    : ServiceBase("Api.EaCtEx")
 {
     public ContentExportApi Init(int appId)
     {
-        var l = Log.Fn<ContentExportApi>($"For app: {appId}");
+        using var l = Log.Fn<ContentExportApi>($"For app: {appId}");
         _appCtx = appWorkCtxSvc.ContextNew(appId);
         return l.Return(this);
     }
@@ -53,7 +52,7 @@ public class ContentExportApi(
         ExportLanguageResolution exportLanguageReferences,
         string? selectedIds)
     {
-        var l = Log.Fn<(string, string)>($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
+        using var l = Log.Fn<(string, string)>($"export content lang:{language}, deflang:{defaultLanguage}, ct:{contentType}, ids:{selectedIds}");
         SecurityHelpers.ThrowIfNotContentAdmin(user, l);
 
         var contextLanguages = appsCatalog.Zone(_appCtx.ZoneId).LanguagesActive
@@ -91,7 +90,7 @@ public class ContentExportApi(
     [HttpGet]
     public THttpResponseType DownloadTypeAsJson(IUser user, string name)
     {
-        var l = Log.Fn<THttpResponseType>($"get fields type:{name}");
+        using var l = Log.Fn<THttpResponseType>($"get fields type:{name}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
         var type = _appCtx.AppReader.GetContentType(name);
         var serializer = jsonSerializer.New().SetApp(_appCtx.AppReader);
@@ -109,7 +108,7 @@ public class ContentExportApi(
     [HttpGet]
     public THttpResponseType DownloadEntityAsJson(IUser user, int id, string prefix, bool withMetadata)
     {
-        var l = Log.Fn<THttpResponseType>($"get fields id:{id}");
+        using var l = Log.Fn<THttpResponseType>($"get fields id:{id}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
         var entity = _appCtx.AppReader.List.FindRepoId(id)
             ?? throw new($"Can't find entity with id {id}");
@@ -125,7 +124,7 @@ public class ContentExportApi(
     [HttpGet]
     public THttpResponseType JsonBundleExport(IUser user, Guid exportConfiguration, int indentation)
     {
-        var l = Log.Fn<THttpResponseType>($"create Json Bundle Export for ExportConfiguration:{exportConfiguration}");
+        using var l = Log.Fn<THttpResponseType>($"create Json Bundle Export for ExportConfiguration:{exportConfiguration}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
 
         features.Value.ThrowIfNotEnabled("This feature is required", BuiltInFeatures.DataExportImportBundles.Guid);
@@ -137,7 +136,7 @@ public class ContentExportApi(
 
     public bool BundleSave(IUser user, Guid exportConfiguration, int indentation)
     {
-        var l = Log.Fn<bool>($"for ExportConfiguration:{exportConfiguration}");
+        using var l = Log.Fn<bool>($"for ExportConfiguration:{exportConfiguration}");
 
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
 
@@ -175,7 +174,7 @@ public class ContentExportApi(
 
     internal (ExportConfiguration export, string fileContent) CreateBundleExport(Guid exportConfiguration, int indentation)
     {
-        var l = Log.Fn<(ExportConfiguration export, string fileContent)>($"create bundle export for ExportConfiguration:{exportConfiguration}");
+        using var l = Log.Fn<(ExportConfiguration export, string fileContent)>($"create bundle export for ExportConfiguration:{exportConfiguration}");
 
         var export = ExportConfigurationBuildOrThrow(exportConfiguration);
 
@@ -198,7 +197,7 @@ public class ContentExportApi(
 
     private ExportConfiguration ExportConfigurationBuildOrThrow(Guid exportConfigGuid)
     {
-        var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfigGuid}");
+        using var l = Log.Fn<ExportConfiguration>($"build ExportConfiguration:{exportConfigGuid}");
         var systemExportConfiguration = _appCtx.AppReader.List.GetModel<ExportConfiguration>(exportConfigGuid,
             options: new()
             {

@@ -12,13 +12,13 @@ internal sealed class LogExecutionTestContext : IDisposable
     internal ILogStoreLive Store { get; }
     internal ILogger Logger { get; }
 
-    internal LogExecutionTestContext(LogStoreMode mode = LogStoreMode.ILogger)
+    internal LogExecutionTestContext()
     {
         var factory = _services.GetRequiredService<ILoggerFactory>();
         Logger = factory.CreateLogger(MicrosoftLoggerEventSink.Category);
         Store = _services.GetRequiredService<ILogStoreLive>();
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(factory));
-        Store.Configure(mode.ToString(), bridgeEnabled: true);
+        Store.Configure(null);
     }
 
     internal Log Admit(string name)

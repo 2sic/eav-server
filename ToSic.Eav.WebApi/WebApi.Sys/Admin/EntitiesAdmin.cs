@@ -36,14 +36,14 @@ public class EntitiesAdmin : CustomDataSource
         LazySvc<IContextOfSite> siteContext,
         LazySvc<IAppsCatalog> appsCatalog,
         LazySvc<EntityApi> entityApi)
-        : base(services, logName: "Eav.EntitiesAdmin", connect: [siteContext, appsCatalog, entityApi])
+        : base(services, logName: "Eav.EntitiesAdmin")
     {
         ProvideOut(() => GetEntities(siteContext.Value, appsCatalog.Value, entityApi.Value));
     }
 
     private IEnumerable<IEntity> GetEntities(IContextOfSite siteContext, IAppsCatalog appsCatalogValue, EntityApi entityApiValue)
     {
-        var l = Log.Fn<IEnumerable<IEntity>>();
+        using var l = Log.Fn<IEnumerable<IEntity>>();
 
         if (string.IsNullOrWhiteSpace(ContentType))
             return l.Return([], "no content type");

@@ -42,7 +42,7 @@ public sealed class OData : DataSourceBase
     #region Ctor / DI
     
     public OData(Dependencies parentServices, LazySvc<IDataSourcesService> dataSourceFactory)
-        : base(parentServices, $"{DataSourceConstantsInternal.LogPrefix}.OData", connect: [parentServices, dataSourceFactory])
+        : base(parentServices, $"{DataSourceConstantsInternal.LogPrefix}.OData")
     {
         _engine = new ODataQueryEngine(dataSourceFactory.Value);
         ProvideOut(GetODataResult);
@@ -54,7 +54,7 @@ public sealed class OData : DataSourceBase
 
     private IImmutableList<IEntity> GetODataResult()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         // Ensure we have an upstream

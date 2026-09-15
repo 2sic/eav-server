@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.DataSources;
 using ToSic.Eav.LookUp;
@@ -22,8 +22,7 @@ public class QueryFactory(
     Generator<PassThrough, IDataSourceOptions> genPassThrough,
     IAppsCatalog appsCatalog,
     ICurrentContextUserPermissionsService userPermissions)
-    : ServiceBase("DS.PipeFt",
-        connect: [appReaders, cultureResolver, appsCatalog, dataSourceFactory, genPassThrough, userPermissions])
+    : ServiceBase("DS.PipeFt")
 {
     private QueryWiringsHelper WiringsHelper => new(Log);
 
@@ -35,7 +34,7 @@ public class QueryFactory(
     /// <returns></returns>
     public QueryFactoryResult CreateWithParams(QueryDefinition queryDef, ILookUpEngine lookUpEngineToClone)
     {
-        var l = Log.Fn<QueryFactoryResult>(message: $"Query: '{queryDef.Title}'", timer: true);
+        using var l = Log.Fn<QueryFactoryResult>(message: $"Query: '{queryDef.Title}'", timer: true);
         // Step 1: Resolve the params from outside, where x=[Params:y] should come from the outer Params
         // and the current In
         var resolvedParams = lookUpEngineToClone.LookUp(queryDef.ParamsDic);
@@ -54,14 +53,14 @@ public class QueryFactory(
     /// <returns></returns>
     public QueryFactoryResult CreateWithTestParams(QueryDefinition queryDef, ILookUpEngine? lookUps = null)
     {
-        var l = Log.Fn<QueryFactoryResult>($"a#{queryDef.AppId}, pipe:{queryDef.Guid} ({queryDef.Id})");
+        using var l = Log.Fn<QueryFactoryResult>($"a#{queryDef.AppId}, pipe:{queryDef.Guid} ({queryDef.Id})");
         var testValueProviders = queryDef.TestParameterLookUps;
         return l.ReturnAsOk(Create(queryDef, lookUps, testValueProviders));
     }
 
     private QueryFactoryResult Create(QueryDefinition queryDef, ILookUpEngine? lookUpEngineToClone, List<ILookUp> overrideLookUps) 
     {
-        var l = Log.Fn<QueryFactoryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
+        using var l = Log.Fn<QueryFactoryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
         #region prepare shared / global value providers
             
         var showDrafts = userPermissions.UserPermissions().ShowDraftData;

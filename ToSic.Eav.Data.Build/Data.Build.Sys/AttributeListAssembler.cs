@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys;
 using ToSic.Sys.Capabilities.FeatureSet;
 using static System.StringComparer;
@@ -7,7 +7,7 @@ namespace ToSic.Eav.Data.Build.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AttributeListAssembler(Generator<AttributeAssembler, DataAssemblerOptions> attrAss)
-    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld", connect: [attrAss])
+    : ServiceWithSetup<DataAssemblerOptions>("DaB.AttBld")
 {
     protected override DataAssemblerOptions GetDefaultOptions() => new();
     

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Relationships;
+using ToSic.Eav.Data.Sys.Relationships;
 using ToSic.Eav.Data.Sys.Save;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
@@ -11,7 +11,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// </summary>
     private void UpdateEntityRelationshipsAndSaveUntracked(ICollection<RelationshipUpdatePackage> packages)
     {
-        var l = LogSummary.Fn($"Packages: {packages.Count}", timer: true);
+        using var l = LogSummary.Fn($"Packages: {packages.Count}", timer: true);
         
         // Only log more details if details-logging is enabled
         if (LogDetails != null)
@@ -61,7 +61,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// </summary>
     internal void ImportRelationshipQueueAndSaveUntracked(ICollection<RelationshipToSave> list)
     {
-        var lSum = LogSummary.Fn(timer: true);
+        using var lSum = LogSummary.Fn(timer: true);
         // if SaveOptions determines it, clear all existing relationships first
         var fullFlush = list
             .Where(r => r.FlushAllEntityRelationships)
@@ -166,7 +166,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     // It probably works, but not verified, as it's almost never used, except probably when migrating non-json entities to json
     internal void FlushChildrenRelationships(ICollection<int> parentIds)
     {
-        var l = LogSummary.Fn($"will do full-flush for {parentIds.Count} items", timer: true);
+        using var l = LogSummary.Fn($"will do full-flush for {parentIds.Count} items", timer: true);
 
         // Delete all existing relationships - but not the target, just the relationship
         // note: can't use .Clear(), as that will try to actually delete the children
@@ -227,7 +227,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
 
     internal ICollection<RelationshipToSave> GetChangeRelationships(IEntity eToSave, int entityId, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
     {
-        var l = LogDetails.Fn<ICollection<RelationshipToSave>>(timer: true);
+        using var l = LogDetails.Fn<ICollection<RelationshipToSave>>(timer: true);
         // some initial error checking
         if (entityId <= 0)
             throw new("can't work on relationships if entity doesn't have a repository id yet");
@@ -277,7 +277,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
     /// </summary>
     private RelationshipToSave PrepTask(int attributeId, List<Guid?>? guidRels, List<int?>? intRels, int entityId, bool flushAll)
     {
-        var l = LogDetails.Fn<RelationshipToSave>($"id:{entityId}, guids⋮{guidRels?.Count}, ints⋮{intRels?.Count}");
+        using var l = LogDetails.Fn<RelationshipToSave>($"id:{entityId}, guids⋮{guidRels?.Count}, ints⋮{intRels?.Count}");
         var rel = new RelationshipToSave
         {
             AttributeId = attributeId,

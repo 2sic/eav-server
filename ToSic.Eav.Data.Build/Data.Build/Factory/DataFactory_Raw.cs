@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.Data.Sys.Entities;
@@ -58,7 +58,7 @@ partial class DataFactory
     private IList<EntityPair<IRawEntity>> Prepare<TNewEntity>(IEnumerable<TNewEntity> list)
         where TNewEntity : class, IRawData
     {
-        var l = Log.Fn<IList<EntityPair<IRawEntity>>>();
+        using var l = Log.Fn<IList<EntityPair<IRawEntity>>>();
 
         var all = list
             .Select(toBeRaw =>
@@ -108,7 +108,7 @@ partial class DataFactory
     /// <returns></returns>
     private IImmutableList<IEntity> WrapUp(IEnumerable<EntityPair<IRawEntity>> rawList)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
 
         // Pre-process relationship keys, so they are added to the lookup
         var entityPairs = rawList.ToListOpt();

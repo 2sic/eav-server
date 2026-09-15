@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
@@ -42,7 +42,7 @@ internal class DeferredContentTypeProvider(ILog? parentLog)
 
     private IList<IContentType> EliminateDuplicateTypes(IEnumerable<IContentType> types)
     {
-        var l = Log.Fn<IList<IContentType>>();
+        using var l = Log.Fn<IList<IContentType>>();
 
         // In rare cases there can be a mistake and the same type may be duplicate!
         var typesGrouped = types
@@ -68,7 +68,7 @@ internal class DeferredContentTypeProvider(ILog? parentLog)
 
     public ICollection<IContentType> SetTypesOfContentTypeParts()
     {
-        var l = Log.Fn<List<IContentType>>(timer: true);
+        using var l = Log.Fn<List<IContentType>>(timer: true);
         var changeCount = 0;
 
         try
@@ -102,7 +102,7 @@ internal class DeferredContentTypeProvider(ILog? parentLog)
 
     public void SetTypesOfOtherEntities(ICollection<IEntity> entities)
     {
-        var l = Log.Fn(timer: true);
+        using var l = Log.Fn(timer: true);
         var changeCount = 0;
         try
         {
@@ -119,7 +119,7 @@ internal class DeferredContentTypeProvider(ILog? parentLog)
 
     private int UpdateTypes(string name, ICollection<IEntity> entitiesToRetype)
     {
-        var l = Log.Fn<int>($"For {name}", timer: true);
+        using var l = Log.Fn<int>($"For {name}", timer: true);
         var changeCount = 0;
         foreach (var entity in entitiesToRetype)
         {

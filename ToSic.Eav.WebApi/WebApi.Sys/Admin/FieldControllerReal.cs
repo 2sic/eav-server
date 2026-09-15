@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -7,7 +7,7 @@ public class FieldControllerReal(
     //QuickWork<ContentTypeDtoService> ctApiLazy,
     AppWorkQuick<WorkAttributesMod> attributesMod,
     LazySvc<ISysFeaturesService> featuresSvc)
-    : ServiceBase("Api.FieldRl", connect: [attributesMod, /*ctApiLazy,*/ featuresSvc]), IFieldController
+    : ServiceBase("Api.FieldRl"), IFieldController
 {
     public const string LogSuffix = "Field";
 

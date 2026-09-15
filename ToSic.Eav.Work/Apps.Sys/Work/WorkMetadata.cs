@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 
@@ -9,11 +9,11 @@ public class WorkMetadata(
     DataAssembler dataAssembler,
     AppWorkChain<WorkEntitySave> workEntSave,
     AppWorkChain<WorkEntityUpdate> entityUpdate)
-    : ServiceWithSetup<IAppWorkContext>("AWk.EntMd", connect: [entityUpdate, dataAssembler, workEntSave])
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntMd")
 {
     public void SaveMetadata(Target target, string typeName, Dictionary<string, object> values)
     {
-        var l = Log.Fn($"target:{target.KeyNumber}/{target.KeyGuid}, {nameof(typeName)}: '{typeName}', values count:{values.Count}");
+        using var l = Log.Fn($"target:{target.KeyNumber}/{target.KeyGuid}, {nameof(typeName)}: '{typeName}', values count:{values.Count}");
         if (target.TargetType != (int)TargetTypes.Attribute || target.KeyNumber == null || target.KeyNumber == 0)
             throw new NotSupportedException("atm this command only creates metadata for entities with id-keys");
 

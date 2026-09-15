@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Entities.Sources;
 
@@ -11,7 +11,7 @@ internal partial class DataFactory(
     Generator<DataFactoryContentTypeHelper, DataFactoryOptions> contentTypeHelper,
     Generator<IDataFactory, DataFactoryOptions> selfGenerator
 )
-    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, contentTypeHelper, selfGenerator]), IDataFactory
+    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld"), IDataFactory
 {
     /// <summary>
     /// The data factory will often need options, but there could be cases (WIP) where it's called without...?

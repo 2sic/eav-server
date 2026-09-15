@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils.Assemblies;
 
 namespace ToSic.Sys.Capabilities.SysFeatures;
@@ -9,7 +9,7 @@ namespace ToSic.Sys.Capabilities.SysFeatures;
 /// <param name="sp"></param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class SysFeaturesLoader(IServiceProvider sp)
-    : ServiceBase("Eav.SysCap", connect: [/* never! sp*/ ])
+    : ServiceBase("Eav.SysCap")
 {
     public IList<FeatureState> Load()
     {

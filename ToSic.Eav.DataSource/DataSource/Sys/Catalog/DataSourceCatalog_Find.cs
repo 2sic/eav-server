@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.VisualQuery.Sys;
+using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.DataSource.Sys.Catalog;
 
@@ -24,7 +24,7 @@ partial class DataSourceCatalog
 
     internal DataSourceInfo? FindDsiByGuidOrName(string name, int appId)
     {
-        var l = Log.Fn<DataSourceInfo?>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
+        using var l = Log.Fn<DataSourceInfo?>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
         // New 11.12.x If the type is identified by a GUID, that's what we should return
         var typeInfo = FindInCache(name, appId);
         if (typeInfo?.NameId != null)
@@ -38,7 +38,7 @@ partial class DataSourceCatalog
     // Note: only public because we're still supporting a very old API in a 2sxc code
     public DataSourceInfo? FindDataSourceInfo(string name, int appId)
     {
-        var l = Log.Fn<DataSourceInfo?>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
+        using var l = Log.Fn<DataSourceInfo?>($"{nameof(name)}: {name}, {nameof(appId)}: {appId}");
 
         // if not found, or if obsolete, try to find another
         var typeFromCatalog = FindInCache(name, appId);
@@ -51,7 +51,7 @@ partial class DataSourceCatalog
     /// <remarks>Objects that implement IDataSource</remarks>
     public IList<DataSourceInfo> GetAll(bool onlyForVisualQuery, int appId)
     {
-        var l = Log.Fn<IList<DataSourceInfo>>($"{onlyForVisualQuery}, {appId}");
+        using var l = Log.Fn<IList<DataSourceInfo>>($"{onlyForVisualQuery}, {appId}");
 
         var fromGlobal = onlyForVisualQuery
             ? GlobalCache.Where(dsi => (dsi.VisualQuery?.NameId).HasValue())

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2022 by 2sic internet solutions in Switzerland - www.2sic.com
  *
  * This file and the code IS COPYRIGHTED.
@@ -30,7 +30,7 @@ namespace ToSic.Sys.Capabilities.Fingerprints;
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class SystemFingerprint(LazySvc<IPlatformInfo> platform, LazySvc<IGlobalConfiguration> globalConfig)
-    : ServiceBase("Sys.SysFpr", connect: [platform]), IFingerprint
+    : ServiceBase("Sys.SysFpr"), IFingerprint
 {
     public string GetFingerprint()
     {

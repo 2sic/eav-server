@@ -1,4 +1,4 @@
-﻿//namespace ToSic.Eav.Apps.Sys.Work;
+//namespace ToSic.Eav.Apps.Sys.Work;
 
 ///// <summary>
 ///// Helper to generate a App Work Unit class to get a single / simple thing done.
@@ -8,7 +8,7 @@
 ///// <typeparam name="TWork"></typeparam>
 //[ShowApiWhenReleased(ShowApiMode.Never)]
 //public class GenWorkDb<TWork>(LazySvc<AppWorkContextService> ctxSvc, Generator<TWork> gen)
-//    : ServiceBase("App.WorkUn", connect: [ctxSvc, gen])
+//    : ServiceBase("App.WorkUn")
 //    where TWork : WorkUnitBase<IAppWorkCtxWithDb>
 //{
 //    public AppWorkContextService CtxSvc => ctxSvc.Value;

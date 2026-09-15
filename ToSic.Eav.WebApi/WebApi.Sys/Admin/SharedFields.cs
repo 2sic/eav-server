@@ -24,7 +24,7 @@ public class SharedFields : CustomDataSource
         AppWorkQuick<WorkAttributes> workAttributes,
         Generator<ConvertAttributeToDto> convertAttribute,
         LazySvc<ISysFeaturesService> features)
-        : base(services, logName: "Eav.SharedFld", connect: [workAttributes, convertAttribute, features])
+        : base(services, logName: "Eav.SharedFld")
     {
         ProvideOutRaw(() => Convert(convertAttribute, workAttributes.New(AppId).GetSharedFields(AttributeId)));
         ProvideOutRaw(

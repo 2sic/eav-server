@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.Permissions;
 using ToSic.Eav.Context.Sys.ZoneMapper;
@@ -22,7 +22,7 @@ public class AppUserLanguageCheck(
     Generator<AppPermissionCheck> checkGenerator,
     LazySvc<IAppReaderFactory> appReadersLazy,
     LazySvc<ISysFeaturesService> featuresLazy)
-    : Services_ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, checkGenerator, appReadersLazy, featuresLazy])
+    : Services_ServiceBase($"{EavLogs.Eav}.LngChk")
 {
     /// <summary>
     /// Test if the current user has explicit language editing permissions
@@ -32,7 +32,7 @@ public class AppUserLanguageCheck(
     /// <returns>true in most admin-cases, false if feature enabled AND permissions configured AND not allowed</returns>
     public bool? UserRestrictedByLanguagePermissions(IAppReader appReader)
     {
-        var l = Log.Fn<bool?>($"{appReader.Specs.Name}({appReader.AppId})");
+        using var l = Log.Fn<bool?>($"{appReader.Specs.Name}({appReader.AppId})");
         // Note: it's important that all cases where we don't detect a forbidden
         // we return null, and DON'T access _ctx.UserMayEdit, as it will recurse to here again
         if (!featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
@@ -55,7 +55,7 @@ public class AppUserLanguageCheck(
     /// <returns></returns>
     public List<AppUserLanguageState> LanguagesWithPermissions(IAppReader? appReaderOrNull)
     {
-        var l = Log.Fn<List<AppUserLanguageState>>();
+        using var l = Log.Fn<List<AppUserLanguageState>>();
         // to solves the issue with globals settings languages that can not be saved if 
         // app languages are different from languages in global app and because global
         // settings are in primary appid=1, zoneId=1 without portal site we just return empty list for it

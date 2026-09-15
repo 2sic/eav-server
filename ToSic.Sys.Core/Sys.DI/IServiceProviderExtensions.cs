@@ -60,22 +60,7 @@ public static class IServiceProviderExtensions
     /// <param name="parentLog"></param>
     /// <returns></returns>
     public static T Build<T>(this IServiceProvider serviceProvider, ILog? parentLog)
-    {
-        // temp: debug with try-catch, as we're getting some strange problems
-        //try
-        //{
-            var service = serviceProvider.Build<T>();
-            if (service is IHasLog withLog && parentLog != null)
-                withLog.LinkLog(parentLog);
-            return service;
-        //}
-        //catch (Exception ex)
-        //{
-        //    parentLog?.A("Error using ServiceProvider to build something.");
-        //    parentLog?.Ex(ex);
-        //    throw;
-        //}
-    }
+        => serviceProvider.Build<T>();
 
     /// <summary>
     /// Build a service and if it supports logging, attach it to the parent
@@ -86,19 +71,9 @@ public static class IServiceProviderExtensions
     /// <param name="parentLog"></param>
     /// <returns></returns>
     public static T Build<T>(this IServiceProvider serviceProvider, string key, ILog? parentLog)
-    {
-        var service = serviceProvider.Build<T>(key);
-        if (service is IHasLog withLog && parentLog != null)
-            withLog.LinkLog(parentLog);
-        return service;
-    }
+        => serviceProvider.Build<T>(key);
     public static T? TryBuild<T>(this IServiceProvider serviceProvider, string key, ILog? parentLog)
-    {
-        var service = serviceProvider.TryBuild<T>(key);
-        if (service is IHasLog withLog && parentLog != null)
-            withLog.LinkLog(parentLog);
-        return service;
-    }
+        => serviceProvider.TryBuild<T>(key);
 
 
 
@@ -107,8 +82,6 @@ public static class IServiceProviderExtensions
         // Try to first check registered types, otherwise try to find in DLLs etc. using Activator Utilities
         var service = serviceProvider.GetService(type)
                       ?? ActivatorUtilities.CreateInstance(serviceProvider, type);
-        if (service is IHasLog withLog && parentLog != null)
-            withLog.LinkLog(parentLog);
         return (service as T)!;
     }
 

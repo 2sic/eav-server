@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Query.Sys;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.LookUp.Sources;
@@ -27,7 +27,7 @@ namespace ToSic.Eav.DataSources;
 
 // ReSharper disable once UnusedMember.Global
 public class QueryRun(DataSourceBase.Dependencies services, Generator<Query> queryGenerator)
-    : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun", connect: [queryGenerator])
+    : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun")
 {
     #region Configuration-properties
 
@@ -57,7 +57,7 @@ public class QueryRun(DataSourceBase.Dependencies services, Generator<Query> que
 
     private Query? BuildQuery()
     {
-        var l = Log.Fn<Query>();
+        using var l = Log.Fn<Query>();
         // parse config to be sure we get the right query name etc.
         Configuration.Parse();
 

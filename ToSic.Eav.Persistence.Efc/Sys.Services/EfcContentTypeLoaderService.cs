@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.FileSystemState;
 using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Apps.Sys.State;
@@ -26,7 +26,7 @@ internal class EfcContentTypeLoaderService(
     internal (IImmutableList<IContentType> Types, ICollection<IEntity> Entities)
         LoadExtensionsTypesAndMerge(IAppReader appReader, IImmutableList<IContentType> dbTypes)
     {
-        var l = Log.Fn<(IImmutableList<IContentType> Types, ICollection<IEntity> Entities)>(timer: true);
+        using var l = Log.Fn<(IImmutableList<IContentType> Types, ICollection<IEntity> Entities)>(timer: true);
         try
         {
             if (string.IsNullOrEmpty(appReader.Specs.Folder))
@@ -64,7 +64,7 @@ internal class EfcContentTypeLoaderService(
     /// <returns></returns>
     private PartialData LoadContentTypesFromFileSystem(IAppReader appReader)
     {
-        var l = Log.Fn<PartialData>(timer: true);
+        using var l = Log.Fn<PartialData>(timer: true);
         // must create a new loader for each app
         var loader = appFileContentTypesLoader.New(new(appReader, efcAppLoader.LogSettings));
         //loader.Init(new(appReader, efcAppLoader.LogSettings));
@@ -91,7 +91,7 @@ internal class EfcContentTypeLoaderService(
         // 1. Collect AppIds used in content-types and attributes here
         // 2. After loading the types, access the app-state of each of these IDs to ensure it's loaded already
 
-        var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
+        using var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
 

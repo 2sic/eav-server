@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.Sys.Logging;
 
@@ -9,7 +9,7 @@ partial class ImportListXml
 
     private bool RunDocumentValidityChecks(List<XElement> xmlEntities)
     {
-        var l = LogSummary.Fn<bool>();
+        using var l = LogSummary.Fn<bool>();
         // #1 Assure that each element has a GUID and language child element
         foreach (var element in xmlEntities)
         {
@@ -44,7 +44,7 @@ partial class ImportListXml
     private bool LoadStreamIntoDocumentElement(IContentType contentType, Stream dataStream,
         [NotNullWhen(true)] out List<XElement>? xmlEntityNodes)
     {
-        var l = LogSummary.Fn<bool>(timer: true);
+        using var l = LogSummary.Fn<bool>(timer: true);
         var document = XDocument.Load(dataStream);
         dataStream.Position = 0;
         if (document == null)

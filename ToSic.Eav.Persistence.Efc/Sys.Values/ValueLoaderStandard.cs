@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
@@ -19,7 +19,7 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
 
     public virtual Dictionary<int, ICollection<TempAttributeWithValues>> LoadValues()
     {
-        var l = Log.IfSummary(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>(timer: true);
+        using var l = Log.IfSummary(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>(timer: true);
 
         var sqlTime = Stopwatch.StartNew();
         var result = Specs.IdsToLoadChunks
@@ -36,7 +36,7 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
 
     private Dictionary<int, ICollection<TempAttributeWithValues>> GetValuesOfEntityChunk(ICollection<int> entityIdsFound)
     {
-        var l = Log.IfDetails(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
+        using var l = Log.IfDetails(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"ids: {entityIdsFound.Count}", timer: true);
 
         var attributesRaw = GetSqlValuesChunk(entityIdsFound);
 
@@ -66,7 +66,7 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
     /// </remarks>
     private ICollection<LoadingValue> GetSqlValuesChunk(ICollection<int> entityIdsFound)
     {
-        var l = Log.Fn<ICollection<LoadingValue>>($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
+        using var l = Log.Fn<ICollection<LoadingValue>>($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
 
         var query = ValueQueries.ChunkValuesQuery(entityIdsFound);
         var attributesRaw = ToLoadingValues(query, null);

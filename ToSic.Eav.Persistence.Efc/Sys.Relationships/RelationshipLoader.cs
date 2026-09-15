@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
@@ -22,7 +22,7 @@ internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLo
 
         // Load relationships in batches / chunks
         var sqlTime = Stopwatch.StartNew();
-        var lRelationshipSql = Log.IfDetails(appLoader.LogSettings).Fn("Relationship SQL", timer: true);
+        using var lRelationshipSql = Log.IfDetails(appLoader.LogSettings).Fn("Relationship SQL", timer: true);
         var relChunks = specs.IdsToLoadChunks
             .Select(idList => GetRelationshipChunkOptimizedSql(specs.AppId, idList))
             .SelectMany(chunk => chunk)
@@ -49,7 +49,7 @@ internal class RelationshipLoader(EfcAppLoaderService appLoader, EntityDetailsLo
     /// <returns></returns>
     private List<LoadingRelationship> GetRelationshipChunkOptimizedSql(int appId, List<int> entityIds)
     {
-        var l = Log.IfDetails(appLoader.LogSettings).Fn<List<LoadingRelationship>>($"app: {appId}, ids: {entityIds.Count}", timer: true);
+        using var l = Log.IfDetails(appLoader.LogSettings).Fn<List<LoadingRelationship>>($"app: {appId}, ids: {entityIds.Count}", timer: true);
         var relationships = RelationshipQueries
             .RelationshipChunkQueryOptimized(appId, entityIds)
             .Select(rel => new LoadingRelationship(rel, rel.Attribute.StaticName))

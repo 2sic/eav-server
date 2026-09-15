@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Sys.Insights.HtmlHelpers;
+using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Eav.Sys.Insights.Sys;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Razor.Blade;
@@ -9,7 +9,7 @@ namespace ToSic.Eav.Sys.Insights;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache> dsCache, IEnumerable<IInsightsProvider> insightsProviders, IHttpExceptionMaker exceptionMaker)
-    : ServiceBase("Api.SysIns", connect: [user, dsCache, insightsProviders])
+    : ServiceBase("Api.SysIns")
 {
     public const string LogSuffix = "Insight";
 
@@ -22,7 +22,7 @@ public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache>
     /// <returns></returns>
     public string Details(string view, int? appId, string key, int? position, string type, bool? toggle, string nameId, string filter)
     {
-        var l = Log.Fn<string>($"view:{view}, appId:{appId}, key:{key}, position:{position}, type:{type}, toggle:{toggle}, nameId:{nameId}, filter:{filter}");
+        using var l = Log.Fn<string>($"view:{view}, appId:{appId}, key:{key}, position:{position}, type:{type}, toggle:{toggle}, nameId:{nameId}, filter:{filter}");
         // This is really important
         ThrowIfNotSystemAdmin();
 

@@ -1,11 +1,11 @@
-﻿using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Eav.Sys.Insights.Logs;
 
 namespace ToSic.Eav.Sys.Insights.App;
 
 internal class InsightsAppLoadLog(LazySvc<IAppStateCacheService> appStates, LazySvc<ILogStoreLive> logStore)
-    : InsightsProvider(new() { Name = Link, Title = "App Load Log" }, connect: [appStates, logStore])
+    : InsightsProvider(new() { Name = Link, Title = "App Load Log" })
 {
     [field: AllowNull, MaybeNull]
     private InsightsLogsHelper LogHtml => field ??= new(logStore.Value);

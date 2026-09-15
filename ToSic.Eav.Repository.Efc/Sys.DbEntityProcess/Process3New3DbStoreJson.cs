@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
+namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class Process3New3DbStoreJson() : Process0Base("DB.EPr3n3")
 {
     public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
@@ -6,7 +6,7 @@ internal class Process3New3DbStoreJson() : Process0Base("DB.EPr3n3")
         // Only update the header for JSON on new, as the header with json-value changes
         // will be updated in phase 
 
-        var l = services.LogDetails.Fn<EntityProcessData>();
+        using var l = services.LogDetails.Fn<EntityProcessData>();
 
         //if (!data.IsNew)
         //    return l.Return(data, "not new, skip");

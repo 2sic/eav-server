@@ -1,4 +1,4 @@
-﻿
+
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 
@@ -8,7 +8,7 @@ internal class ValueQueriesPro(EfcAppLoaderService appLoader, ILog parentLog): H
 {
     internal (IQueryable<TsDynDataValue> Query, List<TsDynDataDimension> Dimensions) AllValuesQuery(int appId)
     {
-        var l = Log.IfSummary(appLoader.LogSettings).Fn<(IQueryable<TsDynDataValue>, List<TsDynDataDimension>)>(timer: true);
+        using var l = Log.IfSummary(appLoader.LogSettings).Fn<(IQueryable<TsDynDataValue>, List<TsDynDataDimension>)>(timer: true);
 
         var dimensions = appLoader.Context.TsDynDataDimensions.ToList(); // materialise (very fast)
 

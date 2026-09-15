@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Sys.State;
+namespace ToSic.Eav.Apps.Sys.State;
 
 partial class AppState
 {
@@ -12,12 +12,12 @@ partial class AppState
     /// <param name="transaction"></param>
     public void DoInLock(ILog parentLog, Action transaction)
     {
-        var l = parentLog.Fn();
+        using var l = parentLog.Fn();
         try
         {
             lock (_transactionLock)
             {
-                var lInner = parentLog.Fn("in lock");
+                using var lInner = parentLog.Fn("in lock");
                 transaction();
                 lInner.Done();
             }

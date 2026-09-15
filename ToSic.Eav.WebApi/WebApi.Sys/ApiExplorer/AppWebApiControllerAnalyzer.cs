@@ -6,11 +6,11 @@ namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWebApiControllerAnalyzer(IApiInspector inspector)
-    : ServiceBase($"{EavLogs.WebApi}.ApiCtlAn", connect: [inspector])
+    : ServiceBase($"{EavLogs.WebApi}.ApiCtlAn")
 {
     internal (AppWebApiControllerRaw Controller, IReadOnlyCollection<AppWebApiEndpointRaw> Endpoints) Analyze(string path, Assembly assembly)
     {
-        var l = Log.Fn<(AppWebApiControllerRaw, IReadOnlyCollection<AppWebApiEndpointRaw>)>();
+        using var l = Log.Fn<(AppWebApiControllerRaw, IReadOnlyCollection<AppWebApiEndpointRaw>)>();
 
         path = CleanPath(path);
         var controller = GetController(path, assembly);
@@ -21,7 +21,7 @@ public class AppWebApiControllerAnalyzer(IApiInspector inspector)
 
     private string CleanPath(string path)
     {
-        var l = Log.Fn<string>();
+        using var l = Log.Fn<string>();
 
         l.A($"Controller Path from appRoot: {path}");
 
@@ -34,7 +34,7 @@ public class AppWebApiControllerAnalyzer(IApiInspector inspector)
 
     private Type GetController(string path, Assembly assembly)
     {
-        var l = Log.Fn<Type>();
+        using var l = Log.Fn<Type>();
 
         var controllerName = Path.GetFileNameWithoutExtension(path);
 
@@ -50,7 +50,7 @@ public class AppWebApiControllerAnalyzer(IApiInspector inspector)
 
     private (AppWebApiControllerRaw Controller, IReadOnlyCollection<AppWebApiEndpointRaw> Endpoints) Build(Type controller)
     {
-        var l = Log.Fn<(AppWebApiControllerRaw, IReadOnlyCollection<AppWebApiEndpointRaw>)>();
+        using var l = Log.Fn<(AppWebApiControllerRaw, IReadOnlyCollection<AppWebApiEndpointRaw>)>();
 
         var controllerSecurity = inspector.GetSecurity(controller);
         var controllerRaw = new AppWebApiControllerRaw

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -64,7 +64,7 @@ public class AttributeRename : DataSourceBase
     /// Constructs a new AttributeFilter DataSource
     /// </summary>
     [PrivateApi]
-    public AttributeRename(DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen", connect: [dataAssembler])
+    public AttributeRename(DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit, Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.AtrRen")
     {
         _dataAssembler = dataAssembler;
         _ctAssemblyKit = ctAssemblyKit;
@@ -81,7 +81,7 @@ public class AttributeRename : DataSourceBase
     /// <returns></returns>
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         Configuration.Parse();
 
         var mapRaw = AttributeMap ?? "";

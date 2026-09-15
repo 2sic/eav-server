@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Raw.Sys;
@@ -40,7 +40,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     /// <param name="logName">Optional name for logging such as `My.JsonDS`</param>
     /// <param name="connect"></param>
     protected internal CustomDataSource(Dependencies services, string? logName = null, object[]? connect = null)
-        : base(services, logName ?? "Ds.CustLt", connect: connect)
+        : base(services, logName ?? "Ds.CustLt")
     {
         // Provide a default out, in case the overriding class doesn't
         base.ProvideOut(() => GetRaw(GetDefault, null));
@@ -86,7 +86,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
 
     private IImmutableList<IEntity> GetAny(Func<object>? source, Func<DataFactoryOptions>? options)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
 
         // Call the Generator and handle errors/null
         object? funcResult;
@@ -166,7 +166,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
     private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>>? source, Func<DataFactoryOptions>? options)
         where T: class, IRawData
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
 
         // Get raw entities - from _source or from override method
         var raw = source?.Invoke()?.ToList();

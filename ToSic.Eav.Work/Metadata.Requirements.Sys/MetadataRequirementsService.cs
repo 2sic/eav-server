@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Models;
 using ToSic.Sys.Capabilities.Aspects;
 using ToSic.Sys.Capabilities.Features;
@@ -38,13 +38,12 @@ public class MetadataRequirementsService(
     LazySvc<ISysFeaturesService> featsService,
     LazySvc<IPlatformInfo> platInfo,
     LicenseCatalog licenseCatalog
-) : ServiceBase($"{AppConstants.LogName}.MdReq",
-        connect: [licenseService, featsService, platInfo, licenseCatalog]), IRequirementsService
+) : ServiceBase($"{AppConstants.LogName}.MdReq"), IRequirementsService
 {
     public ICollection<RequirementStatus> UnfulfilledRequirements(IEnumerable<SysFeature> requirements)
     {
         var list = requirements?.ToListOpt();
-        var l = Log.Fn<ICollection<RequirementStatus>>();
+        using var l = Log.Fn<ICollection<RequirementStatus>>();
         if (list.SafeNone())
             return l.Return([], "empty requirements");
 
@@ -58,7 +57,7 @@ public class MetadataRequirementsService(
 
     public ICollection<RequirementStatus> UnfulfilledRequirements(IEnumerable<IEntity> requirements)
     {
-        var l = Log.Fn<ICollection<RequirementStatus>>();
+        using var l = Log.Fn<ICollection<RequirementStatus>>();
 
         var (ok, notOk) = CheckRequirements(requirements);
         return ok 
@@ -68,7 +67,7 @@ public class MetadataRequirementsService(
 
     public (bool Approved, string FeatureId) RequirementMet(IEnumerable<IEntity> requirement)
     {
-        var l = Log.Fn<(bool, string)>();
+        using var l = Log.Fn<(bool, string)>();
 
         var (ok, notOk) = CheckRequirements(requirement);
         if (ok)
@@ -85,7 +84,7 @@ public class MetadataRequirementsService(
 
     private (bool AllOk, ICollection<ReqStatusWithDecorator> Issues) CheckRequirements(IEnumerable<IEntity> requirement)
     {
-        var l = Log.Fn<(bool, ICollection<ReqStatusWithDecorator>)>();
+        using var l = Log.Fn<(bool, ICollection<ReqStatusWithDecorator>)>();
         var entities = requirement?.ToListOpt();
         l.A($"entities: {entities?.Count}");
         if (entities == null || !entities.Any())
@@ -120,7 +119,7 @@ public class MetadataRequirementsService(
 
     private ReqStatusWithDecorator? RequirementMet(RequirementDecorator? requirement)
     {
-        var l = Log.Fn<ReqStatusWithDecorator>();
+        using var l = Log.Fn<ReqStatusWithDecorator>();
         // No requirement, all is ok
         if (requirement == null)
             return l.ReturnNull();
@@ -145,7 +144,7 @@ public class MetadataRequirementsService(
 
     private (bool IsOk, Aspect Aspect) VerifyPlatform(string? platform)
     {
-        var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {platform}");
+        using var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {platform}");
         if (platform.IsEmptyOrWs())
             return l.Return((true, Aspect.EmptyAspect(ReqPlatform)), "no req. platform");
 
@@ -159,7 +158,7 @@ public class MetadataRequirementsService(
 
     private (bool IsOk, Aspect Aspect) VerifyFeature(string? feat)
     {
-        var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {feat}");
+        using var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {feat}");
         if (feat.IsEmptyOrWs())
             return l.Return((true, Aspect.EmptyAspect(RequirementFeature)), "no req. feature");
 
@@ -179,7 +178,7 @@ public class MetadataRequirementsService(
 
     private (bool IsOk, Aspect Aspect) VerifyLicense(string? license)
     {
-        var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {license}");
+        using var l = Log.Fn<(bool IsEnabled, Aspect Aspect)>($"name: {license}");
         if (license.IsEmptyOrWs())
             return l.Return((true, Aspect.EmptyAspect(ReqLicense)), "no req. license");
 

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context.Sys.ZoneMapper;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
@@ -36,7 +36,7 @@ public sealed class Zones: CustomDataSourceAdvanced
     /// </summary>
     [PrivateApi]
     public Zones(Dependencies services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [zoneMapper, appsCatalog])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones")
     {
         _zoneMapper = zoneMapper;
         _appsCatalog = appsCatalog;
@@ -48,7 +48,7 @@ public sealed class Zones: CustomDataSourceAdvanced
 
     private IImmutableList<IEntity> GetList()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var dataFactory = DataFactory.SpawnNew(options: new()
         {
             AppId = 0,

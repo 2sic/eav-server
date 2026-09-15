@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Sys.Insights;
+namespace ToSic.Eav.Sys.Insights;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class InsightsProvider(
@@ -7,7 +7,7 @@ public abstract class InsightsProvider(
     NoParamOrder npo = default,
 #pragma warning restore CS9113 // Parameter is unread.
     object[]? connect = default
-): ServiceBase($"Ins.{specs.Name}", connect: connect ?? []),
+): ServiceBase($"Ins.{specs.Name}"),
     IInsightsProvider
 {
     public InsightsProviderSpecs Specs => specs; 

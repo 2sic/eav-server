@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Security.Permissions;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class MultiPermissionsBase<TServices, TOptions>(TServices services, string logName, object[]? connect = default)
-    : ServiceWithSetup<TServices, TOptions>(services, logName, connect: connect), IMultiPermissionCheck
+    : ServiceWithSetup<TServices, TOptions>(services, logName), IMultiPermissionCheck
     where TServices : IDependencies
     where TOptions : class, new()
 {
@@ -46,7 +46,7 @@ public abstract class MultiPermissionsBase<TServices, TOptions>(TServices servic
     /// <returns>True if all pass, false if any one fails</returns>
     public bool EnsureAll(List<Grants> grants, out string? error)
     {
-        var l = Log.Fn<bool>($"Doing {nameof(EnsureAll)} for {GetType().Name}");
+        using var l = Log.Fn<bool>($"Doing {nameof(EnsureAll)} for {GetType().Name}");
 
         var permCheckers = PermissionCheckers;
         l.A($"{nameof(PermissionCheckers)}: {permCheckers.Count}");

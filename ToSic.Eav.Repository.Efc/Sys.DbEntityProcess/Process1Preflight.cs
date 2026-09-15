@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
@@ -8,7 +8,7 @@ internal class Process1Preflight(): Process0Base("DB.EPrc1")
     {
         var newEnt = data.NewEntity;
 
-        var l = services.LogDetails.Fn<EntityProcessData>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{data.LogDetails}");
+        using var l = services.LogDetails.Fn<EntityProcessData>($"id:{newEnt?.EntityId}/{newEnt?.EntityGuid}, logDetails:{data.LogDetails}");
 
         if (newEnt == null)
             return l.ReturnAsError(data with { Exception = new ArgumentNullException(nameof(newEnt)) });

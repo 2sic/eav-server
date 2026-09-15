@@ -43,7 +43,7 @@ public class ContentTypeChangeActionRunner(
     /// </summary>
     public void RunForFieldMetadata(int appId, IEnumerable<IContentType> contentTypes, IEnumerable<ITarget> targets)
     {
-        var l = Log.Fn($"app:{appId}");
+        using var l = Log.Fn($"app:{appId}");
         try
         {
             // Materialize before running any action, as actions reload the app-state we're reading here.
@@ -68,7 +68,7 @@ public class ContentTypeChangeActionRunner(
 
     public void RunFor(int appId, string contentTypeNameId, string source = ContentTypeChangeSources.ContentTypeField)
     {
-        var l = Log.Fn($"app:{appId}, type:{contentTypeNameId}, source:{source}");
+        using var l = Log.Fn($"app:{appId}, type:{contentTypeNameId}, source:{source}");
 
         if (Suppressed.Value)
         {

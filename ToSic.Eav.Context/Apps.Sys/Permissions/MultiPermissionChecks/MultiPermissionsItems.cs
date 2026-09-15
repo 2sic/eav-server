@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Security.Permissions;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
@@ -38,7 +38,7 @@ public class MultiPermissionsItems(MultiPermissionsApp.Dependencies services)
     /// <returns></returns>
     private IPermissionCheck BuildItemPermissionChecker(IEntity item)
     {
-        var l = Log.Fn<IPermissionCheck>($"type: {item.Type}; entity:{item.EntityId}");
+        using var l = Log.Fn<IPermissionCheck>($"type: {item.Type}; entity:{item.EntityId}");
         var checker = BuildPermissionChecker(item.Type, item);
         return l.ReturnAsOk(checker);
     }

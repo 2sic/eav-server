@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.LookUp.Sys.Engines;
 
 namespace ToSic.Eav.DataSource.Query.Sys;
@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class QueryManager<TQuery>(QueryDefinitionService queryDefSvc, Generator<TQuery> queryGenerator)
-    : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.QryMan", connect: [queryDefSvc, queryGenerator])
+    : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.QryMan")
     where TQuery : Query
 {
 
@@ -22,7 +22,7 @@ public class QueryManager<TQuery>(QueryDefinitionService queryDefSvc, Generator<
     /// <returns></returns>
     public Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine lookUps)
     {
-        var l = Log.Fn<Dictionary<string, IQuery>>();
+        using var l = Log.Fn<Dictionary<string, IQuery>>();
         var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entQuery in queryDefSvc.AllQueryEntities(app))
         {
@@ -39,7 +39,7 @@ public class QueryManager<TQuery>(QueryDefinitionService queryDefSvc, Generator<
     
     public TQuery? TryGetQuery(IAppIdentity appIdentity, string? nameOrGuid, ILookUpEngine lookUps, int recurseParents = 0)
     {
-        var l = Log.Fn<TQuery>($"{nameOrGuid}, recurse: {recurseParents}");
+        using var l = Log.Fn<TQuery>($"{nameOrGuid}, recurse: {recurseParents}");
         var qEntity = queryDefSvc.TryGetQueryEntity(appIdentity, nameOrGuid, recurseParents);
         if (qEntity == null)
             return l.ReturnNull("not found");

@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Apps.Sys.LogSettings;
 
@@ -6,7 +6,7 @@ public abstract class GetLogSettingsBase(ISysFeaturesService featuresSvc, string
 {
     protected ToSic.Sys.Logging.LogSettings GetLogSettings(string nameDetailed, string nameSummary)
     {
-        var l = Log.Fn<ToSic.Sys.Logging.LogSettings>();
+        using var l = Log.Fn<ToSic.Sys.Logging.LogSettings>();
         var settings = new ToSic.Sys.Logging.LogSettings(Details: false);
 
         var config = featuresSvc.Get(BuiltInFeatures.InsightsLoggingCustomized.NameId)

@@ -1,10 +1,10 @@
-﻿using ToSic.Eav.WebApi.Sys.Helpers.Http;
+using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsAttributeMetadata(LazySvc<IAppReaderFactory> appReaders, IHttpExceptionMaker exceptionMaker)
-    : InsightsProvider(new() { Name = Link, Title = "Field Metadata "}, connect: [appReaders])
+    : InsightsProvider(new() { Name = Link, Title = "Field Metadata "})
 {
     public static string Link = "AttributeMetadata";
 

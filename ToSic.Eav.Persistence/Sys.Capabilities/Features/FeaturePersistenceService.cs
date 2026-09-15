@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Sys.Capabilities.Fingerprints;
@@ -10,7 +10,7 @@ public class FeaturePersistenceService(
     LazySvc<IGlobalConfiguration> globalConfiguration,
     LazySvc<FeaturesIoHelper> featuresIo,
     LazySvc<SystemFingerprint> fingerprint)
-    : ServiceBase("FeatCfgMng", connect: [globalConfiguration, featuresIo, fingerprint])
+    : ServiceBase("FeatCfgMng")
 {
     #region JSON serialization
 
@@ -30,7 +30,7 @@ public class FeaturePersistenceService(
     internal bool ApplyUpdatesAndSave(List<FeatureStateChange> changes)
     {
         var changeCount = changes?.Count ?? -1;
-        var l = Log.Fn<bool>($"c:{changeCount}");
+        using var l = Log.Fn<bool>($"c:{changeCount}");
         if (changes == null || changeCount <= 0)
             return l.ReturnTrue("no changes");
 

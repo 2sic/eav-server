@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSource;
@@ -25,7 +25,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin.Query;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class QueryControllerBase(QueryControllerBase.Dependencies services, string logName, object[]? connect = default)
-    : ServiceBase<QueryControllerBase.Dependencies>(services, logName, connect: connect)
+    : ServiceBase<QueryControllerBase.Dependencies>(services, logName)
 {
 
     #region Constructor / DI / Services
@@ -41,11 +41,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
         Generator<IAppReaderFactory> AppStates,
         AppWorkQuick<WorkQueryMod> WorkUnitQueryMod,
         AppWorkQuick<WorkQueryCopy> WorkUnitQueryCopy)
-        : DependenciesBase(connect:
-        [
-            QueryFactory, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough,
-            QueryDefSvc, AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
-        ]);
+        : DependenciesBase();
 
     #endregion
 
@@ -54,7 +50,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
     /// </summary>
     public QueryDefinitionDto Get(int appId, int? id = null)
     {
-        var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
+        using var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
 
         if (!id.HasValue)
             return l.Return(new(), "no id, empty");
@@ -108,7 +104,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
     /// <param name="appIdentity"></param>
     public IEnumerable<DataSourceDto> DataSources(AppIdentity appIdentity)
     {
-        var l = Log.Fn<IEnumerable<DataSourceDto>>($"a#{appIdentity.AppId}");
+        using var l = Log.Fn<IEnumerable<DataSourceDto>>($"a#{appIdentity.AppId}");
         var dsCat = Services.DataSourceCatalogLazy.Value;
         var installedDataSources = Services.DataSourceCatalogLazy.Value.GetAll(true, appIdentity.AppId);
 
@@ -134,7 +130,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
     /// <param name="id">PipelineEntityId</param>
     public QueryDefinitionDto Save(QueryDefinitionDto data, int appId, int id)
     {
-        var l = Log.Fn<QueryDefinitionDto>($"save pipe: a#{appId}, id#{id}");
+        using var l = Log.Fn<QueryDefinitionDto>($"save pipe: a#{appId}, id#{id}");
         // assemble list of all new data-source guids, for later re-mapping when saving
         var newDsGuids = data.DataSources
             .Where(d => d.ContainsKey("EntityGuid"))
@@ -190,7 +186,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
     protected QueryRunDto RunDevInternal(int appId, int id, ILookUpEngine lookUps, int top,
         Func<QueryFactoryResult, IDataSource> partLookup) 
     {
-        var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
+        using var l = Log.Fn<QueryRunDto>($"a#{appId}, {nameof(id)}:{id}, top: {top}");
 
         // Get the query, run it and track how much time this took
         var qDef = Services.QueryDefSvc.Value.GetDefinition(appId, id);
@@ -249,7 +245,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
 
     public bool Import(EntityImportDto args)
     {
-        var l = Log.Fn<bool>(args.DebugInfo);
+        using var l = Log.Fn<bool>(args.DebugInfo);
         try
         {
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);

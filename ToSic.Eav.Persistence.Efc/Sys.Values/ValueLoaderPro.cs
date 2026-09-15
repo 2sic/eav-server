@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Persistence.Efc.Sys.Entities;
@@ -15,7 +15,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
 
     public override Dictionary<int, ICollection<TempAttributeWithValues>> LoadValues()
     {
-        var l = Log.IfDetails(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
+        using var l = Log.IfDetails(AppLoader.LogSettings).Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"LoadAll: {Specs.LoadAll}", timer: true);
 
         // Check if we should use the optimized code, which only works for loading everything
         if (!Specs.LoadAll)
@@ -40,7 +40,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
 
     private Dictionary<int, ICollection<TempAttributeWithValues>> GetValuesOfAllEntitiesInApp(int appId)
     {
-        var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"appId:{appId}", timer: true);
+        using var l = Log.Fn<Dictionary<int, ICollection<TempAttributeWithValues>>>($"appId:{appId}", timer: true);
 
         var attributesRaw = GetSqlValuesAll(appId);
 
@@ -55,7 +55,7 @@ internal class ValueLoaderPro(EfcAppLoaderService appLoader, EntityDetailsLoadSp
     /// <returns></returns>
     private ICollection<LoadingValue> GetSqlValuesAll(int appId)
     {
-        var l = Log.Fn<ICollection<LoadingValue>>($"Attributes SQL for appId:{appId}", timer: true);
+        using var l = Log.Fn<ICollection<LoadingValue>>($"Attributes SQL for appId:{appId}", timer: true);
 
         var query = ValueQueries.AllValuesQuery(appId);
         var attributesRaw = ToLoadingValues(query.Query, query.Dimensions);

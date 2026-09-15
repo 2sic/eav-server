@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.AppJson;
+using ToSic.Eav.Apps.Sys.AppJson;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Sys;
 
@@ -40,7 +40,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// <param name="messages"></param>
     public void CopyAllFiles(string destinationFolder, bool overwriteFiles, List<Message> messages) 
     {
-        var l = Log.Fn($"dest:{destinationFolder}, overwrite:{overwriteFiles}");
+        using var l = Log.Fn($"dest:{destinationFolder}, overwrite:{overwriteFiles}");
         var filteredFiles = GetAllTransferableFiles().ToList();
         l.A($"copy files:{filteredFiles.Count}");
         foreach (var file in filteredFiles)
@@ -73,7 +73,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     {
         if (string.IsNullOrWhiteSpace(searchPattern))
             searchPattern = "*.*"; // default search pattern
-        var l = Log.Fn<IEnumerable<string>>($"{nameof(searchPattern)}: '{searchPattern}'");
+        using var l = Log.Fn<IEnumerable<string>>($"{nameof(searchPattern)}: '{searchPattern}'");
         var hardcodedExcludedFolders = GetHardcodedExcludedFolders();
         l.A($"Hardcoded excluded folders count: {hardcodedExcludedFolders.Count}");
 
@@ -102,7 +102,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
 
     private List<string> GetHardcodedExcludedFolders()
     {
-        var l = Log.Fn<List<string>>();
+        using var l = Log.Fn<List<string>>();
         // add folder slashes to ensure the term is part of a folder, not within a file-name
         var exclAnyFolder = Settings.ExcludeFolders
             .Select(f => $"{Path.DirectorySeparatorChar}{f}{Path.DirectorySeparatorChar}")
@@ -129,7 +129,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// <returns></returns>
     private IEnumerable<string> GetAllTransferableFolders(FileSearchSpecs specs, string searchPattern = "*.*")
     {
-        var l = Log.Fn<IEnumerable<string>>();
+        using var l = Log.Fn<IEnumerable<string>>();
         if (appJsonService.Value.ExcludeSearchPatterns(_sourceFolder, _appId).Any()) // exclude files based on app.json from v14.08
             return l.Return(ExcludeFoldersBasedOnExcludeInDotAppJson(_root, specs).ToList(), $"ok, exclude folders based on {FolderConstants.AppJsonFile}");
 
@@ -183,7 +183,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// <returns></returns>
     private IEnumerable<string> ExcludeFilesBasedOnExcludeInDotAppJson(string root, FileSearchSpecs specs)
     {
-        var l = Log.Fn<IEnumerable<string>>($"folderPath:{root}");
+        using var l = Log.Fn<IEnumerable<string>>($"folderPath:{root}");
         // validate folderPath
         if (!Directory.Exists(root))
             return l.Return([], $"warning, can't find root folder path '{root}'");
@@ -218,7 +218,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
     /// <returns></returns>
     private IEnumerable<string> ExcludeFoldersBasedOnExcludeInDotAppJson(string root, FileSearchSpecs specs)
     {
-        var l = Log.Fn<IEnumerable<string>>($"folderPath:{root}");
+        using var l = Log.Fn<IEnumerable<string>>($"folderPath:{root}");
         // validate folderPath
         if (!Directory.Exists(root))
             return l.Return([], $"warning, can't find folder path '{_sourceFolder}'");
@@ -243,7 +243,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
 
     private List<string> GetFilesRecursive(string folderPath, FileSearchSpecs specs)
     {
-        var l = Log.Fn<List<string>>($"folderPath:{folderPath}");
+        using var l = Log.Fn<List<string>>($"folderPath:{folderPath}");
         var subFolders = GetFolders(folderPath, specs).ToList();
 
         var allFiles = subFolders
@@ -260,7 +260,7 @@ public class AppFileManager(LazySvc<IAppJsonConfigurationService> appJsonService
 
     private List<string> GetFoldersRecursive(string folderPath, FileSearchSpecs specs)
     {
-        var l = Log.Fn<List<string>>($"folderPath:{folderPath}");
+        using var l = Log.Fn<List<string>>($"folderPath:{folderPath}");
         var subFolders = GetFolders(folderPath, specs).ToList();
         var allFolders = subFolders
             .SelectMany<string, string>(folder => [folder, .. GetFoldersRecursive(folderPath, specs)])

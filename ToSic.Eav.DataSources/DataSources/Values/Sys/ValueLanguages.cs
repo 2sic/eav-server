@@ -1,10 +1,10 @@
-﻿using ToSic.Eav.Context.Sys.ZoneCulture;
+using ToSic.Eav.Context.Sys.ZoneCulture;
 
 namespace ToSic.Eav.DataSources.Sys;
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ValueLanguages(IZoneCultureResolver cultureResolver) : ServiceBase("Ds.ValLng", connect: [cultureResolver])
+public class ValueLanguages(IZoneCultureResolver cultureResolver) : ServiceBase("Ds.ValLng")
 {
     /// <summary>
     /// Constants for certain resolution modes
@@ -18,7 +18,7 @@ public class ValueLanguages(IZoneCultureResolver cultureResolver) : ServiceBase(
     /// <returns></returns>
     internal string[] PrepareLanguageList(string languages)
     {
-        var l = Log.Fn<string[]>();
+        using var l = Log.Fn<string[]>();
         var lang = languages.ToLowerInvariant().Trim();
 
         var resolved = ResolveOneLanguageCode(lang);
@@ -36,7 +36,7 @@ public class ValueLanguages(IZoneCultureResolver cultureResolver) : ServiceBase(
 
     private string? ResolveOneLanguageCode(string lang)
     {
-        var l = Log.Fn<string>(lang);
+        using var l = Log.Fn<string>(lang);
         if (string.IsNullOrWhiteSpace(lang) || lang == LanguageDefaultPlaceholder)
             return l.Return(string.Empty, LanguageDefaultPlaceholder); // empty string / no language means the default language
 

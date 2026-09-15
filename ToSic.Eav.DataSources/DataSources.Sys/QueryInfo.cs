@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Query.Sys;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys.Types;
 using ToSic.Eav.Services;
@@ -58,7 +58,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
         LazySvc<QueryDefinitionService> queryDefSvc,
         QueryFactory queryFactory,
         IDataSourceGenerator<Attributes> attributesGenerator)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn", connect: [queryDefSvc, queryFactory, attributesGenerator])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.EavQIn")
     {
         _queryDefSvc = queryDefSvc;
         QueryFactory = queryFactory;
@@ -73,7 +73,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     /// <returns></returns>
     private IImmutableList<IEntity> GetStreamsOfQuery()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
 
         var dataFactory = DataFactory.SpawnNew(options: new()
         {
@@ -99,7 +99,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     /// <returns></returns>
     private IImmutableList<IEntity> GetAttributes()
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
 
         // no query can happen if the name was blank
         var query = Query;
@@ -141,7 +141,7 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
 
     private IDataSource? BuildQuery()
     {
-        var l = Log.Fn<IDataSource>();
+        using var l = Log.Fn<IDataSource>();
 
         //Configuration.Parse();
 

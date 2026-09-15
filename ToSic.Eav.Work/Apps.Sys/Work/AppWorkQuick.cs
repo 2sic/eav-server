@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Sys.Work;
+namespace ToSic.Eav.Apps.Sys.Work;
 
 /// <summary>
 /// Helper to quickly get work done; should not be used for complex work or situations where shared context would be beneficial.
@@ -7,7 +7,7 @@
 /// <param name="appWorkCtxSvc"></param>
 /// <param name="gen"></param>
 public class AppWorkQuick<TWork>(AppWorkContextService appWorkCtxSvc, Generator<TWork, IAppWorkContext> gen)
-    : ServiceBase("Wrk.Quick", connect: [])
+    : ServiceBase("Wrk.Quick")
     where TWork : IServiceWithSetup<IAppWorkContext>
 {
     public TWork New(int appId, bool? showDrafts = default)

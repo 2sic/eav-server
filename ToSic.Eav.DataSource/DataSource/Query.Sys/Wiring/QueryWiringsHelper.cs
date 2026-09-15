@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSource.Query.Sys;
+namespace ToSic.Eav.DataSource.Query.Sys;
 
 internal class QueryWiringsHelper(ILog? parentLog) : HelperBase(parentLog, "DS.QWireH")
 {
@@ -8,7 +8,7 @@ internal class QueryWiringsHelper(ILog? parentLog) : HelperBase(parentLog, "DS.Q
     /// </summary>
     internal void InitWirings(QueryDefinition queryDef, IDictionary<string, IDataSource> dataSources)
     {
-        var l = Log.Fn($"count⋮{queryDef.Connections?.Count}");
+        using var l = Log.Fn($"count⋮{queryDef.Connections?.Count}");
         // Init
         var wirings = queryDef.Connections ?? [];
         //var initializedWirings = new List<Connection>();

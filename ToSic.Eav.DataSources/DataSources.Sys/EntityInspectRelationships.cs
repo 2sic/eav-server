@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
@@ -40,7 +40,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
 
     [PrivateApi]
     public EntityInspectRelationships(Dependencies services, IAppReaderFactory appReaders, FeaturesForDataSources featuresForDs)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [appReaders, featuresForDs])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState")
     {
         // Main stream
         ProvideOutRaw(
@@ -58,7 +58,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
     private IEnumerable<IRawData> GetRelationships(IAppReaderFactory appReaders, ISysFeaturesService featuresSvc)
     {
         var id = Id;
-        var l = Log.Fn<IEnumerable<IRawData>>($"Id: {id}");
+        using var l = Log.Fn<IEnumerable<IRawData>>($"Id: {id}");
         if (id == 0)
             return l.Return([], "no id provided, []");
 

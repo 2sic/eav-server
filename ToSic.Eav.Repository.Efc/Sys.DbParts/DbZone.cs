@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
@@ -27,7 +27,7 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
 
     public bool AddMissingPrimaryApps()
     {
-        var l = LogSummary.Fn<bool>();
+        using var l = LogSummary.Fn<bool>();
 
         var zonesWithoutPrimary = DbStore.SqlDb.TsDynDataZones
             .Include(z => z.TsDynDataApps)

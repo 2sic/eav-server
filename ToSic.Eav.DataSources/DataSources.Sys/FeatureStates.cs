@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys;
 using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -40,7 +40,7 @@ public sealed class FeatureStates : CustomDataSource
 
     [PrivateApi]
     public FeatureStates(Dependencies services, ISysFeaturesService featuresService)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [featuresService])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState")
     {
         ProvideOutRaw(() => GetList(featuresService));
     }

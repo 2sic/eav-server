@@ -32,7 +32,7 @@ public class ApiSecurityDto
     /// <returns></returns>
     public static ApiSecurityDto MergeSecurity(ApiSecurityDto controllerSecurity, ApiSecurityDto methodSecurity, ILog? log = default)
     {
-        var l = log.Fn<ApiSecurityDto>();
+        using var l = log.Fn<ApiSecurityDto>();
 
         var ignoreSecurity = controllerSecurity.IgnoreSecurity || methodSecurity.IgnoreSecurity;
         var allowAnonymous = controllerSecurity.AllowAnonymous || methodSecurity.AllowAnonymous;

@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.LookUp.Sources;
+using ToSic.Eav.LookUp.Sources;
 using static System.StringComparer;
 using DicString = System.Collections.Generic.IDictionary<string, string>;
 
@@ -51,7 +51,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
     {
         if (original == null)
             return;
-        var l = Log.Fn($"clone: {original.Log?.NameId}; LogDetailed: {LogDetailed}; {nameof(onlyUseProperties)}: {onlyUseProperties}");
+        using var l = Log.Fn($"clone: {original.Log?.NameId}; LogDetailed: {LogDetailed}; {nameof(onlyUseProperties)}: {onlyUseProperties}");
         
         // Link downstream. This is either the original, or if we copy the sources, then we won't use the original, so we use its downstream
         Link(onlyUseProperties ? original.Downstream : original);
@@ -85,7 +85,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         
     internal DicString LookUpInternal(DicString values, int depth = 4, ITweakLookUp? tweaker = default)
     {
-        var l = Log.Fn<DicString>($"values: {values.Count}, depth: {depth}");
+        using var l = Log.Fn<DicString>($"values: {values.Count}, depth: {depth}");
         // start by creating a copy of the dictionary
         values = new Dictionary<string, string>(values, InvariantCultureIgnoreCase);
 
@@ -118,7 +118,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         Func<ITweakLookUp, ITweakLookUp>? tweak = default)
     {
         var overridesList = overrides?.ToList() ?? [];
-        var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overridesList.Count}, depth: {depth}, hasTweak: {tweak != null}");
+        using var l = Log.Fn<DicString>($"values: {values.Count}, overrides: {overridesList.Count}, depth: {depth}, hasTweak: {tweak != null}");
 
         // If nothing to do, exit early
         if (values.Count == 0)
@@ -160,7 +160,7 @@ public class LookUpEngine : HelperBase, ILookUpEngine
         // check if it already has this provider. 
         // ensure that there is an "override property provider" which would pre-catch certain keys
         var found = SourceDic.TryGetValue(lookUp.Name, out var original);
-        var l = (LogDetailed ? Log : null).Fn($"{lookUp.Name}; found existing: {found}");
+        using var l = (LogDetailed ? Log : null).Fn($"{lookUp.Name}; found existing: {found}");
         SourceDic[lookUp.Name] = found
             ? new LookUpInLookUps(lookUp.Name, [lookUp, original!])
             : lookUp;

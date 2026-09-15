@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 
 namespace ToSic.Eav.DataSource;
 
@@ -12,7 +12,7 @@ partial class DataSourceBase
     [ShowApiWhenReleased(ShowApiMode.Never)]
     void IServiceWithSetup<IDataSourceOptions>.Setup(IDataSourceOptions options)
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
         var attachLink = options.Attach?.GetLink();
         var mainUpstream = attachLink?.DataSource;
 

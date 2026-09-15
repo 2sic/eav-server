@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.LogSettings;
@@ -31,8 +31,7 @@ public class DbStorage(
     DataAssembler dataAssembler,
     DataImportLogSettings importLogSettings,
     ISysFeaturesService features)
-    : ServiceBase("Db.Data",
-        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, dataAssembler, importLogSettings, features]
+    : ServiceBase("Db.Data"
     ), IStorage, IAppIdentity
 {
 
@@ -188,7 +187,7 @@ public class DbStorage(
     // WIP, not final architecture...
     public void ConfigureLogging(LogSettings logSettings)
     {
-        var l = Log.Fn($"Settings: {logSettings}");
+        using var l = Log.Fn($"Settings: {logSettings}");
         // Store settings and reset the loggers, so they retrieve it again next time.
         LogSettings = logSettings;
         LogDetails = null;
@@ -285,7 +284,7 @@ public class DbStorage(
 
     private void PurgeAppCacheIfReady()
     {
-        var l = LogDetails.Fn($"{_purgeAppCacheOnSave}");
+        using var l = LogDetails.Fn($"{_purgeAppCacheOnSave}");
         if (_purgeAppCacheOnSave)
             appsCache.Purge(this);
         l.Done();
@@ -302,7 +301,7 @@ public class DbStorage(
 
     internal void DoAndSaveTracked(Action action, string? message = null)
     {
-        var l = LogSummary.Fn(message: message, timer: true);
+        using var l = LogSummary.Fn(message: message, timer: true);
         if (IsWithinSave)
             throw new("DoAndSaveTracked was called while already within a save operation. This is not allowed.");
         IsWithinSave = true;
@@ -320,7 +319,7 @@ public class DbStorage(
             //            e.State == Microsoft.EntityFrameworkCore.EntityState.Deleted)
             .ToList();
 
-        var l = LogSummary.Fn($"FlushChangeTracking: {changes.Count} changes", timer: true);
+        using var l = LogSummary.Fn($"FlushChangeTracking: {changes.Count} changes", timer: true);
 
         foreach (var change in changes)
         {
@@ -333,7 +332,7 @@ public class DbStorage(
 
     internal void DoAndSaveWithoutChangeDetection(Action action, string? message = null)
     {
-        var l = LogSummary.Fn(timer: true, message: message);
+        using var l = LogSummary.Fn(timer: true, message: message);
 
         if (IsWithinSave)
             throw new("DoAndSaveWithoutChangeDetection was called while already within a save operation. This is not allowed.");
@@ -379,7 +378,7 @@ public class DbStorage(
             ? SqlDb.Database.BeginTransaction()
             : null;
         var log = ownTransaction == null ? LogDetails : LogSummary;
-        var l = log.Fn(timer: true, message: $"id:{randomId} - create new trans:{ownTransaction != null}");
+        using var l = log.Fn(timer: true, message: $"id:{randomId} - create new trans:{ownTransaction != null}");
         {
             try
             {
@@ -407,7 +406,7 @@ public class DbStorage(
 
     public void DoButSkipAppCachePurge(Action action)
     {
-        var l = LogSummary.Fn(timer: true);
+        using var l = LogSummary.Fn(timer: true);
         var before = _purgeAppCacheOnSave;
         _purgeAppCacheOnSave = false;
         action.Invoke();
@@ -417,7 +416,7 @@ public class DbStorage(
 
     public void DoWithDelayedCacheInvalidation(Action action)
     {
-        var l = LogSummary.Fn(timer: true);
+        using var l = LogSummary.Fn(timer: true);
         _purgeAppCacheOnSave = false;
         action.Invoke();
 
@@ -440,7 +439,7 @@ public class DbStorage(
     /// <returns></returns>
     public List<EntityIdentity> Save(ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
-        var l = LogDetails.Fn<List<EntityIdentity>>(timer: true);
+        using var l = LogDetails.Fn<List<EntityIdentity>>(timer: true);
         logStore.Add("save-data", Log);
         return l.ReturnAsOk(Entities.SaveEntities(entityOptionPairs));
     }
@@ -473,7 +472,7 @@ public class DbStorage(
 
     public int CreateApp(string guidName, int? inheritAppId = null)
     {
-        var l = LogSummary.Fn<int>($"guid:{guidName}, inheritAppId:{inheritAppId}");
+        using var l = LogSummary.Fn<int>($"guid:{guidName}, inheritAppId:{inheritAppId}");
         var app = App.AddAppAndSave(ZoneId, guidName, inheritAppId);
         return l.Return(app.AppId, $"Created App with Id:{app.AppId} and Name:{app.Name} in ZoneId:{ZoneId}");
     }

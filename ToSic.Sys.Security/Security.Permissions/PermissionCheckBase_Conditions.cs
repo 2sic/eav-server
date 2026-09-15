@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Users;
+using ToSic.Sys.Users;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Sys.Security.Permissions;
@@ -15,7 +15,7 @@ partial class PermissionCheckBase
     /// <returns></returns>
     private PermissionCheckInfo VerifyConditionApplies(IPermission permission)
     {
-        var l = Log.Fn<PermissionCheckInfo>();
+        using var l = Log.Fn<PermissionCheckInfo>();
         try
         {
             // check general permissions

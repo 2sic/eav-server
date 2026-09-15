@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Xml;
@@ -9,7 +9,7 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
 {
     internal void EnsureVersions(XElement appConfig)
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
         var reqVersionNode = appConfig
             .Elements(XmlConstants.ValueNode)
             .FirstOrDefault(v => v.Attribute(XmlConstants.KeyAttr)?.Value == AppConfigurationFields.FieldRequiredSxcVersion)
@@ -27,7 +27,7 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
 
     private void CheckRequiredEnvironmentVersions(string? reqVersionNode, string? reqVersionNodePlatform)
     {
-        var l = Log.Fn($"{reqVersionNode}, {reqVersionNodePlatform}");
+        using var l = Log.Fn($"{reqVersionNode}, {reqVersionNodePlatform}");
         if (reqVersionNode != null)
         {
             var vEav = Version.Parse(env.ModuleVersion);

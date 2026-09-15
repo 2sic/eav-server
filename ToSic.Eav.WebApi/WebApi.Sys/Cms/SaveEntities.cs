@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -8,11 +8,11 @@ namespace ToSic.Eav.WebApi.Sys.Cms;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SaveEntities(EntityAssembler entityAssembler, AppWorkChain<WorkEntitySave> workEntSave)
-    : ServiceBase("Eav.SavHlp", connect: [entityAssembler, workEntSave])
+    : ServiceBase("Eav.SavHlp")
 {
     public void UpdateGuidAndPublishedAndSaveMany(IAppWorkContext appCtx, List<BundleWithHeader<IEntity>> itemsToImport, bool enforceDraft)
     {
-        var l = Log.Fn($"will save {itemsToImport.Count} items");
+        using var l = Log.Fn($"will save {itemsToImport.Count} items");
 
         var saver = workEntSave.New(appCtx);
         var saveOptions = saver.SaveOptions();
@@ -37,7 +37,7 @@ public class SaveEntities(EntityAssembler entityAssembler, AppWorkChain<WorkEnti
     /// <returns></returns>
     public Dictionary<Guid, int> GenerateIdList(WorkEntities workEntities, IEnumerable<BundleWithHeader> items)
     {
-        var l = Log.Fn<Dictionary<Guid, int>>();
+        using var l = Log.Fn<Dictionary<Guid, int>>();
             
         var idList = items.Select(e =>
             {

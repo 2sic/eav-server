@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Build.Sys;
@@ -21,7 +21,7 @@ public partial class ImportListXml(
     Generator<DataAssembler, DataAssemblerOptions> builderGenerator,
     LazySvc<IValueConverter> valueConverter,
     AppWorkQuick<WorkEntityDelete> entDelete)
-    : ServiceBase("App.ImpVtT", connect: [builderGenerator, valueConverter, importerLazy, entDelete])
+    : ServiceBase("App.ImpVtT")
 {
     private DataAssembler DataAssembler { get; set; } = null!;
 
@@ -66,7 +66,7 @@ public partial class ImportListXml(
         LogSettings logSettings)
     {
         var langs = languages.ToList();
-        var l = LogSummary.Fn<ImportListXml>($"type: {typeName}, langs: {langs.Count}, delete: {deleteSetting}, resolve: {resolveLinkMode}", timer: true);
+        using var l = LogSummary.Fn<ImportListXml>($"type: {typeName}, langs: {langs.Count}, delete: {deleteSetting}, resolve: {resolveLinkMode}", timer: true);
         ErrorLog = new(Log);
 
         LogSettings = logSettings;
@@ -145,7 +145,7 @@ public partial class ImportListXml(
     /// </summary>
     private bool ValidateAndImportToMemory(int appId, IContentType contentType, List<XElement> xmlEntities, List<IEntity> existingEntities)
     {
-        var l = LogSummary.Fn<bool>(timer: true);
+        using var l = LogSummary.Fn<bool>(timer: true);
         var nodesCount = 0;
         var entityGuidManager = new ImportItemGuidManager();
 
@@ -322,7 +322,7 @@ public partial class ImportListXml(
     /// <returns>True if succeeded</returns>
     public void PersistImportToRepository()
     {
-        var l = LogSummary.Fn(timer: true);
+        using var l = LogSummary.Fn(timer: true);
 
         if (ErrorLog.HasErrors)
         {

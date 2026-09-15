@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.Entities.Sources;
+using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Persistence.File;
 
 namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
@@ -7,7 +7,7 @@ partial class AppStateInFolderLoader
 {
     private ICollection<IEntity> LoadGlobalEntities(IAppReader appReader)
     {
-        var l = Log.Fn<ICollection<IEntity>>($"appId:{appReader.AppId}", timer: true);
+        using var l = Log.Fn<ICollection<IEntity>>($"appId:{appReader.AppId}", timer: true);
         // Set TypeID seed for loader so each loaded type has a unique ID
         var loaderIndex = 1;
         foreach (var ldr in Loaders)
@@ -40,7 +40,7 @@ partial class AppStateInFolderLoader
 
     private ICollection<IEntity> DeduplicateAndLogStats(ICollection<EntitySetsToLoad> entitySets)
     {
-        var l = Log.Fn<ICollection<IEntity>>();
+        using var l = Log.Fn<ICollection<IEntity>>();
         // Deduplicate entities 
         var entities = entitySets
             .SelectMany(es => es.Entities)
@@ -74,7 +74,7 @@ partial class AppStateInFolderLoader
 
     private ICollection<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppReader appReader) 
     {
-        var l = Log.Fn<ICollection<IEntity>>($"groupIdentifier:{groupIdentifier}", timer: true);
+        using var l = Log.Fn<ICollection<IEntity>>($"groupIdentifier:{groupIdentifier}", timer: true);
         if (!AppDataFoldersConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
             throw new ArgumentOutOfRangeException(nameof(groupIdentifier),
                 "atm we can only load items of type " + string.Join("/", AppDataFoldersConstants.EntityItemFolders));

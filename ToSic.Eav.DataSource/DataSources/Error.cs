@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.DataSources;
+namespace ToSic.Eav.DataSources;
 
 /// <summary>
 /// Internal DataSource to generate an error on purpose.
@@ -51,7 +51,7 @@ public class Error: DataSourceBase
 
     private IEnumerable<IEntity> GenerateExceptionStream()
     {
-        var l = Log.Fn<IEnumerable<IEntity>>();
+        using var l = Log.Fn<IEnumerable<IEntity>>();
 
         // New v21.02 - allow another source to create this and provide custom errors.
         // This is for testing scenarios where you want to create specific exceptions, or a stream of exceptions.

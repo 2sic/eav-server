@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Eav.Data.Sys.PropertyStack;
 using ToSic.Eav.Sys;
 
@@ -27,7 +27,7 @@ public class PropertyLookupWithStackNavigation(PropertyLookupDictionary current,
     public static PropReqResult FindPropertyInternalOfStackWrapper<T>(T parent, PropReqSpecs specs, PropertyLookupPath path, string logName, string logMessage) where T: IPropertyStackLookup
     {
         specs = specs.SubLog(logName);
-        var l = specs.LogOrNull.Fn<PropReqResult>($"{logMessage}, {specs.Dump()}");
+        using var l = specs.LogOrNull.Fn<PropReqResult>($"{logMessage}, {specs.Dump()}");
         var result = parent.GetNextInStack(specs, 0, path);
         return l.Return(result, result?.Result != null ? "found" : null);
     }

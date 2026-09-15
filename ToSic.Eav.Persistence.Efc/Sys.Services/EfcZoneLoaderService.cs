@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Services;
@@ -7,13 +7,13 @@ internal class EfcZoneLoaderService(EfcAppLoaderService appLoader): HelperBase(a
 {
     internal IDictionary<int, Zone> LoadZones(ILogStore logStore)
     {
-        var log = new Log("DB.EfLoad", null, "Zones()");
+        var log = new Log("DB.EfLoad", message: "Zones()");
         // Add to zone-loading log, as it could
         logStore.Add(LogNames.LogStoreStartUp, log);
-        var l = log.Fn<IDictionary<int, Zone>>(timer: true);
+        using var l = log.Fn<IDictionary<int, Zone>>(timer: true);
 
         // Build the tree of zones incl. their default(Content) and Primary apps
-        var lSql = log.Fn($"Zone SQL; {appLoader.Context.TrackingInfo()}", timer: true);
+        using var lSql = log.Fn($"Zone SQL; {appLoader.Context.TrackingInfo()}", timer: true);
 
         var zonesSql = appLoader.Context.TsDynDataZones
             .AsNoTrackingOptional(appLoader.FeaturesService)

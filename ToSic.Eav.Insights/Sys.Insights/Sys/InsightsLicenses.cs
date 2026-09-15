@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys;
 
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
@@ -14,7 +14,7 @@ namespace ToSic.Eav.Sys.Insights.Sys;
 internal class InsightsLicenses(LazySvc<SystemFingerprint> fingerprint,
     LazySvc<ILicenseService> licenseServiceLazy,
     LazySvc<LicenseCatalog> licenseCatalog) 
-    : InsightsProvider(new() { Name = Link, Title = "Licenses Overview" }, connect: [fingerprint, licenseServiceLazy, licenseCatalog])
+    : InsightsProvider(new() { Name = Link, Title = "Licenses Overview" })
 {
     public static string Link = "Licenses";
 

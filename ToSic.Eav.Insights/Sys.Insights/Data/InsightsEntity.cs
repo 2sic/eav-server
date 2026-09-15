@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Work;
+using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
@@ -9,7 +9,7 @@ using static ToSic.Razor.Blade.Tag;
 namespace ToSic.Eav.Sys.Insights.Data;
 
 internal class InsightsEntity(AppWorkQuick<WorkEntities> workEntities, Generator<JsonSerializer> jsonSerializer, IHttpExceptionMaker exceptionMaker)
-    : InsightsProvider(new() { Name = Link, Title = "Entity Details" }, connect: [workEntities, jsonSerializer])
+    : InsightsProvider(new() { Name = Link, Title = "Entity Details" })
 {
     public static string Link = "Entity";
 

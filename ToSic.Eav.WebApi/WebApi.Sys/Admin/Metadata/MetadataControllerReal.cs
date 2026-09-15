@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
@@ -22,7 +22,7 @@ public class MetadataControllerReal(
     IAppReaderFactory appReaders,
     ITargetTypeService metadataTargets,
     AppWorkChain<RecommendedMetadataService> mdRead)
-    : Services_ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [appWorkCtxSvc, converter, appReaders, metadataTargets, mdRead]),
+    : Services_ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl"),
         IMetadataController
 {
     public const string LogSuffix = "MetaDt";
@@ -32,7 +32,7 @@ public class MetadataControllerReal(
     /// </summary>
     public MetadataListDto Get(int appId, int targetType, string keyType, string key, string? contentType = null)
     {
-        var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
+        using var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
         var ctx = appWorkCtxSvc.ContextNew(appId);
         //var appReader = appReaders.Get(appId);
 
@@ -103,7 +103,7 @@ public class MetadataControllerReal(
     /// <exception cref="Exception"></exception>
     private (List<IEntity>? entityList, JsonMetadataFor mdFor) GetExistingEntitiesAndMd(int targetType, string keyType, string key, string? contentType, IMetadataSource mdSource)
     {
-        var l = Log.Fn<(List<IEntity>? entityList, JsonMetadataFor mdFor)>($"targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
+        using var l = Log.Fn<(List<IEntity>? entityList, JsonMetadataFor mdFor)>($"targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
         var mdFor = new JsonMetadataFor
         {
             // #TargetTypeIdInsteadOfTarget

@@ -1,4 +1,4 @@
-﻿namespace ToSic.Sys.Utils;
+namespace ToSic.Sys.Utils;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class Retry
@@ -6,7 +6,7 @@ public static class Retry
     public static bool RetryOnException(Action action, ILogCall logCall, int repeat = 10, int delay = 100,
         bool silent = false)
     {
-        var l = logCall.Fn<bool>($"{nameof(repeat)}: {repeat}; {nameof(delay)}: {delay}; {nameof(silent)}: {silent}");
+        using var l = logCall.Fn<bool>($"{nameof(repeat)}: {repeat}; {nameof(delay)}: {delay}; {nameof(silent)}: {silent}");
         for (var i = 0; i < repeat; i++)
         {
             try

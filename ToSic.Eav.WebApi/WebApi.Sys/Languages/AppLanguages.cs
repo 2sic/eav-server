@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.DataSource;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.WebApi.Sys.Dto;
 
@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 public class AppLanguages : CustomDataSource
 {
     public AppLanguages(Dependencies services, LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
-        : base(services, logName: "Sxc.AppLangs", connect: [languagesBackend, appReadersLazy])
+        : base(services, logName: "Sxc.AppLangs")
     {
         ProvideOutRaw(
             () => GetLanguages(languagesBackend, appReadersLazy),
@@ -30,7 +30,7 @@ public class AppLanguages : CustomDataSource
 
     private IEnumerable<LanguageStatusRaw> GetLanguages(LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
     {
-        var l = Log.Fn<IEnumerable<LanguageStatusRaw>>();
+        using var l = Log.Fn<IEnumerable<LanguageStatusRaw>>();
 
         var appReader = appReadersLazy.Value.Get(AppId);
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.EntityDecorators.Sys;
@@ -24,7 +24,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
         LazySvc<IAppReaderFactory> AppReaders,
         IValueConverter ValueConverter,
         IZoneCultureResolver ZoneCultureResolver)
-        : DependenciesBase(connect: [AppReaders, ValueConverter, ZoneCultureResolver]);
+        : DependenciesBase();
 
     /// <summary>
     /// Important: this constructor is used both in inherited,

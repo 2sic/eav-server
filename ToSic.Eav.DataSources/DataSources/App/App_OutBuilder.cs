@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Streams;
@@ -52,7 +52,7 @@ partial class App : IDataSourceReset // #RemoveDataSourceReset v21
     /// </summary>
     private void CreateAppOutWithAllStreams()
     {
-        var l = Log.Fn();
+        using var l = Log.Fn();
         IDataStream inStream;
         try
         {
@@ -104,7 +104,7 @@ partial class App : IDataSourceReset // #RemoveDataSourceReset v21
     /// </summary>
     private EntityTypeFilter BuildTypeStream(IDataSource upstreamDataSource, string typeName)
     {
-        var l = Log.Fn<EntityTypeFilter>($"..., ..., {typeName}");
+        using var l = Log.Fn<EntityTypeFilter>($"..., ..., {typeName}");
         var ds = _services.DataSourceFactory.Create<EntityTypeFilter>(//attach: upstreamDataSource,
             options: new DataSourceOptions
             {

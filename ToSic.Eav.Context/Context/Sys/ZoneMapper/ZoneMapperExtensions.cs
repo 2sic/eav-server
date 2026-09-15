@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Context.Sys.ZoneMapper;
@@ -22,7 +22,7 @@ public static class ZoneMapperExtensions
             return siteFromDi;
 
         var zoneMapper = zoneMapperLazy.Value;
-        var l = zoneMapper.Log.Fn<ISite>($"Trying to build path based on tenant.");
+        using var l = zoneMapper.Log.Fn<ISite>($"Trying to build path based on tenant.");
         try
         {
             //if (siteFromDi.Id != Eav.Constants.NullId)

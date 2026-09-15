@@ -15,10 +15,10 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
 
     /// <inheritdoc/>
     void ILazyInitLog.SetLog(ILog? parentLog)
-        => Log = parentLog;
+    { }
 
     /// <inheritdoc cref="LazySvc{TService}.Log"/>
-    public ILog? Log { get; private set; }
+    public ILog? Log => null;
 
     #endregion
 
@@ -31,7 +31,7 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     /// <returns></returns>
     public TService New()
     {
-        var service = sp.Build<TService>(Log);
+        var service = sp.Build<TService>();
         _initCall?.Invoke(service);
         return service;
     }
@@ -46,14 +46,14 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     /// <returns></returns>
     public TService New(string key)
     {
-        var service = sp.Build<TService>(key, Log);
+        var service = sp.Build<TService>(key);
         _initCall?.Invoke(service);
         return service;
     }
     
     public TService? TryNew(string key)
     {
-        var service = sp.TryBuild<TService>(key, Log);
+        var service = sp.TryBuild<TService>(key);
         if (service == null)
             return null;
         _initCall?.Invoke(service);

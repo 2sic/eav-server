@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Data.Sys.PropertyLookup;
+using ToSic.Eav.Data.Sys.PropertyLookup;
 using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Data.Sys.PropertyStack;
@@ -40,7 +40,7 @@ public partial class PropertyStackNavigator(IPropertyLookup child, StackAddress 
     public PropReqResult GetNextInStack(PropReqSpecs specs, int startAtSource, PropertyLookupPath path)
     {
         var logOrNull = specs.LogOrNull.SubLogOrNull(EavLogs.Eav + ".PSNav");
-        var l = logOrNull.Fn<PropReqResult>($"{specs.Dump()}, {nameof(startAtSource)}:{startAtSource}");
+        using var l = logOrNull.Fn<PropReqResult>($"{specs.Dump()}, {nameof(startAtSource)}:{startAtSource}");
 
         // Catch errors with infinite recursions
         // This shouldn't happen, but if it ever does we don't want the server to run into buffer overflows
@@ -89,7 +89,7 @@ public partial class PropertyStackNavigator(IPropertyLookup child, StackAddress 
     /// <returns></returns>
     private PropReqResult? GetResultOfOwnItem(PropReqSpecs specs, ILog? logOrNull, PropertyLookupPath path)
     {
-        var l = logOrNull.Fn<PropReqResult>();
+        using var l = logOrNull.Fn<PropReqResult>();
         // 2022-05-02 2dm - there seem to be cases where this wrapper is created without an own entity.
         // Not yet sure why, but in this case we must be sure to not return something.
         if (GetContents() == null)

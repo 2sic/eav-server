@@ -10,7 +10,7 @@
 /// It should be used when the owning-class is expected to be inherited.
 /// This is important for _inheriting_ classes to keep a stable constructor.
 ///
-/// Can collect all objects which need the log and init that.
+/// Obsolete logging-connection signatures remain as no-ops for compatibility.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -18,32 +18,17 @@ public abstract record DependenciesBase : IDependencies
 {
     // ReSharper disable once UnusedParameter.Local
     protected DependenciesBase(NoParamOrder npo = default, object[]? connect = default)
-    {
-        if (connect == null)
-            return;
-        ConnectLogs(connect);
-    }
+    { }
 
 
     /// <summary>
-    /// Special helper to keep track of all dependencies which need a log, to init once SetLog is called
-    /// </summary>
-    internal DependenciesLogHelper LogHelper { get; } = new();
-
     /// <summary>
-    /// Add objects to various queues to be auto-initialized when <see cref="DependenciesExtensions.ConnectServices{TDependencies}"/> is called later on
+    /// Obsolete compatibility method; ignored.
     /// </summary>
-    /// <param name="services">One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/></param>
+    /// <param name="services">Former logging dependencies; ignored.</param>
     protected void ConnectLogs(object[] services)
-        => LogHelper.Add(services);
-
-    internal bool InitDone;
+    { }
 
     void ILazyInitLog.SetLog(ILog? parentLog)
-    {
-        if (InitDone)
-            return;
-        LogHelper.SetLog(parentLog);
-        InitDone = true;
-    }
+    { }
 }

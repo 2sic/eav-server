@@ -1,4 +1,4 @@
-﻿using System.Security.Authentication;
+using System.Security.Authentication;
 using ToSic.Sys.Users;
 
 namespace ToSic.Eav.WebApi.Sys.Security;
@@ -14,7 +14,7 @@ public static class SecurityHelpers
 
     private static void ThrowIfNot(bool isTrue, string name, ILog? log)
     {
-        var l = log.Fn($"{name}: {isTrue}");
+        using var l = log.Fn($"{name}: {isTrue}");
         if (!isTrue)
             throw new AuthenticationException($"Needs {name} permissions to do this");
         l.Done();

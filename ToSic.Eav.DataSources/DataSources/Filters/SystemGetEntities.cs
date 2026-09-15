@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
@@ -38,14 +38,14 @@ public class SystemGetEntities : DataSourceBase
     /// </summary>
     [PrivateApi]
     public SystemGetEntities(Dependencies services, IAppReaderFactory appReaders)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.EntIdF", connect: [appReaders])
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.EntIdF")
     {
         ProvideOut(() => GetList(appReaders));
     }
 
     private IImmutableList<IEntity> GetList(IAppReaderFactory appReaders)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        using var l = Log.Fn<IImmutableList<IEntity>>();
         var entityIdsOrError = this.CustomConfigurationParse(EntityIds);
         if (!entityIdsOrError.IsOk)
             return l.ReturnAsError(entityIdsOrError.ErrorsSafe());

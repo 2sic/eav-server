@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Sys.Xml;
@@ -16,7 +16,7 @@ partial class XmlImportWithFiles
     /// </summary>
     public bool ImportXml(int zoneId, int appId, int? parentAppId, XDocument doc, bool leaveExistingValuesUntouched = true)
     {
-        var l = LogSummary.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
+        using var l = LogSummary.Fn<bool>($"z#{zoneId}, a#{appId}, leaveExisting:{leaveExistingValuesUntouched}");
             
         AppId = appId;
         ZoneId = zoneId;

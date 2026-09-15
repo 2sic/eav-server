@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Data.Build.Sys;
+namespace ToSic.Eav.Data.Build.Sys;
 
 /// <summary>
 /// Internal assembler to assemble content types and content type attributes.
@@ -10,7 +10,7 @@
 public class ContentTypeAssemblyKit(
     Generator<ContentTypeAssembler, DataAssemblerOptions> contentTypeBuilder,
     Generator<ContentTypeFieldAssembler, DataAssemblerOptions> fieldBuilder)
-    : ServiceWithSetup<DataAssemblerOptions>("DaB.CtAss", connect: [contentTypeBuilder, fieldBuilder])
+    : ServiceWithSetup<DataAssemblerOptions>("DaB.CtAss")
 {
     protected override DataAssemblerOptions GetDefaultOptions() => new();
     
