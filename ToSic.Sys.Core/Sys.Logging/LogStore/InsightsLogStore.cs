@@ -165,10 +165,10 @@ public sealed class InsightsLogStore
         if (admission.Properties.TryGetValue(LogExecution.SourceLogIdKey, out var sourceLogId))
             ids.Add(sourceLogId);
         admission.Properties.TryGetValue(LogExecution.PreAdmissionExecutionIdKey, out var preAdmissionExecutionId);
-        var canAdoptSource = sourceLogId != null && preAdmissionExecutionId != null && admission.OperationId.HasValue
+        var canAdoptSource = sourceLogId != null && preAdmissionExecutionId != null
             && !_logs.ContainsKey(preAdmissionExecutionId) && !_latestBySource.ContainsKey(preAdmissionExecutionId);
         var adoptedOperations = new HashSet<long>();
-        if (canAdoptSource)
+        if (canAdoptSource && admission.OperationId.HasValue)
         {
             adoptedOperations.Add(admission.OperationId!.Value);
             foreach (var pending in _pending)
@@ -182,9 +182,16 @@ public sealed class InsightsLogStore
             var next = node.Next;
             var matched = node.Value.Remaining.RemoveWhere(ids.Contains) != 0;
             var adopted = false;
-            if (!matched && canAdoptSource && node.Value.Data.OperationId.HasValue
-                && adoptedOperations.Contains(node.Value.Data.OperationId.Value))
-                matched = adopted = node.Value.Remaining.Remove(preAdmissionExecutionId);
+            var adoptedPlain = false;
+            if (!matched && canAdoptSource)
+            {
+                if (admission.OperationId.HasValue && node.Value.Data.OperationId.HasValue
+                    && adoptedOperations.Contains(node.Value.Data.OperationId.Value))
+                    matched = adopted = node.Value.Remaining.Remove(preAdmissionExecutionId!);
+                else if (!admission.OperationId.HasValue && node.Value.Data.LogId == sourceLogId
+                    && !node.Value.Data.WrapOpen)
+                    matched = adopted = adoptedPlain = node.Value.Remaining.Remove(preAdmissionExecutionId!);
+            }
             if (matched)
             {
                 LogEvent? previousOld = null;
@@ -197,8 +204,9 @@ public sealed class InsightsLogStore
                     data = data with
                     {
                         Ancestors = [admission.LogId],
-                        ParentOperationId = data.OperationId == admission.OperationId ? null : data.ParentOperationId,
-                        Depth = Math.Max(0, data.Depth - admission.Depth),
+                        OperationId = adoptedPlain ? null : data.OperationId,
+                        ParentOperationId = adoptedPlain || data.OperationId == admission.OperationId ? null : data.ParentOperationId,
+                        Depth = adoptedPlain ? 0 : Math.Max(0, data.Depth - admission.Depth),
                     };
                 }
                 WriteToBundle(admission.LogId, data, ref firstBundle, ref visited, ref previousOld, ref previousMerged);

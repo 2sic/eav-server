@@ -76,7 +76,7 @@ public class LogStoreLive : ILogStoreLive
             var adoption = canAdopt
                 ? LogOperationContext.AdoptCurrent(realLog, preAdmissionExecutionId!, entry.ExecutionId, entry.Sequence)
                 : null;
-            PublishAdmission(key, entry, adoption.HasValue ? preAdmissionExecutionId : null, adoption);
+            PublishAdmission(key, entry, canAdopt ? preAdmissionExecutionId : null, adoption);
             if (++AddCount >= MaxItems)
                 _pause = true;
             return entry;
