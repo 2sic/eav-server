@@ -99,12 +99,28 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     Entry ILogInternal.CreateAndAdd(string? message, CodeRef? code, EntryOptions? options, Entry? parent,
         Microsoft.Extensions.Logging.LogLevel level, Exception? exception, bool publish)
     {
-        var parentOperation = parent ?? LogOperationContext.Current?.Entry ?? CurrentOperation;
+        var parentOperation = parent ?? LogOperationContext.Latest?.Entry ?? CurrentOperation;
         parentOperation ??= AttachmentOperation;
+
+        var executionId = parentOperation?.ExecutionId ?? parentOperation?.Owner?.LogId;
+        var ownerSequence = parentOperation?.OwnershipSequence ?? 0;
+        if (LogExecution.CurrentExecutionSequence > ownerSequence)
+        {
+            executionId = LogExecution.CurrentExecutionId;
+            ownerSequence = LogExecution.CurrentExecutionSequence;
+        }
+        if (CurrentAdmission is { } admission && admission.Sequence > ownerSequence)
+        {
+            executionId = admission.ExecutionId;
+            ownerSequence = admission.Sequence;
+        }
+        if (parentOperation != null
+            && parentOperation.OwnershipSequence != ownerSequence)
+            parentOperation = null;
         var depth = parentOperation != null
             ? Math.Max(WrapDepth, parentOperation.Depth + 1)
-            : WrapDepth;
-        var e = new Entry(this, message, depth, code, options)
+            : ownerSequence == 0 ? WrapDepth : 0;
+        var e = new Entry(this, message, depth, code, options, executionId)
         {
             ParentOperation = parentOperation,
             Level = level,
@@ -137,6 +153,14 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
 
     /// <summary>Latest compatibility admission; exact boundaries pass their LogStoreEntry instead.</summary>
     internal string? LatestExecutionId { get; set; }
+
+    /// <summary>Latest admission in this async flow; a newer operation or execution supersedes it.</summary>
+    internal LogStoreEntry? CurrentAdmission
+    {
+        get => _currentAdmission.Value;
+        set => _currentAdmission.Value = value;
+    }
+    private readonly AsyncLocal<LogStoreEntry?> _currentAdmission = new();
 
     internal Entry[] SnapshotEntries()
     {

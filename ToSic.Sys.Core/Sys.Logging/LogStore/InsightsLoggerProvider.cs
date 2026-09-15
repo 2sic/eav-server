@@ -24,7 +24,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
     private static readonly HashSet<string> Reserved = new(StringComparer.OrdinalIgnoreCase)
     {
         LogExecution.LogIdKey, LogExecution.AmbientLogIdKey, LogExecution.AmbientOperationIdKey,
-        LogExecution.InvocationLogIdKey, LogExecution.SourceLogIdKey, OperationIdKey,
+        LogExecution.InvocationLogIdKey, LogExecution.SourceLogIdKey, LogExecution.PreAdmissionExecutionIdKey, OperationIdKey,
         CodeFileKey, CodeMemberKey, CodeLineKey, "TraceId", "SpanId", "ParentSpanId",
     };
 

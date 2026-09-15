@@ -12,7 +12,8 @@ public class Entry: ICanEstimateSize
     internal static long NextSequence() => Interlocked.Increment(ref _nextSequence);
     private static long _nextSequence;
     internal Entry? ParentOperation { get; set; }
-    internal string? ExecutionId { get; }
+    internal string? ExecutionId { get; set; }
+    internal long OwnershipSequence { get; set; }
     internal bool BridgePublicationAttempted { get; set; }
     internal Microsoft.Extensions.Logging.LogLevel Level { get; set; }
     internal string? ExceptionType { get; set; }
@@ -36,13 +37,12 @@ public class Entry: ICanEstimateSize
 
     public DateTime Created { get; } = DateTime.UtcNow;
 
-    internal Entry(ILog log, string? message, int depth, CodeRef? code, EntryOptions? options = default)
+    internal Entry(ILog log, string? message, int depth, CodeRef? code, EntryOptions? options = default,
+        string? executionId = default)
     {
         _log = log;
-        ExecutionId = LogExecution.CurrentExecutionId
-            ?? LogOperationContext.Current?.ExecutionId
-            ?? (log as Log)?.AttachmentOperation?.ExecutionId
-            ?? (log as Log)?.LatestExecutionId;
+        ExecutionId = executionId;
+        OwnershipSequence = Sequence;
         Message = message;
         Depth = depth;
         Options = options;

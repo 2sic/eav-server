@@ -310,6 +310,76 @@ public class Bridge3OwnershipTests
     }
 
     [Fact]
+    public void AdmissionInsideUnadmittedFn_OwnsFollowingEntriesWithoutPending()
+    {
+        LogEventBridge.SetSink(null);
+        var unadmitted = new Log("Tst.Unadmitted");
+        using var outer = unadmitted.Fn("outer")!;
+        using var ctx = new LogExecutionTestContext();
+
+        var admittedLog = new Log("Tst.InsideUnadmitted", outer);
+        var beforeAdmission = admittedLog.Fn("before admission")!;
+        var beforeAdmissionSequence = beforeAdmission.Entry!.Sequence;
+        admittedLog.A("pre-admission child");
+        var admitted = ctx.Store.Add("test", admittedLog)!;
+        using (var inner = admitted.Log!.Fn("inner")!)
+            inner.Done("done");
+        new Log("Tst.Child").A("child after admission");
+        beforeAdmission.Done("adopted");
+
+        var snapshot = Single(ctx.Store.Snapshot("test"));
+        Equal(admitted.ExecutionId, snapshot.LogId);
+        var adopted = Single(snapshot.Entries, entry => entry.Sequence == beforeAdmissionSequence);
+        Equal("adopted", adopted.Result);
+        Equal(admitted.ExecutionId, adopted.RootLogId);
+        Null(adopted.ParentOperationId);
+        Equal(0, adopted.Depth);
+        Equal(1, Single(snapshot.Entries, entry => entry.Message == "pre-admission child").Depth);
+        Equal("done", Single(snapshot.Entries, entry => entry.Result == "done").Result);
+        var child = Single(snapshot.Entries, entry => entry.Message == "child after admission");
+        Equal(admitted.ExecutionId, child.RootLogId);
+        Equal(beforeAdmissionSequence, child.OperationId);
+        Equal(1, child.Depth);
+        Contains($"0/{InsightsLogStore.MaxPendingEntries} pending", ctx.Store.Status);
+    }
+
+    [Fact]
+    public async Task ConcurrentLateAdmissions_KeepTheirOwnActiveOperation()
+    {
+        LogEventBridge.SetSink(null);
+        var unadmitted = new Log("Tst.ConcurrentOuter");
+        using var outer = unadmitted.Fn("outer")!;
+        using var ctx = new LogExecutionTestContext();
+        var shared = new Log("Tst.ConcurrentLate");
+        var ready = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var started = 0;
+
+        var admissions = await Task.WhenAll(Run("first"), Run("second"));
+
+        var snapshots = ctx.Store.Snapshot("test");
+        var results = new[] { "first", "second" };
+        for (var i = 0; i < admissions.Length; i++)
+        {
+            var entries = Single(snapshots, snapshot => snapshot.LogId == admissions[i].ExecutionId).Entries;
+            Contains(entries, entry => entry.Result == results[i]);
+            DoesNotContain(entries, entry => entry.Result != null && entry.Result != results[i]);
+        }
+        Contains($"0/{InsightsLogStore.MaxPendingEntries} pending", ctx.Store.Status);
+
+        async Task<LogStoreEntry> Run(string result)
+        {
+            using var call = shared.Fn(result)!;
+            if (Interlocked.Increment(ref started) == 2)
+                ready.SetResult(true);
+            await ready.Task;
+            var admission = ctx.Store.Add("test", shared)!;
+            await Task.Yield();
+            call.Done(result);
+            return admission;
+        }
+    }
+
+    [Fact]
     public void PreSinkHistory_IsReplayedOnlyIntoTheFirstAdmission()
     {
         LogEventBridge.SetSink(null);

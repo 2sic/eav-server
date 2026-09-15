@@ -10,16 +10,19 @@ public static class LogExecution
 {
     private static readonly AsyncLocal<ExecutionFrame?> CurrentFrame = new();
 
-    internal static string? CurrentExecutionId
+    private static ExecutionFrame? Current
     {
         get
         {
             var frame = CurrentFrame.Value;
             while (frame is { Active: false })
                 frame = frame.Previous;
-            return frame?.ExecutionId;
+            return frame;
         }
     }
+
+    internal static string? CurrentExecutionId => Current?.ExecutionId;
+    internal static long CurrentExecutionSequence => Current?.Sequence ?? 0;
 
     /// <summary>True while the current async flow is already owned by an admitted execution.</summary>
     public static bool HasActiveExecution => CurrentExecutionId != null;
@@ -32,6 +35,7 @@ public static class LogExecution
     public const string AmbientOperationIdKey = "2sxc.AmbientOperationId";
     public const string InvocationLogIdKey = "2sxc.InvocationLogId";
     public const string SourceLogIdKey = "2sxc.SourceLogId";
+    internal const string PreAdmissionExecutionIdKey = "2sxc.PreAdmissionExecutionId";
 
     /// <summary>
     /// Groups live events under an already admitted log and starts an optional Activity.
@@ -72,7 +76,7 @@ public static class LogExecution
             AddContext("PageId", "2sxc.page.id", pageId);
             AddContext("ModuleId", "2sxc.module.id", moduleId);
             AddContext("AppId", "2sxc.app.id", appId);
-            var frame = new ExecutionFrame(executionId, CurrentFrame.Value);
+            var frame = new ExecutionFrame(executionId, Entry.NextSequence(), CurrentFrame.Value);
             CurrentFrame.Value = frame;
             try
             {
@@ -148,10 +152,11 @@ public static class LogExecution
         }
     }
 
-    private sealed class ExecutionFrame(string executionId, ExecutionFrame? previous)
+    private sealed class ExecutionFrame(string executionId, long sequence, ExecutionFrame? previous)
     {
         private int _active = 1;
         internal string ExecutionId { get; } = executionId;
+        internal long Sequence { get; } = sequence;
         internal ExecutionFrame? Previous { get; } = previous;
         internal bool Active => Volatile.Read(ref _active) != 0;
         internal void Close() => Interlocked.Exchange(ref _active, 0);
@@ -174,6 +179,17 @@ internal static class LogOperationContext
         }
     }
 
+    internal static Frame? Latest
+    {
+        get
+        {
+            var frame = CurrentFrame.Value;
+            while (frame is { Active: false })
+                frame = frame.Previous;
+            return frame;
+        }
+    }
+
     internal static IDisposable Begin(Entry entry)
     {
         var frame = new Frame(entry, CurrentFrame.Value);
@@ -181,11 +197,43 @@ internal static class LogOperationContext
         return new Scope(frame);
     }
 
+    internal static (long OperationId, int Depth)? AdoptCurrent(Log owner, string previousExecutionId,
+        string executionId, long ownershipSequence)
+    {
+        var frames = new List<Frame>();
+        for (var frame = CurrentFrame.Value; frame != null; frame = frame.Previous)
+        {
+            if (!frame.Active)
+                continue;
+            if (frame.ExecutionId != previousExecutionId)
+                break;
+            frames.Add(frame);
+            if (!ReferenceEquals(frame.Entry.Owner, owner))
+                continue;
+
+            var root = frame.Entry;
+            var rootDepth = root.Depth;
+            var entries = frames.Select(active => active.Entry).ToHashSet();
+            foreach (var active in frames)
+            {
+                active.ExecutionId = executionId;
+                active.Entry.ExecutionId = executionId;
+                active.Entry.OwnershipSequence = ownershipSequence;
+                active.Entry.Depth = Math.Max(0, active.Entry.Depth - rootDepth);
+            }
+            foreach (var entry in entries)
+                if (entry.ParentOperation is { } parent && !entries.Contains(parent))
+                    entry.ParentOperation = null;
+            return (root.Sequence, rootDepth);
+        }
+        return null;
+    }
+
     internal sealed class Frame(Entry entry, Frame? previous)
     {
         private int _active = 1;
         internal Entry Entry { get; } = entry;
-        internal string ExecutionId { get; } = entry.ExecutionId ?? entry.Owner!.LogId;
+        internal string ExecutionId { get; set; } = entry.ExecutionId ?? entry.Owner!.LogId;
         internal Frame? Previous { get; } = previous;
         internal bool Active => Volatile.Read(ref _active) != 0;
         internal int Depth
