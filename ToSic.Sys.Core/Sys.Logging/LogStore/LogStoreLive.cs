@@ -110,6 +110,8 @@ public class LogStoreLive : ILogStoreLive
 
     public IReadOnlyList<LogSnapshot> Snapshot(string segment) => _insights.Snapshot(segment);
 
+    public IReadOnlyList<PendingLogGroup> PendingGroups() => _insights.PendingGroups();
+
     public LogSnapshot? Snapshot(ILog? log)
     {
         if (log.GetRealLog() is not Log typed)

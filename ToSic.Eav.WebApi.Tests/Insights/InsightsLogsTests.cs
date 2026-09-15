@@ -11,6 +11,33 @@ public sealed class InsightsLogsTestCollection;
 [Collection(nameof(InsightsLogsTests))]
 public class InsightsLogsTests
 {
+    [Fact]
+    public void PendingLogs_GroupsByMissingIdAndSource()
+    {
+        using var ctx = new InsightsLogsTestContext();
+        var start = new DateTime(2026, 9, 15, 10, 0, 0, DateTimeKind.Utc);
+        ctx.Write(new()
+        {
+            LogId = "source-log", Ancestors = ["missing-execution"], Source = "License.Loader",
+            Sequence = 1, Created = start, Message = "first pending",
+        });
+        ctx.Write(new()
+        {
+            LogId = "source-log", Ancestors = ["missing-execution"], Source = "License.Loader",
+            Sequence = 2, Created = start.AddSeconds(1), Message = "second pending",
+        });
+
+        var group = Single(ctx.Store.PendingGroups());
+        Equal("missing-execution", group.MissingId);
+        Equal("License.Loader", group.Source);
+        Equal(2, group.Count);
+        var html = ctx.PendingView.HtmlBody();
+        Contains("first pending", html);
+        Contains("missing-execution", html);
+        Contains("License.Loader", html);
+        Contains(">2</td>", html);
+    }
+
     [Theory]
     [InlineData(10)]
     [InlineData(1)]

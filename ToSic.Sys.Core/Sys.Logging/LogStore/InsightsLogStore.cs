@@ -16,7 +16,7 @@ public sealed class InsightsLogStore
     public const int MaxProperties = 32;
     public const long MaxEstimatedBytes = 16 * 1024 * 1024;
     public const string TruncatedKey = "2sxc.Truncated";
-    // ponytail: one lock for the bounded diagnostic buffer; partition only if profiling warrants it.
+    // one lock for the bounded diagnostic buffer; partition only if profiling warrants it.
     private readonly object _sync = new();
     private readonly Dictionary<string, Bundle> _logs = new();
     private readonly Dictionary<string, Bundle> _latestBySource = new(StringComparer.Ordinal);
@@ -41,8 +41,9 @@ public sealed class InsightsLogStore
     internal bool Knows(string logId, ImmutableArray<string> ancestors)
     {
         lock (_sync)
-            return _logs.ContainsKey(logId) || _latestBySource.ContainsKey(logId)
-                || ancestors.Any(id => _logs.ContainsKey(id) || _latestBySource.ContainsKey(id));
+            return _logs.ContainsKey(logId)
+                   || _latestBySource.ContainsKey(logId)
+                   || ancestors.Any(id => _logs.ContainsKey(id) || _latestBySource.ContainsKey(id));
     }
 
     internal void Write(LogEvent data, int segmentSize)
@@ -81,8 +82,7 @@ public sealed class InsightsLogStore
 
             List<string>? missing = null;
             foreach (var id in data.Ancestors)
-                if (!_logs.ContainsKey(id) && !_latestBySource.ContainsKey(id)
-                    && (missing == null || !missing.Contains(id)))
+                if (!_logs.ContainsKey(id) && !_latestBySource.ContainsKey(id) && (missing == null || !missing.Contains(id)))
                     (missing ??= []).Add(id);
             if (missing != null)
                 Buffer(data, missing);
@@ -92,8 +92,7 @@ public sealed class InsightsLogStore
         }
     }
 
-    private bool WriteToBundle(string id, LogEvent data, ref Bundle? firstBundle, ref HashSet<Bundle>? visited,
-        ref LogEvent? previousOld, ref LogEvent? previousMerged)
+    private bool WriteToBundle(string id, LogEvent data, ref Bundle? firstBundle, ref HashSet<Bundle>? visited, ref LogEvent? previousOld, ref LogEvent? previousMerged)
     {
         if (!_logs.TryGetValue(id, out var bundle) && !_latestBySource.TryGetValue(id, out bundle))
             return false;
@@ -185,11 +184,9 @@ public sealed class InsightsLogStore
             var adoptedPlain = false;
             if (!matched && canAdoptSource)
             {
-                if (admission.OperationId.HasValue && node.Value.Data.OperationId.HasValue
-                    && adoptedOperations.Contains(node.Value.Data.OperationId.Value))
+                if (admission.OperationId.HasValue && node.Value.Data.OperationId.HasValue && adoptedOperations.Contains(node.Value.Data.OperationId.Value))
                     matched = adopted = node.Value.Remaining.Remove(preAdmissionExecutionId!);
-                else if (!admission.OperationId.HasValue && node.Value.Data.LogId == sourceLogId
-                    && !node.Value.Data.WrapOpen)
+                else if (!admission.OperationId.HasValue && node.Value.Data.LogId == sourceLogId && !node.Value.Data.WrapOpen)
                     matched = adopted = adoptedPlain = node.Value.Remaining.Remove(preAdmissionExecutionId!);
             }
             if (matched)
@@ -318,8 +315,7 @@ public sealed class InsightsLogStore
             if (bundles.Count == 0)
                 _bundlesByLog.Remove(logId);
         }
-        if (bundle.SourceLogId is { } sourceLogId
-            && _latestBySource.TryGetValue(sourceLogId, out var latest) && latest == bundle)
+        if (bundle.SourceLogId is { } sourceLogId && _latestBySource.TryGetValue(sourceLogId, out var latest) && latest == bundle)
         {
             var previous = _order.Reverse().Select(logId => _logs[logId])
                 .FirstOrDefault(candidate => candidate != bundle && candidate.SourceLogId == sourceLogId);
@@ -367,6 +363,27 @@ public sealed class InsightsLogStore
         lock (_sync)
             return !_segments.TryGetValue(segment, out var members) ? []
                 : members.Select(id => Snapshot(_logs[id], segment)).ToArray();
+    }
+
+    public IReadOnlyList<PendingLogGroup> PendingGroups()
+    {
+        lock (_sync)
+            return _pending
+                .SelectMany(item => item.Remaining.Select(id => (Id: id, item.Data)))
+                .GroupBy(item => (item.Id, item.Data.Source))
+                .Select(group => new PendingLogGroup
+                {
+                    MissingId = group.Key.Id,
+                    Source = group.Key.Source,
+                    Count = group.Count(),
+                    First = group.Min(item => item.Data.Created),
+                    Last = group.Max(item => item.Data.Created),
+                    Sample = group.Select(item => item.Data.Message).FirstOrDefault(message => !string.IsNullOrEmpty(message)),
+                })
+                .OrderByDescending(group => group.Count)
+                .ThenBy(group => group.Source, StringComparer.Ordinal)
+                .ThenBy(group => group.MissingId, StringComparer.Ordinal)
+                .ToArray();
     }
 
     public LogSnapshot? Find(string logId)

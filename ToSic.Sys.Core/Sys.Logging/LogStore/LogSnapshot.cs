@@ -18,3 +18,16 @@ public sealed record LogSnapshot
     public int TruncatedEntries { get; init; }
 
 }
+
+/// <summary>A grouped, detached view of events waiting for log admission.</summary>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public sealed record PendingLogGroup
+{
+    public string MissingId { get; init; } = "";
+    public string Source { get; init; } = "";
+    public int Count { get; init; }
+    public DateTime First { get; init; }
+    public DateTime Last { get; init; }
+    public string? Sample { get; init; }
+}

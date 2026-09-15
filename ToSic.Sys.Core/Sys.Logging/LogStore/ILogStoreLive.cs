@@ -26,6 +26,9 @@ public interface ILogStoreLive: ILogStore, ILogShouldNeverConnect
 
     LogSnapshot? Snapshot(ILog? log);
 
+    /// <summary>Returns a detached diagnostic view of events still waiting for admission.</summary>
+    IReadOnlyList<PendingLogGroup> PendingGroups();
+
     string Status { get; }
 
     string Configure(string? obsoleteStore);

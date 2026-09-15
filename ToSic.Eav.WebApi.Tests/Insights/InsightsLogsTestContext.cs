@@ -14,6 +14,7 @@ internal sealed class InsightsLogsTestContext : IDisposable
     internal ILogStoreLive Store { get; }
     private readonly ServiceProvider _services;
     internal InsightsLogs View { get; }
+    internal InsightsPendingLogs PendingView { get; }
 
     internal InsightsLogsTestContext()
     {
@@ -23,6 +24,7 @@ internal sealed class InsightsLogsTestContext : IDisposable
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(_services.GetRequiredService<ILoggerFactory>()));
         Store.Configure(null);
         View = new(new LazySvc<ILogStoreLive>(_services));
+        PendingView = new(new LazySvc<ILogStoreLive>(_services));
     }
 
     internal Log Add(string message, string moduleId)

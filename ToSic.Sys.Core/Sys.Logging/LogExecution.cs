@@ -42,20 +42,17 @@ public static class LogExecution
     /// Use once at a request/module boundary, with using across the complete awaited operation.
     /// This does not replace nested Fn/Done calls or create an Insights span tree.
     /// </summary>
-    public static IDisposable? BeginExecution(this ILogger logger, ILog? log, ActivitySource source,
-        string operation, int? siteId = null, int? pageId = null, int? moduleId = null, int? appId = null)
+    public static IDisposable? BeginExecution(this ILogger logger, ILog? log, ActivitySource source, string operation, int? siteId = null, int? pageId = null, int? moduleId = null, int? appId = null)
         => BeginExecution(logger, log, (log.GetRealLog() as Log)?.LatestExecutionId, source, operation,
             siteId, pageId, moduleId, appId);
 
     /// <summary>Starts an execution using the exact admission returned by the log store.</summary>
-    public static IDisposable? BeginExecution(this ILogger logger, LogStoreEntry? entry, ActivitySource source,
-        string operation, int? siteId = null, int? pageId = null, int? moduleId = null, int? appId = null)
+    public static IDisposable? BeginExecution(this ILogger logger, LogStoreEntry? entry, ActivitySource source, string operation, int? siteId = null, int? pageId = null, int? moduleId = null, int? appId = null)
         => BeginExecution(logger, entry?.Log,
             entry?.ExecutionId, source, operation,
             siteId, pageId, moduleId, appId);
 
-    private static IDisposable? BeginExecution(ILogger logger, ILog? log, string? executionId, ActivitySource source,
-        string operation, int? siteId, int? pageId, int? moduleId, int? appId)
+    private static IDisposable? BeginExecution(ILogger logger, ILog? log, string? executionId, ActivitySource source, string operation, int? siteId, int? pageId, int? moduleId, int? appId)
     {
         if (log.GetRealLog() is not Log root)
             return null;
@@ -197,8 +194,7 @@ internal static class LogOperationContext
         return new Scope(frame);
     }
 
-    internal static (long OperationId, int Depth)? AdoptCurrent(Log owner, string previousExecutionId,
-        string executionId, long ownershipSequence)
+    internal static (long OperationId, int Depth)? AdoptCurrent(Log owner, string previousExecutionId, string executionId, long ownershipSequence)
     {
         var frames = new List<Frame>();
         for (var frame = CurrentFrame.Value; frame != null; frame = frame.Previous)

@@ -24,6 +24,7 @@ public static class StartupEavInsights
         services.AddTransient<IInsightsProvider, InsightsMemoryCache>();
 
         services.AddTransient<IInsightsProvider, InsightsLogs>();
+        services.AddTransient<IInsightsProvider, InsightsPendingLogs>();
         services.AddTransient<IInsightsProvider, InsightsPauseLogs>();
         services.AddTransient<IInsightsProvider, InsightsLogsFlush>();
         services.AddTransient<IInsightsProvider, InsightsAppStats>();

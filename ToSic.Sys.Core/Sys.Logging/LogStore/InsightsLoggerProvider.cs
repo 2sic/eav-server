@@ -20,7 +20,9 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
     /// Identity, code and trace keys must survive an exhausted property budget. Otherwise a noisy outer
     /// scope costs an inner event its bundle membership or its C# link.
     /// </summary>
-    // ponytail: fixed reserve of 11 keys above MaxProperties; revisit only if this list grows.
+    /// <remarks>
+    /// fixed reserve of 11 keys above MaxProperties; revisit only if this list grows.
+    /// </remarks>
     private static readonly HashSet<string> Reserved = new(StringComparer.OrdinalIgnoreCase)
     {
         LogExecution.LogIdKey, LogExecution.AmbientLogIdKey, LogExecution.AmbientOperationIdKey,
@@ -40,8 +42,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
     bool ILogEventSink.IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
     void ILogEventSink.Write(LogEvent entry, Exception? exception)
-        => Write(MicrosoftLoggerEventSink.StoreCategory, entry.Level, default, entry, exception,
-            static (state, _) => state.ToString());
+        => Write(MicrosoftLoggerEventSink.StoreCategory, entry.Level, default, entry, exception,static (state, _) => state.ToString());
 
     private void Write<TState>(string category, LogLevel level, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
@@ -92,8 +93,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
                 Set(pair.Key, text);
                 if (!scope || string.IsNullOrEmpty(text))
                     continue;
-                if (pair.Key.Equals(LogExecution.AmbientLogIdKey, StringComparison.OrdinalIgnoreCase)
-                    )
+                if (pair.Key.Equals(LogExecution.AmbientLogIdKey, StringComparison.OrdinalIgnoreCase))
                     executionLogId = text;
                 else if (pair.Key.Equals(LogExecution.InvocationLogIdKey, StringComparison.OrdinalIgnoreCase))
                     invocationLogId ??= text;

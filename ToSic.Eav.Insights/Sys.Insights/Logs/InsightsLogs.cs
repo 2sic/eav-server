@@ -69,3 +69,17 @@ internal class InsightsLogs : InsightsProvider
     }
 
 }
+
+internal class InsightsPendingLogs(LazySvc<ILogStoreLive> logStore)
+    : InsightsProvider(new()
+    {
+        Name = Link,
+        Teaser = "Events waiting for log admission, grouped by missing ID and source",
+        HelpCategory = "Logging",
+        Title = "Pending Logs",
+    })
+{
+    public const string Link = "PendingLogs";
+
+    public override string HtmlBody() => new InsightsLogsHelper(logStore.Value).PendingGroups();
+}
