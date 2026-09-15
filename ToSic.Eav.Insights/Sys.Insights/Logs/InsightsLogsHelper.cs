@@ -65,11 +65,33 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                          ", toggle: ", Linker.LinkTo(HtmlEncode("▶"), InsightsPauseLogs.Link, more: "toggle=false"),
                          " | ", Linker.LinkTo(HtmlEncode("⏸"), InsightsPauseLogs.Link, more: "toggle=true"),
                          $" collecting #{logStore.AddCount} of max {logStore.MaxItems} (keep max {logStore.SegmentSize} per set, then FIFO); {logStore.Status}"
+                         + " " + Linker.LinkTo("view pending", InsightsPendingLogs.Link)
                          + (showFlush ? " " + Linker.LinkTo("flush " + key, InsightsLogsFlush.Link, key: key) : ""));
         if (showReset)
             result += Br() + Strong("This list has filters applied. ")
                            + Linker.LinkTo(HtmlEncode("❌") + "remove filters", InsightsLogs.Link, key: key);
         return result.ToString();
+    }
+
+    internal string PendingGroups()
+    {
+        var groups = logStore.PendingGroups();
+        return InsightsHtmlParts.PageStyles()
+               + Div("back to " + Linker.LinkTo("all logs", InsightsLogs.Link))
+               + H1("2sxc Insights: Pending Logs")
+               + P(logStore.Status)
+               + P("A pending event appears once for each missing ID that blocks it.")
+               + Table().Id("table").Wrap(
+                   HeadFields(["Count ↕", "First Local ↕", "Last Local ↕", "Source ↕", "Missing ID ↕", "Sample"]),
+                   Tbody(groups.Select(group => RowFields([
+                       SpecialField.Right(group.Count.ToString()),
+                       group.First.ToLocalTime().ToString("O"),
+                       group.Last.ToLocalTime().ToString("O"),
+                       SpecialField.Left(HtmlEncode(group.Source), tooltip: group.Source),
+                       SpecialField.Left(HtmlEncode(group.MissingId), tooltip: group.MissingId),
+                       SpecialField.Left(HtmlEncode(group.Sample.NeverNull()), tooltip: group.Sample),
+                   ])).ToArray<object>()))
+               + "\n\n" + InsightsHtmlParts.JsTableSort();
     }
 
     internal string LogHistoryList(string key, string filter)
