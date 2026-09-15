@@ -18,6 +18,9 @@ public class LogStoreEntry
     /// <summary>Fresh identity of this admitted execution/history item.</summary>
     internal string ExecutionId { get; } = Guid.NewGuid().ToString("N");
 
+    /// <summary>Orders this admission against execution and operation boundaries in the current flow.</summary>
+    internal long Sequence { get; } = Entry.NextSequence();
+
     internal string? Segment { get; init; }
 
     public IDictionary<string, string>? Specs { get; internal set; }

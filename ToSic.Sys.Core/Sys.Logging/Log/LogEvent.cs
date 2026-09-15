@@ -54,7 +54,12 @@ public sealed record LogEvent : IEnumerable<KeyValuePair<string, object?>>
     internal static LogEvent FromEntry(Entry entry)
     {
         var log = entry.Owner!;
-        var parentId = (entry.ParentOperation ?? log.AttachmentOperation)?.Sequence;
+        var parent = entry.ParentOperation;
+        if (parent == null && log.AttachmentOperation is { } attachment
+            && (entry.ExecutionId == null || string.Equals(entry.ExecutionId,
+                attachment.ExecutionId ?? attachment.Owner?.LogId, StringComparison.Ordinal)))
+            parent = attachment;
+        var parentId = parent?.Sequence;
         ImmutableArray<string> ancestors = [];
         if (entry.ExecutionId is { } executionId && executionId != log.LogId)
             ancestors = [executionId];

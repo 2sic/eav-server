@@ -164,16 +164,44 @@ public sealed class InsightsLogStore
         var ids = new HashSet<string>(StringComparer.Ordinal) { admission.LogId };
         if (admission.Properties.TryGetValue(LogExecution.SourceLogIdKey, out var sourceLogId))
             ids.Add(sourceLogId);
+        admission.Properties.TryGetValue(LogExecution.PreAdmissionExecutionIdKey, out var preAdmissionExecutionId);
+        var canAdoptSource = sourceLogId != null && preAdmissionExecutionId != null && admission.OperationId.HasValue
+            && !_logs.ContainsKey(preAdmissionExecutionId) && !_latestBySource.ContainsKey(preAdmissionExecutionId);
+        var adoptedOperations = new HashSet<long>();
+        if (canAdoptSource)
+        {
+            adoptedOperations.Add(admission.OperationId!.Value);
+            foreach (var pending in _pending)
+                if (pending.Remaining.Contains(preAdmissionExecutionId!) && pending.Data.WrapOpen
+                    && pending.Data.OperationId.HasValue && pending.Data.ParentOperationId.HasValue
+                    && adoptedOperations.Contains(pending.Data.ParentOperationId.Value))
+                    adoptedOperations.Add(pending.Data.OperationId.Value);
+        }
         for (var node = _pending.First; node != null;)
         {
             var next = node.Next;
-            if (node.Value.Remaining.RemoveWhere(ids.Contains) != 0)
+            var matched = node.Value.Remaining.RemoveWhere(ids.Contains) != 0;
+            var adopted = false;
+            if (!matched && canAdoptSource && node.Value.Data.OperationId.HasValue
+                && adoptedOperations.Contains(node.Value.Data.OperationId.Value))
+                matched = adopted = node.Value.Remaining.Remove(preAdmissionExecutionId);
+            if (matched)
             {
                 LogEvent? previousOld = null;
                 LogEvent? previousMerged = null;
                 Bundle? firstBundle = null;
                 HashSet<Bundle>? visited = null;
-                WriteToBundle(admission.LogId, node.Value.Data, ref firstBundle, ref visited, ref previousOld, ref previousMerged);
+                var data = node.Value.Data;
+                if (adopted)
+                {
+                    data = data with
+                    {
+                        Ancestors = [admission.LogId],
+                        ParentOperationId = data.OperationId == admission.OperationId ? null : data.ParentOperationId,
+                        Depth = Math.Max(0, data.Depth - admission.Depth),
+                    };
+                }
+                WriteToBundle(admission.LogId, data, ref firstBundle, ref visited, ref previousOld, ref previousMerged);
                 if (node.Value.Remaining.Count == 0)
                     RemovePending(node, dropped: false);
             }

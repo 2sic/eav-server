@@ -69,28 +69,40 @@ public class LogStoreLive : ILogStoreLive
             if (!force && (_pause || !realLog.Preserve))
                 return null;
             var entry = new LogStoreEntry { Log = realLog, Segment = key };
+            var preAdmissionExecutionId = LogOperationContext.Latest?.ExecutionId;
+            var canAdopt = preAdmissionExecutionId != null && !_insights.Knows(preAdmissionExecutionId, []);
+            realLog.CurrentAdmission = entry;
             realLog.LatestExecutionId = entry.ExecutionId;
-            PublishAdmission(key, entry);
+            var adoption = canAdopt
+                ? LogOperationContext.AdoptCurrent(realLog, preAdmissionExecutionId!, entry.ExecutionId, entry.Sequence)
+                : null;
+            PublishAdmission(key, entry, adoption.HasValue ? preAdmissionExecutionId : null, adoption);
             if (++AddCount >= MaxItems)
                 _pause = true;
             return entry;
         }
     }
 
-    private static void PublishAdmission(string segment, LogStoreEntry entry)
+    private void PublishAdmission(string segment, LogStoreEntry entry, string? preAdmissionExecutionId,
+        (long OperationId, int Depth)? adoption)
     {
         if (entry.Log is not Log log)
             return;
+        LogEventBridge.Replay(log);
         var admission = LogEvent.ForLog(log);
+        var properties = admission.Properties.SetItem(LogExecution.SourceLogIdKey, log.LogId);
+        if (preAdmissionExecutionId != null && !_insights.Knows(preAdmissionExecutionId, []))
+            properties = properties.SetItem(LogExecution.PreAdmissionExecutionIdKey, preAdmissionExecutionId);
         LogEventBridge.Write(admission with
         {
             LogId = entry.ExecutionId,
             Ancestors = [],
-            Properties = admission.Properties.SetItem(LogExecution.SourceLogIdKey, log.LogId),
+            Properties = properties,
             Kind = "Admission",
             Segment = segment,
+            OperationId = adoption?.OperationId,
+            Depth = adoption?.Depth ?? 0,
         });
-        LogEventBridge.Replay(log);
         entry.PublishSpecs();
     }
 
