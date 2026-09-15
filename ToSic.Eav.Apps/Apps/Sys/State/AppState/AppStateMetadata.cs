@@ -29,14 +29,16 @@ public class AppStateMetadata : IAppStateMetadata
         );
 
 
-    /// <summary>
-    /// The App-Settings or App-Resources
-    /// </summary>
+    /// <inheritdoc />
     public IEntity? MetadataItem => (_appItemSynced ??= BuildSyncedItem(Owner, Target.AppType, true)).Value;
     private SynchronizedObject<IEntity?>? _appItemSynced;
 
+    /// <summary>
+    /// The System Settings or System Resources.
+    /// </summary>
     public IEntity? SystemItem => (_appSystemSynced ??= BuildSyncedItem(Owner, Target.SystemType, false)).Value;
     private SynchronizedObject<IEntity?>? _appSystemSynced;
+
 
     public IEntity? CustomItem => (_appCustomSynced ??= BuildSyncedItem(Owner, Target.CustomType, false)).Value;
     private SynchronizedObject<IEntity?>? _appCustomSynced;

@@ -123,7 +123,8 @@ internal class AppStateStackSourcesBuilder(
                 sources.Add(new(keySystem, stateMetadata.SystemItem));
         }
 
-        // Drop all null-values
+        // Drop all sources which are empty (null-values)
+        // to skip checking them while looking up values for performance reasons
         var filtered = sources
             .Where(pair => pair.Value != null)
             .ToListOpt();
