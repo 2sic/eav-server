@@ -124,34 +124,6 @@ public class Bridge3OwnershipTests
     }
 
     [Fact]
-    public void LinkLog_KeepsConnectionCallbackWithoutRetainingParent()
-    {
-        using var ctx = new LogExecutionTestContext();
-        var root = ctx.Admit("Callback");
-        var owner = new CallbackLogOwner();
-
-        owner.LinkLog(root);
-
-        True(owner.WasConnected);
-        Null(owner.TypedLog.Parent);
-    }
-
-    [Fact]
-    public void DependencyConnection_KeepsCallbackWithoutRetainingParent()
-    {
-        using var ctx = new LogExecutionTestContext();
-        var root = ctx.Admit("DependencyCallback");
-        var owner = new CallbackLogOwner();
-        var helper = new DependenciesLogHelper();
-
-        helper.Add([owner]);
-        helper.SetLog(root);
-
-        True(owner.WasConnected);
-        Null(owner.TypedLog.Parent);
-    }
-
-    [Fact]
     public async Task ReusedLogger_RemainsInItsSequentialAndParallelExecutions()
     {
         using var ctx = new LogExecutionTestContext();
@@ -357,17 +329,6 @@ public class Bridge3OwnershipTests
     }
 
     [Fact]
-    public void LegacyExactAdmission_UsesTheRootLogIdentity()
-    {
-        using var ctx = new LogExecutionTestContext(LogStoreMode.Legacy);
-        var admission = ctx.AdmitEntry("LegacyIdentity");
-        var root = (Log)admission.Log!;
-
-        using (ctx.Logger.BeginExecution(admission, ctx.Source, "legacy"))
-            Equal(root.LogId, LogExecution.CurrentExecutionId);
-    }
-
-    [Fact]
     public void LongLivedUnadmittedLog_IsBoundedAndReplaysTheRetainedTail()
     {
         using var ctx = new LogExecutionTestContext();
@@ -394,11 +355,4 @@ public class Bridge3OwnershipTests
         public ILog? Log => TypedLog;
     }
 
-    private sealed class CallbackLogOwner : IHasLog, ILogWasConnected
-    {
-        internal Log TypedLog { get; } = new("Tst.Callback");
-        public ILog? Log => TypedLog;
-        internal bool WasConnected { get; private set; }
-        public void LogWasConnected() => WasConnected = true;
-    }
 }

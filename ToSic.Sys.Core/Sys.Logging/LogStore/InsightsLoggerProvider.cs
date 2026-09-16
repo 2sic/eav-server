@@ -9,7 +9,7 @@ namespace ToSic.Sys.Logging;
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [ProviderAlias("2sxcInsights")]
-public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProvider, ISupportExternalScope
+public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProvider, ISupportExternalScope, ILogEventSink
 {
     public const string OperationIdKey = "2sxc.OperationId";
     public const string CodeFileKey = "2sxc.Code.File";
@@ -33,14 +33,18 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
 
     private IExternalScopeProvider _scopes = new LoggerExternalScopeProvider();
     internal int SegmentSize { get; set; } = LogConstants.LiveStoreSegmentSize;
-    public ILogger CreateLogger(string categoryName) => new StoreLogger(this, store, categoryName);
+    public ILogger CreateLogger(string categoryName) => new StoreLogger(this, categoryName);
     public void SetScopeProvider(IExternalScopeProvider scopeProvider) => _scopes = scopeProvider;
     public void Dispose() { }
 
+    bool ILogEventSink.IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
+
+    void ILogEventSink.Write(LogEvent entry, Exception? exception)
+        => Write(MicrosoftLoggerEventSink.StoreCategory, entry.Level, default, entry, exception,
+            static (state, _) => state.ToString());
+
     private void Write<TState>(string category, LogLevel level, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        if (!store.Enabled)
-            return;
         ImmutableDictionary<string, string>.Builder? properties = null;
         var truncated = false;
         string? executionLogId = null;
@@ -140,7 +144,7 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
             foreach (var pair in bridge.Properties)
                 Set(pair.Key, pair.Value);
             var operationContext = mismatchedCapturedExecution ? null : LogOperationContext.Current;
-            data = LogEventBridge.UsesExecutionContext && captureContext
+            data = captureContext
                 && (membership != null || operationContext != null || activeOperationIds != null)
                 ? bridge with
                 {
@@ -219,9 +223,9 @@ public sealed class InsightsLoggerProvider(InsightsLogStore store) : ILoggerProv
             int.TryParse(line, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number) ? number : 0);
     }
 
-    private sealed class StoreLogger(InsightsLoggerProvider provider, InsightsLogStore store, string category) : ILogger
+    private sealed class StoreLogger(InsightsLoggerProvider provider, string category) : ILogger
     {
-        public bool IsEnabled(LogLevel logLevel) => store.Enabled && logLevel != LogLevel.None;
+        public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
         public IDisposable BeginScope<TState>(TState state) where TState : notnull => provider._scopes.Push(state);
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {

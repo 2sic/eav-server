@@ -57,8 +57,9 @@ public class LogCreate: LogTestBase
         Single(parent.Entries);
         Equal(2, child.Entries.Count);
         child.LinkTo(parent);
-        Equal(3, parent.Entries.Count);
+        Single(parent.Entries);
         Equal(2, child.Entries.Count);
+        Null(child.Parent);
     }
 
     [Fact]
@@ -70,8 +71,9 @@ public class LogCreate: LogTestBase
 
         child.W("child warning");
 
-        Same(parent, child.Parent);
-        Contains(parent.Entries, entry => entry.Message == LogConstants.WarningPrefix + "child warning");
+        Null(child.Parent);
+        Same(call.Entry, child.AttachmentOperation);
+        DoesNotContain(parent.Entries, entry => entry.Message == LogConstants.WarningPrefix + "child warning");
         call.Done();
     }
 

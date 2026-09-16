@@ -15,13 +15,13 @@ internal sealed class InsightsLogsTestContext : IDisposable
     private readonly ServiceProvider _services;
     internal InsightsLogs View { get; }
 
-    internal InsightsLogsTestContext(LogStoreMode mode = LogStoreMode.Legacy)
+    internal InsightsLogsTestContext()
     {
         _services = new ServiceCollection().AddSysCoreLogging().BuildServiceProvider();
         Store = _services.GetRequiredService<ILogStoreLive>();
         Store.SegmentSize = 2;
         LogEventBridge.SetSink(new MicrosoftLoggerEventSink(_services.GetRequiredService<ILoggerFactory>()));
-        Store.Configure(mode.ToString(), bridgeEnabled: true);
+        Store.Configure(null);
         View = new(new LazySvc<ILogStoreLive>(_services));
     }
 
@@ -36,9 +36,7 @@ internal sealed class InsightsLogsTestContext : IDisposable
     }
 
     internal string StoredId(Log log)
-        => Store.Mode == LogStoreMode.Legacy
-            ? log.LogId
-            : Store.Snapshot("test").Single(snapshot => snapshot.Specs["ModuleId"] == _moduleIds[log]).LogId;
+        => Store.Snapshot("test").Single(snapshot => snapshot.Specs["ModuleId"] == _moduleIds[log]).LogId;
 
     internal void Write(LogEvent entry)
         => _services.GetRequiredService<InsightsLoggerProvider>().CreateLogger(MicrosoftLoggerEventSink.StoreCategory)

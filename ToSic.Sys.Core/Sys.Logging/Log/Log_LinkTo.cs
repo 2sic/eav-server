@@ -10,56 +10,14 @@ public partial class Log
     /// <param name="name">optional new name</param>
     internal void LinkTo(ILog? newParent, string? name = default)
     {
-        // ILogCall is a wrapper around its Log, and entries propagate through Log parents.
-        // Unwrap it here so helper logs linked to an active call remain visible in the parent log.
         var explicitParentOperation = (newParent as ILogCall)?.Entry;
-        var parentOperation = explicitParentOperation ?? (newParent as Log)?.CurrentOperation;
         newParent = newParent.GetRealLog();
 
         if (newParent == this)
             throw new("LOG ERROR - attaching a log to itself can't work");
 
-        if (LogEventBridge.UsesExecutionContext)
-        {
-            // A deliberately supplied call remains an explicit operation token without retaining a log parent.
-            AttachmentOperation = explicitParentOperation;
-            if (name != null)
-                this.Rename(name);
-            return;
-        }
-
-        // only attach new parent if it didn't already have an old one
-        // this is critical because we cannot guarantee that sometimes a LinkTo is called more than once on something
-        if (newParent != null)
-        {
-            //var oldParentTyped = Parent as Log;
-            var newParentTyped = newParent as Log;
-
-            // Only allow switching if the target doesn't have a parent
-            // or if it was auto-linked but never used yet
-            if (Parent == null || !Entries.Any())
-            {
-                Parent = newParent;
-                AttachmentOperation = parentOperation;
-                Depth = newParentTyped?.Depth + 1 ?? 0;
-                if (Depth > MaxParentDepth)
-                    throw new($"🪵 LOGGER ERROR - Adding parent to logger exceeded max depth of {MaxParentDepth}");
-
-                // If we have any entries that were added before, add them to the parent now
-                if (Entries.Any() && newParentTyped != null)
-                    foreach (var entry in SnapshotEntries())
-                        newParentTyped.AddEntry(entry);
-                LogEventBridge.Replay(this);
-            }
-
-            // show info if the new parent is different from the old one
-            // 2025-07-30 2dm - commented out, because it was too noisy and no value in this message
-            //else if (oldParentTyped?.FullIdentifier != newParentTyped?.FullIdentifier)
-            //    this.A("🪵 LOGGER INFO - logger with parent trying to attach. " +
-            //           $"Existing parent: {oldParentTyped?.FullIdentifier}. " +
-            //           $"New Parent (ignored): {newParentTyped?.FullIdentifier}");
-        }
-
+        // A deliberately supplied call remains an explicit operation token without retaining a log parent.
+        AttachmentOperation = explicitParentOperation;
         if (name != null)
             this.Rename(name);
     }

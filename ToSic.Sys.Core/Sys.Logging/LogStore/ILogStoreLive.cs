@@ -26,11 +26,9 @@ public interface ILogStoreLive: ILogStore, ILogShouldNeverConnect
 
     LogSnapshot? Snapshot(ILog? log);
 
-    LogStoreMode Mode { get; }
-
     string Status { get; }
 
-    string Configure(string? mode, bool bridgeEnabled);
+    string Configure(string? obsoleteStore);
 
     [PrivateApi]
     bool Pause { get; set; }

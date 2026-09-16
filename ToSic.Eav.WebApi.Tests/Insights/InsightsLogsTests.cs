@@ -33,7 +33,7 @@ public class InsightsLogsTests
                 new() { Sequence = 2, OperationId = 1, Source = "Root", Message = "last message", Created = start.AddSeconds(2) },
             ],
         };
-        using var ctx = new InsightsLogsTestContext(LogStoreMode.ILogger);
+        using var ctx = new InsightsLogsTestContext();
         ctx.Write(new() { Kind = "Admission", LogId = snapshot.LogId, Segment = "test", Created = start });
         foreach (var entry in snapshot.Entries)
             ctx.Write(entry with { LogId = snapshot.LogId });
@@ -48,12 +48,10 @@ public class InsightsLogsTests
     }
 
     #region Log selection
-    [Theory]
-    [InlineData(LogStoreMode.Legacy)]
-    [InlineData(LogStoreMode.ILogger)]
-    public void FilteredLink_SelectsStableIdentity_AndExpiresAfterEviction(LogStoreMode mode)
+    [Fact]
+    public void FilteredLink_SelectsStableIdentity_AndExpiresAfterEviction()
     {
-        using var ctx = new InsightsLogsTestContext(mode);
+        using var ctx = new InsightsLogsTestContext();
         ctx.Add("unselected", "1");
         var selected = ctx.Add("selected event", "2");
         var selectedId = ctx.StoredId(selected);
@@ -91,7 +89,7 @@ public class InsightsLogsTests
     public void DumpTree_ShowsNotCapturedMessage_ForUnadmittedLog()
     {
         var store = new LogStoreLive();
-        store.Configure("ILogger", bridgeEnabled: true);
+        store.Configure(null);
 
         var html = new InsightsLogsHelper(store).DumpTree("Global Types", new Log("Tst.Types"));
 
@@ -101,7 +99,7 @@ public class InsightsLogsTests
     [Fact]
     public void DumpTree_PreservesSubtreeAndLocalTime_AfterIndexedBundleIsFlushed()
     {
-        using var ctx = new InsightsLogsTestContext(LogStoreMode.ILogger);
+        using var ctx = new InsightsLogsTestContext();
         var root = ctx.Add("root entry", "1");
         var leaf = new Log("Tst.Leaf");
         using (var parent = root.Fn("parent"))

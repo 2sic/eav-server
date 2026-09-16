@@ -7,11 +7,6 @@ namespace ToSic.Sys.Logging;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class Log: ILog, ILogInternal, ICanEstimateSize
 {
-    /// <summary>
-    /// Max logging depth, we should never attach loggers if we are past this level
-    /// </summary>
-    private const int MaxParentDepth = 100;
-
     #region Constructors
 
     /// <summary>
@@ -84,7 +79,7 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     public string NameId => $"{Scope}{(string.IsNullOrEmpty(Scope) ? "" : ".")}{Name}[{Id}]";
 
 
-    public string FullIdentifier => (Parent as Log)?.FullIdentifier + NameId;
+    public string FullIdentifier => NameId;
 
     #endregion
 
@@ -96,19 +91,17 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
         lock (Entries)
         {
             Entries.Add(entry);
-            if (LogEventBridge.UsesExecutionContext && Entries.Count > InsightsLogStore.MaxEntriesPerLog)
+            if (Entries.Count > InsightsLogStore.MaxEntriesPerLog)
                 Entries.RemoveAt(0);
         }
-        (Parent as Log)?.AddEntry(entry);
     }
 
     Entry ILogInternal.CreateAndAdd(string? message, CodeRef? code, EntryOptions? options, Entry? parent,
         Microsoft.Extensions.Logging.LogLevel level, Exception? exception, bool publish)
     {
         var parentOperation = parent ?? LogOperationContext.Current?.Entry ?? CurrentOperation;
-        if (LogEventBridge.UsesExecutionContext)
-            parentOperation ??= AttachmentOperation;
-        var depth = LogEventBridge.UsesExecutionContext && parentOperation != null
+        parentOperation ??= AttachmentOperation;
+        var depth = parentOperation != null
             ? Math.Max(WrapDepth, parentOperation.Depth + 1)
             : WrapDepth;
         var e = new Entry(this, message, depth, code, options)
@@ -134,20 +127,9 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
             while (current?.WrapOpenWasClosed == true)
                 current = current.ParentOperation;
 
-            var parentCurrent = (Parent as Log)?.CurrentOperation;
-            if (current == null)
-                return parentCurrent;
-
-            return parentCurrent?.Sequence > current.Sequence
-                ? parentCurrent
-                : current;
+            return current;
         }
-        set
-        {
-            _currentOperation.Value = value;
-            if (Parent is Log parent)
-                parent.CurrentOperation = value;
-        }
+        set => _currentOperation.Value = value;
     }
     private readonly AsyncLocal<Entry?> _currentOperation = new();
 
@@ -173,16 +155,9 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     /// </summary>
     internal int WrapDepth
     {
-        get => LogEventBridge.UsesExecutionContext ? _contextWrapDepth.Value : _legacyWrapDepth;
-        set
-        {
-            if (LogEventBridge.UsesExecutionContext)
-                _contextWrapDepth.Value = value;
-            else
-                _legacyWrapDepth = value;
-        }
+        get => _contextWrapDepth.Value;
+        set => _contextWrapDepth.Value = value;
     }
-    private int _legacyWrapDepth;
     private readonly AsyncLocal<int> _contextWrapDepth = new();
 
     /// <summary>
@@ -205,13 +180,7 @@ public partial class Log: ILog, ILogInternal, ICanEstimateSize
     {
         get;
         // ?? true;
-        set
-        {
-            field = value;
-            // pass it on to the parent if suddenly turned on, so that the chain knows if it should be preserved
-            if (Parent is Log logParent)
-                logParent.Preserve = value;
-        }
+        set;
     } = true;
 
     #endregion

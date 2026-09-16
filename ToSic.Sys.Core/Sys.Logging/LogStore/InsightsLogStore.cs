@@ -16,8 +16,6 @@ public sealed class InsightsLogStore
     public const int MaxProperties = 32;
     public const long MaxEstimatedBytes = 16 * 1024 * 1024;
     public const string TruncatedKey = "2sxc.Truncated";
-    public bool Enabled { get; internal set; }
-
     // ponytail: one lock for the bounded diagnostic buffer; partition only if profiling warrants it.
     private readonly object _sync = new();
     private readonly Dictionary<string, Bundle> _logs = new();
@@ -49,8 +47,6 @@ public sealed class InsightsLogStore
 
     internal void Write(LogEvent data, int segmentSize)
     {
-        if (!Enabled)
-            return;
         lock (_sync)
         {
             if (data.Kind == "Admission" && data.Segment != null)
@@ -80,18 +76,15 @@ public sealed class InsightsLogStore
             foreach (var id in data.Ancestors)
                 written |= WriteToBundle(id, data, ref firstBundle, ref visited, ref previousOld, ref previousMerged);
 
-            if (LogEventBridge.UsesExecutionContext)
-            {
-                List<string>? missing = null;
-                foreach (var id in data.Ancestors)
-                    if (!_logs.ContainsKey(id) && !_latestBySource.ContainsKey(id)
-                        && (missing == null || !missing.Contains(id)))
-                        (missing ??= []).Add(id);
-                if (missing != null)
-                    Buffer(data, missing);
-                else if (!written && data.Ancestors.Length == 0)
-                    Buffer(data, [data.LogId]);
-            }
+            List<string>? missing = null;
+            foreach (var id in data.Ancestors)
+                if (!_logs.ContainsKey(id) && !_latestBySource.ContainsKey(id)
+                    && (missing == null || !missing.Contains(id)))
+                    (missing ??= []).Add(id);
+            if (missing != null)
+                Buffer(data, missing);
+            else if (!written && data.Ancestors.Length == 0)
+                Buffer(data, [data.LogId]);
             EnforceBudget();
         }
     }

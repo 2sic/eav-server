@@ -1,20 +1,26 @@
-using System.Collections.Concurrent;
-
 namespace ToSic.Sys.Logging;
 
-/// <summary>Compatibility admission API and read selection; ILogger owns the new storage path.</summary>
+/// <summary>Admission and read API for the single local Insights store.</summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvider? provider = null) : ILogStoreLive
+public class LogStoreLive : ILogStoreLive
 {
     public const string StoreConfigurationKey = "Logging:2sxc:Store";
-    private readonly InsightsLogStore _insights = insights ?? new();
+    private readonly InsightsLogStore _insights;
+    private readonly InsightsLoggerProvider _provider;
     private readonly object _sync = new();
-    private readonly ConcurrentDictionary<string, FixedSizedQueue<LogStoreEntry>> _segments = new();
     public int MaxItems => LogConstants.LiveStoreMaxItems;
-    public LogStoreMode Mode { get; private set; }
-    public string Status => _configurationError ?? (Mode == LogStoreMode.Legacy ? "Legacy store" : _insights.Status);
-    private string? _configurationError;
+    public string Status => _insights.Status;
+
+    public LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvider? provider = null)
+    {
+        _insights = insights ?? new();
+        _provider = provider ?? new(_insights);
+        // Capture is available as soon as the store is first resolved. The host replaces this
+        // direct sink with its factory-backed sink after ILoggerFactory is available.
+        LogEventBridge.SetSink(_provider);
+    }
+
     public int SegmentSize
     {
         get => _segmentSize;
@@ -23,8 +29,7 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
             if (value < 1 || value > InsightsLogStore.MaxLogs)
                 throw new ArgumentOutOfRangeException(nameof(value));
             _segmentSize = value;
-            if (provider != null)
-                provider.SegmentSize = value;
+            _provider.SegmentSize = value;
         }
     }
     private int _segmentSize = LogConstants.LiveStoreSegmentSize;
@@ -44,35 +49,11 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
     private bool _pause;
     public int AddCount { get; private set; }
 
-    /// <summary>Call once at startup, after installing the bridge sink.</summary>
-    public string Configure(string? mode, bool bridgeEnabled)
-    {
-        if (!Enum.TryParse(mode ?? nameof(LogStoreMode.Legacy), true, out LogStoreMode selected)
-            || !Enum.IsDefined(typeof(LogStoreMode), selected))
-            return _configurationError = $"Unknown logging store; retaining {Mode}.";
-        if (selected != LogStoreMode.Legacy && !bridgeEnabled)
-            return _configurationError = $"ILogger store requires Logging:2sxc:Enabled=true; retaining {Mode}.";
-        lock (_sync)
-        {
-            _configurationError = null;
-            Mode = selected;
-            LogEventBridge.SetMode(selected);
-            _insights.Enabled = selected != LogStoreMode.Legacy;
-            if (!_insights.Enabled)
-                return Status;
-            // Bootstrap admissions may precede installation of the host's logger factory.
-            foreach (var segment in _segments)
-                foreach (var entry in segment.Value.ToArray())
-                {
-                    if (entry.Log is Log log)
-                        log.LatestExecutionId = entry.ExecutionId;
-                    PublishAdmission(segment.Key, entry);
-                }
-            if (Mode == LogStoreMode.ILogger)
-                _segments.Clear();
-            return Status;
-        }
-    }
+    /// <summary>Reports an obsolete store selection; local capture always uses the ILogger store.</summary>
+    public string Configure(string? obsoleteStore)
+        => string.IsNullOrWhiteSpace(obsoleteStore)
+            ? Status
+            : $"{StoreConfigurationKey}={obsoleteStore} is obsolete; using the ILogger store. {Status}";
 
     public LogStoreEntry? Add(string segment, ILog log) => AddInternal(segment, log, false);
     public LogStoreEntry? ForceAdd(string key, ILog log) => AddInternal(key, log, true);
@@ -87,20 +68,9 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
         {
             if (!force && (_pause || !realLog.Preserve))
                 return null;
-            LogStoreEntry? entry = null;
-            if (Mode == LogStoreMode.Legacy)
-            {
-                var queue = _segments.GetOrAdd(key, _ => new(SegmentSize));
-                entry = queue.ToArray().FirstOrDefault(e => e.Log == realLog);
-                if (entry == null)
-                    queue.Enqueue(entry = new() { Log = realLog, Segment = key });
-            }
-            entry ??= new() { Log = realLog, Segment = key };
-            if (Mode == LogStoreMode.ILogger)
-            {
-                realLog.LatestExecutionId = entry.ExecutionId;
-                PublishAdmission(key, entry);
-            }
+            var entry = new LogStoreEntry { Log = realLog, Segment = key };
+            realLog.LatestExecutionId = entry.ExecutionId;
+            PublishAdmission(key, entry);
             if (++AddCount >= MaxItems)
                 _pause = true;
             return entry;
@@ -112,52 +82,30 @@ public class LogStoreLive(InsightsLogStore? insights = null, InsightsLoggerProvi
         if (entry.Log is not Log log)
             return;
         var admission = LogEvent.ForLog(log);
-        if (LogEventBridge.UsesExecutionContext)
-            admission = admission with
-            {
-                LogId = entry.ExecutionId,
-                Ancestors = [],
-                Properties = admission.Properties.SetItem(LogExecution.SourceLogIdKey, log.LogId),
-            };
-        LogEventBridge.Write(admission with { Kind = "Admission", Segment = segment });
+        LogEventBridge.Write(admission with
+        {
+            LogId = entry.ExecutionId,
+            Ancestors = [],
+            Properties = admission.Properties.SetItem(LogExecution.SourceLogIdKey, log.LogId),
+            Kind = "Admission",
+            Segment = segment,
+        });
         LogEventBridge.Replay(log);
         entry.PublishSpecs();
     }
 
-    public IReadOnlyDictionary<string, int> SegmentCounts() => Mode == LogStoreMode.Legacy
-        ? _segments.ToDictionary(p => p.Key, p => p.Value.Count)
-        : _insights.SegmentCounts();
+    public IReadOnlyDictionary<string, int> SegmentCounts() => _insights.SegmentCounts();
 
-    public IReadOnlyList<LogSnapshot> Snapshot(string segment)
-    {
-        if (Mode == LogStoreMode.ILogger)
-            return _insights.Snapshot(segment);
-        return !_segments.TryGetValue(segment, out var entries) ? []
-            : entries.ToArray().Where(e => e.Log is Log)
-                .Select(e => LogSnapshot.FromLegacy((Log)e.Log!, e.Specs)).ToArray();
-    }
+    public IReadOnlyList<LogSnapshot> Snapshot(string segment) => _insights.Snapshot(segment);
 
     public LogSnapshot? Snapshot(ILog? log)
     {
         if (log.GetRealLog() is not Log typed)
             return null;
-        return Mode == LogStoreMode.Legacy
-            ? LogSnapshot.FromLegacy(typed)
-            : typed.LatestExecutionId is { } executionId && _insights.Find(executionId) is { Entries.Length: > 0 } current
-                ? current
-                : _insights.Find(typed.LogId);
+        return typed.LatestExecutionId is { } executionId && _insights.Find(executionId) is { Entries.Length: > 0 } current
+            ? current
+            : _insights.Find(typed.LogId);
     }
 
-    public void FlushSegment(string segment)
-    {
-        lock (_sync)
-        {
-            _segments.TryRemove(segment, out _);
-            _insights.Flush(segment);
-        }
-    }
+    public void FlushSegment(string segment) => _insights.Flush(segment);
 }
-
-/// <summary>Startup selection.</summary>
-[PrivateApi]
-public enum LogStoreMode { Legacy, ILogger }

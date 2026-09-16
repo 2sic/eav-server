@@ -68,6 +68,7 @@ public static class LogCallBaseExtensions
             if (entry != null && log.CurrentOperation == entry)
                 log.CurrentOperation = entry.ParentOperation;
             log.WrapDepth--;
+            (logCall as LogCallBase)?.CloseOperationScope();
             entry?.AppendResult(message);
             var final = log.AddInternalReuse(null!, null);
             final.WrapClose = true;
