@@ -72,7 +72,10 @@ public sealed class InsightsLogStore
             LogEvent? previousMerged = null;
             Bundle? firstBundle = null;
             HashSet<Bundle>? visited = null;
-            var written = WriteToBundle(data.LogId, data, ref firstBundle, ref visited, ref previousOld, ref previousMerged);
+            // Explicit execution ownership wins over the producer's latest standalone admission.
+            // The source is still indexed in every execution bundle for Snapshot(sourceLog).
+            var written = data.Ancestors.Length == 0
+                && WriteToBundle(data.LogId, data, ref firstBundle, ref visited, ref previousOld, ref previousMerged);
             foreach (var id in data.Ancestors)
                 written |= WriteToBundle(id, data, ref firstBundle, ref visited, ref previousOld, ref previousMerged);
 

@@ -15,10 +15,10 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
 
     /// <inheritdoc/>
     void ILazyInitLog.SetLog(ILog? parentLog)
-        => Log = parentLog;
+    { }
 
     /// <inheritdoc cref="LazySvc{TService}.Log"/>
-    public ILog? Log { get; private set; }
+    public ILog? Log => null;
 
     #endregion
 

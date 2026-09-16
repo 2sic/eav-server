@@ -21,6 +21,9 @@ public static class LogExecution
         }
     }
 
+    /// <summary>True while the current async flow is already owned by an admitted execution.</summary>
+    public static bool HasActiveExecution => CurrentExecutionId != null;
+
     public const string ActivitySourceName = MicrosoftLoggerEventSink.Category;
     public const string ActivitySourceVersion = ToSic.Sys.Assembly.SharedAssemblyInfo.AssemblyVersion;
 

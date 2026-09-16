@@ -12,7 +12,7 @@ namespace ToSic.Sys.Services;
 ///
 /// Notes
 /// 
-/// * Also has an API to auto-connect the logs of child-services.
+/// * Obsolete logging-connection signatures remain as no-ops for compatibility.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 // #NoEditorBrowsableBecauseOfInheritance - would cause side-effects on inheriting classes, and would never show up when you need it to inherit from it
@@ -25,14 +25,10 @@ public abstract class ServiceBase(string logName) : IHasLog
     /// </summary>
     /// <param name="logName">The name to use in the log, like "My.Purpose"</param>
     /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="connect">List of services to auto-connect to the logging.</param>
+    /// <param name="connect">Obsolete compatibility parameter; ignored.</param>
     // ReSharper disable once UnusedParameter.Local
     protected ServiceBase(string logName, NoParamOrder npo = default, object[]? connect = default) : this(logName)
-    {
-        if (connect == null)
-            return;
-        ConnectLogs(connect);
-    }
+    { }
 
     /// <inheritdoc />
     [JsonIgnore]
@@ -42,11 +38,11 @@ public abstract class ServiceBase(string logName) : IHasLog
     public ILog Log { get; } = new Log(logName);
 
     /// <summary>
-    /// Connect Log of all dependencies listed in the `services` array.
+    /// Obsolete compatibility method; ignored.
     /// </summary>
     /// <param name="services">
-    /// One or more services which could implement <see cref="ILazyInitLog"/> or <see cref="IHasLog"/>
+    /// Former logging dependencies; ignored.
     /// </param>
     protected void ConnectLogs(object[] services)
-        => (this as IHasLog).ConnectLogs(services);
+    { }
 }

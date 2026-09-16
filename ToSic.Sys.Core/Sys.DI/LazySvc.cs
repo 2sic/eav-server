@@ -27,13 +27,13 @@ public class LazySvc<TService>(IServiceProvider sp)
 
     /// <inheritdoc/>
     void ILazyInitLog.SetLog(ILog? parentLog)
-        => Log = parentLog;
+    { }
 
     /// <summary>
     /// The parent log, which is attached to newly generated objects
     /// _if_ they support logging.
     /// </summary>
-    public ILog? Log { get; private set; }
+    public ILog? Log => null;
 
     #endregion
 
