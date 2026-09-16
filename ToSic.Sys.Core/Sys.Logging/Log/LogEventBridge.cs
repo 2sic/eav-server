@@ -18,8 +18,6 @@ public static class LogEventBridge
     public static void SetSink(ILogEventSink? sink)
         => Volatile.Write(ref _sink, sink);
 
-    internal static bool UsesExecutionContext => true;
-
     internal static IDisposable? BeginOperation(Entry? entry)
     {
         if (entry is not { Owner: { } })

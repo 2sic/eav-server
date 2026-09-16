@@ -85,7 +85,7 @@ public class LogExecutionTests
         // A late replay carries source data but cannot recover its publication-time scope.
         var replay = original with { Ancestors = [second.LogId], Properties = original.Properties.Clear(), Replay = true };
 
-        ctx.Logger.Log(LogLevel.Trace, default, replay, null, (entry, _) => entry.ToString());
+        LogEventBridge.Write(replay);
 
         Equal("331", Single(ctx.Store.Snapshot(first)!.Entries).Properties["2sxc.ModuleId"]);
         False(Single(ctx.Store.Snapshot(second)!.Entries).Properties.ContainsKey("2sxc.ModuleId"));
