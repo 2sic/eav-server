@@ -22,19 +22,22 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsMetadata")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 
-public class Metadata(CustomDataSourceAdvanced.Dependencies services) : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaDt")
+public class Metadata(CustomDataSourceAdvanced.Dependencies services) : DataSourceProcessInBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaDt")
 {
     /// <summary>
     /// Optional Type Name restriction to only get **Metadata** of this Content Type.
     /// </summary>
     [Configuration]
-    public override string? ContentTypeName => Configuration.GetThis();
+    public string? ContentTypeName => Configuration.GetThis();
 
-    protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string? typeName)
+    protected override IEnumerable<IEntity> GetDefault(IImmutableList<IEntity> defaultIn)
     {
-        var getMdFunc = GetMetadataFunctionGenerator(typeName);
+        var typeName = ContentTypeName;
+        var l = Log.Fn<IEnumerable<IEntity>>($"Content Type Name: '{typeName}'");
 
-        return originals.SelectMany(getMdFunc);
+        var getMdFunc = GetMetadataFunctionGenerator(typeName.NullIfNoValue());
+
+        return l.Return(defaultIn.SelectMany(getMdFunc));
     }
 
     /// <summary>

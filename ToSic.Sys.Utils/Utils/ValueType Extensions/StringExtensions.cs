@@ -29,6 +29,12 @@ public static class StringExtensions
     public static string? UseFallbackIfNoValue(this string? value, string? fallback)
         => !string.IsNullOrWhiteSpace(value) ? value : fallback;
 
+    /// <summary>
+    /// Returns null if the original string is null, empty or whitespace.
+    /// Otherwise, returns the original string.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static string? NullIfNoValue(this string? value)
         => value.HasValue() ? value : null;
 

@@ -28,13 +28,13 @@ public class MetadataTargets(
     CustomDataSourceAdvanced.Dependencies services,
     Generator<IDataFactory, DataFactoryOptions> genDataFactory,
     IAppReaderFactory appReaders)
-    : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders, genDataFactory])
+    : DataSourceProcessInBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders, genDataFactory])
 {
     /// <summary>
     /// Optional TypeName restrictions to only get **Targets** of this Content Type.
     /// </summary>
     [Configuration]
-    public override string? ContentTypeName => Configuration.GetThis();
+    public string? ContentTypeName => Configuration.GetThis();
 
     /// <summary>
     /// If it should filter duplicates. Default is true.
@@ -42,11 +42,14 @@ public class MetadataTargets(
     [Configuration(Fallback = true)]
     public bool FilterDuplicates => Configuration.GetThis(true);
 
-    protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string? typeName)
+    protected override IEnumerable<IEntity> GetDefault(IImmutableList<IEntity> defaultIn)
     {
+        var typeName = ContentTypeName;
+        var filterDuplicates = FilterDuplicates;
+        var l = Log.Fn<IEnumerable<IEntity>>($"Content Type Name: '{typeName}', Filter Duplicates: {filterDuplicates}");
         var getTargetFunc = GetTargetsFunctionGenerator();
 
-        var relationships = originals
+        var relationships = defaultIn
             .SelectMany(getTargetFunc);
 
         if (FilterDuplicates)
@@ -55,7 +58,7 @@ public class MetadataTargets(
         if (typeName.HasValue())
             relationships = relationships.GetAll(typeName);
 
-        return relationships;
+        return l.Return(relationships);
     }
 
     /// <summary>
