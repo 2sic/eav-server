@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using ToSic.Eav.Data.Build;
+﻿using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
-using ToSic.Eav.Data.Raw.Sys;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Configuration;
 using ToSic.Eav.DataSource.Sys.Errors;
-using static ToSic.Eav.DataSource.DataSourceConstants;
 
 namespace ToSic.Eav.DataSource;
 
@@ -48,49 +45,29 @@ public class CustomDataSource: CustomDataSourceAdvanced
         : base(services, logName ?? "Ds.CustLt", connect: connect)
     {
         // Provide a default out, in case the overriding class doesn't
-        base.ProvideOut(() => GetRaw(GetDefault, null));
+        ProvideOut(() => ConvertRaw(GetDefault, null));
     }
-
-    private Generator<IDataFactory, DataFactoryOptions> DataFactoryGenerator
-        => ((Dependencies)Services).DataFactoryGenerator;
 
     /// <summary>
     /// Every new DataSource based on this is [immutable](xref:NetCode.Conventions.Immutable).
     /// </summary>
     public override bool Immutable => true;
 
-    protected virtual IEnumerable<IRawData> GetDefault() => [];
-
     /// <summary>
-    /// Provide data on the `Out` of this DataSource.
-    /// This is a very generic version which takes any function that generates a list of something.
-    /// Internally it will try to detect what the data was and convert it to the final format.
-    ///
-    /// Note that the `source` must create a list (`IEnumerable`) of the following (all items must have the same type):
-    /// * <see cref="IEntity"/>
-    /// * <see cref="IRawEntity"/>
-    ///
-    /// If you know what data type you're creating, you should look at the other ProvideOut* methods.
+    /// Default method called to return data.
+    /// If the inheriting class overrides this, it can go without having a full constructor.
     /// </summary>
-    /// <param name="data"></param>
-    /// <param name="npo">see [](xref:NetCode.Conventions.NamedParameters)</param>
-    /// <param name="name">_optional_ name of the out-stream.</param>
-    /// <param name="options">Conversion options which are relevant for <see cref="IRawEntity"/> data</param>
-    protected internal void ProvideOut(
-        Func<object> data,
-        NoParamOrder npo = default,
-        string name = StreamDefaultName,
-        Func<DataFactoryOptions>? options = default
-    ) => base.ProvideOut(() => GetAny(data, options), name);
+    /// <returns></returns>
+    protected virtual IEnumerable<IRawData> GetDefault() => [];
 
     [PrivateApi]
     protected internal void ProvideOutRaw<T>(
         Func<IEnumerable<T>> data,
         NoParamOrder npo = default,
-        string name = StreamDefaultName,
+        string name = DataSourceConstants.StreamDefaultName,
         Func<DataFactoryOptions>? options = default
     ) where T : class, IRawData
-        => base.ProvideOut(() => GetRaw(data, options), name);
+        => ProvideOut(() => ConvertRaw(data, options), name);
 
     /// <summary>
     /// Provide raw data which may instead contain an already prepared error stream.
@@ -99,92 +76,21 @@ public class CustomDataSource: CustomDataSourceAdvanced
     protected internal void ProvideOutRaw<T>(
         Func<ResultOrError<IEnumerable<T>>> data,
         NoParamOrder npo = default,
-        string name = StreamDefaultName,
+        string name = DataSourceConstants.StreamDefaultName,
         Func<DataFactoryOptions>? options = default
-    ) where T : class, IRawData
-        => base.ProvideOut(() => GetRawOrError(data, options), name);
+    ) where T : class, IRawData =>
+        ProvideOut(() =>
+            {
+                var result = data();
+                return result.IsOk
+                    ? ConvertRaw(() => result.Result, options)
+                    : result.ErrorsSafe();
+            },
+            name
+        );
 
-    private IImmutableList<IEntity> GetAny(Func<object>? source, Func<DataFactoryOptions>? options)
-    {
-        var l = Log.Fn<IImmutableList<IEntity>>();
-
-        // Call the Generator and handle errors/null
-        object? funcResult;
-        try
-        {
-            funcResult = source?.Invoke();
-        }
-        catch (Exception ex)
-        {
-            l.Ex(ex);
-            var runErr = Error.Create(title: $"Error calling source generator of {nameof(ProvideOut)}. " +
-                                             "Error details can be found in Insights.", exception: ex);
-            return l.ReturnAsError(runErr);
-        }
-        if (funcResult is null)
-            return l.Return([], "null, no data returned");
-
-        // Make a list out of the result
-        List<object> data;
-        try
-        {
-            data = funcResult is IEnumerable enumerable
-                ? enumerable.Cast<object>().ToList()
-                : [funcResult];
-        }
-        catch (Exception ex)
-        {
-            l.Ex(ex);
-            var runErr = Error.Create(title: $"Error handling result of source generator of {nameof(ProvideOut)}. " +
-                                             "Error details can be found in Insights.", exception: ex);
-            return l.ReturnAsError(runErr);
-        }
-
-        // Handle empty list
-        if (data.SafeNone())
-            return l.Return([], "no items returned");
-
-        // Handle all is already converted to IEntity
-        if (data.All(i => i is IEntity))
-            return l.Return(data.Cast<IEntity>().ToImmutableOpt(), "IEntities");
-
-        
-        // If all are Anonymous, convert to Raw
-        if (data.All(d => d.IsAnonymous()))
-        {
-            l.A("Was anonymous, converted to raw");
-            var converter = new RawFromAnonymousHelper(Log);
-            var rawFromAnon = data.Select(converter.Convert).ToList();
-            var result = DataFactoryGenerator   // #DropSpawnNew
-                .New(options: GetBestOptions(options))
-                .Create(rawFromAnon);
-            return l.Return(result, "was anonymous, converted to RawEntity");
-        }
-
-        // Handle data is already IRawEntity
-        if (data.All(i => i is IRawEntity))
-        {
-            var rawEntities = data.Cast<IRawEntity>().ToList();
-            var result = DataFactoryGenerator   // #DropSpawnNew
-                .New(options: GetBestOptions(options))
-                .Create(rawEntities);
-            return l.Return(result, "was IRawEntity");
-        }
-        
-        // todo - maybe also process IHasEntity - but only after doing the raw entities
-
-        var err = Error.Create(title: $"Error in {nameof(ProvideOutRaw)}",
-            message: "The list received was tested against all possible data types but non matched. " +
-                     $"Expected was a list of either {nameof(IEntity)}, {nameof(IRawEntity)} or anonymous objects. " +
-                     "Note that all items must be of the same type. ");
-        return l.ReturnAsError(err);
-    }
-
-    private static DataFactoryOptions GetBestOptions(Func<DataFactoryOptions>? options)
-        => options?.Invoke() ?? new();
-
-    private IImmutableList<IEntity> GetRaw<T>(Func<IEnumerable<T>>? source, Func<DataFactoryOptions>? options)
-        where T: class, IRawData
+    internal IImmutableList<IEntity> ConvertRaw<T>(Func<IEnumerable<T>>? source, Func<DataFactoryOptions>? options)
+        where T : class, IRawData
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
 
@@ -196,21 +102,9 @@ public class CustomDataSource: CustomDataSourceAdvanced
             return l.Return([], "no items returned");
 
         // Transform result to IEntity
-        var result = DataFactoryGenerator   // #DropSpawnNew
-            .New(options: GetBestOptions(options))
+        var result = ((Dependencies)Services).DataFactoryGenerator
+            .New(options: options?.Invoke() ?? new())
             .Create(raw);
         return l.Return(result, $"Got {result.Count} items");
     }
-
-    private IImmutableList<IEntity> GetRawOrError<T>(
-        Func<ResultOrError<IEnumerable<T>>> source,
-        Func<DataFactoryOptions>? options)
-        where T : class, IRawData
-    {
-        var result = source();
-        return result.IsOk
-            ? GetRaw(() => result.Result, options)
-            : result.ErrorsSafe();
-    }
-
 }

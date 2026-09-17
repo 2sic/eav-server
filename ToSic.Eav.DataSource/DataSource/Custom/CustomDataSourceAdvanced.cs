@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.Data.Build;
-using ToSic.Eav.DataSource.Sys.Caching;
+﻿using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Configuration;
 
 namespace ToSic.Eav.DataSource;
@@ -14,54 +13,25 @@ namespace ToSic.Eav.DataSource;
 /// This has changed a lot in v15 (breaking change).
 /// Read about it in the docs.
 /// </remarks>
-[PublicApi]
-public abstract class CustomDataSourceAdvanced: DataSourceBase
+[PrivateApi("Made private in v22, before was public. As of now, doesn't really serve a purpose any more...")]
+public abstract class CustomDataSourceAdvanced(CustomDataSourceAdvanced.Dependencies services, string? logName = null, object[]? connect = null)
+    : DataSourceBase(services, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: connect)
 {
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public new record Dependencies: DataSourceBase.Dependencies
-    {
-        //[PrivateApi]
-        //public IDataFactory DataFactory { get; }
+    public new record Dependencies(
+        IDataSourceConfiguration Configuration,
+        LazySvc<DataSourceErrorHelper> ErrorHandler,
+        ConfigurationDataLoader ConfigDataLoader,
+        LazySvc<IDataSourceCacheService> CacheService)
+        : DataSourceBase.Dependencies(Configuration, ErrorHandler, ConfigDataLoader, CacheService);
 
-        [PrivateApi]
-        [ShowApiWhenReleased(ShowApiMode.Never)]
-        public Dependencies(
-            IDataSourceConfiguration configuration,
-            LazySvc<DataSourceErrorHelper> errorHandler,
-            ConfigurationDataLoader configDataLoader,
-            LazySvc<IDataSourceCacheService> cacheService)//,
-            // #DropSpawnNew
-            //IDataFactory dataFactory)
-            : base(configuration, errorHandler, configDataLoader, cacheService)
-        {
-            //ConnectLogs([DataFactory = dataFactory]);
-        }
-    }
-
-    /// <summary>
-    /// Initializes an DataSource which will usually provide/generate external data.
-    /// </summary>
-    /// <param name="services">Dependencies needed by this data source and/or the parent</param>
-    /// <param name="logName">
-    /// The log name/identifier for insights logging.
-    /// Optional, but makes debugging a bit easier when provided.
-    /// </param>
-    /// <remarks>
-    /// set the cache creation date to the moment the object is constructed
-    /// this is important, because the date should stay fixed throughout the lifetime of this object
-    /// but renew when it is updates
-    /// </remarks>
-    protected CustomDataSourceAdvanced(Dependencies services, string? logName = null, object[]? connect = null)
-        : base(services, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: connect)
-    {
-        //DataFactory = services.DataFactory;
-    }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Set the cache creation date to the **moment the object is constructed**.
+    /// This is important, because the date should stay fixed throughout the lifetime of this object
+    /// but renew when it is updated
+    /// </remarks>
     public override long CacheTimestamp { get; } = DateTime.Now.Ticks;  // Initialize with moment the object was created
-
-    // #DropSpawnNew
-    //[PrivateApi("Made private v22 2026-09, previously public API")]
-    //protected IDataFactory DataFactory { get; }
 }
