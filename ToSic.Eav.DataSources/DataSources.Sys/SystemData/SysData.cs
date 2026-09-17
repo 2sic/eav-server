@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Catalog;
@@ -34,8 +35,8 @@ namespace ToSic.Eav.DataSources.Sys;
     DynamicOut = true
 )]
 // ReSharper disable once UnusedMember.Global
-public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCatalog catalog, IDataSourcesService dataSourceFactory, IUser user)
-    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.SysDat", connect: [catalog, dataSourceFactory])
+public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCatalog catalog, Generator<IDataFactory, DataFactoryOptions> genDataFactory, IDataSourcesService dataSourcesSvc, IUser user)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.SysDat", connect: [catalog, dataSourcesSvc, genDataFactory])
 {
     #region Configuration-properties
 
@@ -80,7 +81,7 @@ public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCa
         // Construct basic options and build the source
 
         var options = CreateInnerOptions();
-        return dataSourceFactory.Create(dsInfo.Type, options: options);
+        return dataSourcesSvc.Create(dsInfo.Type, options: options);
     }
 
     private DataSourceOptions CreateInnerOptions() =>
@@ -126,7 +127,7 @@ public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCa
     private IDataSource GetTrivialMessageDs(bool dsFound, string streamName, bool streamFound, string? allowed = default)
     {
         var msg = GetTrivialMessage(dsFound, streamName, streamFound, allowed);
-        var ds = dataSourceFactory.Create<Error>(options: CreateInnerOptions());
+        var ds = dataSourcesSvc.Create<Error>(options: CreateInnerOptions());
         ds.UseCustomErrorData(msg);
         return ds;
     }
@@ -135,7 +136,7 @@ public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCa
     {
         var l = Log.Fn<IEnumerable<IEntity>>();
 
-        var dataFactory = DataFactory.SpawnNew(options: new()
+        var dataFactory = genDataFactory.New(options: new()
         {
             TitleField = "Name",
             TypeName = nameof(SysData),

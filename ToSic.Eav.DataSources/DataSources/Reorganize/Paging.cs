@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.DataSource.Sys;
+﻿using ToSic.Eav.Data.Build;
+using ToSic.Eav.DataSource.Sys;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
 
@@ -21,6 +22,8 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsPaging")]
 public sealed class Paging: CustomDataSourceAdvanced
 {
+    private readonly Generator<IDataFactory, DataFactoryOptions> _genDataFactory;
+
     #region Configuration-properties
 
     private const int DefPageSize = 10;
@@ -62,8 +65,11 @@ public sealed class Paging: CustomDataSourceAdvanced
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public Paging(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging")
+    public Paging(Dependencies services, Generator<IDataFactory, DataFactoryOptions> genDataFactory)
+        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging", connect: [genDataFactory])
     {
+        // #DropSpawnNew
+        _genDataFactory = genDataFactory;
         ProvideOut(GetList);
         ProvideOut(GetPaging, "Paging");
     }
@@ -102,7 +108,7 @@ public sealed class Paging: CustomDataSourceAdvanced
         );
 
         // Assemble list of this for the stream
-        List<IEntity> list = [DataFactory.Create(rawEntity)];
+        List<IEntity> list = [_genDataFactory.New(options: new()).Create(rawEntity)];
         return l.ReturnAsOk(list.ToImmutableOpt());
     }
 }

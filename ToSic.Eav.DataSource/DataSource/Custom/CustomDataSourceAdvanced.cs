@@ -21,8 +21,8 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public new record Dependencies: DataSourceBase.Dependencies
     {
-        [PrivateApi]
-        public IDataFactory DataFactory { get; }
+        //[PrivateApi]
+        //public IDataFactory DataFactory { get; }
 
         [PrivateApi]
         [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -30,11 +30,12 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
             IDataSourceConfiguration configuration,
             LazySvc<DataSourceErrorHelper> errorHandler,
             ConfigurationDataLoader configDataLoader,
-            LazySvc<IDataSourceCacheService> cacheService,
-            IDataFactory dataFactory)
+            LazySvc<IDataSourceCacheService> cacheService)//,
+            // #DropSpawnNew
+            //IDataFactory dataFactory)
             : base(configuration, errorHandler, configDataLoader, cacheService)
         {
-            ConnectLogs([DataFactory = dataFactory]);
+            //ConnectLogs([DataFactory = dataFactory]);
         }
     }
 
@@ -54,12 +55,13 @@ public abstract class CustomDataSourceAdvanced: DataSourceBase
     protected CustomDataSourceAdvanced(Dependencies services, string? logName = null, object[]? connect = null)
         : base(services, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: connect)
     {
-        DataFactory = services.DataFactory;
+        //DataFactory = services.DataFactory;
     }
 
     /// <inheritdoc />
     public override long CacheTimestamp { get; } = DateTime.Now.Ticks;  // Initialize with moment the object was created
 
-    [PublicApi]
-    protected IDataFactory DataFactory { get; }
+    // #DropSpawnNew
+    //[PrivateApi("Made private v22 2026-09, previously public API")]
+    //protected IDataFactory DataFactory { get; }
 }

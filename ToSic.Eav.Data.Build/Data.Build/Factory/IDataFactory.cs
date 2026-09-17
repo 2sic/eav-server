@@ -85,9 +85,9 @@ public interface IDataFactory: IServiceWithSetup<DataFactoryOptions>
     #region WIP
 
     // #DropSpawnNew
-    [PrivateApi("Being deprecated")]
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public IDataFactory SpawnNew(DataFactoryOptions options);
+    //[PrivateApi("Being deprecated")]
+    //[ShowApiWhenReleased(ShowApiMode.Never)]
+    //public IDataFactory SpawnNew(DataFactoryOptions options);
 
     #endregion
 }

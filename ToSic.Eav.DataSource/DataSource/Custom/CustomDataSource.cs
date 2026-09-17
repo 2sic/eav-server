@@ -30,9 +30,13 @@ public class CustomDataSource: CustomDataSourceAdvanced
         LazySvc<DataSourceErrorHelper> ErrorHandler,
         ConfigurationDataLoader ConfigDataLoader,
         LazySvc<IDataSourceCacheService> CacheService,
-        IDataFactory DataFactory
-        )
-        : CustomDataSourceAdvanced.Dependencies(Configuration, ErrorHandler, ConfigDataLoader, CacheService, DataFactory);
+        //IDataFactory DataFactory,
+        // #DropSpawnNew
+        // Note: This is not connected to the logs, could be an issue if we don't finish switching to ILogger
+        // In that case, we would have to make a property an initialize, as was previously done in the base Dependencies record
+        Generator<IDataFactory, DataFactoryOptions> DataFactoryGenerator
+    )
+        : CustomDataSourceAdvanced.Dependencies(Configuration, ErrorHandler, ConfigDataLoader, CacheService);//, DataFactory);
 
     /// <summary>
     /// Constructor for creating a Custom DataSource.
@@ -47,12 +51,15 @@ public class CustomDataSource: CustomDataSourceAdvanced
         base.ProvideOut(() => GetRaw(GetDefault, null));
     }
 
+    private Generator<IDataFactory, DataFactoryOptions> DataFactoryGenerator
+        => ((Dependencies)Services).DataFactoryGenerator;
+
     /// <summary>
     /// Every new DataSource based on this is [immutable](xref:NetCode.Conventions.Immutable).
     /// </summary>
     public override bool Immutable => true;
 
-    protected virtual IEnumerable<IRawEntity> GetDefault() => new List<IRawEntity>();
+    protected virtual IEnumerable<IRawData> GetDefault() => [];
 
     /// <summary>
     /// Provide data on the `Out` of this DataSource.
@@ -148,8 +155,8 @@ public class CustomDataSource: CustomDataSourceAdvanced
             l.A("Was anonymous, converted to raw");
             var converter = new RawFromAnonymousHelper(Log);
             var rawFromAnon = data.Select(converter.Convert).ToList();
-            var result = DataFactory
-                .SpawnNew(options: GetBestOptions(options))
+            var result = DataFactoryGenerator   // #DropSpawnNew
+                .New(options: GetBestOptions(options))
                 .Create(rawFromAnon);
             return l.Return(result, "was anonymous, converted to RawEntity");
         }
@@ -158,8 +165,8 @@ public class CustomDataSource: CustomDataSourceAdvanced
         if (data.All(i => i is IRawEntity))
         {
             var rawEntities = data.Cast<IRawEntity>().ToList();
-            var result = DataFactory
-                .SpawnNew(options: GetBestOptions(options))
+            var result = DataFactoryGenerator   // #DropSpawnNew
+                .New(options: GetBestOptions(options))
                 .Create(rawEntities);
             return l.Return(result, "was IRawEntity");
         }
@@ -189,7 +196,9 @@ public class CustomDataSource: CustomDataSourceAdvanced
             return l.Return([], "no items returned");
 
         // Transform result to IEntity
-        var result = DataFactory.SpawnNew(options: GetBestOptions(options)).Create(raw);
+        var result = DataFactoryGenerator   // #DropSpawnNew
+            .New(options: GetBestOptions(options))
+            .Create(raw);
         return l.Return(result, $"Got {result.Count} items");
     }
 

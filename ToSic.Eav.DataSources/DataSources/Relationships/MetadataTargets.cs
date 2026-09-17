@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.Metadata;
@@ -25,8 +26,9 @@ namespace ToSic.Eav.DataSources;
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 public class MetadataTargets(
     CustomDataSourceAdvanced.Dependencies services,
+    Generator<IDataFactory, DataFactoryOptions> genDataFactory,
     IAppReaderFactory appReaders)
-    : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders])
+    : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders, genDataFactory])
 {
     /// <summary>
     /// Optional TypeName restrictions to only get **Targets** of this Content Type.
@@ -94,7 +96,8 @@ public class MetadataTargets(
                 var ct = appState.TryGetContentType(key);
                 if (ct == null)
                     return [];
-                var contentTypeFactory = DataFactory.SpawnNew(options: new() { AppId = AppId, WithMetadata = true });
+                // #DropSpawnNew
+                var contentTypeFactory = genDataFactory.New(options: new() { AppId = AppId, WithMetadata = true });
                 var ctEntity = contentTypeFactory.Create(new ContentTypeUtil.ContentTypeSummary(ct, items: 0));
                 return [ctEntity];
             }
