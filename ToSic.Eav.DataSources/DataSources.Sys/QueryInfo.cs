@@ -76,9 +76,7 @@ public sealed class QueryInfo : CustomDataSource
         Description = "Output stream of a query",
         Name = "QueryStream"
     )]
-    private sealed record QueryStreamRaw(
-        [property: ContentTypeTitle] string Name
-    ) : IRawEntityAutoConvert;
+    private sealed record QueryStreamRaw([property: ContentTypeTitle] string Name) : IRawEntityAutoConvert;
 
     private IImmutableList<QueryStreamRaw> GetStreamsOfQuery()
     {

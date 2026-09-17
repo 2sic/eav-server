@@ -19,7 +19,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
     DataConfidentiality = DataConfidentiality.Internal,
     UiHint = "Admin list of entities for a content type"
 )]
-public class EntitiesAdmin : CustomDataSource
+public class EntitiesAdmin : DataSourceBase
 {
     #region Configuration Properties
 
@@ -31,11 +31,7 @@ public class EntitiesAdmin : CustomDataSource
 
     #endregion
 
-    public EntitiesAdmin(
-        Dependencies services,
-        LazySvc<IContextOfSite> siteContext,
-        LazySvc<IAppsCatalog> appsCatalog,
-        LazySvc<EntityApi> entityApi)
+    public EntitiesAdmin(Dependencies services, LazySvc<IContextOfSite> siteContext, LazySvc<IAppsCatalog> appsCatalog, LazySvc<EntityApi> entityApi)
         : base(services, logName: "Eav.EntitiesAdmin", connect: [siteContext, appsCatalog, entityApi])
     {
         ProvideOut(() => GetEntities(siteContext.Value, appsCatalog.Value, entityApi.Value));

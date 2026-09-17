@@ -22,8 +22,6 @@ namespace ToSic.Eav.DataSources;
     HelpLink = "https://go.2sxc.org/DsPaging")]
 public sealed class Paging: CustomDataSourceAdvanced
 {
-    private readonly Generator<IDataFactory, DataFactoryOptions> _genDataFactory;
-
     #region Configuration-properties
 
     private const int DefPageSize = 10;
@@ -69,9 +67,8 @@ public sealed class Paging: CustomDataSourceAdvanced
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging", connect: [genDataFactory])
     {
         // #DropSpawnNew
-        _genDataFactory = genDataFactory;
         ProvideOut(GetList);
-        ProvideOut(GetPaging, "Paging");
+        ProvideOut(() => GetPaging(genDataFactory), "Paging");
     }
 
 
@@ -91,7 +88,7 @@ public sealed class Paging: CustomDataSourceAdvanced
         return l.Return(result, $"page:{PageNumber}; size{PageSize}; found:{result.Count}");
     }
 
-    private IImmutableList<IEntity> GetPaging()
+    private IImmutableList<IEntity> GetPaging(Generator<IDataFactory, DataFactoryOptions> genDataFactory)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
 
@@ -108,7 +105,7 @@ public sealed class Paging: CustomDataSourceAdvanced
         );
 
         // Assemble list of this for the stream
-        List<IEntity> list = [_genDataFactory.New(options: new()).Create(rawEntity)];
+        List<IEntity> list = [genDataFactory.New(options: new()).Create(rawEntity)];
         return l.ReturnAsOk(list.ToImmutableOpt());
     }
 }
