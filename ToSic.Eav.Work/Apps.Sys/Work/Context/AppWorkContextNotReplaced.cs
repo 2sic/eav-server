@@ -6,6 +6,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// <summary>
 /// This is a pre-registered service which will throw an exception if it is requested in a place where it was not previously injected.
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkContextNotReplaced: IAppWorkContext
 {
     public AppWorkContextNotReplaced()

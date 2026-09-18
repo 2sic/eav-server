@@ -6,6 +6,7 @@
 /// <remarks>
 /// Meant to disable some fixes / optimizations which make sense in edit-scenarios, but not in import scenarios.
 /// </remarks>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record SaveProcessOptions
 {
     public bool TypeAttributeAutoSetTitle { get; init; } = true;

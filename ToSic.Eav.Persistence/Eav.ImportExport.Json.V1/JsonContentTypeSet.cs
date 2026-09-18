@@ -1,8 +1,6 @@
-﻿
+﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport.Json.V1;
-
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonContentTypeSet
 {
     ///// <summary>

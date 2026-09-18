@@ -7,10 +7,10 @@ using ToSic.Eav.DataSource.Sys.Errors;
 namespace ToSic.Eav.DataSource;
 
 /// <summary>
-/// Very lightweight DataSource base for data sources which are very simple and convention based.
+/// DataSource base for lightweight data sources which are quite simple and convention based.
 /// </summary>
 [PublicApi]
-public class CustomDataSource: CustomDataSourceAdvanced
+public class CustomDataSource: DataSourceBase
 {
     /// <summary>
     /// The Services of <see cref="CustomDataSource"/> - explicitly implemented for API stability.
@@ -33,7 +33,7 @@ public class CustomDataSource: CustomDataSourceAdvanced
         // In that case, we would have to make a property an initialize, as was previously done in the base Dependencies record
         Generator<IDataFactory, DataFactoryOptions> DataFactoryGenerator
     )
-        : CustomDataSourceAdvanced.Dependencies(Configuration, ErrorHandler, ConfigDataLoader, CacheService);//, DataFactory);
+        : DataSourceBase.Dependencies(Configuration, ErrorHandler, ConfigDataLoader, CacheService);//, DataFactory);
 
     /// <summary>
     /// Constructor for creating a Custom DataSource.

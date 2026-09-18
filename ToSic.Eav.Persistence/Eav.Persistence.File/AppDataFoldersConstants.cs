@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Eav.Persistence.File;
 
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppDataFoldersConstants
 {
     public const string TypesFolder = "contenttypes";

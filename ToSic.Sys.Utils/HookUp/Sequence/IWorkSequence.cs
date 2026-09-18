@@ -13,6 +13,8 @@
 /// </remarks>
 /// <typeparam name="TWork">The type of work to be executed in the sequence.</typeparam>
 /// <typeparam name="TData">The type of data being processed by the work sequence.</typeparam>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IWorkSequence<TWork, TData>
     : IWorkSequenceManual<TWork, TData>
     where TWork : class, IWork<TData, TData>;

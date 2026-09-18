@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record AppExportSpecs(
     int ZoneId,
     int AppId,

@@ -11,6 +11,7 @@ using ToSic.Sys.Utils.Assemblies;
 
 namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 {
     #region Constructor and DI

@@ -6,6 +6,7 @@ namespace ToSic.Eav.Apps.Sys.PresetLoaders;
 /// <summary>
 /// Minimal state loader - can only load parts that an app can load, so content-types and entities
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppContentTypesLoader: IServiceWithSetup<AppFileSystemLoaderOptions>
 {
     /// <summary>

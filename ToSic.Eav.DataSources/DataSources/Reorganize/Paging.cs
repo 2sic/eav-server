@@ -20,7 +20,7 @@ namespace ToSic.Eav.DataSources;
     In = [InStreamDefaultRequired],
     ConfigurationType = "|Config ToSic.Eav.DataSources.Paging",
     HelpLink = "https://go.2sxc.org/DsPaging")]
-public sealed class Paging: CustomDataSourceAdvanced
+public sealed class Paging: DataSourceBase
 {
     #region Configuration-properties
 

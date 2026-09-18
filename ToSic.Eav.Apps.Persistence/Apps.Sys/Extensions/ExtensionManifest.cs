@@ -9,6 +9,7 @@ namespace ToSic.Eav.Apps.Sys.Extensions;
 /// <remarks>
 /// Stable contract for extension.json files. Pure data – helper logic lives in ExtensionManifestService.
 /// </remarks>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record ExtensionManifest
 {
     private static readonly JsonElement JsonNullElement = JsonDocument.Parse("null").RootElement.Clone();

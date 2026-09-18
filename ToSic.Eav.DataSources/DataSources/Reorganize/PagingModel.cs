@@ -12,7 +12,7 @@ namespace ToSic.Eav.DataSources;
     Description = "Paging Information",
     Name = "Paging"
 )]
-[PrivateApi] // #ToBeReleasedWithModels
+[WorkInProgressApi("v22")] // #ToBeReleasedWithModels
 public interface IPagingModel : IModelFromEntity<PagingModel>
 {
     /// <summary>

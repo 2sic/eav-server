@@ -6,11 +6,12 @@ namespace ToSic.Eav.Persistence.Efc.Diagnostics;
 // this class helps debug in advanced scenarios
 // hasn't been used since ca. 2017, but keep in case we ever do deep work on the DB again
 // ReSharper disable once UnusedMember.Global
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EfCoreFilteredLoggerProvider : ILoggerProvider
 {
     private static readonly string[] Categories =
     [
-        typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName
+        typeof(Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommandBuilderFactory).FullName!,
     ];
 
     public ILogger CreateLogger(string categoryName)

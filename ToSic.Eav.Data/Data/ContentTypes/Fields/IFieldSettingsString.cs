@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Data.ContentTypes.Fields;
 
+[WorkInProgressApi("WIP v22")]
 public interface IFieldSettingsString : IModelFromEntity
 {
     [PrivateApi]

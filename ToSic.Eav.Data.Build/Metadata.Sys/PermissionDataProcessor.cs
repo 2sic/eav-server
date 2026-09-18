@@ -25,7 +25,7 @@ internal class PermissionDataProcessor(IUser user) : ServiceBase("Sec.Process"),
 }
 
 
-
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityBlockUsers(IUser user): IWork<PermissionCheckPayload, IEntity?>
 {
     public Task<Package<IEntity?>> Handle(WorkContext context, Package<PermissionCheckPayload> package)

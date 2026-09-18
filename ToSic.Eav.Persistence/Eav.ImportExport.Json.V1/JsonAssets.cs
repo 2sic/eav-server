@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class JsonAssets
 {
     public JsonAsset Get(string realPath, string relativeName, string storage)

@@ -6,6 +6,7 @@
 /// <typeparam name="TWork"></typeparam>
 /// <param name="appWorkCtxSvc"></param>
 /// <param name="gen"></param>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkQuick<TWork>(AppWorkContextService appWorkCtxSvc, Generator<TWork, IAppWorkContext> gen)
     : ServiceBase("Wrk.Quick", connect: [])
     where TWork : IServiceWithSetup<IAppWorkContext>

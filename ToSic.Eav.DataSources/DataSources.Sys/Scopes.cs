@@ -58,4 +58,27 @@ public sealed class Scopes : CustomDataSource
                 });
         });
     }
+
+
+    [ToSic.Eav.Data.ContentTypes.ContentType(
+        Name = "Scope",
+        Guid = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
+        Description = "Data Scope",
+        Scope = "System"
+    )]
+    private record ScopeModel : ToSic.Eav.Data.Raw.IRawEntityAutoConvert
+    {
+        public required string NameId { get; init; }
+
+        [ToSic.Eav.Data.ContentTypes.ContentTypeTitle]
+        public required string Name { get; init; }
+
+        public required int TypesTotal { get; init; }
+
+        public required int TypesInherited { get; init; }
+
+        public required int TypesOfApp { get; init; }
+
+    }
+
 }

@@ -2,6 +2,8 @@
 
 namespace ToSic.Sys.HookUp;
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IHookUp
 {
     IHookUpWork<TData> StartWith<TData>(TData data);
@@ -13,10 +15,14 @@ internal class HookUpBase(IServiceProvider serviceProvider): ServiceBase("Hup.Ho
         => new HookUp<TData>(null, data.ToPackage(), serviceProvider);
 }
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IHookUpWork
 {
 }
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IHookUpWork<TData>: IHookUpWork, IHasLog
 {
     internal IServiceProvider ServiceProvider { get; }
@@ -57,6 +63,8 @@ internal class HookUp<TData>(WorkContext? context, Package<TData>  package, ISer
         => Work<TWork, TData>();
 }
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class HookUpExtensions
 {
     public static async Task<IHookUpWork<TOutput>> Work<TData, TOutput>(this IHookUpWork<TData> hookUp, IWork<TData, TOutput> work)

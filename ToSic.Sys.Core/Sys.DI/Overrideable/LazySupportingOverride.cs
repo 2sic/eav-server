@@ -2,6 +2,8 @@
 
 namespace ToSic.Sys.DI;
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazySupportingOverride<T>(IServiceProvider provider) : Lazy<T>(CreateFactory(provider))
     where T : class
 {

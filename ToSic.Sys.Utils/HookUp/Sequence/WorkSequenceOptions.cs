@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Sys.HookUp;
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record WorkSequenceOptions
 {
     public bool Sort { get; init; } = false;

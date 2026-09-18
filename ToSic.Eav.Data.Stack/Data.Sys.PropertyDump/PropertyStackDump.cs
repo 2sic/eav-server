@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Data.Sys.PropertyDump;
 
-public class PropertyStackDump: IPropertyDumper
+internal class PropertyStackDump: IPropertyDumper
 {
     #region Internal Constants for filtering out some keys, seem to be so that debug info hides confusing properties...
 

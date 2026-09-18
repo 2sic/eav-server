@@ -2,6 +2,8 @@
 using ToSic.Eav.Data.Sys.Entities.Sources;
 
 namespace ToSic.Eav.Persistence.File;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class FileSystemLoaderOptions
 {
     public required int AppId { get; init; }

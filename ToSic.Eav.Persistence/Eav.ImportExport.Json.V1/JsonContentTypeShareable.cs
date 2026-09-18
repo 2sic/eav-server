@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonContentTypeShareable
 {
     [JsonIgnore(Condition = WhenWritingDefault)] public bool AlwaysShare { get; init; }

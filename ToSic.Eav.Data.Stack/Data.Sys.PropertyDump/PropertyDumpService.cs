@@ -1,7 +1,8 @@
 ﻿using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys.PropertyDump;
-public class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceBase("Eav.DpmSvc"), IPropertyDumpService
+
+internal class PropertyDumpService(IEnumerable<IPropertyDumper> dumpers): ServiceBase("Eav.DpmSvc"), IPropertyDumpService
 {
     /// <summary>
     /// Find the best dumper and return with ranking.

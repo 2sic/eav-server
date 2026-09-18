@@ -2,7 +2,10 @@
 
 namespace ToSic.Sys.HookUp;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record DoNamedInput<TData, TResult>(string Action, TData Input, TResult Fallback);
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record DoNamedInput<TData>(string Action, TData Input) : DoNamedInput<TData, TData>(Action, Input, Input);
 
 /// <summary>
@@ -12,6 +15,7 @@ public record DoNamedInput<TData>(string Action, TData Input) : DoNamedInput<TDa
 /// <typeparam name="TData"></typeparam>
 /// <typeparam name="TResult"></typeparam>
 /// <param name="generator"></param>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class RemoteWork<TWork, TData, TResult>(Generator<TWork> generator) : ServiceBase("Sec.Process")
     where TWork: class, IWork<TData, TResult>
 {

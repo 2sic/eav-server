@@ -3,6 +3,8 @@ using System.Text.RegularExpressions;
 using ToSic.Sys.Utils.Culture;
 
 namespace ToSic.Eav.LookUp.Sources;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LookUpHelpers
 {
     #region Sub-Token analysis and splitting

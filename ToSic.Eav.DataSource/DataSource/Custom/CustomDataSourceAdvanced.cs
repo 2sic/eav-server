@@ -14,6 +14,7 @@ namespace ToSic.Eav.DataSource;
 /// Read about it in the docs.
 /// </remarks>
 [PrivateApi("Made private in v22, before was public. As of now, doesn't really serve a purpose any more...")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public abstract class CustomDataSourceAdvanced(CustomDataSourceAdvanced.Dependencies services, string? logName = null, object[]? connect = null)
     : DataSourceBase(services, logName ?? $"{DataSourceConstantsInternal.LogPrefix}.Extern", connect: connect)
 {

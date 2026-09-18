@@ -2,6 +2,8 @@
 using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Persistence.Efc.Sys;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class EfcExtensions
 {
     public static IQueryable<TEntity> AsNoTrackingOptional<TEntity>(

@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Models.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ModelStreamNames
 {
     #region Stream Names WIP

@@ -1,8 +1,6 @@
-﻿
+﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport.Json.V1;
-
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonEntity: IJsonWithAssets
 {
     /// <remarks>V 1.0</remarks>
@@ -50,6 +48,7 @@ public record JsonEntity: IJsonWithAssets
 /// <summary>
 /// WIP
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonRelationship
 {
     /// <summary>

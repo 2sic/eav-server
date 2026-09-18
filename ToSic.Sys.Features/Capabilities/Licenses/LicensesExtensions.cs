@@ -2,6 +2,8 @@
 
 namespace ToSic.Sys.Capabilities.Licenses;
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class LicensesExtensions
 {
     /// <summary>

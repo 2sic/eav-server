@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonContentType: IJsonWithAssets
 {
     /// <remarks>V 1.0</remarks>
@@ -38,6 +39,7 @@ public record JsonContentType: IJsonWithAssets
     public ICollection<JsonAsset>? Assets { get; init; }
 }
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonContentTypeWithTitleWip: JsonContentType
 {
     /// <summary>

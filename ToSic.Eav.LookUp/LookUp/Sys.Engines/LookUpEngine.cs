@@ -9,6 +9,7 @@ namespace ToSic.Eav.LookUp.Sys.Engines;
 /// Read more about this in [](xref:Abyss.Parts.LookUp.Index)
 /// </summary>
 [PrivateApi("hide implementation")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class LookUpEngine : HelperBase, ILookUpEngine
 {
     #region Debug

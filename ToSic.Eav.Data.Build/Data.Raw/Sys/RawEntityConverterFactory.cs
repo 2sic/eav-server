@@ -3,6 +3,7 @@
 /// <summary>
 /// This is the basic implementation of a converter, using a simple factory function
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class RawEntityConverterFactory<TData>(Func<TData, RawConvertOptions, IRawEntity> factory)
     : IRawEntityConverter
     where TData : class
