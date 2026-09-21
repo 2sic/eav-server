@@ -17,7 +17,7 @@ public partial class EavDbContext(
     IEavDbContextConfigurator dbContextConfigurator)
     : Microsoft.EntityFrameworkCore.DbContext(options)
 {
-    private ILog Log { get; } = new Log("EF.DbCtx");
+    private ILog Log { get; } = LogFactory.Create("EF.DbCtx");
 
     //public bool DebugMode = false;
 
