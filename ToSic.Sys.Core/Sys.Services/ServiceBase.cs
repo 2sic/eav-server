@@ -39,7 +39,7 @@ public abstract class ServiceBase(string logName) : IHasLog
     [IgnoreDataMember]
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public ILog Log { get; } = new Log(logName);
+    public ILog Log { get; } = LogFactory.Create(logName);
 
     /// <summary>
     /// Connect Log of all dependencies listed in the `services` array.

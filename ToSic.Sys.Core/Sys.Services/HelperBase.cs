@@ -20,5 +20,5 @@ public abstract class HelperBase(ILog? parentLog, string logName) : IHasLog
     [JsonIgnore]        // Prevent System.Text.Json from serializing this property
     [IgnoreDataMember]  // Prevent Newtonsoft Json from serializing this property, without depending on the Newtonsoft.Json package
     [PrivateApi]
-    public ILog Log { get; } = new Log(logName, parentLog);
+    public ILog Log { get; } = LogFactory.Create(logName, parentLog);
 }
