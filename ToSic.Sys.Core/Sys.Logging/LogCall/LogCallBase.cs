@@ -53,10 +53,7 @@ public class LogCallBase : ILogCall
 
     internal void Complete(string? message, object? result, bool hasResult)
     {
-        // Existing client code can complete a call more than once; MEL should publish it only once.
-        if (Interlocked.Exchange(ref _completed, 1) != 0)
-            return;
-
+        // Keep Legacy first, because its repeated completion behavior is part of the existing diagnostics.
         if (Log is Log log)
         {
             log.WrapDepth--;
@@ -71,6 +68,10 @@ public class LogCallBase : ILogCall
                 Entry.Elapsed = Timer.Elapsed;
             return;
         }
+
+        // Existing client code can complete a call more than once; MEL should publish it only once.
+        if (Interlocked.Exchange(ref _completed, 1) != 0)
+            return;
 
         if (Timer.IsRunning)
             Timer.Stop();
