@@ -21,7 +21,8 @@ public class HttpRequestLoggingScoped(ILogStore logStore) : ServiceWithSetup<Htt
 
         base.Setup(options);
 
-        RootLog = new Log(options.RootName);
+        // This is the root for the complete request, so it must use the application-selected implementation.
+        RootLog = LogFactory.Create(options.RootName);
         
         StoreEntry = logStore.Add(MyOptions.Segment, RootLog);
     }

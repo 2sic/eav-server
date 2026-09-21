@@ -14,7 +14,7 @@ public class AppInitializedChecker(AppWorkQuick<AppInitializer> appInitGenerator
     /// <inheritdoc />
     public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppReader appReader, string? newAppName, CodeRefTrail codeRefTrail, ILog parentLog)
     {
-        var log = new Log("Eav.AppChk", parentLog);
+        var log = LogFactory.Create("Eav.AppChk", parentLog);
         codeRefTrail.WithHere();
 
         var l = log.Fn<bool>($"..., {newAppName}");

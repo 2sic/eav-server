@@ -10,7 +10,7 @@ public class BootLog
 
     private static ILog Start()
     {
-        var log = new Log("Sys.BootLog");
+        var log = LogFactory.Create("Sys.BootLog");
         log.A("Starting Boot Log");
         return log;
     }
