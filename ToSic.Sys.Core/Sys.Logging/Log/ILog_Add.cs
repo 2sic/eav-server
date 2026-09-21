@@ -29,7 +29,7 @@ public static partial class ILog_Add
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default,
         EntryOptions? options = default
-    ) => log.AddInternal(message, CodeRef.Create(cPath!, cName!, cLine), options);
+    ) => log.AddInternal(message, CodeRef.Create(cPath!, cName!, cLine), options, LogEventKind.Trace);
 
 
     /// <summary>
@@ -52,7 +52,7 @@ public static partial class ILog_Add
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default,
         EntryOptions? options = default
-    ) { if (enabled) log.AddInternal(message, CodeRef.Create(cPath!, cName!, cLine), options); }
+    ) { if (enabled) log.AddInternal(message, CodeRef.Create(cPath!, cName!, cLine), options, LogEventKind.Trace); }
 
     /// <summary>
     /// Add a **warning** to the log.
@@ -69,7 +69,7 @@ public static partial class ILog_Add
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.AddInternal(LogConstants.WarningPrefix + message, CodeRef.Create(cPath!, cName!, cLine));
+    ) => log.AddInternal(message, CodeRef.Create(cPath!, cName!, cLine), kind: LogEventKind.Warning);
 
     /// <summary>
     /// Add an **error** to the log.
@@ -86,7 +86,7 @@ public static partial class ILog_Add
         [CallerFilePath] string? cPath = default,
         [CallerMemberName] string? cName = default,
         [CallerLineNumber] int cLine = default
-    ) => log.AddInternal(LogConstants.ErrorPrefix + message, CodeRef.Create(cPath!, cName!, cLine));
+    ) => log.AddInternal(message, CodeRef.Create(cPath!, cName!, cLine), kind: LogEventKind.Error);
 
 
     [PrivateApi]

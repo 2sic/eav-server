@@ -18,10 +18,23 @@ internal static partial class LogExtensionsInternal
     /// Add a message if we're actually logging something, otherwise skip.
     /// Return the entry as it may be used again - if we actually had a real logger.
     /// </summary>
-    internal static Entry? AddInternal(this ILog? log, string? message, CodeRef? code, EntryOptions? options = default)
-        => log.GetRealLog() is not ILogInternal realLog
+    internal static Entry? AddInternal(this ILog? log, string? message, CodeRef? code, EntryOptions? options = default, LogEventKind kind = LogEventKind.Trace)
+    {
+        var realLog = log.GetRealLog();
+        if (realLog is ILogEventSink sink)
+        {
+            sink.Add(message, code, options, kind);
+            return null;
+        }
+        return realLog is not ILogInternal legacyLog
             ? null
-            : realLog.CreateAndAdd(message, code, options);
+            : legacyLog.CreateAndAdd(kind switch
+            {
+                LogEventKind.Warning => LogConstants.WarningPrefix + message,
+                LogEventKind.Error => LogConstants.ErrorPrefix + message,
+                _ => message
+            }, code, options);
+    }
 
     internal static Entry AddInternalReuse(this ILog? log, string message, CodeRef? code) 
         => log.AddInternal(message, code)

@@ -43,7 +43,13 @@ partial class ILog_Add
         [CallerLineNumber] int cLine = default
     ) where TException : Exception
     {
+        var code = CodeRef.Create(cPath!, cName!, cLine);
+        if (log.GetRealLog() is ILogEventSink sink)
+        {
+            sink.Add(message, code, default, LogEventKind.Error, exception);
+            return exception;
+        }
         log.E(message);
-        return log.ExceptionInternal(exception, CodeRef.Create(cPath!, cName!, cLine));
+        return log.ExceptionInternal(exception, code);
     }
 }
