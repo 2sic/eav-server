@@ -66,7 +66,7 @@ public class MelLogCallTests
     }
 
     [Fact]
-    public void LegacyRepeatedCompletionKeepsDepthAndAddsOneClose()
+    public void LegacyRepeatedCompletionPreservesExistingBehavior()
     {
         var log = new Log("Legacy");
         var call = log.Fn()!;
@@ -74,8 +74,8 @@ public class MelLogCallTests
         call.Done("first");
         call.Done("second");
 
-        Equal(0, log.WrapDepth);
-        Single(log.Entries.Where(entry => entry.WrapClose));
+        Equal(-1, log.WrapDepth);
+        Equal(2, log.Entries.Count(entry => entry.WrapClose));
     }
 
     private static (MelLogTests.RecordingLoggerFactory Recording, ILog Log) NewLog()
