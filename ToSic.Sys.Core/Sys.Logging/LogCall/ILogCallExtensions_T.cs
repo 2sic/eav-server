@@ -23,7 +23,7 @@ partial class ILogCallExtensions
     [return: NotNullIfNotNull(nameof(result))]
     public static T Return<T>(this ILogCall<T>? logCall, T result, string? message)
     {
-        logCall?.DoneInternal(message);
+        logCall?.DoneInternal(message, result, true);
         return result;
     }
 

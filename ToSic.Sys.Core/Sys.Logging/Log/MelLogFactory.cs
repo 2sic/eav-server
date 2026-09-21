@@ -21,6 +21,7 @@ public sealed class MelLogFactory(ILoggerFactory loggerFactory) : ILogFactory
 internal enum LogEventKind
 {
     Trace,
+    Debug,
     Warning,
     Error
 }
@@ -30,7 +31,12 @@ internal interface ILogEventSink
     void Add(string? message, CodeRef? code, EntryOptions? options, LogEventKind kind, Exception? exception = default);
 }
 
-internal sealed class MelLog(ILogger logger, ILogFactory factory, string category, string logName) : ILog, ILogFactoryOwner, ILogEventSink
+internal interface ILogCallCompletionSink
+{
+    void Complete(string operation, string? completionMessage, object? result, bool hasResult, CodeRef code, long durationMilliseconds);
+}
+
+internal sealed class MelLog(ILogger logger, ILogFactory factory, string category, string logName) : ILog, ILogFactoryOwner, ILogEventSink, ILogCallCompletionSink
 {
     public ILogFactory Factory { get; } = factory;
 
@@ -40,6 +46,7 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
     {
         var level = kind switch
         {
+            LogEventKind.Debug => LogLevel.Debug,
             LogEventKind.Warning => LogLevel.Warning,
             LogEventKind.Error => LogLevel.Error,
             _ => LogLevel.Trace
@@ -63,5 +70,31 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             new("{OriginalFormat}", "{Message}")
         ];
         logger.Log(level, default, state, exception, static (values, _) => values[0].Value?.ToString() ?? "");
+    }
+
+    public void Complete(string operation, string? completionMessage, object? result, bool hasResult, CodeRef code, long durationMilliseconds)
+    {
+        if (!logger.IsEnabled(LogLevel.Debug))
+            return;
+
+        var activity = Activity.Current;
+        var resultText = hasResult ? result?.ToString() ?? "null" : null;
+        IReadOnlyList<KeyValuePair<string, object?>> state =
+        [
+            new("Message", string.IsNullOrWhiteSpace(completionMessage) ? operation : $"{operation} {completionMessage}"),
+            new("LogName", logName),
+            new("Operation", operation),
+            new("CompletionMessage", completionMessage),
+            new("Result", resultText),
+            new("HasResult", hasResult),
+            new("DurationMilliseconds", durationMilliseconds),
+            new("SourceFilePath", code.Path),
+            new("SourceMemberName", code.Name),
+            new("SourceLineNumber", code.Line),
+            new("TraceId", activity?.TraceId.ToString()),
+            new("SpanId", activity?.SpanId.ToString()),
+            new("{OriginalFormat}", "{Message}")
+        ];
+        logger.Log(LogLevel.Debug, default, state, null, static (values, _) => values[0].Value?.ToString() ?? "");
     }
 }

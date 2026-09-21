@@ -7,6 +7,11 @@ namespace ToSic.Sys.Logging;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LogCallBase : ILogCall
 {
+    private readonly ILogCallCompletionSink? _completionSink;
+    private readonly string? _operation;
+    private readonly CodeRef _code;
+    private int _completed;
+
     /// <summary>
     /// Keep constructor internal
     /// </summary>
@@ -23,17 +28,53 @@ public class LogCallBase : ILogCall
             ? Stopwatch.StartNew()
             : new();
 
-        // Keep the log, but quit if it's not valid
-        if (log.GetRealLog() is not Log typedLog)
-            return;
-        Log = typedLog;
-
         var openingMessage = $"{code.Name}{(isProperty ? "" : $"({parameters})")}";
-        if (!IsNullOrWhiteSpace(message)) 
+        if (!IsNullOrWhiteSpace(message))
             openingMessage += (IsNullOrWhiteSpace(openingMessage) ? "" : " ") + $"{message}";
-        var entry = Entry = Log.AddInternalReuse(openingMessage, code);
-        entry.WrapOpen = true;
-        typedLog.WrapDepth++;
+
+        // Keep the log, but quit if it's not valid
+        switch (log.GetRealLog())
+        {
+            case Log typedLog:
+                Log = typedLog;
+                var entry = Entry = Log.AddInternalReuse(openingMessage, code);
+                entry.WrapOpen = true;
+                typedLog.WrapDepth++;
+                break;
+            case MelLog melLog:
+                // MEL keeps one completion event instead of recreating the Legacy open/close Entry pair.
+                Log = melLog;
+                _completionSink = melLog;
+                _operation = openingMessage;
+                _code = code;
+                break;
+        }
+    }
+
+    internal void Complete(string? message, object? result, bool hasResult)
+    {
+        // Existing client code can complete a call more than once; MEL should publish it only once.
+        if (Interlocked.Exchange(ref _completed, 1) != 0)
+            return;
+
+        if (Log is Log log)
+        {
+            log.WrapDepth--;
+            Entry?.AppendResult(message);
+            var final = log.AddInternalReuse(null!, null);
+            final.WrapClose = true;
+            final.AppendResult(message);
+            if (!Timer.IsRunning)
+                return;
+            Timer.Stop();
+            if (Entry != null)
+                Entry.Elapsed = Timer.Elapsed;
+            return;
+        }
+
+        if (Timer.IsRunning)
+            Timer.Stop();
+        _completionSink?.Complete(_operation!, message, result, hasResult, _code, Timer.ElapsedMilliseconds);
     }
 
     public ILog? Log { get; }
