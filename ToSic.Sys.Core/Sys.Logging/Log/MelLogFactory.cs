@@ -36,7 +36,12 @@ internal interface ILogCallCompletionSink
     void Complete(string operation, string? completionMessage, object? result, bool hasResult, CodeRef code, long durationMilliseconds);
 }
 
-internal sealed class MelLog(ILogger logger, ILogFactory factory, string category, string logName) : ILog, ILogFactoryOwner, ILogEventSink, ILogCallCompletionSink
+internal interface ILogSpecsSink
+{
+    void AddSpecs(string segment, IReadOnlyDictionary<string, string> specs);
+}
+
+internal sealed class MelLog(ILogger logger, ILogFactory factory, string category, string logName) : ILog, ILogFactoryOwner, ILogEventSink, ILogCallCompletionSink, ILogSpecsSink
 {
     public ILogFactory Factory { get; } = factory;
 
@@ -96,5 +101,24 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             new("{OriginalFormat}", "{Message}")
         ];
         logger.Log(LogLevel.Debug, default, state, null, static (values, _) => values[0].Value?.ToString() ?? "");
+    }
+
+    public void AddSpecs(string segment, IReadOnlyDictionary<string, string> specs)
+    {
+        if (!logger.IsEnabled(LogLevel.Trace))
+            return;
+
+        var activity = Activity.Current;
+        var state = new List<KeyValuePair<string, object?>>
+        {
+            new("Message", "Log specs"),
+            new("LogName", logName),
+            new("Segment", segment),
+            new("TraceId", activity?.TraceId.ToString()),
+            new("SpanId", activity?.SpanId.ToString())
+        };
+        state.AddRange(specs.Select(pair => new KeyValuePair<string, object?>(pair.Key, pair.Value)));
+        state.Add(new("{OriginalFormat}", "{Message}"));
+        logger.Log(LogLevel.Trace, default, (IReadOnlyList<KeyValuePair<string, object?>>)state, null, static (values, _) => values[0].Value?.ToString() ?? "");
     }
 }
