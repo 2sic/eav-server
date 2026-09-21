@@ -8,6 +8,12 @@ partial class LogExtensionsInternal
     internal static TException? ExceptionInternal<TException>(this ILog? log, TException? ex, CodeRef codeRef)
         where TException : Exception
     {
+        if (log.GetRealLog() is ILogEventSink sink)
+        {
+            sink.Add(ex?.Message, codeRef, default, LogEventKind.Error, ex);
+            return ex;
+        }
+
         // Null-check
         if (log.GetRealLog() is not Log realLog)
             return ex;
