@@ -22,7 +22,7 @@ public abstract record HelperRecordBase : IHasLog
     [PrivateApi]
     protected HelperRecordBase(ILog? parentLog, string logName)
     {
-        Log = new Log(logName, parentLog);
+        Log = LogFactory.Create(logName, parentLog);
     }
 
     /// <inheritdoc />
