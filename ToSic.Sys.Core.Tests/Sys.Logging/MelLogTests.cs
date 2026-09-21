@@ -111,7 +111,7 @@ public class MelLogTests
         return (loggerFactory, new(loggerFactory));
     }
 
-    private sealed class RecordingLoggerFactory(bool traceEnabled) : ILoggerFactory
+    internal sealed class RecordingLoggerFactory(bool traceEnabled) : ILoggerFactory
     {
         public List<RecordedEvent> Entries { get; } = [];
 
@@ -132,7 +132,7 @@ public class MelLogTests
             => entries.Add(new(category, logLevel, (IReadOnlyList<KeyValuePair<string, object?>>)state!, exception));
     }
 
-    private sealed record RecordedEvent(string Category, LogLevel Level, IReadOnlyList<KeyValuePair<string, object?>> State, Exception? Exception)
+    internal sealed record RecordedEvent(string Category, LogLevel Level, IReadOnlyList<KeyValuePair<string, object?>> State, Exception? Exception)
     {
         public object? Value(string key) => State.Single(pair => pair.Key == key).Value;
     }

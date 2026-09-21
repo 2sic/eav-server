@@ -40,8 +40,14 @@ public static class LogCallBaseExtensions
 
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    internal static void DoneInternal(this ILogCall? logCall, string? message)
+    internal static void DoneInternal(this ILogCall? logCall, string? message, object? result = default, bool hasResult = false)
     {
+        if (logCall is LogCallBase logCallBase)
+        {
+            logCallBase.Complete(message, result, hasResult);
+            return;
+        }
+
         if (logCall?.Log is not Log log)
             return;
 
