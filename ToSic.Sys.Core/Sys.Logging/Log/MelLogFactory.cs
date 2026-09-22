@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 
 namespace ToSic.Sys.Logging;
@@ -117,6 +118,7 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             new("TraceId", activity?.TraceId.ToString()),
             new("SpanId", activity?.SpanId.ToString())
         };
+        state.Add(new("Specs", specs.ToImmutableDictionary()));
         state.AddRange(specs.Select(pair => new KeyValuePair<string, object?>(pair.Key, pair.Value)));
         state.Add(new("{OriginalFormat}", "{Message}"));
         logger.Log(LogLevel.Trace, default, (IReadOnlyList<KeyValuePair<string, object?>>)state, null, static (values, _) => values[0].Value?.ToString() ?? "");
