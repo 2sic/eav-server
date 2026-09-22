@@ -57,6 +57,51 @@ public class MelLogStoreTests
         => Null(new MelLogStore().Add("segment", new Log("legacy")));
 
     [Fact]
+    public void Add_AssignsSegmentToSubsequentEvents()
+    {
+        var (recording, log) = NewLog();
+        new MelLogStore().Add("webapi", log);
+
+        log.A("after admission");
+
+        Equal("webapi", Single(recording.Entries).Value("Segment"));
+    }
+
+    [Fact]
+    public void MelInsights_SegmentEventsAreVisibleAndFlushable()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSysCoreMelInsightsLogging();
+        using var provider = services.BuildServiceProvider();
+        var log = provider.GetRequiredService<ILogFactory>().Create("App.Log", null, new CodeRef());
+        provider.GetRequiredService<ILogStore>().Add("webapi", log);
+        log.A("ordinary");
+        var reader = provider.GetRequiredService<IInsightsLogSnapshotReader>();
+
+        Single(reader.Snapshot().Groups.SelectMany(group => group.Events).Where(entry => entry.Message == "ordinary"));
+        reader.FlushSegment("webapi");
+        Empty(reader.Snapshot().Groups.SelectMany(group => group.Events));
+    }
+
+    [Fact]
+    public void CoreOnlyMel_RemovesInsightsButKeepsOtherProvider()
+    {
+        var other = new OtherProvider();
+        var services = new ServiceCollection();
+        services.AddLogging(logging => logging.AddProvider(other));
+        services.AddSysCoreMelInsightsLogging().AddSysCoreMelLogging();
+        using var provider = services.BuildServiceProvider();
+
+        IsType<MelLogFactory>(provider.GetRequiredService<ILogFactory>());
+        IsType<MelLogStore>(provider.GetRequiredService<ILogStore>());
+        Null(provider.GetService<IInsightsLogStore>());
+        Null(provider.GetService<IInsightsLogSnapshotReader>());
+        Null(provider.GetService<InsightsLoggerProvider>());
+        Same(other, Single(provider.GetServices<ILoggerProvider>()));
+    }
+
+    [Fact]
     public void Registrations_KeepLegacyDefaultAndSwitchExplicitStacks()
     {
         var legacy = new ServiceCollection().AddSysCoreLogging();
@@ -91,11 +136,19 @@ public class MelLogStoreTests
         IsType<MelLogFactory>(melProvider.GetRequiredService<ILogFactory>());
         IsType<MelLogStore>(melProvider.GetRequiredService<ILogStore>());
         Null(melProvider.GetService<ILogStoreLive>());
+        Null(melProvider.GetService<IInsightsLogStore>());
+        Null(melProvider.GetService<IInsightsLogSnapshotReader>());
     }
 
     private static (MelLogTests.RecordingLoggerFactory Recording, ILog Log) NewLog()
     {
         var recording = new MelLogTests.RecordingLoggerFactory(true);
         return (recording, new MelLogFactory(recording).Create("App.Log", null, new CodeRef()));
+    }
+
+    private sealed class OtherProvider : ILoggerProvider
+    {
+        public ILogger CreateLogger(string categoryName) => Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+        public void Dispose() { }
     }
 }
