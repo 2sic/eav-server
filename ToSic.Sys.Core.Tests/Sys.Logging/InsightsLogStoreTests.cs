@@ -75,6 +75,57 @@ public class InsightsLogStoreTests
         Equal(["two", "three"], store.List().Select(entry => entry.Message));
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Append_EvictsLowestSequencePerGroup_WhenArrivalIsOutOfOrder(bool correlated)
+    {
+        var store = new InsightsLogStore(new() { MaxEventsPerGroup = 2 });
+        var traceId = correlated ? "trace" : null;
+
+        store.Append(NewEvent("two", 2, traceId, "segment"));
+        store.Append(NewEvent("one", 1, traceId, "segment"));
+        store.Append(NewEvent("three", 3, traceId, "segment"));
+
+        Equal([2L, 3L], store.List().Select(entry => entry.Sequence));
+    }
+
+    [Fact]
+    public void Append_EvictsLowestSequenceForTotalCountByteAndGroupLimits_WhenArrivalIsOutOfOrder()
+    {
+        var stores = new[]
+        {
+            new InsightsLogStore(new() { MaxEvents = 4 }),
+            new InsightsLogStore(new() { MaxEstimatedBytes = 1400 }),
+            new InsightsLogStore(new() { MaxGroups = 2 })
+        };
+
+        foreach (var store in stores)
+        {
+            store.Append(NewEvent(new string('b', 100), 2, traceId: "two"));
+            store.Append(NewEvent(new string('d', 100), 4, traceId: "two"));
+            store.Append(NewEvent(new string('c', 100), 3, traceId: "three"));
+            store.Append(NewEvent(new string('a', 100), 1, traceId: "three"));
+            store.Append(NewEvent(new string('e', 100), 5, traceId: "five"));
+
+            Equal([2L, 4L, 5L], store.List().Select(entry => entry.Sequence));
+        }
+    }
+
+    [Fact]
+    public void Append_EvictsLowestSequenceAcrossUnscopedStreams_WhenTotalLimitIsExceeded()
+    {
+        var store = new InsightsLogStore(new() { MaxEvents = 4 });
+
+        store.Append(NewEvent("two", 2, segment: "two"));
+        store.Append(NewEvent("four", 4, segment: "two"));
+        store.Append(NewEvent("three", 3, segment: "three"));
+        store.Append(NewEvent("one", 1, segment: "three"));
+        store.Append(NewEvent("five", 5, traceId: "five"));
+
+        Equal([2L, 3L, 4L, 5L], store.List().Select(entry => entry.Sequence));
+    }
+
     [Fact]
     public void ReadGroup_OrdersEventsAndListsEverySegment()
     {

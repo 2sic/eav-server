@@ -66,6 +66,36 @@ public class InsightsLoggerProviderTests
     }
 
     [Fact]
+    public async Task Provider_RetainsNewestSequence_WhenDelayedFormatterAppendsOutOfOrder()
+    {
+        var store = new InsightsLogStore(new() { MaxEventsPerGroup = 1 });
+        var provider = new InsightsLoggerProvider(store);
+        var logger = provider.CreateLogger("ToSic.App");
+        using var entered = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+
+        var delayed = Task.Run(() => logger.Log(LogLevel.Information, default, State(("TraceId", "trace")), null, (_, _) =>
+        {
+            entered.Set();
+            if (!release.Wait(TimeSpan.FromSeconds(5)))
+                throw new TimeoutException("The delayed formatter was not released.");
+            return "one";
+        }));
+        try
+        {
+            True(entered.Wait(TimeSpan.FromSeconds(5)));
+            logger.Log(LogLevel.Information, default, State(("TraceId", "trace")), null, static (_, _) => "two");
+        }
+        finally
+        {
+            release.Set();
+            await delayed;
+        }
+
+        Equal([2L], store.List().Select(entry => entry.Sequence));
+    }
+
+    [Fact]
     public void Provider_CapturesMetadataSpecsWithoutStandardFieldCollisions()
     {
         var store = new InsightsLogStore();
