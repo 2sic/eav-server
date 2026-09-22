@@ -5,13 +5,13 @@ using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsGlobalTypesLog(LazySvc<ILogStoreLive> logStore)
-    : InsightsProvider(new() { Name = Link, Title = "Global Types Log" }, connect: [logStore])
+internal class InsightsGlobalTypesLog(LazySvc<IInsightsLogSnapshotReader> snapshotReader)
+    : InsightsProvider(new() { Name = Link, Title = "Global Types Log" }, connect: [snapshotReader])
 {
     public static string Link = "GlobalTypesLog";
 
     [field: AllowNull, MaybeNull]
-    private InsightsLogsHelper LogHtml => field ??= new(logStore.Value);
+    private InsightsLogsHelper LogHtml => field ??= new(snapshotReader.Value);
 
     public override string HtmlBody()
     {

@@ -4,11 +4,11 @@ using ToSic.Eav.Sys.Insights.Logs;
 
 namespace ToSic.Eav.Sys.Insights.App;
 
-internal class InsightsAppLoadLog(LazySvc<IAppStateCacheService> appStates, LazySvc<ILogStoreLive> logStore)
-    : InsightsProvider(new() { Name = Link, Title = "App Load Log" }, connect: [appStates, logStore])
+internal class InsightsAppLoadLog(LazySvc<IAppStateCacheService> appStates, LazySvc<IInsightsLogSnapshotReader> snapshotReader)
+    : InsightsProvider(new() { Name = Link, Title = "App Load Log" }, connect: [appStates, snapshotReader])
 {
     [field: AllowNull, MaybeNull]
-    private InsightsLogsHelper LogHtml => field ??= new(logStore.Value);
+    private InsightsLogsHelper LogHtml => field ??= new(snapshotReader.Value);
 
     public static string Link = "AppLoadLog";
 
