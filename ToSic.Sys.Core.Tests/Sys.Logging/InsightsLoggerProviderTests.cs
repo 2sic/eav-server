@@ -1,0 +1,170 @@
+using System.Collections.Immutable;
+using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using ToSic.Sys.Run.Startup;
+
+namespace ToSic.Sys.Logging;
+
+public class InsightsLoggerProviderTests
+{
+    [Fact]
+    public void Provider_CapturesAcceptedEventWithAllDetachedDetails()
+    {
+        var store = new InsightsLogStore();
+        var provider = new InsightsLoggerProvider(store);
+        using var activity = new Activity("test").SetIdFormat(ActivityIdFormat.W3C).Start();
+        var exception = new InvalidOperationException("outer", new ArgumentException("inner"));
+        exception.Data["Code"] = 42;
+
+        provider.CreateLogger("ToSic.App").Log(LogLevel.Error, new(42, "Failure"), State(
+            ("Message", "state message"),
+            ("SourceFilePath", "C:\\full\\source.cs"),
+            ("SourceMemberName", "Run"),
+            ("SourceLineNumber", 7),
+            ("Operation", "App.Run()"),
+            ("Result", "failed"),
+            ("DurationMilliseconds", 12L),
+            ("Segment", "webapi"),
+            ("Custom", "value")), exception, static (_, _) => "rendered message");
+        exception.Data["Code"] = "changed";
+
+        var entry = Single(store.List());
+        Equal(1, entry.Sequence);
+        Equal(InsightsLogLevel.Error, entry.Level);
+        Equal(42, entry.EventId);
+        Equal("Failure", entry.EventName);
+        Equal("ToSic.App", entry.Category);
+        Equal("rendered message", entry.Message);
+        Equal("value", entry.Properties["Custom"]);
+        Equal("C:\\full\\source.cs", entry.SourceFilePath);
+        Equal("Run", entry.SourceMemberName);
+        Equal(7, entry.SourceLineNumber);
+        Equal("App.Run()", entry.Operation);
+        Equal("failed", entry.Result);
+        Equal(12, entry.DurationMilliseconds);
+        Equal("webapi", entry.Segment);
+        Equal(activity.TraceId.ToString(), entry.TraceId);
+        Equal(activity.SpanId.ToString(), entry.SpanId);
+        Equal("42", entry.Exception!.Data["Code"]);
+        Equal(exception.ToString(), entry.Exception.Details);
+        Equal(typeof(ArgumentException).FullName, entry.Exception.InnerException!.Type);
+    }
+
+    [Fact]
+    public void Provider_RejectsOtherCategories_AndSequencesAcceptedEventsOnce()
+    {
+        var store = new InsightsLogStore();
+        var provider = new InsightsLoggerProvider(store);
+
+        provider.CreateLogger("Microsoft.Hosting").LogTrace("ignored");
+        provider.CreateLogger("2sxc.Module").LogWarning("first");
+        provider.CreateLogger("ToSic.App").LogInformation("second");
+
+        Equal([1L, 2L], store.List().Select(entry => entry.Sequence));
+        Equal([InsightsLogLevel.Warning, InsightsLogLevel.Information], store.List().Select(entry => entry.Level));
+    }
+
+    [Fact]
+    public void Provider_CapturesMetadataSpecsWithoutStandardFieldCollisions()
+    {
+        var store = new InsightsLogStore();
+        var insights = new InsightsLoggerProvider(store);
+        using var factory = LoggerFactory.Create(builder =>
+        {
+            builder.SetMinimumLevel(LogLevel.Trace);
+            builder.AddProvider(insights);
+        });
+        var log = new MelLogFactory(factory).Create("App.Log", null, new CodeRef());
+        var entry = new MelLogStore().Add("webapi", log)!;
+        const string url = "https://example.test/path?a=one&b=two%20words";
+        using var activity = new Activity("test").SetIdFormat(ActivityIdFormat.W3C).Start();
+
+        entry.AddSpec("Message", "spec message");
+        entry.AddSpec("Specs", "nested collision");
+        entry.AddSpec("Url", url);
+
+        var metadata = store.List().Last();
+        Equal("Log specs", metadata.Message);
+        Equal("Log specs", metadata.Properties["Message"]);
+        Equal("spec message", metadata.Specs["Message"]);
+        Equal("nested collision", metadata.Specs["Specs"]);
+        Equal(url, metadata.Specs["Url"]);
+        Equal("webapi", metadata.Segment);
+        Equal(activity.TraceId.ToString(), metadata.TraceId);
+        Equal(3, store.ReadGroup(activity.TraceId.ToString()).Length);
+    }
+
+    [Fact]
+    public void Provider_IsolatesStoreFailures()
+    {
+        var provider = new InsightsLoggerProvider(new ThrowingStore());
+
+        var exception = Record.Exception(() => provider.CreateLogger("ToSic.App").LogInformation("safe"));
+
+        Null(exception);
+    }
+
+    [Fact]
+    public void Registration_UsesSameProviderAndKeepsTraceLocal()
+    {
+        var other = new RecordingProvider();
+        var services = new ServiceCollection();
+        services.AddLogging(logging =>
+        {
+            logging.SetMinimumLevel(LogLevel.Warning);
+            logging.AddSysCoreInsightsLogger();
+            logging.AddSysCoreInsightsLogger();
+            logging.AddProvider(other);
+        });
+        using var servicesProvider = services.BuildServiceProvider();
+        var insights = servicesProvider.GetRequiredService<InsightsLoggerProvider>();
+        Same(insights, Single(servicesProvider.GetServices<ILoggerProvider>().Where(provider => provider is InsightsLoggerProvider)));
+        var logger = servicesProvider.GetRequiredService<ILoggerFactory>().CreateLogger("ToSic.App");
+
+        logger.LogTrace("trace");
+        logger.LogWarning("warning");
+
+        Equal([InsightsLogLevel.Trace, InsightsLogLevel.Warning], servicesProvider.GetRequiredService<IInsightsLogStore>().List().Select(entry => entry.Level));
+        Single(other.Entries);
+        Equal(LogLevel.Warning, Single(other.Entries).Level);
+    }
+
+    private static IReadOnlyList<KeyValuePair<string, object?>> State(params (string Key, object? Value)[] values)
+        => values.Select(value => new KeyValuePair<string, object?>(value.Key, value.Value)).ToList();
+
+    private sealed class ThrowingStore : IInsightsLogStore
+    {
+        public InsightsAppendResult Append(InsightsEvent entry) => throw new InvalidOperationException();
+        public void Pause() { }
+        public void Resume() { }
+        public void FlushGroup(string traceId) { }
+        public void FlushSegment(string? segment) { }
+        public void Flush() { }
+        public InsightsLogStoreSnapshot Snapshot() => throw new NotImplementedException();
+        public ImmutableArray<InsightsEvent> ReadGroup(string traceId) => [];
+        public ImmutableArray<InsightsEvent> List(string? segment = null) => [];
+        public ImmutableArray<InsightsGroupSummary> ListGroups() => [];
+    }
+
+    private sealed class RecordingProvider : ILoggerProvider
+    {
+        public List<(LogLevel Level, string Message)> Entries { get; } = [];
+        public ILogger CreateLogger(string categoryName) => new RecordingLogger(Entries);
+        public void Dispose() { }
+    }
+
+    private sealed class RecordingLogger(List<(LogLevel Level, string Message)> entries) : ILogger
+    {
+        public IDisposable BeginScope<TState>(TState state) where TState : notnull => EmptyScope.Instance;
+        public bool IsEnabled(LogLevel logLevel) => true;
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+            => entries.Add((logLevel, formatter(state, exception)));
+    }
+
+    private sealed class EmptyScope : IDisposable
+    {
+        public static EmptyScope Instance { get; } = new();
+        public void Dispose() { }
+    }
+}
