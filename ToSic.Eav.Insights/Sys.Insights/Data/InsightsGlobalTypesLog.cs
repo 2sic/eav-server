@@ -10,16 +10,14 @@ internal class InsightsGlobalTypesLog(LazySvc<IInsightsLogSnapshotReader> snapsh
 {
     public static string Link = "GlobalTypesLog";
 
-    [field: AllowNull, MaybeNull]
-    private InsightsLogsHelper LogHtml => field ??= new(snapshotReader.Value);
-
     public override string HtmlBody()
     {
-        var msg = InsightsHtmlParts.PageStyles() + LogHtml.LogHeader(Link, false);
+        var logHtml = new InsightsLogsHelper(snapshotReader.Value.Snapshot());
+        var msg = InsightsHtmlParts.PageStyles() + logHtml.LogHeader(Link, false);
         var log = AppStateInFolderGlobalLog.LoadLog;
         return msg + (log == null
             ? P("log is null").ToString()
-            : LogHtml.DumpTree("Log for Global Types loading", log));
+            : logHtml.DumpTree("Log for Global Types loading", log));
     }
 
 }

@@ -2,14 +2,13 @@
 using ToSic.Eav.Apps.Assets.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Blade;
-using ToSic.Sys.Memory;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Logs;
 
-internal class InsightsLogsHelper(IInsightsLogSnapshotReader logReader)
+internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
 {
     private InsightsHtmlBase Linker { get; } = new();
 
@@ -18,7 +17,7 @@ internal class InsightsLogsHelper(IInsightsLogSnapshotReader logReader)
         var msg = "";
         try
         {
-            var segments = logReader.ListGroups()
+            var segments = snapshot.Groups
                 .SelectMany(group => group.Segments)
                 .Where(segment => segment != null)
                 .GroupBy(segment => segment!, StringComparer.InvariantCultureIgnoreCase)
@@ -65,6 +64,13 @@ internal class InsightsLogsHelper(IInsightsLogSnapshotReader logReader)
             ["Z Timespan B-First"] = group.Events.FirstOrDefault()?.TimestampUtc.Dump() ?? "unknown",
             ["Z Timespan C-Last"] = group.Events.LastOrDefault()?.TimestampUtc.Dump() ?? "unknown"
         };
+        if (group.Events.Length > 0)
+        {
+            var first = group.Events[0].TimestampUtc;
+            var last = group.Events[group.Events.Length - 1].TimestampUtc;
+            specsCopy["Z Timespan D-Duration SL"] = (last - group.TimestampUtc).ToString();
+            specsCopy["Z Timespan D-Duration FL"] = (last - first).ToString();
+        }
 
         specList = specsCopy
             .OrderBy(s => s.Key)
@@ -80,12 +86,12 @@ internal class InsightsLogsHelper(IInsightsLogSnapshotReader logReader)
             +Div("back to " + Linker.LinkTo("2sxc insights home", InsightsHelp.Link))
             + H1($"2sxc Insights: Log {key}")
             + P("Status: ",
-                Strong(logReader.Snapshot().IsPaused ? "paused" : "collecting"),
+                Strong(snapshot.IsPaused ? "paused" : "collecting"),
                 ", toggle: ",
                 Linker.LinkTo(HtmlEncode("▶"), InsightsPauseLogs.Link, more: "toggle=false"),
                 " | ",
                 Linker.LinkTo(HtmlEncode("⏸"), InsightsPauseLogs.Link, more: "toggle=true"),
-                $" collecting {logReader.ListGroups().Length} retained log groups"
+                $" collecting {snapshot.Groups.Length} retained log groups"
                 + (showFlush
                     ? " " + Linker.LinkTo("flush " + key, InsightsLogsFlush.Link, key: key).ToString()
                     : "")
@@ -102,7 +108,7 @@ internal class InsightsLogsHelper(IInsightsLogSnapshotReader logReader)
     internal string LogHistoryList(string key, string filter)
     {
         var msg = "";
-        var logItems = logReader.ListGroups()
+        var logItems = snapshot.Groups
             .Where(group => group.Segments.Contains(key, StringComparer.InvariantCultureIgnoreCase));
         if (!logItems.Any())
             return msg + "item not found";
@@ -141,7 +147,6 @@ internal class InsightsLogsHelper(IInsightsLogSnapshotReader logReader)
         var hasPage = HasKey("PageId");
         var hasMod = HasKey("ModuleId");
         var hasUsr = HasKey("UserId");
-        var totalSize = new SizeEstimate();
         var groups = logItems.ToArray();
         msg += P($"Logs Overview: {groups.Length}\n");
         msg += Table().Id("table").Wrap(
@@ -218,7 +223,6 @@ internal class InsightsLogsHelper(IInsightsLogSnapshotReader logReader)
                     log.AppendLine("</ol></li>");
                     depth--;
                 }
-                log.AppendLine($"<li>{SnapshotLine(entry)}</li>");
                 continue;
             }
 
@@ -226,12 +230,15 @@ internal class InsightsLogsHelper(IInsightsLogSnapshotReader logReader)
             log.AppendLine(SnapshotLine(entry));
             if (entry.WrapOpen)
             {
+                if (!entry.WrapOpenWasClosed)
+                    log.AppendLine(HtmlEncode("🪵⚠️ LOGGER WARNING: This logger was never closed"));
                 log.AppendLine("<ol>");
                 depth++;
             }
             else
                 log.AppendLine("</li>");
         }
+        // A live Legacy call may still be open when the snapshot is taken, so close the remaining markup.
         while (depth-- > 0)
             log.AppendLine("</ol></li>");
         log.Append("</ol>end of log");
@@ -249,7 +256,10 @@ internal class InsightsLogsHelper(IInsightsLogSnapshotReader logReader)
             : "";
         var result = entry.Result == null ? "" : $" {ResStart}{HtmlEncode(entry.Result)}{ResEnd}";
         var exception = entry.Exception?.Details == null ? "" : " " + HtmlEncode(entry.Exception.Details);
-        return Span(HoverLabel(HtmlEncode(entry.ShortSource ?? entry.Category), source, "logIds") + " - " + message + result + exception + code)
+        var timing = entry.DurationMilliseconds is { } milliseconds
+            ? $" {entry.TimestampUtc:HH:mm:ss.fff} ⌚ {milliseconds}ms"
+            : $" {entry.TimestampUtc:HH:mm:ss.fff}";
+        return Span(HoverLabel(HtmlEncode(entry.ShortSource ?? entry.Category), source, "logIds") + " - " + message + result + timing + exception + code)
             .Class("log-line")
             .ToString();
     }
