@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Sys.Insights.Logs;
 
-internal class InsightsLogsFlush(LazySvc<ILogStoreLive> logStore)
-    : InsightsProvider(new() { Name = Link, Title = "Flush Logs" }, connect: [logStore])
+internal class InsightsLogsFlush(LazySvc<IInsightsLogSnapshotReader> snapshotReader)
+    : InsightsProvider(new() { Name = Link, Title = "Flush Logs" }, connect: [snapshotReader])
 {
     public static string Link = "LogsFlush";
 
@@ -13,7 +13,7 @@ internal class InsightsLogsFlush(LazySvc<ILogStoreLive> logStore)
     internal string LogsFlush(string key)
     {
         Log.A($"flush log for {key}");
-        logStore.Value.FlushSegment(key);
+        snapshotReader.Value.FlushSegment(key);
         return $"flushed log history for {key}";
     }
 }

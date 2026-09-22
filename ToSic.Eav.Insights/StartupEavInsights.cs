@@ -17,6 +17,7 @@ public static class StartupEavInsights
         // Insights, the most important core backend
         services.TryAddTransient<InsightsControllerReal>();
         services.TryAddTransient<InsightsDataSourceCache>();
+        services.TryAddTransient<IInsightsLogSnapshotReader, LegacyInsightsLogSnapshotReader>();
 
         services.AddTransient<IInsightsProvider, InsightsIsAlive>();
         services.AddTransient<IInsightsProvider, InsightsTypes>();
