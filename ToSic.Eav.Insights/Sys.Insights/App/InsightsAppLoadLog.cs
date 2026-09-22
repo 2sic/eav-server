@@ -4,8 +4,8 @@ using ToSic.Eav.Sys.Insights.Logs;
 
 namespace ToSic.Eav.Sys.Insights.App;
 
-internal class InsightsAppLoadLog(LazySvc<IAppStateCacheService> appStates, LazySvc<IInsightsLogSnapshotReader> snapshotReader)
-    : InsightsProvider(new() { Name = Link, Title = "App Load Log" }, connect: [appStates, snapshotReader])
+internal class InsightsAppLoadLog(LazySvc<IAppStateCacheService> appStates)
+    : InsightsProvider(new() { Name = Link, Title = "App Load Log" }, connect: [appStates])
 {
     public static string Link = "AppLoadLog";
 
@@ -15,7 +15,8 @@ internal class InsightsAppLoadLog(LazySvc<IAppStateCacheService> appStates, Lazy
             return message;
 
         Log.A($"debug app-load {AppId}");
-        var logHtml = new InsightsLogsHelper(snapshotReader.Value.Snapshot());
+        // App-load already owns the exact Legacy log, so do not snapshot the complete retained history here.
+        var logHtml = new InsightsLogsHelper();
         return InsightsHtmlParts.PageStyles()
                + logHtml.DumpTree(
                    $"2sxc load log for app {AppId}",

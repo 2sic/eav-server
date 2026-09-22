@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Collections.Immutable;
 using ToSic.Eav.Apps.Assets.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Blade;
@@ -10,6 +11,8 @@ namespace ToSic.Eav.Sys.Insights.Logs;
 
 internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
 {
+    internal InsightsLogsHelper() : this(new(false, ImmutableArray<InsightsLogGroupSnapshot>.Empty)) { }
+
     private InsightsHtmlBase Linker { get; } = new();
 
     internal string LogHistoryOverview()
