@@ -165,7 +165,7 @@ public sealed class InsightsLogStore : IInsightsLogStore
                 _groups[traceId] = group = new(traceId);
             group.Events.Add(entry);
             while (group.Events.Count > _options.MaxEventsPerGroup)
-                Remove(group.Events, group.Events[0]);
+                Remove(group.Events, Oldest(group.Events));
         }
         else
         {
@@ -174,7 +174,7 @@ public sealed class InsightsLogStore : IInsightsLogStore
                 _unscopedBySegment[segment] = events = [];
             events.Add(entry);
             while (events.Count > _options.MaxEventsPerGroup)
-                Remove(events, events[0]);
+                Remove(events, Oldest(events));
         }
         _eventCount++;
         _estimatedBytes += estimatedBytes;
@@ -191,7 +191,7 @@ public sealed class InsightsLogStore : IInsightsLogStore
 
     private void EvictOldestGroup()
     {
-        var group = _groups.Values.OrderBy(group => group.Events[0].Sequence).First();
+        var group = _groups.Values.OrderBy(group => Oldest(group.Events).Sequence).First();
         _groups.Remove(group.Key);
         _evictedEvents += group.Events.Count;
         Remove(group.Events);
@@ -200,12 +200,12 @@ public sealed class InsightsLogStore : IInsightsLogStore
 
     private void EvictOldestContainer()
     {
-        var oldestGroup = _groups.Values.OrderBy(group => group.Events[0].Sequence).FirstOrDefault();
+        var oldestGroup = _groups.Values.OrderBy(group => Oldest(group.Events).Sequence).FirstOrDefault();
         var oldestUnscoped = _unscopedBySegment
             .Where(pair => pair.Value.Count > 0)
-            .OrderBy(pair => pair.Value[0].Sequence)
+            .OrderBy(pair => Oldest(pair.Value).Sequence)
             .FirstOrDefault();
-        if (oldestGroup != null && (oldestUnscoped.Value == null || oldestGroup.Events[0].Sequence <= oldestUnscoped.Value[0].Sequence))
+        if (oldestGroup != null && (oldestUnscoped.Value == null || Oldest(oldestGroup.Events).Sequence <= Oldest(oldestUnscoped.Value).Sequence))
             EvictOldestGroup();
         else
             EvictOldestUnscoped();
@@ -215,11 +215,11 @@ public sealed class InsightsLogStore : IInsightsLogStore
     {
         var pair = _unscopedBySegment
             .Where(pair => pair.Value.Count > 0)
-            .OrderBy(pair => pair.Value[0].Sequence)
+            .OrderBy(pair => Oldest(pair.Value).Sequence)
             .FirstOrDefault();
         if (pair.Value == null)
             return false;
-        Remove(pair.Value, pair.Value[0]);
+        Remove(pair.Value, Oldest(pair.Value));
         if (pair.Value.Count == 0)
             _unscopedBySegment.Remove(pair.Key);
         return true;
@@ -243,6 +243,9 @@ public sealed class InsightsLogStore : IInsightsLogStore
 
     private IEnumerable<InsightsEvent> AllEvents()
         => _groups.Values.SelectMany(group => group.Events).Concat(_unscopedBySegment.Values.SelectMany(events => events));
+
+    private static InsightsEvent Oldest(IEnumerable<InsightsEvent> events)
+        => events.OrderBy(entry => entry.Sequence).First();
 
     private InsightsLogStoreCounters Counters()
         => new(_appended, _droppedPaused, _droppedOversized, _evictedEvents, _evictedGroups, _eventCount, _estimatedBytes, GroupCount);
