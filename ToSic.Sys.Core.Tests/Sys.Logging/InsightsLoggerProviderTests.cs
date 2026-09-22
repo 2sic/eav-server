@@ -130,6 +130,57 @@ public class InsightsLoggerProviderTests
         Equal(LogLevel.Warning, Single(other.Entries).Level);
     }
 
+    [Fact]
+    public void MelInsightsRegistration_ReplacesLegacyReaderAndKeepsOtherProviderIndependent()
+    {
+        var other = new RecordingProvider();
+        var services = new ServiceCollection();
+        services.AddLogging(logging =>
+        {
+            logging.SetMinimumLevel(LogLevel.Warning);
+            logging.AddProvider(other);
+        });
+        services.AddTransient<IInsightsLogSnapshotReader, LegacyInsightsLogSnapshotReader>();
+        services.AddSysCoreMelInsightsLogging();
+
+        using var serviceProvider = services.BuildServiceProvider();
+        var insights = serviceProvider.GetRequiredService<InsightsLoggerProvider>();
+        Same(insights, Single(serviceProvider.GetServices<ILoggerProvider>().Where(provider => provider is InsightsLoggerProvider)));
+        IsType<MelLogFactory>(serviceProvider.GetRequiredService<ILogFactory>());
+        IsType<MelLogStore>(serviceProvider.GetRequiredService<ILogStore>());
+        Null(serviceProvider.GetService<ILogStoreLive>());
+        IsType<InsightsLogStore>(serviceProvider.GetRequiredService<IInsightsLogStore>());
+        IsType<MelInsightsLogSnapshotReader>(serviceProvider.GetRequiredService<IInsightsLogSnapshotReader>());
+
+        var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("ToSic.App");
+        var reader = serviceProvider.GetRequiredService<IInsightsLogSnapshotReader>();
+        logger.Log(LogLevel.Warning, default, State(("Segment", "unit")), null, static (state, _) => state[0].Value!.ToString()!);
+        reader.Pause();
+        logger.Log(LogLevel.Warning, default, State(("Segment", "unit")), null, static (state, _) => state[0].Value!.ToString()!);
+        reader.Resume();
+        reader.FlushSegment("unit");
+        logger.Log(LogLevel.Warning, default, State(("Segment", "unit")), null, static (state, _) => state[0].Value!.ToString()!);
+
+        Equal(3, other.Entries.Count);
+        Equal(["unit"], reader.Snapshot().Groups.Single().Events.Select(entry => entry.Message));
+    }
+
+    [Fact]
+    public void LegacyRegistration_RemovesMelInsightsStack()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSysCoreMelInsightsLogging().AddSysCoreLegacyLogging();
+
+        using var serviceProvider = services.BuildServiceProvider();
+        IsType<LegacyLogFactory>(serviceProvider.GetRequiredService<ILogFactory>());
+        IsType<LogStoreLive>(serviceProvider.GetRequiredService<ILogStore>());
+        IsType<LogStoreLive>(serviceProvider.GetRequiredService<ILogStoreLive>());
+        IsType<LegacyInsightsLogSnapshotReader>(serviceProvider.GetRequiredService<IInsightsLogSnapshotReader>());
+        Null(serviceProvider.GetService<IInsightsLogStore>());
+        Empty(serviceProvider.GetServices<ILoggerProvider>().Where(provider => provider is InsightsLoggerProvider));
+    }
+
     private static IReadOnlyList<KeyValuePair<string, object?>> State(params (string Key, object? Value)[] values)
         => values.Select(value => new KeyValuePair<string, object?>(value.Key, value.Value)).ToList();
 
