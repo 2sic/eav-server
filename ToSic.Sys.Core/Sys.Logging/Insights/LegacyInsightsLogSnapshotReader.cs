@@ -22,13 +22,6 @@ public sealed class LegacyInsightsLogSnapshotReader(ILogStoreLive store) : IInsi
     public void Pause() => store.Pause = true;
     public void Resume() => store.Pause = false;
 
-    public void FlushGroup(string groupId)
-    {
-        var group = ReadGroup(groupId);
-        if (group?.Segments.FirstOrDefault() is { } segment)
-            store.FlushSegment(segment);
-    }
-
     public void FlushSegment(string segment) => store.FlushSegment(segment);
 
     public void Flush()
@@ -40,7 +33,7 @@ public sealed class LegacyInsightsLogSnapshotReader(ILogStoreLive store) : IInsi
     private static InsightsLogGroupSnapshot Snapshot(string segment, int index, LogStoreEntry entry)
     {
         var specs = (entry.Specs ?? new Dictionary<string, string>())
-            .ToImmutableDictionary(pair => pair.Key, pair => (string?)pair.Value);
+            .ToImmutableDictionary(pair => pair.Key, pair => (string?)pair.Value, StringComparer.InvariantCultureIgnoreCase);
         var log = entry.Log as Log;
         var events = log == null
             ? ImmutableArray<InsightsLogEventSnapshot>.Empty
@@ -57,7 +50,7 @@ public sealed class LegacyInsightsLogSnapshotReader(ILogStoreLive store) : IInsi
         return entries.Select((entry, index) => new InsightsLogEventSnapshot(
                 index + 1,
                 entry.Created.ToUniversalTime(),
-                log.NameId,
+                entry.ShortSource,
                 InsightsLogLevel.Trace,
                 0,
                 null,
@@ -77,7 +70,11 @@ public sealed class LegacyInsightsLogSnapshotReader(ILogStoreLive store) : IInsi
                 entry.Depth,
                 entry.WrapOpen,
                 entry.WrapClose,
-                entry.WrapOpenWasClosed))
+                entry.WrapOpenWasClosed,
+                entry.Source,
+                entry.ShortSource,
+                entry.Options?.HideCodeReference ?? false,
+                entry.Options?.ShowNewLines ?? false))
             .ToImmutableArray();
     }
 

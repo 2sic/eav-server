@@ -12,7 +12,7 @@ public class InsightsLogSnapshotTests
         var log = new Log("Legacy.Log");
         const string path = "C:\\full\\legacy.cs";
         const string url = "https://example.test/path?a=one&b=two%20words";
-        log.A("legacy message", cPath: path, cName: "LegacyMember", cLine: 42);
+        log.A("legacy message", cPath: path, cName: "LegacyMember", cLine: 42, options: new() { HideCodeReference = true, ShowNewLines = true });
         log.Do(() => "legacy result", cPath: path, cName: "LegacyCall", cLine: 43);
         log.Ex(new InvalidOperationException("legacy failure"));
         var entry = store.Add("webapi", log)!;
@@ -26,6 +26,11 @@ public class InsightsLogSnapshotTests
         Equal(path, first.SourceFilePath);
         Equal("LegacyMember", first.SourceMemberName);
         Equal(42, first.SourceLineNumber);
+        Equal(log.NameId, first.Category);
+        Equal(log.FullIdentifier, first.FullSource);
+        Equal(log.NameId, first.ShortSource);
+        True(first.HideCodeReference);
+        True(first.ShowNewLines);
         Contains(group.Events, item => item.Result == "legacy result");
         Equal(url, group.Specs["Url"]);
         Equal("?a=one&b=two%20words", group.Specs["Query"]);
@@ -75,7 +80,7 @@ public class InsightsLogSnapshotTests
         True(reader.Snapshot().IsPaused);
         reader.Resume();
         False(reader.Snapshot().IsPaused);
-        reader.FlushGroup(group.Id);
+        reader.FlushSegment("webapi");
         Empty(reader.ListGroups());
     }
 

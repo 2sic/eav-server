@@ -21,17 +21,6 @@ public sealed class MelInsightsLogSnapshotReader(IInsightsLogStore store) : IIns
     public void Pause() => store.Pause();
     public void Resume() => store.Resume();
 
-    public void FlushGroup(string groupId)
-    {
-        var group = ReadGroup(groupId);
-        if (group == null)
-            return;
-        if (group.TraceId != null)
-            store.FlushGroup(group.TraceId);
-        else if (group.Segments.FirstOrDefault() is { } segment)
-            store.FlushSegment(segment);
-    }
-
     public void FlushSegment(string segment) => store.FlushSegment(segment);
     public void Flush() => store.Flush();
 
@@ -51,7 +40,7 @@ public sealed class MelInsightsLogSnapshotReader(IInsightsLogStore store) : IIns
         var events = retained
             .Select(Event)
             .ToImmutableArray();
-        var specs = ImmutableDictionary.CreateBuilder<string, string?>();
+        var specs = ImmutableDictionary.CreateBuilder<string, string?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in events)
             foreach (var spec in entry.Specs)
                 specs[spec.Key] = spec.Value;
@@ -66,11 +55,16 @@ public sealed class MelInsightsLogSnapshotReader(IInsightsLogStore store) : IIns
             events);
     }
 
+    // Null tree fields tell the renderer to use chronological MEL order instead of Legacy nesting.
     private static InsightsLogEventSnapshot Event(InsightsEvent entry)
         => new(entry.Sequence, entry.TimestampUtc, entry.Category, entry.Level, entry.EventId, entry.EventName, entry.Message,
             entry.Properties, entry.Specs, entry.SourceFilePath, entry.SourceMemberName, entry.SourceLineNumber,
             entry.Operation, entry.Result, entry.DurationMilliseconds, entry.TraceId, entry.SpanId, entry.Segment,
-            entry.Exception, null, false, false, false);
+            entry.Exception, null, false, false, false, null, entry.Category,
+            Bool(entry.Properties, "HideCodeReference"), Bool(entry.Properties, "ShowNewLines"));
+
+    private static bool Bool(ImmutableDictionary<string, string?> properties, string key)
+        => properties.TryGetValue(key, out var value) && bool.TryParse(value, out var result) && result;
 
     private static string SegmentId(string? segment)
         => Convert.ToBase64String(Encoding.UTF8.GetBytes(segment ?? ""));
