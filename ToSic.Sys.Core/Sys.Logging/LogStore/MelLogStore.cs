@@ -15,6 +15,9 @@ public class MelLogStore : ILogStore
         if (log.GetRealLog() is not MelLog melLog)
             return null;
 
+        // Set this before more events are written, so segment flush also removes normal log lines.
+        melLog.SetSegment(segment);
+
         // The entry stays a caller-owned metadata handle; MEL retains no Legacy store entry or log graph.
         return new()
         {

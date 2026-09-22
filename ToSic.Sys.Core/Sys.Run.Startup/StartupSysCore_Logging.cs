@@ -33,6 +33,9 @@ public static partial class StartupSysCore
     public static IServiceCollection AddSysCoreMelLogging(this IServiceCollection services)
     {
         RemoveLoggingServices(services);
+        // Core-only MEL must also remove an earlier Insights stack; switching is all-or-nothing.
+        RemoveSysCoreInsightsLoggerServices(services);
+        services.RemoveAll<IInsightsLogSnapshotReader>();
         services.AddSingleton<ILogFactory>(serviceProvider => new MelLogFactory(serviceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>()));
         services.AddTransient<ILogStore, MelLogStore>();
 

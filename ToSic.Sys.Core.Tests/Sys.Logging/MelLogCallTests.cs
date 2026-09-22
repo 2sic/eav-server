@@ -39,6 +39,15 @@ public class MelLogCallTests
     }
 
     [Fact]
+    public void Return_DoesNotThrowWhenResultTextFails()
+    {
+        var (_, log) = NewLog();
+        var value = new ThrowingText();
+
+        Same(value, log.Fn<ThrowingText>()!.Return(value));
+    }
+
+    [Fact]
     public void Done_WithTimerStopsItAndIncludesDuration()
     {
         var (recording, log) = NewLog();
@@ -83,5 +92,10 @@ public class MelLogCallTests
         var recording = new MelLogTests.RecordingLoggerFactory(true);
         var factory = new MelLogFactory(recording);
         return (recording, factory.Create("App.Log", null, new CodeRef()));
+    }
+
+    private sealed class ThrowingText
+    {
+        public override string ToString() => throw new InvalidOperationException();
     }
 }

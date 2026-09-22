@@ -44,6 +44,7 @@ internal interface ILogSpecsSink
 
 internal sealed class MelLog(ILogger logger, ILogFactory factory, string category, string logName) : ILog, ILogFactoryOwner, ILogEventSink, ILogCallCompletionSink, ILogSpecsSink
 {
+    private string? _segment;
     public ILogFactory Factory { get; } = factory;
 
     public string NameId => category;
@@ -73,6 +74,7 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             new("ShowNewLines", options?.ShowNewLines ?? false),
             new("TraceId", activity?.TraceId.ToString()),
             new("SpanId", activity?.SpanId.ToString()),
+            new("Segment", _segment),
             new("{OriginalFormat}", "{Message}")
         ];
         logger.Log(level, default, state, exception, static (values, _) => values[0].Value?.ToString() ?? "");
@@ -84,7 +86,7 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             return;
 
         var activity = Activity.Current;
-        var resultText = hasResult ? result?.ToString() ?? "null" : null;
+        var resultText = hasResult ? ResultText(result) : null;
         IReadOnlyList<KeyValuePair<string, object?>> state =
         [
             new("Message", string.IsNullOrWhiteSpace(completionMessage) ? operation : $"{operation} {completionMessage}"),
@@ -99,6 +101,7 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             new("SourceLineNumber", code.Line),
             new("TraceId", activity?.TraceId.ToString()),
             new("SpanId", activity?.SpanId.ToString()),
+            new("Segment", _segment),
             new("{OriginalFormat}", "{Message}")
         ];
         logger.Log(LogLevel.Debug, default, state, null, static (values, _) => values[0].Value?.ToString() ?? "");
@@ -122,5 +125,22 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
         state.AddRange(specs.Select(pair => new KeyValuePair<string, object?>(pair.Key, pair.Value)));
         state.Add(new("{OriginalFormat}", "{Message}"));
         logger.Log(LogLevel.Trace, default, (IReadOnlyList<KeyValuePair<string, object?>>)state, null, static (values, _) => values[0].Value?.ToString() ?? "");
+    }
+
+    internal void SetSegment(string segment) => _segment = segment;
+
+    private static string ResultText(object? result)
+    {
+        if (result == null)
+            return "null";
+        try
+        {
+            return result.ToString() ?? "";
+        }
+        catch
+        {
+            // A diagnostic ToString must never turn successful application code into a failure.
+            return "[result conversion failed]";
+        }
     }
 }
