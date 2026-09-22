@@ -74,13 +74,20 @@ public class MelLogStoreTests
         services.AddLogging();
         services.AddSysCoreMelInsightsLogging();
         using var provider = services.BuildServiceProvider();
-        var log = provider.GetRequiredService<ILogFactory>().Create("App.Log", null, new CodeRef());
-        var child = provider.GetRequiredService<ILogFactory>().Create("App.Child", log, new CodeRef());
+        var factory = provider.GetRequiredService<ILogFactory>();
+        var log = factory.Create("App.Log", null, new CodeRef());
+        var factoryChild = factory.Create("App.FactoryChild", log, new CodeRef());
+        var linkedParent = new HasLog(factory.Create("App.LinkedParent", null, new CodeRef()));
+        var linkedChild = new HasLog(factory.Create("App.LinkedChild", null, new CodeRef())).LinkLog(linkedParent.Log).Log;
+        linkedParent.LinkLog(log);
+        // Existing DI may connect the same family again; this reverse link must stay cycle-safe.
+        new HasLog(log).LinkLog(linkedChild);
         provider.GetRequiredService<ILogStore>().Add("webapi", log);
-        child.A("ordinary");
+        factoryChild.A("factory child");
+        linkedChild.A("linked child");
         var reader = provider.GetRequiredService<IInsightsLogSnapshotReader>();
 
-        Single(reader.Snapshot().Groups.SelectMany(group => group.Events).Where(entry => entry.Message == "ordinary"));
+        Equal(2, reader.Snapshot().Groups.SelectMany(group => group.Events).Count(entry => entry.Message?.EndsWith(" child") == true));
         reader.FlushSegment("webapi");
         Empty(reader.Snapshot().Groups.SelectMany(group => group.Events));
     }
@@ -151,5 +158,10 @@ public class MelLogStoreTests
     {
         public ILogger CreateLogger(string categoryName) => Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
         public void Dispose() { }
+    }
+
+    private sealed class HasLog(ILog log) : IHasLog
+    {
+        public ILog Log { get; } = log;
     }
 }

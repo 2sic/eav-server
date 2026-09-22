@@ -29,8 +29,12 @@ public static class IHasLogExtensions
                 logConnector.SetLog(parentLog);
                 return thingWithLog;
             default:
+                // Legacy keeps its tree link; MEL only joins the small segment context.
                 // Connect if possible
-                (thingWithLog.Log as Log)?.LinkTo(parentLog/*, name*/);
+                if (thingWithLog.Log is Log legacy)
+                    legacy.LinkTo(parentLog/*, name*/);
+                else if (thingWithLog.Log.GetRealLog() is MelLog mel)
+                    mel.Link(parentLog);
 
                 // If the object needs a call back, give it...
                 (thingWithLog as ILogWasConnected)?.LogWasConnected();

@@ -131,6 +131,12 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
 
     internal void SetSegment(string segment) => SegmentContext.Value = segment;
 
+    internal void Link(ILog? parent)
+    {
+        if (parent.GetRealLog() is MelLog parentMel)
+            SegmentContext.Link(parentMel.SegmentContext);
+    }
+
     private static string ResultText(object? result)
     {
         if (result == null)
@@ -149,11 +155,42 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
 
 internal sealed class MelSegmentContext
 {
+    private static readonly object LinkSync = new();
     private string? _value;
+    private MelSegmentContext? _parent;
 
     internal string? Value
     {
-        get => Volatile.Read(ref _value);
-        set => Volatile.Write(ref _value, value);
+        get => Volatile.Read(ref Root()._value);
+        set
+        {
+            lock (LinkSync)
+                Volatile.Write(ref Root()._value, value);
+        }
+    }
+
+    internal void Link(MelSegmentContext parent)
+    {
+        // LinkLog can repeat or form cycles through DI, so union roots instead of chaining recursively.
+        lock (LinkSync)
+        {
+            var sourceRoot = Root();
+            var targetRoot = parent.Root();
+            if (ReferenceEquals(sourceRoot, targetRoot))
+                return;
+            if (Volatile.Read(ref targetRoot._value) == null)
+                Volatile.Write(ref targetRoot._value, Volatile.Read(ref sourceRoot._value));
+            Volatile.Write(ref sourceRoot._parent, targetRoot);
+        }
+    }
+
+    // Normal writes stay lock-free; links only happen while services are connected.
+    private MelSegmentContext Root()
+    {
+        var current = this;
+        MelSegmentContext? parent;
+        while ((parent = Volatile.Read(ref current._parent)) != null)
+            current = parent;
+        return current;
     }
 }
