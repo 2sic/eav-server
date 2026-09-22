@@ -14,6 +14,7 @@ public interface IInsightsLogStore
     void FlushSegment(string? segment);
     void Flush();
     InsightsLogStoreSnapshot Snapshot();
+    ImmutableArray<InsightsEvent> ReadGroup(string traceId);
     ImmutableArray<InsightsEvent> List(string? segment = default);
     ImmutableArray<InsightsGroupSummary> ListGroups();
 }
@@ -58,4 +59,4 @@ public sealed record InsightsLogStoreSnapshot(
 
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public sealed record InsightsGroupSummary(string? TraceId, string? Segment, long FirstSequence, int EventCount, bool IsCorrelated);
+public sealed record InsightsGroupSummary(string? TraceId, ImmutableArray<string?> Segments, long FirstSequence, int EventCount, bool IsCorrelated);

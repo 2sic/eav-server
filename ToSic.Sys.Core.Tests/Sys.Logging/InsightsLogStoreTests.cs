@@ -76,6 +76,17 @@ public class InsightsLogStoreTests
     }
 
     [Fact]
+    public void ReadGroup_OrdersEventsAndListsEverySegment()
+    {
+        var store = new InsightsLogStore();
+        store.Append(NewEvent("web", 2, traceId: "trace", segment: "web"));
+        store.Append(NewEvent("api", 1, traceId: "trace", segment: "api"));
+
+        Equal(["api", "web"], store.ReadGroup("trace").Select(entry => entry.Message));
+        Equal(["api", "web"], Single(store.ListGroups()).Segments.ToArray());
+    }
+
+    [Fact]
     public void Append_DropsOversizedAndPausedEventsWithCounters()
     {
         var store = new InsightsLogStore(new() { MaxEstimatedBytes = 200 });
