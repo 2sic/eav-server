@@ -127,6 +127,15 @@ public sealed class InsightsLogStore : IInsightsLogStore
             return new(AllEvents().OrderBy(eventInfo => eventInfo.Sequence).ToImmutableArray(), Counters(), _paused);
     }
 
+    public ImmutableArray<InsightsEvent> ReadGroup(string traceId)
+    {
+        // Return a detached ordered view, so callers never observe the mutable group list.
+        lock (_sync)
+            return _groups.TryGetValue(traceId, out var group)
+                ? group.Events.OrderBy(eventInfo => eventInfo.Sequence).ToImmutableArray()
+                : [];
+    }
+
     public ImmutableArray<InsightsEvent> List(string? segment = default)
     {
         lock (_sync)
@@ -140,8 +149,8 @@ public sealed class InsightsLogStore : IInsightsLogStore
     {
         lock (_sync)
             return _groups.Values
-                .Select(group => new InsightsGroupSummary(group.Key, group.Events[0].Segment, group.Events[0].Sequence, group.Events.Count, true))
-                .Concat(_unscopedBySegment.Select(pair => new InsightsGroupSummary(null, pair.Key == "" ? null : pair.Key, pair.Value[0].Sequence, pair.Value.Count, false)))
+                .Select(group => new InsightsGroupSummary(group.Key, group.Events.Select(eventInfo => eventInfo.Segment).Distinct().OrderBy(segment => segment, StringComparer.Ordinal).ToImmutableArray(), group.Events.Min(eventInfo => eventInfo.Sequence), group.Events.Count, true))
+                .Concat(_unscopedBySegment.Select(pair => new InsightsGroupSummary(null, ImmutableArray.Create<string?>(pair.Key == "" ? null : pair.Key), pair.Value.Min(eventInfo => eventInfo.Sequence), pair.Value.Count, false)))
                 .OrderBy(group => group.FirstSequence)
                 .ToImmutableArray();
     }
