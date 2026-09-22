@@ -16,9 +16,7 @@ public sealed record InsightsLogGroupSnapshot(
     ImmutableDictionary<string, string?> Specs,
     ImmutableArray<InsightsLogEventSnapshot> Events)
 {
-    private const string TitleKey = " Title";
-
-    public string? Title => Specs.TryGetValue(TitleKey, out var title)
+    public string? Title => Specs.TryGetValue(LogStoreEntry.TitleKey, out var title)
         ? title
         : Events.Length > 0 ? Events[0].Message : null;
 }
@@ -48,4 +46,8 @@ public sealed record InsightsLogEventSnapshot(
     int? Depth,
     bool WrapOpen,
     bool WrapClose,
-    bool WrapOpenWasClosed);
+    bool WrapOpenWasClosed,
+    string? FullSource,
+    string? ShortSource,
+    bool HideCodeReference,
+    bool ShowNewLines);

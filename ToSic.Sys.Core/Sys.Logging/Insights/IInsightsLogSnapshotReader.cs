@@ -11,7 +11,6 @@ public interface IInsightsLogSnapshotReader
     InsightsLogGroupSnapshot? ReadGroup(string groupId);
     void Pause();
     void Resume();
-    void FlushGroup(string groupId);
     void FlushSegment(string segment);
     void Flush();
 }
