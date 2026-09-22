@@ -75,8 +75,9 @@ public class MelLogStoreTests
         services.AddSysCoreMelInsightsLogging();
         using var provider = services.BuildServiceProvider();
         var log = provider.GetRequiredService<ILogFactory>().Create("App.Log", null, new CodeRef());
+        var child = provider.GetRequiredService<ILogFactory>().Create("App.Child", log, new CodeRef());
         provider.GetRequiredService<ILogStore>().Add("webapi", log);
-        log.A("ordinary");
+        child.A("ordinary");
         var reader = provider.GetRequiredService<IInsightsLogSnapshotReader>();
 
         Single(reader.Snapshot().Groups.SelectMany(group => group.Events).Where(entry => entry.Message == "ordinary"));
