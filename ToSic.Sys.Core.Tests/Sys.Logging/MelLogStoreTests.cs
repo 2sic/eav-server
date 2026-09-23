@@ -140,6 +140,51 @@ public class MelLogStoreTests
     }
 
     [Fact]
+    public void ModuleLogs_KeepTheirOwnEventsAndSpecs_WhenAmbientActivityChanges()
+    {
+        var services = new ServiceCollection();
+        services.AddSysCoreMelInsightsLogging();
+        using var provider = services.BuildServiceProvider();
+        var factory = provider.GetRequiredService<ILogFactory>();
+        var logStore = provider.GetRequiredService<ILogStore>();
+        var first = factory.Create("Module.First", null, new CodeRef());
+        var second = factory.Create("Module.Second", null, new CodeRef());
+        var firstEntry = logStore.Add("module", first)!;
+        var secondEntry = logStore.Add("module", second)!;
+
+        using var loadActivity = new Activity("load").SetIdFormat(ActivityIdFormat.W3C).Start();
+        first.A("first load");
+        second.A("second load");
+        loadActivity.Stop();
+        using var renderActivity = new Activity("render").SetIdFormat(ActivityIdFormat.W3C).Start();
+        first.A("first render");
+        second.A("second render");
+        firstEntry.UpdateSpecs(new Dictionary<string, string>
+        {
+            ["AppId"] = "1", ["SiteId"] = "10", ["PageId"] = "100", ["ModuleId"] = "1000"
+        });
+        secondEntry.UpdateSpecs(new Dictionary<string, string>
+        {
+            ["AppId"] = "2", ["SiteId"] = "20", ["PageId"] = "200", ["ModuleId"] = "2000"
+        });
+
+        var groups = provider.GetRequiredService<IInsightsLogSnapshotReader>().ListGroups();
+        Equal(2, groups.Length);
+        var insightsStore = provider.GetRequiredService<IInsightsLogStore>();
+        Equal(2, insightsStore.ListGroups().Length);
+        Equal(6, insightsStore.ReadGroup(loadActivity.TraceId.ToString()).Length);
+        var byApp = groups.ToDictionary(group => group.Specs["AppId"]!);
+        Equal(["first load", "first render", "Log specs"], byApp["1"].Events.Select(entry => entry.Message));
+        Equal(["second load", "second render", "Log specs"], byApp["2"].Events.Select(entry => entry.Message));
+        Equal("10", byApp["1"].Specs["SiteId"]);
+        Equal("100", byApp["1"].Specs["PageId"]);
+        Equal("1000", byApp["1"].Specs["ModuleId"]);
+        Equal("2000", byApp["2"].Specs["ModuleId"]);
+        Equal(loadActivity.TraceId.ToString(), byApp["1"].Events[0].TraceId);
+        Equal(renderActivity.TraceId.ToString(), byApp["1"].Events[1].TraceId);
+    }
+
+    [Fact]
     public void MelInsights_SegmentEventsAreVisibleAndFlushable_WithoutHostLogging()
     {
         var services = new ServiceCollection();

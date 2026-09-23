@@ -24,10 +24,10 @@ public sealed class MelInsightsLogSnapshotReader(IInsightsLogStore store) : IIns
     public void FlushSegment(string segment) => store.FlushSegment(segment);
     public void Flush() => store.Flush();
 
-    // A trace is one request history; without a trace the explicit segment is the group.
+    // An admitted log is one history; TraceId remains available across its sibling histories.
     private static ImmutableArray<InsightsLogGroupSnapshot> Groups(IEnumerable<InsightsEvent> entries)
         => entries
-            .GroupBy(entry => string.IsNullOrEmpty(entry.TraceId) ? $"segment:{SegmentId(entry.Segment)}" : $"trace:{entry.TraceId}")
+            .GroupBy(GroupId)
             .Select(Group)
             .OrderBy(group => group.Events[0].Sequence)
             .ToImmutableArray();
@@ -44,10 +44,10 @@ public sealed class MelInsightsLogSnapshotReader(IInsightsLogStore store) : IIns
         foreach (var entry in events)
             foreach (var spec in entry.Specs)
                 specs[spec.Key] = spec.Value;
-        var traceId = retained[0].TraceId;
+        var traceId = retained.Select(entry => entry.TraceId).FirstOrDefault(id => id != null);
         var segments = retained.Select(entry => entry.Segment).Distinct().OrderBy(segment => segment, StringComparer.Ordinal).ToImmutableArray();
         return new(
-            string.IsNullOrEmpty(traceId) ? $"segment:{SegmentId(segments.FirstOrDefault())}" : $"trace:{traceId}",
+            GroupId(retained[0]),
             traceId,
             segments,
             // A completion may arrive after later calls; group time follows the earliest start.
@@ -70,4 +70,10 @@ public sealed class MelInsightsLogSnapshotReader(IInsightsLogStore store) : IIns
 
     private static string SegmentId(string? segment)
         => Convert.ToBase64String(Encoding.UTF8.GetBytes(segment ?? ""));
+
+    // Events without an admitted log keep the earlier trace or segment grouping.
+    private static string GroupId(InsightsEvent entry)
+        => !string.IsNullOrEmpty(entry.LogGroupId) ? $"log:{entry.LogGroupId}"
+            : !string.IsNullOrEmpty(entry.TraceId) ? $"trace:{entry.TraceId}"
+            : $"segment:{SegmentId(entry.Segment)}";
 }
