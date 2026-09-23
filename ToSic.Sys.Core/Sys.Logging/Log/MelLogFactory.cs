@@ -142,7 +142,10 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
 
     internal void Link(ILog? parent)
     {
-        if (parent.GetRealLog() is MelLog parentMel)
+        var realParent = parent.GetRealLog();
+        if (realParent != null && realParent is not MelLog)
+            throw new InvalidOperationException("A MEL log cannot link to a Legacy log.");
+        if (realParent is MelLog parentMel)
             SegmentContext.Link(parentMel.SegmentContext);
     }
 

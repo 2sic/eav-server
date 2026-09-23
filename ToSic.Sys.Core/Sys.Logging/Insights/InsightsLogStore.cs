@@ -193,9 +193,8 @@ public sealed class InsightsLogStore : IInsightsLogStore
             EvictOldestContainer();
     }
 
-    private void EvictOldestGroup()
+    private void EvictGroup(Group group)
     {
-        var group = _groups.Values.OrderBy(group => Oldest(group.Events).Sequence).First();
         _groups.Remove(group.Key);
         _evictedEvents += group.Events.Count;
         Remove(group.Events);
@@ -204,16 +203,25 @@ public sealed class InsightsLogStore : IInsightsLogStore
 
     private void EvictOldestContainer()
     {
-        var oldestGroup = _groups.Values.OrderBy(group => Oldest(group.Events).Sequence).FirstOrDefault();
+        // Keep the process boot history inspectable while ordinary histories turn over.
+        var oldestGroup = _groups.Values
+            .Where(group => !IsBootLog(group))
+            .OrderBy(group => Oldest(group.Events).Sequence)
+            .FirstOrDefault();
         var oldestUnscoped = _unscopedBySegment
             .Where(pair => pair.Value.Count > 0)
             .OrderBy(pair => Oldest(pair.Value).Sequence)
             .FirstOrDefault();
+        if (oldestGroup == null && oldestUnscoped.Value == null)
+            oldestGroup = _groups.Values.OrderBy(group => Oldest(group.Events).Sequence).FirstOrDefault();
         if (oldestGroup != null && (oldestUnscoped.Value == null || Oldest(oldestGroup.Events).Sequence <= Oldest(oldestUnscoped.Value).Sequence))
-            EvictOldestGroup();
+            EvictGroup(oldestGroup);
         else
             EvictOldestUnscoped();
     }
+
+    private static bool IsBootLog(Group group)
+        => group.Events.Any(entry => entry.Segment == "boot-log" && entry.Category == "ToSic.Sys.BootLog");
 
     private bool EvictOldestUnscoped()
     {

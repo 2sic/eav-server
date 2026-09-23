@@ -26,15 +26,25 @@ public class LogFactorySelectorTests
     }
 
     [Fact]
-    public void UsesParentsFactoryBeforeGlobalSelection()
+    public void RejectsMelSelectionAfterDefaultLegacyRootWasCreated()
+    {
+        var legacy = new TestFactory();
+        var selector = new LogFactorySelector(legacy);
+        Same(legacy, selector.For(null));
+
+        Throws<InvalidOperationException>(() => selector.Select(new TestFactory()));
+    }
+
+    [Fact]
+    public void RejectsParentFromAnotherStackAfterSelection()
     {
         var legacy = new TestFactory();
         var parentFactory = new TestFactory();
         var selector = new LogFactorySelector(legacy);
         selector.Select(new TestFactory());
 
-        Same(parentFactory, selector.For(new TestLog(parentFactory)));
-        Same(legacy, selector.For(new Log("legacy")));
+        Throws<InvalidOperationException>(() => selector.For(new TestLog(parentFactory)));
+        Throws<InvalidOperationException>(() => selector.For(new Log("legacy")));
     }
 
     private sealed class TestFactory : ILogFactory

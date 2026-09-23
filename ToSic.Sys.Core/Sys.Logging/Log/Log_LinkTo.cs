@@ -13,6 +13,8 @@ public partial class Log
         // ILogCall is a wrapper around its Log, and entries propagate through Log parents.
         // Unwrap it here so helper logs linked to an active call remain visible in the parent log.
         newParent = newParent.GetRealLog();
+        if (newParent != null && newParent is not Log)
+            throw new InvalidOperationException("A Legacy log cannot link to a MEL log.");
 
         if (newParent == this)
             throw new("LOG ERROR - attaching a log to itself can't work");

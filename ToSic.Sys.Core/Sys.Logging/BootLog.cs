@@ -8,9 +8,13 @@ public class BootLog
 {
     public static ILog Log { get; } = Start();
 
-    private static ILog Start()
+    private static ILog Start() => Start(LogFactory.Create("Sys.BootLog"));
+
+    internal static ILog Start(ILog log)
     {
-        var log = LogFactory.Create("Sys.BootLog");
+        // Set the MEL segment before the first event, including events replayed after DI is ready.
+        if (log is MelLog)
+            new MelLogStore().Add("boot-log", log);
         log.A("Starting Boot Log");
         return log;
     }
@@ -19,6 +23,8 @@ public class BootLog
 
     public static void AddToStore(ILogStore store)
     {
+        if (Log is MelLog)
+            return; // MEL admission happened before the first boot event.
         if (_addedToStore) return;
         _addedToStore = true;
         store.Add("boot-log", Log);

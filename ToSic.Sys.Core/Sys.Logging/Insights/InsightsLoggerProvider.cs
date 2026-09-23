@@ -28,10 +28,11 @@ public sealed class InsightsLoggerProvider(IInsightsLogStore store) : ILoggerPro
             var traceId = Value(values, "TraceId") ?? activity?.TraceId.ToString();
             var spanId = Value(values, "SpanId") ?? activity?.SpanId.ToString();
             var sequence = Interlocked.Increment(ref _sequence);
+            // Bootstrap replay carries its original time and flattened exception in the event state.
             store.Append(new()
             {
                 Sequence = sequence,
-                TimestampUtc = DateTime.UtcNow,
+                TimestampUtc = DateTimeValue(values, "TimestampUtc") ?? DateTime.UtcNow,
                 Category = category,
                 Level = Level(level),
                 EventId = eventId.Id,
@@ -51,7 +52,7 @@ public sealed class InsightsLoggerProvider(IInsightsLogStore store) : ILoggerPro
                 SpanId = spanId,
                 Segment = Value(values, "Segment"),
                 LogGroupId = Value(values, "LogGroupId"),
-                Exception = Diagnostic(exception)
+                Exception = Diagnostic(exception) ?? BootstrapDiagnostic(values)
             });
         }
         catch
@@ -129,6 +130,15 @@ public sealed class InsightsLoggerProvider(IInsightsLogStore store) : ILoggerPro
         => exception == null
             ? null
             : new(exception.GetType().FullName ?? exception.GetType().Name, Scalar(exception.Message), Scalar(exception.StackTrace), Scalar(exception), ExceptionData(exception.Data), Diagnostic(exception.InnerException));
+
+    private static InsightsExceptionDiagnostic? BootstrapDiagnostic(IEnumerable<KeyValuePair<string, object?>> values)
+    {
+        var type = Value(values, "BootstrapExceptionType");
+        return type == null
+            ? null
+            : new(type, Value(values, "BootstrapExceptionMessage"), Value(values, "BootstrapExceptionStackTrace"),
+                Value(values, "BootstrapExceptionDetails"), ImmutableDictionary<string, string?>.Empty, null);
+    }
 
     private static ImmutableDictionary<string, string?> ExceptionData(System.Collections.IDictionary data)
     {
