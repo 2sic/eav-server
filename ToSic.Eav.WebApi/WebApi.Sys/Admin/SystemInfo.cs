@@ -29,7 +29,7 @@ public class SystemInfo : CustomDataSource
     private readonly IPlatformInfo _platform;
     private readonly ISite _site;
     private readonly LazySvc<ILicenseService> _licenseService;
-    private readonly ILogStoreLive _logStore;
+    private readonly IInsightsLogSnapshotReader _snapshotReader;
 
     public SystemInfo(
         Dependencies services,
@@ -39,8 +39,8 @@ public class SystemInfo : CustomDataSource
         IPlatformInfo platform,
         ISite site,
         LazySvc<ILicenseService> licenseService,
-        ILogStoreLive logStore)
-        : base(services, logName: "Sxc.SysInfo", connect: [appsCatalog, fingerprint, zoneMapper, platform, site, licenseService, logStore])
+        IInsightsLogSnapshotReader snapshotReader)
+        : base(services, logName: "Sxc.SysInfo", connect: [appsCatalog, fingerprint, zoneMapper, platform, site, licenseService, snapshotReader])
     {
         _appsCatalog = appsCatalog;
         _fingerprint = fingerprint;
@@ -48,7 +48,7 @@ public class SystemInfo : CustomDataSource
         _platform = platform;
         _site = site;
         _licenseService = licenseService;
-        _logStore = logStore;
+        _snapshotReader = snapshotReader;
 
         ProvideOutRaw(GetSite, name: "Site");
 
@@ -113,8 +113,9 @@ public class SystemInfo : CustomDataSource
     {
         var l = Log.Fn<IEnumerable<MessagesRaw>>();
 
-        var warningsObsolete = CountInsightsMessages(CodeInfoConstants.ObsoleteNameInHistory);
-        var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;
+        var groups = _snapshotReader.Snapshot().Groups;
+        var warningsObsolete = CountInsightsMessages(groups, CodeInfoConstants.ObsoleteNameInHistory);
+        var warningsOther = CountInsightsMessages(groups, LogConstants.StoreWarningsPrefix) - warningsObsolete;
 
         var entity = new MessagesRaw
         {
@@ -125,11 +126,7 @@ public class SystemInfo : CustomDataSource
         return l.Return([entity], "1");
     }
 
-    private int CountInsightsMessages(string prefix)
-    {
-        return _logStore.Segments
-            .Where(s => s.Key.StartsWith(prefix))
-            .Select(s => s.Value.Count)
-            .Sum();
-    }
+    // Count each segment once per history, even when the history contains multiple events.
+    private static int CountInsightsMessages(IEnumerable<InsightsLogGroupSnapshot> groups, string prefix)
+        => groups.Sum(group => group.Segments.Count(segment => segment?.StartsWith(prefix) == true));
 }
