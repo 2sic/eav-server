@@ -165,12 +165,12 @@ public class MelLogStoreTests
     }
 
     [Fact]
-    public void CoreOnlyMel_RemovesInsightsButKeepsOtherProvider()
+    public void CoreOnlyMel_RegistersWithoutInsightsAndKeepsOtherProvider()
     {
         var other = new OtherProvider();
         var services = new ServiceCollection();
         services.AddLogging(logging => logging.AddProvider(other));
-        services.AddSysCoreMelInsightsLogging().AddSysCoreMelLogging();
+        services.AddSysCoreMelLogging();
         using var provider = services.BuildServiceProvider();
 
         IsType<MelLogFactory>(provider.GetRequiredService<ILogFactory>());
@@ -182,42 +182,14 @@ public class MelLogStoreTests
     }
 
     [Fact]
-    public void Registrations_KeepLegacyDefaultAndSwitchExplicitStacks()
+    public void Registration_UsesLegacyByDefault()
     {
         var legacy = new ServiceCollection().AddSysCoreLogging();
         Equal(ServiceLifetime.Singleton, Single(legacy, descriptor => descriptor.ServiceType == typeof(ILogFactory)).Lifetime);
         Equal(typeof(LegacyLogFactory), Single(legacy, descriptor => descriptor.ServiceType == typeof(ILogFactory)).ImplementationInstance?.GetType());
         Equal(typeof(LogStoreLive), Single(legacy, descriptor => descriptor.ServiceType == typeof(ILogStore)).ImplementationType);
         Equal(typeof(LogStoreLive), Single(legacy, descriptor => descriptor.ServiceType == typeof(ILogStoreLive)).ImplementationType);
-
-        var recording = new MelLogTests.RecordingLoggerFactory(true);
-        var mel = new ServiceCollection()
-            .AddSingleton<ILoggerFactory>(recording)
-            .AddSysCoreMelLogging();
-        using var provider = mel.BuildServiceProvider();
-        IsType<MelLogFactory>(provider.GetRequiredService<ILogFactory>());
-        IsType<MelLogStore>(provider.GetRequiredService<ILogStore>());
-        Null(provider.GetService<ILogStoreLive>());
-
-        var legacyAfterMel = new ServiceCollection()
-            .AddSingleton<ILoggerFactory>(recording)
-            .AddSysCoreMelLogging()
-            .AddSysCoreLegacyLogging();
-        using var legacyProvider = legacyAfterMel.BuildServiceProvider();
-        IsType<LegacyLogFactory>(legacyProvider.GetRequiredService<ILogFactory>());
-        IsType<LogStoreLive>(legacyProvider.GetRequiredService<ILogStore>());
-        IsType<LogStoreLive>(legacyProvider.GetRequiredService<ILogStoreLive>());
-
-        var melAfterLegacy = new ServiceCollection()
-            .AddSingleton<ILoggerFactory>(recording)
-            .AddSysCoreLegacyLogging()
-            .AddSysCoreMelLogging();
-        using var melProvider = melAfterLegacy.BuildServiceProvider();
-        IsType<MelLogFactory>(melProvider.GetRequiredService<ILogFactory>());
-        IsType<MelLogStore>(melProvider.GetRequiredService<ILogStore>());
-        Null(melProvider.GetService<ILogStoreLive>());
-        Null(melProvider.GetService<IInsightsLogStore>());
-        Null(melProvider.GetService<IInsightsLogSnapshotReader>());
+        Equal(typeof(LegacyInsightsLogSnapshotReader), Single(legacy, descriptor => descriptor.ServiceType == typeof(IInsightsLogSnapshotReader)).ImplementationType);
     }
 
     private static (MelLogTests.RecordingLoggerFactory Recording, ILog Log) NewLog()
