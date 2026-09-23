@@ -1,5 +1,7 @@
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Sys;
@@ -132,4 +134,63 @@ public class SystemInfo : CustomDataSource
             .Select(s => s.Value.Count)
             .Sum();
     }
+
+    [ContentType(
+        Name = "SiteStats",
+        Guid = "f59a06bb-60ad-4d65-8c02-799d46f5e640",
+        Description = "Site statistics",
+        Scope = "System"
+    )]
+    private record SiteStatsRaw(
+        [property: ContentTypeField(IsTitle = true)]
+        int SiteId,
+        int ZoneId,
+        int Apps,
+        int Languages
+    ) : IRawEntityAutoConvert;
+
+
+    [ContentType(
+        Name = "SystemInfo",
+        Guid = "6ed9998e-7087-41c5-a26e-207e07359531",
+        Description = "System information",
+        Scope = "System"
+    )]
+    private record SystemInfoRaw(
+        string Fingerprint,
+        string EavVersion,
+        [property: ContentTypeField(IsTitle = true)]
+        string Platform,
+        string PlatformVersion,
+        int Zones
+    ) : IRawEntityAutoConvert;
+
+
+    [ContentType(
+        Name = "LicenseInfo",
+        Guid = "7c70aa77-af5c-4a74-9d17-e977cb93b80b",
+        Description = "License information",
+        Scope = "System"
+    )]
+    public record LicenseInfoRaw(
+        [property: ContentTypeField(IsTitle = true)]
+        string Main,
+        int Count,
+        string Owner
+    ) : IRawEntityAutoConvert;
+
+
+    [ContentType(
+        Name = "Messages",
+        Guid = "41bc9f69-6760-4cab-9004-6c848ed2e569",
+        Description = "System message statistics",
+        Scope = "System"
+    )]
+    public record MessagesRaw : IRawEntityAutoConvert
+    {
+        public required int WarningsOther { get; init; }
+
+        public required int WarningsObsolete { get; init; }
+    }
+
 }

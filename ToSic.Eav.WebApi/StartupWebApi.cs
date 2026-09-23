@@ -53,6 +53,7 @@ public static class StartupWebApi
         services.TryAddTransient<EntityApi>();
         services.TryAddTransient<EditLoadActionGetForEditing>(); // WIP v21
         services.TryAddTransient<IUiData, UiData>();
+        services.TryAddTransient<ImportApp>(); // moved here v22 (was in Sxc before)
 
         // WIP Converter clean-up v12.05
         // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion

@@ -14,6 +14,18 @@ using ISite = ToSic.Eav.Context.ISite;
 
 namespace ToSic.Eav.WebApi.Sys.ImportExport;
 
+// TODO: @2rb
+// Create three separate small services for each of the three methods in this class
+// - ImportAppService (top function)
+// - PendingAppsGet (middle function)
+// - PendingAppInstall (bottom function)
+//
+// 1. extract / separate - make sure the constructor of each only has the services it needs
+// 2. Make sure to register each service in the DI container (StartupWebApi)
+// 3. Adjust code which calls it
+// 4. Test / verify
+// 5. Remove this class
+
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportApp(
     IEnvironmentLogger envLogger,
@@ -53,31 +65,6 @@ public class ImportApp(
         }
     }
 
-    // 2026-07-03 2dm - very duplicate code, but seems to be unused
-    //public ImportResultDto Import(string zipPath, int zoneId, string renameApp, int? inheritAppId = null)
-    //{
-    //    var l = Log.Fn<ImportResultDto>($"start import app from:{zipPath} with inheritAppId:{inheritAppId}");
-    //    var result = new ImportResultDto();
-
-    //    if (!string.IsNullOrEmpty(renameApp))
-    //        l.A($"new app name: {renameApp}");
-
-    //    try
-    //    {
-    //        zipImport.Init(zoneId, null, user.IsSystemAdmin);
-    //        var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
-    //        result.Success = zipImport.ImportZip(zipPath, temporaryDirectory, renameApp, inheritAppId);
-    //        result.Messages.AddRange(zipImport.Messages);
-    //        return l.ReturnAsOk(result);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        envLogger.LogException(ex);
-    //        result.Success = false;
-    //        result.Messages.AddRange(zipImport.Messages);
-    //        return l.ReturnAsError(result);
-    //    }
-    //}
 
     /// <summary>
     /// Get list of pending apps.
@@ -102,7 +89,7 @@ public class ImportApp(
             // skip folder when app is already installed
             if (appFinder.AppIdFromFolderName(zoneId, folderName) != AppConstants.AppIdNotFound)
             {
-                l.A($"skip, app is already installed");
+                l.A("skip, app is already installed");
                 continue;
             }
 
@@ -110,7 +97,7 @@ public class ImportApp(
             var appXml = Path.Combine(directoryPath, FolderConstants.DataFolderProtected, FolderConstants.AppDataFile);
             if (!File.Exists(appXml))
             {
-                l.A($"skip, App_Data/app.xml is missing");
+                l.A("skip, App_Data/app.xml is missing");
                 continue;
             }
 
