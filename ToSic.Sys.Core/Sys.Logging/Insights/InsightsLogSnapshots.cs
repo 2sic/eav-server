@@ -50,4 +50,6 @@ public sealed record InsightsLogEventSnapshot(
     string? FullSource,
     string? ShortSource,
     bool HideCodeReference,
-    bool ShowNewLines);
+    bool ShowNewLines,
+    DateTime? StartedUtc = null,
+    long? DurationTicks = null);

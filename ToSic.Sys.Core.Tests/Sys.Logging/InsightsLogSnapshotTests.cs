@@ -57,6 +57,8 @@ public class InsightsLogSnapshotTests
             Operation = "App.Run()",
             Result = "mel result",
             DurationMilliseconds = 12,
+            StartedUtc = new(2026, 1, 1, 1, 2, 2, DateTimeKind.Utc),
+            DurationTicks = 120123,
             TraceId = "trace",
             SpanId = "span",
             Segment = "webapi",
@@ -69,6 +71,9 @@ public class InsightsLogSnapshotTests
 
         Equal("mel message", item.Message);
         Equal("mel result", item.Result);
+        Equal(new DateTime(2026, 1, 1, 1, 2, 2, DateTimeKind.Utc), item.StartedUtc);
+        Equal(120123, item.DurationTicks);
+        Equal(item.StartedUtc, group.TimestampUtc);
         Equal(url, group.Specs["Url"]);
         Equal("C:\\full\\mel.cs", item.SourceFilePath);
         Equal("MelMember", item.SourceMemberName);
@@ -97,6 +102,23 @@ public class InsightsLogSnapshotTests
         reader.FlushSegment("module");
 
         Empty(reader.ListGroups());
+    }
+
+    [Fact]
+    public void LegacyReader_PreservesSubMillisecondDuration()
+    {
+        var store = new TestLiveStore();
+        var log = new Log("Legacy");
+        var call = log.Fn(timer: true)!;
+        call.Done();
+        call.Entry!.Elapsed = TimeSpan.FromTicks(1300);
+        store.Add("module", log);
+
+        var entry = Single(new LegacyInsightsLogSnapshotReader(store).ListGroups())
+            .Events.Single(item => item.DurationTicks != null);
+
+        Equal(1300, entry.DurationTicks);
+        Equal(0, entry.DurationMilliseconds);
     }
 
     private sealed class TestLiveStore : ILogStoreLive
