@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Collections.Immutable;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace ToSic.Sys.Logging;
@@ -155,42 +156,38 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
 
 internal sealed class MelSegmentContext
 {
-    private static readonly object LinkSync = new();
+    // Admission belongs to this producer; only links are execution-local.
     private string? _value;
-    private MelSegmentContext? _parent;
+    private readonly AsyncLocal<MelSegmentContext?> _parent = new();
 
     internal string? Value
     {
-        get => Volatile.Read(ref Root()._value);
+        get => _parent.Value?.Value ?? Volatile.Read(ref _value);
         set
         {
-            lock (LinkSync)
-                Volatile.Write(ref Root()._value, value);
+            // Explicit admission must break any request link inherited by this execution.
+            _parent.Value = null;
+            Volatile.Write(ref _value, value);
         }
     }
 
     internal void Link(MelSegmentContext parent)
     {
-        // LinkLog can repeat or form cycles through DI, so union roots instead of chaining recursively.
-        lock (LinkSync)
-        {
-            var sourceRoot = Root();
-            var targetRoot = parent.Root();
-            if (ReferenceEquals(sourceRoot, targetRoot))
-                return;
-            if (Volatile.Read(ref targetRoot._value) == null)
-                Volatile.Write(ref targetRoot._value, Volatile.Read(ref sourceRoot._value));
-            Volatile.Write(ref sourceRoot._parent, targetRoot);
-        }
+        // A reused service must follow only the current execution, never retain or rewrite old request roots.
+        if (!ReferenceEquals(this, parent) && !parent.References(this))
+            _parent.Value = parent;
     }
 
-    // Normal writes stay lock-free; links only happen while services are connected.
-    private MelSegmentContext Root()
+    private bool References(MelSegmentContext context)
     {
         var current = this;
         MelSegmentContext? parent;
-        while ((parent = Volatile.Read(ref current._parent)) != null)
+        while ((parent = current._parent.Value) != null)
+        {
+            if (ReferenceEquals(parent, context))
+                return true;
             current = parent;
-        return current;
+        }
+        return false;
     }
 }
