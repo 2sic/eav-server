@@ -8,10 +8,9 @@ namespace ToSic.Eav.Data.Build;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 internal partial class DataFactory(
     Generator<DataAssembler, DataAssemblerOptions> dataAssembler,
-    Generator<DataFactoryContentTypeHelper, DataFactoryOptions> contentTypeHelper,
-    Generator<IDataFactory, DataFactoryOptions> selfGenerator
+    Generator<DataFactoryContentTypeHelper, DataFactoryOptions> contentTypeHelper
 )
-    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, contentTypeHelper, selfGenerator]), IDataFactory
+    : ServiceWithSetup<DataFactoryOptions>("Ds.DatBld", connect: [dataAssembler, contentTypeHelper]), IDataFactory
 {
     /// <summary>
     /// The data factory will often need options, but there could be cases (WIP) where it's called without...?
@@ -56,7 +55,7 @@ internal partial class DataFactory(
     private DataAssembler EntityAssemblyKit => field
         ??= dataAssembler.New(new()
         {
-            AllowUnknownValueTypes = MyOptions.AllowUnknownValueTypes
+            AllowUnknownValueTypes = ContentTypeHelper.AllowUnknownValueTypes ?? MyOptions.AllowUnknownValueTypes
         });
 
 

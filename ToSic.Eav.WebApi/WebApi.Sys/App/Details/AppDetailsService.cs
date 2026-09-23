@@ -35,12 +35,14 @@ public class AppDetailsService(CodeInfoStats codeStats, Generator<IAppPathsMicro
             IsHidden = specs.Configuration.IsHidden,
             ConfigurationId = specs.Configuration.Id,
             Items = appReader.List.Count,
-            Thumbnail = "",
             Version = specs.VersionSafe(),
             IsGlobal = appReader.IsShared(),
             IsInherited = appReader.IsInherited(),
-            Lightspeed = null,
             HasCodeWarnings = codeStats.AppHasWarnings(appReader.AppId),
+
+            // The following is only available if added by the 2sxc layer
+            //Thumbnail = "",
+            //LightSpeed = null,
         };
     }
 }

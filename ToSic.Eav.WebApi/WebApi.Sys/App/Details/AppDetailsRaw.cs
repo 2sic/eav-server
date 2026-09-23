@@ -27,7 +27,7 @@ public record AppDetailsRaw: IRawEntityAutoConvert
     public required bool IsHidden { get; init; }
     public required int? ConfigurationId { get; init; }
     public required int Items { get; init; }
-    public required string? Thumbnail { get; init; }
+    public string? Thumbnail { get; init; } // will usually only be set in 2sxc, not in EAV
     public required string Version { get; init; }
 
     /// <summary>
@@ -41,8 +41,8 @@ public record AppDetailsRaw: IRawEntityAutoConvert
     /// </summary>
     public required bool IsInherited { get; init; }
 
-    [JsonPropertyName("lightSpeed")]
-    public required AppMetadataDto? Lightspeed { get; init; }
+    [ContentTypeField(Type = ValueTypes.Object)]
+    public AppMetadataDto? LightSpeed { get; init; }    // will usually only be set in 2sxc, not in EAV
 
     public required bool HasCodeWarnings { get; init; }
 }

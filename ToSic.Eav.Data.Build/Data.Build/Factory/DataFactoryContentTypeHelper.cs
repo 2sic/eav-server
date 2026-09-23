@@ -18,11 +18,38 @@ internal class DataFactoryContentTypeHelper(LazySvc<ContentTypesFromCodeManager>
     /// </summary>
     internal Type? TypeFallbackIfNotSet;
 
+    /// <summary>
+    /// The preferred EAV Content-Type to attach to the generated entity.
+    /// </summary>
     internal IContentType PreferredContentType => field
         ??= GetPreferredContentType();
 
+    /// <summary>
+    /// The preferred title field to use for the generated entity.
+    /// </summary>
     internal string PreferredTitleFieldName => field
         ??= MyOptions.TitleField.UseFallbackIfNoValue(PreferredContentType.TitleFieldName ?? AttributeNames.TitleNiceName);
+
+    /// <summary>
+    /// Determine if the underlying type explicitly has "object" fields, which means that the generated entity should allow unknown value types.
+    /// </summary>
+    /// <remarks>
+    /// Can only return true or null, because downstream it must know if it was explicit or not.
+    /// New v22.01
+    /// </remarks>
+    internal bool? AllowUnknownValueTypes
+    {
+        get
+        {
+            if (_allowObjectsTested)
+                return field;
+            _allowObjectsTested = true;
+            return PreferredContentType.Attributes.Any(a => a.Type == ValueTypes.Object)
+                ? field = true
+                : null;
+        }
+    }
+    private bool _allowObjectsTested;
 
     /// <summary>
     /// Get the best possible ContentType definition in the current scenario.

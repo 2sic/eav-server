@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using ToSic.Eav.Data.Sys;
-using ToSic.Sys.Capabilities.FeatureSet;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Data.Build.Sys;
@@ -72,14 +71,11 @@ public class AttributeListAssembler(Generator<AttributeAssembler, DataAssemblerO
 
                 // Not yet a proper IAttribute, construct from value
                 var attributeType = DataTypes.GetAttributeTypeName(pair.Value, MyOptions.AllowUnknownValueTypes);
-                var valuesModelList = new List<IValue>();
-                if (pair.Value != null)
-                {
-                    var valueModel = Attributes.Values.Create(attributeType, pair.Value, languages);
-                    valuesModelList.Add(valueModel);
-                }
+                IList<IValue> valuesModList = pair.Value == null
+                    ? []
+                    : [Attributes.Values.Create(attributeType, pair.Value, languages)];
 
-                var attributeModel = Attributes.Create(pair.Key, attributeType, valuesModelList);
+                var attributeModel = Attributes.Create(pair.Key, attributeType, valuesModList);
 
                 return attributeModel;
             },
