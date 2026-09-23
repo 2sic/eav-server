@@ -8,6 +8,78 @@ namespace ToSic.Sys.Logging;
 public class MelLogStoreTests
 {
     [Fact]
+    public void Link_ReusedLogKeepsSequentialRequestSegmentsAndReleasesContexts()
+    {
+        var (recording, factory) = NewFactory();
+        var store = new MelLogStore();
+        var reused = new HasLog(factory.Create("App.Reused", null, new CodeRef()));
+        var discarded = Enumerable.Range(0, 8)
+            .Select(index => LinkAndWriteInIsolatedExecution(factory, store, reused, index))
+            .ToList();
+
+        ForceCollection();
+
+        Equal(Enumerable.Range(0, 8).Select(index => $"request-{index}"),
+            recording.Entries
+                .Where(entry => entry.Value("Message")?.ToString()?.StartsWith("reused-") == true)
+                .Select(entry => entry.Value("Segment")));
+        DoesNotContain(discarded, context => context.TryGetTarget(out _));
+    }
+
+    [Fact]
+    public void Link_ReusedLogKeepsParallelRequestSegmentsIsolated()
+    {
+        var (recording, factory) = NewFactory();
+        var store = new MelLogStore();
+        var reused = new HasLog(factory.Create("App.Reused", null, new CodeRef()));
+
+        Parallel.For(0, 16, index => LinkAndWriteInIsolatedExecution(factory, store, reused, index));
+        reused.Log.A("after-parallel");
+
+        var segments = recording.Entries
+            .Where(entry => entry.Value("Message")?.ToString()?.StartsWith("reused-") == true)
+            .ToDictionary(entry => entry.Value("Message")!.ToString()!, entry => entry.Value("Segment"));
+        Equal(16, segments.Count);
+        foreach (var index in Enumerable.Range(0, 16))
+            Equal($"request-{index}", segments[$"reused-{index}"]);
+        Null(Single(recording.Entries, entry => Equals(entry.Value("Message"), "after-parallel")).Value("Segment"));
+    }
+
+    [Fact]
+    public void Link_LeavesEarlierAdmittedRootSegmentStable()
+    {
+        var (recording, factory) = NewFactory();
+        var store = new MelLogStore();
+        var reused = new HasLog(factory.Create("App.Reused", null, new CodeRef()));
+        var first = factory.Create("App.First", null, new CodeRef());
+        store.Add("request-first", first);
+        reused.LinkLog(first);
+        first.A("first-before");
+
+        var second = factory.Create("App.Second", null, new CodeRef());
+        store.Add("request-second", second);
+        reused.LinkLog(second);
+        first.A("first-after");
+
+        Equal(["request-first", "request-first"], recording.Entries
+            .Where(entry => entry.Value("Message")?.ToString()?.StartsWith("first-") == true)
+            .Select(entry => entry.Value("Segment")));
+    }
+
+    [Fact]
+    public void Add_ExplicitlyAdmittedLogKeepsSegmentOutsideAdmittingExecution()
+    {
+        var (recording, factory) = NewFactory();
+        var log = factory.Create("App.Background", null, new CodeRef());
+        new MelLogStore().Add("startup", log);
+
+        using (ExecutionContext.SuppressFlow())
+            Task.Run(() => log.A("background")).GetAwaiter().GetResult();
+
+        Equal("startup", Single(recording.Entries).Value("Segment"));
+    }
+
+    [Fact]
     public void AddSpec_LateEmitsOneMetadataEventWithoutReplay()
     {
         var (recording, log) = NewLog();
@@ -152,6 +224,33 @@ public class MelLogStoreTests
     {
         var recording = new MelLogTests.RecordingLoggerFactory(true);
         return (recording, new MelLogFactory(recording).Create("App.Log", null, new CodeRef()));
+    }
+
+    private static (MelLogTests.RecordingLoggerFactory Recording, MelLogFactory Factory) NewFactory()
+    {
+        var recording = new MelLogTests.RecordingLoggerFactory(true);
+        return (recording, new(recording));
+    }
+
+    private static WeakReference<MelSegmentContext> LinkAndWriteInIsolatedExecution(MelLogFactory factory, MelLogStore store, HasLog reused, int index)
+    {
+        WeakReference<MelSegmentContext>? weak = null;
+        ExecutionContext.Run(ExecutionContext.Capture()!, _ =>
+        {
+            var root = factory.Create($"App.Request{index}", null, new CodeRef());
+            store.Add($"request-{index}", root);
+            reused.LinkLog(root);
+            reused.Log.A($"reused-{index}");
+            weak = new(IsType<MelLog>(root).SegmentContext);
+        }, null);
+        return weak!;
+    }
+
+    private static void ForceCollection()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 
     private sealed class OtherProvider : ILoggerProvider

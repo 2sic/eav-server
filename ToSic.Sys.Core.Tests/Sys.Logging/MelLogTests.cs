@@ -129,7 +129,10 @@ public class MelLogTests
         public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.Trace || traceEnabled;
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-            => entries.Add(new(category, logLevel, (IReadOnlyList<KeyValuePair<string, object?>>)state!, exception));
+        {
+            lock (entries)
+                entries.Add(new(category, logLevel, (IReadOnlyList<KeyValuePair<string, object?>>)state!, exception));
+        }
     }
 
     internal sealed record RecordedEvent(string Category, LogLevel Level, IReadOnlyList<KeyValuePair<string, object?>> State, Exception? Exception)
