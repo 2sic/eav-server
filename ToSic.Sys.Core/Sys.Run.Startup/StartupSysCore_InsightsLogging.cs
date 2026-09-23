@@ -21,14 +21,4 @@ public static partial class StartupSysCore
         // Only the Insights provider needs Trace; do not lower filters for the other host providers.
         services.Configure<LoggerFilterOptions>(options => options.Rules.Add(new(typeof(InsightsLoggerProvider).FullName, null, LogLevel.Trace, null)));
     }
-
-    private static void RemoveSysCoreInsightsLoggerServices(IServiceCollection services)
-    {
-        services.RemoveAll<IInsightsLogStore>();
-        services.RemoveAll<InsightsLoggerProvider>();
-        foreach (var descriptor in services
-                     .Where(descriptor => descriptor.ServiceType == typeof(ILoggerProvider) && descriptor.ImplementationType == typeof(InsightsLoggerProvider))
-                     .ToArray())
-            services.Remove(descriptor);
-    }
 }

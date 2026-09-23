@@ -19,12 +19,13 @@ public static partial class StartupSysCore
     /// Call this method during application startup to ensure wrapper dependencies are available for injection.
     /// </remarks>
     /// <param name="services">The service collection to which the wrapper services will be added. Cannot be null.</param>
+    /// <param name="useMel">Selects MEL logging with Insights instead of the default Legacy stack.</param>
     /// <returns>The same <see cref="IServiceCollection"/> instance, enabling method chaining.</returns>
-    public static IServiceCollection AddSysCore(this IServiceCollection services)
+    public static IServiceCollection AddSysCore(this IServiceCollection services, bool useMel = false)
     {
         return services
             .AddSysCoreBoot()
-            .AddSysCoreLogging()
+            .AddSysCoreLogging(useMel)
             .AddSysCoreDiServiceSwitchers()
             .AddSysCoreDi();
     }

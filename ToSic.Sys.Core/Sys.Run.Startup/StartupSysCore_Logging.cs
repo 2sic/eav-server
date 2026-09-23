@@ -1,27 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ToSic.Sys.Run.Startup;
 
 public static partial class StartupSysCore
 {
-    
-    public static IServiceCollection AddSysCoreLogging(this IServiceCollection services)
-    {
-        services.TryAddSingleton<ILogFactory>(LegacyLogFactory.Instance);
-
-        // History (very core service)
-        services.TryAddTransient<ILogStore, LogStoreLive>();
-        services.TryAddTransient<ILogStoreLive, LogStoreLive>();
-
-        return services;
-    }
+    /// <summary>
+    /// Registers one complete logging stack. Call once at startup; changing stacks requires an application restart.
+    /// Factory, store and reader use the same selection so Insights cannot resolve a mixed stack.
+    /// </summary>
+    public static IServiceCollection AddSysCoreLogging(this IServiceCollection services, bool useMel = false)
+        => useMel
+            ? services.AddSysCoreMelInsightsLogging()
+            : services.AddSysCoreLegacyLogging();
 
     public static IServiceCollection AddSysCoreLegacyLogging(this IServiceCollection services)
     {
-        RemoveLoggingServices(services);
-        RemoveSysCoreInsightsLoggerServices(services);
-        services.RemoveAll<IInsightsLogSnapshotReader>();
         services.AddSingleton<ILogFactory>(LegacyLogFactory.Instance);
         services.AddTransient<ILogStore, LogStoreLive>();
         services.AddTransient<ILogStoreLive, LogStoreLive>();
@@ -32,10 +25,6 @@ public static partial class StartupSysCore
 
     public static IServiceCollection AddSysCoreMelLogging(this IServiceCollection services)
     {
-        RemoveLoggingServices(services);
-        // Core-only MEL must also remove an earlier Insights stack; switching is all-or-nothing.
-        RemoveSysCoreInsightsLoggerServices(services);
-        services.RemoveAll<IInsightsLogSnapshotReader>();
         services.AddSingleton<ILogFactory>(serviceProvider => new MelLogFactory(serviceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>()));
         services.AddTransient<ILogStore, MelLogStore>();
 
@@ -44,19 +33,11 @@ public static partial class StartupSysCore
 
     public static IServiceCollection AddSysCoreMelInsightsLogging(this IServiceCollection services)
     {
-        // First select core MEL, then add exactly one local Insights provider and snapshot reader.
+        // Complete the MEL stack with the local Insights provider and snapshot reader.
         services.AddSysCoreMelLogging();
-        services.RemoveAll<IInsightsLogSnapshotReader>();
         services.AddTransient<IInsightsLogSnapshotReader, MelInsightsLogSnapshotReader>();
         services.AddSysCoreInsightsLoggerServices();
 
         return services;
-    }
-
-    private static void RemoveLoggingServices(IServiceCollection services)
-    {
-        services.RemoveAll<ILogFactory>();
-        services.RemoveAll<ILogStore>();
-        services.RemoveAll<ILogStoreLive>();
     }
 }

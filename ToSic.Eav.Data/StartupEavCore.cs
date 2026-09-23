@@ -7,7 +7,10 @@ namespace ToSic.Eav.Run.Startup;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupEavCore
 {
-    public static IServiceCollection AddAllLibAndSys(this IServiceCollection services)
+    /// <summary>
+    /// Registers core services with the logging stack selected at startup; Legacy is the default.
+    /// </summary>
+    public static IServiceCollection AddAllLibAndSys(this IServiceCollection services, bool useMel = false)
     {
         services
             .AddSysCapabilities()
@@ -16,7 +19,7 @@ public static class StartupEavCore
             .AddSysCaching()
             .AddHookUp()
             .AddSysUtils()
-            .AddSysCore();
+            .AddSysCore(useMel);
 
         return services;
     }

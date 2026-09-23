@@ -15,7 +15,8 @@ public static class StartupEav
     /// Use this to set up the new DI container
     /// </summary>
     /// <param name="services"></param>
-    public static IServiceCollection AddEavAll(this IServiceCollection services)
+    /// <param name="useMel">Selects MEL logging with Insights instead of the default Legacy stack.</param>
+    public static IServiceCollection AddEavAll(this IServiceCollection services, bool useMel = false)
     {
         // standard IEntity conversion
         // not sure where to put it, interface is in Core but the implementation in Web, also used by DataSources for json errors
@@ -43,7 +44,7 @@ public static class StartupEav
             .AddEavDataStack()
             .AddEavModels()
             .AddEavData()
-            .AddAllLibAndSys();
+            .AddAllLibAndSys(useMel);
 
         return services;
     }

@@ -161,7 +161,7 @@ public class InsightsLoggerProviderTests
     }
 
     [Fact]
-    public void MelInsightsRegistration_ReplacesLegacyReaderAndKeepsOtherProviderIndependent()
+    public void MelInsightsRegistration_KeepsOtherProviderIndependent()
     {
         var other = new RecordingProvider();
         var services = new ServiceCollection();
@@ -170,8 +170,7 @@ public class InsightsLoggerProviderTests
             logging.SetMinimumLevel(LogLevel.Warning);
             logging.AddProvider(other);
         });
-        services.AddTransient<IInsightsLogSnapshotReader, LegacyInsightsLogSnapshotReader>();
-        services.AddSysCoreMelInsightsLogging();
+        services.AddSysCoreLogging(useMel: true);
 
         using var serviceProvider = services.BuildServiceProvider();
         var insights = serviceProvider.GetRequiredService<InsightsLoggerProvider>();
@@ -196,11 +195,10 @@ public class InsightsLoggerProviderTests
     }
 
     [Fact]
-    public void LegacyRegistration_RemovesMelInsightsStack()
+    public void LegacyRegistration_UsesCompleteLegacyStackByDefault()
     {
         var services = new ServiceCollection();
-        services.AddLogging();
-        services.AddSysCoreMelInsightsLogging().AddSysCoreLegacyLogging();
+        services.AddSysCore();
 
         using var serviceProvider = services.BuildServiceProvider();
         IsType<LegacyLogFactory>(serviceProvider.GetRequiredService<ILogFactory>());
