@@ -40,7 +40,8 @@ public class AppUserLanguageCheck(
 
         // Check if we have any language rules
         var languages = LanguagesWithPermissions(appReader);
-        if (languages == null || languages.Count == 0) return l.ReturnNull("no config");
+        if (languages.Count == 0)
+            return l.ReturnNull("no config");
 
         // Check rules on current language
         var currentCode = ctx.Site.CurrentCultureCode;
@@ -91,7 +92,7 @@ public class AppUserLanguageCheck(
         if (!hasPermissions && !readerSafe.Specs.IsSiteSettingsApp())
         {
             l.A("No permissions, and not primary app - will try that");
-            var primaryAppReader = appReadersLazy.Value.GetZonePrimary(readerSafe.ZoneId)!;
+            var primaryAppReader = appReadersLazy.Value.GetZonePrimary(readerSafe.ZoneId);
             set = GetLanguagePermissions(primaryAppReader.Metadata, languages);
             hasPermissions = set.Any(s => s.Permissions.Any());
         }

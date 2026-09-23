@@ -1,16 +1,9 @@
 using ToSic.Eav.Data.ContentTypes;
-using ToSic.Eav.Data.Raw;
 using ToSic.Eav.WebApi.Sys.Security;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.WebApi.Sys.Context;
 
-[ContentType(
-    Name = "LanguageStatus",
-    Guid = "c8676078-b904-4412-bf4e-aa83d48b63e7",
-    Description = "Language enabled for an app",
-    Scope = "System"
-)]
-public record LanguageStatusRaw : IRawEntityAutoConvert
+public record ContextLanguageDto
 {
     public required string Code { get; init; }
 

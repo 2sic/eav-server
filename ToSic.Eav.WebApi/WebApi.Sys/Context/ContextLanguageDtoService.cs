@@ -1,13 +1,18 @@
 using ToSic.Eav.Context.Sys;
-using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Languages;
+namespace ToSic.Eav.WebApi.Sys.Context;
 
+/// <summary>
+/// Trivial helper to convert the languages into the DTO.
+/// Actually only called in 2sxc (not EAV),
+/// but as we'll probably move things up the stack to EAV, we'll leave this service here for now.
+/// </summary>
+/// <param name="appUserLanguageCheckLazy"></param>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class LanguagesBackend(LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy)
+public class ContextLanguageDtoService(LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy)
     : ServiceBase("Bck.Admin", connect: [appUserLanguageCheckLazy])
 {
-    public List<LanguageStatusRaw> GetLanguagesOfApp(IAppReader? appReaderOrNull, bool withCount = false)
+    public List<ContextLanguageDto> GetLanguagesOfApp(IAppReader? appReaderOrNull)
     {
         try
         {
@@ -15,13 +20,13 @@ public class LanguagesBackend(LazySvc<AppUserLanguageCheck> appUserLanguageCheck
             var converted = langs
                 .Select(lng =>
                 {
-                    var dto = new LanguageStatusRaw
+                    var dto = new ContextLanguageDto
                     {
                         Code = lng.Code,
                         Culture = lng.Culture,
                         IsAllowed = lng.IsAllowed,
                         IsEnabled = lng.IsEnabled,
-                        Permissions = withCount ? new() { Count = lng.PermissionCount } : null,
+                        Permissions = null,
                     };
                     return dto;
                 })

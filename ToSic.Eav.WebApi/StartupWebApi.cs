@@ -9,11 +9,11 @@ using ToSic.Eav.WebApi.Sys.Admin.Metadata;
 using ToSic.Eav.WebApi.Sys.Admin.Query;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
 using ToSic.Eav.WebApi.Sys.Cms;
+using ToSic.Eav.WebApi.Sys.Context;
 using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.Helpers.Json;
 using ToSic.Eav.WebApi.Sys.ImportExport;
-using ToSic.Eav.WebApi.Sys.Languages;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Sys.Logs;
 
@@ -34,7 +34,7 @@ public static class StartupWebApi
         services.TryAddTransient<LicenseControllerReal>();
 
         // Various Backends
-        services.TryAddTransient<LanguagesBackend>();
+        services.TryAddTransient<ContextLanguageDtoService>();
         services.TryAddTransient<SaveEntities>();
 
         // APIs
