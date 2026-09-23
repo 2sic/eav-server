@@ -140,10 +140,9 @@ public class MelLogStoreTests
     }
 
     [Fact]
-    public void MelInsights_SegmentEventsAreVisibleAndFlushable()
+    public void MelInsights_SegmentEventsAreVisibleAndFlushable_WithoutHostLogging()
     {
         var services = new ServiceCollection();
-        services.AddLogging();
         services.AddSysCoreMelInsightsLogging();
         using var provider = services.BuildServiceProvider();
         var factory = provider.GetRequiredService<ILogFactory>();
@@ -179,6 +178,22 @@ public class MelLogStoreTests
         Null(provider.GetService<IInsightsLogSnapshotReader>());
         Null(provider.GetService<InsightsLoggerProvider>());
         Same(other, Single(provider.GetServices<ILoggerProvider>()));
+    }
+
+    [Fact]
+    public void CoreOnlyMel_PreservesExistingHostFactory()
+    {
+        using var hostFactory = new MelLogTests.RecordingLoggerFactory(true);
+        var services = new ServiceCollection();
+        services.AddSingleton<ILoggerFactory>(hostFactory);
+        services.AddSysCoreMelLogging();
+        using var provider = services.BuildServiceProvider();
+
+        var log = provider.GetRequiredService<ILogFactory>().Create("App.Log", null, new CodeRef());
+        log.A("host event");
+
+        Same(hostFactory, Single(provider.GetServices<ILoggerFactory>()));
+        Equal("host event", Single(hostFactory.Entries).Value("Message"));
     }
 
     [Fact]
