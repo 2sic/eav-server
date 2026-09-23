@@ -37,7 +37,8 @@ internal interface ILogEventSink
 
 internal interface ILogCallCompletionSink
 {
-    void Complete(string operation, string? completionMessage, object? result, bool hasResult, CodeRef code, long durationMilliseconds);
+    void Complete(string operation, string? completionMessage, object? result, bool hasResult, CodeRef code,
+        DateTime startedUtc, TimeSpan? duration);
 }
 
 internal interface ILogSpecsSink
@@ -83,7 +84,8 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
         logger.Log(level, default, state, exception, static (values, _) => values[0].Value?.ToString() ?? "");
     }
 
-    public void Complete(string operation, string? completionMessage, object? result, bool hasResult, CodeRef code, long durationMilliseconds)
+    public void Complete(string operation, string? completionMessage, object? result, bool hasResult, CodeRef code,
+        DateTime startedUtc, TimeSpan? duration)
     {
         if (!logger.IsEnabled(LogLevel.Debug))
             return;
@@ -98,7 +100,10 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             new("CompletionMessage", completionMessage),
             new("Result", resultText),
             new("HasResult", hasResult),
-            new("DurationMilliseconds", durationMilliseconds),
+            new("StartedUtc", startedUtc),
+            // Milliseconds keep existing consumers working; ticks preserve precision for Insights.
+            new("DurationMilliseconds", duration is { } elapsed ? (long?)elapsed.TotalMilliseconds : null),
+            new("DurationTicks", duration?.Ticks),
             new("SourceFilePath", code.Path),
             new("SourceMemberName", code.Name),
             new("SourceLineNumber", code.Line),

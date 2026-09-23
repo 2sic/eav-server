@@ -196,7 +196,7 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
                         // WIP must find a slightly better way to truncate the title
                         SpecialField.Left(HtmlEncode(trimmedTitle), tooltip: bestTitle),
                         HtmlEncode(firstIfExists?.Result),
-                        SpecialField.Right(ShowDuration(bundle.Events))
+                        SpecialField.Right(ShowDuration(bundle.Events), tooltip: "Longest recorded operation; not total request duration")
                     ]);
                 })
                 .ToArray<object>()));
@@ -207,7 +207,17 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
     }
 
     private static string ShowDuration(IEnumerable<InsightsLogEventSnapshot> events)
-        => events.Select(entry => entry.DurationMilliseconds).Where(value => value != null).Select(value => TimeSpan.FromMilliseconds(value!.Value)).DefaultIfEmpty().Max().ToString();
+        => events.Select(Duration).Max() is { } elapsed
+            ? new InsightsTime().ShowTime(elapsed)
+            : "";
+
+    // Prefer precise ticks, but keep older snapshots that only recorded milliseconds readable.
+    private static TimeSpan? Duration(InsightsLogEventSnapshot entry)
+        => entry.DurationTicks is { } ticks
+            ? TimeSpan.FromTicks(ticks)
+            : entry.DurationMilliseconds is { } milliseconds
+                ? TimeSpan.FromMilliseconds(milliseconds)
+                : null;
 
     internal string DumpTree(string title, InsightsLogGroupSnapshot group)
     {
@@ -216,8 +226,13 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
 
         var log = new StringBuilder(H1(title) + Div(group.TimestampUtc.Dump()) + "\n\n<ol>");
         var depth = 0;
-        // Legacy snapshots have wrap markers; MEL snapshots simply stay in provider sequence.
-        foreach (var entry in group.Events)
+        var isMel = group.Events.All(entry => entry.Depth == null);
+        var start = isMel ? group.Events.Min(entry => entry.StartedUtc ?? entry.TimestampUtc) : group.TimestampUtc;
+        IEnumerable<InsightsLogEventSnapshot> entries = isMel
+            ? group.Events.OrderBy(entry => entry.StartedUtc ?? entry.TimestampUtc).ThenBy(entry => entry.Sequence)
+            : group.Events;
+        // Legacy snapshots have wrap markers; MEL rows follow operation start time.
+        foreach (var entry in entries)
         {
             if (entry.WrapClose)
             {
@@ -230,7 +245,7 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
             }
 
             log.AppendLine("<li>");
-            log.AppendLine(SnapshotLine(entry));
+            log.AppendLine(SnapshotLine(entry, start));
             if (entry.WrapOpen)
             {
                 if (!entry.WrapOpenWasClosed)
@@ -248,7 +263,7 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
         return log.ToString();
     }
 
-    private static string SnapshotLine(InsightsLogEventSnapshot entry)
+    private static string SnapshotLine(InsightsLogEventSnapshot entry, DateTime start)
     {
         var message = HtmlEncode(entry.Message.NeverNull());
         if (entry.ShowNewLines)
@@ -259,9 +274,7 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
             : "";
         var result = entry.Result == null ? "" : $" {ResStart}{HtmlEncode(entry.Result)}{ResEnd}";
         var exception = entry.Exception?.Details == null ? "" : " " + HtmlEncode(entry.Exception.Details);
-        var timing = entry.DurationMilliseconds is { } milliseconds
-            ? $" {entry.TimestampUtc:HH:mm:ss.fff} ⌚ {milliseconds}ms"
-            : $" {entry.TimestampUtc:HH:mm:ss.fff}";
+        var timing = " " + new InsightsTime().ShowTime(Duration(entry), (entry.StartedUtc ?? entry.TimestampUtc) - start);
         return Span(HoverLabel(HtmlEncode(entry.ShortSource ?? entry.Category), source, "logIds") + " - " + message + result + timing + exception + code)
             .Class("log-line")
             .ToString();

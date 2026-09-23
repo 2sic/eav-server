@@ -254,7 +254,7 @@ public sealed class InsightsLogStore : IInsightsLogStore
 
     // This is a stable retention budget, not a managed-heap measurement.
     private static long Estimate(InsightsEvent entry)
-        => 128
+        => 144
            + Length(entry.Category) + Length(entry.EventName) + Length(entry.Message)
            + Length(entry.SourceFilePath) + Length(entry.SourceMemberName) + Length(entry.Operation) + Length(entry.Result)
            + Length(entry.TraceId) + Length(entry.SpanId) + Length(entry.Segment)

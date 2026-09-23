@@ -45,6 +45,8 @@ public sealed class InsightsLoggerProvider(IInsightsLogStore store) : ILoggerPro
                 Operation = Value(values, "Operation"),
                 Result = Value(values, "Result"),
                 DurationMilliseconds = LongValue(values, "DurationMilliseconds"),
+                StartedUtc = DateTimeValue(values, "StartedUtc"),
+                DurationTicks = LongValue(values, "DurationTicks"),
                 TraceId = traceId,
                 SpanId = spanId,
                 Segment = Value(values, "Segment"),
@@ -110,6 +112,11 @@ public sealed class InsightsLoggerProvider(IInsightsLogStore store) : ILoggerPro
             int value => value,
             _ => null
         };
+
+    private static DateTime? DateTimeValue(IEnumerable<KeyValuePair<string, object?>> values, string key)
+        => values.FirstOrDefault(pair => pair.Key == key).Value is DateTime value
+            ? value.ToUniversalTime()
+            : null;
 
     private static string? Scalar(object? value)
     {

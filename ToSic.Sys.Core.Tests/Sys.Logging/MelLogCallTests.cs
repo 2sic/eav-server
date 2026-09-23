@@ -57,6 +57,22 @@ public class MelLogCallTests
 
         False(call.Timer.IsRunning);
         True((long)Single(recording.Entries).Value("DurationMilliseconds")! >= 0);
+        True((long)Single(recording.Entries).Value("DurationTicks")! >= 0);
+        IsType<DateTime>(Single(recording.Entries).Value("StartedUtc"));
+    }
+
+    [Fact]
+    public void Done_WithoutTimerHasStartButNoMeasuredDuration()
+    {
+        var (recording, log) = NewLog();
+        var call = log.Fn()!;
+
+        call.Done();
+
+        var entry = Single(recording.Entries);
+        IsType<DateTime>(entry.Value("StartedUtc"));
+        Null(entry.Value("DurationMilliseconds"));
+        Null(entry.Value("DurationTicks"));
     }
 
     [Fact]

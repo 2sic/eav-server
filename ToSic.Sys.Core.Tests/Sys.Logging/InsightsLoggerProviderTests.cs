@@ -16,6 +16,7 @@ public class InsightsLoggerProviderTests
         using var activity = new Activity("test").SetIdFormat(ActivityIdFormat.W3C).Start();
         var exception = new InvalidOperationException("outer", new ArgumentException("inner"));
         exception.Data["Code"] = 42;
+        var startedUtc = new DateTime(2026, 9, 23, 12, 0, 0, DateTimeKind.Utc);
 
         provider.CreateLogger("ToSic.App").Log(LogLevel.Error, new(42, "Failure"), State(
             ("Message", "state message"),
@@ -25,6 +26,8 @@ public class InsightsLoggerProviderTests
             ("Operation", "App.Run()"),
             ("Result", "failed"),
             ("DurationMilliseconds", 12L),
+            ("StartedUtc", startedUtc),
+            ("DurationTicks", 123456L),
             ("Segment", "webapi"),
             ("Custom", "value")), exception, static (_, _) => "rendered message");
         exception.Data["Code"] = "changed";
@@ -43,6 +46,8 @@ public class InsightsLoggerProviderTests
         Equal("App.Run()", entry.Operation);
         Equal("failed", entry.Result);
         Equal(12, entry.DurationMilliseconds);
+        Equal(startedUtc, entry.StartedUtc);
+        Equal(123456L, entry.DurationTicks);
         Equal("webapi", entry.Segment);
         Equal(activity.TraceId.ToString(), entry.TraceId);
         Equal(activity.SpanId.ToString(), entry.SpanId);

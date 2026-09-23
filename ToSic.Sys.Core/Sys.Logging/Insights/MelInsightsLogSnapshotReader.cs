@@ -50,7 +50,8 @@ public sealed class MelInsightsLogSnapshotReader(IInsightsLogStore store) : IIns
             string.IsNullOrEmpty(traceId) ? $"segment:{SegmentId(segments.FirstOrDefault())}" : $"trace:{traceId}",
             traceId,
             segments,
-            events[0].TimestampUtc,
+            // A completion may arrive after later calls; group time follows the earliest start.
+            events.Min(entry => entry.StartedUtc ?? entry.TimestampUtc),
             specs.ToImmutable(),
             events);
     }
@@ -61,7 +62,8 @@ public sealed class MelInsightsLogSnapshotReader(IInsightsLogStore store) : IIns
             entry.Properties, entry.Specs, entry.SourceFilePath, entry.SourceMemberName, entry.SourceLineNumber,
             entry.Operation, entry.Result, entry.DurationMilliseconds, entry.TraceId, entry.SpanId, entry.Segment,
             entry.Exception, null, false, false, false, null, entry.Category,
-            Bool(entry.Properties, "HideCodeReference"), Bool(entry.Properties, "ShowNewLines"));
+            Bool(entry.Properties, "HideCodeReference"), Bool(entry.Properties, "ShowNewLines"),
+            entry.StartedUtc, entry.DurationTicks);
 
     private static bool Bool(ImmutableDictionary<string, string?> properties, string key)
         => properties.TryGetValue(key, out var value) && bool.TryParse(value, out var result) && result;

@@ -74,7 +74,9 @@ public sealed class LegacyInsightsLogSnapshotReader(ILogStoreLive store) : IInsi
                 entry.Source,
                 entry.ShortSource,
                 entry.Options?.HideCodeReference ?? false,
-                entry.Options?.ShowNewLines ?? false))
+                entry.Options?.ShowNewLines ?? false,
+                entry.Created.ToUniversalTime(),
+                entry.Elapsed == TimeSpan.Zero ? null : entry.Elapsed.Ticks))
             .ToImmutableArray();
     }
 

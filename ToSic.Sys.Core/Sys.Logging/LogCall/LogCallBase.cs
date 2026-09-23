@@ -10,6 +10,7 @@ public class LogCallBase : ILogCall
     private readonly ILogCallCompletionSink? _completionSink;
     private readonly string? _operation;
     private readonly CodeRef _code;
+    private readonly DateTime _startedUtc;
     private int _completed;
 
     /// <summary>
@@ -23,6 +24,7 @@ public class LogCallBase : ILogCall
         string? message = null,
         bool timer = false)
     {
+        _startedUtc = DateTime.UtcNow;
         // Always init the stopwatch, as it could be used later even without a parent log
         Timer = timer
             ? Stopwatch.StartNew()
@@ -73,9 +75,12 @@ public class LogCallBase : ILogCall
         if (Interlocked.Exchange(ref _completed, 1) != 0)
             return;
 
-        if (Timer.IsRunning)
+        // No running timer means no measured duration, not a measured zero.
+        var wasRunning = Timer.IsRunning;
+        if (wasRunning)
             Timer.Stop();
-        _completionSink?.Complete(_operation!, message, result, hasResult, _code, Timer.ElapsedMilliseconds);
+        _completionSink?.Complete(_operation!, message, result, hasResult, _code, _startedUtc,
+            wasRunning ? Timer.Elapsed : null);
     }
 
     public ILog? Log { get; }

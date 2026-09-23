@@ -21,6 +21,8 @@ public sealed record InsightsEvent
     public string? Operation { get; init; }
     public string? Result { get; init; }
     public long? DurationMilliseconds { get; init; }
+    public DateTime? StartedUtc { get; init; }
+    public long? DurationTicks { get; init; }
     public string? TraceId { get; init; }
     public string? SpanId { get; init; }
     public string? Segment { get; init; }
