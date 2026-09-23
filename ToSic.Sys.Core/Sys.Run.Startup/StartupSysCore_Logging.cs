@@ -25,6 +25,8 @@ public static partial class StartupSysCore
 
     public static IServiceCollection AddSysCoreMelLogging(this IServiceCollection services)
     {
+        // Older DNN hosts have no ILoggerFactory; AddLogging supplies one without replacing a host factory.
+        services.AddLogging();
         services.AddSingleton<ILogFactory>(serviceProvider => new MelLogFactory(serviceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>()));
         services.AddTransient<ILogStore, MelLogStore>();
 
