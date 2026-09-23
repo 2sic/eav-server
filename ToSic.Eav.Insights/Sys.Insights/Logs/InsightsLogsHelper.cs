@@ -269,7 +269,29 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
 
     internal string DumpTree(string title, ILog? log)
     {
-        var typedLog = (Log)log!;
+        if (log is not Log typedLog)
+            return DumpRetainedEvents(title, log?.NameId);
+
+        return DumpLegacyTree(title, typedLog);
+    }
+
+    private string DumpRetainedEvents(string title, string? category)
+    {
+        // MEL has no per-log entry tree here, so show the retained events for its category.
+        var events = snapshot.Groups
+            .SelectMany(group => group.Events)
+            .Where(entry => entry.Category == category)
+            .OrderBy(entry => entry.Sequence)
+            .ToImmutableArray();
+        if (events.Length == 0)
+            return "";
+
+        InsightsLogGroupSnapshot group = new("", null, [], events[0].TimestampUtc, ImmutableDictionary<string, string?>.Empty, events);
+        return DumpTree($"{title} (retained events for {category})", group);
+    }
+
+    private string DumpLegacyTree(string title, Log typedLog)
+    {
         var lg = new StringBuilder(
             H1($"{title}") +
             Div($"{typedLog.Created.Dump()}") +
