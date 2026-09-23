@@ -13,7 +13,7 @@ public class MelLogStore : ILogStore
     private static LogStoreEntry? AddInternal(string segment, ILog log)
     {
         if (log.GetRealLog() is not MelLog melLog)
-            return null;
+            throw new InvalidOperationException("The MEL store only accepts MEL logs.");
 
         // Set this before more events are written, so segment flush also removes normal log lines.
         melLog.SetSegment(segment);

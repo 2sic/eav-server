@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace ToSic.Sys.Run.Startup;
 
 public static partial class StartupSysCore
@@ -15,7 +17,7 @@ public static partial class StartupSysCore
 
     public static IServiceCollection AddSysCoreLegacyLogging(this IServiceCollection services)
     {
-        services.AddSingleton<ILogFactory>(LegacyLogFactory.Instance);
+        services.TryAddSingleton<ILogFactory>(LegacyLogFactory.Instance);
         services.AddTransient<ILogStore, LogStoreLive>();
         services.AddTransient<ILogStoreLive, LogStoreLive>();
         services.AddTransient<IInsightsLogSnapshotReader, LegacyInsightsLogSnapshotReader>();
@@ -27,7 +29,7 @@ public static partial class StartupSysCore
     {
         // Older DNN hosts have no ILoggerFactory; AddLogging supplies one without replacing a host factory.
         services.AddLogging();
-        services.AddSingleton<ILogFactory>(serviceProvider => new MelLogFactory(serviceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>()));
+        services.TryAddSingleton<ILogFactory>(serviceProvider => new MelLogFactory(serviceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>()));
         services.AddTransient<ILogStore, MelLogStore>();
 
         return services;

@@ -21,6 +21,8 @@ internal interface ILogFactoryOwner
 internal sealed class LogFactorySelector(ILogFactory legacyFactory)
 {
     private ILogFactory? _selected;
+    private readonly object _selectionSync = new();
+    private bool _legacyCreatedBeforeSelection;
 
     // Boot logging can start before host DI is ready, so Legacy must remain the safe default.
     internal ILogFactory Current => Volatile.Read(ref _selected) ?? legacyFactory;
@@ -29,21 +31,40 @@ internal sealed class LogFactorySelector(ILogFactory legacyFactory)
     {
         if (factory == null)
             throw new ArgumentNullException(nameof(factory));
-        // The application must not mix implementations after normal logging has started.
-        var previous = Interlocked.CompareExchange(ref _selected, factory, null);
-        if (previous != null && !ReferenceEquals(previous, factory))
-            throw new InvalidOperationException("A log factory was already selected for this application.");
+        lock (_selectionSync)
+        {
+            if (_legacyCreatedBeforeSelection && !ReferenceEquals(factory, legacyFactory))
+                throw new InvalidOperationException("A Legacy log was created before MEL was selected.");
+            if (_selected != null && !ReferenceEquals(_selected, factory))
+                throw new InvalidOperationException("A log factory was already selected for this application.");
+            Volatile.Write(ref _selected, factory);
+        }
     }
 
     internal ILogFactory For(ILog? parent)
     {
-        // A known parent wins, so a child cannot cross from Legacy to MEL or the other way around.
         var realParent = parent.GetRealLog();
-        return realParent switch
+        if (realParent == null && Volatile.Read(ref _selected) == null)
+        {
+            // A root created before host selection commits this process to Legacy.
+            lock (_selectionSync)
+            {
+                if (_selected == null)
+                {
+                    _legacyCreatedBeforeSelection = true;
+                    return legacyFactory;
+                }
+            }
+        }
+        var factory = realParent switch
         {
             Log => legacyFactory,
             ILogFactoryOwner owner => owner.Factory,
             _ => Current
         };
+        if (realParent != null && Volatile.Read(ref _selected) != null
+            && !ReferenceEquals(factory, Current))
+            throw new InvalidOperationException("A log parent belongs to a different logging stack.");
+        return factory;
     }
 }

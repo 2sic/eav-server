@@ -126,7 +126,7 @@ public class MelLogStoreTests
 
     [Fact]
     public void Add_RejectsLegacyLog()
-        => Null(new MelLogStore().Add("segment", new Log("legacy")));
+        => Throws<InvalidOperationException>(() => new MelLogStore().Add("segment", new Log("legacy")));
 
     [Fact]
     public void Add_AssignsSegmentToSubsequentEvents()

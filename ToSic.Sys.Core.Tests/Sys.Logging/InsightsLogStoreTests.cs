@@ -75,6 +75,24 @@ public class InsightsLogStoreTests
         Equal(["two", "three"], store.List().Select(entry => entry.Message));
     }
 
+    [Fact]
+    public void Append_RetainsProcessBootGroup_WhenOtherGroupsExceedLimits()
+    {
+        var store = new InsightsLogStore(new() { MaxEvents = 2, MaxGroups = 1 });
+        var boot = NewEvent("Starting Boot Log", 1, segment: "boot-log") with
+        {
+            Category = "ToSic.Sys.BootLog",
+            LogGroupId = "process-boot"
+        };
+
+        store.Append(boot);
+        store.Append(NewEvent("first request", 2, traceId: "request-1"));
+        store.Append(NewEvent("second request", 3, traceId: "request-2"));
+
+        Equal(["Starting Boot Log"], store.List().Select(entry => entry.Message));
+        Equal(1, store.Snapshot().Counters.RetainedGroups);
+    }
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
