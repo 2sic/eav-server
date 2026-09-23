@@ -76,11 +76,12 @@ public sealed class InsightsLogStore : IInsightsLogStore
 
     public void FlushGroup(string traceId)
     {
+        // A trace lookup removes each matching log history, including events written under another Activity.
         lock (_sync)
         {
-            if (_groups.TryGetValue(traceId, out var group))
+            foreach (var group in _groups.Values.Where(group => group.Key == traceId || group.Events.Any(entry => entry.TraceId == traceId)).ToList())
             {
-                _groups.Remove(traceId);
+                _groups.Remove(group.Key);
                 Remove(group.Events);
             }
         }
@@ -129,11 +130,13 @@ public sealed class InsightsLogStore : IInsightsLogStore
 
     public ImmutableArray<InsightsEvent> ReadGroup(string traceId)
     {
-        // Return a detached ordered view, so callers never observe the mutable group list.
+        // Return matching log histories as a detached ordered view, even if their Activity changed.
         lock (_sync)
-            return _groups.TryGetValue(traceId, out var group)
-                ? group.Events.OrderBy(eventInfo => eventInfo.Sequence).ToImmutableArray()
-                : [];
+            return _groups.Values
+                .Where(group => group.Key == traceId || group.Events.Any(entry => entry.TraceId == traceId))
+                .SelectMany(group => group.Events)
+                .OrderBy(eventInfo => eventInfo.Sequence)
+                .ToImmutableArray();
     }
 
     public ImmutableArray<InsightsEvent> List(string? segment = default)
@@ -147,9 +150,10 @@ public sealed class InsightsLogStore : IInsightsLogStore
 
     public ImmutableArray<InsightsGroupSummary> ListGroups()
     {
+        // The group key may now be a log ID; expose an event TraceId for request correlation.
         lock (_sync)
             return _groups.Values
-                .Select(group => new InsightsGroupSummary(group.Key, group.Events.Select(eventInfo => eventInfo.Segment).Distinct().OrderBy(segment => segment, StringComparer.Ordinal).ToImmutableArray(), group.Events.Min(eventInfo => eventInfo.Sequence), group.Events.Count, true))
+                .Select(group => new InsightsGroupSummary(group.Events.Select(entry => entry.TraceId).FirstOrDefault(traceId => traceId != null), group.Events.Select(eventInfo => eventInfo.Segment).Distinct().OrderBy(segment => segment, StringComparer.Ordinal).ToImmutableArray(), group.Events.Min(eventInfo => eventInfo.Sequence), group.Events.Count, true))
                 .Concat(_unscopedBySegment.Select(pair => new InsightsGroupSummary(null, ImmutableArray.Create<string?>(pair.Key == "" ? null : pair.Key), pair.Value.Min(eventInfo => eventInfo.Sequence), pair.Value.Count, false)))
                 .OrderBy(group => group.FirstSequence)
                 .ToImmutableArray();
@@ -157,12 +161,12 @@ public sealed class InsightsLogStore : IInsightsLogStore
 
     private void Add(InsightsEvent entry, long estimatedBytes)
     {
-        // Activity is the natural request group; logs without one stay grouped by their explicit segment.
-        if (!string.IsNullOrEmpty(entry.TraceId))
+        // Admitted logs keep their own history; Activity still correlates them across a request.
+        var groupKey = !string.IsNullOrEmpty(entry.LogGroupId) ? $"log:{entry.LogGroupId}" : entry.TraceId;
+        if (!string.IsNullOrEmpty(groupKey))
         {
-            var traceId = entry.TraceId!;
-            if (!_groups.TryGetValue(traceId, out var group))
-                _groups[traceId] = group = new(traceId);
+            if (!_groups.TryGetValue(groupKey, out var group))
+                _groups[groupKey] = group = new(groupKey);
             group.Events.Add(entry);
             while (group.Events.Count > _options.MaxEventsPerGroup)
                 Remove(group.Events, Oldest(group.Events));
@@ -257,7 +261,7 @@ public sealed class InsightsLogStore : IInsightsLogStore
         => 144
            + Length(entry.Category) + Length(entry.EventName) + Length(entry.Message)
            + Length(entry.SourceFilePath) + Length(entry.SourceMemberName) + Length(entry.Operation) + Length(entry.Result)
-           + Length(entry.TraceId) + Length(entry.SpanId) + Length(entry.Segment)
+           + Length(entry.TraceId) + Length(entry.SpanId) + Length(entry.Segment) + Length(entry.LogGroupId)
            + Estimate(entry.Exception)
            + entry.Properties.Sum(pair => Length(pair.Key) + Length(pair.Value))
            + entry.Specs.Sum(pair => Length(pair.Key) + Length(pair.Value));

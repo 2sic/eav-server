@@ -79,6 +79,7 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             new("TraceId", activity?.TraceId.ToString()),
             new("SpanId", activity?.SpanId.ToString()),
             new("Segment", SegmentContext.Value),
+            new("LogGroupId", SegmentContext.GroupId),
             new("{OriginalFormat}", "{Message}")
         ];
         logger.Log(level, default, state, exception, static (values, _) => values[0].Value?.ToString() ?? "");
@@ -110,6 +111,7 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             new("TraceId", activity?.TraceId.ToString()),
             new("SpanId", activity?.SpanId.ToString()),
             new("Segment", SegmentContext.Value),
+            new("LogGroupId", SegmentContext.GroupId),
             new("{OriginalFormat}", "{Message}")
         ];
         logger.Log(LogLevel.Debug, default, state, null, static (values, _) => values[0].Value?.ToString() ?? "");
@@ -127,7 +129,8 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             new("LogName", logName),
             new("Segment", segment),
             new("TraceId", activity?.TraceId.ToString()),
-            new("SpanId", activity?.SpanId.ToString())
+            new("SpanId", activity?.SpanId.ToString()),
+            new("LogGroupId", SegmentContext.GroupId)
         };
         state.Add(new("Specs", specs.ToImmutableDictionary()));
         state.AddRange(specs.Select(pair => new KeyValuePair<string, object?>(pair.Key, pair.Value)));
@@ -135,7 +138,7 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
         logger.Log(LogLevel.Trace, default, (IReadOnlyList<KeyValuePair<string, object?>>)state, null, static (values, _) => values[0].Value?.ToString() ?? "");
     }
 
-    internal void SetSegment(string segment) => SegmentContext.Value = segment;
+    internal void SetSegment(string segment) => SegmentContext.Admit(segment);
 
     internal void Link(ILog? parent)
     {
@@ -163,17 +166,20 @@ internal sealed class MelSegmentContext
 {
     // Admission belongs to this producer; only links are execution-local.
     private string? _value;
+    private string? _groupId;
     private readonly AsyncLocal<MelSegmentContext?> _parent = new();
 
-    internal string? Value
+    internal string? Value => _parent.Value?.Value ?? Volatile.Read(ref _value);
+
+    internal string? GroupId => _parent.Value?.GroupId ?? Volatile.Read(ref _groupId);
+
+    internal void Admit(string segment)
     {
-        get => _parent.Value?.Value ?? Volatile.Read(ref _value);
-        set
-        {
-            // Explicit admission must break any request link inherited by this execution.
-            _parent.Value = null;
-            Volatile.Write(ref _value, value);
-        }
+        // Explicit admission must break any request link inherited by this execution.
+        _parent.Value = null;
+        // Give this log its own Insights history; the ambient Activity may change while it renders.
+        Volatile.Write(ref _groupId, Guid.NewGuid().ToString("N"));
+        Volatile.Write(ref _value, segment);
     }
 
     internal void Link(MelSegmentContext parent)

@@ -50,6 +50,7 @@ public sealed class InsightsLoggerProvider(IInsightsLogStore store) : ILoggerPro
                 TraceId = traceId,
                 SpanId = spanId,
                 Segment = Value(values, "Segment"),
+                LogGroupId = Value(values, "LogGroupId"),
                 Exception = Diagnostic(exception)
             });
         }
