@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.DataSource;
+﻿using ToSic.Eav.Context.Sys;
+using ToSic.Eav.Data.Raw;
+using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Languages;
 
@@ -8,36 +9,18 @@ namespace ToSic.Eav.WebApi.Sys.Languages;
 [VisualQuery(
     NiceName = "App Languages",
     NameId = "c8676078-b904-4412-bf4e-aa83d48b63e7",
-    NameIds = ["System.AppLanguages"], // Internal name for the system, used in some entity-pickers. Can change at any time.
+    NameIds = ["System.AppLanguages"], // Internal name for the system, used in the app-admin UI (admin only). Can change at any time.
     Type = DataSourceType.System,
     Audience = Audience.System,
     DataConfidentiality = DataConfidentiality.Internal,
     UiHint = "Languages of the current app"
 )]
-public class AppLanguages : CustomDataSource
+public class AppLanguages(CustomDataSource.Dependencies services, IAppReaderFactory appReaders, AppUserLanguageCheck appLanguages)
+    : CustomDataSource(services, logName: "Sxc.AppLangs", connect: [appReaders, appLanguages])
 {
-    public AppLanguages(Dependencies services, LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
-        : base(services, logName: "Sxc.AppLangs", connect: [languagesBackend, appReadersLazy])
-    {
-        ProvideOutRaw(
-            () => GetLanguages(languagesBackend, appReadersLazy),
-            options: () => new()
-            {
-                AutoId = true,
-                AllowUnknownValueTypes = true,
-            });
-    }
-
-    private IEnumerable<LanguageStatusRaw> GetLanguages(LanguagesBackend languagesBackend, LazySvc<IAppReaderFactory> appReadersLazy)
-    {
-        var l = Log.Fn<IEnumerable<LanguageStatusRaw>>();
-
-        var appReader = appReadersLazy.Value.Get(AppId);
-
-        var list = languagesBackend
-            .GetLanguagesOfApp(appReader, true)
-            .ToListOpt();
-
-        return l.Return(list, $"{list.Count}");
-    }
+    /// <summary>
+    /// Get the site languages
+    /// </summary>
+    protected override IEnumerable<IRawData> GetDefault()
+        => appLanguages.LanguagesWithPermissions(appReaders.Get(AppId));
 }

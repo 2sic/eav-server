@@ -1,16 +1,11 @@
-using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
-using Services_ServiceBase = ToSic.Sys.Services.ServiceBase;
 
 namespace ToSic.Eav.WebApi.Sys.Languages;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class LanguagesBackend(
-    LazySvc<ZoneManager> zoneManager,
-    ISite site,
-    LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy)
-    : Services_ServiceBase("Bck.Admin", connect: [zoneManager, site, appUserLanguageCheckLazy])
+public class LanguagesBackend(LazySvc<AppUserLanguageCheck> appUserLanguageCheckLazy)
+    : ServiceBase("Bck.Admin", connect: [appUserLanguageCheckLazy])
 {
     public List<LanguageStatusRaw> GetLanguagesOfApp(IAppReader? appReaderOrNull, bool withCount = false)
     {
@@ -18,15 +13,15 @@ public class LanguagesBackend(
         {
             var langs = appUserLanguageCheckLazy.Value.LanguagesWithPermissions(appReaderOrNull);
             var converted = langs
-                .Select(l =>
+                .Select(lng =>
                 {
                     var dto = new LanguageStatusRaw
                     {
-                        Code = l.Code,
-                        Culture = l.Culture,
-                        IsAllowed = l.IsAllowed,
-                        IsEnabled = l.IsEnabled,
-                        Permissions = withCount ? new() { Count = l.PermissionCount } : null,
+                        Code = lng.Code,
+                        Culture = lng.Culture,
+                        IsAllowed = lng.IsAllowed,
+                        IsEnabled = lng.IsEnabled,
+                        Permissions = withCount ? new() { Count = lng.PermissionCount } : null,
                     };
                     return dto;
                 })
@@ -41,10 +36,4 @@ public class LanguagesBackend(
 
     }
 
-    public void Toggle(string cultureCode, bool enable, string niceName)
-    {
-        Log.A($"switch language:{cultureCode}, to:{enable}");
-        // Activate or Deactivate the Culture
-        zoneManager.Value.SetId(site.ZoneId).SaveLanguage(cultureCode, niceName, enable);
-    }
 }

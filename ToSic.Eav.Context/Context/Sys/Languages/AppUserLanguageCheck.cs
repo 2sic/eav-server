@@ -53,9 +53,9 @@ public class AppUserLanguageCheck(
     /// </summary>
     /// <param name="appReaderOrNull"></param>
     /// <returns></returns>
-    public List<AppUserLanguageState> LanguagesWithPermissions(IAppReader? appReaderOrNull)
+    public List<AppLanguageState> LanguagesWithPermissions(IAppReader? appReaderOrNull)
     {
-        var l = Log.Fn<List<AppUserLanguageState>>();
+        var l = Log.Fn<List<AppLanguageState>>();
         // to solves the issue with globals settings languages that can not be saved if 
         // app languages are different from languages in global app and because global
         // settings are in primary appid=1, zoneId=1 without portal site we just return empty list for it
@@ -76,7 +76,7 @@ public class AppUserLanguageCheck(
         if (allowAllLanguages || appReaderOrNull == null)
         {
             var noAppResult = languages
-                .Select<ISiteLanguageState, AppUserLanguageState>(lng => new(lng, true, -1))
+                .Select(lng => new AppLanguageState(lng, true, -1))
                 .ToList();
             return l.Return(noAppResult, $"no-app {noAppResult.Count}");
         }
@@ -123,7 +123,7 @@ public class AppUserLanguageCheck(
             });
 
         var result = newSet
-            .Select(s => new AppUserLanguageState(s.Language, s.Allowed, s.PermissionCount))
+            .Select(s => new AppLanguageState(s.Language, s.Allowed, s.PermissionCount))
             .ToList();
         return l.Return(result, $"ok {result.Count}");
     }
