@@ -8,6 +8,7 @@ using ToSic.Eav.WebApi.Sys.Admin.Features;
 using ToSic.Eav.WebApi.Sys.Admin.Metadata;
 using ToSic.Eav.WebApi.Sys.Admin.Query;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
+using ToSic.Eav.WebApi.Sys.App.Details;
 using ToSic.Eav.WebApi.Sys.Cms;
 using ToSic.Eav.WebApi.Sys.Context;
 using ToSic.Eav.WebApi.Sys.Entities;
@@ -73,6 +74,10 @@ public static class StartupWebApi
 
         // v20 centralize log creation / access for an http request
         services.TryAddScoped<HttpRequestLoggingScoped>();
+
+        // v22
+        services.TryAddTransient<IAppDetailsService, AppDetailsService>();
+        services.TryAddTransient<AppDetailsService>();
 
         services.AddNetInfrastructure();
 

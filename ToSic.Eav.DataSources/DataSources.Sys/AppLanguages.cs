@@ -1,8 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Data.Raw;
-using ToSic.Eav.DataSource;
-using ToSic.Eav.DataSource.VisualQuery;
 
 namespace ToSic.Eav.DataSources.Sys;
 

@@ -5,12 +5,6 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 
 public interface IAppController
 {
-    // Replaced by DataSource System.Apps
-    //ICollection<AppDto> List(int zoneId);
-
-    // Replaced by DataSource System.InheritableApps
-    //ICollection<AppDto> InheritableApps();
-
     void App(int zoneId, int appId, bool fullDelete = true);
 
     void App(int zoneId, string name, int? inheritAppId = null);

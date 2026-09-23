@@ -1,31 +1,19 @@
 ﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
+using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.WebApi.Sys.App.Details;
 
-// 1. Rename Raw
-// 2. Define Content Type
-// 3. Auto generate properties with IRawEntityAutoConvert
-// 4. Specify which one is the title
-//
-// Change use
-// - Simplify access/creation in DataSource
-// - Make sure we don't need options (unless really important, because of special sub-objects)
-//
-// Then
-// - verify it works
-// - especially Guid & Id
-//
-// Cleanup
-// - Delete anything not important (like the temporary objects)
-
+/// <summary>
+/// Detailed information about apps - including lightspeed configuration and more.
+/// </summary>
 [ContentType(
-    Name = "App",
-    Guid = "53b3fe9b-d689-4b1f-bed1-503cbc898ffc",
-    Description = "App information",
+    Name = "AppDetails",
+    Guid = "b9ed2955-3dfd-4397-9810-376ae6982481",
+    Description = "App details information",
     Scope = "System"
 )]
-public class AppRaw: IRawEntityAutoConvert
+public record AppDetailsRaw: IRawEntityAutoConvert
 {
     public required int Id { get; init; }
     public required bool IsApp { get; init; }
