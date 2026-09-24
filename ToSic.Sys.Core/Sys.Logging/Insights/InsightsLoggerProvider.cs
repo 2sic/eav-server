@@ -28,7 +28,7 @@ public sealed class InsightsLoggerProvider(IInsightsLogStore store) : ILoggerPro
             var traceId = Value(values, "TraceId") ?? activity?.TraceId.ToString();
             var spanId = Value(values, "SpanId") ?? activity?.SpanId.ToString();
             var sequence = Interlocked.Increment(ref _sequence);
-            // Bootstrap replay carries its original time and flattened exception in the event state.
+            // Bootstrap replay carries its original time and a detached exception diagnostic.
             store.Append(new()
             {
                 Sequence = sequence,
@@ -52,7 +52,7 @@ public sealed class InsightsLoggerProvider(IInsightsLogStore store) : ILoggerPro
                 SpanId = spanId,
                 Segment = Value(values, "Segment"),
                 LogGroupId = Value(values, "LogGroupId"),
-                Exception = Diagnostic(exception) ?? BootstrapDiagnostic(values)
+                Exception = Diagnostic(exception)
             });
         }
         catch
@@ -126,19 +126,14 @@ public sealed class InsightsLoggerProvider(IInsightsLogStore store) : ILoggerPro
         catch { return "<unavailable>"; }
     }
 
-    private static InsightsExceptionDiagnostic? Diagnostic(Exception? exception)
-        => exception == null
-            ? null
-            : new(exception.GetType().FullName ?? exception.GetType().Name, Scalar(exception.Message), Scalar(exception.StackTrace), Scalar(exception), ExceptionData(exception.Data), Diagnostic(exception.InnerException));
-
-    private static InsightsExceptionDiagnostic? BootstrapDiagnostic(IEnumerable<KeyValuePair<string, object?>> values)
-    {
-        var type = Value(values, "BootstrapExceptionType");
-        return type == null
-            ? null
-            : new(type, Value(values, "BootstrapExceptionMessage"), Value(values, "BootstrapExceptionStackTrace"),
-                Value(values, "BootstrapExceptionDetails"), ImmutableDictionary<string, string?>.Empty, null);
-    }
+    // Bootstrap replay uses an adapter Exception; keep the original diagnostic instead of its adapter type.
+    internal static InsightsExceptionDiagnostic? Diagnostic(Exception? exception)
+        => exception switch
+        {
+            null => null,
+            BootstrapMelLogging.DetachedException detached => detached.Diagnostic,
+            _ => new(exception.GetType().FullName ?? exception.GetType().Name, Scalar(exception.Message), Scalar(exception.StackTrace), Scalar(exception), ExceptionData(exception.Data), Diagnostic(exception.InnerException))
+        };
 
     private static ImmutableDictionary<string, string?> ExceptionData(System.Collections.IDictionary data)
     {
