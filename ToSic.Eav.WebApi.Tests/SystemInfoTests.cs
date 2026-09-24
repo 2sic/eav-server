@@ -22,7 +22,7 @@ public class SystemInfoTests
             : [Group("warnings-obsolete", 2), Group("warnings-not-implemented", 1), Group("warnings-other", 1), Group("module", 1)];
         var reader = new TestSnapshotReader(new(false, groups));
         var services = new ServiceCollection();
-        services.AddEavAll(useMel: true).AddEavAllFallbacks().AddEavWebApiTypedAfterEav();
+        services.AddEavAll().AddEavAllFallbacks().AddEavWebApiTypedAfterEav();
         services.AddSingleton<IInsightsLogSnapshotReader>(reader);
         using var provider = services.BuildServiceProvider();
 

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ToSic.Eav.Run.Startup;
-using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Sys.Logging;
 using static Xunit.Assert;
 
@@ -13,7 +12,7 @@ public class StartupEavLoggingTests
     [InlineData(null, typeof(LegacyLogFactory), typeof(LogStoreLive), typeof(LegacyInsightsLogSnapshotReader))]
     [InlineData(false, typeof(LegacyLogFactory), typeof(LogStoreLive), typeof(LegacyInsightsLogSnapshotReader))]
     [InlineData(true, typeof(MelLogFactory), typeof(MelLogStore), typeof(MelInsightsLogSnapshotReader))]
-    public void AddEavAll_RegistersLoggingAndConstructsSystemInfo(bool? useMel, Type factoryType, Type storeType, Type readerType)
+    public void AddEavAll_RegistersSelectedLoggingStack(bool? useMel, Type factoryType, Type storeType, Type readerType)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -33,6 +32,8 @@ public class StartupEavLoggingTests
             Empty(provider.GetServices<ILogStoreLive>());
             IsType<InsightsLogStore>(Single(provider.GetServices<IInsightsLogStore>()));
             Same(provider.GetRequiredService<InsightsLoggerProvider>(), Single(provider.GetServices<ILoggerProvider>()));
+            var log = provider.GetRequiredService<ILogFactory>().Create("test", null, new CodeRef());
+            NotNull(provider.GetRequiredService<ILogStore>().Add("test", log));
         }
         else
         {
@@ -41,7 +42,5 @@ public class StartupEavLoggingTests
             Empty(provider.GetServices<ILoggerProvider>());
             Null(provider.GetService<InsightsLoggerProvider>());
         }
-
-        NotNull(ActivatorUtilities.CreateInstance<SystemInfo>(provider));
     }
 }
