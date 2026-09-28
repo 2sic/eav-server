@@ -3,7 +3,13 @@ using ToSic.Eav.Data.Raw;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-public class PendingAppDto : IRawEntityAutoConvert
+[ContentType(
+    Name = "PendingApp",
+    Guid = "b84a5687-f70f-4ebd-a3ef-a8fccd026bef",
+    Description = "App package waiting to be initialized",
+    Scope = "System"
+)]
+public record PendingAppDto : IRawEntityAutoConvert
 {
     // folder as it's stored on the server
     public required string ServerFolder { get; init; }
