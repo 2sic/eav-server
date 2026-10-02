@@ -17,6 +17,7 @@ public record InputTypeInfoRaw : IRawEntityAutoConvert
     public required string? Label { get; init; }
     public required string? Description { get; init; }
     public required bool DisableI18n { get; init; }
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required IDictionary<string, string> UiAssets { get; init; }
     public required bool UseAdam { get; init; }
     public required bool IsObsolete { get; init; }
@@ -24,5 +25,6 @@ public record InputTypeInfoRaw : IRawEntityAutoConvert
     public required bool IsRecommended { get; init; }
     public required bool IsDefault { get; init; }
     public required string? Source { get; init; }
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required string[]? ConfigTypes { get; init; }
 }

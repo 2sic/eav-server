@@ -1,4 +1,3 @@
-using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -22,10 +21,9 @@ public class AppsPendingInitialization : CustomDataSource
 
     public AppsPendingInitialization(Dependencies services, LazySvc<ImportApp> importApp)
         : base(services, "Sxc.PendingApps", connect: [importApp])
-        => ProvideOutRaw(() => Get(importApp), options: Options);
+        => ProvideOutRaw(() => Get(importApp));
 
     private IEnumerable<PendingAppDto> Get(LazySvc<ImportApp> importApp)
         => importApp.Value.GetPendingApps(OfZoneId);
 
-    private static DataFactoryOptions Options() => new() { TypeName = "PendingApp", AllowUnknownValueTypes = true };
 }
