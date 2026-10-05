@@ -20,12 +20,12 @@ public class AppsPendingInitialization : CustomDataSource
     [Configuration(Field = "ZoneId")]
     public int OfZoneId => Configuration.GetThis(ZoneId);
 
-    public AppsPendingInitialization(Dependencies services, LazySvc<ImportApp> importApp)
-        : base(services, "Sxc.PendingApps", connect: [importApp])
-        => ProvideOutRaw(() => Get(importApp), options: Options);
+    public AppsPendingInitialization(Dependencies services, LazySvc<PendingAppsGet> pendingAppsGet)
+        : base(services, "Sxc.PendingApps", connect: [pendingAppsGet])
+        => ProvideOutRaw(() => Get(pendingAppsGet), options: Options);
 
-    private IEnumerable<PendingAppDto> Get(LazySvc<ImportApp> importApp)
-        => importApp.Value.GetPendingApps(OfZoneId);
+    private IEnumerable<PendingAppDto> Get(LazySvc<PendingAppsGet> pendingAppsGet)
+        => pendingAppsGet.Value.GetPendingApps(OfZoneId);
 
     private static DataFactoryOptions Options() => new() { TypeName = "PendingApp", AllowUnknownValueTypes = true };
 }
