@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Values;
@@ -30,7 +31,8 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "5461d34d-7dc6-4d38-9250-a0729cc8ead3",
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Attributes")]
 
-public sealed class Attributes: CustomDataSource
+public sealed class Attributes(IAppReaderFactory appReaders, CustomDataSource.Dependencies services)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders])
 {
 
     #region Configuration-properties
@@ -45,19 +47,9 @@ public sealed class Attributes: CustomDataSource
         
     #endregion
 
-    /// <inheritdoc />
-    /// <summary>
-    /// Constructs a new Attributes DS
-    /// </summary>
-    public Attributes(IAppReaderFactory appReaders, Dependencies services)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Attrib", connect: [appReaders])
+    protected override IEnumerable<IRawData> GetDefault()
     {
-        ProvideOutRaw(() => GetList(appReaders));
-    }
-
-    private IImmutableList<AttributeRaw> GetList(IAppReaderFactory appReaders)
-    {
-        var l = Log.Fn<IImmutableList<AttributeRaw>>();
+        var l = Log.Fn<IEnumerable<IRawData>>();
 
         // try to load the content-type - if it fails, return empty list
         var ctName = ContentTypeName;
