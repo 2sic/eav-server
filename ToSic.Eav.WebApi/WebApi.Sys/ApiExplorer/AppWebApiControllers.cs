@@ -1,5 +1,6 @@
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -17,27 +18,16 @@ namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
     DataConfidentiality = DataConfidentiality.Internal,
     UiHint = "Lists WebAPI controller files of an app"
 )]
-public class AppWebApiControllers : CustomDataSource
+public class AppWebApiControllers(
+    CustomDataSource.Dependencies services,
+    IUser user,
+    LazySvc<IAppExplorerControllerDependency> appFileController)
+    : CustomDataSource(services, logName: "Eav.ApiExplorer", connect: [user, appFileController])
 {
-    private readonly IUser _user;
-    private readonly LazySvc<IAppExplorerControllerDependency> _appFileController;
-
     public const string LogSuffix = "AppWebApiControllers";
 
 
-    public AppWebApiControllers(
-        Dependencies services,
-        IUser user,
-        LazySvc<IAppExplorerControllerDependency> appFileController)
-        : base(services, logName: "Eav.ApiExplorer", connect: [user, appFileController])
-    {
-        _user = user;
-        _appFileController = appFileController;
-
-        ProvideOutRaw(GetApiFiles);
-    }
-
-    private IEnumerable<AppWebApiFileRaw> GetApiFiles()
+    protected override IEnumerable<IRawData> GetDefault()
     {
         var l = Log.Fn<IEnumerable<AppWebApiFileRaw>>($"list all api files a#{AppId}");
 
@@ -57,7 +47,7 @@ public class AppWebApiControllers : CustomDataSource
 
         l.A($"local files:{localFiles.Length}");
 
-        var globalFiles = _user.IsSystemAdmin
+        var globalFiles = user.IsSystemAdmin
             ? AppFileController
                 .All(AppId, global: true, mask: mask, withSubfolders: true, returnFolders: false)
                 .Select(file => new AppWebApiFileRaw
@@ -91,7 +81,7 @@ public class AppWebApiControllers : CustomDataSource
         return l.Return(entities, $"{entities.Count}");
     }
 
-    private IAppExplorerControllerDependency AppFileController => _appFileController.Value;
+    private IAppExplorerControllerDependency AppFileController => appFileController.Value;
 
     private static string ApiFileEndpointPath(string relativePath)
         => AdjustControllerName(relativePath, $"{EavConstants.ApiControllerSuffix}.cs").ForwardSlash();
