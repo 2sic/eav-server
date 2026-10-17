@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Sys.Helpers.Http;
 /// <summary>
 /// Net Core implementation of the Response Maker
 /// </summary>
-internal class ResponseMaker: IResponseMaker
+internal class ResponseMakerNetCore: IResponseMaker
 {
     public void Init(ControllerBase apiController) => _apiController = apiController;
 
@@ -17,7 +17,7 @@ internal class ResponseMaker: IResponseMaker
 
     public ControllerBase ApiController => _apiController ??
                                        throw new(
-                                           $"Accessing the {nameof(ApiController)} in the {nameof(ResponseMaker)} requires it to be Init first.");
+                                           $"Accessing the {nameof(ApiController)} in the {nameof(ResponseMakerNetCore)} requires it to be Init first.");
 
     public IActionResult InternalServerError(string message)
         => Error((int)HttpStatusCode.InternalServerError, message);

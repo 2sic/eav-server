@@ -73,7 +73,7 @@ public static class StartupWebApi
         // This ensures that generic backends (.net framework/core) can create a response object
 #if NETCOREAPP
         // In .net core, it does not need to be initialized in the controller.
-        services.TryAddScoped<IResponseMaker, ResponseMaker>();
+        services.TryAddScoped<IResponseMaker, ResponseMakerNetCore>();
 #else
         // The initial dummy, which will always throw an exception if used. This is to ensure that the ResponseMaker is always overridden in the EAV WebApi.
         services.TryAddTransient<ResponseMakerToOverride>();
