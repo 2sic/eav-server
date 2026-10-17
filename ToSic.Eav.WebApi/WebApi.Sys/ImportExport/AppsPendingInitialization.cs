@@ -16,10 +16,14 @@ namespace ToSic.Eav.WebApi.Sys.ImportExport;
 // ReSharper disable once UnusedMember.Global
 public class AppsPendingInitialization : CustomDataSource
 {
+    /// <summary>
+    /// The configuration for which zone to look in.
+    /// Cannot be named `ZoneId` as that property already exists.
+    /// </summary>
     [Configuration(Field = "ZoneId")]
     public int OfZoneId => Configuration.GetThis(ZoneId);
 
-    public AppsPendingInitialization(Dependencies services, LazySvc<ImportApp> importApp)
+    public AppsPendingInitialization(Dependencies services, LazySvc<PendingAppsGet> importApp)
         : base(services, "Sxc.PendingApps", connect: [importApp])
         => ProvideOutRaw(() => Get(importApp));
 

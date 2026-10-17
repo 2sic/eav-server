@@ -18,7 +18,7 @@ public class PendingAppsGet(
     /// Get list of pending apps.
     /// List all app folders in the 2sxc which:
     /// - are not installed as apps yet
-    /// - have a App_Data/app.xml
+    /// - have an App_Data/app.xml
     /// </summary>
     public IEnumerable<PendingAppDto> GetPendingApps(int zoneId)
     {

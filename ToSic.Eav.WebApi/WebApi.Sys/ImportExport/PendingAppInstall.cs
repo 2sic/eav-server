@@ -1,11 +1,10 @@
+using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Zip;
 using ToSic.Eav.Persistence.Sys.Logging;
-using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
-using ISite = ToSic.Eav.Context.ISite;
 
 namespace ToSic.Eav.WebApi.Sys.ImportExport;
 
@@ -23,13 +22,13 @@ public class PendingAppInstall(
         var l = Log.Fn<ImportResultDto>("Install pending apps start");
         var result = new ImportResultDto();
 
+        // If feature disabled, exit early with message
         if (!features.IsEnabled(BuiltInFeatures.AppSyncWithSiteFiles))
         {
             var message = $"Skip all. Can't install pending apps because feature {BuiltInFeatures.AppSyncWithSiteFiles.NameId} is not enabled.";
-            var messages = new List<Message> { new(message, Message.MessageTypes.Warning) };
             l.A(message);
             result.Success = false;
-            result.Messages.AddRange(messages);
+            result.Messages.Add(new(message, Message.MessageTypes.Warning));
             return l.ReturnAsOk(result);
         }
 
@@ -39,8 +38,10 @@ public class PendingAppInstall(
             foreach (var pendingAppDto in pendingApps)
             {
                 var appDirectory = Path.Combine(site.AppsRootPhysicalFull, pendingAppDto.ServerFolder);
+                // careful: the import messages is actually modified in a deeper call
+                // should be improved to have a clear flow returning the messages instead of modifying a list in a deeper call
                 var importMessage = new List<Message>();
-                var rename = pendingAppDto.ServerFolder.Equals(pendingAppDto.Folder, StringComparison.InvariantCultureIgnoreCase)
+                var rename = pendingAppDto.ServerFolder.EqualsInsensitive(pendingAppDto.Folder)
                     ? string.Empty
                     : pendingAppDto.ServerFolder;
                 result.Success = zipImport.ImportApp(rename, appDirectory, importMessage, pendingApp: true);
