@@ -1,11 +1,5 @@
-using ToSic.Eav.Context;
-using ToSic.Eav.Data.EntityDecorators.Sys;
-using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.Serialization.Sys.Options;
-using ToSic.Eav.WebApi.Sys.Entities;
-using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.WebApi.Sys.Admin;
 
@@ -31,47 +25,9 @@ public class EntitiesAdmin : DataSourceBase
 
     #endregion
 
-    public EntitiesAdmin(Dependencies services, LazySvc<IContextOfSite> siteContext, LazySvc<IAppsCatalog> appsCatalog, LazySvc<EntityApi> entityApi)
-        : base(services, logName: "Eav.EntitiesAdmin", connect: [siteContext, appsCatalog, entityApi])
+    public EntitiesAdmin(Dependencies services, LazySvc<EntitiesAdminData> entitiesAdminData)
+        : base(services, logName: "Eav.EntitiesAdmin", connect: [entitiesAdminData])
     {
-        ProvideOut(() => GetEntities(siteContext.Value, appsCatalog.Value, entityApi.Value));
-    }
-
-    private IEnumerable<IEntity> GetEntities(IContextOfSite siteContext, IAppsCatalog appsCatalogValue, EntityApi entityApiValue)
-    {
-        var l = Log.Fn<IEnumerable<IEntity>>();
-
-        if (string.IsNullOrWhiteSpace(ContentType))
-            return l.Return([], "no content type");
-
-        var app = appsCatalogValue.AppIdentity(AppId);
-
-        var entities = entityApiValue
-            .InitOrThrowBasedOnGrants(siteContext, app, ContentType, GrantSets.ReadSomething)
-            .GetEntitiesForAdminStep1(ContentType);
-
-        // Attach serialization metadata.
-        // This matches ConvertToEavLight.ConfigureForAdminUse().
-        var decorator = new EntitySerializationDecorator
-        {
-            SerializeGuid = true,
-            WithPublishing = true,
-            SerializeMetadataFor = new() { Serialize = true },
-            SerializeMetadata = new SubEntitySerialization
-            {
-                Serialize = true,
-                SerializeId = true,
-                SerializeTitle = true,
-                SerializeGuid = true,
-            },
-            WithEditInfos = true,
-            LinksWithBothValues = true,
-        };
-
-        var result = entities
-            .Select(entity => new EntityWithDecorator<EntitySerializationDecorator>(entity, decorator))
-            .ToImmutableOpt();
-
-        return l.Return(result);
+        ProvideOut(() => entitiesAdminData.Value.GetEntities(AppId, ContentType));
     }
 }
