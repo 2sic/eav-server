@@ -25,12 +25,16 @@ public class ContentTypeFieldDto: IRawEntityAutoConvert
     
     public bool IsTitle { get; init; }
     public int AttributeId { get; init; }
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required IDictionary<string, EavLightEntity> Metadata { get; init; }
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required InputTypeInfo? InputTypeConfig { get; init; }
 
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required HasPermissionsDto Permissions { get; init; }
 
     [JsonPropertyName("imageConfiguration")]
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required ContentTypeFieldMetadataDto ImageConfiguration { get; init; }
         
     /// <summary>
@@ -49,21 +53,25 @@ public class ContentTypeFieldDto: IRawEntityAutoConvert
     /// </remarks>
     public bool HasFormulas { get; init; }
 
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required EditInfoAttributeDto EditInfo { get; init; }
 
     // #SharedFieldDefinition
     public required Guid? Guid { get; init; }
 
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required JsonAttributeSysSettings? SysSettings { get; init; }
 
     /// <summary>
     /// Short info for the case where we get the fields of many types to show
     /// </summary>
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required JsonType? ContentType { get; init; }
 
     /// <summary>
     /// WIP 16.08 - list the configuration types for a field.
     /// This is so the UI knows what metadata types to request when editing the field.
     /// </summary>
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required IDictionary<string, bool> ConfigTypes {get; init; }
 }

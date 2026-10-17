@@ -16,7 +16,9 @@ public record AppWebApiEndpointRaw : IRawEntityAutoConvert
 
     public required string returns { get; init; }
     public required string verbs { get; init; }
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required IEnumerable<Parameter> parameters { get; init; }
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required IDictionary<string, object?> security { get; init; }
 
     public required bool ignoreSecurity { get; init; }

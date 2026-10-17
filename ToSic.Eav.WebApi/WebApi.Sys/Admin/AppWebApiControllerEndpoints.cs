@@ -32,10 +32,7 @@ public class AppWebApiControllerEndpoints : CustomDataSource
         _analyzer = analyzer;
         _assemblyLoader = assemblyLoader;
 
-        ProvideOutRaw(GetEndpoints, options: () => new()
-        {
-            AllowUnknownValueTypes = true,
-        });
+        ProvideOutRaw(GetEndpoints);
     }
 
     private IEnumerable<AppWebApiEndpointRaw> GetEndpoints()
