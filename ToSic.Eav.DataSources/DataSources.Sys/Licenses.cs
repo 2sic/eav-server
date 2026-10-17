@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Sys.Capabilities.Licenses;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -18,18 +19,15 @@ namespace ToSic.Eav.DataSources.Sys;
     Audience = Audience.Advanced
 )]
 // ReSharper disable once UnusedMember.Global
-public sealed class Licenses : CustomDataSource
+public sealed class Licenses(CustomDataSource.Dependencies services, ILicenseService licenseService)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.Lics", connect: [licenseService])
 {
-    [PrivateApi]
-    public Licenses(Dependencies services, ILicenseService licenseService)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Lics", connect: [licenseService])
-    {
-        
-        ProvideOutRaw(() => licenseService.All
+    protected override IEnumerable<IRawData> GetDefault()
+        => licenseService.All
             .DistinctByLongestExpiration()
             .Select(l => new FeatureSetStateRaw(l))
             .OrderBy(l => l.Priority)
-            .ToListOpt());
+            .ToListOpt();
 
         // Note: old code till 2026-08-26 2dm #ToRemoveQ4
         // This resulted in certain licenses being listed multiple times
@@ -43,6 +41,4 @@ public sealed class Licenses : CustomDataSource
         //        .Select(license => new FeatureSetStateRaw(license))
         //        .OrderBy(l => l.Priority)
         //        .ToListOpt();
-
-    }
 }

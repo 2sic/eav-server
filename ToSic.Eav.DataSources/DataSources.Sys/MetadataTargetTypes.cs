@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -20,18 +21,14 @@ namespace ToSic.Eav.DataSources.Sys;
     DataConfidentiality = DataConfidentiality.Internal
 )]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class MetadataTargetTypes : CustomDataSource
+public class MetadataTargetTypes(CustomDataSource.Dependencies services)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
 {
     internal const string NameId = "fba0d40d-f6af-4593-9ccb-54cfd73d8217";
 
-    public MetadataTargetTypes(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
+    protected override IEnumerable<IRawData> GetDefault()
     {
-        ProvideOutRaw(GetList);
-    }
-
-    private IImmutableList<MetadataTargetTypeRaw> GetList()
-    {
-        var l = Log.Fn<IImmutableList<MetadataTargetTypeRaw>>();
+        var l = Log.Fn<IEnumerable<IRawData>>();
 
         var publicTargetTypes = Enum
             .GetValues(typeof(TargetTypes))

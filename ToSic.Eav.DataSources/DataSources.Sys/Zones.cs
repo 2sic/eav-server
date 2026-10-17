@@ -1,5 +1,6 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.Context.Sys.ZoneMapper;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
 
 
@@ -27,23 +28,12 @@ namespace ToSic.Eav.DataSources.Sys;
     ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
 // ReSharper disable once UnusedMember.Global
-public sealed class Zones: CustomDataSource
+public sealed class Zones(CustomDataSource.Dependencies services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [zoneMapper, appsCatalog])
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Constructs a new Zones DS
-    /// </summary>
-    [PrivateApi]
-    public Zones(Dependencies services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [zoneMapper, appsCatalog])
+    protected override IEnumerable<IRawData> GetDefault()
     {
-        ProvideOutRaw(() => GetList(zoneMapper, appsCatalog));
-    }
-
-
-    private IImmutableList<ZoneRaw> GetList(IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
-    {
-        var l = Log.Fn<IImmutableList<ZoneRaw>>();
+        var l = Log.Fn<IEnumerable<IRawData>>();
         
         // Get cache, which manages a list of zones
         var zones = appsCatalog.Zones;

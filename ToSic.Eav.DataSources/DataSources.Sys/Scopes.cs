@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.DataSource.Sys;
 
@@ -22,41 +23,34 @@ namespace ToSic.Eav.DataSources.Sys;
     DataConfidentiality = DataConfidentiality.Confidential
 )]
 // ReSharper disable once UnusedMember.Global
-public sealed class Scopes : CustomDataSource
+public sealed class Scopes(CustomDataSource.Dependencies services, IAppReaderFactory appReadFac)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes", connect: [appReadFac])
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Constructs a new Scopes DS
-    /// </summary>
-    [PrivateApi]
-    public Scopes(Dependencies services, IAppReaderFactory appReadFac) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Scopes", connect: [appReadFac])
+    protected override IEnumerable<IRawData> GetDefault()
     {
-        ProvideOutRaw(() =>
-        {
-            var contentTypes = appReadFac
-                .Get(AppId).ContentTypes
-                .ToListOpt();
+        var contentTypes = appReadFac
+            .Get(AppId).ContentTypes
+            .ToListOpt();
             
-            return contentTypes
-                .GetAllScopesWithLabels()
-                .Select(s =>
+        return contentTypes
+            .GetAllScopesWithLabels()
+            .Select(s =>
+            {
+                var types = contentTypes
+                    .OfScope(s.Key)
+                    .ToListOpt();
+
+                var inheritCount = types.Count(t => t.HasAncestor());
+
+                return new ScopeModel
                 {
-                    var types = contentTypes
-                        .OfScope(s.Key)
-                        .ToListOpt();
-
-                    var inheritCount = types.Count(t => t.HasAncestor());
-
-                    return new ScopeModel
-                    {
-                        NameId = s.Key,
-                        Name = s.Value,
-                        TypesTotal = types.Count,
-                        TypesInherited = inheritCount,
-                        TypesOfApp = types.Count - inheritCount,
-                    };
-                });
-        });
+                    NameId = s.Key,
+                    Name = s.Value,
+                    TypesTotal = types.Count,
+                    TypesInherited = inheritCount,
+                    TypesOfApp = types.Count - inheritCount,
+                };
+            });
     }
 
 

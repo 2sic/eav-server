@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -22,7 +23,8 @@ namespace ToSic.Eav.DataSources.Sys;
     DataConfidentiality = DataConfidentiality.System
 )]
 // ReSharper disable once UnusedMember.Global
-public sealed class FeatureStates : CustomDataSource
+public sealed class FeatureStates(CustomDataSource.Dependencies services, ISysFeaturesService featuresService)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [featuresService])
 {
     /// <summary>
     /// Required filter to only return specific features by their NameId, comma-separated. E.g. "Feature1,Feature2"
@@ -38,14 +40,7 @@ public sealed class FeatureStates : CustomDataSource
     [Configuration(Fallback = false)]
     public bool All => Configuration.GetThis(false);
 
-    [PrivateApi]
-    public FeatureStates(Dependencies services, ISysFeaturesService featuresService)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [featuresService])
-    {
-        ProvideOutRaw(() => GetList(featuresService));
-    }
-
-    private IEnumerable<FeatureStateDetailedRaw> GetList(ISysFeaturesService featuresService)
+    protected override IEnumerable<IRawData> GetDefault()
     {
         var filterIds = FeatureId.CsvToArrayWithoutEmpty();
         var hasFilterIds = filterIds.Any();
