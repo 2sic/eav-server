@@ -26,7 +26,7 @@ namespace ToSic.Eav.DataSources;
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
 public class MetadataTargets(
     CustomDataSourceAdvanced.Dependencies services,
-    Generator<IDataFactory, DataFactoryOptions> genDataFactory,
+    DataFactoryGenerator genDataFactory,
     IAppReaderFactory appReaders)
     : DataSourceProcessInBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders, genDataFactory])
 {

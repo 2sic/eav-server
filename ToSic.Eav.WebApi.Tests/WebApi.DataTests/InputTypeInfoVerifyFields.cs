@@ -1,12 +1,11 @@
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.WebApi.Sys.Dto;
-using ToSic.Sys.DI;
 
 namespace ToSic.Eav.WebApi.DataTests;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class InputTypeInfoVerifyFields(Generator<IDataFactory, DataFactoryOptions> dataFactory)
+public class InputTypeInfoVerifyFields(DataFactoryGenerator dataFactory)
 {
     [Fact]
     public void ObjectFieldsEnableUnknownValueConversion()

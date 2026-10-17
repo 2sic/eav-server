@@ -35,7 +35,7 @@ namespace ToSic.Eav.DataSources.Sys;
     DynamicOut = true
 )]
 // ReSharper disable once UnusedMember.Global
-public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCatalog catalog, Generator<IDataFactory, DataFactoryOptions> genDataFactory, IDataSourcesService dataSourcesSvc, IUser user)
+public sealed class SysData(CustomDataSource.Dependencies services, DataSourceCatalog catalog, DataFactoryGenerator genDataFactory, IDataSourcesService dataSourcesSvc, IUser user)
     : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.SysDat", connect: [catalog, dataSourcesSvc, genDataFactory])
 {
     #region Configuration-properties

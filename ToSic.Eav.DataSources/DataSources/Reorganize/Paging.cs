@@ -63,7 +63,7 @@ public sealed class Paging: DataSourceBase
     /// Constructs a new EntityIdFilter
     /// </summary>
     [PrivateApi]
-    public Paging(Dependencies services, Generator<IDataFactory, DataFactoryOptions> genDataFactory)
+    public Paging(Dependencies services, DataFactoryGenerator genDataFactory)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging", connect: [genDataFactory])
     {
         // #DropSpawnNew
@@ -88,7 +88,7 @@ public sealed class Paging: DataSourceBase
         return l.Return(result, $"page:{PageNumber}; size{PageSize}; found:{result.Count}");
     }
 
-    private IImmutableList<IEntity> GetPaging(Generator<IDataFactory, DataFactoryOptions> genDataFactory)
+    private IImmutableList<IEntity> GetPaging(DataFactoryGenerator genDataFactory)
     {
         var l = Log.Fn<IImmutableList<IEntity>>();
 

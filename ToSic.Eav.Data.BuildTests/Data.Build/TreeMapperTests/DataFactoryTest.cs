@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Data.Build.TreeMapperTests;
 
 [Startup(typeof(StartupTestsEavDataBuild))]
-public class DataFactoryTest(Generator<IDataFactory, DataFactoryOptions> dataFactoryGenerator)
+public class DataFactoryTest(DataFactoryGenerator dataFactoryGenerator)
 {
     [Fact]
     public void ChildrenRelationships()

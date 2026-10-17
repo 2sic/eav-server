@@ -31,7 +31,7 @@ public class CustomDataSource: DataSourceBase
         // #DropSpawnNew
         // Note: This is not connected to the logs, could be an issue if we don't finish switching to ILogger
         // In that case, we would have to make a property an initialize, as was previously done in the base Dependencies record
-        Generator<IDataFactory, DataFactoryOptions> DataFactoryGenerator
+        DataFactoryGenerator DataFactoryGenerator
     )
         : DataSourceBase.Dependencies(Configuration, ErrorHandler, ConfigDataLoader, CacheService);//, DataFactory);
 
