@@ -13,8 +13,9 @@ public abstract class Site<T>(string logPrefix,
     object[]? connect = default) : ServiceBase($"{logPrefix}.Site", npo, connect), ISite, IWrapper<T>
     where T : class
 {
-    /// <inheritdoc />
-    public abstract ISite Init(int siteId, ILog? parentLogOrNull);
+    // 2026-10-18 2dm: #DropSiteInitSeemsUnused
+    ///// <inheritdoc />
+    //public abstract ISite Init(int siteId, ILog? parentLogOrNull);
 
     public virtual T GetContents() => UnwrappedSite;
 
