@@ -20,7 +20,7 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
     /// Constructor for DI
     /// </summary>
     /// <param name="services"></param>
-    public ContextOfSite(Dependencies services) : this(services, null) { }
+    public ContextOfSite(Dependencies services) : this(services, "Eav.CtxSte") { }
 
     protected ContextOfSite(Dependencies services, string? logName, object[]? connect = default) : base(services, logName ?? "Eav.CtxSte", connect: connect)
     {
