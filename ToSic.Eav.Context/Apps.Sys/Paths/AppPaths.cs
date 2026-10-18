@@ -37,16 +37,16 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
     private string AppFolder
     {
         get => field ??= appReader.Specs.Folder;
-        set;
+        // 2026-10-18 2dm: #AppPathsSkipCacheSeemsUnused
+        //set;
     }
 
-    private bool _skipCache;
 
-    public void SetupForUseBeforeAppIsReady(string folder)
-    {
-        AppFolder = folder;
-        _skipCache = true; // skip cache, because we are not sure if the app is ready yet
-    }
+    // 2026-10-18 2dm: #AppPathsSkipCacheSeemsUnused
+    //public void SetupForUseBeforeAppIsReady(string folder)
+    //{
+    //    AppFolder = folder;
+    //    _skipCache = true; // skip cache, because we are not sure if the app is ready yet
 
     /// <summary>
     /// We are having some difficulties that the App is caching the wrong path, so temporarily we'll log
@@ -70,7 +70,8 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
         var final = GetFromCacheOrBypass();
 
         // 2025-12-02 2dm still have cases where the cached value is not as it should be
-        if (!_skipCache && final.Contains(AppSpecConstants.ErrorAppFolderNotLoaded))
+        // 2026-10-18 2dm: #AppPathsSkipCacheSeemsUnused
+        if (/*!_skipCache &&*/ final.Contains(AppSpecConstants.ErrorAppFolderNotLoaded))
         {
             appReader.GetCache().PiggyBackRemove(key);
             final = GetFromCacheOrBypass();
@@ -80,9 +81,10 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
             Log.A($"{name}: {final}");
         return final;
 
-        string GetFromCacheOrBypass() => _skipCache
-            ? generator()
-            : appReader
+        // 2026-10-18 2dm: #AppPathsSkipCacheSeemsUnused
+        string GetFromCacheOrBypass() => /*_skipCache*/
+            //? generator()
+            /*:*/ appReader
                 .GetCache()
                 .PiggyBackGet(
                     key,
