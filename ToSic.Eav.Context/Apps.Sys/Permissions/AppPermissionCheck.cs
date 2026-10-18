@@ -63,7 +63,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     /// Uses a GUID as identifier because that survives export/import. 
     /// </summary>
     private void Init(
-        IContextOfSite ctx,
+        IContextOfSite ctxSiteOrBlock,
         IAppIdentity appIdentity,
         IContentType? targetType = null, // optional type to check
         IEntity? targetItem = null, // optional entity to check
@@ -80,8 +80,8 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
             : null;
 
         LoadTargets(targetType ?? targetItem?.Type, targetItem, permissions);
-        ((IEnvironmentPermissionSetup)_environmentPermission).Init<IContextOfSite>(ctx, appIdentity);
-        Context = ctx ?? throw new ArgumentNullException(nameof(ctx));
+        ((IEnvironmentPermissionSetup)_environmentPermission).Init<IContextOfSite>(ctxSiteOrBlock, appIdentity);
+        Context = ctxSiteOrBlock ?? throw new ArgumentNullException(nameof(ctxSiteOrBlock));
         l.Done();
     }
 
@@ -117,7 +117,7 @@ public class AppPermissionCheck(IAppReaderFactory appReaders, PermissionCheckBas
     }
 
 
-    protected IContextOfSite Context { get; private set; } = null!;
+    private IContextOfSite Context { get; set; } = null!;
 
     #endregion
 

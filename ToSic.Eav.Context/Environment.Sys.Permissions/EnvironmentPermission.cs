@@ -19,17 +19,17 @@ public abstract class EnvironmentPermission(string logPrefix, object[]? connect 
     protected const string SalSystemUser = SalPrefix + ".Host";
 
 
-    public IEnvironmentPermission Init<TContext>(IContextOfSite context, IAppIdentity? appIdentityOrNull)
+    public IEnvironmentPermission Init<TContext>(IContextOfSite ctxSiteOrBlock, IAppIdentity? appIdentityOrNull)
     {
-        var siteCtx = context ?? throw new ArgumentException($@"Must be an {nameof(IContextOfSite)}", nameof(context));
-        Context = siteCtx;
+        var siteCtx = ctxSiteOrBlock ?? throw new ArgumentException($@"Must be an {nameof(IContextOfSite)}", nameof(ctxSiteOrBlock));
+        ContextOfSiteOrBlock = siteCtx;
         UserOrNull = siteCtx.User;
         SiteOrNull = siteCtx.Site;
         AppIdentityOrNull = appIdentityOrNull;
         return this;
     }
 
-    protected IContextOfSite Context { get; private set; } = null!;
+    protected IContextOfSite ContextOfSiteOrBlock { get; private set; } = null!;
     private IUser? UserOrNull { get; set; }
     private ISite? SiteOrNull { get; set; }
     protected IAppIdentity? AppIdentityOrNull { get; private set; }

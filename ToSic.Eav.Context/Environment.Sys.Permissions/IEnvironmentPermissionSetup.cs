@@ -11,9 +11,9 @@ public interface IEnvironmentPermissionSetup : IEnvironmentPermission
     /// Init the checker
     /// </summary>
     /// <typeparam name="TContext">Important: Special type info for the context because the Eav.Core doesn't know about these types yet</typeparam>
-    /// <param name="context"></param>
+    /// <param name="ctxSiteOrBlock"></param>
     /// <param name="appIdentityOrNull"></param>
     /// <returns></returns>
-    IEnvironmentPermission Init<TContext>(IContextOfSite context, IAppIdentity? appIdentityOrNull);
+    IEnvironmentPermission Init<TContext>(IContextOfSite ctxSiteOrBlock, IAppIdentity? appIdentityOrNull);
 
 }

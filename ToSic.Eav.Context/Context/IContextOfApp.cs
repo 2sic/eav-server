@@ -16,6 +16,7 @@ public interface IContextOfApp: IContextOfSite
     /// WIP v15
     /// </summary>
     PropertyStack AppSettings { get; }
+
     /// <summary>
     /// WIP v15
     /// </summary>
