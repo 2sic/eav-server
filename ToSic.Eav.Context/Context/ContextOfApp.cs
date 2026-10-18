@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.AppStack;
+using ToSic.Eav.Apps.Sys.Permissions;
 using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Context.Sys.Site;
 using ToSic.Eav.Data.Sys.PropertyStack;
@@ -28,8 +29,9 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         LazySvc<ISysFeaturesService> Features,
         LazySvc<AppUserLanguageCheck> LangChecks,
         Generator<IEnvironmentPermission> EnvironmentPermissions,
+        Generator<AppPermissionCheck> AppPermissionCheck,
         LazySvc<AppDataStackService> SettingsStack)
-        : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, SettingsStack]);
+        : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, AppPermissionCheck, SettingsStack]);
 
     /// <summary>
     /// Constructor for DI
@@ -107,7 +109,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         }
 
         // Case 3: From App
-        var fromApp = Services.AppPermissionCheck.New()
+        var fromApp = AppServices.AppPermissionCheck.New()
             .ForAppInInstance(this, AppReaderRequired)
             .UserMay(GrantSets.WriteSomething)
             .Allowed;

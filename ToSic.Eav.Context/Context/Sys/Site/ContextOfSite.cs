@@ -1,7 +1,5 @@
-﻿using ToSic.Eav.Apps.Sys.Permissions;
-using ToSic.Sys.Users;
+﻿using ToSic.Sys.Users;
 using ToSic.Sys.Users.Permissions;
-using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Context.Sys.Site;
 
@@ -15,8 +13,8 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
 {
     #region Constructor / DI
 
-    public record Dependencies(ISite Site, IUser User, Generator<AppPermissionCheck> AppPermissionCheck)
-        : DependenciesBase(connect: [Site, User, AppPermissionCheck]);
+    public record Dependencies(ISite Site, IUser User)
+        : DependenciesBase(connect: [Site, User]);
 
     /// <summary>
     /// Constructor for DI
@@ -35,27 +33,26 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
     public ISite Site => Services.Site;
 
     /// <inheritdoc />
-    public IUser User => Services.User;
+    public IUser User => field ??= Services.User;
 
-    protected bool UserMayAdmin => Log.Getter(() =>
-    {
-        var u = User;
-        // Note: I'm not sure if the user could ever be null, but maybe in search scenarios?
-        if (u == null)
-            return false;
-        return u.IsSystemAdmin || u.IsSiteAdmin || u.IsSiteDeveloper;
-    });
-
-    private bool IsContentAdmin => User?.IsContentAdmin ?? false;
-    private bool IsContentEditor => User?.IsContentEditor ?? false;
+    protected bool UserMayAdmin => Log.Getter(() => User != null! // Note: I'm not sure if the user could ever be null, but maybe in search scenarios?
+                                                    && (User.IsSystemAdmin || User.IsSiteAdmin || User.IsSiteDeveloper));
 
     [field: AllowNull, MaybeNull]
     EffectivePermissions ICurrentContextUserPermissions.Permissions => field
-        ??= UserMayAdmin.Map(mayAdmin => new EffectivePermissions(
+        ??= EffectiveAppPermissions();
+
+    private EffectivePermissions EffectiveAppPermissions()
+    {
+        var mayAdmin = UserMayAdmin;
+        var isContentAdmin = User?.IsContentAdmin ?? false;
+        var isContentEditor = User?.IsContentEditor ?? false;
+        return new(
             IsSiteAdmin: mayAdmin,
-            IsContentAdmin: mayAdmin || IsContentAdmin,
-            IsContentEditor: mayAdmin || IsContentEditor,
-            ShowDraftData: mayAdmin || IsContentAdmin || IsContentEditor));
+            IsContentAdmin: mayAdmin || isContentAdmin,
+            IsContentEditor: mayAdmin || isContentEditor,
+            ShowDraftData: mayAdmin || isContentAdmin || isContentEditor);
+    }
 
     /// <inheritdoc />
     public virtual IContextOfSite CloneFullContext(ILog parentLog, ISite site)
