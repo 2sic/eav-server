@@ -26,14 +26,13 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
 
     protected ContextOfSite(Dependencies services, string? logName, object[]? connect = default) : base(services, logName ?? "Eav.CtxSte", connect: connect)
     {
-        Site = Services.Site;
     }
 
     #endregion
 
 
     /// <inheritdoc />
-    public ISite Site { get; set; }
+    public ISite Site => Services.Site;
 
     /// <inheritdoc />
     public IUser User => Services.User;
@@ -59,6 +58,6 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
             ShowDraftData: mayAdmin || IsContentAdmin || IsContentEditor));
 
     /// <inheritdoc />
-    public virtual IContextOfSite Clone(ILog parentLog)
-        => new ContextOfSite(Services, Log.NameId).LinkLog(parentLog);
+    public virtual IContextOfSite CloneFullContext(ILog parentLog, ISite site)
+        => new ContextOfSite(Services with { Site = site }, Log.NameId).LinkLog(parentLog);
 }

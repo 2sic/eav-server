@@ -96,9 +96,9 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
         var l = Log.Fn<IPermissionCheck>($"BuildPermissionChecker(type:{type?.Name}, item:{item?.EntityId})");
 
         // user has edit permissions on this app, and it's the same app as the user is coming from
-        var modifiedContext = MyOptions.SiteContext.Clone(Log);
-        modifiedContext.Site = SiteForSecurityCheck;
-        var result = Services.AppPermCheckGenerator.New().ForParts(modifiedContext, MyOptions.App, type, item);
+        var ctxSiteOrBlock = MyOptions.SiteContext.CloneFullContext(Log, SiteForSecurityCheck);
+        var result = Services.AppPermCheckGenerator.New()
+            .ForParts(ctxSiteOrBlock, MyOptions.App, type, item);
 
         return l.Return(result, $"for {MyOptions.App.Show()} in {SiteForSecurityCheck?.Id}");
     }

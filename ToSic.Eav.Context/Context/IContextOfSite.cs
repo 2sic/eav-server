@@ -9,7 +9,7 @@ public interface IContextOfSite: IHasLog, ICurrentContextUserPermissions
     /// <summary>
     /// The website the current request is running in
     /// </summary>
-    ISite Site { get; set; }
+    ISite Site { get; }
 
     /// <summary>
     /// The user in the current request / context
@@ -17,8 +17,11 @@ public interface IContextOfSite: IHasLog, ICurrentContextUserPermissions
     IUser User { get; }
 
     /// <summary>
-    /// Create a clone of the context, usually for then making a slightly different context
+    /// Create a clone of the context, usually for then making a slightly different context.
     /// </summary>
+    /// <remarks>
+    /// Implemented at the level of SiteContext and BlockContext.
+    /// </remarks>
     /// <returns></returns>
-    IContextOfSite Clone(ILog newParentLog);
+    IContextOfSite CloneFullContext(ILog newParentLog, ISite site);
 }
