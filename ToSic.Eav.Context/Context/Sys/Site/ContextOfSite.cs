@@ -55,6 +55,6 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
     }
 
     /// <inheritdoc />
-    public virtual IContextOfSite CloneFullContext(ILog parentLog, ISite site)
+    IContextOfSite IContextOfSiteOrMoreCloneable.CloneFullContext(ILog parentLog, ISite site)
         => new ContextOfSite(Services with { Site = site }, Log.NameId).LinkLog(parentLog);
 }
