@@ -9,6 +9,10 @@ using static System.IO.Path;
 
 namespace ToSic.Eav.Apps.Sys.Paths;
 
+// Important Findings 2026-10-18 2dm
+// This is a helper, called by the MicroSvc
+// It doesn't seem to be used anywhere else, so the naming should be adjusted later on
+
 /// <summary>
 /// Find the App Paths for a specific App in a site
 /// </summary>
@@ -30,6 +34,13 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
 {
     private const bool Debug = true;
 
+    /// <summary>
+    /// This one is really special.
+    /// It falls back to siteLazy.Value since that will be accessed later on.
+    /// This usually would result in the site to be correctly populated even if
+    /// it originally did not work yet.
+    /// This is not a great solution, but it's been in place for a while and it's scary to try to fix.
+    /// </summary>
     [field: AllowNull, MaybeNull]
     private ISite Site => field ??= siteOrNull ?? siteLazy.Value;
 
@@ -41,12 +52,15 @@ internal class AppPaths(LazySvc<IServerPaths> serverPaths, LazySvc<IGlobalConfig
         //set;
     }
 
+    // 2026-10-18 2dm: #AppPathsSkipCacheSeemsUnused
+    //private bool _skipCache;
 
     // 2026-10-18 2dm: #AppPathsSkipCacheSeemsUnused
     //public void SetupForUseBeforeAppIsReady(string folder)
     //{
     //    AppFolder = folder;
     //    _skipCache = true; // skip cache, because we are not sure if the app is ready yet
+    //}
 
     /// <summary>
     /// We are having some difficulties that the App is caching the wrong path, so temporarily we'll log
