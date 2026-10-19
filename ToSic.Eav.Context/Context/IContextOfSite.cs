@@ -4,7 +4,7 @@ using ToSic.Sys.Users.Permissions;
 namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IContextOfSite: IHasLog, ICurrentContextUserPermissions //, IContextOfSiteOrMoreCloneable
+public interface IContextOfSite: IHasLog, ICurrentContextUserPermissions
 {
     /// <summary>
     /// The website the current request is running in
@@ -25,15 +25,3 @@ public interface IContextOfSite: IHasLog, ICurrentContextUserPermissions //, ICo
     /// <returns></returns>
     IContextOfSite WithSwappedSite(ISite site);
 }
-
-//public interface IContextOfSiteOrMoreCloneable
-//{
-//    /// <summary>
-//    /// Create a clone of the context, usually for then making a slightly different context.
-//    /// </summary>
-//    /// <remarks>
-//    /// Implemented at the level of SiteContext and BlockContext.
-//    /// </remarks>
-//    /// <returns></returns>
-//    IContextOfSite CloneFullContext(ISite site);
-//}

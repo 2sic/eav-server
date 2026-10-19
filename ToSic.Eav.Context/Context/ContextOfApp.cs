@@ -54,6 +54,8 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
 
     #endregion
 
+    #region Factory Work
+
     /// <summary>
     /// New Implementation WIP
     /// </summary>
@@ -72,6 +74,10 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
             AppIdentity = appIdentity;
         l.Done();
     }
+
+    #endregion
+
+
 
     protected virtual IAppIdentity? AppIdentity
     {
@@ -186,11 +192,4 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
     }
 
     #endregion
-
-    //IContextOfSite IContextOfSiteOrMoreCloneable.CloneFullContext(ISite site) =>
-    //    new ContextOfApp(Services with { Site = site })
-    //    {
-    //        AppIdentity = AppIdentity,
-    //    };
-
 }
