@@ -10,9 +10,17 @@ namespace ToSic.Eav.Context;
 public record ContextOfApp(
     ISite Site,
     IUser User,
-    IAppReader? AppReaderOrNull): IContextOfApp
+    IAppReader? AppReaderOrNull
+): IContextOfApp
 {
+    /// <summary>
+    /// Helper to lazy-retrieve permissions if ever needed.
+    /// </summary>
     public required ContextOfAppFactory InternalMachinery { get; init; }
+
+    /// <summary>
+    /// Helper to lazy-retrieve Settings & Resources if ever needed.
+    /// </summary>
     public required LazySvc<AppDataStackService> SettingsStackSvc { get; init; }
 
 

@@ -11,13 +11,12 @@ using ToSic.Sys.Users;
 namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContextOfAppFactory: ServiceBase<ContextOfAppFactory.Dependencies>, IContextOfAppFactory
+public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
+    : ServiceBase<ContextOfAppFactory.Dependencies>(services, "Sxc.CtxApp"),
+        IContextOfAppFactory
 {
-    #region Constructor / DI
-
     /// <summary>
-    /// These dependencies are a bit special, because they can be re-used for child context-of...
-    /// This is why we gave them a much clearer name, not just the normal "Dependencies"
+    /// Dependencies
     /// </summary>
     public record Dependencies(
         ISite Site,
@@ -27,32 +26,14 @@ public class ContextOfAppFactory: ServiceBase<ContextOfAppFactory.Dependencies>,
         LazySvc<AppUserLanguageCheck> LangChecks,
         Generator<IEnvironmentPermission> EnvironmentPermissions,
         Generator<AppPermissionCheck> AppPermissionCheck,
-        LazySvc<AppDataStackService> SettingsStack)
-        : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, AppPermissionCheck, SettingsStack]);
+        LazySvc<AppDataStackService> SettingsStack
+    ) : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, AppPermissionCheck, SettingsStack]);
 
-    /// <summary>
-    /// Constructor for DI
-    /// </summary>
-    /// <param name="services"></param>
-    public ContextOfAppFactory(Dependencies services) : this(services, "Sxc.CtxApp", [])
-    { }
-
-    // 2025-06-13 2dm - sometimes AppIdentity is null, but I'm not sure if this is something that should be kept this way
-    // For now, the code works, but we should continuously optimize and review again.
-    // Also with the AppReaderOrNull which is null if AppIdentity is null
-#pragma warning disable CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
-    protected ContextOfAppFactory(Dependencies services, string logName, object[] connect) : base(services, logName, connect: connect)
-    {
-    }
-#pragma warning restore CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
-
-
-    #endregion
 
     #region Factory Work
 
     /// <summary>
-    /// New Implementation WIP
+    /// New Implementation WIP v22.01 2026-10-18
     /// </summary>
     /// <param name="appIdentity"></param>
     /// <returns></returns>
@@ -75,6 +56,11 @@ public class ContextOfAppFactory: ServiceBase<ContextOfAppFactory.Dependencies>,
     
     #region User Permissions / May Edit
 
+    /// <summary>
+    /// Helper to look up specific permissions - will be called by the implementation
+    /// </summary>
+    /// <param name="contextOfApp"></param>
+    /// <returns></returns>
     internal bool GetUserMayEdit(ContextOfApp contextOfApp)
     {
         var l = Log.Fn<bool>();
