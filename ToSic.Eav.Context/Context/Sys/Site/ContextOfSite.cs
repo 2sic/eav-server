@@ -9,24 +9,14 @@ namespace ToSic.Eav.Context.Sys.Site;
 /// In rare cases you may want to replace them, which is why Site/User have Set Accessors
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfSite
+public class ContextOfSite(ContextOfSite.Dependencies services)
+    : ServiceBase<ContextOfSite.Dependencies>(services, "Eav.CtxSte"), IContextOfSite
 {
-    #region Constructor / DI
-
+    /// <summary>
+    /// Dependencies
+    /// </summary>
     public record Dependencies(ISite Site, IUser User)
         : DependenciesBase(connect: [Site, User]);
-
-    /// <summary>
-    /// Constructor for DI
-    /// </summary>
-    /// <param name="services"></param>
-    public ContextOfSite(Dependencies services) : this(services, "Eav.CtxSte") { }
-
-    protected ContextOfSite(Dependencies services, string? logName, object[]? connect = default) : base(services, logName ?? "Eav.CtxSte", connect: connect)
-    {
-    }
-
-    #endregion
 
 
     /// <inheritdoc />
@@ -35,16 +25,14 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
     /// <inheritdoc />
     public IUser User => field ??= Services.User;
 
-    protected bool UserMayAdmin => Log.Getter(() => User != null! // Note: I'm not sure if the user could ever be null, but maybe in search scenarios?
-                                                    && (User.IsSystemAdmin || User.IsSiteAdmin || User.IsSiteDeveloper));
-
+    /// <inheritdoc />
     [field: AllowNull, MaybeNull]
     EffectivePermissions ICurrentContextUserPermissions.Permissions => field
         ??= EffectiveAppPermissions();
 
     private EffectivePermissions EffectiveAppPermissions()
     {
-        var mayAdmin = UserMayAdmin;
+        var mayAdmin = GetUserMayAdmin(User);
         var isContentAdmin = User?.IsContentAdmin ?? false;
         var isContentEditor = User?.IsContentEditor ?? false;
         return new(
@@ -54,7 +42,11 @@ public class ContextOfSite: ServiceBase<ContextOfSite.Dependencies>, IContextOfS
             ShowDraftData: mayAdmin || isContentAdmin || isContentEditor);
     }
 
+    internal static bool GetUserMayAdmin(IUser user) => user != null! // Note: I'm not sure if the user could ever be null, but maybe in search scenarios?
+                                                    && (user.IsSystemAdmin || user.IsSiteAdmin || user.IsSiteDeveloper);
+
+
     /// <inheritdoc />
     IContextOfSite IContextOfSiteOrMoreCloneable.CloneFullContext(ILog parentLog, ISite site)
-        => new ContextOfSite(Services with { Site = site }, Log.NameId).LinkLog(parentLog);
+        => new ContextOfSite(Services with { Site = site }).LinkLog(parentLog);
 }

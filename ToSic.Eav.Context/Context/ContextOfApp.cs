@@ -8,6 +8,7 @@ using ToSic.Eav.Data.Sys.PropertyStack;
 using ToSic.Eav.Environment.Sys.Permissions;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Security.Permissions;
+using ToSic.Sys.Users;
 using ToSic.Sys.Users.Permissions;
 using static ToSic.Eav.Apps.Sys.AppStack.AppStackConstants;
 
@@ -15,7 +16,7 @@ using static ToSic.Eav.Apps.Sys.AppStack.AppStackConstants;
 namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContextOfApp: ContextOfSite, IContextOfApp
+public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
 {
     #region Constructor / DI
 
@@ -23,8 +24,9 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     /// These dependencies are a bit special, because they can be re-used for child context-of...
     /// This is why we gave them a much clearer name, not just the normal "Dependencies"
     /// </summary>
-    public new record Dependencies(
-        ContextOfSite.Dependencies SiteServices,
+    public record Dependencies(
+        ISite Site,
+        IUser User,
         IAppReaderFactory AppReaders,
         LazySvc<ISysFeaturesService> Features,
         LazySvc<AppUserLanguageCheck> LangChecks,
@@ -44,13 +46,11 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     // For now, the code works, but we should continuously optimize and review again.
     // Also with the AppReaderOrNull which is null if AppIdentity is null
 #pragma warning disable CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
-    protected ContextOfApp(Dependencies services, string logName, object[] connect) : base(services.SiteServices, logName, connect: connect)
+    protected ContextOfApp(Dependencies services, string logName, object[] connect) : base(services, logName, connect: connect)
     {
-        AppServices = services;
     }
 #pragma warning restore CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.
 
-    protected readonly Dependencies AppServices;
 
     #endregion
 
@@ -72,22 +72,23 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
             AppSettings = null!;
             AppResources = null!;
             AppDataStackService = null!;
-            _userMayEdit.Reset();
+            _userMayAdmin = null;
         }
     }
 
     #region User Permissions / May Edit
 
+    private bool UserMayAdmin => _userMayAdmin ??= ContextOfSite.GetUserMayAdmin(User);
+    private bool? _userMayAdmin;
+
     [field: AllowNull, MaybeNull]
     EffectivePermissions ICurrentContextUserPermissions.Permissions
-        => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: UserMayEdit || User.IsContentAdmin);
-
-    private bool UserMayEdit => _userMayEdit.Get(GetUserMayEdit);
-    private readonly LazyGetAndReset<bool> _userMayEdit = new();
+        => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: GetUserMayEdit() || User.IsContentAdmin);
 
     private bool GetUserMayEdit()
     {
         var l = Log.Fn<bool>();
+
         // Case 1: Superuser always may
         if (User.IsSystemAdmin)
             return l.ReturnTrue("super");
@@ -99,7 +100,7 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
                 return l.ReturnTrue("no app, use UserMayAdmin checks");
 
             // If user isn't allowed yet, it may be that the environment allows it
-            var enfPermissions = AppServices.EnvironmentPermissions.New();
+            var enfPermissions = Services.EnvironmentPermissions.New();
             var fromEnv = ((IEnvironmentPermissionSetup)enfPermissions)
                 .Init<IContextOfSite>(this, null)
                 .EnvironmentAllows(GrantSets.WriteSomething)
@@ -109,25 +110,41 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
         }
 
         // Case 3: From App
-        var fromApp = AppServices.AppPermissionCheck.New()
+        var fromApp = Services.AppPermissionCheck.New()
             .ForAppInInstance(this, AppReaderRequired)
             .UserMay(GrantSets.WriteSomething)
             .Allowed;
 
         // Check if language permissions may alter / remove edit permissions
-        if (fromApp && AppServices.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-            fromApp = AppServices.LangChecks.Value.UserRestrictedByLanguagePermissions(AppReaderRequired) ?? true;
+        if (fromApp && Services.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
+            fromApp = Services.LangChecks.Value.UserRestrictedByLanguagePermissions(AppReaderRequired) ?? true;
 
         return l.Return(fromApp, $"{fromApp}");
     }
 
     #endregion
 
-    public IAppReader? AppReaderOrNull => _appReaderOrNull.Get(() => AppIdentity == null! ? null : AppServices.AppReaders.TryGet(AppIdentity));
+
+    #region Site Context
+
+    public ISite Site => Services.Site;
+
+    public IUser User => Services.User;
+
+    #endregion
+
+
+    #region AppReaders
+
+
+    public IAppReader? AppReaderOrNull => _appReaderOrNull.Get(() => AppIdentity == null! ? null : Services.AppReaders.TryGet(AppIdentity));
     private readonly LazyGetAndReset<IAppReader?> _appReaderOrNull = new();
 
     public IAppReader AppReaderRequired => AppReaderOrNull
                                            ?? throw new NullReferenceException("Trying to get AppReader but AppIdentity is null");
+
+    #endregion
+
 
     #region Settings and Resources
 
@@ -148,9 +165,15 @@ public class ContextOfApp: ContextOfSite, IContextOfApp
     [field: AllowNull, MaybeNull]
     private AppDataStackService AppDataStackService
     {
-        get => field ??= AppServices.SettingsStack.Value.Init(AppReaderRequired);
+        get => field ??= Services.SettingsStack.Value.Init(AppReaderRequired);
         set;
     }
 
     #endregion
+
+    IContextOfSite IContextOfSiteOrMoreCloneable.CloneFullContext(ILog newParentLog, ISite site) =>
+        new ContextOfApp(Services with { Site = site })
+        {
+            AppIdentity = AppIdentity,
+        };
 }
