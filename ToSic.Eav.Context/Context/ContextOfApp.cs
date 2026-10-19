@@ -16,7 +16,7 @@ using static ToSic.Eav.Apps.Sys.AppStack.AppStackConstants;
 namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
+public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp, IContextOfAppFactory
 {
     #region Constructor / DI
 
@@ -53,6 +53,17 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
 
 
     #endregion
+
+    /// <summary>
+    /// New Implementation WIP
+    /// </summary>
+    /// <param name="appIdentity"></param>
+    /// <returns></returns>
+    public IContextOfApp Create(IAppIdentity appIdentity)
+    {
+        ResetApp(appIdentity);
+        return this;
+    }
 
     public void ResetApp(IAppIdentity appIdentity)
     {
@@ -176,4 +187,5 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
         {
             AppIdentity = AppIdentity,
         };
+
 }

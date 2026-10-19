@@ -25,3 +25,8 @@ public interface IContextOfApp: IContextOfSite
     IAppReader AppReaderRequired { get; }
     IAppReader? AppReaderOrNull { get; }
 }
+
+public interface IContextOfAppFactory
+{
+    IContextOfApp Create(IAppIdentity appIdentity);
+}
