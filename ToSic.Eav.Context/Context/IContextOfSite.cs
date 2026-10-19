@@ -4,7 +4,7 @@ using ToSic.Sys.Users.Permissions;
 namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IContextOfSite: IHasLog, ICurrentContextUserPermissions, IContextOfSiteOrMoreCloneable
+public interface IContextOfSite: IHasLog, ICurrentContextUserPermissions //, IContextOfSiteOrMoreCloneable
 {
     /// <summary>
     /// The website the current request is running in
@@ -15,16 +15,25 @@ public interface IContextOfSite: IHasLog, ICurrentContextUserPermissions, IConte
     /// The user in the current request / context
     /// </summary>
     IUser User { get; }
+
+    /// <summary>
+    /// Special method to swap the site on a context.
+    /// It would be better in a factory, but since different implementations of IContextOfSite may have different levels of data,
+    /// and these other implementations can be in a later DLL, this is the only way to ensure that the context can be swapped without losing data.
+    /// </summary>
+    /// <param name="site"></param>
+    /// <returns></returns>
+    IContextOfSite WithSwappedSite(ISite site);
 }
 
-public interface IContextOfSiteOrMoreCloneable
-{
-    /// <summary>
-    /// Create a clone of the context, usually for then making a slightly different context.
-    /// </summary>
-    /// <remarks>
-    /// Implemented at the level of SiteContext and BlockContext.
-    /// </remarks>
-    /// <returns></returns>
-    IContextOfSite CloneFullContext(ILog newParentLog, ISite site);
-}
+//public interface IContextOfSiteOrMoreCloneable
+//{
+//    /// <summary>
+//    /// Create a clone of the context, usually for then making a slightly different context.
+//    /// </summary>
+//    /// <remarks>
+//    /// Implemented at the level of SiteContext and BlockContext.
+//    /// </remarks>
+//    /// <returns></returns>
+//    IContextOfSite CloneFullContext(ISite site);
+//}

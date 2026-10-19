@@ -25,6 +25,8 @@ public class ContextOfSite(ContextOfSite.Dependencies services)
     /// <inheritdoc />
     public IUser User => field ??= Services.User;
 
+    public virtual IContextOfSite WithSwappedSite(ISite site) => new ContextOfSite(new(site, User));
+
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
     EffectivePermissions ICurrentContextUserPermissions.Permissions => field
@@ -46,7 +48,7 @@ public class ContextOfSite(ContextOfSite.Dependencies services)
                                                     && (user.IsSystemAdmin || user.IsSiteAdmin || user.IsSiteDeveloper);
 
 
-    /// <inheritdoc />
-    IContextOfSite IContextOfSiteOrMoreCloneable.CloneFullContext(ILog parentLog, ISite site)
-        => new ContextOfSite(Services with { Site = site }).LinkLog(parentLog);
+    ///// <inheritdoc />
+    //IContextOfSite IContextOfSiteOrMoreCloneable.CloneFullContext(ISite site)
+    //    => new ContextOfSite(Services with { Site = site });
 }

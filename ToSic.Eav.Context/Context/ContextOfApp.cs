@@ -65,7 +65,7 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
         return this;
     }
 
-    public void ResetApp(IAppIdentity appIdentity)
+    protected void ResetApp(IAppIdentity appIdentity)
     {
         var l = Log.Fn(appIdentity.Show());
         if (AppIdentity?.AppId != appIdentity.AppId)
@@ -142,6 +142,11 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
 
     public IUser User => Services.User;
 
+    public virtual IContextOfSite WithSwappedSite(ISite site) => new ContextOfApp(Services with { Site = site })
+    {
+        AppIdentity = AppIdentity,
+    };
+
     #endregion
 
 
@@ -182,10 +187,10 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
 
     #endregion
 
-    IContextOfSite IContextOfSiteOrMoreCloneable.CloneFullContext(ILog newParentLog, ISite site) =>
-        new ContextOfApp(Services with { Site = site })
-        {
-            AppIdentity = AppIdentity,
-        };
+    //IContextOfSite IContextOfSiteOrMoreCloneable.CloneFullContext(ISite site) =>
+    //    new ContextOfApp(Services with { Site = site })
+    //    {
+    //        AppIdentity = AppIdentity,
+    //    };
 
 }
