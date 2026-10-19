@@ -6,27 +6,23 @@ namespace ToSic.Eav.Context;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IContextOfApp: IContextOfSite
 {
-    ///// <summary>
-    ///// Reset call to change what AppState is in the context.
-    ///// Internal API to get the context ready
-    ///// </summary>
-    //void ResetApp(IAppIdentity appIdentity);
-
     /// <summary>
-    /// WIP v15
+    /// The App settings (if the app was available)
     /// </summary>
     PropertyStack AppSettings { get; }
 
     /// <summary>
-    /// WIP v15
+    /// The App resources (if the app was available)
     /// </summary>
     PropertyStack AppResources { get; }
 
-    IAppReader AppReaderRequired { get; }
+    /// <summary>
+    /// Optional AppReader - to check if the context really has something.
+    /// </summary>
     IAppReader? AppReaderOrNull { get; }
-}
 
-public interface IContextOfAppFactory
-{
-    IContextOfApp Create(IAppIdentity appIdentity);
+    /// <summary>
+    /// Full app reader - or exception if accessed incorrectly.
+    /// </summary>
+    IAppReader AppReaderRequired { get; }
 }
