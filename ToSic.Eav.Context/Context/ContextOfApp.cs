@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.AppStack;
 using ToSic.Eav.Apps.Sys.Permissions;
 using ToSic.Eav.Context.Sys;
@@ -16,7 +15,7 @@ using static ToSic.Eav.Apps.Sys.AppStack.AppStackConstants;
 namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp, IContextOfAppFactory
+public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, /*IContextOfApp,*/ IContextOfAppFactory
 {
     #region Constructor / DI
 
@@ -61,65 +60,75 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
     /// </summary>
     /// <param name="appIdentity"></param>
     /// <returns></returns>
-    public IContextOfApp Create(IAppIdentity appIdentity)
+    public IContextOfApp Create(IAppIdentity? appIdentity)
     {
-        ResetApp(appIdentity);
-        return this;
+        var result = new ContextOfAppRecord(
+            Services.Site,
+            Services.User,
+            appIdentity == null ? null : Services.AppReaders.TryGet(appIdentity)
+        )
+        {
+            InternalMachinery = this,
+            SettingsStackSvc = Services.SettingsStack,
+        };
+        return result;
+        //ResetApp(appIdentity);
+        //return this;
     }
 
-    protected void ResetApp(IAppIdentity appIdentity)
-    {
-        var l = Log.Fn(appIdentity.Show());
-        if (AppIdentity?.AppId != appIdentity.AppId)
-            AppIdentity = appIdentity;
-        l.Done();
-    }
+    //protected void ResetApp(IAppIdentity appIdentity)
+    //{
+    //    var l = Log.Fn(appIdentity.Show());
+    //    if (AppIdentity?.AppId != appIdentity.AppId)
+    //        AppIdentity = appIdentity;
+    //    l.Done();
+    //}
 
     #endregion
 
 
 
-    protected virtual IAppIdentity? AppIdentity
-    {
-        get;
-        set
-        {
-            field = value;
-            _appReaderOrNull.Reset();
-            AppSettings = null!;
-            AppResources = null!;
-            AppDataStackService = null!;
-            _userMayAdmin = null;
-        }
-    }
+    //protected virtual IAppIdentity? AppIdentity
+    //{
+    //    get;
+    //    set
+    //    {
+    //        field = value;
+    //        _appReaderOrNull.Reset();
+    //        AppSettings = null!;
+    //        AppResources = null!;
+    //        AppDataStackService = null!;
+    //        _userMayAdmin = null;
+    //    }
+    //}
 
     #region User Permissions / May Edit
 
-    private bool UserMayAdmin => _userMayAdmin ??= ContextOfSite.GetUserMayAdmin(User);
-    private bool? _userMayAdmin;
+    //private bool UserMayAdmin => _userMayAdmin ??= ContextOfSite.GetUserMayAdmin(Services.User);
+    //private bool? _userMayAdmin;
 
-    [field: AllowNull, MaybeNull]
-    EffectivePermissions ICurrentContextUserPermissions.Permissions
-        => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: GetUserMayEdit() || User.IsContentAdmin);
+    //[field: AllowNull, MaybeNull]
+    //EffectivePermissions ICurrentContextUserPermissions.Permissions
+    //    => field ??= new EffectivePermissions(isSiteAdmin: UserMayAdmin, isContentAdmin: GetUserMayEdit() || User.IsContentAdmin);
 
-    private bool GetUserMayEdit()
+    internal bool GetUserMayEdit(ContextOfAppRecord contextOfApp)
     {
         var l = Log.Fn<bool>();
 
         // Case 1: Superuser always may
-        if (User.IsSystemAdmin)
+        if (Services.User.IsSystemAdmin)
             return l.ReturnTrue("super");
 
         // Case 2: No App-State
-        if (AppReaderOrNull == null)
+        if (contextOfApp.AppReaderOrNull == null)
         {
-            if (UserMayAdmin)
+            if (contextOfApp.UserMayAdmin)
                 return l.ReturnTrue("no app, use UserMayAdmin checks");
 
             // If user isn't allowed yet, it may be that the environment allows it
             var enfPermissions = Services.EnvironmentPermissions.New();
             var fromEnv = ((IEnvironmentPermissionSetup)enfPermissions)
-                .Init<IContextOfSite>(this, null)
+                .Init<IContextOfSite>(contextOfApp, null)
                 .EnvironmentAllows(GrantSets.WriteSomething)
                 .Allowed;
 
@@ -128,13 +137,13 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
 
         // Case 3: From App
         var fromApp = Services.AppPermissionCheck.New()
-            .ForAppInInstance(this, AppReaderRequired)
+            .ForAppInInstance(contextOfApp, contextOfApp.AppReaderOrNull)
             .UserMay(GrantSets.WriteSomething)
             .Allowed;
 
         // Check if language permissions may alter / remove edit permissions
         if (fromApp && Services.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-            fromApp = Services.LangChecks.Value.UserRestrictedByLanguagePermissions(AppReaderRequired) ?? true;
+            fromApp = Services.LangChecks.Value.UserRestrictedByLanguagePermissions(contextOfApp.AppReaderOrNull) ?? true;
 
         return l.Return(fromApp, $"{fromApp}");
     }
@@ -144,14 +153,14 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
 
     #region Site Context
 
-    public ISite Site => Services.Site;
+    //public ISite Site => Services.Site;
 
-    public IUser User => Services.User;
+    //public IUser User => Services.User;
 
-    public virtual IContextOfSite WithSwappedSite(ISite site) => new ContextOfApp(Services with { Site = site })
-    {
-        AppIdentity = AppIdentity,
-    };
+    //public virtual IContextOfSite WithSwappedSite(ISite site) => new ContextOfApp(Services with { Site = site })
+    //{
+    //    AppIdentity = AppIdentity,
+    //};
 
     #endregion
 
@@ -159,37 +168,74 @@ public class ContextOfApp: ServiceBase<ContextOfApp.Dependencies>, IContextOfApp
     #region AppReaders
 
 
-    public IAppReader? AppReaderOrNull => _appReaderOrNull.Get(() => AppIdentity == null! ? null : Services.AppReaders.TryGet(AppIdentity));
-    private readonly LazyGetAndReset<IAppReader?> _appReaderOrNull = new();
+    //public IAppReader? AppReaderOrNull => _appReaderOrNull.Get(() => AppIdentity == null! ? null : Services.AppReaders.TryGet(AppIdentity));
+    //private readonly LazyGetAndReset<IAppReader?> _appReaderOrNull = new();
 
-    public IAppReader AppReaderRequired => AppReaderOrNull
-                                           ?? throw new NullReferenceException("Trying to get AppReader but AppIdentity is null");
+    //public IAppReader AppReaderRequired => AppReaderOrNull
+    //                                       ?? throw new NullReferenceException("Trying to get AppReader but AppIdentity is null");
 
     #endregion
 
 
     #region Settings and Resources
 
-    [field: AllowNull, MaybeNull]
-    public PropertyStack AppSettings
-    {
-        get => field ??= AppDataStackService.GetStack(RootNameSettings);
-        private set;
-    }
+    //[field: AllowNull, MaybeNull]
+    //public PropertyStack AppSettings
+    //{
+    //    get => field ??= AppDataStackService.GetStack(RootNameSettings);
+    //    private set;
+    //}
 
-    [field: AllowNull, MaybeNull]
-    public PropertyStack AppResources
-    {
-        get => field ??= AppDataStackService.GetStack(RootNameResources);
-        private set;
-    }
+    //[field: AllowNull, MaybeNull]
+    //public PropertyStack AppResources
+    //{
+    //    get => field ??= AppDataStackService.GetStack(RootNameResources);
+    //    private set;
+    //}
 
-    [field: AllowNull, MaybeNull]
-    private AppDataStackService AppDataStackService
-    {
-        get => field ??= Services.SettingsStack.Value.Init(AppReaderRequired);
-        set;
-    }
+    //[field: AllowNull, MaybeNull]
+    //private AppDataStackService AppDataStackService
+    //{
+    //    get => field ??= Services.SettingsStack.Value.Init(AppReaderRequired);
+    //    set;
+    //}
 
     #endregion
+}
+
+public record ContextOfAppRecord(
+    ISite Site,
+    IUser User,
+    IAppReader? AppReaderOrNull): IContextOfApp
+{
+    public required ContextOfApp InternalMachinery { get; init; }
+    public required LazySvc<AppDataStackService> SettingsStackSvc { get; init; }
+
+
+    public IAppReader AppReaderRequired => AppReaderOrNull ?? throw new NullReferenceException("Trying to get AppReader but AppIdentity is null");
+
+    public IContextOfSite WithSwappedSite(ISite site) => this with { Site = site };
+
+
+
+    internal bool UserMayAdmin => _userMayAdmin ??= ContextOfSite.GetUserMayAdmin(User);
+    private bool? _userMayAdmin;
+
+
+    [field: AllowNull, MaybeNull]
+    EffectivePermissions ICurrentContextUserPermissions.Permissions
+        => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: InternalMachinery.GetUserMayEdit(this) || User.IsContentAdmin);
+
+
+
+
+    [field: AllowNull, MaybeNull]
+    public PropertyStack AppSettings => field ??= AppDataStackService.GetStack(RootNameSettings);
+
+    [field: AllowNull, MaybeNull]
+    public PropertyStack AppResources => field ??= AppDataStackService.GetStack(RootNameResources);
+
+    [field: AllowNull, MaybeNull]
+    private AppDataStackService AppDataStackService => field ??= SettingsStackSvc.Value.Init(AppReaderRequired);
+
 }
