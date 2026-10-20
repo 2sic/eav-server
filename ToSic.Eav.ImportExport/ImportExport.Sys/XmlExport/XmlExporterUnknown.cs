@@ -8,7 +8,7 @@ internal sealed class XmlExporterUnknown(XmlSerializer xmlSerializer, IAppsCatal
     : XmlExporter(xmlSerializer, appsCatalog, LogScopes.NotImplemented, connect: []), IIsUnknown
 {
 
-    public override XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
+    public override XmlExporter Init(AppExportSpecs specs, IAppReader appReader, bool appExport, string[] attrSetIds, string[] entityIds)
     {
         // do nothing
         return this;

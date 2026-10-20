@@ -70,30 +70,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         l.Done();
     }
 
-    public abstract XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds);
-
-    ///// <summary>
-    ///// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
-    ///// </summary>
-    ///// <returns></returns>
-    //public virtual XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
-    //{
-    //    ContextResolver.SetApp(new AppIdentity(specs.ZoneId, specs.AppId));
-    //    var ctxOfApp = ContextResolver.AppRequired();
-    //    PostContextInit(ctxOfApp);
-    //    Constructor(specs, appRuntime, ctxOfApp.AppReader.Specs.NameId, appExport, attrSetIds, entityIds, ctxOfApp.Site.DefaultCultureCode);
-
-    //    // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
-    //    //InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
-
-    //    return this;
-    //}
-
-    ///// <summary>
-    ///// Post context init the caller must be able to init Adam, which is not part of this project, so we're handling it as a callback
-    ///// </summary>
-    ///// <param name="appContext"></param>
-    //protected abstract void PostContextInit(IContextOfApp appContext);
+    public abstract XmlExporter Init(AppExportSpecs specs, IAppReader appReader, bool appExport, string[] attrSetIds, string[] entityIds);
 
     private void EnsureThisIsInitialized()
     {

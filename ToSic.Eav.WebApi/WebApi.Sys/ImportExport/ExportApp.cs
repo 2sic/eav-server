@@ -11,8 +11,8 @@ public class ExportApp(ExportHelper exportHelper) : ServiceBase("Bck.Export", co
         Func<(IEnumerable<PathCaseItem> App, IEnumerable<PathCaseItem> Shared)>? getReferences = null)
     {
         var l = Log.Fn<PathCasePreflightResult>(specs.Dump());
-        var (_, zipExport) = exportHelper.GetZipExportAndCheckZoneSwitchPermissions(specs);
         var (appReferences, sharedAppReferences) = ReferencesOrEmpty(getReferences);
+        var (_, zipExport) = exportHelper.GetZipExportAndCheckZoneSwitchPermissions(specs);
         var result = zipExport.PathCasePreflight(specs, appReferences, sharedAppReferences);
         return l.Return(result, $"{result.Issues.Count} issues");
     }

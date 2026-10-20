@@ -16,10 +16,11 @@ public class ExportImportDataTest(XmlExporter xmlExporter, IAppReaderFactory app
         var Log = new Log("TstExp");
         var zoneId = 2;
         var appId = 2;
-        var appState = appReaderFactory.GetTac(new AppIdentity(zoneId, appId));
+        var specs = new AppExportSpecs(zoneId, appId);
+        var appReader = appReaderFactory.GetTac(specs);
 
         var fileXml = xmlExporter
-            .Init(new AppExportSpecs(zoneId, appId), appState, false,
+            .Init(specs, appReader, false,
                 /*contentTypeIdsString?.Split(';') ?? */[],
                 /*entityIdsString?.Split(';') ?? */[]
             )
