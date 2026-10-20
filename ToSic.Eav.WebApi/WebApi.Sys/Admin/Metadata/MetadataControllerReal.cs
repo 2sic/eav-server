@@ -31,6 +31,9 @@ public class MetadataControllerReal(
     /// Get Entities with specified TargetTypeId and Key
     /// </summary>
     public MetadataListDto Get(int appId, int targetType, string keyType, string key, string? contentType = null)
+        => Get(appId, targetType, keyType, key, contentType, includeItems: true);
+
+    public MetadataListDto Get(int appId, int targetType, string keyType, string key, string? contentType, bool includeItems)
     {
         var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
         var ctx = appWorkCtxSvc.ContextNew(appId);
@@ -79,7 +82,9 @@ public class MetadataControllerReal(
         var result = new MetadataListDto
         {
             For = mdFor,
-            Items = converter.Convert(entityList),
+            // Some callers only need the target and recommendations. In that case, don't let
+            // conversion of an unrelated metadata item break those independent results.
+            Items = includeItems ? converter.Convert(entityList) : [],
             Recommendations = recommendations,
         };
 
