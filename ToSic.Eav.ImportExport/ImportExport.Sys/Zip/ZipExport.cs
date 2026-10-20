@@ -16,7 +16,7 @@ namespace ToSic.Eav.ImportExport.Sys.Zip;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipExport(
     IAppReaderFactory appReaders,
-    XmlExporter xmlExporter,
+    Generator<XmlExporter, XmlExporter.Options> xmlExporter,
     Generator<AppFileManager> fileManagerGenerator,
     IGlobalConfiguration globalConfiguration,
     ISysFeaturesService features
@@ -337,7 +337,7 @@ public class ZipExport(
             .Select(e => e.EntityId.ToString())
             .ToArray();
 
-        var xmlExport = xmlExporter.Init(specs, appReader, true, contentTypeNames, entityIds);
+        var xmlExport = xmlExporter.New(new(specs, appReader, true, contentTypeNames, entityIds));
 
         #region reset App Guid if necessary
 

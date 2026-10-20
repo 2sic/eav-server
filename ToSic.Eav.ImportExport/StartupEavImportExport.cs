@@ -21,6 +21,7 @@ public static class StartupEavImportExport
 
         services.TryAddTransient<ImportService>();
 
+        services.TryAddTransient<XmlExporter>();    // new v22, now using composition, previously using inheritance
         services.TryAddTransient<ZipExport>();
         services.TryAddTransient<ZipImport>();
         services.TryAddTransient<ZipImport.Dependencies>();
@@ -46,8 +47,6 @@ public static class StartupEavImportExport
     public static IServiceCollection AddEavImportExportFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
-        //services.TryAddTransient<XmlExporter, XmlExporterUnknown>();
-        services.TryAddTransient<XmlExporter>();
         services.TryAddTransient<IXmlExporterIntegration, XmlExporterIntegrationUnknown>();
         services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
 

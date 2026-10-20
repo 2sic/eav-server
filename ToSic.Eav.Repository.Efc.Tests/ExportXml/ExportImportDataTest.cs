@@ -7,7 +7,7 @@ using Xunit.DependencyInjection;
 namespace ToSic.Eav.Repository.Efc.Tests.ExportXml;
 
 [Startup(typeof(StartupTestsApps))]
-public class ExportImportDataTest(XmlExporter xmlExporter, IAppReaderFactory appReaderFactory) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
+public class ExportImportDataTest(Generator<XmlExporter, XmlExporter.Options> xmlExporter, IAppReaderFactory appReaderFactory) : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
 
     [Fact(Skip = "ignore for now, reason is that we don't have a mock-IContextResolver")]
@@ -20,10 +20,10 @@ public class ExportImportDataTest(XmlExporter xmlExporter, IAppReaderFactory app
         var appReader = appReaderFactory.GetTac(specs);
 
         var fileXml = xmlExporter
-            .Init(specs, appReader, false,
+            .New(new(specs, appReader, false,
                 /*contentTypeIdsString?.Split(';') ?? */[],
                 /*entityIdsString?.Split(';') ?? */[]
-            )
+            ))
             .GenerateNiceXml();
 
     }
