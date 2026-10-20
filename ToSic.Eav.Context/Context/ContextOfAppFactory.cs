@@ -32,6 +32,12 @@ public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
 
     #region Factory Work
 
+    public IContextOfApp Create(int appId)
+    {
+        var appIdentity = Services.AppReaders.AppIdentity(appId);
+        return Create(appIdentity);
+    }
+
     /// <summary>
     /// New Implementation WIP v22.01 2026-10-18
     /// </summary>
@@ -42,7 +48,7 @@ public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
         var result = new ContextOfApp(
             Services.Site,
             Services.User,
-            appIdentity == null ? null : Services.AppReaders.TryGet(appIdentity)
+            AppReaderOrNull: appIdentity == null ? null : Services.AppReaders.TryGet(appIdentity)
         )
         {
             InternalMachinery = this,
