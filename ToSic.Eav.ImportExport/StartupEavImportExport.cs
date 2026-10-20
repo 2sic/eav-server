@@ -46,7 +46,9 @@ public static class StartupEavImportExport
     public static IServiceCollection AddEavImportExportFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<IEnvironmentLogger, EnvironmentLoggerUnknown>();
-        services.TryAddTransient<XmlExporter, XmlExporterUnknown>();
+        //services.TryAddTransient<XmlExporter, XmlExporterUnknown>();
+        services.TryAddTransient<XmlExporter>();
+        services.TryAddTransient<IXmlExporterIntegration, XmlExporterIntegrationUnknown>();
         services.TryAddTransient<IImportExportEnvironment, ImportExportEnvironmentUnknown>();
 
         return services;

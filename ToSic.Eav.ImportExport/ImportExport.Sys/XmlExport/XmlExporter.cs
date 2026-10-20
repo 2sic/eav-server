@@ -4,6 +4,7 @@ using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Identity;
@@ -16,13 +17,13 @@ namespace ToSic.Eav.ImportExport.Sys.XmlExport;
 // should all get it from cache only!
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, string logPrefix, object[] connect)
-    : ServiceBase(logPrefix + "XmlExp", connect: [..connect, appsCatalog, xmlSerializer])
+public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, IContextOfAppFactory appCtxFactory, IXmlExporterIntegration integration)
+    : ServiceBase($"{EavLogs.Eav}XmlExp", connect: [appsCatalog, xmlSerializer, appCtxFactory, integration])
 {
 
     #region simple properties
-    protected readonly List<int> ReferencedFileIds = [];
-    protected readonly List<int> ReferencedFolderIds = [];
+    //protected readonly List<int> ReferencedFileIds = [];
+    //protected readonly List<int> ReferencedFolderIds = [];
     public List<TenantFileItem> ReferencedFiles = [];
     private bool _isAppExport;
 
@@ -44,7 +45,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
     public XmlSerializer Serializer { get; } = xmlSerializer;
     protected readonly IAppsCatalog AppsCatalog = appsCatalog;
 
-    protected void Constructor(AppExportSpecs specs, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, string defaultCultureCode)
+    protected void Constructor(AppExportSpecs specs, IAppReader appReader, bool appExport, string[] typeNamesOrIds, string[] entityIds, string defaultCultureCode)
     {
         var l = Log.Fn(message: "start XML exporter using app-package");
         _specs = specs;
@@ -60,7 +61,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
                 ),
             AppReader);
 
-        _appStaticName = appStaticName;
+        _appStaticName = appReader.Specs.NameId;
         _isAppExport = appExport;
         ContentTypeNamesOrIds = typeNamesOrIds;
         EntityIDs = entityIds;
@@ -70,7 +71,23 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         l.Done();
     }
 
-    public abstract XmlExporter Init(AppExportSpecs specs, IAppReader appReader, bool appExport, string[] attrSetIds, string[] entityIds);
+    //public abstract XmlExporter Init(AppExportSpecs specs, IAppReader appReader, bool appExport, string[] attrSetIds, string[] entityIds);
+
+    /// <summary>
+    /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
+    /// </summary>
+    /// <returns></returns>
+    public XmlExporter Init(AppExportSpecs specs, IAppReader appReader, bool appExport, string[] attrSetIds, string[] entityIds)
+    {
+        //currentContextService.SetApp(specs);
+        //var ctxOfApp = currentContextService.AppContextRequired();
+        var ctxOfApp = appCtxFactory.Create(specs);
+        integration.Setup(ctxOfApp);
+        Constructor(specs, appReader, appExport, attrSetIds, entityIds, ctxOfApp.Site.DefaultCultureCode);
+
+        return this;
+    }
+
 
     private void EnsureThisIsInitialized()
     {
@@ -228,7 +245,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         #endregion
 
         // init files (add to queue)
-        AddFilesToExportQueue();
+        integration.AddFilesToExportQueue();
 
         GetFoldersForEntitiesThatAreNotDeleted(entities);
 
@@ -285,7 +302,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         );
     }
 
-    public abstract void AddFilesToExportQueue();
+    //public abstract void AddFilesToExportQueue();
 
     /// <summary>
     /// Returns an Entity XElement
@@ -319,37 +336,30 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
                 var a = fileRegex.Match(valueString);
                 // try to remember the file
                 if (a.Success && a.Groups[XmlConstants.FileIdInRegEx].Length > 0)
-                    AddFileAndFolderToQueue(int.Parse(a.Groups[XmlConstants.FileIdInRegEx].Value));
+                    integration.AddFileAndFolderToQueue(int.Parse(a.Groups[XmlConstants.FileIdInRegEx].Value));
             }
         }
 
         return entityXElement;
     }
 
-    protected abstract void AddFileAndFolderToQueue(int fileNum);
+    //protected abstract void AddFileAndFolderToQueue(int fileNum);
 
 
     #endregion
 
     #region Files & Pages
 
-    private XElement GetFilesXElements() => new(XmlConstants.PortalFiles /*"PortalFiles" */,
-        ReferencedFileIds.Distinct().Select(GetFileXElement)
-    );
+    private XElement GetFilesXElements() => new(XmlConstants.PortalFiles, integration.ReferencedFileIds.Distinct().Select(GetFileXElement));
 
 
-    private XElement GetFoldersXElements()
-    {
-        return new(XmlConstants.FolderGroup,
-            ReferencedFolderIds.Distinct().Select(GetFolderXElement)
-        );
-    }
+    private XElement GetFoldersXElements() => new(XmlConstants.FolderGroup, integration.ReferencedFolderIds.Distinct().Select(GetFolderXElement));
 
-    protected abstract TenantFileItem ResolveFile(int fileId);
+    //protected abstract TenantFileItem ResolveFile(int fileId);
 
     private XElement? GetFileXElement(int fileId)
     {
-        var file = ResolveFile(fileId);
+        var file = integration.ResolveFile(fileId);
 
         if (IsDeletedOrInvalid(file?.RelativePath))
             return null;
@@ -363,11 +373,11 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         );
     }
 
-    protected abstract string ResolveFolderId(int folderId);
+    //protected abstract string ResolveFolderId(int folderId);
 
     private XElement? GetFolderXElement(int folderId)
     {
-        var path = ResolveFolderId(folderId).ForwardSlash();
+        var path = integration.ResolveFolderId(folderId).ForwardSlash();
 
         if (IsDeletedOrInvalid(path))
             return null;
@@ -412,10 +422,28 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
     #endregion
 
     /// <summary>
-    /// Creates a new StringWriter with UTF8 Encoding
+    /// StringWriter with UTF8 Encoding
     /// </summary>
-    internal class Utf8StringWriter : StringWriter
+    private class Utf8StringWriter : StringWriter
     {
         public override Encoding Encoding => Encoding.UTF8;
     }
+}
+
+public interface IXmlExporterIntegration
+{
+    /// <summary>
+    /// Post context init the caller must be able to init Adam, which is not part of this project, so we're handling it as a callback
+    /// </summary>
+    /// <param name="appContext"></param>
+    void Setup(IContextOfApp appContext);
+
+    public List<int> ReferencedFileIds { get; }
+    public List<int> ReferencedFolderIds { get; }
+
+    public string ResolveFolderId(int folderId);
+    public TenantFileItem ResolveFile(int fileId);
+    void AddFilesToExportQueue();
+    void AddFileAndFolderToQueue(int fileNum);
+
 }
