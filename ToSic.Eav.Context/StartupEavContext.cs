@@ -51,7 +51,6 @@ public static class StartupEavContext
     {
         services.TryAddTransient<ISite, SiteUnknown>();
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
-        services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
         services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
 
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();

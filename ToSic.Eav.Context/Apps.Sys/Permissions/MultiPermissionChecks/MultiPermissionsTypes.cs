@@ -25,25 +25,6 @@ public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, La
 
     public void Setup(Options options) => base.Setup(options);
 
-    //public MultiPermissionsTypes Init(IContextOfSite context, IAppIdentity app, string contentType)
-    //{
-    //    var l = Log.Fn<MultiPermissionsTypes>($"..., appId: {app.AppId}, contentType: '{contentType}'");
-    //    Init(context, app);
-    //    ContentTypes = [contentType];
-    //    return l.Return(this);
-    //}
-
-    ///// <summary>
-    ///// This step is separate, because extension methods need it _after_ Init
-    ///// </summary>
-    ///// <param name="contentTypes"></param>
-    ///// <returns></returns>
-    //public MultiPermissionsTypes InitTypesAfterInit(IEnumerable<string> contentTypes)
-    //{
-    //    ContentTypes = contentTypes;
-    //    return this;
-    //}
-
 
     protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
         => InitPermissionChecksForType(MyOptions.ContentTypes);

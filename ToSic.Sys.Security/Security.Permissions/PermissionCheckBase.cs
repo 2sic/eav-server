@@ -16,21 +16,15 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
 
     #region MyServices
 
-    public record Dependencies(ISysFeaturesService Features, IEnvironmentPermission EnvironmentPermission)
-        : DependenciesBase(connect: [Features, EnvironmentPermission])
-    {
-        //public ISysFeaturesService Features { get; } = Features;
-        //public IEnvironmentPermission EnvironmentPermission { get; } = EnvironmentPermission;
-    }
+    public record Dependencies(ISysFeaturesService Features, IEnvironmentPermission EnvironmentPermission, IUser User)
+        : DependenciesBase(connect: [Features, EnvironmentPermission]);
 
     #endregion
 
     #region Permission Targets and resulting list of metadata to control
 
-    //private IContentType TargetType { get; set; }
     private IHasPermissions? TargetTypePermissionsOrNull { get; set; }
 
-    //private IEntity TargetItem { get; set; }
     private IHasPermissions? TargetItemPermissionsOrNull { get; set; }
 
     private string? TargetItemOwner { get; set; }
@@ -60,29 +54,6 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
     #endregion
 
 
-    ///// <summary>
-    ///// Initialize this object so it can then give information regarding the permissions of an entity.
-    ///// Uses a GUID as identifier because that survives export/import. 
-    ///// </summary>
-    ///// <param name="targetType">optional type to check</param>
-    ///// <param name="targetItem">optional entity to check</param>
-    ///// <param name="permissions"></param>
-    ///// 
-    //protected void Init(IContentType targetType = default, IEntity targetItem = default, IEnumerable<IPermission> permissions = default) 
-    //{
-    //    _additionalPermissions = permissions?.ToList() ?? [];
-
-    //    var l = Log.Fn($"type:{targetType?.NameId}, " +
-    //                   $"itm:{targetItem?.EntityGuid} ({targetItem?.EntityId}), " +
-    //                   $"permList1: {_additionalPermissions.Count}, ");
-
-    //    TargetTypePermissionsOrNull = targetType?.Metadata;
-    //    TargetItemPermissionsOrNull = targetItem?.Metadata;
-    //    TargetItemOwner = targetItem?.Owner ?? "unknown-random239s;o";
-
-    //    GrantedBecause = Conditions.Undefined;
-    //    l.Done();
-    //}
     protected void InitTargets(IHasPermissions? typePermissions = default, IHasPermissions? itemPermissions = default, string? targetOwner = default, IEnumerable<IPermission>? permissions = default) 
     {
         var l = Log.Fn();
@@ -126,8 +97,6 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
                 return l.ReturnAndLog(info);
         }
 
-        //var result = PermissionList.FirstOrDefault(
-        //    perm => PermissionAllows(perm, grants.Select(g => (char) g).ToArray()));
         return l.ReturnAndLog(new(false, Conditions.Undefined));
     }
 
@@ -155,5 +124,5 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
     /// <summary>
     /// The current user, as provided by injection
     /// </summary>
-    protected abstract IUser User { get; }
+    protected virtual IUser User => services.User;
 }
