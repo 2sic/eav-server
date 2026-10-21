@@ -28,14 +28,3 @@ public class AppParts
     public const string Data = "data"; // new, v13
     public const string Query = "query";
 }
-
-public class AppRoots
-{
-    public const string AppAuto = $"{Areas.App}/{AppParts.Auto}";
-    public const string AppAutoContent = $"{Areas.App}/{AppParts.Auto}/{AppParts.Content}";
-    public const string AppAutoData = $"{Areas.App}/{AppParts.Auto}/{AppParts.Data}"; // new, v13
-
-    public const string AppNamed = $"{Areas.App}/{ValueTokens.AppPath}";
-    public const string AppNamedContent = $"{Areas.App}/{ValueTokens.AppPath}/{AppParts.Content}";
-    public const string AppNamedData = $"{Areas.App}/{ValueTokens.AppPath}/{AppParts.Data}"; // new, v13
-}
