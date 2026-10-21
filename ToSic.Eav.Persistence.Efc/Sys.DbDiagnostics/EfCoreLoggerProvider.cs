@@ -24,8 +24,9 @@ public class EfCoreLoggerProvider : ILoggerProvider
             return true;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception, string> formatter)
         {
+            exception = exception ?? new Exception("No exception provided");
             System.IO.File.AppendAllText(@"C:\temp\log.txt", formatter(state, exception));
             Console.WriteLine(formatter(state, exception));
         }
