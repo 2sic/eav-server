@@ -228,6 +228,10 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
         var depth = 0;
         var isMel = group.Events.All(entry => entry.Depth == null);
         var start = isMel ? group.Events.Min(entry => entry.StartedUtc ?? entry.TimestampUtc) : group.TimestampUtc;
+        // Use the same full span as the original Legacy tree, including the final wrap-close.
+        var last = group.Events[group.Events.Length - 1];
+        var legacyTime = isMel ? null : new InsightsTime(last.TimestampUtc.Add(Duration(last) ?? default) - start);
+        var parents = new Stack<InsightsLogEventSnapshot>();
         IEnumerable<InsightsLogEventSnapshot> entries = isMel
             ? group.Events.OrderBy(entry => entry.StartedUtc ?? entry.TimestampUtc).ThenBy(entry => entry.Sequence)
             : group.Events;
@@ -240,18 +244,20 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
                 {
                     log.AppendLine("</ol></li>");
                     depth--;
+                    parents.Pop();
                 }
                 continue;
             }
 
             log.AppendLine("<li>");
-            log.AppendLine(SnapshotLine(entry, start));
+            log.AppendLine(SnapshotLine(entry, start, legacyTime, parents.Count > 0 ? parents.Peek() : null));
             if (entry.WrapOpen)
             {
                 if (!entry.WrapOpenWasClosed)
                     log.AppendLine(HtmlEncode("🪵⚠️ LOGGER WARNING: This logger was never closed"));
                 log.AppendLine("<ol>");
                 depth++;
+                parents.Push(entry);
             }
             else
                 log.AppendLine("</li>");
@@ -263,19 +269,24 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
         return log.ToString();
     }
 
-    private static string SnapshotLine(InsightsLogEventSnapshot entry, DateTime start)
+    private string SnapshotLine(InsightsLogEventSnapshot entry, DateTime start, InsightsTime? legacyTime, InsightsLogEventSnapshot? parent)
     {
         var message = HtmlEncode(entry.Message.NeverNull());
         if (entry.ShowNewLines)
             message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
         var source = entry.FullSource ?? entry.ShortSource ?? entry.Category;
+        var label = legacyTime == null
+            ? entry.ShortSource ?? entry.Category
+            : LegacyLabel(source, parent?.ShortSource ?? "");
         var code = entry.SourceFilePath != null && !entry.HideCodeReference
             ? " " + HoverLabel("C#", $"{entry.SourceFilePath} - {entry.SourceMemberName}() #{entry.SourceLineNumber}", "codePeek")
             : "";
         var result = entry.Result == null ? "" : $" {ResStart}{HtmlEncode(entry.Result)}{ResEnd}";
         var exception = entry.Exception?.Details == null ? "" : " " + HtmlEncode(entry.Exception.Details);
-        var timing = " " + new InsightsTime().ShowTime(Duration(entry), (entry.StartedUtc ?? entry.TimestampUtc) - start);
-        return Span(HoverLabel(HtmlEncode(entry.ShortSource ?? entry.Category), source, "logIds") + " - " + message + result + timing + exception + code)
+        var timing = legacyTime == null
+            ? " " + new InsightsTime().ShowTime(Duration(entry), (entry.StartedUtc ?? entry.TimestampUtc) - start)
+            : legacyTime.ShowTime(Duration(entry) ?? default, entry.TimestampUtc, parent == null ? default : Duration(parent) ?? default, start);
+        return Span(HoverLabel(HtmlEncode(label), source, "logIds") + " - " + message + result + timing + exception + code)
             .Class("log-line")
             .ToString();
     }
@@ -407,9 +418,30 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
         if (e.WrapClose)
             return $"{ResStart}{e.Result}{ResEnd}";
 
-        #region find perfect Label
-
         var logChainPath = e.Source ?? "";
+        var label = LegacyLabel(logChainPath, parentBreadcrumb);
+
+        var message = HtmlEncode(e.Message.NeverNull());
+        if (e.Options?.ShowNewLines == true)
+            message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
+        return Span(
+                HoverLabel(HtmlEncode(label), logChainPath, "logIds")
+                + " - "
+                + message
+                + (e.Result != null
+                    ? $" {ResStart}{HtmlEncode(e.Result)}{ResEnd}"
+                    : string.Empty)
+                + time.ShowTime(e, parentTime, mainStart)
+                + (e.Code != null && e.Options?.HideCodeReference != true
+                    ? " " + HoverLabel("C#", $"{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}", "codePeek")
+                    : string.Empty)
+                + "\n")
+            .Class("log-line")
+            .ToString();
+    }
+
+    private string LegacyLabel(string logChainPath, string parentBreadcrumb)
+    {
         var label = KeepOnlyLastSegmentOfPath(logChainPath);
 
         // If we have a previous breadcrumb...
@@ -439,25 +471,7 @@ internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
         if (label.Trim('…') == _lastLogLabel) label = "[=]";
         else _lastLogLabel = label;
 
-        #endregion
-
-        var message = HtmlEncode(e.Message.NeverNull());
-        if (e.Options?.ShowNewLines == true)
-            message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
-        return Span(
-                HoverLabel(HtmlEncode(label), logChainPath, "logIds")
-                + " - "
-                + message
-                + (e.Result != null
-                    ? $" {ResStart}{HtmlEncode(e.Result)}{ResEnd}"
-                    : string.Empty)
-                + time.ShowTime(e, parentTime, mainStart)
-                + (e.Code != null && e.Options?.HideCodeReference != true
-                    ? " " + HoverLabel("C#", $"{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}", "codePeek")
-                    : string.Empty)
-                + "\n")
-            .Class("log-line")
-            .ToString();
+        return label;
     }
     private const string ResStart = "<span style='color: green'>= ";
     private const string ResEnd = "</span>";
