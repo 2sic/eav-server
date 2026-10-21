@@ -2,11 +2,10 @@ using System.Collections.Immutable;
 
 namespace ToSic.Sys.Logging;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record InsightsLogSnapshot(bool IsPaused, ImmutableArray<InsightsLogGroupSnapshot> Groups);
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record InsightsLogGroupSnapshot(
     string Id,
@@ -21,7 +20,7 @@ public sealed record InsightsLogGroupSnapshot(
         : Events.Length > 0 ? Events[0].Message : null;
 }
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record InsightsLogEventSnapshot(
     long Sequence,

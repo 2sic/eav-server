@@ -3,7 +3,7 @@ using System.Text;
 
 namespace ToSic.Sys.Logging;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 // This is a read-time adapter only; MEL never converts events back into Log or Entry.
 public sealed class LegacyInsightsLogSnapshotReader(ILogStoreLive store) : IInsightsLogSnapshotReader

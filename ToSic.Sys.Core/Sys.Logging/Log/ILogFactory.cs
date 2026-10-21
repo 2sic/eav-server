@@ -3,7 +3,7 @@ namespace ToSic.Sys.Logging;
 /// <summary>
 /// Creates logs while preserving their implementation across parent-child chains.
 /// </summary>
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface ILogFactory
 {

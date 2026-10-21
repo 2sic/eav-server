@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ToSic.Sys.Logging;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record InsightsEvent
 {
@@ -43,7 +43,7 @@ public sealed record InsightsEvent
     public InsightsExceptionDiagnostic? Exception { get; init; }
 }
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public enum InsightsLogLevel
 {
@@ -55,7 +55,7 @@ public enum InsightsLogLevel
     Critical
 }
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record InsightsExceptionDiagnostic(
     string Type,

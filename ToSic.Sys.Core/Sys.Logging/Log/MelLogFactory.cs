@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ToSic.Sys.Logging;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class MelLogFactory(ILoggerFactory loggerFactory) : ILogFactory
 {

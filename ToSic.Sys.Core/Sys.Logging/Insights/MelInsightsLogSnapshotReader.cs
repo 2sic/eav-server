@@ -3,7 +3,7 @@ using System.Text;
 
 namespace ToSic.Sys.Logging;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class MelInsightsLogSnapshotReader(IInsightsLogStore store) : IInsightsLogSnapshotReader
 {

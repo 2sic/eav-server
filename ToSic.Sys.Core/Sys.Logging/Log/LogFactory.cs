@@ -7,7 +7,7 @@ namespace ToSic.Sys.Logging;
 /// <summary>
 /// Application-wide log factory access.
 /// </summary>
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class LogFactory
 {

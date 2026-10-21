@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ToSic.Sys.Logging;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IInsightsLogSnapshotReader
 {

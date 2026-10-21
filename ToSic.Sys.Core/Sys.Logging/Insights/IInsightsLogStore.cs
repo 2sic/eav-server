@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ToSic.Sys.Logging;
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IInsightsLogStore
 {
@@ -19,7 +19,7 @@ public interface IInsightsLogStore
     ImmutableArray<InsightsGroupSummary> ListGroups();
 }
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public enum InsightsAppendResult
 {
@@ -28,7 +28,7 @@ public enum InsightsAppendResult
     DroppedOversized
 }
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record InsightsLogStoreOptions
 {
@@ -38,7 +38,7 @@ public sealed record InsightsLogStoreOptions
     public int MaxEventsPerGroup { get; init; } = 4096;
 }
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record InsightsLogStoreCounters(
     long Appended,
@@ -50,13 +50,13 @@ public sealed record InsightsLogStoreCounters(
     long RetainedEstimatedBytes,
     int RetainedGroups);
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record InsightsLogStoreSnapshot(
     ImmutableArray<InsightsEvent> Events,
     InsightsLogStoreCounters Counters,
     bool Paused);
 
-[InternalApi_DoNotUse_MayChangeWithoutNotice]
+[PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed record InsightsGroupSummary(string? TraceId, ImmutableArray<string?> Segments, long FirstSequence, int EventCount, bool IsCorrelated);
