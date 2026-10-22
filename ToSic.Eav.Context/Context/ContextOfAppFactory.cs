@@ -25,7 +25,7 @@ public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
         LazySvc<ISysFeaturesService> Features,
         LazySvc<AppUserLanguageCheck> LangChecks,
         Generator<IEnvironmentPermission> EnvironmentPermissions,
-        Generator<AppPermissionCheck> AppPermissionCheck,
+        LazySvc<PermissionCheckFactory> AppPermissionCheck,
         LazySvc<AppDataStackService> SettingsStack
     ) : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, AppPermissionCheck, SettingsStack]);
 
@@ -92,7 +92,7 @@ public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
         }
 
         // Case 3: From App
-        var fromApp = Services.AppPermissionCheck.New()
+        var fromApp = Services.AppPermissionCheck.Value
             .ForAppInInstance(contextOfApp, contextOfApp.AppReaderOrNull)
             .UserMay(GrantSets.WriteSomething)
             .Allowed;

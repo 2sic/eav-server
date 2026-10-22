@@ -18,10 +18,10 @@ namespace ToSic.Eav.Context.Sys;
 public class AppUserLanguageCheck(
     LazySvc<IZoneMapper> zoneMapperLazy,
     IContextOfSite ctx,
-    Generator<AppPermissionCheck> checkGenerator,
+    LazySvc<PermissionCheckFactory> permCheckFactory,
     LazySvc<IAppReaderFactory> appReadersLazy,
     LazySvc<ISysFeaturesService> featuresLazy)
-    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, checkGenerator, appReadersLazy, featuresLazy])
+    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, permCheckFactory, appReadersLazy, featuresLazy])
 {
     /// <summary>
     /// Test if the current user has explicit language editing permissions
@@ -106,12 +106,11 @@ public class AppUserLanguageCheck(
                 var ok = defaultAllowed;
                 if (!ok)
                 {
-                    var pChecker = checkGenerator.New();
                     var permissions = permissionEntities
                         .Select(p => p.ToModel<Permission>(options: ToModelOptions.DisableTypeNameCheck)!)
                         .ToListOpt();
-                    pChecker.For("user language", ctx, readerSafe, permissions);
-                    ok = pChecker.PermissionsAllow(GrantSets.WriteSomething).Allowed;
+                    var checker = permCheckFactory.Value.For("user language", ctx, readerSafe, permissions);
+                    ok = checker.PermissionsAllow(GrantSets.WriteSomething).Allowed;
                 }
 
                 return new

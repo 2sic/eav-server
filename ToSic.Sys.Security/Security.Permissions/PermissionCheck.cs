@@ -8,11 +8,21 @@ namespace ToSic.Sys.Security.Permissions;
 /// Basic constructor, you must always call Init afterward
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependencies services, string logName, object[]? connect = default)
-    : ServiceBase<PermissionCheckBase.Dependencies>(services, logName, connect: connect), IPermissionCheck
+public partial class PermissionCheck(PermissionCheck.Dependencies services)
+    : ServiceWithSetup<PermissionCheck.Options>("Sys.PrmChk", connect: [services]), IPermissionCheck
 {
-    // ReSharper disable once InconsistentNaming
-    private readonly Dependencies services = services;
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="Permissions"></param>
+    /// <param name="TargetOwner">Information who the owner is for the item we're checking for - if any.</param>
+    /// <param name="Env"></param>
+    /// <param name="User"></param>
+    public record Options(List<IPermission> Permissions, string? TargetOwner, IEnvironmentPermission? Env, IUser? User)
+    {
+        /// <summary>Information who the owner is for the item we're checking for - if any.</summary>
+        public string TargetOwner { get; init; } = TargetOwner ?? "unknown-random239s;o";
+    }
 
     #region MyServices
 
@@ -23,55 +33,47 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
 
     #region Permission Targets and resulting list of metadata to control
 
-    private IHasPermissions? TargetTypePermissionsOrNull { get; set; }
+    [field: AllowNull, MaybeNull]
+    private IEnvironmentPermission EnvPermissions => field ??= MyOptions.Env ?? services.EnvironmentPermission;
 
-    private IHasPermissions? TargetItemPermissionsOrNull { get; set; }
-
-    private string? TargetItemOwner { get; set; }
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    //private string? TargetItemOwner { get; set; }
 
     [field: AllowNull, MaybeNull]
-    protected List<IPermission> PermissionList => field ??= BuildPermissionList();
-
-    private List<IPermission> BuildPermissionList()
-    {
-        var l = Log.Fn<List<IPermission>>();
-
-        List<IPermission> list =
-        [
-            ..TargetTypePermissionsOrNull?.Permissions ?? [],
-            ..TargetItemPermissionsOrNull?.Permissions ?? [],
-            .._additionalPermissions ?? throw new NullReferenceException($"{nameof(_additionalPermissions)} is null, it appears that you didn't call {nameof(InitTargets)}")
-        ];
-
-        return l.Return(list, $"permissions: {list.Count}");
-    }
-
-
-    private List<IPermission>? _additionalPermissions;
+    protected List<IPermission> PermissionList => field ??= MyOptions.Permissions ?? throw new NullReferenceException($"{nameof(PermissionList)} is null, it appears that you didn't call {nameof(Setup)}");
 
     public bool HasPermissions => PermissionList.Any();
-
     #endregion
 
-
-    protected void InitTargets(IHasPermissions? typePermissions = default, IHasPermissions? itemPermissions = default, string? targetOwner = default, IEnumerable<IPermission>? permissions = default) 
+    public static List<IPermission> CombinePermissions(IEnumerable<IHasPermissions?> hasPermissions, IEnumerable<IPermission?>? permissions)
     {
-        var l = Log.Fn();
-
-        _additionalPermissions = permissions?.ToList() ?? [];
-        
-        TargetTypePermissionsOrNull = typePermissions;
-        TargetItemPermissionsOrNull = itemPermissions;
-        TargetItemOwner = targetOwner ?? "unknown-random239s;o";
-
-        l.Done($"permissions: {_additionalPermissions.Count}");
+        List<IPermission> list =
+        [
+            ..hasPermissions.SelectMany(tp => tp?.Permissions ?? []),
+            ..permissions?.OfType<IPermission>() ?? []
+        ];
+        return list;
     }
+
+    //public void InitTargets(List<IPermission> permissions, string? targetOwner, IEnvironmentPermission? env, IUser? user) 
+    //{
+    //    var l = Log.Fn();
+    //    //PermissionList = permissions;
+
+    //    //TargetItemOwner = targetOwner ?? "unknown-random239s;o";
+    //    //EnvPermissions = env!;
+    //    //User = user;
+
+    //    l.Done($"permissions: {PermissionList.Count}");
+    //}
 
     public PermissionCheckInfo UserMay(List<Grants> grants)
     {
         var l = Log.Fn<PermissionCheckInfo>(Log.Try(() => $"[{string.Join(",", grants)}]"));
 
-        var envPermissions = services.EnvironmentPermission.EnvironmentAllows(grants);
+        var envPermissions = EnvPermissions.EnvironmentAllows(grants);
         if (envPermissions.Allowed)
             return l.ReturnAndLog(envPermissions);
 
@@ -92,7 +94,7 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
         // Loop through permissions, and check if any of them allows the desired action
         foreach (var permission in PermissionList)
         {
-            var info = PermissionAllows(permission, grants.Select(g => (char)g).ToArray());
+            var info = PermissionAllows(permission, [.. grants.Select(g => (char)g)]);
             if (info.Allowed)
                 return l.ReturnAndLog(info);
         }
@@ -124,5 +126,5 @@ public abstract partial class PermissionCheckBase(PermissionCheckBase.Dependenci
     /// <summary>
     /// The current user, as provided by injection
     /// </summary>
-    protected virtual IUser User => services.User;
+    private IUser User => field ??= MyOptions.User ?? services.User;
 }

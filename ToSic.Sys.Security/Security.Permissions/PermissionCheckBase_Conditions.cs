@@ -3,11 +3,16 @@ using ToSic.Sys.Utils;
 
 namespace ToSic.Sys.Security.Permissions;
 
-partial class PermissionCheckBase
+partial class PermissionCheck
 {
-    // TODO: THIS IS CURRENTLY A MANUAL COPY OF THE VALUE
-    // This should not be the final state
-    private static Guid PermissionCheckUsersGuid = new("47c71ee9-ac7b-45bf-a08b-dfc8ce7c7775");
+    /// <summary>
+    /// The feature guid for this permission check.
+    /// </summary>
+    /// <remarks>
+    /// TODO: THIS IS CURRENTLY A MANUAL COPY OF THE VALUE
+    /// This should not be the final state
+    /// </remarks>
+    private static readonly Guid PermissionCheckUsersGuid = new("47c71ee9-ac7b-45bf-a08b-dfc8ce7c7775");
 
     /// <summary>
     /// Check if the current user fits the reason for this grant
@@ -27,7 +32,7 @@ partial class PermissionCheckBase
             if (User.Guid != default)
             {
                 // check owner conditions (only possible on target entities, not content-types)
-                if (VerifyUserIsItemOwner(condition, TargetItemOwner, User))
+                if (VerifyUserIsItemOwner(condition, MyOptions.TargetOwner, User))
                     return l.Return(new(true, Conditions.Identity), "is-owner: true");
 
                 // check if an identity was provided
@@ -44,7 +49,7 @@ partial class PermissionCheckBase
 
             // this checks if the condition is a environment condition
             // for example, if it's a DNN code for "user may view something"
-            if (services.EnvironmentPermission.VerifyConditionOfEnvironment(condition))
+            if (EnvPermissions.VerifyConditionOfEnvironment(condition))
                 return l.Return(new(true, Conditions.EnvironmentInstance), "environment: true");
 
             return l.Return(new (false, Conditions.Undefined), "no-match: false");
@@ -62,7 +67,7 @@ partial class PermissionCheckBase
     /// </summary>
     private bool VerifyUserIsThisUser(string identity, IUser user)
     {
-        if (!Services.Features.IsEnabled(PermissionCheckUsersGuid))
+        if (!services.Features.IsEnabled(PermissionCheckUsersGuid))
             return false;
         return identity == user.Guid.ToString();
     }
@@ -76,7 +81,7 @@ partial class PermissionCheckBase
     /// <returns></returns>
     private bool VerifyUserIsInGroup(string identity, IUser user)
     {
-        if (!Services.Features.IsEnabled(PermissionCheckUsersGuid))
+        if (!services.Features.IsEnabled(PermissionCheckUsersGuid))
             return false;
 
         if (string.IsNullOrWhiteSpace(identity))
@@ -87,7 +92,7 @@ partial class PermissionCheckBase
             .Where(gid => gid > 0)
             .ToList();
 
-        return user.Roles.Any(r => groupIds.Contains(r));
+        return user.Roles.Any(groupIds.Contains);
     }
 
     /// <summary>

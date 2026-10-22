@@ -27,7 +27,7 @@ public static class StartupEavContext
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
         // App Permission Check moved to this project as the implementations are now all identical
-        services.TryAddTransient<AppPermissionCheck>();
+        services.TryAddTransient<PermissionCheckFactory>();
         services.TryAddTransient<MultiPermissionsTypes>();
         services.TryAddTransient<MultiPermissionsApp>();
         services.TryAddTransient<MultiPermissionsApp.Dependencies>();

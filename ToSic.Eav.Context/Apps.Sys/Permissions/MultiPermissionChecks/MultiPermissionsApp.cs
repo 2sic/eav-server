@@ -16,9 +16,9 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
 
     public record Dependencies(
         LazySvc<IZoneMapper> ZoneMapper,
-        Generator<AppPermissionCheck> AppPermCheckGenerator,
+        LazySvc<PermissionCheckFactory> PermCheckFactory,
         Generator<ISysFeaturesService> FeatIntGen)
-        : DependenciesBase(connect: [ZoneMapper, AppPermCheckGenerator, FeatIntGen]);
+        : DependenciesBase(connect: [ZoneMapper, PermCheckFactory, FeatIntGen]);
 
     public record Options
     {
@@ -97,8 +97,7 @@ public class MultiPermissionsApp: MultiPermissionsBase<MultiPermissionsApp.Depen
 
         // user has edit permissions on this app, and it's the same app as the user is coming from
         var ctxSiteOrBlock = MyOptions.SiteContext.WithSwappedSite(SiteForSecurityCheck);
-        var result = Services.AppPermCheckGenerator.New()
-            .ForParts(ctxSiteOrBlock, MyOptions.App, type, item);
+        var result = Services.PermCheckFactory.Value.ForParts(ctxSiteOrBlock, MyOptions.App, type, item);
 
         return l.Return(result, $"for {MyOptions.App.Show()} in {SiteForSecurityCheck?.Id}");
     }
