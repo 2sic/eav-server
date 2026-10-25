@@ -33,7 +33,7 @@ public class EntityApi(
     public EntityApi InitOrThrowBasedOnGrants(IContextOfSite context, IAppIdentity app, string contentType, List<Grants> requiredGrants)
     {
         var permCheck = multiPermissionsTypes.New(new() { SiteContext = context, App = app, ContentTypes = [contentType] });
-        if (!permCheck.EnsureAll(requiredGrants, out var error))
+        if (!permCheck.EnsureAllWithError(requiredGrants, out var error))
             throw HttpException.PermissionDenied(error);
 
         var includeDrafts = permCheck.EnsureAny(GrantSets.ReadDraft);

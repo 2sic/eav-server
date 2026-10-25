@@ -7,7 +7,7 @@ namespace ToSic.Eav.WebApi.Sys.Security;
 
 internal static class PublicFormsPermissions
 {
-    internal static bool UserCanWriteAndPublicFormsEnabled(this MultiPermissionsApp mpa, LazySvc<ISysFeaturesService> sysFeatSvc, out HttpExceptionAbstraction? preparedException, out string? error)
+    internal static bool UserCanWriteAndPublicFormsEnabled(this MultiPermissionsTypes mpa, LazySvc<ISysFeaturesService> sysFeatSvc, out HttpExceptionAbstraction? preparedException, out string? error)
     {
         var l = mpa.Log.Fn<bool>("");
         // 1. check if user is restricted

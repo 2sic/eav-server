@@ -3,22 +3,15 @@
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MultiPermissionsItems(MultiPermissionsApp.Dependencies services, PermissionContextAdjuster permCtxAdjuster, PermissionCheckFactory permCheckFactory)
-    : MultiPermissionsApp(services, "Sec.MpItms"),
-        IServiceWithSetup<MultiPermissionsItems.Options>,
-        IHasOptions<MultiPermissionsItems.Options>
+public class MultiPermissionsItems(PermissionContextAdjuster permCtxAdjuster, PermissionCheckFactory permCheckFactory)
+    : ServiceWithSetup<MultiPermissionsItems.Options>("Sec.MpItms", connect: [permCtxAdjuster, permCheckFactory]), IMultiPermissionCheck
 {
-    public new record Options: MultiPermissionsApp.Options
+    public record Options: MultiPermissionsApp.Options
     {
         public List<IEntity> Entities { get; init; } = [];
     }
 
-    public new Options MyOptions => (Options)base.MyOptions;
-
-
-    public void Setup(Options options) => base.Setup(options);
-
-    public override Dictionary<string, IPermissionCheck> PermissionCheckers
+    public Dictionary<string, IPermissionCheck> PermissionCheckers
         => field ??= InitializePermissionChecks();
 
 
@@ -32,7 +25,6 @@ public class MultiPermissionsItems(MultiPermissionsApp.Dependencies services, Pe
     /// <summary>
     /// Creates a permission checker for an entity in this app
     /// </summary>
-    /// <returns></returns>
     private IPermissionCheck BuildItemPermissionChecker(IEntity item)
     {
         var l = Log.Fn<IPermissionCheck>($"type: {item.Type}; entity:{item.EntityId}");
@@ -40,9 +32,8 @@ public class MultiPermissionsItems(MultiPermissionsApp.Dependencies services, Pe
 
         // user has edit permissions on this app, and it's the same app as the user is coming from
         var ctxSiteOrBlock = permCtxAdjuster.AdjustContextForApp(MyOptions.SiteContext, app);
-        var checker = permCheckFactory.ForParts(ctxSiteOrBlock, app, item.Type, item);
+        var checker = permCheckFactory.ForItem(ctxSiteOrBlock, app, item);
 
-        //var checker = MultiPermAppCheckBuilder.BuildPermissionChecker(MyOptions.App, item.Type, item);
         return l.ReturnAsOk(checker);
     }
 }

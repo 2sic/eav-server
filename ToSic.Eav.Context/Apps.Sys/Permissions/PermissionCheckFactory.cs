@@ -47,12 +47,12 @@ public class PermissionCheckFactory(IAppReaderFactory appReaders, Generator<Perm
         return l.Return(result);
     }
 
-    public IPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType? targetType, IEntity? targetItem)
-    {
-        var l = Log.Fn<IPermissionCheck>($"ctx, app: {app.Show()}, type: {targetType?.NameId}, item: {targetItem?.EntityId}");
-        var result = Init(ctx, app, targetType, targetItem, includeApp: true);
-        return l.Return(result);
-    }
+    //public IPermissionCheck ForParts(IContextOfSite ctx, IAppIdentity app, IContentType? targetType, IEntity? targetItem)
+    //{
+    //    var l = Log.Fn<IPermissionCheck>($"ctx, app: {app.Show()}, type: {targetType?.NameId}, item: {targetItem?.EntityId}");
+    //    var result = Init(ctx, app, targetType, targetItem, includeApp: true);
+    //    return l.Return(result);
+    //}
 
 
     /// <summary>

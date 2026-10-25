@@ -32,7 +32,6 @@ public static class StartupEavContext
         services.TryAddTransient<MultiPermissionsApp>();
         services.TryAddTransient<ZoneSwitchPermissionCheck>();  // new v22
         services.TryAddTransient<PermissionContextAdjuster>();  // new v22
-        services.TryAddTransient<MultiPermissionsApp.Dependencies>();
 
         // V13 Language Checks
         services.TryAddTransient<AppUserLanguageCheck>();
