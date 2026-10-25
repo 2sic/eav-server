@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, LazySvc<IAppReaderFactory> appReaderFactory)
+public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, IAppReaderFactory appReaderFactory, PermissionContextAdjuster permCtxAdjuster, PermissionCheckFactory permCheckFactory)
     : MultiPermissionsApp(services, "Sec.MPTyps", connect: [appReaderFactory]),
         IServiceWithSetup<MultiPermissionsTypes.Options>,
         IHasOptions<MultiPermissionsTypes.Options>
@@ -19,18 +19,15 @@ public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, La
 
     public new Options MyOptions => (Options)base.MyOptions;
 
-    // Note: AppState must be public, as we have some extension methods that need it
-    [field: AllowNull, MaybeNull]
-    public IAppReader AppState => field ??= appReaderFactory.Value.GetOrKeep(MyOptions.App);
 
     public void Setup(Options options) => base.Setup(options);
 
+    public override Dictionary<string, IPermissionCheck> PermissionCheckers
+        => field ??= InitializePermissionChecks();
 
-    protected override Dictionary<string, IPermissionCheck> InitializePermissionChecks()
-        => InitPermissionChecksForType(MyOptions.ContentTypes);
-
-    protected Dictionary<string, IPermissionCheck> InitPermissionChecksForType(IEnumerable<string> contentTypes)
-        => contentTypes.Distinct().ToDictionary(t => t, BuildTypePermissionChecker);
+    private Dictionary<string, IPermissionCheck> InitializePermissionChecks()
+        => MyOptions.ContentTypes.Distinct()
+            .ToDictionary(t => t, BuildTypePermissionChecker);
 
 
     /// <summary>
@@ -41,10 +38,17 @@ public class MultiPermissionsTypes(MultiPermissionsApp.Dependencies services, La
     private IPermissionCheck BuildTypePermissionChecker(string typeName)
     {
         var l = Log.Fn<IPermissionCheck>($"BuildTypePermissionChecker({typeName})");
-        // now do relevant security checks
-        var appState = appReaderFactory.Value.GetOrKeep(MyOptions.App);
-        var result = BuildPermissionChecker(appState.TryGetContentType(typeName));
-        return l.Return(result);
+        var app = MyOptions.App;
+
+        // user has edit permissions on this app, and it's the same app as the user is coming from
+        var ctxSiteOrBlock = permCtxAdjuster.AdjustContextForApp(MyOptions.SiteContext, app);
+        var checker = permCheckFactory.ForType(ctxSiteOrBlock, app, AppState.GetContentType(typeName));
+
+        //var result = MultiPermAppCheckBuilder.BuildPermissionChecker(MyOptions.App, AppState.TryGetContentType(typeName));
+        return l.Return(checker);
     }
+
+    [field: AllowNull, MaybeNull]
+    private IAppReader AppState => field ??= appReaderFactory.GetOrKeep(MyOptions.App);
 
 }

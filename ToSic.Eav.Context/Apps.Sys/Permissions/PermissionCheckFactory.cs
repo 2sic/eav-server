@@ -23,7 +23,7 @@ public class PermissionCheckFactory(IAppReaderFactory appReaders, Generator<Perm
     public IPermissionCheck ForType(IContextOfSite ctx, IAppIdentity appIdentity, IContentType targetType)
     {
         var l = Log.Fn<IPermissionCheck>();
-        var result = Init(ctx, appIdentity, targetType);
+        var result = Init(ctx, appIdentity, targetType, includeApp: true);
         return l.Return(result);
     }
 

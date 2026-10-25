@@ -1,70 +1,26 @@
-﻿using ToSic.Sys.Security.Permissions;
+﻿//using ToSic.Sys.Security.Permissions;
 
-namespace ToSic.Eav.Apps.Sys.Permissions;
+//namespace ToSic.Eav.Apps.Sys.Permissions;
 
-/// <summary>
-/// A permission checker which is initialized with various items which must be checked
-/// Calling Ensure or similar will verify that all permission checks succeed
-/// </summary>
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class MultiPermissionsBase<TServices, TOptions>(TServices services, string logName, object[]? connect = default)
-    : ServiceWithSetup<TServices, TOptions>(services, logName, connect: connect), IMultiPermissionCheck
-    where TServices : IDependencies
-    where TOptions : class, new()
-{
-    /// <summary>
-    /// All the permission checks that will be used
-    /// </summary>
-    [field: AllowNull, MaybeNull]
-    public Dictionary<string, IPermissionCheck> PermissionCheckers
-        => field ??= InitializePermissionChecks();
-
-    #region abstract methods
-
-    /// <summary>
-    /// Since the final permission check can check for many things,
-    /// this will create the list of permission checkers.
-    /// </summary>
-    /// <returns></returns>
-    protected abstract Dictionary<string, IPermissionCheck> InitializePermissionChecks();
-
-    #endregion
+///// <summary>
+///// A permission checker which is initialized with various items which must be checked
+///// Calling Ensure or similar will verify that all permission checks succeed
+///// </summary>
+//[ShowApiWhenReleased(ShowApiMode.Never)]
+//public abstract class MultiPermissionsBase<TServices, TOptions>(TServices services, string logName, object[]? connect = default)
+//    : ServiceWithSetup<TServices, TOptions>(services, logName, connect: connect), IMultiPermissionCheck
+//    where TServices : IDependencies
+//    where TOptions : class, new()
+//{
+//    /// <inheritdoc/>
+//    [field: AllowNull, MaybeNull]
+//    public abstract Dictionary<string, IPermissionCheck> PermissionCheckers { get; }
 
 
-    /// <summary>
-    /// Verify that all checks pass
-    /// </summary>
-    /// <param name="grants"></param>
-    /// <returns>True if all pass, false if any one fails</returns>
-    public bool UserMayOnAll(List<Grants> grants) => EnsureAll(grants, out _);
+//    /// <inheritdoc/>
+//    public bool UserMayOnAll(List<Grants> grants) => EnsureAll(grants, out _);
 
-    /// <summary>
-    /// Ensure that all! checks pass
-    /// </summary>
-    /// <param name="grants"></param>
-    /// <param name="error">Out error message to use to throw upstream</param>
-    /// <returns>True if all pass, false if any one fails</returns>
-    public bool EnsureAll(List<Grants> grants, out string? error)
-    {
-        var l = Log.Fn<bool>($"Doing {nameof(EnsureAll)} for {GetType().Name}");
+//    /// <inheritdoc/>>
+//    public bool EnsureAll(List<Grants> grants, out string? error) => this.EnsureAllInternal(grants, out error);
 
-        var permCheckers = PermissionCheckers;
-        l.A($"{nameof(PermissionCheckers)}: {permCheckers.Count}");
-
-        foreach (var set in permCheckers)
-            if (!set.Value.Ensure(grants, out error))
-                return l.ReturnFalse();
-
-        error = null;
-        return l.ReturnTrue();
-    }
-
-    /// <summary>
-    /// Ensure that any! checks pass
-    /// </summary>
-    /// <param name="grants"></param>
-    /// <returns>True if all pass, false if any one fails</returns>
-    public bool EnsureAny(List<Grants> grants) => Log.Quick(() =>
-        PermissionCheckers.Any(set => set.Value.Ensure(grants, out _)));
-
-}
+//}
