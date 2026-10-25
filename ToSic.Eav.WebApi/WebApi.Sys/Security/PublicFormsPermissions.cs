@@ -11,7 +11,7 @@ internal static class PublicFormsPermissions
     {
         var l = mpa.Log.Fn<bool>("");
         // 1. check if user is restricted
-        var userIsRestricted = !mpa.UserMayOnAll(GrantSets.WritePublished);
+        var userIsRestricted = !mpa.EnsureAll(GrantSets.WritePublished).Allowed;
 
         // 2. check if feature is enabled
         var feats = new[] { BuiltInFeatures.PublicEditForm.Guid };

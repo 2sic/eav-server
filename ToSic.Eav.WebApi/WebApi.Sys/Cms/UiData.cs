@@ -16,7 +16,7 @@ internal class UiData(ISysFeaturesService features, IUser user) : IUiData
     /// </remarks>
     public IList<FeatureState> Features(IMultiPermissionCheck permCheck)
     {
-        var userHasPublishRights = permCheck.UserMayOnAll(GrantSets.WritePublished);
+        var userHasPublishRights = permCheck.EnsureAll(GrantSets.WritePublished).Allowed;
         return Features(userHasPublishRights);
     }
 

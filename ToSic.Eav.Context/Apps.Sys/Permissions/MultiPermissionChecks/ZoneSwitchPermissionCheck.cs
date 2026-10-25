@@ -6,23 +6,6 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 public class ZoneSwitchPermissionCheck(IContextOfSite requestContext, LazySvc<IZoneMapper> zoneMapper)
     : ServiceBase("Sec.ZoneSw", connect: [zoneMapper])
 {
-    //public ISite GetSiteForSecurityCheck(IAppIdentity app)
-    //{
-    //    var context = requestContext;
-    //    var isSameSite = context.Site.ZoneId == app.ZoneId;
-    //    var l = Log.Fn($"..., appId: {app.AppId}, ...");
-
-    //    var result = isSameSite
-    //        ? context.Site
-    //        // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
-    //        // todo: probably enhance with a Site.IsMultiZone check
-    //        : zoneMapper.Value.SiteOfZone(app.ZoneId)
-    //          ?? context.Site;
-    //    l.Done($"ready for app:{app.Show()} tenant/zone:{result.Id}/{context.Site.ZoneId} same:{isSameSite}");
-    //    return result;
-    //}
-
-
     /// <summary>
     /// Test if we are switching zones - and if yes, if it is allowed (superuser only)
     /// </summary>
