@@ -11,23 +11,23 @@ namespace ToSic.Sys.Security.Permissions;
 public partial class PermissionCheck(PermissionCheck.Dependencies services)
     : ServiceWithSetup<PermissionCheck.Options>("Sys.PrmChk", connect: [services]), IPermissionCheck
 {
+    #region Dependencies and Options
+
+    public record Dependencies(ISysFeaturesService Features, IEnvironmentPermission EnvironmentPermission, IUser User)
+        : DependenciesBase(connect: [Features, EnvironmentPermission]);
+
     /// <summary>
-    /// 
+    /// Options
     /// </summary>
-    /// <param name="Permissions"></param>
+    /// <param name="Permissions">Permissions to load.</param>
     /// <param name="TargetOwner">Information who the owner is for the item we're checking for - if any.</param>
-    /// <param name="Env"></param>
-    /// <param name="User"></param>
+    /// <param name="Env">Environment permissions.</param>
+    /// <param name="User">The user for whom the permissions are being checked.</param>
     public record Options(List<IPermission> Permissions, string? TargetOwner, IEnvironmentPermission? Env, IUser? User)
     {
         /// <summary>Information who the owner is for the item we're checking for - if any.</summary>
         public string TargetOwner { get; init; } = TargetOwner ?? "unknown-random239s;o";
     }
-
-    #region MyServices
-
-    public record Dependencies(ISysFeaturesService Features, IEnvironmentPermission EnvironmentPermission, IUser User)
-        : DependenciesBase(connect: [Features, EnvironmentPermission]);
 
     #endregion
 
@@ -56,18 +56,6 @@ public partial class PermissionCheck(PermissionCheck.Dependencies services)
         ];
         return list;
     }
-
-    //public void InitTargets(List<IPermission> permissions, string? targetOwner, IEnvironmentPermission? env, IUser? user) 
-    //{
-    //    var l = Log.Fn();
-    //    //PermissionList = permissions;
-
-    //    //TargetItemOwner = targetOwner ?? "unknown-random239s;o";
-    //    //EnvPermissions = env!;
-    //    //User = user;
-
-    //    l.Done($"permissions: {PermissionList.Count}");
-    //}
 
     public PermissionCheckInfo UserMay(List<Grants> grants)
     {

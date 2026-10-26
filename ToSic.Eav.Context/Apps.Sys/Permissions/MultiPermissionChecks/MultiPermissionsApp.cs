@@ -40,7 +40,7 @@ public class MultiPermissionsApp(PermissionCheckFactory permCheckFactory, Permis
 
         // user has edit permissions on this app, and it's the same app as the user is coming from
         var ctxSiteOrBlock = permCtxAdjuster.AdjustContextForApp(MyOptions.SiteContext, app);
-        var result = permCheckFactory.ForAppInInstance(ctxSiteOrBlock, app);
+        var result = permCheckFactory.ForApp(ctxSiteOrBlock, app);
 
         return l.Return(result, $"for {app.Show()} in {ctxSiteOrBlock?.Site?.Id}");
     }

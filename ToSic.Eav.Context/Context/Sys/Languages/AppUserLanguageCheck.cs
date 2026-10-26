@@ -109,7 +109,7 @@ public class AppUserLanguageCheck(
                     var permissions = permissionEntities
                         .Select(p => p.ToModel<Permission>(options: ToModelOptions.DisableTypeNameCheck)!)
                         .ToListOpt();
-                    var checker = permCheckFactory.Value.For("user language", ctx, readerSafe, permissions);
+                    var checker = permCheckFactory.Value.For(ctx, readerSafe, permissions, "user language");
                     ok = checker.PermissionsAllow(GrantSets.WriteSomething).Allowed;
                 }
 

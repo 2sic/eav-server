@@ -18,7 +18,10 @@ public class MultiPermissionsTypes(IAppReaderFactory appReaderFactory, Permissio
     {
         var appState = appReaderFactory.GetOrKeep(MyOptions.App);
         return MyOptions.ContentTypes.Distinct()
-            .ToDictionary(t => t, s => BuildTypePermissionChecker(appState, s));
+            .ToDictionary(
+                t => t,
+                s => BuildTypePermissionChecker(appState, s)
+            );
     }
 
 

@@ -17,6 +17,8 @@ public static class PermissionCheckWithEnsure
     //    error = ok ? null : "required permissions for this request are not given";
     //    return l.Return(ok, ok ? "ok" : "permissions not ok");
     //}
+
+
     /// <summary>
     /// Run a permission check and return error if it failed
     /// </summary>
