@@ -58,9 +58,9 @@ public partial class PermissionCheck(ISysFeaturesService featuresSvc, IEnvironme
     {
         var l = Log.Fn<PermissionCheckInfo>(Log.Try(() => $"[{string.Join(",", grants)}]"));
 
-        var envPermissions = EnvPermissions.EnvironmentAllows(grants);
-        if (envPermissions.Allowed)
-            return l.ReturnAndLog(envPermissions);
+        var envPermInfo = EnvPermissions.EnvironmentAllows(grants);
+        if (envPermInfo.Allowed)
+            return l.ReturnAndLog(envPermInfo);
 
         var result = PermissionsAllow(grants);
         return l.Return(result, $"{result}");

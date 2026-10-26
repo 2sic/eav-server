@@ -41,7 +41,7 @@ public abstract class EnvironmentPermission(string logPrefix, object[]? connect 
     /// </summary>
     /// <param name="grants"></param>
     /// <returns></returns>
-    protected virtual bool EnvironmentOk(List<Grants> grants)
+    protected bool EnvironmentOk(List<Grants> grants)
     {
         var l = Log.Fn<bool>(Log.Try(() => $"[{string.Join(",", grants)}]"));
         if (UserIsAnonymous())
