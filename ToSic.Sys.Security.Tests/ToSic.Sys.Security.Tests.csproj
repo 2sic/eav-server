@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
+  <PropertyGroup>
+    <RootNamespace>ToSic.Sys</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToSic.Sys.Security\ToSic.Sys.Security.csproj" />
+  </ItemGroup>
+</Project>
