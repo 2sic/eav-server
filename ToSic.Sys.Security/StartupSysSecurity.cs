@@ -17,7 +17,6 @@ public static class StartupSysSecurity
 
         // Permissions helper
         services.TryAddTransient<PermissionCheck>();
-        services.TryAddTransient<PermissionCheck.Dependencies>();
 
         return services;
     }

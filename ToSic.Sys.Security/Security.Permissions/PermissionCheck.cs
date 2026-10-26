@@ -8,13 +8,10 @@ namespace ToSic.Sys.Security.Permissions;
 /// Basic constructor, you must always call Init afterward
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class PermissionCheck(PermissionCheck.Dependencies services)
-    : ServiceWithSetup<PermissionCheck.Options>("Sys.PrmChk", connect: [services]), IPermissionCheck
+public partial class PermissionCheck(ISysFeaturesService featuresSvc, IEnvironmentPermission envPermissions, IUser userFromDi)
+    : ServiceWithSetup<PermissionCheck.Options>("Sys.PrmChk", connect: [featuresSvc, envPermissions, userFromDi]), IPermissionCheck
 {
     #region Dependencies and Options
-
-    public record Dependencies(ISysFeaturesService Features, IEnvironmentPermission EnvironmentPermission, IUser User)
-        : DependenciesBase(connect: [Features, EnvironmentPermission]);
 
     /// <summary>
     /// Options
@@ -34,7 +31,7 @@ public partial class PermissionCheck(PermissionCheck.Dependencies services)
     #region Permission Targets and resulting list of metadata to control
 
     [field: AllowNull, MaybeNull]
-    private IEnvironmentPermission EnvPermissions => field ??= MyOptions.Env ?? services.EnvironmentPermission;
+    private IEnvironmentPermission EnvPermissions => field ??= MyOptions.Env ?? envPermissions;
 
     ///// <summary>
     ///// 
@@ -114,5 +111,5 @@ public partial class PermissionCheck(PermissionCheck.Dependencies services)
     /// <summary>
     /// The current user, as provided by injection
     /// </summary>
-    private IUser User => field ??= MyOptions.User ?? services.User;
+    private IUser User => field ??= MyOptions.User ?? userFromDi;
 }
