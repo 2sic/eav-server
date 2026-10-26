@@ -23,14 +23,14 @@ partial class PermissionCheck
             {
                 // check owner conditions (only possible on target entities, not content-types)
                 if (VerifyUserIsItemOwner(permission.Condition, MyOptions.TargetOwner, User))
-                    return l.Return(new(true, Conditions.Identity), "is-owner: true");
+                    return l.Return(new(true, Conditions.Owner), "is-owner: true");
 
                 // check if an identity was provided
                 if (!string.IsNullOrWhiteSpace(permission.Identity))
                 {
                     l.A($"Check if user is user or group - identity: {permission.Identity}");
                     if (VerifyUserIsThisUser(permission.Identity, User))
-                        return l.Return(new(true, Conditions.Owner), "is-this-user: true");
+                        return l.Return(new(true, Conditions.Identity), "is-this-user: true");
 
                     if (VerifyUserIsInGroup(permission.Identity, User))
                         return l.Return(new(true, Conditions.Group), "is-in-specified-group: true");
@@ -70,7 +70,7 @@ partial class PermissionCheck
     /// <returns></returns>
     private bool VerifyUserIsInGroup(string identity, IUser user)
     {
-        if (!featuresSvc.IsEnabled(BuiltInFeatures.PermissionCheckUsers.Guid))
+        if (!featuresSvc.IsEnabled(BuiltInFeatures.PermissionCheckGroups.Guid))
             return false;
 
         if (string.IsNullOrWhiteSpace(identity))

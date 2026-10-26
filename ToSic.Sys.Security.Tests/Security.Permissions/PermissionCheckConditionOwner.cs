@@ -77,7 +77,7 @@ public class PermissionCheckConditionOwner(Generator<PermissionCheck, Permission
 
 
     [Fact]
-    public void OwnerReasonIsIdentity()
-        => Equal(Conditions.Identity, CheckRead("owner-only", UserMock.MockIdentityToken).Condition);
+    public void OwnerReasonIsOwner()
+        => Equal(Conditions.Owner, CheckRead("owner-only", UserMock.MockIdentityToken).Condition);
 
 }
