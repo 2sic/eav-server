@@ -24,7 +24,7 @@ public class RegisteredCheckers
         sc.AddSysCapabilitiesAndSysCore();
         var sp = sc.BuildServiceProvider();
         
-        Equal(StartupHelpers.RequirementChecksInDiByDefault,
+        Equal(SysCapabilitiesTestConstants.RequirementChecksInDiByDefault,
             sp.GetAllKeysForService<IRequirementCheck>().Count());
     }
 }

@@ -3,7 +3,7 @@ using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.Features;
 
-public static class StartupHelpers
+public static class SysCapabilitiesTestStartup
 {
     /// <summary>
     /// Default DI registration, called by XUnit
@@ -15,10 +15,4 @@ public static class StartupHelpers
             .AddSysCapabilitiesFallbacks()
             .AddSysCore();
 
-    /// <summary>
-    /// By default, it only has 2 feature checkers
-    /// - Features
-    /// - SysFeatures
-    /// </summary>
-    public const int RequirementChecksInDiByDefault = 2;
 }
