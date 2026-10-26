@@ -7,9 +7,7 @@ using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Context.Sys.Site;
 using ToSic.Eav.Context.Sys.ZoneCulture;
 using ToSic.Eav.Context.Sys.ZoneMapper;
-using ToSic.Eav.Environment.Sys.Permissions;
 using ToSic.Eav.Environment.Sys.ServerPaths;
-using ToSic.Sys.Security.Permissions;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run.Startup;
@@ -52,7 +50,6 @@ public static class StartupEavContext
     {
         services.TryAddTransient<ISite, SiteUnknown>();
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
-        services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
 
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
 

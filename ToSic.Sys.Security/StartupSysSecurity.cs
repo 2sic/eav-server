@@ -25,6 +25,8 @@ public static class StartupSysSecurity
     public static IServiceCollection AddSysSecurityFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<IUser, UserUnknown>();
+        services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
+
         return services;
     }
 
