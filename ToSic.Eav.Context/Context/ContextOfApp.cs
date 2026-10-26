@@ -14,6 +14,11 @@ public record ContextOfApp(
 ): IContextOfApp
 {
     /// <summary>
+    /// Describe this context without evaluating required or lazy properties, including on derived records.
+    /// </summary>
+    public sealed override string ToString() => $"{GetType().Name} {{ HasApp = {AppReaderOrNull != null} }}";
+
+    /// <summary>
     /// Helper to lazy-retrieve permissions if ever needed.
     /// </summary>
     public required ContextOfAppFactory InternalMachinery { get; init; }
