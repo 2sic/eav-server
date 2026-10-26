@@ -4,6 +4,9 @@
     <RootNamespace>ToSic.Sys</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Sys.Features\ToSic.Sys.Features.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.Security.TestHelpers\ToSic.Sys.Security.TestHelpers.csproj" />
     <ProjectReference Include="..\ToSic.Sys.Security\ToSic.Sys.Security.csproj" />
+    <ProjectReference Include="..\ToSic.Sys.TestHelpers\ToSic.Sys.TestHelpers.csproj" />
   </ItemGroup>
 </Project>

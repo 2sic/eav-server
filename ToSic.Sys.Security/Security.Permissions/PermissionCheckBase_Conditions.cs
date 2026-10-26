@@ -41,7 +41,7 @@ partial class PermissionCheck
             // for example, if it's a DNN code for "user may view something"
             return EnvPermissions.VerifyConditionOfEnvironment(permission.Condition)
                 ? l.Return(new(true, Conditions.EnvironmentInstance), "environment: true")
-                : l.Return(new (false, Conditions.Undefined), "no-match: false");
+                : l.Return(new(false, Conditions.Undefined), "no-match: false");
         }
         catch
         {

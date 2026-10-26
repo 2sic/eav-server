@@ -90,20 +90,20 @@ public partial class PermissionCheck(ISysFeaturesService featuresSvc, IEnvironme
     /// <summary>
     /// Check if a specific permission entity allows for the desired permission
     /// </summary>
-    /// <param name="permissionEntity">The entity describing a permission</param>
+    /// <param name="permission">The entity describing a permission</param>
     /// <param name="desiredActionCode">A key like r (for read), u (for update) etc. which is the level you want to check</param>
     /// <returns></returns>
-    private PermissionCheckInfo PermissionAllows(IPermission permissionEntity, char[] desiredActionCode)
+    private PermissionCheckInfo PermissionAllows(IPermission permission, char[] desiredActionCode)
     {
         var l = Log.Fn<PermissionCheckInfo>($"{new string(desiredActionCode)}");
         // Check if it's a grant for the desired action - otherwise stop here
-        var grant = permissionEntity.Grant;
+        var grant = permission.Grant;
         // If Grant doesn't contain desired action, stop here
         if (grant.IndexOfAny(desiredActionCode) == -1)
             return l.Return(new(false, Conditions.Undefined), "no grant-match");
 
         // otherwise check if it applies
-        var result = VerifyConditionApplies(permissionEntity);
+        var result = VerifyConditionApplies(permission);
         return l.ReturnAndLog(result);
     }
         
