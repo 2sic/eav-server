@@ -7,7 +7,7 @@ public static class GrantSets
 {
     /// <summary>
     /// If any of the following permissions are given, the user
-    /// may read somethig - but it's not clear yet what may be read
+    /// may read something - but it's not clear yet what may be read
     /// </summary>
     /// <remarks>
     /// It's important to note that create-grants don't provide
