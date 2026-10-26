@@ -22,23 +22,20 @@ public class MultiPermissionsTypes(IAppReaderFactory appReaderFactory, Permissio
                 t => t,
                 s => BuildTypePermissionChecker(appState, s)
             );
+
+        // <summary>
+        // Creates a permission checker for a type in this app
+        // </summary>
+        IPermissionCheck BuildTypePermissionChecker(IAppReader appState, string typeName)
+        {
+            var l = Log.Fn<IPermissionCheck>($"BuildTypePermissionChecker({typeName})");
+            var app = MyOptions.App;
+
+            // user has edit permissions on this app, and it's the same app as the user is coming from
+            var ctxSiteOrBlock = permCtxAdjuster.AdjustContextForApp(MyOptions.SiteContext, app);
+            var checker = permCheckFactory.ForType(ctxSiteOrBlock, app, appState.GetContentType(typeName));
+
+            return l.ReturnAsOk(checker);
+        }
     }
-
-
-    /// <summary>
-    /// Creates a permission checker for a type in this app
-    /// </summary>
-    private IPermissionCheck BuildTypePermissionChecker(IAppReader appState, string typeName)
-    {
-        var l = Log.Fn<IPermissionCheck>($"BuildTypePermissionChecker({typeName})");
-        var app = MyOptions.App;
-
-        // user has edit permissions on this app, and it's the same app as the user is coming from
-        var ctxSiteOrBlock = permCtxAdjuster.AdjustContextForApp(MyOptions.SiteContext, app);
-        var checker = permCheckFactory.ForType(ctxSiteOrBlock, app, appState.GetContentType(typeName));
-
-        return l.ReturnAsOk(checker);
-    }
-
-
 }

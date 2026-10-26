@@ -16,24 +16,26 @@ public class MultiPermissionsItems(PermissionContextAdjuster permCtxAdjuster, Pe
 
 
     private Dictionary<string, IPermissionCheck> InitializePermissionChecks()
-        => MyOptions.Entities
+    {
+        return MyOptions.Entities
             .ToDictionary(
                 i => i.EntityId.ToString(),
                 BuildItemPermissionChecker
             );
 
-    /// <summary>
-    /// Creates a permission checker for an entity in this app
-    /// </summary>
-    private IPermissionCheck BuildItemPermissionChecker(IEntity item)
-    {
-        var l = Log.Fn<IPermissionCheck>($"type: {item.Type}; entity:{item.EntityId}");
-        var app = MyOptions.App;
+        // <summary>
+        // Creates a permission checker for an entity in this app
+        // </summary>
+        IPermissionCheck BuildItemPermissionChecker(IEntity item)
+        {
+            var l = Log.Fn<IPermissionCheck>($"type: {item.Type}; entity:{item.EntityId}");
+            var app = MyOptions.App;
 
-        // user has edit permissions on this app, and it's the same app as the user is coming from
-        var ctxSiteOrBlock = permCtxAdjuster.AdjustContextForApp(MyOptions.SiteContext, app);
-        var checker = permCheckFactory.ForItem(ctxSiteOrBlock, app, item);
+            // user has edit permissions on this app, and it's the same app as the user is coming from
+            var ctxSiteOrBlock = permCtxAdjuster.AdjustContextForApp(MyOptions.SiteContext, app);
+            var checker = permCheckFactory.ForItem(ctxSiteOrBlock, app, item);
 
-        return l.ReturnAsOk(checker);
+            return l.ReturnAsOk(checker);
+        }
     }
 }

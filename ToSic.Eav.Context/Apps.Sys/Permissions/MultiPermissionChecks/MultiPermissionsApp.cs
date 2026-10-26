@@ -28,21 +28,19 @@ public class MultiPermissionsApp(PermissionCheckFactory permCheckFactory, Permis
         => field ??= InitializePermissionChecks();
 
 
-    private Dictionary<string, IPermissionCheck> InitializePermissionChecks()
-        => new() { { "App", BuildPermissionChecker(MyOptions.App) } };
-       
     /// <summary>
     /// Creates a permission checker for an app
     /// </summary>
-    private IPermissionCheck BuildPermissionChecker(IAppIdentity app)
+    private Dictionary<string, IPermissionCheck> InitializePermissionChecks()
     {
-        var l = Log.Fn<IPermissionCheck>($"app:{app.Show()}");
+        var app = MyOptions.App;
+        var l = Log.Fn<Dictionary<string, IPermissionCheck>>($"app:{app.Show()}");
 
         // user has edit permissions on this app, and it's the same app as the user is coming from
         var ctxSiteOrBlock = permCtxAdjuster.AdjustContextForApp(MyOptions.SiteContext, app);
         var result = permCheckFactory.ForApp(ctxSiteOrBlock, app);
 
-        return l.Return(result, $"for {app.Show()} in {ctxSiteOrBlock?.Site?.Id}");
+        return l.Return(new() { { "App", result } }, $"site: {ctxSiteOrBlock?.Site?.Id}");
     }
 
 }
