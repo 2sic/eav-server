@@ -73,6 +73,8 @@ public class PublishingFilter : DataSourceBase
         var showDraftsSetting = ShowDrafts;
         var l = Log.Fn<IImmutableList<IEntity>>();
         var finalShowDrafts = showDraftsSetting
+                              // Keep explicit settings first, then use this query's app-specific decision.
+                              ?? QueryUserPermissions.ShowDrafts(Configuration.LookUpEngine, this)
                               ?? _userPermissions.UserPermissions()?.ShowDraftData
                               ?? QueryConstants.ParamsShowDraftsDefault;
         var inStreamName = finalShowDrafts

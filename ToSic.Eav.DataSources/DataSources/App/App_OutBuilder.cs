@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Streams;
@@ -75,7 +76,9 @@ partial class App : IDataSourceReset // #RemoveDataSourceReset v21
         // because the "real" source already applies filters like published
         var appReader = AppReader;
         var listOfTypes = appReader.ContentTypes;
-        var showDraftsForCacheKey = _services.UserPermissions.UserPermissions().IsContentAdmin;
+        // Separate cached type streams using the same draft decision as the query's publishing filter.
+        var showDraftsForCacheKey = QueryUserPermissions.ShowDrafts(Configuration.LookUpEngine, this)
+                                   ?? _services.UserPermissions.UserPermissions().ShowDraftData;
         var typeList = "";
         foreach (var contentType in listOfTypes)
         {

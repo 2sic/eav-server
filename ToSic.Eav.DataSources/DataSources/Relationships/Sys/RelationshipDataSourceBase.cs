@@ -1,4 +1,5 @@
 ﻿using ToSic.Sys.Users.Permissions;
+using ToSic.Eav.DataSource.Query.Sys;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -67,7 +68,10 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
         // In case the current user should not see draft data,
         // we must ensure that we didn't accidentally include any.
         // Because it could be that the original data was public, but a related item was not.
-        if (!(_userPermissions.UserPermissions()?.ShowDraftData ?? false))
+        var showDrafts = QueryUserPermissions.ShowDrafts(Configuration.LookUpEngine, this)
+                         ?? _userPermissions.UserPermissions()?.ShowDraftData
+                         ?? false;
+        if (!showDrafts)
             relationships = relationships.Where(e => e.IsPublished).ToList();
 
         // ReSharper disable PossibleMultipleEnumeration
