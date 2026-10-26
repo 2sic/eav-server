@@ -15,25 +15,45 @@ namespace ToSic.Sys.Run.Startup;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static class StartupSysCapabilities
 {
+    /// <summary>
+    /// Add everything around system capabilities, incl. features, licenses and requirements.
+    /// </summary>
     public static IServiceCollection AddSysCapabilities(this IServiceCollection services)
     {
-        // Make sure that IFeaturesInternal and IFeatures use the same singleton!
-        services.AddSingleton<LicenseCatalog>();    // Must be singleton
-        services.AddSingleton<FeaturesCatalog>();   // Must be singleton
+        return services
+            .AddSysFeatures()
+            .AddSysRequirements()
+            .AddSysLicenses();
+    }
+
+    /// <summary>
+    /// Add system features services only.
+    /// </summary>
+    public static IServiceCollection AddSysFeatures(this IServiceCollection services)
+    {
+        // The catalogs must be singleton
+        services.AddSingleton<FeaturesCatalog>();
 
         // New SystemCapability
         services.TryAddTransient<SysFeaturesLoader>();
 
         // Features - 2024-05-31 changed to non-singleton
-        services.TryAddTransient<ISysFeaturesService, LibSysFeaturesService>();    // this must come first!
-        services.TryAddTransient<ILibFeaturesService, LibSysFeaturesService>();    // v20
+        services.TryAddTransient<ISysFeaturesService, LibSysFeaturesService>();
+        services.TryAddTransient<ILibFeaturesService, LibSysFeaturesService>();
 
+        // v20 Startup - Registration of Licenses and Features
+        services.AddTransient<IBootProcess, BootRegisterEavFeatures>();
 
-        // V14 Requirements Checks - don't use try-add, as we'll add many
-        services.TryAddTransient<IRequirementsService, RequirementsService>();
-        // V22 - moving requirement checks to keyed services
-        services.AddKeyedTransientWithMarker<IRequirementCheck, FeatureRequirementCheck>(FeatureConstants.RequirementFeature);
-        services.AddKeyedTransientWithMarker<IRequirementCheck, SysFeatureRequirementCheck>(FeatureConstants.RequirementSysCapability);
+        return services;
+    }
+
+    /// <summary>
+    /// Add license services.
+    /// </summary>
+    public static IServiceCollection AddSysLicenses(this IServiceCollection services)
+    {
+        // The catalogs must be singleton
+        services.AddSingleton<LicenseCatalog>();
 
         services.TryAddTransient<ILicenseService, LicenseService>();
 
@@ -43,12 +63,25 @@ public static class StartupSysCapabilities
         services.TryAddTransient<SystemFingerprint>();
 
         // v20 Startup - Registration of Licenses and Features
-        services.AddTransient<IBootProcess, BootRegisterEavFeatures>();
         services.AddTransient<IBootProcess, BootRegisterEavLicenses>();
-
 
         return services;
     }
+
+    /// <summary>
+    /// Add requirements services.
+    /// </summary>
+    public static IServiceCollection AddSysRequirements(this IServiceCollection services)
+    {
+        // V14 Requirements Checks - don't use try-add, as we'll add many
+        services.TryAddTransient<IRequirementsService, RequirementsService>();
+        // V22 - moving requirement checks to keyed services
+        services.AddKeyedTransientWithMarker<IRequirementCheck, FeatureRequirementCheck>(FeatureConstants.RequirementFeature);
+        services.AddKeyedTransientWithMarker<IRequirementCheck, SysFeatureRequirementCheck>(FeatureConstants.RequirementSysCapability);
+
+        return services;
+    }
+
 
     public static IServiceCollection AddSysCapabilitiesFallbacks(this IServiceCollection services)
     {
