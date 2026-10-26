@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// Create permission checkers for various scenarios.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class PermissionCheckFactory(IAppReaderFactory appReaders, Generator<PermissionCheck, PermissionCheck.Options> permCheckGen, IEnvironmentPermission envPermission)
+public class PermissionCheckFactory(IAppReaderFactory appReaders, Generator<PermissionCheck, PermissionCheck.Options> permCheckGen, Generator<IEnvironmentPermission, EnvironmentPermissionOptions> envPermission)
     : ServiceBase($"{AppConstants.LogName}.PrmChk", connect: [appReaders, permCheckGen, envPermission])
 {
     #region Constructor & DI
@@ -61,8 +61,8 @@ public class PermissionCheckFactory(IAppReaderFactory appReaders, Generator<Perm
             ? GetAppPermissions()
             : null;
 
-        var env = ((IEnvironmentPermissionSetup)envPermission).Init<IContextOfSite>(ctxSiteOrBlock, appIdentity);
         var user = (ctxSiteOrBlock ?? throw new ArgumentNullException(nameof(ctxSiteOrBlock))).User;
+        var env = envPermission.New(new(ctxSiteOrBlock, appIdentity));
         var finalTypeOrNull = targetType ?? targetItem?.Type;
         l.A($"type:{finalTypeOrNull?.NameId}, itm:{targetItem?.EntityGuid} ({targetItem?.EntityId})");
         var options = new PermissionCheck.Options(

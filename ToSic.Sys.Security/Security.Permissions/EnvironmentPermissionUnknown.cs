@@ -6,7 +6,7 @@ using ToSic.Sys.Utils;
 namespace ToSic.Sys.Security.Permissions;
 
 internal class EnvironmentPermissionUnknown(IUser user, WarnUseOfUnknown<EnvironmentPermissionUnknown> _)
-    : ServiceBase(LogScopes.NotImplemented), IEnvironmentPermission
+    : ServiceWithSetup<EnvironmentPermissionOptionsBase>(LogScopes.NotImplemented), IEnvironmentPermission
 {
     public PermissionCheckInfo EnvironmentAllows(List<Grants> grants)
         => new(user.IsSystemAdmin, Conditions.EnvironmentGlobal);

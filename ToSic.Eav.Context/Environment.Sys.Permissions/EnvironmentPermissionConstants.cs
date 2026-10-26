@@ -3,7 +3,7 @@
 /// <summary>
 /// Constant keys for security, historic from Dnn
 /// </summary>
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class EnvironmentPermissionConstants
 {
     public const string SalPrefix = "SecurityAccessLevel";

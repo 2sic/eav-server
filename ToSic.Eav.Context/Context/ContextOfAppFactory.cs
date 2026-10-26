@@ -24,7 +24,7 @@ public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
         IAppReaderFactory AppReaders,
         LazySvc<ISysFeaturesService> Features,
         LazySvc<AppUserLanguageCheck> LangChecks,
-        Generator<IEnvironmentPermission> EnvironmentPermissions,
+        Generator<IEnvironmentPermission, EnvironmentPermissionOptions> EnvironmentPermissions,
         LazySvc<PermissionCheckFactory> AppPermissionCheck,
         LazySvc<AppDataStackService> SettingsStack
     ) : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, AppPermissionCheck, SettingsStack]);
@@ -82,9 +82,7 @@ public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
                 return l.ReturnTrue("no app, use UserMayAdmin checks");
 
             // If user isn't allowed yet, it may be that the environment allows it
-            var enfPermissions = Services.EnvironmentPermissions.New();
-            var fromEnv = ((IEnvironmentPermissionSetup)enfPermissions)
-                .Init<IContextOfSite>(contextOfApp, null)
+            var fromEnv = Services.EnvironmentPermissions.New(new(contextOfApp, null))
                 .EnvironmentAllows(GrantSets.WriteSomething)
                 .Allowed;
 
