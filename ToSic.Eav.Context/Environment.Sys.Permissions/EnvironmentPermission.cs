@@ -10,15 +10,6 @@ namespace ToSic.Eav.Environment.Sys.Permissions;
 public abstract class EnvironmentPermission(string logPrefix, object[]? connect = default)
     : ServiceBase($"{logPrefix}.EnvPrm", connect: connect), IEnvironmentPermission, IEnvironmentPermissionSetup
 {
-    // Constant keys for security, historic from Dnn
-    protected const string SalPrefix = "SecurityAccessLevel";
-    protected const string SalView = SalPrefix + ".View";
-    protected const string SalAnonymous = SalPrefix + ".Anonymous";
-    protected const string SalEdit = SalPrefix + ".Edit";
-    protected const string SalSiteAdmin = SalPrefix + ".Admin";
-    protected const string SalSystemUser = SalPrefix + ".Host";
-
-
     public IEnvironmentPermission Init<TContext>(IContextOfSite ctxSiteOrBlock, IAppIdentity? appIdentityOrNull)
     {
         var siteCtx = ctxSiteOrBlock ?? throw new ArgumentException($@"Must be an {nameof(IContextOfSite)}", nameof(ctxSiteOrBlock));
