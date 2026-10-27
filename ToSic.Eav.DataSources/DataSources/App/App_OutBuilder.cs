@@ -78,7 +78,7 @@ partial class App : IDataSourceReset // #RemoveDataSourceReset v21
         var listOfTypes = appReader.ContentTypes;
         // Separate cached type streams using the same draft decision as the query's publishing filter.
         var showDraftsForCacheKey = QueryUserPermissions.ShowDrafts(Configuration.LookUpEngine, this)
-                                   ?? _services.UserPermissions.UserPermissions().ShowDraftData;
+                                   ?? _services.CtxSvc.Context.Permissions.ShowDraftData;
         var typeList = "";
         foreach (var contentType in listOfTypes)
         {

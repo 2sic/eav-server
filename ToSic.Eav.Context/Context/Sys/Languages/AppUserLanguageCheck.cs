@@ -17,11 +17,11 @@ namespace ToSic.Eav.Context.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppUserLanguageCheck(
     LazySvc<IZoneMapper> zoneMapperLazy,
-    IContextOfSite ctx,
+    IContextOfSiteService ctxSvc,
     LazySvc<PermissionCheckFactory> permCheckFactory,
     LazySvc<IAppReaderFactory> appReadersLazy,
     LazySvc<ISysFeaturesService> featuresLazy)
-    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctx, permCheckFactory, appReadersLazy, featuresLazy])
+    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctxSvc, permCheckFactory, appReadersLazy, featuresLazy])
 {
     /// <summary>
     /// Test if the current user has explicit language editing permissions
@@ -43,7 +43,7 @@ public class AppUserLanguageCheck(
             return l.ReturnNull("no config");
 
         // Check rules on current language
-        var currentCode = ctx.Site.CurrentCultureCode;
+        var currentCode = ctxSvc.Context.Site.CurrentCultureCode;
         var currentLang = languages.FirstOrDefault(lp => lp.Code.Equals(currentCode, InvariantCultureIgnoreCase));
         return l.Return(currentLang?.IsAllowed, $"permission: {currentLang?.IsAllowed}");
     }
@@ -63,7 +63,7 @@ public class AppUserLanguageCheck(
         var zoneMapper = zoneMapperLazy.Value;
         var site = appReaderOrNull != null
             ? zoneMapper.SiteOfZone(appReaderOrNull.ZoneId)
-            : ctx.Site;
+            : ctxSvc.Context.Site;
         if (site == null!) // probably not necessary, but just to be sure
             return l.Return([], "null site");
 
@@ -71,7 +71,7 @@ public class AppUserLanguageCheck(
 
         // Check if ML-Permissions-Feature is enabled, otherwise don't check detailed permissions
         var mlFeatureEnabled = featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage);
-        var allowAllLanguages = !mlFeatureEnabled || ctx.User.IsSystemAdmin;
+        var allowAllLanguages = !mlFeatureEnabled || ctxSvc.Context.User.IsSystemAdmin;
 
         if (allowAllLanguages || appReaderOrNull == null)
         {
@@ -96,7 +96,7 @@ public class AppUserLanguageCheck(
             hasPermissions = set.Any(s => s.Permissions.Any());
         }
 
-        var defaultAllowed = ctx.User.IsSystemAdmin || !hasPermissions;
+        var defaultAllowed = ctxSvc.Context.User.IsSystemAdmin || !hasPermissions;
         l.A($"HasPermissions: {hasPermissions}, Initial Allowed: {defaultAllowed}");
 
         var newSet = set
@@ -109,7 +109,7 @@ public class AppUserLanguageCheck(
                     var permissions = permissionEntities
                         .Select(p => p.ToModel<Permission>(options: ToModelOptions.DisableTypeNameCheck)!)
                         .ToListOpt();
-                    var checker = permCheckFactory.Value.For(ctx, readerSafe, permissions, "user language");
+                    var checker = permCheckFactory.Value.For(ctxSvc.Context, readerSafe, permissions, "user language");
                     ok = checker.PermissionsAllow(GrantSets.WriteSomething).Allowed;
                 }
 

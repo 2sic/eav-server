@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.Context;
+using ToSic.Sys.Context.Sys;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
-using ToSic.Sys.Users.Permissions;
 
 #pragma warning disable IDE0130
 namespace ToSic.Sys.Run.Startup;
@@ -16,8 +17,7 @@ public static class StartupSysSecurity
     /// </summary>
     public static IServiceCollection AddSysSecurity(this IServiceCollection services)
     {
-        services.TryAddTransient<ICurrentContextUserPermissions, CurrentContextUserPermissionsBasic>();
-        services.TryAddTransient<ICurrentContextUserPermissionsService, CurrentContextUserPermissionsService>();
+        services.TryAddTransient<IContextService, ContextOfUserService>();
 
         // Permissions helper
         services.TryAddTransient<PermissionCheck>();

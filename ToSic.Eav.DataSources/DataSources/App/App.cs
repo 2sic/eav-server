@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.Services;
+using ToSic.Sys.Context;
 using ToSic.Sys.Users.Permissions;
 
 namespace ToSic.Eav.DataSources;
@@ -85,8 +86,8 @@ public partial class App : DataSourceBase
         Eav.DataSource.DataSourceBase.Dependencies ParentServices,
         IAppReaderFactory AppReaders,
         IDataSourcesService DataSourceFactory,
-        ICurrentContextUserPermissionsService UserPermissions)
-        : DependenciesBase(connect: [AppReaders, DataSourceFactory, UserPermissions]);
+        IContextService CtxSvc)
+        : DependenciesBase(connect: [AppReaders, DataSourceFactory, CtxSvc]);
 
     /// <summary>
     /// Constructs a new App DataSource

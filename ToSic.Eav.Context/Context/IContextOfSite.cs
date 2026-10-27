@@ -1,20 +1,16 @@
-﻿using ToSic.Sys.Users;
-using ToSic.Sys.Users.Permissions;
+﻿using ToSic.Sys.Context;
 
 namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IContextOfSite: /*IHasLog,*/ ICurrentContextUserPermissions
+public interface IContextOfSite: IContextOfUser
 {
     /// <summary>
     /// The website the current request is running in
     /// </summary>
     ISite Site { get; }
 
-    /// <summary>
-    /// The user in the current request / context
-    /// </summary>
-    IUser User { get; }
+    // TODO: PROBABLY REMOVE FROM THIS INTERFACE
 
     /// <summary>
     /// Special method to swap the site on a context.

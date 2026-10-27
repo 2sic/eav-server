@@ -11,7 +11,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityControllerReal(
-    LazySvc<IContextOfSite> context,
+    LazySvc<IContextOfSiteService> ctxSvc,
     LazySvc<IAppsCatalog> appsCatalog,
     LazySvc<EntityApi> entityApi,
     LazySvc<ContentExportApi> contentExport,
@@ -19,7 +19,7 @@ public class EntityControllerReal(
     LazySvc<IUser> user,
     IResponseMaker responseMaker)
     : ServiceBase("Api.EntityRl",
-        connect: [context, appsCatalog, entityApi, contentExport, contentImport, user, responseMaker]),
+        connect: [ctxSvc, appsCatalog, entityApi, contentExport, contentImport, user, responseMaker]),
         IEntityController
 {
     public const string LogSuffix = "Entity";
@@ -38,11 +38,11 @@ public class EntityControllerReal(
         var catalog = appsCatalog.Value;
         if (id.HasValue)
             entityApi.Value
-                .InitOrThrowBasedOnGrants(context.Value, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
+                .InitOrThrowBasedOnGrants(ctxSvc.Value.Context, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
                 .Delete(contentType, id.Value, force, parentId, parentField);
         else if (guid.HasValue)
             entityApi.Value
-                .InitOrThrowBasedOnGrants(context.Value, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
+                .InitOrThrowBasedOnGrants(ctxSvc.Value.Context, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
                 .Delete(contentType, guid.Value, force, parentId, parentField);
         else
             throw new($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");

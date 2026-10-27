@@ -6,7 +6,7 @@ using ToSic.Eav.LookUp.Sources;
 using ToSic.Eav.LookUp.Sources.Sys;
 using ToSic.Eav.LookUp.Sys.Engines;
 using ToSic.Eav.Services;
-using ToSic.Sys.Users.Permissions;
+using ToSic.Sys.Context;
 
 namespace ToSic.Eav.DataSource.Query.Sys;
 
@@ -21,9 +21,9 @@ public class QueryFactory(
     IZoneCultureResolver cultureResolver,
     Generator<PassThrough, IDataSourceOptions> genPassThrough,
     IAppsCatalog appsCatalog,
-    ICurrentContextUserPermissionsService userPermissions)
+    IContextService ctxSvc)
     : ServiceBase("DS.PipeFt",
-        connect: [appReaders, cultureResolver, appsCatalog, dataSourceFactory, genPassThrough, userPermissions])
+        connect: [appReaders, cultureResolver, appsCatalog, dataSourceFactory, genPassThrough, ctxSvc])
 {
     private QueryWiringsHelper WiringsHelper => new(Log);
 
@@ -67,7 +67,7 @@ public class QueryFactory(
         var appIdentity = appsCatalog.AppIdentity(queryDef.AppId);
         // WebApi queries carry permissions for their resolved app; ambient state may belong to another context.
         var showDrafts = QueryUserPermissions.ShowDrafts(lookUpEngineToClone, appIdentity)
-                         ?? userPermissions.UserPermissions().ShowDraftData;
+                         ?? ctxSvc.Context.Permissions?.ShowDraftData;
         if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
             paramsLookup.Properties[QueryConstants.ParamsShowDraftsKey] = showDrafts.ToString();
 

@@ -6,9 +6,9 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// <summary>
 /// Helper to update a context to match the correct site - like when using modules across different sites.
 /// </summary>
-/// <param name="requestContext"></param>
+/// <param name="ctxSvc"></param>
 /// <param name="zoneMapper"></param>
-public class PermissionContextAdjuster(IContextOfSite requestContext, LazySvc<IZoneMapper> zoneMapper)
+public class PermissionContextAdjuster(IContextOfSiteService ctxSvc, LazySvc<IZoneMapper> zoneMapper)
     : ServiceBase("Sec.ZoneSw", connect: [zoneMapper])
 {
     /// <summary>
@@ -32,17 +32,17 @@ public class PermissionContextAdjuster(IContextOfSite requestContext, LazySvc<IZ
 
     private ISite GetSiteForSecurityCheck(IAppIdentity app)
     {
-        var context = requestContext;
-        var isSameSite = context.Site.ZoneId == app.ZoneId;
+        var site = ctxSvc.Context.Site;
+        var isSameSite = site.ZoneId == app.ZoneId;
         var l = Log.Fn($"..., appId: {app.AppId}, ...");
 
         var result = isSameSite
-            ? context.Site
+            ? site
             // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
             // todo: probably enhance with a Site.IsMultiZone check
             : zoneMapper.Value.SiteOfZone(app.ZoneId)
-              ?? context.Site;
-        l.Done($"ready for app:{app.Show()} tenant/zone:{result.Id}/{context.Site.ZoneId} same:{isSameSite}");
+              ?? site;
+        l.Done($"ready for app:{app.Show()} tenant/zone:{result.Id}/{site.ZoneId} same:{isSameSite}");
         return result;
     }
 }

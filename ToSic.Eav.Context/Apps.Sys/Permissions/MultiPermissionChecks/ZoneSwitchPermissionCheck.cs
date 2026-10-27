@@ -3,7 +3,7 @@ using ToSic.Eav.Context.Sys.ZoneMapper;
 
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
-public class ZoneSwitchPermissionCheck(IContextOfSite requestContext, LazySvc<IZoneMapper> zoneMapper)
+public class ZoneSwitchPermissionCheck(IContextOfSiteService ctxSvc, LazySvc<IZoneMapper> zoneMapper)
     : ServiceBase("Sec.ZoneSw", connect: [zoneMapper])
 {
     /// <summary>
@@ -15,9 +15,9 @@ public class ZoneSwitchPermissionCheck(IContextOfSite requestContext, LazySvc<IZ
     public bool Check(IAppIdentity app, out string? error)
     {
         var l = Log.Fn<bool>();
-        var isSameSite = requestContext.Site.ZoneId == app.ZoneId;
+        var isSameSite = ctxSvc.Context.Site.ZoneId == app.ZoneId;
 
-        var zoneSameOrSuperUser = isSameSite || requestContext.User.IsSystemAdmin;
+        var zoneSameOrSuperUser = isSameSite || ctxSvc.Context.User.IsSystemAdmin;
         error = zoneSameOrSuperUser
             ? null
             : $"accessing app {app.Show()} is not allowed for this user as it changes zones";

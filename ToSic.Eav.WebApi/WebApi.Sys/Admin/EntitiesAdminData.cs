@@ -12,7 +12,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 /// </summary>
 [PrivateApi]
 public class EntitiesAdminData(
-    LazySvc<IContextOfSite> siteContext,
+    LazySvc<IContextOfSiteService> ctxSvc,
     LazySvc<IAppsCatalog> appsCatalog,
     LazySvc<EntityApi> entityApi)
 {
@@ -23,7 +23,7 @@ public class EntitiesAdminData(
 
         var entities = entityApi.Value
             .InitOrThrowBasedOnGrants(
-                siteContext.Value,
+                ctxSvc.Value.Context,
                 appsCatalog.Value.AppIdentity(appId),
                 contentType!,
                 GrantSets.ReadSomething)

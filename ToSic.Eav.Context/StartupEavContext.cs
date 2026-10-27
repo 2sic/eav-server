@@ -20,9 +20,7 @@ public static class StartupEavContext
     public static IServiceCollection AddEavContext(this IServiceCollection services)
     {
         // Context
-        services.TryAddTransient<IContextOfSite, ContextOfSite>();
-        //services.TryAddTransient<ContextOfSite>();
-        services.TryAddTransient<ContextOfSite.Dependencies>();
+        services.TryAddTransient<IContextOfSiteService, ContextOfSiteService>();
 
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
