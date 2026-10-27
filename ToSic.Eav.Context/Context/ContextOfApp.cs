@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys.AppStack;
-using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Data.Sys.PropertyStack;
 using ToSic.Sys.Users;
 using ToSic.Sys.Users.Permissions;
@@ -34,15 +33,10 @@ public record ContextOfApp(
     public IContextOfSite WithSwappedSite(ISite site) => this with { Site = site };
 
 
-
-    internal bool UserMayAdmin => _userMayAdmin ??= User.MayAdmin();
-    private bool? _userMayAdmin;
-
-
     [field: AllowNull, MaybeNull]
     public EffectivePermissions Permissions
     {
-        get => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: InternalMachinery.GetUserMayEdit(this) || User.IsContentAdmin);
+        get => field ??= new(isSiteAdmin: User.MayAdmin(), isContentAdmin: InternalMachinery.GetUserMayEdit(this) || User.IsContentAdmin);
         init;
     }
 

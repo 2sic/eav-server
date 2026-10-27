@@ -11,32 +11,23 @@ using ToSic.Sys.Users;
 namespace ToSic.Eav.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
-    : ServiceBase<ContextOfAppFactory.Dependencies>(services, "Sxc.CtxApp"),
+public class ContextOfAppFactory(
+    ISite site,
+    IUser user,
+    IAppReaderFactory appReaders,
+    LazySvc<ISysFeaturesService> features,
+    LazySvc<AppUserLanguageCheck> langChecks,
+    Generator<IEnvironmentPermission, EnvironmentPermissionOptions> environmentPermissions,
+    LazySvc<PermissionCheckFactory> appPermissionCheck,
+    LazySvc<AppDataStackService> settingsStack,
+    LazySvc<IDraftOverrideService> draftService)
+    : ServiceBase("Sxc.CtxApp", connect: [environmentPermissions, appReaders, features, langChecks, appPermissionCheck, settingsStack, draftService]),
         IContextOfAppFactory
 {
-    /// <summary>
-    /// Dependencies
-    /// </summary>
-    public record Dependencies(
-        ISite Site,
-        IUser User,
-        IAppReaderFactory AppReaders,
-        LazySvc<ISysFeaturesService> Features,
-        LazySvc<AppUserLanguageCheck> LangChecks,
-        Generator<IEnvironmentPermission, EnvironmentPermissionOptions> EnvironmentPermissions,
-        LazySvc<PermissionCheckFactory> AppPermissionCheck,
-        LazySvc<AppDataStackService> SettingsStack
-    ) : DependenciesBase(connect: [EnvironmentPermissions, AppReaders, Features, LangChecks, AppPermissionCheck, SettingsStack]);
-
 
     #region Factory Work
 
-    public IContextOfApp Create(int appId)
-    {
-        var appIdentity = Services.AppReaders.AppIdentity(appId);
-        return Create(appIdentity);
-    }
+    public IContextOfApp Create(int appId) => Create(appReaders.AppIdentity(appId));
 
     /// <summary>
     /// New Implementation WIP v22.01 2026-10-18
@@ -45,15 +36,16 @@ public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
     /// <returns></returns>
     public IContextOfApp Create(IAppIdentity? appIdentity)
     {
-        var result = new ContextOfApp(
-            Services.Site,
-            Services.User,
-            AppReaderOrNull: appIdentity == null ? null : Services.AppReaders.TryGet(appIdentity)
-        )
+        // First create context
+        var result = new ContextOfApp(site, user, AppReaderOrNull: appIdentity == null ? null : appReaders.TryGet(appIdentity))
         {
             InternalMachinery = this,
-            SettingsStackSvc = Services.SettingsStack,
+            SettingsStackSvc = settingsStack,
         };
+        // Now using the context, get the generated permissions
+        // and check if we should update them, based on the cookie
+        var updatedPermissions = draftService.Value.UserPermissions(result.Permissions);
+        result = result with { Permissions = updatedPermissions };
         return result;
     }
 
@@ -72,17 +64,17 @@ public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
         var l = Log.Fn<bool>();
 
         // Case 1: Superuser always may
-        if (Services.User.IsSystemAdmin)
+        if (user.IsSystemAdmin)
             return l.ReturnTrue("super");
 
         // Case 2: No App-State
         if (contextOfApp.AppReaderOrNull == null)
         {
-            if (contextOfApp.UserMayAdmin)
+            if (user.MayAdmin())
                 return l.ReturnTrue("no app, use UserMayAdmin checks");
 
             // If user isn't allowed yet, it may be that the environment allows it
-            var fromEnv = Services.EnvironmentPermissions.New(new(contextOfApp, null))
+            var fromEnv = environmentPermissions.New(new(contextOfApp, null))
                 .EnvironmentAllows(GrantSets.WriteSomething)
                 .Allowed;
 
@@ -90,14 +82,14 @@ public class ContextOfAppFactory(ContextOfAppFactory.Dependencies services)
         }
 
         // Case 3: From App
-        var fromApp = Services.AppPermissionCheck.Value
+        var fromApp = appPermissionCheck.Value
             .ForApp(contextOfApp, contextOfApp.AppReaderOrNull)
             .UserMay(GrantSets.WriteSomething)
             .Allowed;
 
         // Check if language permissions may alter / remove edit permissions
-        if (fromApp && Services.Features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
-            fromApp = Services.LangChecks.Value.UserRestrictedByLanguagePermissions(contextOfApp.AppReaderOrNull) ?? true;
+        if (fromApp && features.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage))
+            fromApp = langChecks.Value.UserRestrictedByLanguagePermissions(contextOfApp.AppReaderOrNull) ?? true;
 
         return l.Return(fromApp, $"{fromApp}");
     }

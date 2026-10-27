@@ -58,6 +58,7 @@ public static class StartupEavContext
 
         // v22 - will only be used if Dnn/Oqtane didn't provide a better implementation
         services.TryAddTransient<IEnvironmentPermission, EnvironmentPermission>();
+        services.TryAddTransient<IDraftOverrideService, DraftOverrideServiceNoOp>();
 
         return services;
     }
