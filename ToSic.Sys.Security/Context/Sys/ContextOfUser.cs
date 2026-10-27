@@ -5,5 +5,9 @@ namespace ToSic.Sys.Context.Sys;
 
 public record ContextOfUser(IUser User) : IContextOfUser
 {
-    public EffectivePermissions Permissions => User.EffectivePermissions();
+    public EffectivePermissions Permissions
+    {
+        get => field ??= User.EffectivePermissions();
+        init;
+    }
 }

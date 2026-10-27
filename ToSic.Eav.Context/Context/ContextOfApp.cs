@@ -41,9 +41,10 @@ public record ContextOfApp(
 
     [field: AllowNull, MaybeNull]
     public EffectivePermissions Permissions
-        => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: InternalMachinery.GetUserMayEdit(this) || User.IsContentAdmin);
-
-
+    {
+        get => field ??= new(isSiteAdmin: UserMayAdmin, isContentAdmin: InternalMachinery.GetUserMayEdit(this) || User.IsContentAdmin);
+        init;
+    }
 
 
     [field: AllowNull, MaybeNull]

@@ -5,10 +5,11 @@ namespace ToSic.Eav.Context;
 
 public record ContextOfSite(ISite Site, IUser User) : IContextOfSite
 {
-    public IContextOfSite WithSwappedSite(ISite site)
-    {
-        return this with { Site = site };
-    }
+    public IContextOfSite WithSwappedSite(ISite site) => this with { Site = site };
 
-    public EffectivePermissions Permissions => User.EffectivePermissions();
+    public EffectivePermissions Permissions
+    {
+        get => field ??= User.EffectivePermissions();
+        init;
+    }
 }
