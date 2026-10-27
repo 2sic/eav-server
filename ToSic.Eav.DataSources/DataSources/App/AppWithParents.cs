@@ -42,7 +42,6 @@ internal class AppWithParents: DataSourceBase
         var initialSource = _dataSourceFactory.CreateDefault(new DataSourceOptions
         {
             AppIdentityOrReader = appReader,
-            LookUp = Configuration.LookUpEngine,
         });
         var initialLink = initialSource.GetLink();
 
@@ -54,7 +53,6 @@ internal class AppWithParents: DataSourceBase
             var next = _dataSourceFactory.CreateDefault(new DataSourceOptions
             {
                 AppIdentityOrReader = parentAppState,
-                LookUp = Configuration.LookUpEngine,
             });
             initialLink = initialLink.WithMore([next.GetLink().WithRename(inName: $"App{parentAppState.NameId}")]);
             parentAppState = parentAppState.ParentApp?.AppState;

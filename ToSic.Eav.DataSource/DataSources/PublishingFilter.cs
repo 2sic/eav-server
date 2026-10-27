@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.DataSource.Query.Sys;
-using ToSic.Sys.Context;
-using ToSic.Sys.Users.Permissions;
+﻿using ToSic.Sys.Context;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using static ToSic.Eav.DataSource.Sys.DataSourceConstantsInternal;
 
@@ -63,21 +61,16 @@ public class PublishingFilter : DataSourceBase
     [PrivateApi]
     public PublishingFilter(Dependencies services, IContextService ctxSvc) : base(services, $"{LogPrefix}.Publsh", connect: [ctxSvc])
     {
-        _ctxSvc = ctxSvc;
-        ProvideOut(PublishingFilterList);
+        ProvideOut(() => PublishingFilterList(ctxSvc));
     }
-    private readonly IContextService _ctxSvc;
 
 
-    private IImmutableList<IEntity> PublishingFilterList()
+    private IImmutableList<IEntity> PublishingFilterList(IContextService ctxSvc)
     {
         var showDraftsSetting = ShowDrafts;
         var l = Log.Fn<IImmutableList<IEntity>>();
         var finalShowDrafts = showDraftsSetting
-                              // Keep explicit settings first, then use this query's app-specific decision.
-                              ?? QueryUserPermissions.ShowDrafts(Configuration.LookUpEngine, this)
-                              ?? _ctxSvc.Context.Permissions?.ShowDraftData
-                              ?? QueryConstants.ParamsShowDraftsDefault;
+                              ?? ctxSvc.Context.Permissions.ShowDraftData;
         var inStreamName = finalShowDrafts
             ? StreamDraftsName
             : StreamPublishedName;

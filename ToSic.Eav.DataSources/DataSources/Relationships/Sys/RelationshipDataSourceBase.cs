@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.DataSource.Query.Sys;
-using ToSic.Sys.Context;
+﻿using ToSic.Sys.Context;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -68,9 +67,7 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
         // In case the current user should not see draft data,
         // we must ensure that we didn't accidentally include any.
         // Because it could be that the original data was public, but a related item was not.
-        var showDrafts = QueryUserPermissions.ShowDrafts(Configuration.LookUpEngine, this)
-                         ?? _ctxSvc.Context.Permissions?.ShowDraftData
-                         ?? false;
+        var showDrafts = _ctxSvc.Context.Permissions.ShowDraftData;
         if (!showDrafts)
             relationships = relationships.Where(e => e.IsPublished).ToList();
 

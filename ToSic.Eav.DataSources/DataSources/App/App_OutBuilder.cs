@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
-using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Streams;
@@ -77,8 +76,7 @@ partial class App : IDataSourceReset // #RemoveDataSourceReset v21
         var appReader = AppReader;
         var listOfTypes = appReader.ContentTypes;
         // Separate cached type streams using the same draft decision as the query's publishing filter.
-        var showDraftsForCacheKey = QueryUserPermissions.ShowDrafts(Configuration.LookUpEngine, this)
-                                   ?? _services.CtxSvc.Context.Permissions.ShowDraftData;
+        var showDraftsForCacheKey = _services.CtxSvc.Context.Permissions.ShowDraftData;
         var typeList = "";
         foreach (var contentType in listOfTypes)
         {

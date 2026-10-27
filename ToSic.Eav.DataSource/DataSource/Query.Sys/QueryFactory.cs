@@ -64,10 +64,8 @@ public class QueryFactory(
         var l = Log.Fn<QueryFactoryResult>($"{queryDef.Title}({queryDef.Id}), hasLookUp:{lookUpEngineToClone != null}, overrides: {overrideLookUps?.Count}");
         #region prepare shared / global value providers
             
-        var appIdentity = appsCatalog.AppIdentity(queryDef.AppId);
         // WebApi queries carry permissions for their resolved app; ambient state may belong to another context.
-        var showDrafts = QueryUserPermissions.ShowDrafts(lookUpEngineToClone, appIdentity)
-                         ?? ctxSvc.Context.Permissions?.ShowDraftData;
+        var showDrafts = ctxSvc.Context.Permissions.ShowDraftData;
         if (queryDef.ParamsLookUp is LookUpInDictionary paramsLookup)
             paramsLookup.Properties[QueryConstants.ParamsShowDraftsKey] = showDrafts.ToString();
 
@@ -78,6 +76,7 @@ public class QueryFactory(
 
         #region Load Parameters needed for all parts
 
+        var appIdentity = appsCatalog.AppIdentity(queryDef.AppId);
         var dimensions = cultureResolver.SafeLanguagePriorityCodes();
 
         #endregion
