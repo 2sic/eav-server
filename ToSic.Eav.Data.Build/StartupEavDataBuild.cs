@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.Metadata.Sys;
-using ToSic.Sys.HookUp;
 using ToSic.Sys.Utils.Assemblies;
 
 // ReSharper disable once CheckNamespace
@@ -53,7 +51,7 @@ public static class StartupEavDataBuild
     {
         services.TryAddTransient<IDataFactory, DataFactory>(); // v15.03
         services.TryAddTransient<DataFactoryContentTypeHelper>();
-
+        services.TryAddTransient<DataFactoryGenerator>();   // v22.01
         return services;
     }
     

@@ -2,8 +2,10 @@
 using CsvHelper.Configuration;
 using System.Globalization;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Errors;
 using ToSic.Eav.Environment.Sys.ServerPaths;
 using ToSic.Sys.Users;
 using static System.StringComparison;
@@ -27,7 +29,7 @@ namespace ToSic.Eav.DataSources;
     NameIds = ["ToSic.Eav.DataSources.CsvDataSource, ToSic.Eav.DataSources"],
     ConfigurationType = "|Config ToSic.Eav.DataSources.CsvDataSource",
     HelpLink = "https://go.2sxc.org/DsCsv")]
-public class Csv : CustomDataSourceAdvanced
+public class Csv : CustomDataSource
 {
     #region Known errors
     [PrivateApi]
@@ -48,13 +50,13 @@ public class Csv : CustomDataSourceAdvanced
     /// <summary>
     /// Full path to the CSV file. 
     /// </summary>
-    private string GetServerPath(string csvPath)
+    private string GetServerPath(string csvPath, IServerPaths serverPaths)
     {
         var l = Log.Fn<string>($"{nameof(csvPath)}: {csvPath}");
         // Handle cases where it's a "file:72"
         if (ValueConverterBase.CouldBeReference(csvPath))
         {
-            csvPath = _serverPaths.FullPathOfReference(csvPath);
+            csvPath = serverPaths.FullPathOfReference(csvPath);
             return l.Return(csvPath, $"seems to be a ref, now: {csvPath}");
         }
 
@@ -64,7 +66,7 @@ public class Csv : CustomDataSourceAdvanced
         // this is for backward compatibility, because old samples used "[App:Path]/something.csv" which returns a relative path
         var result = csvPath.IsPathWithDriveOrNetwork()
             ? csvPath
-            : _serverPaths.FullContentPath(csvPath);
+            : serverPaths.FullContentPath(csvPath);
         return l.Return(result, $"not a ref, now: {result}");
     }
 
@@ -120,46 +122,51 @@ public class Csv : CustomDataSourceAdvanced
     public Csv(Dependencies services, IUser user, IServerPaths serverPaths)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Csv", connect: [user, serverPaths])
     {
-        _user = user;
-        _serverPaths = serverPaths;
-        ProvideOut(GetList);
+        ProvideOutRaw(
+            () => GetList(user, serverPaths),
+            options: () => new()
+            {
+                AppId = KnownAppsConstants.TransientAppId,
+                TitleField = _titleFieldForConversion,
+                TypeName = ContentType,
+            }
+        );
     }
-    private readonly IUser _user;
-    private readonly IServerPaths _serverPaths;
+    private string _titleFieldForConversion = "";
 
 
-    private IImmutableList<IEntity> GetList()
+    private ResultOrError<IEnumerable<RawEntity>> GetList(IUser user, IServerPaths serverPaths)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<ResultOrError<IEnumerable<RawEntity>>>();
 
         // Collect parameters here, so we don't trigger logs on each access of each property
         var delimiter = Delimiter;
         var idColumnName = IdColumnName;
         var titleColumnName = TitleColumnName;
 
-        var entityList = new List<IEntity>();
+        var entityList = new List<RawEntity>();
 
-        var csvPath = GetServerPath(FilePath);
+        var csvPath = GetServerPath(FilePath, serverPaths);
         l.A($"CSV path:'{csvPath}', delimiter:'{delimiter}'");
 
         if (string.IsNullOrWhiteSpace(csvPath))
-            return l.ReturnAsError(Error.Create(title: "No Path Given", message: "There was no path for loading the CSV file."));
+            return l.Return(new(false, null, Error.Create(title: "No Path Given", message: "There was no path for loading the CSV file.")), "error");
 
         var pathPart = Path.GetDirectoryName(csvPath);
         if (!Directory.Exists(pathPart))
         {
             l.A($"Didn't find path '{pathPart}'");
-            return l.ReturnAsError(Error.Create(title: "Path not found",
-                message: _user?.IsSystemAdmin == true
+            return l.Return(new(false, null, Error.Create(title: "Path not found",
+                message: user.IsSystemAdmin == true
                     ? $"Path for Super User only: '{pathPart}'"
-                    : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights."));
+                    : "The path given was not found. For security reasons it's not included in the message. You'll find it in the Insights.")), "error");
         }
 
         if (!File.Exists(csvPath))
-            return l.ReturnAsError(Error.Create(title: "CSV File Not Found",
-                message: _user?.IsSystemAdmin == true
+            return l.Return(new(false, null, Error.Create(title: "CSV File Not Found",
+                message: user.IsSystemAdmin == true
                     ? $"Path for Super User only: '{csvPath}'"
-                    : "For security reasons the path isn't mentioned here. You'll find it in the Insights."));
+                    : "For security reasons the path isn't mentioned here. You'll find it in the Insights.")), "error");
 
         const string commonErrorsIdTitle = "A common mistake is to use the wrong delimiter (comma / semi-colon) in which case this may also fail. ";
 
@@ -192,10 +199,10 @@ public class Csv : CustomDataSourceAdvanced
                     idColumnIndex = Array.FindIndex(headers,
                         name => name.Equals(idColumnName, InvariantCultureIgnoreCase));
                 if (idColumnIndex == -1)
-                    return l.ReturnAsError(Error.Create(title: "ID Column not found",
+                    return l.Return(new(false, null, Error.Create(title: "ID Column not found",
                         message: $"ID column '{idColumnName}' specified cannot be found in the file. " +
                                  $"The Headers: '{string.Join(",", headers)}'. " +
-                                 $"{commonErrorsIdTitle}"));
+                                 $"{commonErrorsIdTitle}")), "error");
             }
 
             if (string.IsNullOrEmpty(titleColumnName))
@@ -209,18 +216,13 @@ public class Csv : CustomDataSourceAdvanced
                                    .FirstOrDefault(colName =>
                                        colName.Equals(titleColumnName, InvariantCultureIgnoreCase));
                 if (titleColName == null)
-                    return l.ReturnAsError(Error.Create(title: "Title column not found",
+                    return l.Return(new(false, null, Error.Create(title: "Title column not found",
                         message: $"Title column '{titleColumnName}' cannot be found in the file. " +
                                  $"The Headers: '{string.Join(",", headers)}'. " +
-                                 $"{commonErrorsIdTitle}"));
+                                 $"{commonErrorsIdTitle}")), "error");
             }
 
-            var csvFactory = DataFactory.SpawnNew(new()
-            {
-                AppId = KnownAppsConstants.TransientAppId,
-                TitleField = titleColName,
-                TypeName = ContentType,
-            });
+            _titleFieldForConversion = titleColName;
 
             // Parse data
             while (parser.Read())
@@ -233,18 +235,18 @@ public class Csv : CustomDataSourceAdvanced
                     entityId = parser.Row;
                 // check if id can be parsed from the current row
                 else if (!int.TryParse(fields[idColumnIndex], out entityId))
-                    return l.ReturnAsError(Error.Create(title: ErrorIdNaN,
+                    return l.Return(new(false, null, Error.Create(title: ErrorIdNaN,
                         message:
-                        $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'."));
+                        $"Row {parser.Row}: ID field '{headers[idColumnIndex]}' cannot be parsed to int. Value was '{fields[idColumnIndex]}'.")), "error");
 
                 var entityValues = new Dictionary<string, object?>();
                 for (var i = 0; i < headers.Length; i++)
                     entityValues.Add(headers[i], (i < fields.Length) ? fields[i] : null);
 
-                entityList.Add(csvFactory.Create(values: entityValues, id: entityId));
+                entityList.Add(new RawEntity { Id = entityId, Values = entityValues });
             }
         }
 
-        return l.Return(entityList.ToImmutableOpt(), $"{entityList.Count}");
+        return l.Return(new(true, entityList.ToImmutableOpt()), $"{entityList.Count}");
     }
 }

@@ -17,7 +17,7 @@ public class RequirementsServiceAnimals(IRequirementsService requirementsService
 
     [Fact]
     public void VerifySetup_HasOneMoreKeyedChecker()
-        => Equal(StartupHelpers.RequirementChecksInDiByDefault + 1, provider.GetAllKeysForService<IRequirementCheck>().Count());
+        => Equal(SysCapabilitiesTestConstants.RequirementChecksInDiByDefault + 1, provider.GetAllKeysForService<IRequirementCheck>().Count());
 
     [Fact]
     public void VerifySetup_HasAnimalChecker()

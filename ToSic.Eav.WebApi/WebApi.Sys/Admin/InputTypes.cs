@@ -26,12 +26,7 @@ public class InputTypes : CustomDataSource
     {
         var ctx = new Lazy<IAppWorkContext>(() => appWorkContextService.ContextNew(AppId));
         
-        ProvideOutRaw(() => GetInputTypes(inputTypes.New(ctx.Value)),
-            name: "InputTypes",
-            options: () => new()
-            {
-                AllowUnknownValueTypes = true,
-            });
+        ProvideOutRaw(() => GetInputTypes(inputTypes.New(ctx.Value)), name: "InputTypes");
 
         ProvideOutRaw(() => GetDataTypes(fieldsDataTypes.New(ctx.Value)), name: "DataTypes");
 

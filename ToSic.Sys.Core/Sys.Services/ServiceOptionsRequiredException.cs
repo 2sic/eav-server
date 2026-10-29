@@ -1,5 +1,7 @@
 ﻿namespace ToSic.Sys.Services;
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ServiceOptionsRequiredException()
     : NotSupportedException("This service requires options to be set before using. " +
                             "Default options are not supported. " +

@@ -15,10 +15,15 @@ public class LogStoreEntry
 
     public IDictionary<string, string>? Specs { get; internal set; }
 
+    internal Action<IReadOnlyDictionary<string, string>>? SpecsChanged { private get; set; }
+
     public void AddSpec(string key, string value)
     {
         Specs ??= new Dictionary<string, string>(InvariantCultureIgnoreCase);
+        var changed = !Specs.TryGetValue(key, out var previous) || previous != value;
         Specs[key] = value;
+        if (changed)
+            NotifySpecsChanged();
     }
 
     public void UpdateSpecs(IDictionary<string, string>? specs)
@@ -31,12 +36,20 @@ public class LogStoreEntry
         if (Specs == null || Specs.Count == 0)
         {
             Specs = specs;
+            NotifySpecsChanged();
             return;
         }
 
         // Merge specs
+        var changed = false;
         foreach (var pair in specs)
-            AddSpec(pair.Key, pair.Value);
+        {
+            var pairChanged = !Specs.TryGetValue(pair.Key, out var previous) || previous != pair.Value;
+            Specs[pair.Key] = pair.Value;
+            changed |= pairChanged;
+        }
+        if (changed)
+            NotifySpecsChanged();
     }
 
     /// <summary>
@@ -45,4 +58,12 @@ public class LogStoreEntry
     public string? Title => Specs?.TryGetValue(TitleKey, out var title) == true
         ? title
         : null;
+
+    private void NotifySpecsChanged()
+    {
+        if (SpecsChanged == null || Specs == null)
+            return;
+        // Send a copy because callers may continue changing Specs after this callback.
+        SpecsChanged(new Dictionary<string, string>(Specs, InvariantCultureIgnoreCase));
+    }
 }

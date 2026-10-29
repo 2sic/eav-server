@@ -1,5 +1,5 @@
-﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource.Sys;
+﻿using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Metadata;
 
 namespace ToSic.Eav.DataSources.Sys;
@@ -21,18 +21,14 @@ namespace ToSic.Eav.DataSources.Sys;
     DataConfidentiality = DataConfidentiality.Internal
 )]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class MetadataTargetTypes : CustomDataSource
+public class MetadataTargetTypes(CustomDataSource.Dependencies services)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
 {
     internal const string NameId = "fba0d40d-f6af-4593-9ccb-54cfd73d8217";
 
-    public MetadataTargetTypes(Dependencies services): base(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg")
+    protected override IEnumerable<IRawData> GetDefault()
     {
-        ProvideOut(GetList);
-    }
-
-    private IImmutableList<IEntity> GetList()
-    {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<IEnumerable<IRawData>>();
 
         var publicTargetTypes = Enum
             .GetValues(typeof(TargetTypes))
@@ -57,24 +53,12 @@ public class MetadataTargetTypes : CustomDataSource
             .OrderBy(s => (s.Title.StartsWith("Custom") ? "ZZ" : "") + s.Title)
             .ToList();
 
-        var dataFactory = DataFactory.SpawnNew(options: new()
-        {
-            AppId = 0,
-            TitleField = AttributeNames.TitleNiceName,
-            TypeName = "MetadataTargetTypes",
-        });
-
-
         var list = publicTargetTypes
-            .Select(set => dataFactory.Create(
-                    new Dictionary<string, object?>
-                    {
-                        { AttributeNames.TitleNiceName, set.Title },
-                        { AttributeNames.NameIdNiceName, set.TargetType.ToString() }
-                    },
-                    id: (int)set.TargetType
-                )
-            )
+            .Select(set => new MetadataTargetTypeRaw(
+                Id: (int)set.TargetType,
+                Title: set.Title,
+                NameId: set.TargetType.ToString()
+            ))
             .ToImmutableOpt();
             
         return l.Return(list, $"{list.Count} items");

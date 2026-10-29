@@ -1,5 +1,7 @@
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys.ZoneMapper;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.Sys;
@@ -29,7 +31,7 @@ public class SystemInfo : CustomDataSource
     private readonly IPlatformInfo _platform;
     private readonly ISite _site;
     private readonly LazySvc<ILicenseService> _licenseService;
-    private readonly ILogStoreLive _logStore;
+    private readonly IInsightsLogSnapshotReader _snapshotReader;
 
     public SystemInfo(
         Dependencies services,
@@ -39,8 +41,8 @@ public class SystemInfo : CustomDataSource
         IPlatformInfo platform,
         ISite site,
         LazySvc<ILicenseService> licenseService,
-        ILogStoreLive logStore)
-        : base(services, logName: "Sxc.SysInfo", connect: [appsCatalog, fingerprint, zoneMapper, platform, site, licenseService, logStore])
+        IInsightsLogSnapshotReader snapshotReader)
+        : base(services, logName: "Sxc.SysInfo", connect: [appsCatalog, fingerprint, zoneMapper, platform, site, licenseService, snapshotReader])
     {
         _appsCatalog = appsCatalog;
         _fingerprint = fingerprint;
@@ -48,7 +50,7 @@ public class SystemInfo : CustomDataSource
         _platform = platform;
         _site = site;
         _licenseService = licenseService;
-        _logStore = logStore;
+        _snapshotReader = snapshotReader;
 
         ProvideOutRaw(GetSite, name: "Site");
 
@@ -113,8 +115,9 @@ public class SystemInfo : CustomDataSource
     {
         var l = Log.Fn<IEnumerable<MessagesRaw>>();
 
-        var warningsObsolete = CountInsightsMessages(CodeInfoConstants.ObsoleteNameInHistory);
-        var warningsOther = CountInsightsMessages(LogConstants.StoreWarningsPrefix) - warningsObsolete;
+        var groups = _snapshotReader.Snapshot().Groups;
+        var warningsObsolete = CountInsightsMessages(groups, CodeInfoConstants.ObsoleteNameInHistory);
+        var warningsOther = CountInsightsMessages(groups, LogConstants.StoreWarningsPrefix) - warningsObsolete;
 
         var entity = new MessagesRaw
         {
@@ -125,11 +128,66 @@ public class SystemInfo : CustomDataSource
         return l.Return([entity], "1");
     }
 
-    private int CountInsightsMessages(string prefix)
+    // Count each segment once per history, even when the history contains multiple events.
+    private static int CountInsightsMessages(IEnumerable<InsightsLogGroupSnapshot> groups, string prefix)
+        => groups.Sum(group => group.Segments.Count(segment => segment?.StartsWith(prefix) == true));
+
+    [ContentType(
+        Name = "SiteStats",
+        Guid = "f59a06bb-60ad-4d65-8c02-799d46f5e640",
+        Description = "Site statistics",
+        Scope = "System"
+    )]
+    private record SiteStatsRaw(
+        [property: ContentTypeField(IsTitle = true)]
+        int SiteId,
+        int ZoneId,
+        int Apps,
+        int Languages
+    ) : IRawEntityAutoConvert;
+
+
+    [ContentType(
+        Name = "SystemInfo",
+        Guid = "6ed9998e-7087-41c5-a26e-207e07359531",
+        Description = "System information",
+        Scope = "System"
+    )]
+    private record SystemInfoRaw(
+        string Fingerprint,
+        string EavVersion,
+        [property: ContentTypeField(IsTitle = true)]
+        string Platform,
+        string PlatformVersion,
+        int Zones
+    ) : IRawEntityAutoConvert;
+
+
+    [ContentType(
+        Name = "LicenseInfo",
+        Guid = "7c70aa77-af5c-4a74-9d17-e977cb93b80b",
+        Description = "License information",
+        Scope = "System"
+    )]
+    public record LicenseInfoRaw(
+        [property: ContentTypeField(IsTitle = true)]
+        string Main,
+        int Count,
+        string Owner
+    ) : IRawEntityAutoConvert;
+
+
+    [ContentType(
+        Name = "Messages",
+        Guid = "41bc9f69-6760-4cab-9004-6c848ed2e569",
+        Description = "System message statistics",
+        Scope = "System"
+    )]
+    public record MessagesRaw : IRawEntityAutoConvert
     {
-        return _logStore.Segments
-            .Where(s => s.Key.StartsWith(prefix))
-            .Select(s => s.Value.Count)
-            .Sum();
+        public required int WarningsOther { get; init; }
+
+        public required int WarningsObsolete { get; init; }
     }
+
 }

@@ -3,6 +3,7 @@
 /// <summary>
 /// WIP
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentTypeWithEntities
 {
     public required IContentType ContentType { get; set; }

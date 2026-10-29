@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.DataSource.Sys;
-using ToSic.Eav.DataSources.Sys.Types;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Services;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 
@@ -28,7 +29,7 @@ namespace ToSic.Eav.DataSources.Sys;
     ConfigurationType = "4638668f-d506-4f5c-ae37-aa7fdbbb5540",
     HelpLink = "https://docs.2sxc.org/api/dot-net/ToSic.Eav.DataSources.System.QueryInfo.html")]
 
-public sealed class QueryInfo : CustomDataSourceAdvanced
+public sealed class QueryInfo : CustomDataSource
 {
     private readonly IDataSourceGenerator<Attributes> _attributesGenerator;
     private QueryFactory QueryFactory { get; }
@@ -37,7 +38,6 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
     #region Configuration-properties
 
     private const string DefQuery = "not-configured"; // can't be blank, otherwise tokens fail
-    private const string QueryStreamsContentType = "QueryStream";
 
     /// <summary>
     /// The content-type name
@@ -63,31 +63,29 @@ public sealed class QueryInfo : CustomDataSourceAdvanced
         _queryDefSvc = queryDefSvc;
         QueryFactory = queryFactory;
         _attributesGenerator = attributesGenerator;
-        ProvideOut(GetStreamsOfQuery);
-        ProvideOut(GetAttributes, "Attributes");
+        ProvideOutRaw(GetStreamsOfQuery);
+        ProvideOut(GetAttributes, name: "Attributes");
     }
 
     /// <summary>
     /// Get list of all streams which the query has.
     /// </summary>
     /// <returns></returns>
-    private IImmutableList<IEntity> GetStreamsOfQuery()
-    {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+    [ContentType(
+        Guid = "d1a476cc-9716-4c8b-a0d5-eaa70594f7d2",
+        Description = "Output stream of a query",
+        Name = "QueryStream"
+    )]
+    private sealed record QueryStreamRaw([property: ContentTypeTitle] string Name) : IRawEntityAutoConvert;
 
-        var dataFactory = DataFactory.SpawnNew(options: new()
-        {
-            TitleField = nameof(StreamsType.Name),
-            TypeName = QueryStreamsContentType
-        });
+    private IImmutableList<QueryStreamRaw> GetStreamsOfQuery()
+    {
+        var l = Log.Fn<IImmutableList<QueryStreamRaw>>();
+
 
         var result = Query?.Out
                          .OrderBy(stream => stream.Key)
-                         .Select(stream
-                             => dataFactory.Create(new Dictionary<string, object?>
-                             {
-                                 { nameof(StreamsType.Name), stream.Key }
-                             }))
+                         .Select(stream => new QueryStreamRaw(stream.Key))
                          .ToImmutableOpt()
                      ?? [];
         return l.Return(result, $"{result.Count}");

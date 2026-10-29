@@ -4,6 +4,7 @@ using ToSic.Eav.Serialization.Sys.Json;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class JsonDeserializeAttribute
 {
     /// <summary>

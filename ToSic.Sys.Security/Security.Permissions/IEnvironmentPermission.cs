@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Sys.Security.Permissions;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IEnvironmentPermission: IHasLog
+public interface IEnvironmentPermission: IHasLog, IServiceWithSetup<EnvironmentPermissionOptionsBase>
 {
     /// <summary>
     /// This should evaluate the grants and decide if the environment approves any of these grants.

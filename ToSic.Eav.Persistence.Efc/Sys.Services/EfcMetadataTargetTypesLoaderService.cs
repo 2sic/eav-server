@@ -3,6 +3,7 @@ using EavDbContext = ToSic.Eav.Persistence.Efc.Sys.DbContext.EavDbContext;
 
 namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EfcMetadataTargetTypesLoaderService(LazySvc<EavDbContext> dbLazy) : ServiceBase("Eav.MdTTyp"), ITargetTypesLoader
 {
     /// <summary>

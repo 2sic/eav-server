@@ -1,7 +1,7 @@
 ﻿#if NETFRAMEWORK
 using Microsoft.Extensions.Logging;
 
-namespace ToSic.Eav.Persistence.Efc.Diagnostics;
+namespace ToSic.Eav.Persistence.Efc.Sys.DbDiagnostics;
 
 // this class helps debug in advanced scenarios
 // hasn't been used since ca. 2017, but keep in case we ever do deep work on the DB again
@@ -24,13 +24,14 @@ public class EfCoreLoggerProvider : ILoggerProvider
             return true;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception, string> formatter)
         {
+            exception = exception ?? new Exception("No exception provided");
             System.IO.File.AppendAllText(@"C:\temp\log.txt", formatter(state, exception));
             Console.WriteLine(formatter(state, exception));
         }
 
-        public IDisposable? BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
             return null;
         }

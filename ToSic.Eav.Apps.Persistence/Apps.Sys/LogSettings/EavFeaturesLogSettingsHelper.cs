@@ -36,7 +36,7 @@ internal class EavFeaturesLogSettingsHelper(EavFeaturesLoader featuresLoader, IL
             BuiltInFeatures.LinqListOptimizations.RunOnStateChange?.Invoke(new(BuiltInFeatures.LinqListOptimizations, true), l);
         }
 
-        var settings = GetLogSettingsBase.PatchLogSettings(new(Details: false), config, NameDetailed, NameSummary);
+        var settings = new ToSic.Sys.Logging.LogSettings(Details: false).PatchLogSettings(config, NameDetailed, NameSummary);
 
         return l.Return(settings, "with changed configuration");
     }

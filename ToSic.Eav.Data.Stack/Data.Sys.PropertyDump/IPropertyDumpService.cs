@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.Data.Sys.PropertyDump;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IPropertyDumpService
 {
     /// <summary>

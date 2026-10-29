@@ -5,16 +5,18 @@
 /// </summary>
 public sealed class UserMock : IUser
 {
-    public string IdentityToken { get; set; } = "unknown(eav):0";
+    public const string MockIdentityToken = "mock-user(eav):2742";
+    public const string MockEmail = "mock-user@unknown.org";
+    public string IdentityToken { get; init; } = MockIdentityToken;
 
-    public Guid Guid { get; set; } = System.Guid.Empty;
+    public Guid Guid { get; init; } = Guid.Empty;
 
-    public List<int> Roles { get; set; } = [];
+    public List<int> Roles { get; init; } = [];
 
     public bool IsSystemAdmin
     {
         get;
-        set
+        init
         {
             field = value;
             IsSiteAdmin = value;
@@ -24,7 +26,7 @@ public sealed class UserMock : IUser
     public bool IsSiteAdmin
     {
         get;
-        set
+        init
         {
             field = value;
             IsContentAdmin = value;
@@ -34,24 +36,24 @@ public sealed class UserMock : IUser
     public bool IsContentAdmin
     {
         get;
-        set
+        init
         {
             field = value;
             IsContentEditor = value;
         }
     }
 
-    public bool IsContentEditor { get; set; }
+    public bool IsContentEditor { get; init; }
 
     public bool IsSiteDeveloper => IsSystemAdmin;
 
-    public int Id { get; set; } = 0;
+    public int Id { get; init; } = 0;
 
-    public string Username { get; set; } = SysConstants.Unknown;
+    public string Username { get; init; } = SysConstants.Unknown;
 
-    public string Name { get; set; } = SysConstants.Unknown;
+    public string Name { get; init; } = SysConstants.Unknown;
 
-    public string Email { get; set; } = "unknown@unknown.org";
+    public string Email { get; init; } = MockEmail;
 
-    public bool IsAnonymous { get; set; } = !false;
+    public bool IsAnonymous { get; init; } = !false;
 }

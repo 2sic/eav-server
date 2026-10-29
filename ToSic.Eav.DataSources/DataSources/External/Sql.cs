@@ -6,8 +6,10 @@ using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Text.RegularExpressions;
 using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Sys;
+using ToSic.Eav.DataSource.Sys.Errors;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.LookUp.Sys;
 using static System.StringComparison;
@@ -33,7 +35,7 @@ namespace ToSic.Eav.DataSources;
     ],
     HelpLink = "https://go.2sxc.org/DsSql")]
 
-public class Sql : CustomDataSourceAdvanced
+public class Sql : CustomDataSource
 {
     // Note: of the standard SQL-terms, I will only allow exec|execute|select
     // Everything else shouldn't be allowed
@@ -117,7 +119,7 @@ public class Sql : CustomDataSourceAdvanced
     #region Constructor
 
     [PrivateApi]
-    public new record Dependencies(SqlPlatformInfo SqlPlatformInfo, CustomDataSourceAdvanced.Dependencies ParentServices)
+    public new record Dependencies(SqlPlatformInfo SqlPlatformInfo, CustomDataSource.Dependencies ParentServices)
         : DependenciesBase(connect: [SqlPlatformInfo]);
 
     // Important: This constructor must come BEFORE the other constructors
@@ -128,10 +130,17 @@ public class Sql : CustomDataSourceAdvanced
     [PrivateApi]
     public Sql(Dependencies services) : base(services.ParentServices, $"{DataSourceConstantsInternal.LogPrefix}.ExtSql", connect: [services])
     {
-        SqlServices = services;
-        ProvideOut(GetList);
+        ProvideOutRaw(
+            () => GetList(services.SqlPlatformInfo),
+            options: () => new()
+            {
+                AppId = KnownAppsConstants.TransientAppId,
+                TitleField = _titleFieldForConversion,
+                TypeName = ContentType,
+            }
+        );
     }
-    [PrivateApi] protected readonly Dependencies SqlServices;
+    private string _titleFieldForConversion = "";
 
     #endregion
 
@@ -225,9 +234,9 @@ public class Sql : CustomDataSourceAdvanced
     }
 
 
-    private IImmutableList<IEntity> GetList()
+    private ResultOrError<IEnumerable<RawEntity>> GetList(SqlPlatformInfo sqlPlatformInfo)
     {
-        var l = Log.Fn<IImmutableList<IEntity>>();
+        var l = Log.Fn<ResultOrError<IEnumerable<RawEntity>>>();
         CustomConfigurationParse();
 
         var selectSql = SelectCommand;
@@ -235,8 +244,8 @@ public class Sql : CustomDataSourceAdvanced
 
         // Check if SQL contains forbidden terms
         if (ForbiddenTermsInSelect.IsMatch(selectSql))
-            return l.ReturnAsError(Error.Create(source: this, title: ErrorTitleForbiddenSql,
-                message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue."));
+            return l.Return(new(false, null, Error.Create(source: this, title: ErrorTitleForbiddenSql,
+                message: $"{GetType().Name} - Found forbidden words in the select-command. Cannot continue.")), "error");
 
 
         // Load ConnectionString by Name (if specified)
@@ -246,25 +255,25 @@ public class Sql : CustomDataSourceAdvanced
             {
                 var conStringName = conStringNameRaw.IsEmptyOrWs() ||
                                     conStringNameRaw.EqualsInsensitive(SqlPlatformInfo.DefaultConnectionPlaceholder)
-                    ? SqlServices.SqlPlatformInfo.DefaultConnectionStringName
+                    ? sqlPlatformInfo.DefaultConnectionStringName
                     : conStringNameRaw;
 
-                ConnectionString = SqlServices.SqlPlatformInfo.FindConnectionString(conStringName)
+                ConnectionString = sqlPlatformInfo.FindConnectionString(conStringName)
                     ?? throw new NullReferenceException("Can't find Connection String Name, returned value is null");
             }
             catch(Exception ex)
             {
-                return l.ReturnAsError(Error.Create(source: this, exception: ex,
+                return l.Return(new(false, null, Error.Create(source: this, exception: ex,
                     title: "Can't find Connection String Name",
-                    message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message."));
+                    message: "The specified connection string-name doesn't seem to exist. For security reasons it's not included in this message.")), "error");
             }
 
         // make sure we have one - often it's empty, if the query hasn't been configured yet
         if (string.IsNullOrWhiteSpace(ConnectionString))
-            return l.ReturnAsError(Error.Create(source: this, title: "Connection Problem",
-                message: "The ConnectionString property is empty / has not been initialized"));
+            return l.Return(new(false, null, Error.Create(source: this, title: "Connection Problem",
+                message: "The ConnectionString property is empty / has not been initialized")), "error");
 
-        var list = new List<IEntity>();
+        var list = new List<RawEntity>();
         using (var connection = new SqlConnection(ConnectionString))
         {
             connection.Open();
@@ -284,9 +293,9 @@ public class Sql : CustomDataSourceAdvanced
                 }
                 catch(Exception ex)
                 {
-                    return l.ReturnAsError(Error.Create(source: this, exception: ex,
+                    return l.Return(new(false, null, Error.Create(source: this, exception: ex,
                         title: "Can't read from Database",
-                        message: "Something failed trying to read from the Database."));
+                        message: "Something failed trying to read from the Database.")), "error");
                 }
 
                 var casedTitle = TitleField;
@@ -312,12 +321,7 @@ public class Sql : CustomDataSourceAdvanced
                                      ?? columNames.FirstOrDefault();
                     l.A($"will use '{casedTitle}' as title field");
 
-                    var sqlFactory = DataFactory.SpawnNew(options: new()
-                    {
-                        AppId = KnownAppsConstants.TransientAppId,
-                        TitleField = casedTitle ?? "Unknown",
-                        TypeName = ContentType,
-                    });
+                    _titleFieldForConversion = casedTitle ?? "Unknown";
 
                     #endregion
 
@@ -334,7 +338,7 @@ public class Sql : CustomDataSourceAdvanced
                             var value = reader[c];
                             return Convert.IsDBNull(value) ? null : value;
                         });
-                        var entity = sqlFactory.Create(values, id: entityId);
+                        var entity = new RawEntity { Id = entityId, Values = values };
                         list.Add(entity);
                     }
 
@@ -349,6 +353,6 @@ public class Sql : CustomDataSourceAdvanced
             }
         }
 
-        return l.Return(list.ToImmutableOpt(), $"found:{list.Count}");
+        return l.Return(new(true, list.ToImmutableOpt()), $"found:{list.Count}");
     }
 }

@@ -1,14 +1,11 @@
-﻿using ToSic.Sys.Users;
+﻿using ToSic.Sys.Capabilities.Features;
+using ToSic.Sys.Users;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Sys.Security.Permissions;
 
-partial class PermissionCheckBase
+partial class PermissionCheck
 {
-    // TODO: THIS IS CURRENTLY A MANUAL COPY OF THE VALUE
-    // This should not be the final state
-    private static Guid PermissionCheckUsersGuid = new("47c71ee9-ac7b-45bf-a08b-dfc8ce7c7775");
-
     /// <summary>
     /// Check if the current user fits the reason for this grant
     /// </summary>
@@ -19,35 +16,32 @@ partial class PermissionCheckBase
         try
         {
             // check general permissions
-            var condition = permission.Condition;
-            var identity = permission.Identity;
-            l.A($"condition:{condition}, identity:{identity}");
+            l.A($"condition:{permission.Condition}, identity:{permission.Identity}");
 
             // check custom permission based on the user Guid or owner
             if (User.Guid != default)
             {
                 // check owner conditions (only possible on target entities, not content-types)
-                if (VerifyUserIsItemOwner(condition, TargetItemOwner, User))
-                    return l.Return(new(true, Conditions.Identity), "is-owner: true");
+                if (VerifyUserIsItemOwner(permission.Condition, MyOptions.TargetOwner, User))
+                    return l.Return(new(true, Conditions.Owner), "is-owner: true");
 
                 // check if an identity was provided
-                if (!string.IsNullOrWhiteSpace(identity))
+                if (!string.IsNullOrWhiteSpace(permission.Identity))
                 {
-                    l.A($"Check if user is user or group - identity: {identity}");
-                    if (VerifyUserIsThisUser(identity, User))
-                        return l.Return(new(true, Conditions.Owner), "is-this-user: true");
+                    l.A($"Check if user is user or group - identity: {permission.Identity}");
+                    if (VerifyUserIsThisUser(permission.Identity, User))
+                        return l.Return(new(true, Conditions.Identity), "is-this-user: true");
 
-                    if (VerifyUserIsInGroup(identity, User))
+                    if (VerifyUserIsInGroup(permission.Identity, User))
                         return l.Return(new(true, Conditions.Group), "is-in-specified-group: true");
                 }
             }
 
-            // this checks if the condition is a environment condition
+            // this checks if the condition is an environment condition
             // for example, if it's a DNN code for "user may view something"
-            if (services.EnvironmentPermission.VerifyConditionOfEnvironment(condition))
-                return l.Return(new(true, Conditions.EnvironmentInstance), "environment: true");
-
-            return l.Return(new (false, Conditions.Undefined), "no-match: false");
+            return EnvPermissions.VerifyConditionOfEnvironment(permission.Condition)
+                ? l.Return(new(true, Conditions.EnvironmentInstance), "environment: true")
+                : l.Return(new(false, Conditions.Undefined), "no-match: false");
         }
         catch
         {
@@ -62,7 +56,7 @@ partial class PermissionCheckBase
     /// </summary>
     private bool VerifyUserIsThisUser(string identity, IUser user)
     {
-        if (!Services.Features.IsEnabled(PermissionCheckUsersGuid))
+        if (!featuresSvc.IsEnabled(BuiltInFeatures.PermissionCheckUsers.Guid))
             return false;
         return identity == user.Guid.ToString();
     }
@@ -76,7 +70,7 @@ partial class PermissionCheckBase
     /// <returns></returns>
     private bool VerifyUserIsInGroup(string identity, IUser user)
     {
-        if (!Services.Features.IsEnabled(PermissionCheckUsersGuid))
+        if (!featuresSvc.IsEnabled(BuiltInFeatures.PermissionCheckGroups.Guid))
             return false;
 
         if (string.IsNullOrWhiteSpace(identity))
@@ -87,7 +81,7 @@ partial class PermissionCheckBase
             .Where(gid => gid > 0)
             .ToList();
 
-        return user.Roles.Any(r => groupIds.Contains(r));
+        return user.Roles.Any(groupIds.Contains);
     }
 
     /// <summary>

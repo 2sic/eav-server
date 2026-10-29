@@ -5,7 +5,13 @@ using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.Data;
 
+/// <summary>
+/// Old name, not to be used any more.
+/// Was renamed in v22. Not 100% sure why we left it in place,
+/// but probably Mobius or Radmin was using this... to detect the type of a field, maybe?
+/// </summary>
 [PrivateApi("Leftover of old days")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IContentTypeAttribute
 {
     ValueTypes Type { get; }
@@ -17,7 +23,7 @@ public interface IContentTypeAttribute
 /// </summary>
 /// <remarks>
 /// * Was called `IContentTypeAttribute` up until v21
-/// * Probably will be renamed to `IContentTypeField` in v22 (breaking change)
+/// * Renamed to `IContentTypeField` in v22 (breaking change, but probably won't affect any code)
 /// </remarks>
 [PublicApi]
 public interface IContentTypeField

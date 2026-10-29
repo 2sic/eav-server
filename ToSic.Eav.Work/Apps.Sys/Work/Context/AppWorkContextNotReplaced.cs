@@ -6,6 +6,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// <summary>
 /// This is a pre-registered service which will throw an exception if it is requested in a place where it was not previously injected.
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkContextNotReplaced: IAppWorkContext
 {
     public AppWorkContextNotReplaced()
@@ -20,4 +21,7 @@ public class AppWorkContextNotReplaced: IAppWorkContext
     public IAppReader AppReader => throw new ArgumentNullException(ErrorMessage);
     public DbStorage DbStorage => throw new ArgumentNullException(ErrorMessage);
     public IDataSource Data => throw new ArgumentNullException(ErrorMessage);
+    public DbStorage NewDbStorage() => throw new ArgumentNullException(ErrorMessage);
+
+    public IAppWorkContext FreshContext(IAppReader? freshReader = null) => throw new ArgumentNullException(ErrorMessage);
 }

@@ -1,6 +1,7 @@
 ﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
 /// <remarks>V 1.1</remarks>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonAsset
 {
     /// <summary>

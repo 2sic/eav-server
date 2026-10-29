@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.DataSource.Query.Sys;
-using ToSic.Sys.Users.Permissions;
+﻿using ToSic.Sys.Context;
 using static ToSic.Eav.DataSource.DataSourceConstants;
 using static ToSic.Eav.DataSource.Sys.DataSourceConstantsInternal;
 
@@ -60,21 +59,18 @@ public class PublishingFilter : DataSourceBase
     /// Constructs a new PublishingFilter
     /// </summary>
     [PrivateApi]
-    public PublishingFilter(Dependencies services, ICurrentContextUserPermissionsService userPermissions) : base(services, $"{LogPrefix}.Publsh", connect: [userPermissions])
+    public PublishingFilter(Dependencies services, IContextService ctxSvc) : base(services, $"{LogPrefix}.Publsh", connect: [ctxSvc])
     {
-        _userPermissions = userPermissions;
-        ProvideOut(PublishingFilterList);
+        ProvideOut(() => PublishingFilterList(ctxSvc));
     }
-    private readonly ICurrentContextUserPermissionsService _userPermissions;
 
 
-    private IImmutableList<IEntity> PublishingFilterList()
+    private IImmutableList<IEntity> PublishingFilterList(IContextService ctxSvc)
     {
         var showDraftsSetting = ShowDrafts;
         var l = Log.Fn<IImmutableList<IEntity>>();
         var finalShowDrafts = showDraftsSetting
-                              ?? _userPermissions.UserPermissions()?.ShowDraftData
-                              ?? QueryConstants.ParamsShowDraftsDefault;
+                              ?? ctxSvc.Context.Permissions.ShowDraftData;
         var inStreamName = finalShowDrafts
             ? StreamDraftsName
             : StreamPublishedName;

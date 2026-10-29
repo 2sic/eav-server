@@ -3,6 +3,8 @@ using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.Xml;
 
 namespace ToSic.Eav.ImportExport.Sys.XmlList;
+
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class XmlImportPreparations(
     IList<XElement> xmlEntities,
     IContentType contentType,

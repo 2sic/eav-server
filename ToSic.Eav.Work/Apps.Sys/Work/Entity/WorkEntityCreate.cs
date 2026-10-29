@@ -32,26 +32,28 @@ public class WorkEntityCreate(DataAssembler dataAssembler, AppWorkChain<WorkEnti
     /// <returns></returns>
     public int GetOrCreate(Guid newGuid, string typeName, Dictionary<string, object> values)
     {
-        Log.A($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
-        if (MyOptions.DbStorage.Entities.EntityExists(newGuid))
+        var l = Log.Fn<int>($"get or create guid:{newGuid}, type:{typeName}, val-count:{values.Count}");
+        var db = MyOptions.DbStorage;
+        if (db.Entities.EntityExists(newGuid))
         {
             // check if it's deleted - if yes, resurrect
             // 2025-04-29 2dm code changed a bit for 2sxc v20.0, but couldn't see how to test it / when this scenario pops up
             // remove this comment if everything is ok by 2026-04
             // 2025-12-17 2dm finding: ATM this could never hit, because GetEntityStub(...) will filter out deleted entities
             // ...note that there is another GetStub which uses ID, which would not filter... might need revisiting some day
-            var existingEnt = MyOptions.DbStorage.Entities.GetEntityStubsByGuid(newGuid).First();
+            var existingEnt = db.Entities.GetEntityStubsByGuid(newGuid).First();
             if (existingEnt.TransDeletedId != null)
                 existingEnt.TransDeletedId = null;
 
-            return existingEnt.EntityId;
+            return l.ReturnAndLog(existingEnt.EntityId);
         }
 
         var newE = dataAssembler.Entity.Create(appId: MyOptions.AppId, guid: newGuid,
             contentType: MyOptions.AppReader.GetContentType(typeName),
             attributes: dataAssembler.AttributeList.Finalize(values!));
         var entSaver = workEntSave.New(MyOptions);
-        return entSaver.Save(newE, entSaver.SaveOptions()).Id;
+        var id = entSaver.Save(newE, entSaver.SaveOptions()).Id;
+        return l.ReturnAndLog(id);
     }
 
 }

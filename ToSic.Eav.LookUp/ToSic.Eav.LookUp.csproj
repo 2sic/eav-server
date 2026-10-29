@@ -2,7 +2,8 @@
 
   <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Sys.props" />
 
-  <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
+  <!-- Activating docs for this DLL in v22.01 -->
+  <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
   <PropertyGroup>
     <RootNamespace>ToSic.Eav</RootNamespace>

@@ -8,12 +8,13 @@ using ToSic.Eav.WebApi.Sys.Admin.Features;
 using ToSic.Eav.WebApi.Sys.Admin.Metadata;
 using ToSic.Eav.WebApi.Sys.Admin.Query;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
+using ToSic.Eav.WebApi.Sys.App.Details;
 using ToSic.Eav.WebApi.Sys.Cms;
+using ToSic.Eav.WebApi.Sys.Context;
 using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.Helpers.Json;
 using ToSic.Eav.WebApi.Sys.ImportExport;
-using ToSic.Eav.WebApi.Sys.Languages;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Sys.Logs;
 
@@ -34,7 +35,7 @@ public static class StartupWebApi
         services.TryAddTransient<LicenseControllerReal>();
 
         // Various Backends
-        services.TryAddTransient<LanguagesBackend>();
+        services.TryAddTransient<ContextLanguageDtoService>();
         services.TryAddTransient<SaveEntities>();
 
         // APIs
@@ -50,8 +51,12 @@ public static class StartupWebApi
 
         // Internal API helpers
         services.TryAddTransient<EntityApi>();
+        services.TryAddTransient<EntitiesAdminData>();
         services.TryAddTransient<EditLoadActionGetForEditing>(); // WIP v21
         services.TryAddTransient<IUiData, UiData>();
+        services.TryAddTransient<ImportAppService>();
+        services.TryAddTransient<PendingAppsGet>();
+        services.TryAddTransient<PendingAppInstall>();
 
         // WIP Converter clean-up v12.05
         // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
@@ -66,13 +71,25 @@ public static class StartupWebApi
 
         // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
         // This ensures that generic backends (.net framework/core) can create a response object
-        services.TryAddScoped<IResponseMaker, ResponseMaker>();
+#if NETCOREAPP
+        // In .net core, it does not need to be initialized in the controller.
+        services.TryAddScoped<IResponseMaker, ResponseMakerNetCore>();
+#else
+        // The initial dummy, which will always throw an exception if used. This is to ensure that the ResponseMaker is always overridden in the EAV WebApi.
+        services.TryAddTransient<ResponseMakerToOverride>();
+        // The true registration for the IResponseMaker, requiring override.
+        services.TryAddTransient<IResponseMaker>(OverrideService<IResponseMaker>.Register<ResponseMakerToOverride>());
+#endif
 
         // Helper to decouple Insights from WebApi
         services.TryAddTransient<IHttpExceptionMaker, HttpExceptionMaker>();
 
         // v20 centralize log creation / access for an http request
         services.TryAddScoped<HttpRequestLoggingScoped>();
+
+        // v22
+        services.TryAddTransient<IAppDetailsService, AppDetailsService>();
+        services.TryAddTransient<AppDetailsService>();
 
         services.AddNetInfrastructure();
 
@@ -82,7 +99,7 @@ public static class StartupWebApi
 
     /// <summary>
     /// Add typed EAV WebApi objects.
-    /// Make sure it's called AFTER adding the normal EAV. Otherwise the ResponseMaker will be the unknown even in
+    /// Make sure it's called AFTER adding the normal EAV. Otherwise, it takes precedence.
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
@@ -93,7 +110,7 @@ public static class StartupWebApi
         services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
         services.TryAddTransient<IAppExplorerControllerDependency, AppExplorerControllerDependencyUnknown>();
         // The ResponseMaker must be registered as generic, so that any specific registration will have priority
-        services.TryAddScoped<IResponseMaker, ResponseMakerUnknown>();
+        services.TryAddScoped<IResponseMaker, ResponseMakerToOverride>();
         return services;
     }
 

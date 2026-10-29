@@ -143,14 +143,10 @@ public sealed class RelationshipFilter : DataSourceBase
     /// Constructs a new RelationshipFilter
     /// </summary>
     [PrivateApi]
-    public RelationshipFilter(Dependencies services/*, ICurrentContextUserPermissionsService userPermissions*/) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil", connect: [/*userPermissions*/])
+    public RelationshipFilter(Dependencies services) : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Relfil")
     {
-        //_userPermissions = userPermissions;
         ProvideOut(GetRelationshipsOrFallback);
-        // todo: unclear if implemented...
-        //ConfigMaskMyConfig(nameof(ChildOrParent), $"{Settings.Direction}||{DefaultDirection}");
     }
-    //private readonly ICurrentContextUserPermissionsService _userPermissions;
 
 
     private IImmutableList<IEntity> GetRelationshipsOrFallback()

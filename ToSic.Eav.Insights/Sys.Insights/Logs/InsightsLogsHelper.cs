@@ -1,16 +1,18 @@
 ﻿using System.Text;
+using System.Collections.Immutable;
 using ToSic.Eav.Apps.Assets.Sys;
 using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Razor.Blade;
-using ToSic.Sys.Memory;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlTable;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Logs;
 
-internal class InsightsLogsHelper(ILogStoreLive logStore)
+internal class InsightsLogsHelper(InsightsLogSnapshot snapshot)
 {
+    internal InsightsLogsHelper() : this(new(false, ImmutableArray<InsightsLogGroupSnapshot>.Empty)) { }
+
     private InsightsHtmlBase Linker { get; } = new();
 
     internal string LogHistoryOverview()
@@ -18,19 +20,22 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         var msg = "";
         try
         {
-            var segments = logStore.Segments;
-            msg += P($"Logs Overview: {segments.Count}\n");
+            var segments = snapshot.Groups
+                .SelectMany(group => group.Segments)
+                .Where(segment => segment != null)
+                .GroupBy(segment => segment!, StringComparer.InvariantCultureIgnoreCase)
+                .OrderBy(group => group.Key);
+            msg += P($"Logs Overview: {segments.Count()}\n");
 
             var count = 0;
 
             msg += Table().Id("table").Wrap(
                 HeadFields(["# ↕", "Key ↕", "Count ↕", "Actions ↕"]),
                 Tbody(
-                    segments.OrderBy(segPair => segPair.Key)
-                        .Select(segPair => RowFields([(++count).ToString(),
-                            Linker.LinkTo(segPair.Key, InsightsLogs.Link, key: segPair.Key),
-                            $"{segPair.Value.Count}",
-                            Linker.LinkTo("flush", InsightsLogsFlush.Link, key: segPair.Key)
+                    segments.Select(segment => RowFields([(++count).ToString(),
+                            Linker.LinkTo(segment.Key, InsightsLogs.Link, key: segment.Key),
+                            $"{segment.Count()}",
+                            Linker.LinkTo("flush", InsightsLogsFlush.Link, key: segment.Key)
                             ])
                         )
                         .Cast<object>()
@@ -47,28 +52,27 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
     }
 
 
-    internal IHtmlTag? ShowSpecs(LogStoreEntry? entry)
+    internal IHtmlTag? ShowSpecs(InsightsLogGroupSnapshot? group)
     {
-        if (entry == null)
+        if (group == null)
             return null;
 
-        var specs = entry.Specs ?? new Dictionary<string, string>();
+        var specs = group.Specs;
 
         var specList = Table(HeadFields([SpecialField.Left("Aspect ↕"), SpecialField.Left("Value ↕")]));
 
-        var specsCopy = new Dictionary<string, string>(specs, StringComparer.InvariantCultureIgnoreCase);
-        if (entry.Log is Log { Entries.Count: > 0 } log)
+        var specsCopy = new Dictionary<string, string?>(specs, StringComparer.InvariantCultureIgnoreCase)
         {
-            specsCopy["Z Timespan A-Start"] = log.Created.Dump();
-
-            var first = log.Entries.First()?.Created;
-            specsCopy["Z Timespan B-First"] = first?.Dump() ?? "unknown";
-            var last = log.Entries.Last()?.Created;
-            specsCopy["Z Timespan C-Last"] = last?.Dump() ?? "unknown";
-            if (last != null)
-                specsCopy["Z Timespan D-Duration SL"] = (last - log.Created).ToString()!;
-            if (first != null && last != null)
-                specsCopy["Z Timespan D-Duration FL"] = (last - first).ToString()!;
+            ["Z Timespan A-Start"] = group.TimestampUtc.Dump(),
+            ["Z Timespan B-First"] = group.Events.FirstOrDefault()?.TimestampUtc.Dump() ?? "unknown",
+            ["Z Timespan C-Last"] = group.Events.LastOrDefault()?.TimestampUtc.Dump() ?? "unknown"
+        };
+        if (group.Events.Length > 0)
+        {
+            var first = group.Events[0].TimestampUtc;
+            var last = group.Events[group.Events.Length - 1].TimestampUtc;
+            specsCopy["Z Timespan D-Duration SL"] = (last - group.TimestampUtc).ToString();
+            specsCopy["Z Timespan D-Duration FL"] = (last - first).ToString();
         }
 
         specList = specsCopy
@@ -85,12 +89,12 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
             +Div("back to " + Linker.LinkTo("2sxc insights home", InsightsHelp.Link))
             + H1($"2sxc Insights: Log {key}")
             + P("Status: ",
-                Strong(logStore.Pause ? "paused" : "collecting"),
+                Strong(snapshot.IsPaused ? "paused" : "collecting"),
                 ", toggle: ",
                 Linker.LinkTo(HtmlEncode("▶"), InsightsPauseLogs.Link, more: "toggle=false"),
                 " | ",
                 Linker.LinkTo(HtmlEncode("⏸"), InsightsPauseLogs.Link, more: "toggle=true"),
-                $" collecting #{logStore.AddCount} of max {logStore.MaxItems} (keep max {logStore.SegmentSize} per set, then FIFO)"
+                $" collecting {snapshot.Groups.Length} retained log groups"
                 + (showFlush
                     ? " " + Linker.LinkTo("flush " + key, InsightsLogsFlush.Link, key: key).ToString()
                     : "")
@@ -107,11 +111,13 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
     internal string LogHistoryList(string key, string filter)
     {
         var msg = "";
-        if (!logStore.Segments.TryGetValue(key, out var set))
+        var logItems = snapshot.Groups
+            .Where(group => group.Segments.Contains(key, StringComparer.InvariantCultureIgnoreCase));
+        if (!logItems.Any())
             return msg + "item not found";
 
         // Helper to check if any log has this key
-        bool HasKey(string k) => set.Any(s => s.Specs?.ContainsKey(k) == true);
+        bool HasKey(string k) => logItems.Any(group => group.Specs.ContainsKey(k));
 
         // Helper to get the correct value depending of if it should fill the column, or it's found...
         //string GetValOrAlt(bool use, IDictionary<string, string> specs, string k) => !use 
@@ -120,12 +126,11 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         //        ? value
         //        : "";
 
-        string GetVal(IDictionary<string, string>? specs, string k) => 
-            specs?.TryGetValue(k, out var value) == true
-                ? value
+        string GetVal(IReadOnlyDictionary<string, string?> specs, string k) =>
+            specs.TryGetValue(k, out var value)
+                ? value ?? ""
                 : "";
 
-        var logItems = set as IEnumerable<LogStoreEntry>;
         if (filter.HasValue())
         {
             var parts = filter.Split(',');
@@ -133,9 +138,9 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
             {
                 var criteria = part.Split('=');
                 if (criteria.Length != 2) continue;
-                logItems = logItems.Where(l =>
-                    l.Specs != null && l.Specs.TryGetValue(criteria[0], out var val) &&
-                    val.EqualsInsensitive(criteria[1]));
+            logItems = logItems.Where(group =>
+                group.Specs.TryGetValue(criteria[0], out var val) &&
+                val?.EqualsInsensitive(criteria[1]) == true);
             }
         }
                 
@@ -145,8 +150,8 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         var hasPage = HasKey("PageId");
         var hasMod = HasKey("ModuleId");
         var hasUsr = HasKey("UserId");
-        var totalSize = new SizeEstimate();
-        msg += P($"Logs Overview: {set.Count}\n");
+        var groups = logItems.ToArray();
+        msg += P($"Logs Overview: {groups.Length}\n");
         msg += Table().Id("table").Wrap(
             HeadFields([
                 "#",
@@ -162,17 +167,12 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                 "Info",
                 "Time"
             ]),
-            Tbody(logItems
+            Tbody(groups
                 .Select((bundle, i) =>
                 {
-                    var realLog = bundle.Log as Log;
-                    var firstIfExists = realLog?.Entries.FirstOrDefault();
+                    var firstIfExists = bundle.Events.FirstOrDefault();
                     var specs = bundle.Specs;
-                    var timestamp = realLog?.Created.ToUniversalTime().ToString("O").Substring(5) ?? "no timestamp";
-                    var size = realLog?.EstimateSize(null);
-                    var sizeInfo = size == null ? null : new SizeInfo(size.Total);
-                    if (size != null)
-                        totalSize += size;
+                    var timestamp = bundle.TimestampUtc.ToString("O").Substring(5);
 
                     var bestTitle = (bundle.Title ?? firstIfExists?.Message).NeverNull();
 
@@ -191,26 +191,131 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
                         !hasPage ? null : SpecialField.Right(GetVal(specs, "PageId")),
                         !hasMod ? null : SpecialField.Right(GetVal(specs, "ModuleId")),
                         !hasUsr ? null : SpecialField.Right(GetVal(specs, "UserId")),
-                        SpecialField.Right($"{realLog?.Entries.Count:##,###}"),
-                        SpecialField.Right(sizeInfo != null ? $"{sizeInfo.Kb:N} KB" : "-"),
+                        SpecialField.Right($"{bundle.Events.Length:##,###}"),
+                        SpecialField.Right("-"),
                         // WIP must find a slightly better way to truncate the title
                         SpecialField.Left(HtmlEncode(trimmedTitle), tooltip: bestTitle),
                         HtmlEncode(firstIfExists?.Result),
-                        SpecialField.Right(new InsightsTime().ShowTime(realLog))
+                        SpecialField.Right(ShowDuration(bundle.Events), tooltip: "Longest recorded operation; not total request duration")
                     ]);
                 })
                 .ToArray<object>()));
         msg += "\n\n";
-        var totalSizeInfo = new SizeInfo(totalSize.Total);
-        msg += Br() + Strong($"Total Log Size in Memory: {totalSizeInfo.Mb:N} MB") + Br();
         msg += InsightsHtmlParts.JsTableSort();
 
         return msg;
     }
 
+    private static string ShowDuration(IEnumerable<InsightsLogEventSnapshot> events)
+        => events.Select(Duration).Max() is { } elapsed
+            ? new InsightsTime().ShowTime(elapsed)
+            : "";
+
+    // Prefer precise ticks, but keep older snapshots that only recorded milliseconds readable.
+    private static TimeSpan? Duration(InsightsLogEventSnapshot entry)
+        => entry.DurationTicks is { } ticks
+            ? TimeSpan.FromTicks(ticks)
+            : entry.DurationMilliseconds is { } milliseconds
+                ? TimeSpan.FromMilliseconds(milliseconds)
+                : null;
+
+    internal string DumpTree(string title, InsightsLogGroupSnapshot group)
+    {
+        if (group.Events.Length == 0)
+            return "";
+
+        var log = new StringBuilder(H1(title) + Div(group.TimestampUtc.Dump()) + "\n\n<ol>");
+        var depth = 0;
+        var isMel = group.Events.All(entry => entry.Depth == null);
+        var start = isMel ? group.Events.Min(entry => entry.StartedUtc ?? entry.TimestampUtc) : group.TimestampUtc;
+        // Use the same full span as the original Legacy tree, including the final wrap-close.
+        var last = group.Events[group.Events.Length - 1];
+        var legacyTime = isMel ? null : new InsightsTime(last.TimestampUtc.Add(Duration(last) ?? default) - start);
+        var parents = new Stack<InsightsLogEventSnapshot>();
+        IEnumerable<InsightsLogEventSnapshot> entries = isMel
+            ? group.Events.OrderBy(entry => entry.StartedUtc ?? entry.TimestampUtc).ThenBy(entry => entry.Sequence)
+            : group.Events;
+        // Legacy snapshots have wrap markers; MEL rows follow operation start time.
+        foreach (var entry in entries)
+        {
+            if (entry.WrapClose)
+            {
+                if (depth > 0)
+                {
+                    log.AppendLine("</ol></li>");
+                    depth--;
+                    parents.Pop();
+                }
+                continue;
+            }
+
+            log.AppendLine("<li>");
+            log.AppendLine(SnapshotLine(entry, start, legacyTime, parents.Count > 0 ? parents.Peek() : null));
+            if (entry.WrapOpen)
+            {
+                if (!entry.WrapOpenWasClosed)
+                    log.AppendLine(HtmlEncode("🪵⚠️ LOGGER WARNING: This logger was never closed"));
+                log.AppendLine("<ol>");
+                depth++;
+                parents.Push(entry);
+            }
+            else
+                log.AppendLine("</li>");
+        }
+        // A live Legacy call may still be open when the snapshot is taken, so close the remaining markup.
+        while (depth-- > 0)
+            log.AppendLine("</ol></li>");
+        log.Append("</ol>end of log");
+        return log.ToString();
+    }
+
+    private string SnapshotLine(InsightsLogEventSnapshot entry, DateTime start, InsightsTime? legacyTime, InsightsLogEventSnapshot? parent)
+    {
+        var message = HtmlEncode(entry.Message.NeverNull());
+        if (entry.ShowNewLines)
+            message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
+        var source = entry.FullSource ?? entry.ShortSource ?? entry.Category;
+        var label = legacyTime == null
+            ? entry.ShortSource ?? entry.Category
+            : LegacyLabel(source, parent?.ShortSource ?? "");
+        var code = entry.SourceFilePath != null && !entry.HideCodeReference
+            ? " " + HoverLabel("C#", $"{entry.SourceFilePath} - {entry.SourceMemberName}() #{entry.SourceLineNumber}", "codePeek")
+            : "";
+        var result = entry.Result == null ? "" : $" {ResStart}{HtmlEncode(entry.Result)}{ResEnd}";
+        var exception = entry.Exception?.Details == null ? "" : " " + HtmlEncode(entry.Exception.Details);
+        var timing = legacyTime == null
+            ? " " + new InsightsTime().ShowTime(Duration(entry), (entry.StartedUtc ?? entry.TimestampUtc) - start)
+            : legacyTime.ShowTime(Duration(entry) ?? default, entry.TimestampUtc, parent == null ? default : Duration(parent) ?? default, start);
+        return Span(HoverLabel(HtmlEncode(label), source, "logIds") + " - " + message + result + timing + exception + code)
+            .Class("log-line")
+            .ToString();
+    }
+
     internal string DumpTree(string title, ILog? log)
     {
-        var typedLog = (Log)log!;
+        if (log is not Log typedLog)
+            return DumpRetainedEvents(title, log?.NameId);
+
+        return DumpLegacyTree(title, typedLog);
+    }
+
+    private string DumpRetainedEvents(string title, string? category)
+    {
+        // MEL has no per-log entry tree here, so show the retained events for its category.
+        var events = snapshot.Groups
+            .SelectMany(group => group.Events)
+            .Where(entry => entry.Category == category)
+            .OrderBy(entry => entry.Sequence)
+            .ToImmutableArray();
+        if (events.Length == 0)
+            return "";
+
+        InsightsLogGroupSnapshot group = new("", null, [], events[0].TimestampUtc, ImmutableDictionary<string, string?>.Empty, events);
+        return DumpTree($"{title} (retained events for {category})", group);
+    }
+
+    private string DumpLegacyTree(string title, Log typedLog)
+    {
         var lg = new StringBuilder(
             H1($"{title}") +
             Div($"{typedLog.Created.Dump()}") +
@@ -313,9 +418,30 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         if (e.WrapClose)
             return $"{ResStart}{e.Result}{ResEnd}";
 
-        #region find perfect Label
-
         var logChainPath = e.Source ?? "";
+        var label = LegacyLabel(logChainPath, parentBreadcrumb);
+
+        var message = HtmlEncode(e.Message.NeverNull());
+        if (e.Options?.ShowNewLines == true)
+            message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
+        return Span(
+                HoverLabel(HtmlEncode(label), logChainPath, "logIds")
+                + " - "
+                + message
+                + (e.Result != null
+                    ? $" {ResStart}{HtmlEncode(e.Result)}{ResEnd}"
+                    : string.Empty)
+                + time.ShowTime(e, parentTime, mainStart)
+                + (e.Code != null && e.Options?.HideCodeReference != true
+                    ? " " + HoverLabel("C#", $"{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}", "codePeek")
+                    : string.Empty)
+                + "\n")
+            .Class("log-line")
+            .ToString();
+    }
+
+    private string LegacyLabel(string logChainPath, string parentBreadcrumb)
+    {
         var label = KeepOnlyLastSegmentOfPath(logChainPath);
 
         // If we have a previous breadcrumb...
@@ -345,25 +471,7 @@ internal class InsightsLogsHelper(ILogStoreLive logStore)
         if (label.Trim('…') == _lastLogLabel) label = "[=]";
         else _lastLogLabel = label;
 
-        #endregion
-
-        var message = HtmlEncode(e.Message.NeverNull());
-        if (e.Options?.ShowNewLines == true)
-            message = Tags.Nl2Br(message).Replace("<br><br>", "<br>");
-        return Span(
-                HoverLabel(HtmlEncode(label), logChainPath, "logIds")
-                + " - "
-                + message
-                + (e.Result != null
-                    ? $" {ResStart}{HtmlEncode(e.Result)}{ResEnd}"
-                    : string.Empty)
-                + time.ShowTime(e, parentTime, mainStart)
-                + (e.Code != null && e.Options?.HideCodeReference != true
-                    ? " " + HoverLabel("C#", $"{e.Code.Path} - {e.Code.Name}() #{e.Code.Line}", "codePeek")
-                    : string.Empty)
-                + "\n")
-            .Class("log-line")
-            .ToString();
+        return label;
     }
     private const string ResStart = "<span style='color: green'>= ";
     private const string ResEnd = "</span>";

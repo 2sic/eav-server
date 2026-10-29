@@ -4,6 +4,7 @@
 /// Extensions for any <see cref="IRawData"/> but it must implement other interfaces to properly support conversion.
 /// </summary>
 [PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class IRawEntitySourceExtensions
 {
 

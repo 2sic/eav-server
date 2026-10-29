@@ -75,7 +75,8 @@ partial class App : IDataSourceReset // #RemoveDataSourceReset v21
         // because the "real" source already applies filters like published
         var appReader = AppReader;
         var listOfTypes = appReader.ContentTypes;
-        var showDraftsForCacheKey = _services.UserPermissions.UserPermissions().IsContentAdmin;
+        // Separate cached type streams using the same draft decision as the query's publishing filter.
+        var showDraftsForCacheKey = _services.CtxSvc.Context.Permissions.ShowDraftData;
         var typeList = "";
         foreach (var contentType in listOfTypes)
         {

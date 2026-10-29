@@ -13,18 +13,16 @@ namespace ToSic.Eav.DataSources.Sys;
 /// <typeparam name="TClassOrInterface"></typeparam>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class RegisteredClasses<TClassOrInterface>: CustomDataSource where TClassOrInterface: class
+public abstract class RegisteredClasses<TClassOrInterface>(
+    CustomDataSource.Dependencies services,
+    LazySvc<IEnumerable<TClassOrInterface>> servicesOfType)
+    : CustomDataSource(services, logName: $"{DataSourceConstantsInternal.LogPrefix}.C#Cls", connect: [servicesOfType])
+    where TClassOrInterface: class
 {
-    protected RegisteredClasses(Dependencies services, LazySvc<IEnumerable<TClassOrInterface>> servicesOfType)
-        : base(services, logName: $"{DataSourceConstantsInternal.LogPrefix}.C#Cls", connect: [servicesOfType])
-    {
-        ProvideOutRaw(() => Generators(servicesOfType.Value));
-    }
-
-    private IEnumerable<IRawData> Generators(IEnumerable<TClassOrInterface> servicesOfType)
+    protected override IEnumerable<IRawData> GetDefault()
     {
         var l = Log.Fn<IEnumerable<IRawData>>();
-        var list = servicesOfType
+        var list = servicesOfType.Value
             .Select(g => g.GetType())
             .Where(type => !type.IsAbstract && !type.IsInterface)
             .Select((type, index) => new ClassInfoRaw(type, index))

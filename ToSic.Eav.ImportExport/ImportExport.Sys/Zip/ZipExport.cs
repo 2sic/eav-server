@@ -16,12 +16,12 @@ namespace ToSic.Eav.ImportExport.Sys.Zip;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZipExport(
     IAppReaderFactory appReaders,
-    XmlExporter xmlExporter,
+    Generator<XmlExporter, XmlExporter.Options> xmlExporter,
     Generator<AppFileManager> fileManagerGenerator,
     IGlobalConfiguration globalConfiguration,
     ISysFeaturesService features
     )
-    : ServiceWithSetup<ZipExport.Options>(EavLogs.Eav + ".ZipExp",
+    : ServiceWithSetup<ZipExport.Options>($"{EavLogs.Eav}.ZipExp",
         connect: [appReaders, xmlExporter, globalConfiguration, fileManagerGenerator, features])
 {
     public record Options : IAppIdentity
@@ -69,17 +69,18 @@ public class ZipExport(
     {
         var l = Log.Fn<PathCasePreflightResult>();
         var validator = new PathCasePreflightValidator(l);
-        var results = new List<PathCasePreflightResult>();
+        List<PathCasePreflightResult> results =
+        [
+            validator.Validate(
+                PathCasePreflightValidator.ScopeAppFiles,
+                appReferences,
+                ActualAppPathsOrEmpty(AppFileManager, MyOptions.PhysicalAppPath)),
 
-        results.Add(validator.Validate(
-            PathCasePreflightValidator.ScopeAppFiles,
-            appReferences,
-            ActualAppPathsOrEmpty(AppFileManager, MyOptions.PhysicalAppPath)));
-
-        results.Add(validator.Validate(
-            PathCasePreflightValidator.ScopeSharedAppFiles,
-            sharedAppReferences,
-            ActualAppPathsOrEmpty(AppFileManagerGlobal, MyOptions.PhysicalPathGlobal)));
+            validator.Validate(
+                PathCasePreflightValidator.ScopeSharedAppFiles,
+                sharedAppReferences,
+                ActualAppPathsOrEmpty(AppFileManagerGlobal, MyOptions.PhysicalPathGlobal))
+        ];
 
         var referencedFiles = xmlExport.ReferencedFiles
             .Where(file => file.RelativePath.HasValue())
@@ -203,7 +204,7 @@ public class ZipExport(
         AddInstructionsToPackageFolder(temporaryDirectoryPath);
 
         var tempDirectory = new DirectoryInfo(temporaryDirectoryPath);
-        var appDirectory = tempDirectory.CreateSubdirectory("Apps/" + MyOptions.AppFolder + "/");
+        var appDirectory = tempDirectory.CreateSubdirectory($"Apps/{MyOptions.AppFolder}/");
 
         var sexyDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForAppStuff);
         var globalSexyDirectory = appDirectory.CreateSubdirectory(FolderConstants.ZipFolderForGlobalAppStuff);
@@ -260,13 +261,12 @@ public class ZipExport(
             try
             {
                 var pathStartWithAdam = relPath.StartsWith("adam");
-                if (assetsAdam && pathStartWithAdam // Adam assets
-                    || assetsSite && !pathStartWithAdam) // Site assets
+                if ((assetsAdam && pathStartWithAdam /*Adam assets*/) || (assetsSite && !pathStartWithAdam /*Site assets*/))
                     File.Copy(file.Path!, fullPath, overwrite: true);
             }
             catch (Exception e)
             {
-                throw new("Error on " + fullPath + " (" + fullPath.Length + ")", e);
+                throw new($"Error on {fullPath} ({fullPath.Length})", e);
             }
         }
     }
@@ -316,16 +316,8 @@ public class ZipExport(
             .Select(p => p.NameId)
             .ToArray();
 
-        // 2022-01-04 2dm - new code, simplified
         // Get all entities except Attribute/Field Metadata, which is exported in a different way
-        var entities =
-            //dataSourceServices
-            //.CreateDefault(new DataSourceOptions
-            //{
-            //    AppIdentityOrReader = appIdentity,
-            //    ShowDrafts = true,
-            //})
-            appReader
+        var entities = appReader
             .List
             .Where(e => e.MetadataFor.TargetType != (int)TargetTypes.Attribute)
             .ToList();
@@ -345,7 +337,7 @@ public class ZipExport(
             .Select(e => e.EntityId.ToString())
             .ToArray();
 
-        var xmlExport = xmlExporter.Init(specs, appReader, true, contentTypeNames, entityIds);
+        var xmlExport = xmlExporter.New(new(specs, appReader, true, contentTypeNames, entityIds));
 
         #region reset App Guid if necessary
 

@@ -2,8 +2,8 @@
 
   <Import Project="../SharedImports/CsProj.Props/AllImportsForRealCode-Eav.props" />
 
-  <!-- As of 2026-06-28 2dm this should not be exported ATM -->
-  <!--<Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />-->
+  <!-- Activating docs for this DLL in v22.01 -->
+  <Import Project="../SharedImports/CsProj.Props/CreateXDocsOnRelease.props" />
 
   <PropertyGroup>
     <RootNamespace>ToSic.Eav</RootNamespace>
@@ -29,8 +29,8 @@
     <Reference Include="System.Web" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="System.Runtime.Caching" Version="9.0.0" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="System.Runtime.Caching" Version="10.0.9" />
   </ItemGroup>
 
 </Project>

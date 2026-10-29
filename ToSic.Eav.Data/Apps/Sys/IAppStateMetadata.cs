@@ -3,6 +3,9 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppStateMetadata
 {
+    /// <summary>
+    /// App Configuration containing the folder etc.
+    /// </summary>
     IEntity? AppConfiguration { get; }
 
     /// <summary>
@@ -10,6 +13,11 @@ public interface IAppStateMetadata
     /// </summary>
     IEntity? MetadataItem { get; }
 
+    /// <summary>
+    /// The System Settings or System Resources.
+    /// </summary>
     IEntity? SystemItem { get; }
+
+
     IEntity? CustomItem { get; }
 }

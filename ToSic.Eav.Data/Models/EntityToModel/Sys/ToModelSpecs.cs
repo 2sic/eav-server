@@ -4,12 +4,15 @@ using ToSic.Sys.Utils.Types;
 
 namespace ToSic.Eav.Models.Sys;
 
+// TODO: #ToRename TO ToModelJobSpecs
+
 /// <summary>
-/// 
+/// A job to convert something to a model.
 /// </summary>
 /// <param name="EntryType"></param>
 /// <param name="TrueType"></param>
 /// <param name="Options"></param>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record ToModelSpecs(Type EntryType, Type TrueType, ToModelOptions Options, IModelFactory? Factory, string MethodName)
 {
     public static ToModelSpecs Start<TModel>(Type? trueType, ToModelOptions? options, IModelFactory? factory, bool useFactory, string methodName)
@@ -32,13 +35,14 @@ public record ToModelSpecs(Type EntryType, Type TrueType, ToModelOptions Options
 }
 
 /// <summary>
-/// 
+/// A job to convert one or many entities to models.
 /// </summary>
 /// <typeparam name="TModel"></typeparam>
 /// <param name="ExitEarly"></param>
 /// <param name="TrueType"></param>
 /// <param name="Options"></param>
 /// <param name="MethodName"></param>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 internal record ToModelSpecs<TModel>(bool ExitEarly, Type TrueType, ToModelOptions Options, IModelFactory? Factory, string MethodName)
     : ToModelSpecs(typeof(TModel), TrueType, Options, Factory, MethodName)
     where TModel : class, IModelFromEntity

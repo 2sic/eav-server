@@ -55,6 +55,18 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     /// <param name="fullDelete">If true, the entire App is removed. Otherwise, just all the contents is cleared</param>
     internal void DeleteApp(int appId, bool fullDelete)
     {
+        // Other apps can store entities using this app's inherited content types.
+        // Include soft-deleted rows, since they still hold database references.
+        var dependentAppIds = DbStore.SqlDb.TsDynDataEntities
+            .IgnoreQueryFilters()
+            .Where(e => e.AppId != appId && e.ContentTypeNavigation.AppId == appId)
+            .Select(e => e.AppId)
+            .Distinct()
+            .OrderBy(id => id)
+            .ToArray();
+        if (dependentAppIds.Length > 0)
+            throw new InvalidOperationException($"Cannot delete or reset app {appId} because its content types are still used by apps: {string.Join(", ", dependentAppIds)}. Remove those apps or resolve their dependencies first.");
+
         DbStore.Versioning.GetTransactionId();
 
         // Delete app

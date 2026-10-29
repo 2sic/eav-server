@@ -3,7 +3,7 @@ using ToSic.Eav.Models;
 
 namespace ToSic.Eav.Data.ContentTypes;
 
-// TODO: RENAME TO IContentTypeDetailsModel
+// TODO: #ToRename TO IContentTypeDetailsModel
 
 /// <summary>
 /// Content Type Settings as typically configured in the UI
@@ -14,6 +14,7 @@ namespace ToSic.Eav.Data.ContentTypes;
     Guid = "3ef2547d-8a6d-4cc4-91e0-a6396b96f7e7", // Made-up Guid!, real Guid is a string "ContentType" which would fail! should be fixed some day...
     Description = "Content-Type for the main properties which 'all' attributes have."
 )]
+[WorkInProgressApi("WIP v22")]
 public interface IContentTypeDetails: IModelFromEntity<ContentTypeDetailsModel>
 {
     [PrivateApi]

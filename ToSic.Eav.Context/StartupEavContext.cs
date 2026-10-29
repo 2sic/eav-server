@@ -20,17 +20,16 @@ public static class StartupEavContext
     public static IServiceCollection AddEavContext(this IServiceCollection services)
     {
         // Context
-        services.TryAddTransient<IContextOfSite, ContextOfSite>();
-        services.TryAddTransient<ContextOfSite>();
-        services.TryAddTransient<ContextOfSite.Dependencies>();
+        services.TryAddTransient<IContextOfSiteService, ContextOfSiteService>();
 
         services.TryAddTransient<IAppPathsMicroSvc, AppPathsMicroSvc>(); // WIP trying to remove direct access to AppPaths
 
         // App Permission Check moved to this project as the implementations are now all identical
-        services.TryAddTransient<AppPermissionCheck>();
+        services.TryAddTransient<PermissionCheckFactory>();
         services.TryAddTransient<MultiPermissionsTypes>();
         services.TryAddTransient<MultiPermissionsApp>();
-        services.TryAddTransient<MultiPermissionsApp.Dependencies>();
+        services.TryAddTransient<ZoneSwitchPermissionCheck>();  // new v22
+        services.TryAddTransient<PermissionContextAdjuster>();  // new v22
 
         // V13 Language Checks
         services.TryAddTransient<AppUserLanguageCheck>();
@@ -51,13 +50,15 @@ public static class StartupEavContext
     {
         services.TryAddTransient<ISite, SiteUnknown>();
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
-        services.TryAddTransient<AppPermissionCheck, AppPermissionCheckUnknown>();
-        services.TryAddTransient<IEnvironmentPermission, EnvironmentPermissionUnknown>();
 
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
 
         // v17
         services.TryAddTransient<IZoneCultureResolver, ZoneCultureResolverUnknown>();
+
+        // v22 - will only be used if Dnn/Oqtane didn't provide a better implementation
+        services.TryAddTransient<IEnvironmentPermission, EnvironmentPermission>();
+        services.TryAddTransient<IDraftOverrideService, DraftOverrideServiceNoOp>();
 
         return services;
     }

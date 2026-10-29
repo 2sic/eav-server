@@ -14,27 +14,20 @@ internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
     }
 
     public string ShowTime(Entry? e, TimeSpan parentTime, DateTime mainStart)
-    {
-        if (e == null)
-            return "";
-        
-        var (secondsText, style) = PercentString(e, mainStart);
+        => e == null ? "" : ShowTime(e.Elapsed, e.Created, parentTime, mainStart);
 
-        if (e.Elapsed == TimeSpan.Zero)
+    public string ShowTime(TimeSpan elapsed, DateTime created, TimeSpan parentTime, DateTime mainStart)
+    {
+        var (secondsText, style) = PercentString(elapsed, created, mainStart);
+
+        if (elapsed == TimeSpan.Zero)
             return Span(secondsText + " since " + HtmlEncode("▶️"))
                 .Class("time")
                 .Style(style)
                 //.Style("text-align: right")
                 .ToString();
 
-        var seconds = e.Elapsed.TotalSeconds;
-        var ms = e.Elapsed.TotalMilliseconds;
-        var number = ms < 1000 ? ms : seconds;
-        var time = number > 100
-            ? $"{(int)number}"
-            : $"{number:0.###}".Truncate(4)!.TrimEnd('.');
-
-        time += ms < 1000 ? "ms" : "s";
+        var ms = elapsed.TotalMilliseconds;
 
         // Figure out percent of parent total time
         var parentPercent = PercentString1(ms, parentTime);
@@ -43,12 +36,40 @@ internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
         if (fullPercent.HasValue()) fullPercent = $" | {Span(fullPercent).Class("time-of-total")}";
         var percentString = parentPercent + fullPercent;
 
+        return DurationBadge(elapsed, percentString + " | " + secondsText, style);
+    }
+
+    // Snapshot durations do not imply a known start time or parent relationship.
+    public string ShowTime(TimeSpan elapsed)
+        => DurationBadge(elapsed, "", $"background: {ColorElapsed}");
+
+    public string ShowTime(TimeSpan? elapsed, TimeSpan sinceStart)
+    {
+        var secondsText = $"{Math.Max(0, sinceStart.TotalSeconds):F}";
+        return elapsed is { } duration
+            ? DurationBadge(duration, " | " + secondsText, $"background: {ColorElapsed}")
+            : Span(secondsText + " since " + HtmlEncode("▶️")).Class("time").ToString();
+    }
+
+    private static string DurationBadge(TimeSpan elapsed, string suffix, string style)
+    {
+        var seconds = elapsed.TotalSeconds;
+        var ms = elapsed.TotalMilliseconds;
+        var number = ms < 1000 ? ms : seconds;
+        // Keep short calls visible instead of rounding sub-millisecond work to 0ms.
+        var time = ms is > 0 and < 1
+            ? $"{ms:0.####}"
+            : number > 100
+                ? $"{(int)number}"
+                : $"{number:0.###}".Truncate(4)!.TrimEnd('.');
+
+        time += ms < 1000 ? "ms" : "s";
+
         return Span(
                 " ",
                 Span(HtmlEncode("⌚")).Class("emoji"),
                 $" {time}",
-                percentString,
-                " | " + secondsText
+                suffix
             )
             .Class("time")
             .Style(style)
@@ -58,18 +79,19 @@ internal class InsightsTime(TimeSpan fullTime = default) : InsightsHtmlBase
     /// <summary>
     /// figure out time / % since start
     /// </summary>
-    /// <param name="e"></param>
+    /// <param name="elapsed"></param>
+    /// <param name="created"></param>
     /// <param name="mainStart"></param>
     /// <returns></returns>
-    private (string secondsText, string style) PercentString(Entry e, DateTime mainStart)
+    private (string secondsText, string style) PercentString(TimeSpan elapsed, DateTime created, DateTime mainStart)
     {
-        var sinceStart = e.Created - mainStart;
+        var sinceStart = created - mainStart;
         var secSinceStart = sinceStart.TotalSeconds;
         var secText = $"{secSinceStart:F}";
         var max = fullTime == default ? 5 : fullTime.TotalSeconds;
         var perSinceStart = (int)(secSinceStart / max * 100);
 
-        var secElapsedSinceStart = e.Elapsed.TotalSeconds + secSinceStart;
+        var secElapsedSinceStart = elapsed.TotalSeconds + secSinceStart;
         var perElapsed = (int)(secElapsedSinceStart / max * 100);
 
 

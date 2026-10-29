@@ -32,11 +32,15 @@ public class ContentTypeDto: IRawEntityAutoConvert
 
     public required string? TitleField { get; init; }
 
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required IEnumerable<EavLightEntityReference>? Metadata { get; init; }
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required IDictionary<string, object>? Properties { get; init; }
 
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required HasPermissionsDto Permissions { get; init; }
 
+    [ContentTypeField(Type = ValueTypes.Object)]
     public required EditInfoDto EditInfo { get; init; }
 
 }

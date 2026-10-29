@@ -4,6 +4,7 @@ using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys.PropertyDump;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityDump : IPropertyDumper
 {
     public int IsCompatible(object target) =>

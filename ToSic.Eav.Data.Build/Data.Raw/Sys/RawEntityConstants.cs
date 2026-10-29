@@ -1,5 +1,6 @@
 ﻿namespace ToSic.Eav.Data.Raw.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class RawEntityConstants
 {
     public static readonly string[] KeysToRemove =

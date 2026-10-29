@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSources.Sys;
 using ToSic.Eav.Metadata;
@@ -23,14 +24,17 @@ namespace ToSic.Eav.DataSources;
     ConfigurationType = "7dcd26eb-a70c-4a4f-bb3b-5bd5da304232",
     HelpLink = "https://go.2sxc.org/DsMetadataTargets")]
 [InternalApi_DoNotUse_MayChangeWithoutNotice("WIP")]
-public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAppReaderFactory appReaders)
-    : MetadataDataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders])
+public class MetadataTargets(
+    CustomDataSourceAdvanced.Dependencies services,
+    DataFactoryGenerator genDataFactory,
+    IAppReaderFactory appReaders)
+    : DataSourceProcessInBase(services, $"{DataSourceConstantsInternal.LogPrefix}.MetaTg", connect: [appReaders, genDataFactory])
 {
     /// <summary>
     /// Optional TypeName restrictions to only get **Targets** of this Content Type.
     /// </summary>
     [Configuration]
-    public override string? ContentTypeName => Configuration.GetThis();
+    public string? ContentTypeName => Configuration.GetThis();
 
     /// <summary>
     /// If it should filter duplicates. Default is true.
@@ -38,11 +42,14 @@ public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAp
     [Configuration(Fallback = true)]
     public bool FilterDuplicates => Configuration.GetThis(true);
 
-    protected override IEnumerable<IEntity> SpecificGet(IImmutableList<IEntity> originals, string? typeName)
+    protected override IEnumerable<IEntity> GetDefault(IImmutableList<IEntity> defaultIn)
     {
+        var typeName = ContentTypeName;
+        var filterDuplicates = FilterDuplicates;
+        var l = Log.Fn<IEnumerable<IEntity>>($"Content Type Name: '{typeName}', Filter Duplicates: {filterDuplicates}");
         var getTargetFunc = GetTargetsFunctionGenerator();
 
-        var relationships = originals
+        var relationships = defaultIn
             .SelectMany(getTargetFunc);
 
         if (FilterDuplicates)
@@ -51,7 +58,7 @@ public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAp
         if (typeName.HasValue())
             relationships = relationships.GetAll(typeName);
 
-        return relationships;
+        return l.Return(relationships);
     }
 
     /// <summary>
@@ -86,15 +93,14 @@ public class MetadataTargets(CustomDataSourceAdvanced.Dependencies services, IAp
 
             if (mdFor.TargetType == (int)TargetTypes.ContentType)
             {
-                var contentTypeFactory =
-                    DataFactory.SpawnNew(options: new() { AppId = AppId, WithMetadata = true });
-
                 var key = mdFor.KeyString ?? mdFor.KeyGuid?.ToString();
                 if (key == null)
                     return [];
                 var ct = appState.TryGetContentType(key);
                 if (ct == null)
                     return [];
+                // #DropSpawnNew
+                var contentTypeFactory = genDataFactory.New(options: new() { AppId = AppId, WithMetadata = true });
                 var ctEntity = contentTypeFactory.Create(new ContentTypeUtil.ContentTypeSummary(ct, items: 0));
                 return [ctEntity];
             }

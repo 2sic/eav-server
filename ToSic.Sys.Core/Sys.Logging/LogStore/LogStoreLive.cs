@@ -54,6 +54,8 @@ public class LogStoreLive : ILogStoreLive
     [PrivateApi]
     private LogStoreEntry? AddInternal(string key, ILog log, bool force)
     {
+        if (log.GetRealLog() is MelLog)
+            throw new InvalidOperationException("The Legacy store cannot accept a MEL log.");
         // Check exit clauses if not forced
         if (!force)
         {

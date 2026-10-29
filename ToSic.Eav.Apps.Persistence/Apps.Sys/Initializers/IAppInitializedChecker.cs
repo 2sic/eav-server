@@ -3,6 +3,7 @@
 /// <summary>
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppInitializedChecker
 {
     /// <summary>

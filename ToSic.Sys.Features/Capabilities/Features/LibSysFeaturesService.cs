@@ -8,14 +8,8 @@ using static System.StringComparer;
 namespace ToSic.Sys.Capabilities.Features;
 
 /// <summary>
-/// WARNING: this is used as a singleton / static
-/// not quite sure anymore why, either the name is hard-coded in some apps or we felt like it's a performance improvement
 /// </summary>
 /// <remarks>
-/// WARNING: singleton - don't use any complex services/dependencies here
-/// REASON is probably cache connection, since it should notify the system to release caches as settings change?
-///
-/// 2024-05-31 changing to non-singleton, must monitor if all is ok...
 /// 2025-03-11 updated the `CacheTimestamp` property to use a backing field `_staticCacheTimestamp`, 
 ///            so WebFarmCache is working when feature is enabled https://github.com/2sic/2sxc/issues/3597
 /// </remarks>

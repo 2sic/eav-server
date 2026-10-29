@@ -2,6 +2,8 @@
 using ToSic.Eav.Data.Sys.PropertyLookup;
 
 namespace ToSic.Eav.Data.Sys;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public class PropertyDumpNotSupportedFallback: IPropertyDumper
 {
     public int IsCompatible(object target) => 1;

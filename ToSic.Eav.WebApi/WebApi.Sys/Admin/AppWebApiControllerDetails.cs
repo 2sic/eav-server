@@ -1,5 +1,6 @@
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
 using ToSic.Eav.WebApi.Sys.Dto;
 
@@ -15,35 +16,24 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
     DataConfidentiality = DataConfidentiality.Internal,
     UiHint = "Security details of a single App WebApi controller"
 )]
-public class AppWebApiControllerDetails : CustomDataSource
+public class AppWebApiControllerDetails(
+    CustomDataSource.Dependencies services,
+    AppWebApiControllerAnalyzer analyzer,
+    IAppWebApiControllerAssemblyLoader assemblyLoader)
+    : CustomDataSource(services, logName: "Eav.ApiCtlDet", connect: [analyzer, assemblyLoader])
 {
-    private readonly AppWebApiControllerAnalyzer _analyzer;
-    private readonly IAppWebApiControllerAssemblyLoader _assemblyLoader;
-
     [Configuration(Fallback = "")]
     public string Path => Configuration.GetThis(fallback: "");
 
-    public AppWebApiControllerDetails(
-        Dependencies services,
-        AppWebApiControllerAnalyzer analyzer,
-        IAppWebApiControllerAssemblyLoader assemblyLoader)
-        : base(services, logName: "Eav.ApiCtlDet", connect: [analyzer, assemblyLoader])
-    {
-        _analyzer = analyzer;
-        _assemblyLoader = assemblyLoader;
-
-        ProvideOutRaw(GetDetails);
-    }
-
-    private IEnumerable<AppWebApiControllerRaw> GetDetails()
+    protected override IEnumerable<IRawData> GetDefault()
     {
         var l = Log.Fn<IEnumerable<AppWebApiControllerRaw>>();
 
         if (string.IsNullOrWhiteSpace(Path))
             return l.Return([], "missing path");
 
-        var assembly = _assemblyLoader.GetAssembly(Path);
-        var (controller, _) = _analyzer.Analyze(Path, assembly);
+        var assembly = assemblyLoader.GetAssembly(Path);
+        var (controller, _) = analyzer.Analyze(Path, assembly);
 
         return l.Return([controller], "ok");
     }

@@ -3,6 +3,8 @@ using ToSic.Sys.DI;
 
 namespace ToSic.Sys.Utils.Types;
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ServiceProviderExtensions
 {
     public static Result<T> BuildByName<T>(this IServiceProvider sp, string fullName) where T : class

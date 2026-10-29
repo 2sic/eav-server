@@ -2,11 +2,13 @@
 
 namespace ToSic.Eav.Apps.Sys.LogSettings;
 
-public class DataImportLogSettings(ISysFeaturesService featuresSvc) : GetLogSettingsBase(featuresSvc, "Ldr.LogSet")
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public class DataImportLogSettings(ISysFeaturesService featuresSvc) : ServiceBase("Ldr.LogSet")
 {
     public ToSic.Sys.Logging.LogSettings GetLogSettings()
-        => base.GetLogSettings(
+        => featuresSvc.GetLogSettings(
             nameof(BuiltInFeatures.InsightsLoggingCustomConfig.ImportDataDetails),
-            "dummy-name"
+            "dummy-name",
+            Log
         );
 }

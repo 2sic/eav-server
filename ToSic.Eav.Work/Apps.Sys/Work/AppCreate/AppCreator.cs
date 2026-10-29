@@ -40,8 +40,8 @@ public class AppCreator(
         var isDefaultAppName = appName is KnownAppsConstants.ContentAppName or KnownAppsConstants.DefaultAppGuid;
         if (string.IsNullOrEmpty(appName) 
             || !Regex.IsMatch(appName, "^[0-9A-Za-z -_]+$") 
-            || isDefaultAppName && !inheritAppId.HasValue)
-            throw new ArgumentOutOfRangeException("appName '" + appName + "' not allowed");
+            || (isDefaultAppName && !inheritAppId.HasValue))
+            throw new ArgumentOutOfRangeException($"appName '{appName}' not allowed");
 
         var appId = isDefaultAppName
             ? ConfigureExistingDefaultApp(inheritAppId!.Value)
@@ -50,7 +50,7 @@ public class AppCreator(
         // must get app from DB directly, not from cache, so no State.Get(...)
         var appReader = appsAndZonesLoader.AppReaderRaw(appId, new());
 
-        appInitGenerator.New(appReader).InitializeApp(/*appReader,*/ appName, new());
+        appInitGenerator.New(appReader).InitializeApp(appName, new());
     }
 
     private int ConfigureExistingDefaultApp(int inheritAppId)

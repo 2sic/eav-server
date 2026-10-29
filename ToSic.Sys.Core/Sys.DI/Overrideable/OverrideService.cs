@@ -18,6 +18,9 @@ public static partial class OverrideService<TService> where TService : class
     /// <summary>
     /// Special container to hold the replaced factory function for the current async context.
     /// </summary>
+    /// <remarks>
+    /// It must be of type AsyncLocal, for it to work properly across lazy implementations.
+    /// </remarks>
     private static readonly AsyncLocal<Frame?> CurrentFrame = new();
 
     /// <summary>

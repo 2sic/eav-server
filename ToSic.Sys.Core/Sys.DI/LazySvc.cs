@@ -69,10 +69,16 @@ public class LazySvc<TService>(IServiceProvider sp)
 
     #endregion
 
+    // 2026-10-18 2dm: this seems to be an old experiment
+    // AFAIK it's only used in tests, so it should be clearly unavailable for normal builds
+#if DEBUG
+
     /// <summary>
     /// EXPERIMENTAL - replace a service with an already prepared one, to bypass the default factory in edge cases
     /// </summary>
     /// <param name="replacement"></param>
     public void Inject(TService replacement)
         => _valueGet.Set(replacement);
+
+#endif
 }

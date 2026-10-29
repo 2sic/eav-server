@@ -6,6 +6,7 @@ using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
+[ContentType(Name = "DataSource", Guid = "2de41d89-3cb9-480a-ac3c-40f77fd3af4e", Scope = "System")]
 public class DataSourceDto : IRawEntityAutoConvert
 {
     public DataSourceDto(DataSourceInfo dsInfo, ICollection<string>? outNameList)
@@ -51,7 +52,9 @@ public class DataSourceDto : IRawEntityAutoConvert
 
     public string Identifier { get; }
 
+    [ContentTypeField(Type = ValueTypes.Object)]
     public ICollection<string> In { get; } = StreamNamesIfError;
+    [ContentTypeField(Type = ValueTypes.Object)]
     public ICollection<string> Out { get; } = StreamNamesIfError;
     public string? ContentType { get; }
     public string? PrimaryType { get; }

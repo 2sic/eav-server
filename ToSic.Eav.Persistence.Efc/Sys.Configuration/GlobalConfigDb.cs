@@ -1,5 +1,7 @@
 ﻿// ReSharper disable once CheckNamespace
 namespace ToSic.Sys.Configuration;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class GlobalConfigDb
 {
     /// <summary>

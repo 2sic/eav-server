@@ -31,7 +31,9 @@ public record FeatureStatePersisted
     [JsonPropertyName("expires")]
     public DateTime Expires { get; init; } = DateTime.MaxValue;
 
-
+    /// <summary>
+    /// Dictionary with additional configuration, will be null if stored data was also null.
+    /// </summary>
     [JsonPropertyName("configuration")]
     public Dictionary<string, object>? Configuration
     {
@@ -40,13 +42,6 @@ public record FeatureStatePersisted
             ? null
             : new(value, comparer: StringComparer.InvariantCultureIgnoreCase);
     }
-
-    //public static FeatureStatePersisted FromState(FeatureState featureState) =>
-    //    new()
-    //    {
-    //        Id = featureState.Feature.Guid,
-    //        Enabled = featureState.IsEnabled
-    //    };
 
 
     public static FeatureStatePersisted FromChange(FeatureStateChange change) =>

@@ -26,7 +26,7 @@ public static partial class ILogExtensions
         var realLog = log.GetRealLog();
         return realLog == default
             ? null
-            : new Log(name, realLog);
+            : LogFactory.Create(name, realLog);
     }
         
 }

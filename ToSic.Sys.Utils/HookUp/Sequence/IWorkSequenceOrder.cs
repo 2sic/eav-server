@@ -3,6 +3,8 @@
 /// <summary>
 /// WIP
 /// </summary>
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IWorkSequenceOrder
 {
     /// <summary>

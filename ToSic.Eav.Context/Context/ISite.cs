@@ -13,11 +13,13 @@ public interface ISite: IZoneIdentity, IZoneCultureResolver, ILogShouldNeverConn
 {
     #region Constructor Helper
 
-    /// <summary>
-    /// This is a special constructor where the tenant object is re-initialized with a specific tenant id
-    /// </summary>
-    /// <returns></returns>
-    ISite Init(int siteId, ILog? parentLogOrNull);
+    // 2026-10-18 2dm: #DropSiteInitSeemsUnused
+
+    ///// <summary>
+    ///// This is a special constructor where the tenant object is re-initialized with a specific tenant id
+    ///// </summary>
+    ///// <returns></returns>
+    //ISite Init(int siteId, ILog? parentLogOrNull);
 
     #endregion
 

@@ -1,4 +1,4 @@
-﻿using ToSic.Sys.Users.Permissions;
+﻿using ToSic.Sys.Context;
 
 namespace ToSic.Eav.DataSources.Sys;
 
@@ -32,13 +32,13 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
     /// <summary>
     /// Constructor
     /// </summary>
-    protected RelationshipDataSourceBase(Dependencies services, ICurrentContextUserPermissionsService userPermissions, string logName): base(services, logName, connect: [userPermissions])
+    protected RelationshipDataSourceBase(Dependencies services, IContextService ctxSvc, string logName): base(services, logName, connect: [ctxSvc])
     {
-        _userPermissions = userPermissions;
+        _ctxSvc = ctxSvc;
         ProvideOut(GetRelated);
     }
 
-    private readonly ICurrentContextUserPermissionsService _userPermissions;
+    private readonly IContextService _ctxSvc;
 
     private IImmutableList<IEntity> GetRelated()
     {
@@ -67,7 +67,8 @@ public abstract class RelationshipDataSourceBase : DataSourceBase
         // In case the current user should not see draft data,
         // we must ensure that we didn't accidentally include any.
         // Because it could be that the original data was public, but a related item was not.
-        if (!(_userPermissions.UserPermissions()?.ShowDraftData ?? false))
+        var showDrafts = _ctxSvc.Context.Permissions.ShowDraftData;
+        if (!showDrafts)
             relationships = relationships.Where(e => e.IsPublished).ToList();
 
         // ReSharper disable PossibleMultipleEnumeration

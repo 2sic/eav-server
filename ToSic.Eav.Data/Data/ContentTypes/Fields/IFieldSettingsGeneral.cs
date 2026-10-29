@@ -15,6 +15,7 @@ namespace ToSic.Eav.Data.ContentTypes.Fields;
     Guid = "0bab4be8-e795-4d9f-b50e-f7ec161ed8cb",  // made-up GUID, can't match DB Guid since it's currently `@All`
     Description = "General settings for every Attribute (field) on a Content-Type."
 )]
+[WorkInProgressApi("WIP v22")]
 public interface IFieldSettingsGeneral : IModelFromEntity<FieldSettingsGeneralModel>
 {
     [PrivateApi]

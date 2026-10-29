@@ -18,6 +18,7 @@ namespace ToSic.Eav.DataSources;
     DataConfidentiality = DataConfidentiality.System,
     UiHint = "RecycleBin in this application")]
 // ReSharper disable once UnusedMember.Global
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class RecycleBin : CustomDataSource
 {
     #region Configuration properties

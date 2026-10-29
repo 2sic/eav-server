@@ -10,7 +10,8 @@ public interface IPermission
 
     /// <summary>
     /// The condition in this permission - like "this rule applies to admins"
-    /// The condition is usually a text-code by the hosting CMS
+    /// The condition is usually a text-code by the hosting CMS.
+    /// Examples: "Owner" (for permissions which apply to owners) or "SecurityAccessLevel.View" (view permissions)
     /// </summary>
     string Condition { get; }
 
@@ -26,7 +27,7 @@ public interface IPermission
     string Grant { get; }
 
     /// <summary>
-    /// Special token to identify the owner, like "dnn:42"
+    /// Special token to identify the owner of this permission entity, like "dnn:42"
     /// </summary>
     string Owner { get; }
 }

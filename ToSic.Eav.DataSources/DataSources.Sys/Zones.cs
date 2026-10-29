@@ -1,7 +1,7 @@
-﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps;
 using ToSic.Eav.Context.Sys.ZoneMapper;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource.Sys;
-using ToSic.Eav.DataSources.Sys.Types;
 
 
 // ReSharper disable once CheckNamespace
@@ -28,56 +28,31 @@ namespace ToSic.Eav.DataSources.Sys;
     ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
 // ReSharper disable once UnusedMember.Global
-public sealed class Zones: CustomDataSourceAdvanced
+public sealed class Zones(CustomDataSource.Dependencies services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [zoneMapper, appsCatalog])
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Constructs a new Zones DS
-    /// </summary>
-    [PrivateApi]
-    public Zones(Dependencies services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
-        : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [zoneMapper, appsCatalog])
+    protected override IEnumerable<IRawData> GetDefault()
     {
-        _zoneMapper = zoneMapper;
-        _appsCatalog = appsCatalog;
-        ProvideOut(GetList);
-    }
-    private readonly IZoneMapper _zoneMapper;
-    private readonly IAppsCatalog _appsCatalog;
-
-
-    private IImmutableList<IEntity> GetList()
-    {
-        var l = Log.Fn<IImmutableList<IEntity>>();
-        var dataFactory = DataFactory.SpawnNew(options: new()
-        {
-            AppId = 0,
-            TitleField = nameof(ZoneType.Name),
-            TypeName = "Zone",
-        });
+        var l = Log.Fn<IEnumerable<IRawData>>();
         
         // Get cache, which manages a list of zones
-        var zones = _appsCatalog.Zones;
+        var zones = appsCatalog.Zones;
         var results = zones.Values
             .OrderBy(z => z.ZoneId)
             .Select(zone =>
             {
-                var site = _zoneMapper.SiteOfZone(zone.ZoneId);
+                var site = zoneMapper.SiteOfZone(zone.ZoneId);
 
-                // Assemble the entities
-                var znData = new Dictionary<string, object?>
-                {
-                    { nameof(ZoneType.Id), zone.ZoneId },
-                    { nameof(ZoneType.Name), $"Zone {zone.ZoneId}" },
-                    { nameof(ZoneType.TenantId), site?.Id },
-                    { nameof(ZoneType.TenantName), site?.Name },
-                    { nameof(ZoneType.DefaultAppId), zone.DefaultAppId },
-                    { nameof(ZoneType.PrimaryAppId), zone.PrimaryAppId },
-                    { nameof(ZoneType.IsCurrent), zone.ZoneId == ZoneId },
-                    { nameof(ZoneType.AppCount), zone.Apps.Count }
-                };
-
-                return dataFactory.Create(znData, id: zone.ZoneId);
+                return new ZoneRaw(
+                    Id: zone.ZoneId,
+                    Name: $"Zone {zone.ZoneId}",
+                    TenantId: site?.Id,
+                    TenantName: site?.Name,
+                    DefaultAppId: zone.DefaultAppId,
+                    PrimaryAppId: zone.PrimaryAppId,
+                    IsCurrent: zone.ZoneId == ZoneId,
+                    AppCount: zone.Apps.Count
+                );
             })
             .ToImmutableOpt();
         return l.Return(results, $"{results.Count}");

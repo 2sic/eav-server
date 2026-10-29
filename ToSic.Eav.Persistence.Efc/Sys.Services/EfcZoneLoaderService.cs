@@ -7,7 +7,7 @@ internal class EfcZoneLoaderService(EfcAppLoaderService appLoader): HelperBase(a
 {
     internal IDictionary<int, Zone> LoadZones(ILogStore logStore)
     {
-        var log = new Log("DB.EfLoad", null, "Zones()");
+        var log = LogFactory.Create("DB.EfLoad", null, "Zones()");
         // Add to zone-loading log, as it could
         logStore.Add(LogNames.LogStoreStartUp, log);
         var l = log.Fn<IDictionary<int, Zone>>(timer: true);

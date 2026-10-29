@@ -5,6 +5,7 @@
 ///
 /// Should contain a set of things to preserve together
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonBundle
 {
     public string Name { get; init; } = "default";

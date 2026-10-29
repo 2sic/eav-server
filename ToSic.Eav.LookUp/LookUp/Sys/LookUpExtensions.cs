@@ -2,6 +2,7 @@
 
 namespace ToSic.Eav.LookUp.Sys;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class LookUpExtensions
 {
     public static bool HasSource(this IReadOnlyCollection<ILookUp> list, string name) 

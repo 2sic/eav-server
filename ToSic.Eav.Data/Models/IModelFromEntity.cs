@@ -16,6 +16,8 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IModelFromEntity: IModelFromData;
 
+[InternalApi_DoNotUse_MayChangeWithoutNotice("may change or rename at any time")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IModelFromEntity<out TConcreteModel>
     : IModelFromEntity
     where TConcreteModel : IModelFromEntity

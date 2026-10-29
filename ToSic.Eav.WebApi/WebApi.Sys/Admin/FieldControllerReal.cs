@@ -1,13 +1,8 @@
-﻿using ToSic.Sys.Capabilities.Features;
-
-namespace ToSic.Eav.WebApi.Sys.Admin;
+﻿namespace ToSic.Eav.WebApi.Sys.Admin;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class FieldControllerReal(
-    //QuickWork<ContentTypeDtoService> ctApiLazy,
-    AppWorkQuick<WorkAttributesMod> attributesMod,
-    LazySvc<ISysFeaturesService> featuresSvc)
-    : ServiceBase("Api.FieldRl", connect: [attributesMod, /*ctApiLazy,*/ featuresSvc]), IFieldController
+public class FieldControllerReal(AppWorkQuick<WorkAttributesMod> attributesMod)
+    : ServiceBase("Api.FieldRl", connect: [attributesMod]), IFieldController
 {
     public const string LogSuffix = "Field";
 

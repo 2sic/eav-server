@@ -9,7 +9,7 @@ namespace ToSic.Eav.WebApi.Sys.Install;
 
 public class InstallAppsDto
 {
-    public required string remoteUrl { get; init; }
+    public required string? remoteUrl { get; init; }
 
     public required ICollection<AppInstallRuleDto>? rules { get; init; }
 

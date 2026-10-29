@@ -7,6 +7,8 @@ namespace System.Collections.Generic;
 
 #if NETFRAMEWORK
 
+[PrivateApi]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class DictionaryExtensions
 {
     extension<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> dictionary)

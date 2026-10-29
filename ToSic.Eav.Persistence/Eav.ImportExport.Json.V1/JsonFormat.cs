@@ -1,8 +1,6 @@
-﻿
+﻿namespace ToSic.Eav.ImportExport.Json.V1;
 
-// ReSharper disable once CheckNamespace
-namespace ToSic.Eav.ImportExport.Json.V1;
-
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonFormat: JsonContentTypeSet
 {
     /// <summary>
@@ -25,19 +23,4 @@ public record JsonFormat: JsonContentTypeSet
     [JsonPropertyOrder(20)]
     [JsonIgnore(Condition = WhenWritingNull)] 
     public JsonEntity? Entity { get; init; }
-
-    ///// <summary>
-    ///// V1 - a single Content-Type
-    ///// </summary>
-    //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
-    //public JsonContentType ContentType;
-
-
-    ///// <summary>
-    ///// V1.2 - A list of entities - added in 2sxc 12 to support content-types with additional sub-entities like formulas
-    ///// </summary>
-    //[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    //public IEnumerable<JsonEntity> Entities;
-
-
 }

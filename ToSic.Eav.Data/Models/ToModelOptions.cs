@@ -1,5 +1,8 @@
 ﻿namespace ToSic.Eav.Models;
 
+/// <summary>
+/// Options (settings) to apply when converting data to a model.
+/// </summary>
 [WorkInProgressApi("WIP v22")]
 public record ToModelOptions
 {

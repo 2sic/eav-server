@@ -4,6 +4,7 @@ using System.Xml;
 using System.Xml.Linq;
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Context;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Identity;
@@ -16,89 +17,57 @@ namespace ToSic.Eav.ImportExport.Sys.XmlExport;
 // should all get it from cache only!
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, string logPrefix, object[] connect)
-    : ServiceBase(logPrefix + "XmlExp", connect: [..connect, appsCatalog, xmlSerializer])
+public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, IContextOfAppFactory appCtxFactory, IXmlExporterIntegration integration)
+    : ServiceWithSetup<XmlExporter.Options>($"{EavLogs.Eav}XmlExp", connect: [appsCatalog, xmlSerializer, appCtxFactory, integration])
 {
+    public record Options(
+        AppExportSpecs Specs,
+        IAppReader AppReader,
+        bool IsAppExport,
+        string[] TypeNamesOrIds,
+        string[] EntityIds
+    );
 
     #region simple properties
-    protected readonly List<int> ReferencedFileIds = [];
-    protected readonly List<int> ReferencedFolderIds = [];
+
     public List<TenantFileItem> ReferencedFiles = [];
-    private bool _isAppExport;
 
-    public string[] ContentTypeNamesOrIds = null!;
+    public IAppReader AppReader => MyOptions?.AppReader ?? throw new("Xml Exporter is not initialized - this is required before trying to export");
 
-    public string[] EntityIDs = null!;
-    //public List<Message> Messages = [];
-
-    public IAppReader AppReader { get; private set; } = null!;
-    public int ZoneId { get; private set; }
-
-    private string _appStaticName = "";
-    private AppExportSpecs _specs = null!;
+    private string AppStaticName => field ??= AppReader.Specs.NameId; // load late once initialized
+    //private AppExportSpecs _specs = null!;
     private List<string> _foldersForEntitiesThatAreNotDeleted = [];
     #endregion
 
     #region Constructor & DI
 
-    public XmlSerializer Serializer { get; } = xmlSerializer;
-    protected readonly IAppsCatalog AppsCatalog = appsCatalog;
+    private XmlSerializer Serializer => field ??= SetupSerializerLate();
 
-    protected void Constructor(AppExportSpecs specs, IAppReader appReader, string appStaticName, bool appExport, string[] typeNamesOrIds, string[] entityIds, string defaultCultureCode)
+    private XmlSerializer SetupSerializerLate() => xmlSerializer.Init(
+        appsCatalog
+            .Zone(MyOptions.Specs.ZoneId)
+            .LanguagesActive
+            .ToDictionary(
+                lng => lng.EnvironmentKey.ToLowerInvariant(),
+                lng => lng.DimensionId
+            ),
+        AppReader);
+
+    /// <summary>
+    /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
+    /// </summary>
+    /// <returns></returns>
+    public override void Setup(Options options)
     {
         var l = Log.Fn(message: "start XML exporter using app-package");
-        _specs = specs;
-        ZoneId = specs.ZoneId;
-        AppReader = appReader;
-        Serializer.Init(
-            AppsCatalog
-                .Zone(specs.ZoneId)
-                .LanguagesActive
-                .ToDictionary(
-                    lng => lng.EnvironmentKey.ToLowerInvariant(),
-                    lng => lng.DimensionId
-                ),
-            AppReader);
 
-        _appStaticName = appStaticName;
-        _isAppExport = appExport;
-        ContentTypeNamesOrIds = typeNamesOrIds;
-        EntityIDs = entityIds;
+        var ctxOfApp = appCtxFactory.Create(options.Specs);
+        integration.Setup(ctxOfApp);
+        base.Setup(options);
 
         // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
-        InitExportXDocument(defaultCultureCode, EavSystemInfo.VersionString);
+        InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
         l.Done();
-    }
-
-    public abstract XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds);
-
-    ///// <summary>
-    ///// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
-    ///// </summary>
-    ///// <returns></returns>
-    //public virtual XmlExporter Init(AppExportSpecs specs, IAppReader appRuntime, bool appExport, string[] attrSetIds, string[] entityIds)
-    //{
-    //    ContextResolver.SetApp(new AppIdentity(specs.ZoneId, specs.AppId));
-    //    var ctxOfApp = ContextResolver.AppRequired();
-    //    PostContextInit(ctxOfApp);
-    //    Constructor(specs, appRuntime, ctxOfApp.AppReader.Specs.NameId, appExport, attrSetIds, entityIds, ctxOfApp.Site.DefaultCultureCode);
-
-    //    // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
-    //    //InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
-
-    //    return this;
-    //}
-
-    ///// <summary>
-    ///// Post context init the caller must be able to init Adam, which is not part of this project, so we're handling it as a callback
-    ///// </summary>
-    ///// <param name="appContext"></param>
-    //protected abstract void PostContextInit(IContextOfApp appContext);
-
-    private void EnsureThisIsInitialized()
-    {
-        if (Serializer == null || string.IsNullOrEmpty(_appStaticName))
-            throw new("Xml Exporter is not initialized - this is required before trying to export");
     }
 
     #endregion
@@ -113,10 +82,6 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
     /// <returns></returns>
     public string GenerateNiceXml()
     {
-        EnsureThisIsInitialized();
-
-        var doc = ExportXDocument;
-
         // Will be used to show an export protocol in future
         //Messages = null;
 
@@ -130,7 +95,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
         using var stringWriter = new Utf8StringWriter();
         using (var writer = XmlWriter.Create(stringWriter, xmlSettings))
-            doc.Save(writer);
+            ExportXDocument.Save(writer);
         return stringWriter.ToString();
     }
 
@@ -139,18 +104,16 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
     private void InitExportXDocument(string defaultLanguage, string moduleVersion)
     {
-        EnsureThisIsInitialized();
-
         // Create XML document and declaration
         var doc = ExportXDocument;
 
         #region Header
 
-        var dimensions = AppsCatalog.Zone(ZoneId).LanguagesActive;
+        var dimensions = appsCatalog.Zone(MyOptions.Specs.ZoneId).LanguagesActive;
 
         var header = new XElement(XmlConstants.Header,
-            _isAppExport && _appStaticName != XmlConstants.AppContentGuid
-                ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, _appStaticName))
+            MyOptions.IsAppExport && AppStaticName != XmlConstants.AppContentGuid
+                ? new XElement(XmlConstants.App, new XAttribute(XmlConstants.Guid, AppStaticName))
                 : null,
             GetParentAppXElement(),
             // Default Language of this site
@@ -177,7 +140,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         var contentTypes = new XElement(XmlConstants.AttributeSets);
 
         // Go through each ContentTypeId
-        foreach (var contentTypeId in ContentTypeNamesOrIds)
+        foreach (var contentTypeId in MyOptions.TypeNamesOrIds)
         {
             var ct = int.TryParse(contentTypeId, out var id)
                 ? AppReader.GetContentTypeOptional(id)
@@ -237,7 +200,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         var entities = new XElement(XmlConstants.Entities);
 
         // Go through each Entity
-        foreach (var entityId in EntityIDs)
+        foreach (var entityId in MyOptions.EntityIds)
         {
             var id = int.Parse(entityId);
 
@@ -251,7 +214,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         #endregion
 
         // init files (add to queue)
-        AddFilesToExportQueue();
+        integration.AddFilesToExportQueue();
 
         GetFoldersForEntitiesThatAreNotDeleted(entities);
 
@@ -282,7 +245,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
     {
         // when export includes deleted assets, there is no need to check for deleted entities
         // so skip preparation of list of possible discriminators for folder names in adam/app
-        if (_specs.AssetAdamDeleted)
+        if (MyOptions.Specs.AssetAdamDeleted)
         {
             _foldersForEntitiesThatAreNotDeleted = [];
             return;
@@ -298,7 +261,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
 
     private XElement? GetParentAppXElement()
     {
-        if (!_isAppExport || _appStaticName == XmlConstants.AppContentGuid || !AppReader.HasCustomParentApp())
+        if (!MyOptions.IsAppExport || AppStaticName == XmlConstants.AppContentGuid || !AppReader.HasCustomParentApp())
             return null;
 
         var parentAppState = AppReader.GetParentCache()!;
@@ -308,7 +271,6 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         );
     }
 
-    public abstract void AddFilesToExportQueue();
 
     /// <summary>
     /// Returns an Entity XElement
@@ -331,48 +293,38 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         {
             var valueString = value.Attribute(XmlConstants.ValueAttr)?.Value;
             var valueType = value.Attribute(XmlConstants.EntityTypeAttribute)?.Value;
-            var valueKey = value.Attribute(XmlConstants.KeyAttr)?.Value;
+            //var valueKey = value.Attribute(XmlConstants.KeyAttr)?.Value;
 
-            if (string.IsNullOrEmpty(valueString)) continue;
+            if (string.IsNullOrEmpty(valueString))
+                continue;
+
+            if (valueType != XmlConstants.ValueTypeLink)
+                continue;
 
             // Collect all referenced files for adding a file list to the xml later
-            if (valueType == XmlConstants.ValueTypeLink)
-            {
-                var fileRegex = new Regex(XmlConstants.FileRefRegex, RegexOptions.IgnoreCase);
-                var a = fileRegex.Match(valueString);
-                // try to remember the file
-                if (a.Success && a.Groups[XmlConstants.FileIdInRegEx].Length > 0)
-                    AddFileAndFolderToQueue(int.Parse(a.Groups[XmlConstants.FileIdInRegEx].Value));
-            }
+            var fileRegex = new Regex(XmlConstants.FileRefRegex, RegexOptions.IgnoreCase);
+            var a = fileRegex.Match(valueString);
+            // try to remember the file
+            if (a.Success && a.Groups[XmlConstants.FileIdInRegEx].Length > 0)
+                integration.AddFileAndFolderToQueue(int.Parse(a.Groups[XmlConstants.FileIdInRegEx].Value));
         }
 
         return entityXElement;
     }
 
-    protected abstract void AddFileAndFolderToQueue(int fileNum);
-
-
     #endregion
+
 
     #region Files & Pages
 
-    private XElement GetFilesXElements() => new(XmlConstants.PortalFiles /*"PortalFiles" */,
-        ReferencedFileIds.Distinct().Select(GetFileXElement)
-    );
+    private XElement GetFilesXElements() => new(XmlConstants.PortalFiles, integration.ReferencedFileIds.Distinct().Select(GetFileXElement));
 
 
-    private XElement GetFoldersXElements()
-    {
-        return new(XmlConstants.FolderGroup,
-            ReferencedFolderIds.Distinct().Select(GetFolderXElement)
-        );
-    }
-
-    protected abstract TenantFileItem ResolveFile(int fileId);
+    private XElement GetFoldersXElements() => new(XmlConstants.FolderGroup, integration.ReferencedFolderIds.Distinct().Select(GetFolderXElement));
 
     private XElement? GetFileXElement(int fileId)
     {
-        var file = ResolveFile(fileId);
+        var file = integration.ResolveFile(fileId);
 
         if (IsDeletedOrInvalid(file?.RelativePath))
             return null;
@@ -386,11 +338,9 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
         );
     }
 
-    protected abstract string ResolveFolderId(int folderId);
-
     private XElement? GetFolderXElement(int folderId)
     {
-        var path = ResolveFolderId(folderId).ForwardSlash();
+        var path = integration.ResolveFolderId(folderId).ForwardSlash();
 
         if (IsDeletedOrInvalid(path))
             return null;
@@ -413,7 +363,7 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
             return true;
 
         // skip check for deleted assets and just leave it for export
-        if (_specs.AssetAdamDeleted)
+        if (MyOptions.Specs.AssetAdamDeleted)
             return false;
 
         // if not in "adam" folder, we can't know is it deleted or not, so leave it for export
@@ -435,9 +385,9 @@ public abstract class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog apps
     #endregion
 
     /// <summary>
-    /// Creates a new StringWriter with UTF8 Encoding
+    /// StringWriter with UTF8 Encoding
     /// </summary>
-    internal class Utf8StringWriter : StringWriter
+    private class Utf8StringWriter : StringWriter
     {
         public override Encoding Encoding => Encoding.UTF8;
     }

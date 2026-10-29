@@ -5,6 +5,7 @@ using ToSic.Eav.Repositories.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record EntityProcessData
 {
     public static EntityProcessData CreateInstance(IEntityPair<SaveOptions> entityOptionPair, bool logDetails)
@@ -72,6 +73,7 @@ public record EntityProcessData
 
 }
 
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public static class EntityProcessDataExt
 {
     public static ICollection<EntityProcessData> NextStep(this ICollection<EntityProcessData> list)

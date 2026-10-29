@@ -1,9 +1,5 @@
-﻿
+﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
-
-
-using ToSic.Eav.Data.ContentTypes.Fields.Sys;
-// ReSharper disable once CheckNamespace
 
 namespace ToSic.Eav.ImportExport.Json.V1;
 
@@ -11,6 +7,7 @@ namespace ToSic.Eav.ImportExport.Json.V1;
 /// WIP 16.08+
 /// #SharedFieldDefinition
 /// </summary>
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public record JsonAttributeSysSettings
 {
     /// <summary>

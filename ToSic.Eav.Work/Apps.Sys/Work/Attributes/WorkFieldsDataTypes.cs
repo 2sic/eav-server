@@ -10,7 +10,7 @@ public class WorkFieldsDataTypes(): ServiceWithSetup<IAppWorkContext>("Wrk.FDT")
     public string[] DataTypes()
     {
         var l = Log.Fn<string[]>();
-        var result = MyOptions.DbStorage.Attributes.DataTypeNames();
+        var result = MyOptions.NewDbStorage().Attributes.DataTypeNames();
         return l.Return(result, $"{result.Length}");
     }
     

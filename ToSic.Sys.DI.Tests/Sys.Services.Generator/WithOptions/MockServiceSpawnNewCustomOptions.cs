@@ -1,22 +1,24 @@
-﻿using ToSic.Sys.DI;
+﻿// #DropSpawnNew
 
-namespace ToSic.Sys.Services.Generator.WithOptions;
+//using ToSic.Sys.DI;
 
-/// <summary>
-/// Example service which uses options, but if not set, will use its own defaults.
-/// </summary>
-public class MockServiceSpawnNewCustomOptions(Generator<MockServiceSpawnNewCustomOptions, MockServiceOptions> selfGenerator)
-    : ServiceWithSetup<MockServiceOptions>("Tst"), IServiceRespawn<MockServiceSpawnNewCustomOptions, MockServiceOptions>
-{
-    internal const string DefaultName = "custom";
-    internal const int DefaultNumber = -1;
+//namespace ToSic.Sys.Services.Generator.WithOptions;
 
-    protected override MockServiceOptions GetDefaultOptions() => new()
-    {
-        Name = DefaultName,
-        Number = DefaultNumber
-    };
+///// <summary>
+///// Example service which uses options, but if not set, will use its own defaults.
+///// </summary>
+//public class MockServiceSpawnNewCustomOptions(Generator<MockServiceSpawnNewCustomOptions, MockServiceOptions> selfGenerator)
+//    : ServiceWithSetup<MockServiceOptions>("Tst"), IServiceRespawn<MockServiceSpawnNewCustomOptions, MockServiceOptions>
+//{
+//    internal const string DefaultName = "custom";
+//    internal const int DefaultNumber = -1;
 
-    public MockServiceSpawnNewCustomOptions SpawnNew(MockServiceOptions? options = default)
-        => selfGenerator.New(options ?? GetDefaultOptions());
-}
+//    protected override MockServiceOptions GetDefaultOptions() => new()
+//    {
+//        Name = DefaultName,
+//        Number = DefaultNumber
+//    };
+
+//    public MockServiceSpawnNewCustomOptions SpawnNew(MockServiceOptions? options = default)
+//        => selfGenerator.New(options ?? GetDefaultOptions());
+//}

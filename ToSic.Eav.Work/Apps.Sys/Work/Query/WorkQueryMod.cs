@@ -149,10 +149,12 @@ public class WorkQueryMod(
             .Union(newDataSources)
             .ToListOpt();
 
-        var entDelete = delete.New(MyOptions);
-        foreach (var entToDel in existingEntityGuids.Where(guid => !newGuidsWithMore.Contains(guid)))
-            // force: true - force-delete the data-source part even if it still has metadata and stuff referencing it
-            entDelete.Delete(entToDel, force: true);
+        //var entDelete = delete.New(MyOptions);
+        //foreach (var entToDel in existingEntityGuids.Where(guid => !newGuidsWithMore.Contains(guid)))
+        //    // force: true - force-delete the data-source part even if it still has metadata and stuff referencing it
+        //    entDelete.Delete(entToDel, force: true);
+        var toDelete = existingEntityGuids.Where(guid => !newGuidsWithMore.Contains(guid)).ToArray();
+        delete.New(MyOptions).Delete(toDelete, force: true);
         l.Done();
     }
 

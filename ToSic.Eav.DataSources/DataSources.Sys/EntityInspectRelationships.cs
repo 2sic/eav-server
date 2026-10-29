@@ -43,11 +43,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.FState", connect: [appReaders, featuresForDs])
     {
         // Main stream
-        ProvideOutRaw(
-            () => GetRelationships(appReaders, featuresForDs.Features)//,
-            // WIP - ideally adding the type would not be necessary, but ATM not yet perfect
-            //options: () => new() { Type = typeof(EntityRelationship), AutoId = false }
-        );
+        ProvideOutRaw(() => GetRelationships(appReaders, featuresForDs.Features));
 
         // Feature State / Status
         ProvideOut(name: FeaturesForDataSources.StreamName,
@@ -104,10 +100,7 @@ public sealed class EntityInspectRelationships : CustomDataSource
         Description = "Entity Relationship",
         Name = MyContentTypeName
     )]
-    private record EntityRelationship(
-        string Field,
-        bool IsChild
-    ) : /*RawEntityRecordBase,*/ IRawEntityAutoConvert
+    private record EntityRelationship(string Field, bool IsChild) : IRawEntityAutoConvert
     {
         private const string MyContentTypeName = "EntityRelationship";
         
