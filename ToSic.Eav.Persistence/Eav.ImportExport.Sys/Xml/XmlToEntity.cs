@@ -1,8 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys;
-using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Data.Sys.Global;
 using ToSic.Eav.Data.Sys.Values;
@@ -10,143 +8,23 @@ using ToSic.Eav.Metadata.Targets;
 
 namespace ToSic.Eav.ImportExport.Sys.Xml;
 
+
 /// <summary>
 /// Import EAV Data from XML Format
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
-    : ServiceBase("Imp.XmlEnt", connect: [dataAssembler, globalData])
+    : ServiceWithSetup<XmlToEntity.Options>("Imp.XmlEnt", connect: [globalData, dataAssembler, ctAssemblyKit])
 {
-
-    public XmlToEntity Init(int appId, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang,
-        ICollection<DimensionDefinition> envLanguages, string envDefLang, LogSettings logSettings)
-    {
-        LogSettings = logSettings;
-        AppId = appId;
-        envLanguages = envLanguages
-            .OrderByDescending(p => p.Matches(envDefLang))
-            .ThenBy(p => p.EnvironmentKey)
-            .ToListOpt();
-        EnvLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
-        EnvDefLang = envDefLang;
-        return this;
-    }
-
-    public int AppId { get; private set; }
-
-    #region Detailed Logging
-
-    [field: AllowNull, MaybeNull]
-    private LogSettings LogSettings { get; set; } = null!;
-
     /// <summary>
-    /// Logger for the details of the deserialization process.
-    /// Goal is that it can be enabled/disabled as needed.
+    /// Options
     /// </summary>
-    private ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
+    /// <param name="AppId">Target AppId</param>
+    /// <param name="EnvDefLang">Default environment language</param>
+    /// <param name="EnvLangs">All environment languages, properly sorted</param>
+    /// <param name="LogSettings">Log settings for the import process</param>
+    public record Options(int AppId, string EnvDefLang, ICollection<TargetLanguageToSourceLanguage> EnvLangs, LogSettings LogSettings);
 
-    #endregion
-
-
-    private ICollection<TargetLanguageToSourceLanguage> PrepareTargetToSourceLanguageMapping(ICollection<DimensionDefinition> envLanguages, string envDefLang, ICollection<DimensionDefinition> srcLanguages, int? srcDefLang)
-    {
-        var l = LogDetails.Fn<ICollection<TargetLanguageToSourceLanguage>>($"Env has {envLanguages.Count} languages");
-        ICollection<TargetLanguageToSourceLanguage> result;
-        // if the environment doesn't have languages defined, we'll create a temp-entry for the main language to allow mapping
-        if (envLanguages.Any())
-        {
-            result = envLanguages
-                .Select(el => new TargetLanguageToSourceLanguage
-                {
-                    Active = el.Active,
-                    Key = el.Key,
-                    Name = el.Name,
-                    EnvironmentKey = el.EnvironmentKey,
-                    Id = el.Id,
-                    ParentId = null,
-                    PrioritizedDimensions = FindPrioritizedMatchingDimensions(el, envDefLang, srcLanguages, srcDefLang),
-                })
-                .ToListOpt();
-        }
-        else
-        {
-            var tempDimension = new DimensionDefinition
-            {
-                Active = true,
-                Id = 0,
-                ParentId = null,
-                EnvironmentKey = envDefLang,
-                Key = "dummy-not-used",
-                Name = "Default",
-            };
-            var prioritized = FindPrioritizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang);
-            result =
-            [
-                new()
-                {
-                    Id = 0,
-                    ParentId = null,
-                    Active = true,
-                    EnvironmentKey = envDefLang,
-                    PrioritizedDimensions = prioritized,
-                    Name = tempDimension.Name,
-                    Key = tempDimension.Key,
-                }
-            ];
-        }
-
-        return l.Return(result, $"LanguageMap has {result.Count} items");
-    }
-
-    private static List<DimensionDefinition> FindPrioritizedMatchingDimensions(DimensionDefinition targetLang, string envDefLang, ICollection<DimensionDefinition> srcLangs, int? srcDefLang)
-    {
-        var languageMap = new List<DimensionDefinition>();
-            
-        // Add exact match source language, if exists
-        var exactMatchSourceDimension = srcLangs
-            .FirstOrDefault(p => targetLang.Matches(p.EnvironmentKey));
-        if (exactMatchSourceDimension != null)
-            languageMap.Add(exactMatchSourceDimension);
-
-        // Add non-exact match language
-        var unExactMatchSourceDimensions = srcLangs
-            .Where(sd =>
-                !targetLang.Matches(sd.EnvironmentKey) &&
-                sd.EnvironmentKey.StartsWith(targetLang.EnvironmentKey.ToLowerInvariant().Substring(0, 2))
-            )
-            .OrderByDescending(p => p.EnvironmentKey == envDefLang)
-            .ThenByDescending(p => p.EnvironmentKey.Length == 2 || p.EnvironmentKey.Length == 5 &&
-                p.EnvironmentKey.Substring(0, 2) == p.EnvironmentKey.Substring(3, 2)
-            )
-            .ThenBy(p => p.EnvironmentKey);
-        languageMap.AddRange(unExactMatchSourceDimensions);
-
-        // Add primary language, if current target is primary
-        if (targetLang.Matches(envDefLang) && srcDefLang.HasValue)
-        {
-            var sourcePrimaryLanguage = srcLangs
-                .FirstOrDefault(p => p.Id == srcDefLang);
-            if (sourcePrimaryLanguage != null && !languageMap.Contains(sourcePrimaryLanguage))
-                languageMap.Add(sourcePrimaryLanguage);
-        }
-            
-        return languageMap;
-    }
-
-    [field: AllowNull, MaybeNull]
-    private ICollection<TargetLanguageToSourceLanguage> EnvLangs
-    {
-        get => field ?? throw new NullReferenceException("XmlToEntity not initialized, call Init() first");
-        set;
-    }
-
-    [field: AllowNull, MaybeNull]
-    private string EnvDefLang
-    {
-        get => field ?? throw new NullReferenceException("XmlToEntity not initialized, call Init() first");
-        set;
-    }
-        
     /// <summary>
     /// Returns an EAV import entity
     /// </summary>
@@ -154,8 +32,9 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
     /// <param name="mdTarget"></param>
     internal Entity BuildEntityFromXml(XElement xEntity, Target mdTarget)
     {
-        var wrap = LogDetails.Fn<Entity>();
-        var finalAttributes = new Dictionary<string, IAttribute>();
+        var logDetails = Log.IfDetails(MyOptions.LogSettings);
+
+        var l = logDetails.Fn<Entity>();
 
         // Group values by StaticName
         var valuesGroupedByStaticName = xEntity
@@ -169,49 +48,46 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
                 }
             );
 
+        var xmlValueListHelper = new XmlValueListHelper(MyOptions, Log);
 
         // Process each attribute (values grouped by StaticName)
-        foreach (var sourceAttrib in valuesGroupedByStaticName)
-        {
-            var lAttrib = LogDetails.Fn(sourceAttrib.StaticName);
+        var finalAttributes = valuesGroupedByStaticName
+            .ToDictionary(
+                keySelector: g => g.StaticName,
+                elementSelector: sourceAttrib =>
+                {
+                    var lAttrib = logDetails.Fn<IAttribute>(sourceAttrib.StaticName);
 
-            // Process each target's language
-            var tempTargetValues = new XmlValueListHelper(EnvDefLang, EnvLangs, Log, LogSettings).CreateList(sourceAttrib.Values);
+                    // Process each target's language
+                    var tempTargetValues = xmlValueListHelper.CreateList(sourceAttrib.Values);
 
-            // construct value elements
-            var currentAttributesImportValues = tempTargetValues
-                .Select(tempImportValue => dataAssembler.Value.Create(
-                        ValueTypeHelpers.Get(
-                            tempImportValue.XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value ??
-                            throw new NullReferenceException("can't build attribute with unknown value-type")
-                        ),
-                        tempImportValue.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value ??
-                        throw new NullReferenceException("can't build attribute without value"),
-                        tempImportValue.Dimensions.ToImmutableSafe()
-                    )
-                )
-                .ToListOpt();
+                    // construct value elements
+                    var currentAttributesImportValues = tempTargetValues
+                        .Select(xVal =>
+                        {
+                            var vType = xVal.XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value
+                                        ?? throw new NullReferenceException("can't build attribute with unknown value-type");
+                            var vValue = xVal.XmlValue.Attribute(XmlConstants.ValueAttr)?.Value
+                                         ?? throw new NullReferenceException("can't build attribute without value");
+                            return dataAssembler.Value.Create(ValueTypeHelpers.Get(vType), vValue, xVal.Dimensions.ToImmutableSafe());
+                        })
+                        .ToListOpt();
 
-            // construct the attribute with these value elements
-            var newAttr = dataAssembler.Attribute.Create(
-                sourceAttrib.StaticName,
-                ValueTypeHelpers.Get(tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)
-                    ?.Value ?? ""),
-                currentAttributesImportValues);
+                    // construct the attribute with these value elements
+                    var value = ValueTypeHelpers.Get(tempTargetValues.First().XmlValue.Attribute(XmlConstants.EntityTypeAttribute)?.Value ?? "");
+                    var newAttr = dataAssembler.Attribute.Create(sourceAttrib.StaticName, value, currentAttributesImportValues);
 
-            // attach to attributes-list
-            finalAttributes.Add(sourceAttrib.StaticName, newAttr);
-
-            lAttrib.Done();
-        }
+                    // attach to attributes-list
+                    return lAttrib.Return(newAttr);
+                });
 
         var typeName = xEntity.Attribute(XmlConstants.AttSetStatic)?.Value;
         if (typeName == null)
             throw new NullReferenceException("trying to import an xml entity but type is null - " + xEntity);
 		    
         // find out if it's a system type, and use that if it exists
-        var guidString = xEntity.Attribute(XmlConstants.GuidNode)?.Value ??
-                         throw new NullReferenceException("can't import an entity without a guid identifier");
+        var guidString = xEntity.Attribute(XmlConstants.GuidNode)?.Value
+                         ?? throw new NullReferenceException("can't import an entity without a guid identifier");
         var guid = Guid.Parse(guidString);
         var isPublished = xEntity.Attribute(XmlConstants.IsPublished)?.Value;
 
@@ -225,11 +101,11 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
             var newTypeRepoType = xEntity.Attribute(XmlConstants.EntityIsJsonAttribute)?.Value == "True"
                 ? RepositoryTypes.Folder
                 : RepositoryTypes.Sql;
-            contentType = ctAssemblyKit.Type.Create(appId: AppId, id: 0, name: typeName, nameId: null!, scope: null!, repositoryType: newTypeRepoType);
+            contentType = ctAssemblyKit.Type.Create(appId: MyOptions.AppId, id: 0, name: typeName, nameId: null!, scope: null!, repositoryType: newTypeRepoType);
         }
 
         var targetEntity = dataAssembler.Entity.Create(
-            appId: AppId,
+            appId: MyOptions.AppId,
             guid: guid,
             contentType: contentType,
             isPublished: isPublished != "False",
@@ -237,7 +113,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
             metadataFor: mdTarget
         );
 
-        return wrap.Return(targetEntity, $"returning {guid} of type {globalTypeIfFound?.Name ?? typeName} with attribs:{finalAttributes.Count} and metadata: {mdTarget != null!}");
+        return l.Return(targetEntity, $"returning {guid} of type {globalTypeIfFound?.Name ?? typeName} with attribs:{finalAttributes.Count} and metadata: {mdTarget != null!}");
     }
 
 }

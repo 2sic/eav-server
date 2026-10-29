@@ -17,7 +17,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
         IImportExportEnvironment Environment,
         AppCachePurger AppCachePurger,
         IAppsCatalog AppsCatalog,
-        LazySvc<XmlToEntity> XmlToEntity,
+        Generator<XmlToEntity, XmlToEntity.Options> XmlToEntity,
         LazySvc<DataAssembler> DataAssembler,
         LazySvc<ContentTypeAssemblyKit> TypeAssembler,
         DataImportLogSettings LogSettings)

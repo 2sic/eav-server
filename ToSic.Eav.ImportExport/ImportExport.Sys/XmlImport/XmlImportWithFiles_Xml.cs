@@ -56,7 +56,11 @@ partial class XmlImportWithFiles
 
         var targetDimensions = Services.AppsCatalog.Zone(zoneId).Languages;
 
-        XmlBuilder = Services.XmlToEntity.Value.Init(AppId, sourceDimensions, sourceDefaultDimensionId, targetDimensions, DefaultLanguage, LogSettings);
+        XmlBuilder = Services.XmlToEntity.New(new(
+            AppId,
+            DefaultLanguage,
+            ImportLanguageMap.PrepareTargetToSourceLanguageMapping(targetDimensions, DefaultLanguage,sourceDimensions, sourceDefaultDimensionId, Log.IfDetails(LogSettings)),
+            LogSettings));
         #endregion
 
         var atsNodes = xmlSource

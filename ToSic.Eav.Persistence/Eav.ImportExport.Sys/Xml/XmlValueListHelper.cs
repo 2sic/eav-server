@@ -2,11 +2,7 @@
 using ToSic.Eav.Data.Sys.Dimensions;
 
 namespace ToSic.Eav.ImportExport.Sys.Xml;
-internal class XmlValueListHelper(
-    string envDefLang,
-    ICollection<TargetLanguageToSourceLanguage> langMap,
-    ILog parentLog,
-    LogSettings logSettings) : HelperBase(parentLog, "Xml.ValHlp")
+internal class XmlValueListHelper(XmlToEntity.Options options, ILog parentLog) : HelperBase(parentLog, "Xml.ValHlp")
 {
     #region Detailed Logging
 
@@ -14,22 +10,19 @@ internal class XmlValueListHelper(
     /// Logger for the details of the deserialization process.
     /// Goal is that it can be enabled/disabled as needed.
     /// </summary>
-    private ILog? LogDetails => field ??= Log.IfDetails(logSettings);
+    private ILog? LogDetails => field ??= Log.IfDetails(options.LogSettings);
 
     #endregion
 
-    private readonly IList<TargetLanguageToSourceLanguage> _envLangsSortedByPriority = langMap
-        .OrderByDescending(p => p.Matches(envDefLang))
+    private readonly IList<TargetLanguageToSourceLanguage> _envLangsSortedByPriority = options.EnvLangs
+        .OrderByDescending(p => p.Matches(options.EnvDefLang))
         .ThenBy(p => p.EnvironmentKey)
         .ToListOpt();
-
-    private readonly List<XmlValueToImport> _tempTargetValues = [];
 
     internal List<XmlValueToImport> CreateList(IList<XElement> xmlValuesOfAttrib)
     {
         // protect from accidental multiple calls (needs to be recreated every time)
-        if (_tempTargetValues.Count > 0)
-            throw new InvalidOperationException("XmlValueListHelper can only be used once. Please create a new instance for each use.");
+        var targetVals = new List<XmlValueToImport>();
 
         // Process each target's language
         foreach (var envLang in _envLangsSortedByPriority)
@@ -39,41 +32,38 @@ internal class XmlValueListHelper(
             var readOnly = maybeExactMatch.ReadOnly;
 
             // Take first value if there is only one value without a dimension (default / fallback value), but only in primary language
-            if (sourceValueNode == null && xmlValuesOfAttrib.Count > 0 && envLang.Matches(envDefLang))
+            if (sourceValueNode == null && xmlValuesOfAttrib.Count > 0 && envLang.Matches(options.EnvDefLang))
                 sourceValueNode = GetFallbackAttributeInXml(xmlValuesOfAttrib);
 
             // Override ReadOnly for primary target language
-            if (envLang.Matches(envDefLang))
+            if (envLang.Matches(options.EnvDefLang))
                 readOnly = false;
 
             // Process found value
             if (sourceValueNode != null)
-                AddNodeToImportListOrEnhancePrevious(sourceValueNode, envLang, readOnly);
+                AddNodeToImportListOrEnhancePrevious(targetVals, sourceValueNode, envLang, readOnly);
         }
 
-        return _tempTargetValues;
+        return targetVals;
     }
 
     /// <summary>
     /// Either add the node to the import list with the dimensions, 
     /// OR if it is already in the queue, add the dimension information
     /// </summary>
-    /// <param name="sourceValueNode"></param>
-    /// <param name="envLang"></param>
-    /// <param name="readOnly"></param>
-    private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, TargetLanguageToSourceLanguage envLang, bool readOnly)
+    private void AddNodeToImportListOrEnhancePrevious(List<XmlValueToImport> targetValues, XElement sourceValueNode, TargetLanguageToSourceLanguage envLang, bool readOnly)
     {
         var l = LogDetails.Fn();
         var logText = "";
         var dimensionsToAdd = new List<ILanguage>();
-        if (langMap.Single(p => p.Matches(envLang.EnvironmentKey)).Id > 0)
+        if (options.EnvLangs.Single(p => p.Matches(envLang.EnvironmentKey)).Id > 0)
         {
             dimensionsToAdd.Add(new Language(envLang.EnvironmentKey, readOnly));
             logText += "built dimension-list";
         }
 
         // If value has already been added to the list, add just dimension with original ReadOnly state
-        var existingImportValue = _tempTargetValues.FirstOrDefault(p => p.XmlValue == sourceValueNode);
+        var existingImportValue = targetValues.FirstOrDefault(p => p.XmlValue == sourceValueNode);
         if (existingImportValue != null)
         {
             existingImportValue.Dimensions.AddRange(dimensionsToAdd);
@@ -81,7 +71,7 @@ internal class XmlValueListHelper(
         }
         else
         {
-            _tempTargetValues.Add(new()
+            targetValues.Add(new()
             {
                 Dimensions = dimensionsToAdd,
                 XmlValue = sourceValueNode
@@ -141,12 +131,9 @@ internal class XmlValueListHelper(
 
         // Still nothing found, just take the first one, no matter what's language it's for
         // this should probably never happen, but just in case...
-        if (sourceValueNode == null)
-        {
-            l.W("node still null - this indicates a problem! will just use first match");
-            sourceValueNode = xmlValuesOfAttrib.First();
-        }
-        return l.Return(sourceValueNode);
+        return sourceValueNode == null
+            ? l.Return(xmlValuesOfAttrib.First(), "node still null - this indicates a problem! will just use first match")
+            : l.Return(sourceValueNode);
     }
 
 }

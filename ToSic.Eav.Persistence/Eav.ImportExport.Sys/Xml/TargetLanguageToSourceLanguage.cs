@@ -2,7 +2,8 @@
 
 namespace ToSic.Eav.ImportExport.Sys.Xml;
 
-internal record TargetLanguageToSourceLanguage : DimensionDefinition
+[PrivateApi]
+public record TargetLanguageToSourceLanguage : DimensionDefinition
 {
     public ICollection<DimensionDefinition> PrioritizedDimensions = [];
 }
