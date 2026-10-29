@@ -86,7 +86,7 @@ partial class DbEntity
                                 {
                                     DimensionId = zoneLangs
                                         .Single(ol => ol.Matches(lng.Key))
-                                        .DimensionId,
+                                        .Id,
                                     ReadOnly = lng.ReadOnly
                                 })
                                 .ToList();

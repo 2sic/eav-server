@@ -1,17 +1,28 @@
 ﻿namespace ToSic.Eav.Data.Sys.Dimensions;
 
+// Docs History
+// - Before 2021-09-30: Was marked as internal
+// - 2021-09-30: Marked as PrivateApi
+// - 2026-10-29: Making internal again, to show in docs.
+
 /// <summary>
-/// The definition of a dimension / language
+/// The definition of a dimension / language.
 /// </summary>
-[PrivateApi("hidden 2021-09-30, previously visible as internal don't use")]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record DimensionDefinition
 {
+    /// <summary>
+    /// The ID as is used in the DB.
+    /// </summary>
     [PrivateApi("might be changed to just 'id' or something")]
-    public int DimensionId { get; set; }
+    public required int Id { get; init; }
 
+    /// <summary>
+    /// Parent definition node (or `null`).
+    /// </summary>
     [PrivateApi]
-    public int? Parent { get; set; }
+    public required int? ParentId { get; init; }
 
     /// <summary>
     /// The name - in case of a language this would be something like "English"
@@ -41,6 +52,6 @@ public record DimensionDefinition
     /// <summary>
     /// If this dimension is active.
     /// </summary>
-    public bool Active { get; set; } = true;
+    public required bool Active { get; init; } = true;
 
 }

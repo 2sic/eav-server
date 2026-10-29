@@ -19,7 +19,8 @@ partial class XmlImportWithFiles
             .Elements(XmlConstants.DimensionDefElement)
             .Select(p => new DimensionDefinition
             {
-                DimensionId = int.Parse(p.Attribute(XmlConstants.DimId)!.Value),
+                Id = int.Parse(p.Attribute(XmlConstants.DimId)!.Value),
+                ParentId = null,
                 Name = p.Attribute(XmlConstants.Name)!.Value,
                 Key = p.Attribute(XmlConstants.CultureSysKey)!.Value,
                 EnvironmentKey = p.Attribute(XmlConstants.CultureExtKey)!.Value,

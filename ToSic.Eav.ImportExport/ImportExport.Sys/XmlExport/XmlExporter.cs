@@ -49,7 +49,7 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
             .LanguagesActive
             .ToDictionary(
                 lng => lng.EnvironmentKey.ToLowerInvariant(),
-                lng => lng.DimensionId
+                lng => lng.Id
             ),
         AppReader);
 
@@ -123,7 +123,7 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
                 XmlConstants.DimensionDefinition,
                 dimensions
                     .Select(d => new XElement(XmlConstants.DimensionDefElement,
-                            new XAttribute(XmlConstants.DimId, d.DimensionId),
+                            new XAttribute(XmlConstants.DimId, d.Id),
                             new XAttribute(XmlConstants.Name, d.Name),
                             new XAttribute(XmlConstants.CultureSysKey, d.Key ?? string.Empty),
                             new XAttribute(XmlConstants.CultureExtKey, d.EnvironmentKey ?? string.Empty),

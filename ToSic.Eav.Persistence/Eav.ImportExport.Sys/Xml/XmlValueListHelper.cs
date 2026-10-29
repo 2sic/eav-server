@@ -66,7 +66,7 @@ internal class XmlValueListHelper(
         var l = LogDetails.Fn();
         var logText = "";
         var dimensionsToAdd = new List<ILanguage>();
-        if (langMap.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
+        if (langMap.Single(p => p.Matches(envLang.EnvironmentKey)).Id > 0)
         {
             dimensionsToAdd.Add(new Language(envLang.EnvironmentKey, readOnly));
             logText += "built dimension-list";
@@ -101,7 +101,7 @@ internal class XmlValueListHelper(
         // find the xml-node which best matches the language we want to fill in
         foreach (var sourceLanguage in envLang.PrioritizedDimensions)
         {
-            var dimensionId = sourceLanguage.DimensionId.ToString();
+            var dimensionId = sourceLanguage.Id.ToString();
             // find a possible match for exactly this language
             sourceValueNode = xmlValuesOfAttrib
                 .FirstOrDefault(p =>
@@ -119,7 +119,7 @@ internal class XmlValueListHelper(
 
             readOnly = bool.Parse(textVal);
 
-            l.A($"node for {envLang.EnvironmentKey} on Dim:{sourceLanguage.DimensionId}; readOnly: {readOnly}");
+            l.A($"node for {envLang.EnvironmentKey} on Dim:{sourceLanguage.Id}; readOnly: {readOnly}");
             break;
         }
 

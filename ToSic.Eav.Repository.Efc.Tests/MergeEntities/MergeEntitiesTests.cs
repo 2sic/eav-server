@@ -92,10 +92,10 @@ public class MergeEntitiesTests(EntitySaver entitySaver, DataAssembler dataAssem
     private static Language langDeCh = new("de-CH", false, 39);//{DimensionId = 39, Key = "de-CH"};
     private static Language langFr = new("fr-FR", false, 99);//{DimensionId = 99, Key = "fr-FR"};
 
-    private static DimensionDefinition langEnDef = new() { DimensionId = 1, EnvironmentKey = "en-US", Name = "", Key = "en-us" };
-    private static DimensionDefinition langDeDeDef = new() {DimensionId = 42, EnvironmentKey = "de-DE", Name = "", Key = "de-de" };
-    private static DimensionDefinition langDeChDef = new() {DimensionId = 39, EnvironmentKey = "de-CH", Name = "", Key = "de-ch" };
-    private static DimensionDefinition langFrDef = new() {DimensionId = 99, EnvironmentKey = "fr-FR", Name = "", Key = "fr-fr" };
+    private static DimensionDefinition langEnDef = new() { Id = 1, ParentId = null, EnvironmentKey = "en-US", Name = "", Key = "en-us", Active = true };
+    private static DimensionDefinition langDeDeDef = new() {Id = 42, ParentId = null, EnvironmentKey = "de-DE", Name = "", Key = "de-de", Active = true };
+    private static DimensionDefinition langDeChDef = new() {Id = 39, ParentId = null, EnvironmentKey = "de-CH", Name = "", Key = "de-ch", Active = true };
+    private static DimensionDefinition langFrDef = new() {Id = 99, ParentId = null, EnvironmentKey = "fr-FR", Name = "", Key = "fr-fr", Active = true };
     private static List<DimensionDefinition> activeLangs = [langEnDef, langDeDeDef, langDeChDef];
 
     #endregion

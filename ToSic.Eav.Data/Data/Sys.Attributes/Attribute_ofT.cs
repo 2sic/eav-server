@@ -147,7 +147,7 @@ internal record Attribute<T> : IAttribute<T>
     private IValue? FindHavingDimensions(int[] keys)
     {
         var valuesHavingDimensions = ValuesImmutable
-            .FirstOrDefault(va => keys.All(di => va.Languages.Select(d => d.DimensionId).Contains(di)));
+            .FirstOrDefault(va => keys.All(di => va.Languages.Select(d => d.Id).Contains(di)));
         return valuesHavingDimensions;
     }
     

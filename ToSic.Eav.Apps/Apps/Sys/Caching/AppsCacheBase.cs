@@ -49,11 +49,11 @@ public abstract class AppsCacheBase(IAppCacheKeyService appCacheKeyService) : IA
                 new()
                 {
                     Active = true,
-                    DimensionId = 0,
+                    Id = 0,
                     EnvironmentKey = "en-us",
                     Key = "en-us",
                     Name = "English",
-                    Parent = null
+                    ParentId = null
                 }
             ]);
         realZones.Add(KnownAppsConstants.PresetZoneId, presetZone);

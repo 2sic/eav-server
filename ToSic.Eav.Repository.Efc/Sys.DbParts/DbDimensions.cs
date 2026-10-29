@@ -49,7 +49,7 @@ internal class DbDimensions(DbStorage.DbStorage db) : DbPartBase(db, "Db.Dims")
             .FirstOrDefault(l => l.Matches(cultureCode));
         // If the language exists in EAV, set the active state, else add it
         if (eavLanguage != null)
-            UpdateZoneDimension(eavLanguage.DimensionId, active);
+            UpdateZoneDimension(eavLanguage.Id, active);
         else
             AddZoneDimension(cultureText, cultureCode);
     }

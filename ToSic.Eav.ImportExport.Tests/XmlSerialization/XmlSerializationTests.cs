@@ -19,7 +19,7 @@ public class XmlSerializationTests(XmlSerializer xmlSerializer, IAppsAndZonesLoa
         //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
         var languageMap = appsCatalog
             .Zone(test.ZoneId).LanguagesActive
-            .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
+            .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.Id);
         var exBuilder = xmlSerializer.Init(languageMap, appReader);
         var xmlEnt = exBuilder.Serialize(test.TestItemToSerialize);
         True(xmlEnt.Length > 200, "should get a long xml string");
@@ -35,7 +35,7 @@ public class XmlSerializationTests(XmlSerializer xmlSerializer, IAppsAndZonesLoa
         var appReader = repoLoader.AppStateReaderRawTac(appId);
         var languageMap = appsCatalog
             .Zone(test.ZoneId).LanguagesActive
-            .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
+            .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.Id);
         var exBuilder = xmlSerializer.Init(languageMap, appReader);
 
         var maxCount = 500;

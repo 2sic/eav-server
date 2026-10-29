@@ -45,8 +45,6 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
     /// </summary>
     private ILog? LogDetails => field ??= Log.IfDetails(LogSettings);
 
-    //private ILog? LogSummary => field ??= Log.IfSummary(LogSettings);
-
     #endregion
 
 
@@ -64,8 +62,9 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
                     Key = el.Key,
                     Name = el.Name,
                     EnvironmentKey = el.EnvironmentKey,
-                    DimensionId = el.DimensionId,
-                    PrioritizedDimensions = FindPriorizedMatchingDimensions(el, envDefLang, srcLanguages, srcDefLang)
+                    Id = el.Id,
+                    ParentId = null,
+                    PrioritizedDimensions = FindPrioritizedMatchingDimensions(el, envDefLang, srcLanguages, srcDefLang),
                 })
                 .ToListOpt();
         }
@@ -74,16 +73,19 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
             var tempDimension = new DimensionDefinition
             {
                 Active = true,
-                DimensionId = 0,
+                Id = 0,
+                ParentId = null,
                 EnvironmentKey = envDefLang,
                 Key = "dummy-not-used",
-                Name = "Default"
+                Name = "Default",
             };
-            var prioritized = FindPriorizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang);
+            var prioritized = FindPrioritizedMatchingDimensions(tempDimension, envDefLang, srcLanguages, srcDefLang);
             result =
             [
                 new()
                 {
+                    Id = 0,
+                    ParentId = null,
                     Active = true,
                     EnvironmentKey = envDefLang,
                     PrioritizedDimensions = prioritized,
@@ -96,7 +98,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
         return l.Return(result, $"LanguageMap has {result.Count} items");
     }
 
-    private List<DimensionDefinition> FindPriorizedMatchingDimensions(DimensionDefinition targetLang, string envDefLang, ICollection<DimensionDefinition> srcLangs, int? srcDefLang)
+    private static List<DimensionDefinition> FindPrioritizedMatchingDimensions(DimensionDefinition targetLang, string envDefLang, ICollection<DimensionDefinition> srcLangs, int? srcDefLang)
     {
         var languageMap = new List<DimensionDefinition>();
             
@@ -123,7 +125,7 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
         if (targetLang.Matches(envDefLang) && srcDefLang.HasValue)
         {
             var sourcePrimaryLanguage = srcLangs
-                .FirstOrDefault(p => p.DimensionId == srcDefLang);
+                .FirstOrDefault(p => p.Id == srcDefLang);
             if (sourcePrimaryLanguage != null && !languageMap.Contains(sourcePrimaryLanguage))
                 languageMap.Add(sourcePrimaryLanguage);
         }
@@ -131,7 +133,6 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
         return languageMap;
     }
 
-    //private readonly List<string> _relevantSrcLangsByPriority;
     [field: AllowNull, MaybeNull]
     private ICollection<TargetLanguageToSourceLanguage> EnvLangs
     {
@@ -145,7 +146,6 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
         get => field ?? throw new NullReferenceException("XmlToEntity not initialized, call Init() first");
         set;
     }
-    //private string _srcDefLang;
         
     /// <summary>
     /// Returns an EAV import entity

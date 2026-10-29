@@ -89,7 +89,7 @@ public class XmlSerializer(SerializerBase.Dependencies services) : SerializerBas
                 .OrderBy(l => l.Key)
                 .Select(p => new XElement(XmlConstants.ValueDimNode,
                     // because JSON-Entities do not contain valid dimension ids, lookup id
-                    new XAttribute(XmlConstants.DimId, p.DimensionId == 0 ? (Dimensions.ContainsKey(p.Key.ToLowerInvariant()) ? Dimensions[p.Key] : 0) : p.DimensionId),
+                    new XAttribute(XmlConstants.DimId, p.Id == 0 ? (Dimensions.ContainsKey(p.Key.ToLowerInvariant()) ? Dimensions[p.Key] : 0) : p.Id),
                     new XAttribute(XmlConstants.ValueDimRoAttr, p.ReadOnly)
                 ))
         );
