@@ -43,18 +43,19 @@ public class JsonCtSerialization(ITestOutputHelper output, JsonTestHelpers jsonT
     }
 
     private string GetJsonOfContentTypeOfItem(int appId, int eId)
-        => GetJsonOfContentTypeOfItem(eId, jsonTestHelper.SerializerOfApp(appId));
+        => GetJsonOfContentTypeOfItem(eId, jsonTestHelper.ReaderAndSerializerOfApp(appId));
 
-    internal static string GetJsonOfContentTypeOfItem(int eId, JsonSerializer ser)
+    internal static string GetJsonOfContentTypeOfItem(int eId, (IAppReader Reader, JsonSerializer Serializer) tuple)
     {
-        var x = ser.AppReaderOrError.List.GetOne(eId);
+        var (appReader, ser) = tuple;
+        var x = appReader.List.GetOne(eId);
         var xmlEnt = ser.Serialize(x.Type);
         return xmlEnt;
     }
 
     private string JsonOfContentType(int appId, string typeName)
-        => JsonOfContentType(jsonTestHelper.SerializerOfApp(appId), typeName);
+        => JsonOfContentType(jsonTestHelper.ReaderAndSerializerOfApp(appId), typeName);
 
-    internal static string JsonOfContentType(JsonSerializer ser, string typeName)
-        => JsonTestHelpers.JsonOfContentType(ser, ser.AppReaderOrError.GetContentTypeTac(typeName));
+    internal static string JsonOfContentType((IAppReader Reader, JsonSerializer Serializer) tuple, string typeName)
+        => JsonTestHelpers.JsonOfContentType(tuple.Serializer, tuple.Reader.GetContentTypeTac(typeName));
 }

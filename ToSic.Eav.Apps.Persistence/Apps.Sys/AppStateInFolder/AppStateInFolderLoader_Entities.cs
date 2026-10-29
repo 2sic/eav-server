@@ -83,7 +83,7 @@ partial class AppStateInFolderLoader
         var entities = new List<IEntity>();
         foreach (var loader in Loaders)
         {
-            loader.ResetSerializer(appReader);
+            loader.ResetSerializerOpts(new(appReader));
             var newEntities = loader.Entities(groupIdentifier, relationshipSource);
             entities.AddRange(newEntities);
         }

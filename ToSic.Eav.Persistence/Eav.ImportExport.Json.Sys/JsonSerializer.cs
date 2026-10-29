@@ -2,26 +2,50 @@
 using ToSic.Eav.Data.Sys.Global;
 using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.Metadata.Targets;
-using ToSic.Eav.Serialization.Sys;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer(JsonSerializer.Dependencies services, string logName = "Jsn.Serlzr"): SerializerBase(services, logName), IDataDeserializer
+partial class JsonSerializer(JsonSerializer.Dependencies services/*, string logName = "Jsn.Serlzr"*/): ServiceBase(/*services,*/ /*logName*/"Jsn.Serlzr"), IDataDeserializer
 {
     public const string ReadOnlyMarker = "~";
     public const string NoLanguage = "*";
 
     #region Serializer Dependencies / MyServices
 
-    public new record Dependencies(
+    public record Dependencies(
         ITargetTypeService MetadataTargets,
         IGlobalDataService GlobalData,
         DataAssembler DataAssembler,
         ContentTypeAssemblyKit ContentTypeAssemblyKit,
         LazySvc<IValueConverter> ValueConverter)
-        : SerializerBase.Dependencies(MetadataTargets, DataAssembler, ContentTypeAssemblyKit, GlobalData, Connect: [ValueConverter]);
+        : DependenciesBase(/*DataAssembler,*/ /*ContentTypeAssemblyKit,*/ /*GlobalData,*/ connect: [ValueConverter, MetadataTargets]);
 
     #endregion
+
+    #region Special Loggers
+
+    public void ConfigureLogging(LogSettings settings)
+    {
+        var l = Log.Fn(settings.ToString());
+        _disableLogDetails = Log.IfDetails(settings) == null;
+        _disableLogSummary = Log.IfSummary(settings) == null;
+        l.Done();
+    }
+
+    public new ILog Log => base.Log;
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog? LogDsDetails => _disableLogDetails ? null : Log;
+    private bool _disableLogDetails;
+
+    internal ILog? LogDsSummary => _disableLogSummary ? null : Log;
+    private bool _disableLogSummary;
+
+    #endregion
+
 
     /// <summary>
     /// WIP test API to ensure content-types serialized for UI resolve any hyperlinks.

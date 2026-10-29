@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.ImportExport.Json.Sys;
+﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Repositories;
@@ -15,14 +16,20 @@ public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoaderService loader,
 
     public JsonSerializer SerializerOfApp(int appId)
     {
-        var app = Loader.AppStateReaderRawTac(appId);
-        return jsonSerializerGenerator.New().SetApp(app);
+        var appReader = Loader.AppStateReaderRawTac(appId);
+        return jsonSerializerGenerator.New().SetApp(appReader);
+    }
+    public (IAppReader Reader, JsonSerializer Serializer) ReaderAndSerializerOfApp(int appId)
+    {
+        var appReader = Loader.AppStateReaderRawTac(appId);
+        return (appReader, jsonSerializerGenerator.New().SetApp(appReader));
     }
 
     internal string GetJsonOfEntity(int appId, int eId, JsonSerializer? ser = null)
     {
+        var appReader = Loader.AppStateReaderRawTac(appId);
         var exBuilder = ser ?? SerializerOfApp(appId);
-        var xmlEnt = exBuilder.Serialize(eId);
+        var xmlEnt = exBuilder.Serialize(appReader.List.FindRepoId(eId) ?? throw new NullReferenceException($"Entity {eId} not found, can't serialize"));
         return xmlEnt;
     }
 

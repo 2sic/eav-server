@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Runtime.InteropServices;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Attributes;
 using ToSic.Eav.Data.Sys.Dimensions;
@@ -68,9 +69,9 @@ partial class JsonSerializer
     {
         var l = LogDsDetails.Fn<IEntity>($"guid: {jEnt.Guid}; allowDynamic:{allowDynamic} skipUnknown:{skipUnknownType}", timer: true);
         // get type def - use dynamic if dynamic is allowed OR if we'll skip unknown types
-        var contentType = GetContentType(jEnt.Type.Id)
+        var contentType = JsonDeserializeEntityHelper.GetContentType(jEnt.Type.Id)
                           ?? (allowDynamic || skipUnknownType
-                              ? GetTransientContentType(jEnt.Type.Name, jEnt.Type.Id)
+                              ? JsonDeserializeEntityHelper.GetTransientContentType(jEnt.Type.Name, jEnt.Type.Id)
                               : throw new FormatException($"type not found for deserialization and dynamic not allowed - cannot continue with {jEnt.Type.Id}"));
 
         // Metadata Target
@@ -103,10 +104,10 @@ partial class JsonSerializer
 
 
         l.A("build entity");
-        var builder = Services.DataAssembler;
-        var partsBuilder = builder.EntityConnection.UseOptional(source: AppReaderOrNull?.AppState, metadata: mdItems);
-        var newEntity = Services.DataAssembler.Entity.Create(
-            appId: AppId,
+        var builder = services.DataAssembler;
+        var partsBuilder = builder.EntityConnection.UseOptional(source: DesOptions?.AppReaderOrNull?.AppState, metadata: mdItems);
+        var newEntity = services.DataAssembler.Entity.Create(
+            appId: DesOptions?.AppId ?? 0,
             guid: jEnt.Guid,
             entityId: jEnt.Id,
             repositoryId: jEnt.Id,
@@ -135,7 +136,7 @@ partial class JsonSerializer
 
         var targetType = mdFor.TargetType != 0
             ? mdFor.TargetType
-            : MetadataTargets.GetId(mdFor.Target ?? ""); // #TargetTypeIdInsteadOfTarget, should be deprecated soon
+            : services.MetadataTargets.GetId(mdFor.Target ?? ""); // #TargetTypeIdInsteadOfTarget, should be deprecated soon
 
         var target = new Target(
             targetType: targetType,
@@ -151,8 +152,8 @@ partial class JsonSerializer
     private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAttributes, IEntitiesSource? relationshipsSource = null)
     {
         var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>(timer: true);
-        var valBuilder = Services.DataAssembler.Value;
-        var relBuilder = Services.DataAssembler.Relationship;
+        var valBuilder = services.DataAssembler.Value;
+        var relBuilder = services.DataAssembler.Relationship;
         var attribs = new[]
         {
             BuildAttrib(jAttributes.DateTime, ValueTypes.DateTime, valBuilder.DateTime),
@@ -180,7 +181,7 @@ partial class JsonSerializer
         if (list == null)
             return null;
 
-        var builder = Services.DataAssembler;
+        var builder = services.DataAssembler;
         var newAttributes = list.ToDictionary(
             a => a.Key,
             attrib => builder.Attribute.Create(
@@ -205,7 +206,7 @@ partial class JsonSerializer
                 a =>
                 {
                     var values = GetValues(a, jAttributes, relationshipsSource);
-                    return Services.DataAssembler.Attribute.Create(a.Name, a.Type, values);
+                    return services.DataAssembler.Attribute.Create(a.Name, a.Type, values);
                 },
                 InvariantCultureIgnoreCase
             );
@@ -214,7 +215,7 @@ partial class JsonSerializer
 
     private IList<IValue> GetValues(IContentTypeField a, JsonAttributes jAttribs, IEntitiesSource? relationshipsSource)
     {
-        var relAssembler = Services.DataAssembler.Relationship;
+        var relAssembler = services.DataAssembler.Relationship;
         return a.Type switch
         {
             ValueTypes.Boolean => BuildValues(jAttribs.Boolean, a),
@@ -222,7 +223,7 @@ partial class JsonSerializer
             ValueTypes.Entity => jAttribs.Entity == null || !jAttribs.Entity.ContainsKey(a.Name)
                 ? new List<IValue>() // just keep the empty definition, as that's fine
                 : jAttribs.Entity[a.Name]
-                    .Select(v => relAssembler.Relationship(relAssembler.ToSource(v.Value, relationshipsSource ?? LazyRelationshipLookupList)))
+                    .Select(v => relAssembler.Relationship(relAssembler.ToSource(v.Value, relationshipsSource ?? DesOptions.LazyRelationshipLookupList)))
                     .ToListOpt(),
             ValueTypes.Hyperlink => BuildValues(jAttribs.Hyperlink, a),
             ValueTypes.Number => BuildValues(jAttribs.Number, a),
@@ -242,7 +243,7 @@ partial class JsonSerializer
         if (dic == null || !dic.ContainsKey(attrDef.Name))
             return new List<IValue>();
         return dic[attrDef.Name]
-            .Select(IValue (v) => Services.DataAssembler.Value.Create(v.Value, languages: RecreateLanguageList(v.Key)))
+            .Select(IValue (v) => services.DataAssembler.Value.Create(v.Value, languages: RecreateLanguageList(v.Key)))
             .ToListOpt();
     }
 
@@ -259,7 +260,7 @@ partial class JsonSerializer
         var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, string?>>>();
         try
         {
-            var converter = ((Dependencies)Services).ValueConverter.Value;
+            var converter = services.ValueConverter.Value;
             var converted = links.ToDictionary(
                 pair => pair.Key,
                 pair => pair.Value.ToDictionary(

@@ -9,7 +9,7 @@ namespace ToSic.Eav.ImportExport.Json.Sys;
 
 partial class JsonSerializer
 {
-    public override string Serialize(IEntity entity)
+    public /*override*/ string Serialize(IEntity entity)
         => Serialize(entity, 0);
 
     public string Serialize(IEntity entity, int metadataDepth)
@@ -41,7 +41,7 @@ partial class JsonSerializer
             jsonFor = new()
             {
                 // #TargetTypeIdInsteadOfTarget - the Target should become obsolete
-                Target = MetadataTargets.GetName(entity.MetadataFor.TargetType),
+                Target = services.MetadataTargets.GetName(entity.MetadataFor.TargetType),
                 TargetType = entity.MetadataFor.TargetType,
                 Guid = entity.MetadataFor.KeyGuid,
                 Number = entity.MetadataFor.KeyNumber,

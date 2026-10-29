@@ -50,8 +50,8 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
             .ToDictionary(
                 lng => lng.EnvironmentKey.ToLowerInvariant(),
                 lng => lng.Id
-            ),
-        AppReader);
+            )
+        /*, AppReader*/);
 
     /// <summary>
     /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
@@ -282,7 +282,8 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
         XElement entityXElement;
         try
         {
-            entityXElement = Serializer.ToXml(entityId);
+            var entity = AppReader.List.FindRepoId(entityId) ?? throw new NullReferenceException($"Entity {entityId} not found, can't serialize");
+            entityXElement = Serializer.ToXml(entity);
         }
         catch (Exception ex)
         {

@@ -32,9 +32,13 @@ partial class AppStateInFolderLoader
         var newSets = Loaders
             .Select(ldr =>
             {
-                ldr.Serializer.DeserializationSettings = deSerializeSettings;
+                var prevOpts = ldr.Serializer.DesOptions;
+                var newOpts = prevOpts with { DeserializationSettings = deSerializeSettings };
+                ldr.ResetSerializerOpts(newOpts);
+                //ldr.Serializer.DeserializationSettings = deSerializeSettings;
                 var ctWithEntities = ldr.ContentTypesWithEntities();
-                ldr.Serializer.DeserializationSettings = null;
+                ldr.ResetSerializerOpts(prevOpts);
+                //ldr.Serializer.DeserializationSettings = null;
                 return ctWithEntities;
             })
             .ToListOpt();

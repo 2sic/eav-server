@@ -108,8 +108,8 @@ internal class EfcContentTypeLoaderService(
 
         sqlTime.Stop();
 
-        var serializer = dataDeserializer.New();
-        serializer.Initialize(appId: appId, types: [], allEntities: null);
+        var deserializer = dataDeserializer.New();
+        deserializer.Initialize(new(appId: appId, types: []));
 
         var contentTypes = contentTypesSql
             .Select(set => new

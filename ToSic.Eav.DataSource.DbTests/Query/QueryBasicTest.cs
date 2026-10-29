@@ -59,7 +59,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
     public void Query_to_Json_and_back()
     {
         var qdef = LoadQueryDef(AppForQueryTests, BasicId);
-        var ser = Serializer();
+        var ser = DeAndSerializer();
         var entity = (qdef as ICanBeEntity).Entity;
         var strHead = ser.Serialize(entity, 0);
         var full = ser.Serialize(entity, 10);
@@ -79,11 +79,10 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
 
     }
 
-    private JsonSerializer Serializer()
+    private JsonSerializer DeAndSerializer()
     {
-        var ser = jsonSerializer;
-        ser.Initialize(AppForQueryTests, new List<IContentType>(), null);
-        return ser;
+        jsonSerializer.Initialize(new(AppForQueryTests, new List<IContentType>()));
+        return jsonSerializer;
     }
 
     [Fact]
@@ -95,7 +94,7 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
         True(countDef > 0, "result > 0");
         Equal(BasicCount, countDef);
 
-        var ser = Serializer();
+        var ser = DeAndSerializer();
         var strQuery = ser.Serialize((qdef as ICanBeEntity).Entity, 10);
         var eDef2 = ser.Deserialize(strQuery, true);
         // TODO: #42

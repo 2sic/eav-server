@@ -218,7 +218,7 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<Json
         try
         {
             var serializer = jsonSerializer.New();
-            serializer.Initialize(MyOptions.AppReader);
+            serializer.Initialize(new JsonSerializer.DeserializerOptions(MyOptions.AppReader));
             return serializer.Deserialize(json);
         }
         catch

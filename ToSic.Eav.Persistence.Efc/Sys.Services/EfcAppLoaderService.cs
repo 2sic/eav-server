@@ -378,9 +378,9 @@ public class EfcAppLoaderService(
                 return l.Return((null, null), "no json");
 
             l.A("app Entity found - this json: " + json);
-            var serializer = dataDeserializer.New();
-            serializer.Initialize(appId, [], null);
-            if (serializer.Deserialize(json!, true, true) is not { } appConfig)
+            var deserializer = dataDeserializer.New();
+            deserializer.Initialize(new(appId, []));
+            if (deserializer.Deserialize(json!, true, true) is not { } appConfig)
                 return l.Return((null, null), "can't deserialize");
             var path = appConfig.Get<string>(AppLoadConstants.FieldFolder);
             var name = appConfig.Get<string>(AppLoadConstants.FieldName);

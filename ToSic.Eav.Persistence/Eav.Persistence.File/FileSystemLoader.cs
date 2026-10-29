@@ -25,48 +25,50 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     [field: AllowNull, MaybeNull]
     public JsonSerializer Serializer
     {
-        get => field ??= GenerateSerializer();
+        get => field ??= InitialSerializerDynamic();
         private set;
     }
 
-    private JsonSerializer NewSerializer()
+    internal void ResetSerializer(JsonSerializer otherSerializer)
+        => Serializer = otherSerializer;
+    internal void ResetSerializerOpts(JsonSerializer.DeserializerOptions options)
+        => Serializer = NewJsonSerializer().Setup(options);
+
+    private JsonSerializer NewJsonSerializer()
     {
         var ser = serializerGenerator.New();
         ser.ConfigureLogging(Options.LogSettings);
         return ser;
     }
 
-    private JsonSerializer GenerateSerializer()
+    private JsonSerializer InitialSerializerDynamic()
     {
-        var ser = NewSerializer();
+        var ser = NewJsonSerializer();
 
         var entitySource = Options.EntitiesSource;
         var l = Log.Fn<JsonSerializer>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
         // #SharedFieldDefinition
         // Also provide AppState if possible, for new #SharedFieldDefinition
-        if (entitySource is IHasMetadataSourceAndExpiring withAppState)
-            ser.DeserializationSettings = new()
+        var deSerSettings = entitySource is IHasMetadataSourceAndExpiring withAppState
+            ? new JsonDeSerializationSettings
             {
                 MetadataSource = withAppState,
                 // Just a note: this will only apply to attribute-metadata with related entities
                 // but won't cover Content-Type metadata with related entities
                 // ATM this doesn't matter, because we don't have any related entities in Content-Types
                 // if we ever need it, check out how it's done on the AppLoader
-            };
-        ser.Initialize(Options.AppId, [], entitySource);
-        ser.AssumeUnknownTypesAreDynamic = true;
+            }
+            : null;
+        ser.Initialize(new(Options.AppId, [], entitySource) { DeserializationSettings = deSerSettings, AssumeUnknownTypesAreDynamic = true });
+        //ser.AssumeUnknownTypesAreDynamic = true;
         return l.Return(ser);
     }
 
-    internal void ResetSerializer(IAppReader appReader)
-        => Serializer = NewSerializer().SetApp(appReader);
+    //internal void ResetSerializer(IAppReader appReader)
+    //    => ResetSerializer(NewJsonSerializer().Setup(new(appReader)));
 
     internal void ResetSerializer(ICollection<IContentType> types)
-    {
-        var serializer = NewSerializer();
-        serializer.Initialize(Options.AppId, types, null);
-        Serializer = serializer;
-    }
+        => ResetSerializerOpts(new(Options.AppId, types));
 
     #endregion
 
@@ -277,7 +279,8 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     private bool CheckPathExists(string path)
     {
         var l = Log.Fn<bool>($"Check path exists: {path}");
-        if (Directory.Exists(path)) return l.ReturnTrue("ok");
+        if (Directory.Exists(path))
+            return l.ReturnTrue("ok");
         if (!Options.IgnoreMissing)
             throw new DirectoryNotFoundException("directory '" + path + "' not found, and couldn't ignore");
         l.A("path: doesn't exist, but ignore");

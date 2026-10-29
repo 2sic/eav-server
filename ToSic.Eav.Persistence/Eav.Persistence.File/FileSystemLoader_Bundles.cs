@@ -22,7 +22,6 @@ partial class FileSystemLoader
             return l.Return([], "path doesn't exist");
 
         const string infoIfError = "couldn't read bundle-file";
-        var jsonBundles = new Dictionary<string, JsonFormat>();
         try
         {
             // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
@@ -35,7 +34,7 @@ partial class FileSystemLoader
             //        l.A("Loading json bundle" + p);
             //        jsonBundles[p] = Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p));
             //    });
-            jsonBundles = bundleFiles.ToDictionary(
+            var jsonBundles = bundleFiles.ToDictionary(
                 p => p,
                 p => Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p))
             );

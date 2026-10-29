@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
+using ToSic.Eav.ImportExport.Json.Sys;
 
 namespace ToSic.Eav.Serialization;
 
@@ -10,19 +11,20 @@ namespace ToSic.Eav.Serialization;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IDataDeserializer: IHasLog
 {
-    void Initialize(IAppReader appReader);
+    //void Initialize(IAppReader appReader);
+    void Initialize(JsonSerializer.DeserializerOptions options);
 
     public void ConfigureLogging(LogSettings settings);
 
 
-    /// <summary>
-    /// Initialize with the app. One of two possible initializers. <br/>
-    /// This special initialization is important for deserialization scenarios where the full app-state doesn't exist.
-    /// </summary>
-    /// <param name="appId">the app-ID which contains the data to be serialized</param>
-    /// <param name="types">list of all content-types which the deserializer knows</param>
-    /// <param name="allEntities">list of all entities to use in deserialization</param>
-    void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource? allEntities);
+    ///// <summary>
+    ///// Initialize with the app. One of two possible initializers. <br/>
+    ///// This special initialization is important for deserialization scenarios where the full app-state doesn't exist.
+    ///// </summary>
+    ///// <param name="appId">the app-ID which contains the data to be serialized</param>
+    ///// <param name="types">list of all content-types which the deserializer knows</param>
+    ///// <param name="allEntities">list of all entities to use in deserialization</param>
+    //void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource? allEntities);
 
     /// <summary>
     /// De-serialize an entity.

@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization.Sys;
 using Xunit.Abstractions;
@@ -49,7 +50,7 @@ public class JsonEntitySerialization(JsonSerializer jsonSerializer, IAppsAndZone
                 // maybe skip some
                 if (count++ < skip) continue;
 
-                var json = exBuilder.Serialize(appEntity.EntityId);
+                var json = exBuilder.Serialize(app.List.FindRepoId(appEntity.EntityId) ?? throw new NullReferenceException($"Entity {appEntity.EntityId} not found, can't serialize"));
                 True(json.Length > 25, "should get a long json string");
 
                 // stop if we ran enough tests

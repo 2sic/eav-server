@@ -109,9 +109,9 @@ public class ContentImportApi(
         var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
         try
         {
-            var deserializer = jsonSerializerLazy.Value.SetApp(_appReader);
+            var deserializer = jsonSerializerLazy.Value.Setup(new(_appReader) { PreferLocalAppTypes = true });
             // Since we're importing directly into this app, we prefer local content-types
-            deserializer.PreferLocalAppTypes = true;
+            //deserializer.PreferLocalAppTypes = true;
 
             var listToImport = new List<IEntity> { deserializer.Deserialize(args.GetContentString()) };
 

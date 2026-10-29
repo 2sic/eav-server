@@ -9,7 +9,7 @@ namespace ToSic.Eav.ImportExport.Json.Sys;
 
 partial class JsonSerializer
 {
-    public bool AssumeUnknownTypesAreDynamic { get; set; } = false;
+    //public bool AssumeUnknownTypesAreDynamic { get; set; } = false;
 
     public IContentType DeserializeContentType(string serialized)
     {
@@ -35,8 +35,8 @@ partial class JsonSerializer
         var lMain = LogDsDetails.Fn<ContentTypeWithEntities>(timer: true);
         var contentTypeSet = DirectEntitiesSource.Using(relationships =>
         {
-            IEntitiesSource? preferredSource = AppReaderOrNull?.AppState;
-            var sharedEntSource = DeserializationSettings?.RelationshipsSource;
+            IEntitiesSource? preferredSource = DesOptions?.AppReaderOrNull?.AppState;
+            var sharedEntSource = DesOptions?.DeserializationSettings?.RelationshipsSource;
             var relationshipsSource = preferredSource
                                       ?? sharedEntSource
                                       ?? relationships.Source;
@@ -48,7 +48,7 @@ partial class JsonSerializer
                     : "Standalone List";
             lMain.A($"Will use relationship source {preferredSourceMsg}; current size: {relationshipsSource.List.Count()}");
 
-            IEntity ConvertPart(JsonEntity e) => Deserialize(e, AssumeUnknownTypesAreDynamic, false, relationshipsSource);
+            IEntity ConvertPart(JsonEntity e) => Deserialize(e, DesOptions?.AssumeUnknownTypesAreDynamic ?? false, false, relationshipsSource);
 
             var l = LogDsDetails.Fn<ContentTypeWithEntities>();
             try
@@ -79,7 +79,7 @@ partial class JsonSerializer
                                   .ToListOpt()
                               ?? [];
 
-                        var appSourceForMd = DeserializationSettings?.MetadataSource;
+                        var appSourceForMd = DesOptions?.DeserializationSettings?.MetadataSource;
 
                         // Experimental
 
@@ -94,9 +94,9 @@ partial class JsonSerializer
                         var attrMetadata = new ContentTypeFieldMetadata(key: default, type: valType,
                             name: jsonAttr.Name, sysSettings: attrSysSettings, source: mdSource);
 
-                        var attDef = Services.ContentTypeAssemblyKit.Field
+                        var attDef = services.ContentTypeAssemblyKit.Field
                             .Create(
-                                appId: AppId,
+                                appId: DesOptions?.AppId ?? 0,
                                 name: jsonAttr.Name,
                                 type: valType,
                                 isTitle: jsonAttr.IsTitle,
@@ -123,8 +123,8 @@ partial class JsonSerializer
                 relationships.List.AddRange(ctMeta);
 
                 // Create the Content Type
-                var type = Services.ContentTypeAssemblyKit.Type.Create(
-                    appId: AppId,
+                var type = services.ContentTypeAssemblyKit.Type.Create(
+                    appId: DesOptions?.AppId ?? 0,
                     name: jsonType.Name,
                     nameId: jsonType.Id,
                     id: 0,
@@ -149,8 +149,4 @@ partial class JsonSerializer
         });
         return lMain.ReturnAsOk(contentTypeSet);
     }
-
-    // Removed v20-00-03
-    //public ContentTypeFieldSysSettings? DeserializeAttributeSysSettings(string name, string json)
-    //    => JsonDeserializeAttribute.SysSettings(name, json, LogDsDetails);
 }

@@ -16,11 +16,11 @@ public class WorkAttributesMod(
     AppWorkChain<WorkMetadata> workMetadata,
     AppWorkChain<WorkAttributes> workAttributes,
     Generator<ContentTypeFieldAssembler, DataAssemblerOptions> fieldAssembler,
-    Generator<IDataDeserializer> dataDeserializer,
+    Generator<IDataDeserializer> serializerGen,
     LazySvc<ISysFeaturesService> features,
     LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions)
     : ServiceWithSetup<IAppWorkContext>("Wrk.AttMod",
-        connect: [fieldAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeChangeActions])
+        connect: [fieldAssembler, workMetadata, workAttributes, features, serializerGen, contentTypeChangeActions])
 {
 
     #region Add Field
@@ -142,8 +142,8 @@ public class WorkAttributesMod(
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
             l.W("Setting up field share but feature is not enabled / licensed.");
 
-        var serializer = dataDeserializer.New();
-        serializer.Initialize(MyOptions.AppId, new List<IContentType>(), null);
+        var serializer = serializerGen.New();
+        serializer.Initialize(new(MyOptions.AppId, new List<IContentType>()));
 
         // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
         var db = MyOptions.DbStorage;
@@ -180,8 +180,8 @@ public class WorkAttributesMod(
             l.W("Setting up field share but feature is not enabled / licensed.");
 
         // Prepare serializer
-        var serializer = dataDeserializer.New();
-        serializer.Initialize(MyOptions.AppId, new List<IContentType>(), null);
+        var serializer = serializerGen.New();
+        serializer.Initialize(new(MyOptions.AppId, new List<IContentType>()));
 
         // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
         var db = MyOptions.DbStorage;

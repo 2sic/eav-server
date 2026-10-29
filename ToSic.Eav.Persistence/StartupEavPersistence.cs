@@ -19,12 +19,12 @@ public static class StartupEavPersistence
     {
         AddAppStateInFolder(services);
 
-        services.TryAddTransient<IDataSerializer, JsonSerializer>();
+        //services.TryAddTransient<IDataSerializer, JsonSerializer>();
         services.TryAddTransient<IDataDeserializer, JsonSerializer>();
 
         services.TryAddTransient<JsonSerializer>();
         services.TryAddTransient<JsonSerializer.Dependencies>();
-        services.TryAddTransient<SerializerBase.Dependencies>();
+        //services.TryAddTransient<SerializerBase.Dependencies>();
 
         services.TryAddTransient<XmlSerializer>();
 

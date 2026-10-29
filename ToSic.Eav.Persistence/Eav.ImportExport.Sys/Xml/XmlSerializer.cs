@@ -1,13 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Serialization.Sys;
 
 
 namespace ToSic.Eav.ImportExport.Sys.Xml;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class XmlSerializer(SerializerBase.Dependencies services) : SerializerBase(services, "IEx.XmlSer")
+public class XmlSerializer(/*SerializerBase.Dependencies services,*/ ITargetTypeService metadataTargets) : ServiceBase(/*services,*/ "IEx.XmlSer")
 {
     [field: AllowNull, MaybeNull]
     private Dictionary<string, int> Dimensions
@@ -16,17 +17,17 @@ public class XmlSerializer(SerializerBase.Dependencies services) : SerializerBas
         set;
     }
 
-    public XmlSerializer Init(Dictionary<string, int> dimensionMapping, IAppReader appReader)
+    public XmlSerializer Init(Dictionary<string, int> dimensionMapping/*, IAppReader appReader*/)
     {
-        Initialize(appReader);
+        //Initialize(appReader);
         Dimensions = dimensionMapping;
         return this;
     }
 
-    public XElement ToXml(int entityId) => ToXml(Lookup(entityId) ?? throw new NullReferenceException($"Tried to convert entity {entityId} to XML but could not find entity"));
+    //public XElement ToXml(int entityId) => ToXml(Lookup(entityId) ?? throw new NullReferenceException($"Tried to convert entity {entityId} to XML but could not find entity"));
 
 
-    public override string Serialize(IEntity entity) => ToXml(entity).ToString();
+    public /*override*/ string Serialize(IEntity entity) => ToXml(entity).ToString();
 
 
     public XElement ToXml(IEntity entity)
@@ -44,7 +45,7 @@ public class XmlSerializer(SerializerBase.Dependencies services) : SerializerBas
         var entityXElement = new XElement(XmlConstants.Entity,
             // #TargetTypeIdInsteadOfTarget
             new XAttribute(XmlConstants.KeyTargetType, entity.MetadataFor.TargetType),
-            new XAttribute(XmlConstants.KeyTargetTypeNameOld, MetadataTargets.GetName(entity.MetadataFor.TargetType)),
+            new XAttribute(XmlConstants.KeyTargetTypeNameOld, metadataTargets.GetName(entity.MetadataFor.TargetType)),
             new XAttribute(XmlConstants.AttSetStatic, entity.Type.NameId),
             new XAttribute(XmlConstants.AttSetNiceName, entity.Type.Name),
             new XAttribute(XmlConstants.GuidNode, entity.EntityGuid),

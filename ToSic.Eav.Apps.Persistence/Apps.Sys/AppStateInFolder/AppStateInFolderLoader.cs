@@ -121,7 +121,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
                 builder.InitContentTypes(contentTypes);
 
                 // Note: all must be Entity, but this setup just ensures the compiler sees it that way
-                foreach (var entity in entities.Where(e => e is Entity).Cast<Entity>())
+                foreach (var entity in entities.OfType<Entity>())
                     builder.Add(entity, null, logDetails);
                 return "types loaded";
             });

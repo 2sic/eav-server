@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization.Sys;
 using JsonSerializer = ToSic.Eav.ImportExport.Json.Sys.JsonSerializer;
@@ -22,23 +23,15 @@ public class JsonReSerialization(JsonSerializer jsonSerializer, IAppsAndZonesLoa
         Test_DoubleExportEntity(test.AppId, test.ContentBlockWithALotOfItems);
     }
 
-    private void Test_DoubleExportEntity(int appId, int eid, JsonSerializer? serializer = null)
+    private void Test_DoubleExportEntity(int appId, int eid, (IAppReader Reader, JsonSerializer Serializer)? tuple = null)
     {
-        serializer ??= jsonTestHelpers.SerializerOfApp(appId);
-        var json = GetJsonOfEntity(appId, eid, serializer);
+        tuple ??= jsonTestHelpers.ReaderAndSerializerOfApp(appId);
+        var json = tuple.Value.Serializer.Serialize(tuple.Value.Reader.List.FindRepoId(eid) ?? throw new NullReferenceException($"Entity {eid} not found, can't serialize"));
 
-        var ent = serializer.Deserialize(json);
-        var json2 = serializer.Serialize(ent);
+        var ent = tuple.Value.Serializer.Deserialize(json);
+        var json2 = tuple.Value.Serializer.Serialize(ent);
         //Trace.Write($"{{ \"First\": {json}, \"Second\": {json2}}}");
         Equal(json, json2);//, "serialize, de-serialize, and serialize again should be the same!");
-    }
-
-
-    private string GetJsonOfEntity(int appId, int eId, JsonSerializer? ser = null)
-    {
-        ser ??= jsonTestHelpers.SerializerOfApp(appId);
-        var xmlEnt = ser.Serialize(eId);
-        return xmlEnt;
     }
 
 
@@ -68,7 +61,7 @@ public class JsonReSerialization(JsonSerializer jsonSerializer, IAppsAndZonesLoa
                 // maybe skip some
                 if (count++ < skip) continue;
 
-                Test_DoubleExportEntity(appId, appEntity.EntityId, exBuilder);
+                Test_DoubleExportEntity(appId, appEntity.EntityId, (app, exBuilder));
 
                 // stop if we ran enough tests
                 if (count >= maxCount)
