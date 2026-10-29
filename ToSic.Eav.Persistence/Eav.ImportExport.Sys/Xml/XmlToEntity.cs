@@ -29,8 +29,6 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
             .ToListOpt();
         EnvLangs = PrepareTargetToSourceLanguageMapping(envLanguages, envDefLang, srcLanguages, srcDefLang);
         EnvDefLang = envDefLang;
-        // seems unused 2025-06-10 2dm
-        //_srcDefLang = srcDefLang?.ToString();
         return this;
     }
 
@@ -172,37 +170,10 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
             );
 
 
-        //IList<TargetLanguageToSourceLanguage> envLangsSortedByPriority = EnvLangs
-        //    .OrderByDescending(p => p.Matches(EnvDefLang))
-        //    .ThenBy(p => p.EnvironmentKey)
-        //    .ToListOpt();
-
         // Process each attribute (values grouped by StaticName)
         foreach (var sourceAttrib in valuesGroupedByStaticName)
         {
             var lAttrib = LogDetails.Fn(sourceAttrib.StaticName);
-            //var xmlValuesOfAttrib = sourceAttrib.Values;
-            //var tempTargetValues = new List<XmlValueToImport>();
-
-            //// Process each target's language
-            //foreach (var envLang in envLangsSortedByPriority)
-            //{
-            //    var maybeExactMatch = FindAttribWithLanguageMatch(envLang, xmlValuesOfAttrib);
-            //    var sourceValueNode = maybeExactMatch.Element;
-            //    var readOnly = maybeExactMatch.ReadOnly;
-
-            //    // Take first value if there is only one value without a dimension (default / fallback value), but only in primary language
-            //    if (sourceValueNode == null && xmlValuesOfAttrib.Count > 0 && envLang.Matches(EnvDefLang))
-            //        sourceValueNode = GetFallbackAttributeInXml(xmlValuesOfAttrib);
-
-            //    // Override ReadOnly for primary target language
-            //    if (envLang.Matches(EnvDefLang))
-            //        readOnly = false;
-
-            //    // Process found value
-            //    if (sourceValueNode != null)
-            //        AddNodeToImportListOrEnhancePrevious(sourceValueNode, tempTargetValues, envLang, readOnly);
-            //}
 
             // Process each target's language
             var tempTargetValues = new XmlValueListHelper(EnvDefLang, EnvLangs, Log, LogSettings).CreateList(sourceAttrib.Values);
@@ -269,99 +240,4 @@ public class XmlToEntity(IGlobalDataService globalData, DataAssembler dataAssemb
         return wrap.Return(targetEntity, $"returning {guid} of type {globalTypeIfFound?.Name ?? typeName} with attribs:{finalAttributes.Count} and metadata: {mdTarget != null!}");
     }
 
-    ///// <summary>
-    ///// Either add the node to the import list with the dimensions, 
-    ///// OR if it is already in the queue, add the dimension information
-    ///// </summary>
-    ///// <param name="sourceValueNode"></param>
-    ///// <param name="tempTargetValues"></param>
-    ///// <param name="envLang"></param>
-    ///// <param name="readOnly"></param>
-    //private void AddNodeToImportListOrEnhancePrevious(XElement sourceValueNode, List<XmlValueToImport> tempTargetValues, TargetLanguageToSourceLanguage envLang, bool readOnly)
-    //{
-    //    var l = LogDetails.Fn();
-    //    var logText = "";
-    //    var dimensionsToAdd = new List<ILanguage>();
-    //    if (EnvLangs.Single(p => p.Matches(envLang.EnvironmentKey)).DimensionId > 0)
-    //    {
-    //        dimensionsToAdd.Add(new Language(envLang.EnvironmentKey, readOnly));
-    //        logText += "built dimension-list";
-    //    }
-
-    //    // If value has already been added to the list, add just dimension with original ReadOnly state
-    //    var existingImportValue = tempTargetValues.FirstOrDefault(p => p.XmlValue == sourceValueNode);
-    //    if (existingImportValue != null)
-    //    {
-    //        existingImportValue.Dimensions.AddRange(dimensionsToAdd);
-    //        logText += "targetNode already used for another node, just added dimension";
-    //    }
-    //    else
-    //    {
-    //        tempTargetValues.Add(new()
-    //        {
-    //            Dimensions = dimensionsToAdd,
-    //            XmlValue = sourceValueNode
-    //        });
-    //        logText += "targetNode was not used yet, added it";
-    //    }
-
-    //    l.Done(logText);
-    //}
-
-    //private XElement GetFallbackAttributeInXml(ICollection<XElement> xmlValuesOfAttrib)
-    //{
-    //    var l = LogDetails.Fn<XElement>();
-    //    // First, try to take a fallback node without language assignments
-    //    var sourceValueNode = xmlValuesOfAttrib
-    //        .FirstOrDefault(xv =>
-    //        {
-    //            var dimNodes = xv.Elements(XmlConstants.ValueDimNode).ToListOpt();
-    //            // keep it if it has no dimensions, or if it has a dimensionId of 0
-    //            return !dimNodes.Any() || dimNodes.Any(x => x.Attribute(XmlConstants.DimId)?.Value == "0");
-    //        });
-
-
-    //    // Still nothing found, just take the first one, no matter what's language it's for
-    //    // this should probably never happen, but just in case...
-    //    if (sourceValueNode == null)
-    //    {
-    //        l.W("node still null - this indicates a problem! will just use first match");
-    //        sourceValueNode = xmlValuesOfAttrib.First();
-    //    }
-    //    return l.Return(sourceValueNode);
-    //}
-
-    //private (XElement? Element, bool ReadOnly) FindAttribWithLanguageMatch(TargetLanguageToSourceLanguage envLang, ICollection<XElement> xmlValuesOfAttrib)
-    //{
-    //    var l = LogDetails.Fn<(XElement? Element, bool ReadOnly)>(envLang.EnvironmentKey);
-    //    XElement? sourceValueNode = null;
-    //    var readOnly = false;
-
-    //    // find the xml-node which best matches the language we want to fill in
-    //    foreach (var sourceLanguage in envLang.PrioritizedDimensions)
-    //    {
-    //        var dimensionId = sourceLanguage.DimensionId.ToString();
-    //        // find a possible match for exactly this language
-    //        sourceValueNode = xmlValuesOfAttrib
-    //            .FirstOrDefault(p =>
-    //                p.Elements(XmlConstants.ValueDimNode)
-    //                    .Any(d => d.Attribute(XmlConstants.DimId)?.Value == dimensionId)
-    //            );
-    //        if (sourceValueNode == null)
-    //            continue;
-
-    //        // if match found, check what the read/write should be
-    //        var textVal = sourceValueNode
-    //            .Elements(XmlConstants.ValueDimNode)
-    //            .FirstOrDefault(p => p.Attribute(XmlConstants.DimId)?.Value == dimensionId)?
-    //            .Attribute("ReadOnly")?.Value ?? "false";
-
-    //        readOnly = bool.Parse(textVal);
-
-    //        l.A($"node for {envLang.EnvironmentKey} on Dim:{sourceLanguage.DimensionId}; readOnly: {readOnly}");
-    //        break;
-    //    }
-
-    //    return l.Return((sourceValueNode, readOnly), (sourceValueNode != null).ToString());
-    //}
 }
