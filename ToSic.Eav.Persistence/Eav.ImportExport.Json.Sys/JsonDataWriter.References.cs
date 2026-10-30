@@ -7,7 +7,7 @@ partial class JsonSerializer
         var l = LogDsDetails.Fn<Dictionary<string, Dictionary<string, string?>>>();
         try
         {
-            var converter = services.ValueConverter.Value;
+            var converter = valConverter.Value;
             var converted = links.ToDictionary(
                 pair => pair.Key,
                 pair => pair.Value.ToDictionary(

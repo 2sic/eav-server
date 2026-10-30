@@ -3,13 +3,6 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class SerializerExtensions
 {
-    //[ShowApiWhenReleased(ShowApiMode.Never)]
-    //public static JsonSerializer SetApp(this JsonSerializer serializer, IAppReader appReader)
-    //{
-    //    var l = serializer.Log.Fn<JsonSerializer>();
-    //    serializer.Initialize(new(appReader));
-    //    return l.Return(serializer);
-    //}
     [ShowApiWhenReleased(ShowApiMode.Never)]
     public static IJsonDataReader SetApp(this IJsonDataReader serializer, IAppReader appReader) // SerializerBase
     {

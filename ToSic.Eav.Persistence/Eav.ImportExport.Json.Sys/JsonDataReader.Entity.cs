@@ -4,7 +4,7 @@ using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataReader
 {
 
     public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false) 
@@ -61,9 +61,9 @@ partial class JsonSerializer
 
 
         l.A("build entity");
-        var builder = services.DataAssembler;
+        var builder = dataAssembler;
         var partsBuilder = builder.EntityConnection.UseOptional(source: DesOptions?.AppReaderOrNull?.AppState, metadata: mdItems);
-        var newEntity = services.DataAssembler.Entity.Create(
+        var newEntity = dataAssembler.Entity.Create(
             appId: DesOptions?.AppId ?? 0,
             guid: jEnt.Guid,
             entityId: jEnt.Id,

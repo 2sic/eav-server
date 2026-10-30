@@ -1,26 +1,22 @@
-﻿using ToSic.Eav.Data.Build.Sys;
-using ToSic.Eav.Data.Sys.Global;
-using ToSic.Eav.Data.Sys.ValueConverter;
+﻿using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.Metadata.Targets;
+using static ToSic.Eav.ImportExport.Json.Sys.JsonDataReader;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer(JsonSerializer.Dependencies services/*, string logName = "Jsn.Serlzr"*/): ServiceBase(/*services,*/ /*logName*/"Jsn.Serlzr"), IJsonDataReader, IJsonDataWriter
+public partial class JsonSerializer(ITargetTypeService mdTargetSvc, LazySvc<IValueConverter> valConverter)
+    : ServiceBase("Jsn.DWrite", connect: [mdTargetSvc, valConverter]), IJsonDataWriter
 {
-    public const string ReadOnlyMarker = "~";
-    public const string NoLanguage = "*";
+    public void Initialize(JsonDataReadOptions options)
+    {
+        DesOptions = options;
+    }
+    public JsonDataReadOptions DesOptions
+    {
+        get => field ?? throw new("Can't use DeserializationOptions - you forgot to call Init");
+        set;
+    } = null!;
 
-    #region Serializer Dependencies / MyServices
-
-    public record Dependencies(
-        ITargetTypeService MetadataTargets,
-        IGlobalDataService GlobalData,
-        DataAssembler DataAssembler,
-        ContentTypeAssemblyKit ContentTypeAssemblyKit,
-        LazySvc<IValueConverter> ValueConverter)
-        : DependenciesBase(/*DataAssembler,*/ /*ContentTypeAssemblyKit,*/ /*GlobalData,*/ connect: [ValueConverter, MetadataTargets]);
-
-    #endregion
 
     #region Special Loggers
 
@@ -28,7 +24,7 @@ partial class JsonSerializer(JsonSerializer.Dependencies services/*, string logN
     {
         var l = Log.Fn(settings.ToString());
         _disableLogDetails = Log.IfDetails(settings) == null;
-        _disableLogSummary = Log.IfSummary(settings) == null;
+        //_disableLogSummary = Log.IfSummary(settings) == null;
         l.Done();
     }
 
@@ -41,8 +37,8 @@ partial class JsonSerializer(JsonSerializer.Dependencies services/*, string logN
     internal ILog? LogDsDetails => _disableLogDetails ? null : Log;
     private bool _disableLogDetails;
 
-    internal ILog? LogDsSummary => _disableLogSummary ? null : Log;
-    private bool _disableLogSummary;
+    //internal ILog? LogDsSummary => _disableLogSummary ? null : Log;
+    //private bool _disableLogSummary;
 
     #endregion
 

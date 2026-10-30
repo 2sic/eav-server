@@ -41,7 +41,7 @@ partial class JsonSerializer
             jsonFor = new()
             {
                 // #TargetTypeIdInsteadOfTarget - the Target should become obsolete
-                Target = services.MetadataTargets.GetName(entity.MetadataFor.TargetType),
+                Target = mdTargetSvc.GetName(entity.MetadataFor.TargetType),
                 TargetType = entity.MetadataFor.TargetType,
                 Guid = entity.MetadataFor.KeyGuid,
                 Number = entity.MetadataFor.KeyNumber,

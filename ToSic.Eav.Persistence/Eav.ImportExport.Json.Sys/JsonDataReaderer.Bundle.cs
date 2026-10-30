@@ -1,26 +1,11 @@
-﻿using System.Text.Json;
-using ToSic.Eav.Data.Sys.Entities.Sources;
+﻿using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.Serialization.Sys.Json;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class JsonSerializer
+partial class JsonDataReader
 {
-    public string SerializeJsonBundle(JsonBundle bundleList, int indentation)
-    {
-        return System.Text.Json.JsonSerializer.Serialize(
-            new JsonFormat
-            {
-                Bundles = [bundleList]
-            },
-            new JsonSerializerOptions(JsonOptions.UnsafeJsonWithoutEncodingHtml)
-            {
-                WriteIndented = indentation != 0
-            }
-        );
-    }
 
     public IList<ContentTypeWithEntities> GetContentTypesFromBundles(JsonFormat package)
     {

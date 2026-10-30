@@ -1,101 +1,52 @@
-﻿using ToSic.Eav.Data.Sys.Entities.Sources;
+﻿using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.Sys.Global;
+using ToSic.Eav.Metadata.Targets;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+public partial class JsonDataReader(ITargetTypeService mdTargetSvc, IGlobalDataService globalDataSvc, DataAssembler dataAssembler, ContentTypeAssemblyKit typeAssemblyKit)
+    : ServiceBase("Jsn.DaRead", connect: [mdTargetSvc, globalDataSvc, dataAssembler, typeAssemblyKit]), IJsonDataReader
 {
-    public record DeserializerOptions
-    {
-        public DeserializerOptions(IAppReader appReader)
-        {
-            AppId = appReader.AppId;
-            AppReaderOrNull = appReader;
-        }
-
-        public DeserializerOptions(int appId, IEnumerable<IContentType> types)
-        {
-            AppId = appId;
-            Types = types;
-        }
-
-        /// <summary>
-        /// Initialize with the app. One of two possible initializers. <br/>
-        /// This special initialization is important for deserialization scenarios where the full app-state doesn't exist.
-        /// </summary>
-        /// <param name="appId">the app-ID which contains the data to be serialized</param>
-        /// <param name="types">list of all content-types which the deserializer knows</param>
-        /// <param name="lazyRelationshipLookupList">list of all entities to use in deserialization</param>
-        public DeserializerOptions(int appId, IEnumerable<IContentType> types, IEntitiesSource? lazyRelationshipLookupList)
-        {
-            AppId = appId;
-            Types = types;
-            LazyRelationshipLookupList = lazyRelationshipLookupList;
-        }
-
-        public int AppId { get; }
-        public IAppReader? AppReaderOrNull { get; }
-
-        public IEnumerable<IContentType>? Types { get; private init; }
-
-        public IEntitiesSource? LazyRelationshipLookupList
-        {
-            get => field ??= (AppReaderOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)")).AppState;
-            private init;
-        }
-
-        /// <summary>
-        /// Ability to inject a different TransientContentTypeGenerator and other parameters
-        /// just for deserialization
-        /// </summary>
-        public JsonDeSerializationSettings? DeserializationSettings { get; init; } = null;
-
-        public bool PreferLocalAppTypes { get; init; }
-
-        public bool AssumeUnknownTypesAreDynamic { get; init; } = false;
-
-    }
-
-    public DeserializerOptions DesOptions
+    public JsonDataReadOptions DesOptions
     {
         get => field ?? throw new("Can't use DeserializationOptions - you forgot to call Init");
         set;
     } = null!;
 
 
-    //public void Initialize(IAppReader appReader)
-    //{
-    //    AppReaderOrNull = appReader;
-    //    AppId = appReader.AppId;
-    //}
-    public void Initialize(DeserializerOptions options)
+    public void Initialize(JsonDataReadOptions options)
     {
         DesOptions = options;
     }
-    public IJsonDataReader Setup(DeserializerOptions options)
+    public IJsonDataReader Setup(JsonDataReadOptions options)
     {
         DesOptions = options;
         return this;
     }
 
-    //protected int AppId;
 
-    //public void Initialize(int appId, IEnumerable<IContentType> types, IEntitiesSource? allEntities)
-    //{
-    //    AppId = appId;
-    //    _types = types;
-    //    _relList = allEntities;
-    //}
+    private JsonDeserializeEntityHelper JsonDeserializeEntityHelper => field ??= new(globalDataSvc, typeAssemblyKit, DesOptions, LogDsDetails);
 
-    //protected IEntitiesSource LazyRelationshipLookupList => _relList ??= (AppReaderOrNull ?? throw new("cannot use app in serializer without initializing it first, make sure you call Initialize(...)")).AppState;
-    //private IEntitiesSource? _relList;
 
-    //protected IAppReader? AppReaderOrNull { get; private set; }
 
-    ///// <summary>
-    ///// Ability to inject a different TransientContentTypeGenerator and other parameters
-    ///// just for deserialization
-    ///// </summary>
-    //internal JsonDeSerializationSettings? DeserializationSettings { get; set; } = null;
 
-    private JsonDeserializeEntityHelper JsonDeserializeEntityHelper => field ??= new(services.GlobalData, services.ContentTypeAssemblyKit, DesOptions, LogDsDetails);
+    public void ConfigureLogging(LogSettings settings)
+    {
+        var l = Log.Fn(settings.ToString());
+        _disableLogDetails = Log.IfDetails(settings) == null;
+        _disableLogSummary = Log.IfSummary(settings) == null;
+        l.Done();
+    }
+    public new ILog Log => base.Log;
+
+    /// <summary>
+    /// Logger for the details of the deserialization process.
+    /// Goal is that it can be enabled/disabled as needed.
+    /// </summary>
+    internal ILog? LogDsDetails => _disableLogDetails ? null : Log;
+    private bool _disableLogDetails;
+
+    internal ILog? LogDsSummary => _disableLogSummary ? null : Log;
+    private bool _disableLogSummary;
+
 }

@@ -5,15 +5,15 @@ using static System.StringComparer;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataReader
 {
 
 
     private IReadOnlyDictionary<string, IAttribute> BuildAttribsOfUnknownContentType(JsonAttributes jAttributes, IEntitiesSource? relationshipsSource = null)
     {
         var l = LogDsDetails.Fn<IReadOnlyDictionary<string, IAttribute>>(timer: true);
-        var valBuilder = services.DataAssembler.Value;
-        var relBuilder = services.DataAssembler.Relationship;
+        var valBuilder = dataAssembler.Value;
+        var relBuilder = dataAssembler.Relationship;
         var attribs = new[]
         {
             BuildAttrib(jAttributes.DateTime, ValueTypes.DateTime, valBuilder.DateTime),
@@ -37,7 +37,7 @@ partial class JsonSerializer
             if (list == null)
                 return null;
 
-            var builder = services.DataAssembler;
+            var builder = dataAssembler;
             var newAttributes = list.ToDictionary(
                 a => a.Key,
                 attrib => builder.Attribute.Create(
@@ -63,7 +63,7 @@ partial class JsonSerializer
                 a =>
                 {
                     var values = GetValues(a, jAttributes, relationshipsSource);
-                    return services.DataAssembler.Attribute.Create(a.Name, a.Type, values);
+                    return dataAssembler.Attribute.Create(a.Name, a.Type, values);
                 },
                 InvariantCultureIgnoreCase
             );

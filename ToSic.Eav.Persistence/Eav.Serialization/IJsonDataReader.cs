@@ -14,7 +14,7 @@ namespace ToSic.Eav.Serialization;
 public interface IJsonDataReader: IHasLog
 {
     //void Initialize(IAppReader appReader);
-    void Initialize(JsonSerializer.DeserializerOptions options);
+    void Initialize(JsonDataReadOptions options);
 
     public void ConfigureLogging(LogSettings settings);
 
@@ -70,8 +70,8 @@ public interface IJsonDataReader: IHasLog
     IList<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource? relationshipSource = null);
     IContentType DeserializeContentType(string serialized);
     ContentTypeWithEntities ConvertContentType(JsonContentTypeSet json);
-    public IJsonDataReader Setup(JsonSerializer.DeserializerOptions options);
+    public IJsonDataReader Setup(JsonDataReadOptions options);
     BundleEntityWithAssets DeserializeEntityWithAssets(string serialized, bool allowDynamic = false, bool skipUnknownType = false);
     IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource? dynRelationshipsSource = null);
-    JsonSerializer.DeserializerOptions DesOptions { get; set; }
+    JsonDataReadOptions DesOptions { get; set; }
 }

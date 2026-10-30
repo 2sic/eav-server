@@ -1,10 +1,9 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Global;
-using static ToSic.Eav.ImportExport.Json.Sys.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-internal class JsonDeserializeEntityHelper(IGlobalDataService globalData, ContentTypeAssemblyKit contentTypeAssemblyKit, DeserializerOptions options, ILog? logDsDetails)
+internal class JsonDeserializeEntityHelper(IGlobalDataService globalData, ContentTypeAssemblyKit contentTypeAssemblyKit, JsonDataReadOptions options, ILog? logDsDetails)
 {
     private IAppReader AppReaderOrErrorLazy => field ??= options.AppReaderOrNull ?? throw new ArgumentNullException(nameof(options.AppReaderOrNull), "AppReader must be provided to get content types");
 

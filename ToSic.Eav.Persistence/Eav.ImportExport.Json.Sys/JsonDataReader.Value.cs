@@ -3,11 +3,11 @@ using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataReader
 {
     private IList<IValue> GetValues(IContentTypeField a, JsonAttributes jAttribs, IEntitiesSource? relationshipsSource)
     {
-        var relAssembler = services.DataAssembler.Relationship;
+        var relAssembler = dataAssembler.Relationship;
         return a.Type switch
         {
             ValueTypes.Boolean => BuildValues(jAttribs.Boolean, a),
@@ -35,7 +35,7 @@ partial class JsonSerializer
         if (dic == null || !dic.ContainsKey(attrDef.Name))
             return new List<IValue>();
         return dic[attrDef.Name]
-            .Select(IValue (v) => services.DataAssembler.Value.Create(v.Value, languages: RecreateLanguageList(v.Key)))
+            .Select(IValue (v) => dataAssembler.Value.Create(v.Value, languages: RecreateLanguageList(v.Key)))
             .ToListOpt();
     }
 

@@ -4,7 +4,6 @@ using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.Persistence.File;
-using ToSic.Eav.Serialization.Sys;
 using ToSic.Sys.Boot;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.Licenses;
@@ -19,21 +18,16 @@ public static class StartupEavPersistence
     {
         AddAppStateInFolder(services);
 
-        //services.TryAddTransient<IDataSerializer, JsonSerializer>();
-        services.TryAddTransient<IJsonDataReader, JsonSerializer>();
+        services.TryAddTransient<IJsonDataReader, JsonDataReader>();
         services.TryAddTransient<IJsonDataWriter, JsonSerializer>();
 
         services.TryAddTransient<JsonSerializer>();
-        services.TryAddTransient<JsonSerializer.Dependencies>();
-        //services.TryAddTransient<SerializerBase.Dependencies>();
 
         services.TryAddTransient<XmlSerializer>();
 
         services.TryAddTransient<FileSystemLoader>();
 
         services.TryAddTransient<XmlToEntity>();
-
-        //services.TryAddTransient<FileManager>();
 
         services.TryAddTransient<EntitySaver>();
 

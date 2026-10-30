@@ -3,7 +3,7 @@ using ToSic.Eav.Serialization.Sys.Json;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataReader
 {
     public JsonEntity UnpackEntityAndTestGenericJsonV1(string? serialized)
     {

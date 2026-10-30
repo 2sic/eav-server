@@ -7,7 +7,7 @@ using ToSic.Eav.ImportExport.Json.V1;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataReader
 {
     //public bool AssumeUnknownTypesAreDynamic { get; set; } = false;
 
@@ -94,7 +94,7 @@ partial class JsonSerializer
                         var attrMetadata = new ContentTypeFieldMetadata(key: default, type: valType,
                             name: jsonAttr.Name, sysSettings: attrSysSettings, source: mdSource);
 
-                        var attDef = services.ContentTypeAssemblyKit.Field
+                        var attDef = typeAssemblyKit.Field
                             .Create(
                                 appId: DesOptions?.AppId ?? 0,
                                 name: jsonAttr.Name,
@@ -123,7 +123,7 @@ partial class JsonSerializer
                 relationships.List.AddRange(ctMeta);
 
                 // Create the Content Type
-                var type = services.ContentTypeAssemblyKit.Type.Create(
+                var type = typeAssemblyKit.Type.Create(
                     appId: DesOptions?.AppId ?? 0,
                     name: jsonType.Name,
                     nameId: jsonType.Id,

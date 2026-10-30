@@ -12,7 +12,7 @@ namespace ToSic.Eav.Serialization;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IJsonDataWriter // formerly IDataSerializer
 {
-    void Initialize(JsonSerializer.DeserializerOptions options);
+    void Initialize(JsonDataReadOptions options);
 
     //void Initialize(IAppReader appReader);
 

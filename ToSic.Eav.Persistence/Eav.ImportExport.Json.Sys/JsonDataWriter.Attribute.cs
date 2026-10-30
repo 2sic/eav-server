@@ -62,10 +62,10 @@ partial class JsonSerializer
         {
             var langs = v.Languages
                 .OrderBy(l => l.ReadOnly)
-                .Select(l => (l.ReadOnly ? ReadOnlyMarker : "") + l.Key)
+                .Select(l => (l.ReadOnly ? JsonDataConstants.ReadOnlyMarker : "") + l.Key)
                 .ToArray();
             return string.Join(",", langs)
-                .UseFallbackIfNoValue(NoLanguage);
+                .UseFallbackIfNoValue(JsonDataConstants.NoLanguage);
         }
     }
 }

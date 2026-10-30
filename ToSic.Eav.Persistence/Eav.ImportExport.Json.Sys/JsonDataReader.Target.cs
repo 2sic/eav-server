@@ -3,7 +3,7 @@ using ToSic.Eav.Metadata.Targets;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataReader
 {
     private Target DeserializeEntityTarget(JsonEntity jEnt)
     {
@@ -15,7 +15,7 @@ partial class JsonSerializer
 
         var targetType = mdFor.TargetType != 0
             ? mdFor.TargetType
-            : services.MetadataTargets.GetId(mdFor.Target ?? ""); // #TargetTypeIdInsteadOfTarget, should be deprecated soon
+            : mdTargetSvc.GetId(mdFor.Target ?? ""); // #TargetTypeIdInsteadOfTarget, should be deprecated soon
 
         var target = new Target(
             targetType: targetType,

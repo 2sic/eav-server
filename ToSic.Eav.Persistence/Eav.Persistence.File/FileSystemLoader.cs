@@ -31,7 +31,7 @@ public partial class FileSystemLoader(Generator<IJsonDataReader> serializerGener
 
     internal void ResetSerializer(IJsonDataReader otherSerializer)
         => JsonReader = otherSerializer;
-    internal void ResetSerializerOpts(JsonSerializer.DeserializerOptions options)
+    internal void ResetSerializerOpts(JsonDataReadOptions options)
         => JsonReader = NewJsonReader().Setup(options);
 
     private IJsonDataReader NewJsonReader()
