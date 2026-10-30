@@ -144,14 +144,4 @@ partial class JsonSerializer
             );
         return entities;
     }
-
-    private static string LanguageKeyOfValue(IValue v)
-    {
-        var langs = v.Languages
-            .OrderBy(l => l.ReadOnly)
-            .Select(l => (l.ReadOnly ? ReadOnlyMarker : "") + l.Key)
-            .ToArray();
-        return string.Join(",", langs)
-            .UseFallbackIfNoValue(NoLanguage);
-    }
 }

@@ -6,10 +6,25 @@ namespace ToSic.Eav.Serialization.Sys;
 public static class SerializerExtensions
 {
     [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static T SetApp<T>(this T serializer, IAppReader appReader) where T : JsonSerializer // SerializerBase
+    public static JsonSerializer SetApp(this JsonSerializer serializer, IAppReader appReader)
     {
-        var l = serializer.Log.Fn<T>();
-        serializer.Initialize(new JsonSerializer.DeserializerOptions(appReader));
+        var l = serializer.Log.Fn<JsonSerializer>();
+        serializer.Initialize(new(appReader));
+        return l.Return(serializer);
+    }
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    public static IJsonDataReader SetApp(this IJsonDataReader serializer, IAppReader appReader) // SerializerBase
+    {
+        var l = (serializer as IHasLog)?.Log.Fn<IJsonDataReader>();
+        serializer.Initialize(new(appReader));
+        return l.Return(serializer);
+    }
+
+    [ShowApiWhenReleased(ShowApiMode.Never)]
+    public static IJsonDataWriter SetApp(this IJsonDataWriter serializer, IAppReader appReader) // SerializerBase
+    {
+        var l = (serializer as IHasLog)?.Log.Fn<IJsonDataWriter>();
+        serializer.Initialize(new(appReader));
         return l.Return(serializer);
     }
 

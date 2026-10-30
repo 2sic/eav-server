@@ -5,7 +5,7 @@ using ToSic.Eav.Metadata.Targets;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer(JsonSerializer.Dependencies services/*, string logName = "Jsn.Serlzr"*/): ServiceBase(/*services,*/ /*logName*/"Jsn.Serlzr"), IDataDeserializer
+partial class JsonSerializer(JsonSerializer.Dependencies services/*, string logName = "Jsn.Serlzr"*/): ServiceBase(/*services,*/ /*logName*/"Jsn.Serlzr"), IJsonDataReader, IJsonDataWriter
 {
     public const string ReadOnlyMarker = "~";
     public const string NoLanguage = "*";
@@ -54,6 +54,6 @@ partial class JsonSerializer(JsonSerializer.Dependencies services/*, string logN
     /// Otherwise it's not used, so don't publish this API anywhere
     /// </summary>
     [PrivateApi]
-    public bool ValueConvertHyperlinks = false;
+    public bool ValueConvertHyperlinks { get; set; } = false;
 
 }
