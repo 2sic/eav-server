@@ -17,7 +17,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 internal class EfcContentTypeLoaderService(
     EfcAppLoaderService efcAppLoader,
     Generator<IAppContentTypesLoader, AppFileSystemLoaderOptions> appFileContentTypesLoader,
-    Generator<IJsonDataReader> dataDeserializer,
+    Generator<IJsonDataReader, IJsonDataReader.Options> dataDeserializer,
     ContentTypeAssemblyKit ctAssemblyKit,
     IAppStateCacheService appStates,
     ISysFeaturesService featuresSvc)
@@ -108,8 +108,7 @@ internal class EfcContentTypeLoaderService(
 
         sqlTime.Stop();
 
-        var deserializer = dataDeserializer.New();
-        deserializer.Initialize(new(appId: appId, types: []));
+        var deserializer = dataDeserializer.New(new(appId: appId, types: []));
 
         var contentTypes = contentTypesSql
             .Select(set => new

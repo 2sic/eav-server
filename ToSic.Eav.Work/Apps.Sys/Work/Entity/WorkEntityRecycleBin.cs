@@ -11,7 +11,7 @@ using ToSic.Sys.Utils.Compression;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDataReader> jsonSerializer)
+public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer)
     : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcy", connect: [compressor, jsonSerializer])
 {
     /// <summary>
@@ -218,8 +218,7 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJso
 
         try
         {
-            var serializer = jsonSerializer.New();
-            serializer.Initialize(new(MyOptions.AppReader));
+            var serializer = jsonSerializer.New(new(MyOptions.AppReader));
             return serializer.Deserialize(json);
         }
         catch

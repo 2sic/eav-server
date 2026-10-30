@@ -9,7 +9,7 @@ namespace ToSic.Eav.DataSource.DbTests.Query;
 [Startup(typeof(StartupTestFullWithDb))]
 public class QueryBasicTest(
     IJsonDataWriter jsonSerializer,
-    IJsonDataReader jsonReader,
+    Generator<IJsonDataReader, IJsonDataReader.Options> jsonReader,
     QueryDefinitionService queryDefSvc,
     QueryFactory queryFactory,
     QueryDefinitionFactory queryDefFactory,
@@ -84,8 +84,8 @@ public class QueryBasicTest(
 
     private (IJsonDataWriter Writer, IJsonDataReader Reader) DeAndSerializer()
     {
-        jsonReader.Initialize(new(AppForQueryTests, new List<IContentType>()));
-        return (jsonSerializer, jsonReader);
+        var reader = jsonReader.New(new(AppForQueryTests, new List<IContentType>()));
+        return (jsonSerializer, reader);
     }
 
     [Fact]

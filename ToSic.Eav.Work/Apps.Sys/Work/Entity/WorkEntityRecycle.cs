@@ -1,14 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
 using ToSic.Eav.Serialization;
-using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
@@ -20,7 +18,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntityRecycle(
     AppCachePurger appCachePurger,
     LazySvc<ImportService> import,
-    LazySvc<IJsonDataReader> jsonSerializer,
+    Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer,
     LazySvc<Compressor> compressor,
     ISysFeaturesService featuresService)
     : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService])
@@ -136,7 +134,7 @@ public class WorkEntityRecycle(
         if (historySnapshots.Count == 0)
             return [];
 
-        var serializer = jsonSerializer.Value.SetApp(MyOptions.AppReader);
+        var serializer = jsonSerializer.New(new(MyOptions.AppReader));
         var importer = import.Value.Init(MyOptions.ZoneId, MyOptions.AppId, skipExistingAttributes: false, preserveUntouchedAttributes: false);
 
         var jsonEntities = new List<JsonEntity>();

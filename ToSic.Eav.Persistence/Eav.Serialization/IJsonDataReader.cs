@@ -10,9 +10,9 @@ namespace ToSic.Eav.Serialization;
 /// </summary>
 [PrivateApi("not ready for publishing")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial interface IJsonDataReader: IHasLog
+public partial interface IJsonDataReader: IHasLog, IServiceWithSetup<IJsonDataReader.Options>
 {
-    void Initialize(Options options);
+    //void Initialize(Options options);
 
     public void ConfigureLogging(LogSettings settings);
 
@@ -40,7 +40,7 @@ public partial interface IJsonDataReader: IHasLog
     IList<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource? relationshipSource = null);
     IContentType DeserializeContentType(string serialized);
     ContentTypeWithEntities ConvertContentType(JsonContentTypeSet json);
-    public IJsonDataReader Setup(Options options);
+    //public IJsonDataReader Setup(Options options);
     BundleEntityWithAssets DeserializeEntityWithAssets(string serialized, bool allowDynamic = false, bool skipUnknownType = false);
     IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource? dynRelationshipsSource = null);
     Options MyOptions { get; set; }

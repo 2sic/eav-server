@@ -3,7 +3,7 @@ using ToSic.Eav.Metadata.Targets;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-public partial class JsonSerializer(ITargetTypeService mdTargetSvc, LazySvc<IValueConverter> valConverter)
+internal partial class JsonSerializer(ITargetTypeService mdTargetSvc, LazySvc<IValueConverter> valConverter)
     : ServiceBase("Jsn.DWrite", connect: [mdTargetSvc, valConverter]), IJsonDataWriter
 {
 

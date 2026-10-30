@@ -11,7 +11,7 @@ using ToSic.Eav.Serialization.Sys;
 
 namespace ToSic.Testing.Performance.json;
 
-public class TestGenerateJsonForApps(EavDbContext db, Generator<IJsonDataWriter> jsonWriteGen, Generator<IJsonDataReader> jsonReadGen, Generator<EfcAppLoaderService> loaderGenerator)
+public class TestGenerateJsonForApps(EavDbContext db, Generator<IJsonDataWriter> jsonWriteGen, Generator<IJsonDataReader, IJsonDataReader.Options> jsonReadGen, Generator<EfcAppLoaderService> loaderGenerator)
 {
     public const int OldTestAppOn2dmDnn = 269; // app on 2dms DNN previously - the tractor app on http://2sexycontent.2dm.2sic/owner-filter/tractor-app;
 
@@ -36,7 +36,7 @@ public class TestGenerateJsonForApps(EavDbContext db, Generator<IJsonDataWriter>
     public int SerializeAll(int repeat, List<string> entitiesAsJson)
     {
         var count = 0;
-        var ser = jsonReadGen.New().SetApp(AppReaderRaw);
+        var ser = jsonReadGen.New(new(AppReaderRaw));
         for (var i = 0; i < repeat; i++)
         {
             var ents = ser.Deserialize(entitiesAsJson);

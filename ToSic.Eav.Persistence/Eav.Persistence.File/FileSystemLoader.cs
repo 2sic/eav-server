@@ -13,7 +13,7 @@ using static ToSic.Eav.ImportExport.Sys.ImpExpConstants;
 namespace ToSic.Eav.Persistence.File;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class FileSystemLoader(Generator<IJsonDataReader> serializerGenerator, Generator<IJsonDataWriter> jsonWriter, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
+public partial class FileSystemLoader(Generator<IJsonDataReader, IJsonDataReader.Options> serializerGenerator, Generator<IJsonDataWriter> jsonWriter, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
     : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, jsonWriter, dataAssembler, ctAssemblyKit]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
 {
     private FileSystemLoaderOptions Options { get; set; } = null!;
@@ -32,19 +32,17 @@ public partial class FileSystemLoader(Generator<IJsonDataReader> serializerGener
     internal void ResetSerializer(IJsonDataReader otherSerializer)
         => JsonReader = otherSerializer;
     internal void ResetSerializerOpts(IJsonDataReader.Options options)
-        => JsonReader = NewJsonReader().Setup(options);
+        => JsonReader = serializerGenerator.New(options);
 
-    private IJsonDataReader NewJsonReader()
+    private IJsonDataReader NewJsonReader(IJsonDataReader.Options options)
     {
-        var ser = serializerGenerator.New();
+        var ser = serializerGenerator.New(options);
         ser.ConfigureLogging(Options.LogSettings);
         return ser;
     }
 
     private IJsonDataReader InitialSerializerDynamic()
     {
-        var ser = NewJsonReader();
-
         var entitySource = Options.EntitiesSource;
         var l = Log.Fn<IJsonDataReader>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
         // #SharedFieldDefinition
@@ -59,7 +57,7 @@ public partial class FileSystemLoader(Generator<IJsonDataReader> serializerGener
                 // if we ever need it, check out how it's done on the AppLoader
             }
             : null;
-        ser.Initialize(new(Options.AppId, [])
+        var ser = NewJsonReader(new(Options.AppId, [])
         {
             DeserializationSettings = deSerSettings,
             AssumeUnknownTypesAreDynamic = true,
@@ -112,12 +110,11 @@ public partial class FileSystemLoader(Generator<IJsonDataReader> serializerGener
             .ToListOpt();
 
         // TEMP: DEBUG SERIALIZER SETTINGS
-        l.A($"Serializer: '{(JsonReader as JsonSerializer)?.LogDsDetails}'");
+        // l.A($"Serializer: '{(JsonReader as JsonDataReader)?.LogDsDetails}'");
 
         // #3.2 load entity-items from folder
-        var jsonSerializer = JsonReader;
         var entities = jsons
-            .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++EntityIdSeed, relationshipsSource))
+            .Select(json => LoadAndBuildEntity(JsonReader, json, ++EntityIdSeed, relationshipsSource))
             .Where(entity => entity != null)
             .Cast<IEntity>()
             .ToListOpt();

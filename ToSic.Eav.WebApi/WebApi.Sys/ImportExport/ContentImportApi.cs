@@ -17,7 +17,7 @@ namespace ToSic.Eav.WebApi.Sys.ImportExport;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentImportApi(
     LazySvc<ImportListXml> importListXml,
-    LazySvc<IJsonDataReader> jsonReaderLazy,
+    Generator<IJsonDataReader, IJsonDataReader.Options> jsonReaderLazy,
     AppCachePurger appCachePurger,
     AppWorkQuick<WorkEntitySave> workEntSave,
     IAppsCatalog appsCatalog,
@@ -110,7 +110,7 @@ public class ContentImportApi(
         var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
         try
         {
-            var deserializer = jsonReaderLazy.Value.Setup(new(_appReader) { PreferLocalAppTypes = true });
+            var deserializer = jsonReaderLazy.New(new(_appReader) { PreferLocalAppTypes = true });
             // Since we're importing directly into this app, we prefer local content-types
             //deserializer.PreferLocalAppTypes = true;
 

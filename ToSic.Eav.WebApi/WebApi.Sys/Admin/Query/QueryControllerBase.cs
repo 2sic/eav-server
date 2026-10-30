@@ -36,7 +36,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
         LazySvc<ConvertToEavLight> EntToDicLazy,
         LazySvc<QueryInspectionService> QueryInfoLazy,
         LazySvc<DataSourceCatalog> DataSourceCatalogLazy,
-        Generator<IJsonDataReader> JsonSerializer,
+        Generator<IJsonDataReader, IJsonDataReader.Options> JsonSerializer,
         Generator<PassThrough> PassThrough,
         LazySvc<QueryDefinitionService> QueryDefSvc,
         Generator<IAppReaderFactory> AppStates,
@@ -254,7 +254,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
         try
         {
             var workUnit = Services.WorkUnitQueryCopy.New(appId: args.AppId);
-            var deser = Services.JsonSerializer.New().SetApp(workUnit.MyOptions.AppReader);
+            var deser = Services.JsonSerializer.New(new(workUnit.MyOptions.AppReader));
             var ents = deser.Deserialize(args.GetContentString());
             var qdef = Services.QueryDefSvc.Value.GetDefinition(args.AppId, ents);
             workUnit.SaveCopy(qdef);

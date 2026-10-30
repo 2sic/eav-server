@@ -8,7 +8,7 @@ using ToSic.Eav.Serialization.Sys;
 
 namespace ToSic.Eav.ImportExport.Tests.Json;
 
-public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoaderService loader, Generator<IJsonDataWriter> jsonWriteGen, Generator<IJsonDataReader> jsonReadGen)
+public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoaderService loader, Generator<IJsonDataWriter> jsonWriteGen, Generator<IJsonDataReader, IJsonDataReader.Options> jsonReadGen)
 {
 #if NETCOREAPP
     [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
@@ -20,7 +20,7 @@ public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoaderService loader,
     public IJsonDataReader JsonReaderOfApp(int appId)
     {
         var appReader = Loader.AppStateReaderRawTac(appId);
-        return jsonReadGen.New().SetApp(appReader);
+        return jsonReadGen.New(new(appReader));
     }
     public (IAppReader Reader, IJsonDataWriter Serializer) ReaderAndSerializerOfApp(int appId)
     {

@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntityVersioning(
     AppCachePurger appCachePurger,
     LazySvc<ImportService> import,
-    LazySvc<IJsonDataReader> jsonSerializer)
+    Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer)
     : ServiceWithSetup<IAppWorkContext>("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import])
 {
 
@@ -40,8 +40,8 @@ public class WorkEntityVersioning(
         }
         
         var newVersion = jsonSerializer
-            .SetInit(j => j.SetApp(MyOptions.AppReader))
-            .Value.Deserialize(timelineItem);
+            .New(new(MyOptions.AppReader))
+            .Deserialize(timelineItem);
 
         // Restore Entity
         import.SetInit(i => i.Init(MyOptions.ZoneId, MyOptions.AppId, false, false))

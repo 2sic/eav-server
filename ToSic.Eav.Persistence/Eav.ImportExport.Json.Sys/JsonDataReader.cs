@@ -4,25 +4,20 @@ using ToSic.Eav.Metadata.Targets;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-public partial class JsonDataReader(ITargetTypeService mdTargetSvc, IGlobalDataService globalDataSvc, DataAssembler dataAssembler, ContentTypeAssemblyKit typeAssemblyKit)
-    : ServiceBase("Jsn.DaRead", connect: [mdTargetSvc, globalDataSvc, dataAssembler, typeAssemblyKit]), IJsonDataReader
+internal partial class JsonDataReader(ITargetTypeService mdTargetSvc, IGlobalDataService globalDataSvc, DataAssembler dataAssembler, ContentTypeAssemblyKit typeAssemblyKit)
+    : ServiceWithSetup<IJsonDataReader.Options>("Jsn.DaRead", connect: [mdTargetSvc, globalDataSvc, dataAssembler, typeAssemblyKit]), IJsonDataReader
 {
-    public IJsonDataReader.Options MyOptions
+    /// <summary>
+    /// Temporary solution to surface this property, so it can be replaced temporarily.
+    /// TODO: A better fix should be done in future, basically the caller should use two separate serializers.
+    /// </summary>
+    IJsonDataReader.Options IJsonDataReader.MyOptions
     {
-        get => field ?? throw new("Can't use DeserializationOptions - you forgot to call Init");
+        get => field ??= base.MyOptions ?? throw new("Can't use DeserializationOptions - you forgot to call Init");
         set;
-    } = null!;
-
-
-    public void Initialize(IJsonDataReader.Options options)
-    {
-        MyOptions = options;
     }
-    public IJsonDataReader Setup(IJsonDataReader.Options options)
-    {
-        MyOptions = options;
-        return this;
-    }
+
+    public override IJsonDataReader.Options MyOptions => (this as IJsonDataReader).MyOptions;
 
 
     private JsonDeserializeEntityHelper JsonDeserializeEntityHelper => field ??= new(globalDataSvc, typeAssemblyKit, MyOptions, LogDsDetails);

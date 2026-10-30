@@ -39,7 +39,7 @@ public class EfcAppLoaderService(
     ISysFeaturesService sysFeaturesSvc,
     DataAssembler dataAssembler,
     ContentTypeAssemblyKit ctAssemblyKit,
-    Generator<IJsonDataReader> dataDeserializer,
+    Generator<IJsonDataReader, IJsonDataReader.Options> dataDeserializer,
     Generator<IAppContentTypesLoader, AppFileSystemLoaderOptions> appFileContentTypesLoader,
     Generator<IAppStateBuilder> appStateBuilder)
     : ServiceBase("Db.Efc11",
@@ -378,8 +378,7 @@ public class EfcAppLoaderService(
                 return l.Return((null, null), "no json");
 
             l.A("app Entity found - this json: " + json);
-            var deserializer = dataDeserializer.New();
-            deserializer.Initialize(new(appId, []));
+            var deserializer = dataDeserializer.New(new(appId, []));
             if (deserializer.Deserialize(json!, true, true) is not { } appConfig)
                 return l.Return((null, null), "can't deserialize");
             var path = appConfig.Get<string>(AppLoadConstants.FieldFolder);

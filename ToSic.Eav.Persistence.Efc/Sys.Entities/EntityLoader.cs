@@ -2,7 +2,6 @@
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Build.Sys;
-using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.Relationships;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Persistence.Efc.Sys.TempModels;
@@ -14,7 +13,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityLoader(
     EfcAppLoaderService appLoader,
-    Generator<IJsonDataReader> dataDeserializer,
+    Generator<IJsonDataReader, IJsonDataReader.Options> dataDeserializer,
     DataAssembler dataAssembler,
     ContentTypeAssemblyKit ctAssemblyKit,
     ISysFeaturesService featuresSvc)
@@ -82,8 +81,7 @@ internal class EntityLoader(
 
         #region Build EntityModels
 
-        var serializer = dataDeserializer.New();
-        serializer.Initialize(new(builder.Reader));
+        var serializer = dataDeserializer.New(new(builder.Reader));
         serializer.ConfigureLogging(appLoader.LogSettings);
         l.A($"🪵 Using LogSettings: {appLoader.LogSettings}");
 
