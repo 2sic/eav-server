@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataWriter
 {
     private Dictionary<string, Dictionary<string, string?>> ConvertReferences(Dictionary<string, Dictionary<string, string?>> links, Guid entityGuid)
     {

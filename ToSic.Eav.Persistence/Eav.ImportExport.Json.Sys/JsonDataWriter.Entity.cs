@@ -7,7 +7,7 @@ using ToSic.Eav.Serialization.Sys.Json;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataWriter
 {
     public /*override*/ string Serialize(IEntity entity)
         => Serialize(entity, 0);

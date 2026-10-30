@@ -8,7 +8,7 @@ using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataWriter
 {
     public string Serialize(IContentType contentType, JsonSerializationSettings? settings = default)
     {

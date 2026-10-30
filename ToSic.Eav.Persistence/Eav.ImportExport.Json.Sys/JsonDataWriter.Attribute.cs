@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
-partial class JsonSerializer
+partial class JsonDataWriter
 {
 
     /// <summary>

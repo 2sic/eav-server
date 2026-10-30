@@ -19,9 +19,9 @@ public static class StartupEavPersistence
         AddAppStateInFolder(services);
 
         services.TryAddTransient<IJsonDataReader, JsonDataReader>();
-        services.TryAddTransient<IJsonDataWriter, JsonSerializer>();
+        services.TryAddTransient<IJsonDataWriter, JsonDataWriter>();
 
-        services.TryAddTransient<JsonSerializer>();
+        services.TryAddTransient<JsonDataWriter>();
 
         services.TryAddTransient<XmlSerializer>();
 
