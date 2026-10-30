@@ -12,10 +12,6 @@ namespace ToSic.Eav.Serialization;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IJsonDataWriter // formerly IDataSerializer
 {
-    void Initialize(JsonDataReadOptions options);
-
-    //void Initialize(IAppReader appReader);
-
     ///// <summary>
     ///// Serialize an entity to a string - NOTE: ONLY SEEMS TO BE USED IN TESTS
     ///// </summary>

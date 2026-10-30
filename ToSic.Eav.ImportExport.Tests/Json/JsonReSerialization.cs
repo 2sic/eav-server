@@ -50,7 +50,6 @@ public class JsonReSerialization(IJsonDataWriter jsonSerializer, IAppsAndZonesLo
     {
         //var loader = _loader; 
         var app = loader.AppStateReaderRawTac(appId);
-        var exBuilder = jsonSerializer.SetApp(app);
 
         var maxCount = 1000;
         var skip = 0;
@@ -62,7 +61,7 @@ public class JsonReSerialization(IJsonDataWriter jsonSerializer, IAppsAndZonesLo
                 // maybe skip some
                 if (count++ < skip) continue;
 
-                Test_DoubleExportEntity(appId, appEntity.EntityId, (app, exBuilder));
+                Test_DoubleExportEntity(appId, appEntity.EntityId, (app, jsonSerializer));
 
                 // stop if we ran enough tests
                 if (count >= maxCount)

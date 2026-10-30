@@ -31,7 +31,7 @@ public partial class FileSystemLoader(Generator<IJsonDataReader> serializerGener
 
     internal void ResetSerializer(IJsonDataReader otherSerializer)
         => JsonReader = otherSerializer;
-    internal void ResetSerializerOpts(JsonDataReadOptions options)
+    internal void ResetSerializerOpts(IJsonDataReader.Options options)
         => JsonReader = NewJsonReader().Setup(options);
 
     private IJsonDataReader NewJsonReader()
@@ -59,7 +59,12 @@ public partial class FileSystemLoader(Generator<IJsonDataReader> serializerGener
                 // if we ever need it, check out how it's done on the AppLoader
             }
             : null;
-        ser.Initialize(new(Options.AppId, [], entitySource) { DeserializationSettings = deSerSettings, AssumeUnknownTypesAreDynamic = true });
+        ser.Initialize(new(Options.AppId, [])
+        {
+            DeserializationSettings = deSerSettings,
+            AssumeUnknownTypesAreDynamic = true,
+            LazyRelationshipLookupList = entitySource,
+        });
         //ser.AssumeUnknownTypesAreDynamic = true;
         return l.Return(ser);
     }

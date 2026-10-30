@@ -11,12 +11,4 @@ public static class SerializerExtensions
         return l.Return(serializer);
     }
 
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public static IJsonDataWriter SetApp(this IJsonDataWriter serializer, IAppReader appReader) // SerializerBase
-    {
-        var l = (serializer as IHasLog)?.Log.Fn<IJsonDataWriter>();
-        serializer.Initialize(new(appReader));
-        return l.Return(serializer);
-    }
-
 }

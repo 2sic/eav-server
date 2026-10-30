@@ -94,7 +94,7 @@ public class ContentExportApi(
         var l = Log.Fn<THttpResponseType>($"get fields type:{name}");
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
         var type = _appCtx.AppReader.GetContentType(name);
-        var serializer = jsonSerializer.New().SetApp(_appCtx.AppReader);
+        var serializer = jsonSerializer.New();
         var fileName = (type.Scope + "." + type.NameId + ImpExpConstants.Extension(ImpExpConstants.Files.json))
             .RemoveNonFilenameCharacters();
 
@@ -113,7 +113,7 @@ public class ContentExportApi(
         SecurityHelpers.ThrowIfNotSiteAdmin(user, l);
         var entity = _appCtx.AppReader.List.FindRepoId(id)
             ?? throw new($"Can't find entity with id {id}");
-        var serializer = jsonSerializer.New().SetApp(_appCtx.AppReader);
+        var serializer = jsonSerializer.New();
 
         return l.ReturnAsOk(responseMaker.File(
             serializer.Serialize(entity, withMetadata ? FileSystemLoaderConstants.QueryMetadataDepth : 0),
@@ -182,7 +182,7 @@ public class ContentExportApi(
         // find all decorator metadata of type SystemExportDecorator
         l.A($"metadataExportMarkers:{export.ExportMarkers.Count}");
 
-        var serializer = jsonSerializer.New().SetApp(_appCtx.AppReader);
+        var serializer = jsonSerializer.New();
 
         var bundleBuilder = new JsonBundleBuilder(_appCtx.AppReader, Log);
         var bundle = bundleBuilder.BundleBuild(export, serializer);

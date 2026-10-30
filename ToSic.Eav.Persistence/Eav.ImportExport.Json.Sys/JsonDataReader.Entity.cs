@@ -62,9 +62,9 @@ partial class JsonDataReader
 
         l.A("build entity");
         var builder = dataAssembler;
-        var partsBuilder = builder.EntityConnection.UseOptional(source: DesOptions?.AppReaderOrNull?.AppState, metadata: mdItems);
+        var partsBuilder = builder.EntityConnection.UseOptional(source: MyOptions?.AppReaderOrNull?.AppState, metadata: mdItems);
         var newEntity = dataAssembler.Entity.Create(
-            appId: DesOptions?.AppId ?? 0,
+            appId: MyOptions?.AppId ?? 0,
             guid: jEnt.Guid,
             entityId: jEnt.Id,
             repositoryId: jEnt.Id,

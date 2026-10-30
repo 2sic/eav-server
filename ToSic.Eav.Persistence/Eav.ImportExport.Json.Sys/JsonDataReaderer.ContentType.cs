@@ -35,8 +35,8 @@ partial class JsonDataReader
         var lMain = LogDsDetails.Fn<ContentTypeWithEntities>(timer: true);
         var contentTypeSet = DirectEntitiesSource.Using(relationships =>
         {
-            IEntitiesSource? preferredSource = DesOptions?.AppReaderOrNull?.AppState;
-            var sharedEntSource = DesOptions?.DeserializationSettings?.RelationshipsSource;
+            IEntitiesSource? preferredSource = MyOptions?.AppReaderOrNull?.AppState;
+            var sharedEntSource = MyOptions?.DeserializationSettings?.RelationshipsSource;
             var relationshipsSource = preferredSource
                                       ?? sharedEntSource
                                       ?? relationships.Source;
@@ -48,7 +48,7 @@ partial class JsonDataReader
                     : "Standalone List";
             lMain.A($"Will use relationship source {preferredSourceMsg}; current size: {relationshipsSource.List.Count()}");
 
-            IEntity ConvertPart(JsonEntity e) => Deserialize(e, DesOptions?.AssumeUnknownTypesAreDynamic ?? false, false, relationshipsSource);
+            IEntity ConvertPart(JsonEntity e) => Deserialize(e, MyOptions?.AssumeUnknownTypesAreDynamic ?? false, false, relationshipsSource);
 
             var l = LogDsDetails.Fn<ContentTypeWithEntities>();
             try
@@ -79,7 +79,7 @@ partial class JsonDataReader
                                   .ToListOpt()
                               ?? [];
 
-                        var appSourceForMd = DesOptions?.DeserializationSettings?.MetadataSource;
+                        var appSourceForMd = MyOptions?.DeserializationSettings?.MetadataSource;
 
                         // Experimental
 
@@ -96,7 +96,7 @@ partial class JsonDataReader
 
                         var attDef = typeAssemblyKit.Field
                             .Create(
-                                appId: DesOptions?.AppId ?? 0,
+                                appId: MyOptions?.AppId ?? 0,
                                 name: jsonAttr.Name,
                                 type: valType,
                                 isTitle: jsonAttr.IsTitle,
@@ -124,7 +124,7 @@ partial class JsonDataReader
 
                 // Create the Content Type
                 var type = typeAssemblyKit.Type.Create(
-                    appId: DesOptions?.AppId ?? 0,
+                    appId: MyOptions?.AppId ?? 0,
                     name: jsonType.Name,
                     nameId: jsonType.Id,
                     id: 0,

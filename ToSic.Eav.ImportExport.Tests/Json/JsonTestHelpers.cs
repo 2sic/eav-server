@@ -15,21 +15,17 @@ public class JsonTestHelpers(EavDbContext dbContext, EfcAppLoaderService loader,
 #endif
     private EfcAppLoaderService Loader => field ??= loader.UseExistingDb(dbContext);
 
-    public IJsonDataWriter JsonWriterOfApp(int appId)
-    {
-        var appReader = Loader.AppStateReaderRawTac(appId);
-        return jsonWriteGen.New().SetApp(appReader);
-    }
+    public IJsonDataWriter JsonWriterOfApp(int appId) => jsonWriteGen.New();
+
     public IJsonDataReader JsonReaderOfApp(int appId)
     {
         var appReader = Loader.AppStateReaderRawTac(appId);
         return jsonReadGen.New().SetApp(appReader);
     }
-
     public (IAppReader Reader, IJsonDataWriter Serializer) ReaderAndSerializerOfApp(int appId)
     {
         var appReader = Loader.AppStateReaderRawTac(appId);
-        return (appReader, jsonWriteGen.New().SetApp(appReader));
+        return (appReader, jsonWriteGen.New());
     }
 
     internal string GetJsonOfEntity(int appId, int eId, IJsonDataWriter? ser = null)

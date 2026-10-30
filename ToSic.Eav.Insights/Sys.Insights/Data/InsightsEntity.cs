@@ -1,6 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Serialization;
-using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Razor.Blade;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
@@ -29,7 +28,7 @@ internal class InsightsEntity(AppWorkQuick<WorkEntities> workEntities, Generator
         else
             throw exceptionMaker.BadRequest("can't use entityId - must be number or guid");
 
-        var ser = jsonSerializer.New().SetApp(entities.MyOptions.AppReader);
+        var ser = jsonSerializer.New();
         var json = ser.Serialize(ent);
 
         var msg = H1($"Entity Debug for {NameId} in {AppId}\n")

@@ -54,7 +54,7 @@ public class TestGenerateJsonForApps(EavDbContext db, Generator<IJsonDataWriter>
     public void GenerateJsonForAllEntitiesOfApp(int appId)
     {
         var package = ((IAppsAndZonesLoaderWithRaw)loaderGenerator.New()).AppReaderRaw(appId, new());
-        var ser = jsonWriteGen.New().SetApp(package);
+        var ser = jsonWriteGen.New();
         var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 
         var dbEnts = db.TsDynDataEntities

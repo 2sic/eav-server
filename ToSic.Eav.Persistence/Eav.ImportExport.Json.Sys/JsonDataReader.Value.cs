@@ -15,7 +15,7 @@ partial class JsonDataReader
             ValueTypes.Entity => jAttribs.Entity == null || !jAttribs.Entity.ContainsKey(a.Name)
                 ? new List<IValue>() // just keep the empty definition, as that's fine
                 : jAttribs.Entity[a.Name]
-                    .Select(v => relAssembler.Relationship(relAssembler.ToSource(v.Value, relationshipsSource ?? DesOptions.LazyRelationshipLookupList)))
+                    .Select(v => relAssembler.Relationship(relAssembler.ToSource(v.Value, relationshipsSource ?? MyOptions.LazyRelationshipLookupList)))
                     .ToListOpt(),
             ValueTypes.Hyperlink => BuildValues(jAttribs.Hyperlink, a),
             ValueTypes.Number => BuildValues(jAttribs.Number, a),

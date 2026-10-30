@@ -144,7 +144,6 @@ public class WorkAttributesMod(
             l.W("Setting up field share but feature is not enabled / licensed.");
 
         var serializer = serializerGen.New();
-        serializer.Initialize(new(MyOptions.AppId, new List<IContentType>()));
     
         // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
         var db = MyOptions.DbStorage;
@@ -182,7 +181,6 @@ public class WorkAttributesMod(
 
         // Prepare serializer
         var serializer = serializerGen.New();
-        serializer.Initialize(new(MyOptions.AppId, new List<IContentType>()));
 
         // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
         var db = MyOptions.DbStorage;

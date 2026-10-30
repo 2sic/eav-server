@@ -84,7 +84,6 @@ public class QueryBasicTest(
 
     private (IJsonDataWriter Writer, IJsonDataReader Reader) DeAndSerializer()
     {
-        jsonSerializer.Initialize(new(AppForQueryTests, new List<IContentType>()));
         jsonReader.Initialize(new(AppForQueryTests, new List<IContentType>()));
         return (jsonSerializer, jsonReader);
     }

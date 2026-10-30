@@ -1,22 +1,11 @@
 ﻿using ToSic.Eav.Data.Sys.ValueConverter;
 using ToSic.Eav.Metadata.Targets;
-using static ToSic.Eav.ImportExport.Json.Sys.JsonDataReader;
 
 namespace ToSic.Eav.ImportExport.Json.Sys;
 
 public partial class JsonSerializer(ITargetTypeService mdTargetSvc, LazySvc<IValueConverter> valConverter)
     : ServiceBase("Jsn.DWrite", connect: [mdTargetSvc, valConverter]), IJsonDataWriter
 {
-    public void Initialize(JsonDataReadOptions options)
-    {
-        DesOptions = options;
-    }
-    public JsonDataReadOptions DesOptions
-    {
-        get => field ?? throw new("Can't use DeserializationOptions - you forgot to call Init");
-        set;
-    } = null!;
-
 
     #region Special Loggers
 

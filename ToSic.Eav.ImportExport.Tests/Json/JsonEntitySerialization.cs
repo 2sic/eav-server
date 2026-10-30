@@ -39,7 +39,6 @@ public class JsonEntitySerialization(IJsonDataWriter jsonSerializer, IAppsAndZon
     private void Test_ExportAllOfAnApp(int appId, int maxCount)
     {
         var app = loader.AppStateReaderRawTac(appId);
-        var exBuilder = jsonSerializer.SetApp(app);
 
         var skip = 0;
         var count = 0;
@@ -50,7 +49,7 @@ public class JsonEntitySerialization(IJsonDataWriter jsonSerializer, IAppsAndZon
                 // maybe skip some
                 if (count++ < skip) continue;
 
-                var json = exBuilder.Serialize(app.List.FindRepoId(appEntity.EntityId) ?? throw new NullReferenceException($"Entity {appEntity.EntityId} not found, can't serialize"));
+                var json = jsonSerializer.Serialize(app.List.FindRepoId(appEntity.EntityId) ?? throw new NullReferenceException($"Entity {appEntity.EntityId} not found, can't serialize"));
                 True(json.Length > 25, "should get a long json string");
 
                 // stop if we ran enough tests

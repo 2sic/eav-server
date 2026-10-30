@@ -7,25 +7,25 @@ namespace ToSic.Eav.ImportExport.Json.Sys;
 public partial class JsonDataReader(ITargetTypeService mdTargetSvc, IGlobalDataService globalDataSvc, DataAssembler dataAssembler, ContentTypeAssemblyKit typeAssemblyKit)
     : ServiceBase("Jsn.DaRead", connect: [mdTargetSvc, globalDataSvc, dataAssembler, typeAssemblyKit]), IJsonDataReader
 {
-    public JsonDataReadOptions DesOptions
+    public IJsonDataReader.Options MyOptions
     {
         get => field ?? throw new("Can't use DeserializationOptions - you forgot to call Init");
         set;
     } = null!;
 
 
-    public void Initialize(JsonDataReadOptions options)
+    public void Initialize(IJsonDataReader.Options options)
     {
-        DesOptions = options;
+        MyOptions = options;
     }
-    public IJsonDataReader Setup(JsonDataReadOptions options)
+    public IJsonDataReader Setup(IJsonDataReader.Options options)
     {
-        DesOptions = options;
+        MyOptions = options;
         return this;
     }
 
 
-    private JsonDeserializeEntityHelper JsonDeserializeEntityHelper => field ??= new(globalDataSvc, typeAssemblyKit, DesOptions, LogDsDetails);
+    private JsonDeserializeEntityHelper JsonDeserializeEntityHelper => field ??= new(globalDataSvc, typeAssemblyKit, MyOptions, LogDsDetails);
 
 
 
