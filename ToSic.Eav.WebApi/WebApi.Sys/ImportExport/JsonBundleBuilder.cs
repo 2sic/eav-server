@@ -2,11 +2,12 @@
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.File;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.WebApi.Sys.ImportExport;
 internal class JsonBundleBuilder(IAppReader appReader, ILog parentLog) : HelperBase(parentLog, "Eav.BDHlp")
 {
-    internal JsonBundle BundleBuild(ExportConfiguration export, JsonSerializer serializer)
+    internal JsonBundle BundleBuild(ExportConfiguration export, IJsonDataWriter serializer)
     {
         var l = Log.Fn<JsonBundle>($"build bundle for ExportConfiguration:{(export as ICanBeEntity).Entity.EntityId}");
 

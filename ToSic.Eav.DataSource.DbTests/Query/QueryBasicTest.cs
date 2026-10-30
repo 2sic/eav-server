@@ -2,11 +2,14 @@
 using ToSic.Eav.Apps;
 using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.ImportExport.Json.Sys;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.DataSource.DbTests.Query;
 
 [Startup(typeof(StartupTestFullWithDb))]
-public class QueryBasicTest(JsonSerializer jsonSerializer,
+public class QueryBasicTest(
+    IJsonDataWriter jsonSerializer,
+    IJsonDataReader jsonReader,
     QueryDefinitionService queryDefSvc,
     QueryFactory queryFactory,
     QueryDefinitionFactory queryDefFactory,
@@ -61,28 +64,29 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
         var qdef = LoadQueryDef(AppForQueryTests, BasicId);
         var ser = DeAndSerializer();
         var entity = (qdef as ICanBeEntity).Entity;
-        var strHead = ser.Serialize(entity, 0);
-        var full = ser.Serialize(entity, 10);
+        var strHead = ser.Writer.Serialize(entity, 0);
+        var full = ser.Writer.Serialize(entity, 10);
 
-        var eHead2 = ser.Deserialize(strHead, true);
+        var eHead2 = ser.Reader.Deserialize(strHead, true);
         True(eHead2.Metadata.Count() == 0, "header without metadata should also have non after restoring");
 
-        var strHead2 = ser.Serialize(eHead2);
+        var strHead2 = ser.Writer.Serialize(eHead2);
         Equal(strHead2, strHead2); //, "header without metadata serialized and back should be the same");
 
-        var fullBack = ser.Deserialize(full, true);
+        var fullBack = ser.Reader.Deserialize(full, true);
         Equal(fullBack.Metadata.Count(), entity.Metadata.Count()); //, "full with metadata should also have after restoring");
 
-        var full2 = ser.Serialize(fullBack, 10);
+        var full2 = ser.Writer.Serialize(fullBack, 10);
         Equal(full, full2); //, "serialize, deserialize and serialize should get same thing");
 
 
     }
 
-    private JsonSerializer DeAndSerializer()
+    private (IJsonDataWriter Writer, IJsonDataReader Reader) DeAndSerializer()
     {
         jsonSerializer.Initialize(new(AppForQueryTests, new List<IContentType>()));
-        return jsonSerializer;
+        jsonReader.Initialize(new(AppForQueryTests, new List<IContentType>()));
+        return (jsonSerializer, jsonReader);
     }
 
     [Fact]
@@ -95,8 +99,8 @@ public class QueryBasicTest(JsonSerializer jsonSerializer,
         Equal(BasicCount, countDef);
 
         var ser = DeAndSerializer();
-        var strQuery = ser.Serialize((qdef as ICanBeEntity).Entity, 10);
-        var eDef2 = ser.Deserialize(strQuery, true);
+        var strQuery = ser.Writer.Serialize((qdef as ICanBeEntity).Entity, 10);
+        var eDef2 = ser.Reader.Deserialize(strQuery, true);
         // TODO: #42
         var qdef2 = queryDefFactory.Create(0, eDef2);
         var query2 = queryFactory.CreateWithTestParams(qdef2).Main;

@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys.XmlList;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 #if NETFRAMEWORK
@@ -16,13 +17,13 @@ namespace ToSic.Eav.WebApi.Sys.ImportExport;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ContentImportApi(
     LazySvc<ImportListXml> importListXml,
-    LazySvc<JsonSerializer> jsonSerializerLazy,
+    LazySvc<IJsonDataReader> jsonReaderLazy,
     AppCachePurger appCachePurger,
     AppWorkQuick<WorkEntitySave> workEntSave,
     IAppsCatalog appsCatalog,
     IAppReaderFactory appReaders,
     DataImportLogSettings importLogSettings
-) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonSerializerLazy, appCachePurger, appsCatalog, appReaders, importLogSettings])
+) : ServiceBase("Api.EaCtIm", connect: [workEntSave, importListXml, jsonReaderLazy, appCachePurger, appsCatalog, appReaders, importLogSettings])
 {
     private IAppReader _appReader = null!;
 
@@ -109,7 +110,7 @@ public class ContentImportApi(
         var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
         try
         {
-            var deserializer = jsonSerializerLazy.Value.Setup(new(_appReader) { PreferLocalAppTypes = true });
+            var deserializer = jsonReaderLazy.Value.Setup(new(_appReader) { PreferLocalAppTypes = true });
             // Since we're importing directly into this app, we prefer local content-types
             //deserializer.PreferLocalAppTypes = true;
 

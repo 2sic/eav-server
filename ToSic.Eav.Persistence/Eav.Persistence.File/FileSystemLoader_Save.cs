@@ -10,7 +10,7 @@ partial class FileSystemLoader
 
     public void SaveContentType(IContentType type)
     {
-        var json = Serializer.Serialize(type);
+        var json = jsonWriter.New().Serialize(type);
 
         var cleanName = (type.Scope + "." + type.NameId)
             .RemoveNonFilenameCharacters();
@@ -24,7 +24,7 @@ partial class FileSystemLoader
 
     public void SaveQuery(IEntity queryDef)
     {
-        var json = Serializer.Serialize(queryDef, FileSystemLoaderConstants.QueryMetadataDepth);
+        var json = jsonWriter.New().Serialize(queryDef, FileSystemLoaderConstants.QueryMetadataDepth);
 
         var cleanName = queryDef.EntityGuid.ToString()
             .RemoveNonFilenameCharacters();

@@ -71,7 +71,7 @@ partial class JsonSerializer
     {
         DesOptions = options;
     }
-    public JsonSerializer Setup(DeserializerOptions options)
+    public IJsonDataReader Setup(DeserializerOptions options)
     {
         DesOptions = options;
         return this;

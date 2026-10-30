@@ -13,8 +13,8 @@ using static ToSic.Eav.ImportExport.Sys.ImpExpConstants;
 namespace ToSic.Eav.Persistence.File;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
-    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataAssembler, ctAssemblyKit]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
+public partial class FileSystemLoader(Generator<IJsonDataReader> serializerGenerator, Generator<IJsonDataWriter> jsonWriter, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
+    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, jsonWriter, dataAssembler, ctAssemblyKit]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
 {
     private FileSystemLoaderOptions Options { get; set; } = null!;
 
@@ -23,30 +23,30 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     #region json serializer
 
     [field: AllowNull, MaybeNull]
-    public JsonSerializer Serializer
+    public IJsonDataReader JsonReader
     {
         get => field ??= InitialSerializerDynamic();
         private set;
     }
 
-    internal void ResetSerializer(JsonSerializer otherSerializer)
-        => Serializer = otherSerializer;
+    internal void ResetSerializer(IJsonDataReader otherSerializer)
+        => JsonReader = otherSerializer;
     internal void ResetSerializerOpts(JsonSerializer.DeserializerOptions options)
-        => Serializer = NewJsonSerializer().Setup(options);
+        => JsonReader = NewJsonReader().Setup(options);
 
-    private JsonSerializer NewJsonSerializer()
+    private IJsonDataReader NewJsonReader()
     {
         var ser = serializerGenerator.New();
         ser.ConfigureLogging(Options.LogSettings);
         return ser;
     }
 
-    private JsonSerializer InitialSerializerDynamic()
+    private IJsonDataReader InitialSerializerDynamic()
     {
-        var ser = NewJsonSerializer();
+        var ser = NewJsonReader();
 
         var entitySource = Options.EntitiesSource;
-        var l = Log.Fn<JsonSerializer>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
+        var l = Log.Fn<IJsonDataReader>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
         // #SharedFieldDefinition
         // Also provide AppState if possible, for new #SharedFieldDefinition
         var deSerSettings = entitySource is IHasMetadataSourceAndExpiring withAppState
@@ -107,10 +107,10 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             .ToListOpt();
 
         // TEMP: DEBUG SERIALIZER SETTINGS
-        l.A($"Serializer: '{Serializer.LogDsDetails}'");
+        l.A($"Serializer: '{(JsonReader as JsonSerializer)?.LogDsDetails}'");
 
         // #3.2 load entity-items from folder
-        var jsonSerializer = Serializer;
+        var jsonSerializer = JsonReader;
         var entities = jsons
             .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++EntityIdSeed, relationshipsSource))
             .Where(entity => entity != null)
@@ -161,7 +161,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
             // #3 load content-types from folder
             contentTypes = jsonFiles
-                .Select(json => LoadAndBuildCt(Serializer, json))
+                .Select(json => LoadAndBuildCt(JsonReader, json))
                 .Where(ct => ct != null)
                 .ToList()!;
         }
@@ -201,7 +201,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     /// Try to load a content-type file, but if anything fails, just return a null
     /// </summary>
     /// <returns></returns>
-    private IContentType? LoadAndBuildCt(JsonSerializer ser, string path)
+    private IContentType? LoadAndBuildCt(IJsonDataReader ser, string path)
     {
         var l = Log.Fn<IContentType?>($"Path: {path}", timer: true);
         var infoIfError = "couldn't read type-file";
@@ -248,7 +248,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     /// If anything fails, just return a null
     /// </summary>
     /// <returns></returns>
-    private IEntity? LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource? relationshipSource = null)
+    private IEntity? LoadAndBuildEntity(IJsonDataReader ser, string path, int id, IEntitiesSource? relationshipSource = null)
     {
         var l = Log.Fn<IEntity>($"Loading {path}");
         try

@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 internal class EntityProcessServices(
@@ -26,7 +26,7 @@ internal class EntityProcessServices(
 
     public DataAssembler DataAssembler = dataAssembler;
 
-    public JsonSerializer Serializer { get; } = dbStorage.JsonSerializerGenerator.New();
+    public IJsonDataWriter Serializer { get; } = dbStorage.JsonWriteGenerator.New();
 
 
     [field: AllowNull, MaybeNull]

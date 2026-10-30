@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.ImportExport.Json.Sys;
+﻿using ToSic.Eav.Data.ContentTypes.Fields.Sys;
+using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys.Xml;
 
@@ -49,6 +50,12 @@ public interface IJsonDataWriter // formerly IDataSerializer
     /// </summary>
     bool ValueConvertHyperlinks { get; set; }
 
+    //JsonSerializer Setup(JsonSerializer.DeserializerOptions options);
+    string? Serialize(ContentTypeFieldSysSettings? sysSettings);
+    string Serialize(JsonEntity jsonEntity);
+    void ConfigureLogging(LogSettings settings);
+    string Serialize(IContentType contentType, JsonSerializationSettings? settings = default);
     string Serialize(BundleEntityWithAssets bundle, int metadataDepth);
-    JsonSerializer Setup(JsonSerializer.DeserializerOptions options);
+    string SerializeJsonBundle(JsonBundle bundleList, int indentation);
+    string Serialize(IEntity entity, int metadataDepth);
 }

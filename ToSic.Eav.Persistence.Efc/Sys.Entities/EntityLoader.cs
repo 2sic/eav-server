@@ -14,7 +14,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Entities;
 
 internal class EntityLoader(
     EfcAppLoaderService appLoader,
-    Generator<IDataDeserializer> dataDeserializer,
+    Generator<IJsonDataReader> dataDeserializer,
     DataAssembler dataAssembler,
     ContentTypeAssemblyKit ctAssemblyKit,
     ISysFeaturesService featuresSvc)
@@ -83,7 +83,7 @@ internal class EntityLoader(
         #region Build EntityModels
 
         var serializer = dataDeserializer.New();
-        serializer.Initialize(new JsonSerializer.DeserializerOptions(builder.Reader));
+        serializer.Initialize(new(builder.Reader));
         serializer.ConfigureLogging(appLoader.LogSettings);
         l.A($"🪵 Using LogSettings: {appLoader.LogSettings}");
 

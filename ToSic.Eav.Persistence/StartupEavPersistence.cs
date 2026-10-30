@@ -20,7 +20,8 @@ public static class StartupEavPersistence
         AddAppStateInFolder(services);
 
         //services.TryAddTransient<IDataSerializer, JsonSerializer>();
-        services.TryAddTransient<IDataDeserializer, JsonSerializer>();
+        services.TryAddTransient<IJsonDataReader, JsonSerializer>();
+        services.TryAddTransient<IJsonDataWriter, JsonSerializer>();
 
         services.TryAddTransient<JsonSerializer>();
         services.TryAddTransient<JsonSerializer.Dependencies>();

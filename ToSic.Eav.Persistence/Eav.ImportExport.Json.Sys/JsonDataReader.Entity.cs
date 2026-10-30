@@ -10,7 +10,7 @@ partial class JsonSerializer
     public IEntity Deserialize(string serialized, bool allowDynamic = false, bool skipUnknownType = false) 
         => Deserialize(UnpackEntityAndTestGenericJsonV1(serialized), allowDynamic, skipUnknownType);
 
-    internal IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource? dynRelationshipsSource = null)
+    public IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource? dynRelationshipsSource = null)
     {
         var jsonEntity = UnpackEntityAndTestGenericJsonV1(serialized) with
         {

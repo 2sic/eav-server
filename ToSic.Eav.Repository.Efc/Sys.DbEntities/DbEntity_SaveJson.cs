@@ -16,7 +16,7 @@ partial class DbEntity
         {
             if (logDetails)
                 LogDetails.A("Error serializing - will repeat with detailed with logging");
-            Serializer.LinkLog(Log);
+            (Serializer as IHasLog)?.LinkLog(Log);
             jsonExport = Serializer.Serialize(newEnt);
         }
 

@@ -3,6 +3,7 @@ using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Utils;
 using ToSic.Sys.Utils.Compression;
@@ -10,7 +11,7 @@ using ToSic.Sys.Utils.Compression;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<JsonSerializer> jsonSerializer)
+public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDataReader> jsonSerializer)
     : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcy", connect: [compressor, jsonSerializer])
 {
     /// <summary>
@@ -218,7 +219,7 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<Json
         try
         {
             var serializer = jsonSerializer.New();
-            serializer.Initialize(new JsonSerializer.DeserializerOptions(MyOptions.AppReader));
+            serializer.Initialize(new(MyOptions.AppReader));
             return serializer.Deserialize(json);
         }
         catch

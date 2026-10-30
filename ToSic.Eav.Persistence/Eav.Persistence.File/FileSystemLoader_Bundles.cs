@@ -36,7 +36,7 @@ partial class FileSystemLoader
             //    });
             var jsonBundles = bundleFiles.ToDictionary(
                 p => p,
-                p => Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p))
+                p => JsonReader.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p))
             );
             return l.Return(jsonBundles, $"found {jsonBundles.Count}");
         }
@@ -61,7 +61,7 @@ partial class FileSystemLoader
             return l.Return([]);
 
         var contentTypes = JsonBundleBundles
-            .SelectMany(json => BuildContentTypesInBundles(Serializer, json.Key, json.Value))
+            .SelectMany(json => BuildContentTypesInBundles(JsonReader, json.Key, json.Value))
             //.Where(ct => ct != null)
             .ToListOpt();
 
@@ -75,7 +75,7 @@ partial class FileSystemLoader
     /// Build contentTypes from bundle json
     /// </summary>
     /// <returns></returns>
-    private ICollection<ContentTypeWithEntities> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson)
+    private ICollection<ContentTypeWithEntities> BuildContentTypesInBundles(IJsonDataReader ser, string path, JsonFormat bundleJson)
     {
         var l = Log.Fn<ICollection<ContentTypeWithEntities>>($"path: {path}");
         try
@@ -118,7 +118,7 @@ partial class FileSystemLoader
 
         var entities = JsonBundleBundles
             .SelectMany(json =>
-                BuildEntitiesInBundles(Serializer, json.Key, json.Value, relationshipSource))
+                BuildEntitiesInBundles(JsonReader, json.Key, json.Value, relationshipSource))
             .Where(entity => entity != null!)
             .ToListOpt();
 
@@ -132,7 +132,7 @@ partial class FileSystemLoader
     /// Build entities from bundle json
     /// </summary>
     /// <returns></returns>
-    private IEnumerable<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource)
+    private IEnumerable<IEntity> BuildEntitiesInBundles(IJsonDataReader ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource)
     {
         var l = Log.Fn<IEnumerable<IEntity>>($"Build entities from bundle json: {path}.");
         try

@@ -1,10 +1,8 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
-
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.Versions;
-using ToSic.Eav.Repository.Efc.Sys.DbStorage;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys;
 
 
@@ -15,7 +13,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntityVersioning(
     AppCachePurger appCachePurger,
     LazySvc<ImportService> import,
-    LazySvc<JsonSerializer> jsonSerializer)
+    LazySvc<IJsonDataReader> jsonSerializer)
     : ServiceWithSetup<IAppWorkContext>("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import])
 {
 

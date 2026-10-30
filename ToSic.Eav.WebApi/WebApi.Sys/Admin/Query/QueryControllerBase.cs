@@ -9,6 +9,7 @@ using ToSic.Eav.DataSources;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.LookUp.Sys.Engines;
 using ToSic.Eav.Metadata;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Serialization.Sys.Json;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -35,7 +36,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
         LazySvc<ConvertToEavLight> EntToDicLazy,
         LazySvc<QueryInspectionService> QueryInfoLazy,
         LazySvc<DataSourceCatalog> DataSourceCatalogLazy,
-        Generator<JsonSerializer> JsonSerializer,
+        Generator<IJsonDataReader> JsonSerializer,
         Generator<PassThrough> PassThrough,
         LazySvc<QueryDefinitionService> QueryDefSvc,
         Generator<IAppReaderFactory> AppStates,

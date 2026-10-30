@@ -189,8 +189,11 @@ partial class JsonSerializer
     }
 
     public string? Serialize(ContentTypeFieldSysSettings? sysSettings)
-        => Serialize(sysSettings, LogDsDetails);
+        => ContentTypeFieldSettingsSerializer.Serialize(sysSettings, LogDsDetails);
+}
 
+public class ContentTypeFieldSettingsSerializer
+{
     internal static string? Serialize(ContentTypeFieldSysSettings? sysSettings, ILog? log)
     {
         var l = log.Fn<string>($"serialize {sysSettings} to json string");

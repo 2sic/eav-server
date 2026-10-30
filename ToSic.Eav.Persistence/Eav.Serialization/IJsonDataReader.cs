@@ -61,7 +61,7 @@ public interface IJsonDataReader: IHasLog
     /// </summary>
     /// <param name="sysSettings"></param>
     /// <returns>string or null</returns>
-    string? Serialize(ContentTypeFieldSysSettings sysSettings);
+    //public string? Serialize(ContentTypeFieldSysSettings sysSettings);
 
     JsonEntity UnpackEntityAndTestGenericJsonV1(string? serialized);
     JsonFormat UnpackAndTestGenericJsonV1(string? serialized);
@@ -70,6 +70,8 @@ public interface IJsonDataReader: IHasLog
     IList<IEntity> GetEntitiesFromBundles(JsonFormat package, IEntitiesSource? relationshipSource = null);
     IContentType DeserializeContentType(string serialized);
     ContentTypeWithEntities ConvertContentType(JsonContentTypeSet json);
-    public JsonSerializer Setup(JsonSerializer.DeserializerOptions options);
+    public IJsonDataReader Setup(JsonSerializer.DeserializerOptions options);
     BundleEntityWithAssets DeserializeEntityWithAssets(string serialized, bool allowDynamic = false, bool skipUnknownType = false);
+    IEntity DeserializeWithRelsWip(string serialized, int id, bool allowDynamic = false, bool skipUnknownType = false, IEntitiesSource? dynRelationshipsSource = null);
+    JsonSerializer.DeserializerOptions DesOptions { get; set; }
 }

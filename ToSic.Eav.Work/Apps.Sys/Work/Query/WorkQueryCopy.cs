@@ -2,9 +2,7 @@
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.DataSource.Query.Sys;
-using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Targets;
-using ToSic.Eav.Serialization.Sys;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys.Work;
@@ -13,11 +11,11 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkQueryCopy(
     LazySvc<QueryDefinitionService> queryDefSvc,
     LazySvc<DataAssembler> builder,
-    LazySvc<JsonSerializer> jsonSerializer,
+    //LazySvc<IJsonDataReader> jsonSerializer,
     AppWorkChain<WorkEntitySave> entSave)
-    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod", connect: [entSave, queryDefSvc, jsonSerializer, builder])
+    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod", connect: [entSave, queryDefSvc, /*jsonSerializer,*/ builder])
 {
-    private LazySvc<JsonSerializer> Serializer => field ??= jsonSerializer.SetInit(j => j.SetApp(MyOptions.AppReader));
+    //private LazySvc<IJsonDataReader> Serializer => field ??= jsonSerializer.SetInit(j => j.SetApp(MyOptions.AppReader));
 
     private QueryDefinition Get(int queryId) => queryDefSvc.Value.GetDefinition(MyOptions.AppReader, queryId);
 
@@ -111,11 +109,13 @@ public class WorkQueryCopy(
     private IEntity CopyAndResetIds(IEntity original, Guid newGuid, Guid? newMetadataTarget = null)
     {
         var l = Log.Fn<IEntity>();
+        // 2026-10-30 2dm - skipping serialization, as everything internal is immutable now
+        // so a normal CreateFrom should create a clean copy
         // todo: probably replace with clone as that should be reliable now...
-        var newSer = Serializer.Value.Serialize(original);
-        var newEnt = Serializer.Value.Deserialize(newSer);
+        //var newSer = Serializer.Value.Serialize(original);
+        //var newEnt = Serializer.Value.Deserialize(newSer);
 
-        newEnt = builder.Value.Entity.CreateFrom(newEnt, guid: newGuid, id: 0,
+        var newEnt = builder.Value.Entity.CreateFrom(original, guid: newGuid, id: 0,
             target: newMetadataTarget == null
                 ? null
                 : new Target(original.MetadataFor, keyGuid: newMetadataTarget.Value)

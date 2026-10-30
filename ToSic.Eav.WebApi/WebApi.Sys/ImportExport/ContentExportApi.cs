@@ -1,12 +1,12 @@
 ﻿using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.XmlList;
 using ToSic.Eav.Models;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Security.Files;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
@@ -28,7 +28,7 @@ public class ContentExportApi(
     IAppPathsMicroSvc appPathSvc,
     AppWorkContextService appWorkCtxSvc,
     IAppsCatalog appsCatalog,
-    Generator<JsonSerializer> jsonSerializer,
+    Generator<IJsonDataWriter> jsonSerializer,
     IResponseMaker responseMaker,
     Generator<ExportListXml> exportListXmlGenerator,
     LazySvc<ISysFeaturesService> features)

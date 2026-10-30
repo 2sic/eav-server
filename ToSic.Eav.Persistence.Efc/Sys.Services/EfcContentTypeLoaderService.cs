@@ -17,7 +17,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 internal class EfcContentTypeLoaderService(
     EfcAppLoaderService efcAppLoader,
     Generator<IAppContentTypesLoader, AppFileSystemLoaderOptions> appFileContentTypesLoader,
-    Generator<IDataDeserializer> dataDeserializer,
+    Generator<IJsonDataReader> dataDeserializer,
     ContentTypeAssemblyKit ctAssemblyKit,
     IAppStateCacheService appStates,
     ISysFeaturesService featuresSvc)

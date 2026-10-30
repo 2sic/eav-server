@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.ImportExport.Tests.Persistence.File;
+using ToSic.Eav.Serialization;
 using Xunit.Abstractions;
-using JsonSerializer = ToSic.Eav.ImportExport.Json.Sys.JsonSerializer;
 
 namespace ToSic.Eav.ImportExport.Tests.Json;
 
@@ -45,7 +45,7 @@ public class JsonCtSerialization(ITestOutputHelper output, JsonTestHelpers jsonT
     private string GetJsonOfContentTypeOfItem(int appId, int eId)
         => GetJsonOfContentTypeOfItem(eId, jsonTestHelper.ReaderAndSerializerOfApp(appId));
 
-    internal static string GetJsonOfContentTypeOfItem(int eId, (IAppReader Reader, JsonSerializer Serializer) tuple)
+    internal static string GetJsonOfContentTypeOfItem(int eId, (IAppReader Reader, IJsonDataWriter Serializer) tuple)
     {
         var (appReader, ser) = tuple;
         var x = appReader.List.GetOne(eId);
@@ -56,6 +56,6 @@ public class JsonCtSerialization(ITestOutputHelper output, JsonTestHelpers jsonT
     private string JsonOfContentType(int appId, string typeName)
         => JsonOfContentType(jsonTestHelper.ReaderAndSerializerOfApp(appId), typeName);
 
-    internal static string JsonOfContentType((IAppReader Reader, JsonSerializer Serializer) tuple, string typeName)
+    internal static string JsonOfContentType((IAppReader Reader, IJsonDataWriter Serializer) tuple, string typeName)
         => JsonTestHelpers.JsonOfContentType(tuple.Serializer, tuple.Reader.GetContentTypeTac(typeName));
 }

@@ -32,7 +32,7 @@ partial class AppStateInFolderLoader
         var newSets = Loaders
             .Select(ldr =>
             {
-                var prevOpts = ldr.Serializer.DesOptions;
+                var prevOpts = ldr.JsonReader.DesOptions;
                 var newOpts = prevOpts with { DeserializationSettings = deSerializeSettings };
                 ldr.ResetSerializerOpts(newOpts);
                 //ldr.Serializer.DeserializationSettings = deSerializeSettings;

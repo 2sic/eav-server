@@ -24,13 +24,13 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
             .ToList();
 
         var parentsByChild = GetInboundParentsByChildIds(ids);
-        var serializer = DbStore.JsonSerializerGenerator.New();
+        var serializer = DbStore.JsonWriteGenerator.New();
 
         var historyEntries = items
             .Select(i =>
             {
                 // Prepare json package
-                var jsonPackage = serializer.ToJson(i.Entity, metadataDepth);
+                var jsonPackage = serializer.ToJson(i.Entity, metadataDepth)!;
 
                 // Check if we must store any parents-references along with it
                 var parents = parentsByChild.TryGetValue(i.EntityId, out var foundParents) && foundParents.Count > 0

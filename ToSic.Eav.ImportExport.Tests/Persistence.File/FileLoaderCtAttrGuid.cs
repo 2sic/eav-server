@@ -61,7 +61,7 @@ public class FileLoaderCtAttrGuid(ITestOutputHelper output, FileSystemLoader loa
         var ctAuthor = cts.First(ct => ct.Name.Equals(CtAuthorWithSharedAttributes));
 
         // Re-json the author and check
-        var serializer = jsonTestHelper.SerializerOfApp(KnownAppsConstants.PresetAppId);
+        var serializer = jsonTestHelper.JsonWriterOfApp(KnownAppsConstants.PresetAppId);
         var jsonAuthor = serializer.ToJson(ctAuthor);
         var attributes = jsonAuthor.AttributesSafe();
         var jsonFullName = attributes.First(a => a.Name.Equals(FFullName));
@@ -84,8 +84,9 @@ public class FileLoaderCtAttrGuid(ITestOutputHelper output, FileSystemLoader loa
         False(jsonKeyInherited.SysSettings.InheritName);
 
         // Re-content-type
+        var deSer = jsonTestHelper.JsonReaderOfApp(KnownAppsConstants.PresetAppId);
         var authorJsonString = serializer.Serialize(ctAuthor);
-        var author2 = serializer.DeserializeContentType(authorJsonString);
+        var author2 = deSer.DeserializeContentType(authorJsonString);
         VerifyNormalFullName(author2);
         VerifySpecialKey(author2);
         VerifySpecialKeyInherited(author2);

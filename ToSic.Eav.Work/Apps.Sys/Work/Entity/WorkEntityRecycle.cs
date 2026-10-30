@@ -7,6 +7,7 @@ using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
+using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;
@@ -19,7 +20,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntityRecycle(
     AppCachePurger appCachePurger,
     LazySvc<ImportService> import,
-    LazySvc<JsonSerializer> jsonSerializer,
+    LazySvc<IJsonDataReader> jsonSerializer,
     LazySvc<Compressor> compressor,
     ISysFeaturesService featuresService)
     : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService])
@@ -155,8 +156,7 @@ public class WorkEntityRecycle(
                 var jsonEntity = serializer.UnpackEntityAndTestGenericJsonV1(json);
                 jsonEntities.Add(jsonEntity);
 
-                var entity = serializer.Deserialize(jsonEntity, allowDynamic: false, skipUnknownType: false) as Entity;
-                if (entity != null)
+                if (serializer.Deserialize(jsonEntity, allowDynamic: false, skipUnknownType: false) is Entity entity)
                     entitiesFromHistory.Add(entity with { EntityId = 0, RepositoryId = 0 });
             }
             catch

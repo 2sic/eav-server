@@ -170,7 +170,7 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
                 if (a.Guid.HasValue)
                     xmlAttribute.Add(new XAttribute(XmlConstants.Guid, a.Guid));
                 if (a.SysSettings != null)
-                    xmlAttribute.Add(new XAttribute(XmlConstants.SysSettings, JsonSerializer.Serialize(a.SysSettings, Log)!));
+                    xmlAttribute.Add(new XAttribute(XmlConstants.SysSettings, ContentTypeFieldSettingsSerializer.Serialize(a.SysSettings, Log)!));
 
                 attributes.Add(xmlAttribute);
             }

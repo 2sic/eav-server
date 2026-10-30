@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.ContentTypes.Fields;
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Metadata;
@@ -16,7 +17,7 @@ public class WorkAttributesMod(
     AppWorkChain<WorkMetadata> workMetadata,
     AppWorkChain<WorkAttributes> workAttributes,
     Generator<ContentTypeFieldAssembler, DataAssemblerOptions> fieldAssembler,
-    Generator<IDataDeserializer> serializerGen,
+    Generator<IJsonDataWriter> serializerGen,
     LazySvc<ISysFeaturesService> features,
     LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions)
     : ServiceWithSetup<IAppWorkContext>("Wrk.AttMod",
@@ -144,7 +145,7 @@ public class WorkAttributesMod(
 
         var serializer = serializerGen.New();
         serializer.Initialize(new(MyOptions.AppId, new List<IContentType>()));
-
+    
         // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
         var db = MyOptions.DbStorage;
         db.DoAndSaveTracked(() =>
@@ -159,7 +160,7 @@ public class WorkAttributesMod(
                 attribute.Guid = Guid.NewGuid();
 
             // update with the Share = share (hide we'll ignore for now, it's for future needs)
-            attribute.SysSettings = serializer.Serialize(new()
+            attribute.SysSettings = serializer.Serialize(new ContentTypeFieldSysSettings()
             {
                 Share = share,
             });
@@ -193,7 +194,7 @@ public class WorkAttributesMod(
             contentTypeId = attribute.ContentTypeId;
 
             // set InheritMetadataOf to the guid above(as string)
-            attribute.SysSettings = serializer.Serialize(new()
+            attribute.SysSettings = serializer.Serialize(new ContentTypeFieldSysSettings()
             {
                 Inherit = null,
                 InheritNameOfPrimary = false,

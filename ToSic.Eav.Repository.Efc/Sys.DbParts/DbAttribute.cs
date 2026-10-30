@@ -1,12 +1,13 @@
 ﻿using ToSic.Eav.Data.Sys;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Persistence.Sys.Logging;
+using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttDef")
 {
-    private JsonSerializer Serializer { get; } = db.JsonSerializerGenerator.New();
+    private IJsonDataWriter Serializer { get; } = db.JsonWriteGenerator.New();
 
     /// <summary>
     /// Set an Attribute as Title on a Content-Type

@@ -39,7 +39,7 @@ public class EfcAppLoaderService(
     ISysFeaturesService sysFeaturesSvc,
     DataAssembler dataAssembler,
     ContentTypeAssemblyKit ctAssemblyKit,
-    Generator<IDataDeserializer> dataDeserializer,
+    Generator<IJsonDataReader> dataDeserializer,
     Generator<IAppContentTypesLoader, AppFileSystemLoaderOptions> appFileContentTypesLoader,
     Generator<IAppStateBuilder> appStateBuilder)
     : ServiceBase("Db.Efc11",

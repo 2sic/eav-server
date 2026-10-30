@@ -5,7 +5,6 @@ using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
-using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Persistence.Sys.Logging;
@@ -13,6 +12,7 @@ using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
+using ToSic.Eav.Serialization;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
 using ToSic.Sys.Utils.Compression;
@@ -25,14 +25,14 @@ public class DbStorage(
     LazySvc<EfcAppLoaderService> efcLoaderLazy,
     LazySvc<IUser> userLazy,
     IAppCachePurger appsCache,
-    Generator<JsonSerializer> jsonSerializerGenerator,
+    Generator<IJsonDataWriter> jsonWriteGenerator,
     ILogStore logStore,
     LazySvc<Compressor> compressor,
     DataAssembler dataAssembler,
     DataImportLogSettings importLogSettings,
     ISysFeaturesService features)
     : ServiceBase("Db.Data",
-        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonSerializerGenerator, compressor, dataAssembler, importLogSettings, features]
+        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonWriteGenerator, compressor, dataAssembler, importLogSettings, features]
     ), IStorage, IAppIdentity
 {
 
@@ -142,7 +142,7 @@ public class DbStorage(
         }
     }
 
-    internal Generator<JsonSerializer> JsonSerializerGenerator { get; } = jsonSerializerGenerator;
+    internal Generator<IJsonDataWriter> JsonWriteGenerator { get; } = jsonWriteGenerator;
 
     internal ISysFeaturesService Features => features;
 
@@ -194,7 +194,7 @@ public class DbStorage(
         LogDetails = null;
         LogSummary = null;
 
-        JsonSerializerGenerator.SetInit(ser => ser.ConfigureLogging(logSettings), allowReplace: true);
+        JsonWriteGenerator.SetInit(ser => ser.ConfigureLogging(logSettings), allowReplace: true);
         l.Done();
     }
 
