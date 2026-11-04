@@ -2,9 +2,9 @@
 using ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
-internal class Process1Preflight(): Process0Base("DB.EPrc1")
+internal class Process1Preflight: IEntityProcess
 {
-    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
+    public EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
         var newEnt = data.NewEntity;
 
@@ -52,4 +52,6 @@ internal class Process1Preflight(): Process0Base("DB.EPrc1")
         return l.Return(data);
     }
 
+    public ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
+        => this.Process(services, data, logProcess, ProcessOne);
 }

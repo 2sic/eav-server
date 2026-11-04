@@ -5,9 +5,9 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 /// <summary>
 /// Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
 /// </summary>
-internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
+internal class Process3Upd2PrepareUpdate: IEntityProcess
 {
-    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
+    private EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
         // Track if we make changes to the header to decide later if we need to save again
         var headerNeedsUpdate = false;
@@ -107,9 +107,9 @@ internal class Process3Upd2PrepareUpdate(): Process0Base("Db.EPr3u2")
     }
 
     // TODO: PROBABLY MOVE INTO OWN PROCESS
-    public override ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
+    public ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
     {
-        var l = GetLogCall(services, logProcess);
+        var l = this.GetLogCall(services, logProcess);
         // Skip if all are NOT new
         //if (data.All(d => d.IsNew))
         //    return l.Return(data, "all new, skip");
