@@ -12,9 +12,7 @@ namespace ToSic.Eav.Serialization;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial interface IJsonDataReader: IHasLog, IServiceWithSetup<IJsonDataReader.Options>
 {
-    //void Initialize(Options options);
-
-    public void ConfigureLogging(LogSettings settings);
+    // Removed ConfigureLogging method as logging is now configured via Options
 
 
     /// <summary>

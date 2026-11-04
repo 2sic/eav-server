@@ -81,8 +81,7 @@ internal class EntityLoader(
 
         #region Build EntityModels
 
-        var serializer = dataDeserializer.New(new(builder.Reader));
-        serializer.ConfigureLogging(appLoader.LogSettings);
+        var serializer = dataDeserializer.New(new(builder.Reader) { LogSettings = appLoader.LogSettings });
         l.A($"🪵 Using LogSettings: {appLoader.LogSettings}");
 
         var logDetails = appLoader.LogSettings is { Enabled: true, Details: true };

@@ -22,26 +22,14 @@ internal partial class JsonDataReader(ITargetTypeService mdTargetSvc, IGlobalDat
 
     private JsonDeserializeEntityHelper JsonDeserializeEntityHelper => field ??= new(globalDataSvc, typeAssemblyKit, MyOptions, LogDsDetails);
 
-
-
-
-    public void ConfigureLogging(LogSettings settings)
-    {
-        var l = Log.Fn(settings.ToString());
-        _disableLogDetails = Log.IfDetails(settings) == null;
-        _disableLogSummary = Log.IfSummary(settings) == null;
-        l.Done();
-    }
     public new ILog Log => base.Log;
 
     /// <summary>
     /// Logger for the details of the deserialization process.
     /// Goal is that it can be enabled/disabled as needed.
     /// </summary>
-    internal ILog? LogDsDetails => _disableLogDetails ? null : Log;
-    private bool _disableLogDetails;
+    internal ILog? LogDsDetails => Log.IfDetails(MyOptions.LogSettings);
 
-    internal ILog? LogDsSummary => _disableLogSummary ? null : Log;
-    private bool _disableLogSummary;
+    internal ILog? LogDsSummary => Log.IfSummary(MyOptions.LogSettings);
 
 }

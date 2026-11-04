@@ -53,5 +53,7 @@ partial interface IJsonDataReader
 
         public bool AssumeUnknownTypesAreDynamic { get; init; } = false;
 
+        public LogSettings LogSettings { get; init; } = new();
+
     }
 }
