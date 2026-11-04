@@ -12,7 +12,8 @@ public class FileSystemLoaderOptionsTests
     {
         var options = new FileSystemLoaderOptions
         {
-            AppId = 1,
+            JsonReaderOptions = FileSystemLoaderOptions.CreateJsonOptionsDyn(1),
+            //AppId = 1,
             Path = path,
             RepoType = RepositoryTypes.Folder,
         };

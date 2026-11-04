@@ -20,7 +20,7 @@ public class RuntimeLoader400ContentTypes(IAppStateLoader appStateLoader, ITestO
         var time = Stopwatch.StartNew();
 
         output.WriteLine($"Note: ATM the first loader is the {nameof(AdditionalGlobalFolderRepositoryForReflection)} - but that is a coincidence, so this test may need to be adjusted in future");
-        var firstLoader = loader.Loaders.First();
+        var firstLoader = loader.BuildLoadersForGlobal(new()).First();
         
         for (var i = 0; i < 10; i++)
         {

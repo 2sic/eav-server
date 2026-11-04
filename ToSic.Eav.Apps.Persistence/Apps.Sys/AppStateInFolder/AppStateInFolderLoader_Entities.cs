@@ -5,23 +5,19 @@ namespace ToSic.Eav.Apps.Sys.AppStateInFolder;
 
 partial class AppStateInFolderLoader
 {
-    private ICollection<IEntity> LoadGlobalEntities(IAppReader appReader)
+    private ICollection<IEntity> LoadGlobalEntities(ICollection<FileSystemLoader> loaders, int appId)
     {
-        var l = Log.Fn<ICollection<IEntity>>($"appId:{appReader.AppId}", timer: true);
-        // Set TypeID seed for loader so each loaded type has a unique ID
-        var loaderIndex = 1;
-        foreach (var ldr in Loaders)
-            ldr.EntityIdSeed = GlobalAppIdConstants.GlobalEntityIdMin + GlobalAppIdConstants.GlobalEntitySourceSkip * loaderIndex++;
+        var l = Log.Fn<ICollection<IEntity>>($"appId:{appId}", timer: true);
 
-        // This will be the source of all relationships
-        // In the end it must contain all entities - but not deleted ones...
+        // 1. This will be the source of all relationships
+        //    In the end it must contain all entities - but not deleted ones...
         var final = DirectEntitiesSource.Using(relationships =>
         {
             var entitySets = AppDataFoldersConstants.EntityItemFolders
                 .Select(folder => new EntitySetsToLoad
                 {
                     Folder = folder,
-                    Entities = LoadGlobalEntitiesFromAllLoaders(folder, relationships.Source, appReader) ?? []
+                    Entities = LoadGlobalEntitiesFromAllLoaders(loaders, folder, relationships.Source) ?? []
                 })
                 .ToListOpt();
 
@@ -72,21 +68,17 @@ partial class AppStateInFolderLoader
         return l.Return(entitiesUnique, $"final: {entitiesUnique.Count}");
     }
 
-    private ICollection<IEntity> LoadGlobalEntitiesFromAllLoaders(string groupIdentifier, DirectEntitiesSource relationshipSource, IAppReader appReader) 
+    private ICollection<IEntity> LoadGlobalEntitiesFromAllLoaders(ICollection<FileSystemLoader> loaders, string groupIdentifier, DirectEntitiesSource relationshipSource) 
     {
         var l = Log.Fn<ICollection<IEntity>>($"groupIdentifier:{groupIdentifier}", timer: true);
         if (!AppDataFoldersConstants.EntityItemFolders.Any(f => f.Equals(groupIdentifier)))
             throw new ArgumentOutOfRangeException(nameof(groupIdentifier),
-                "atm we can only load items of type " + string.Join("/", AppDataFoldersConstants.EntityItemFolders));
+                $@"atm we can only load items of type {string.Join("/", AppDataFoldersConstants.EntityItemFolders)}");
 
         // Get items
-        var entities = new List<IEntity>();
-        foreach (var loader in Loaders)
-        {
-            loader.ResetSerializerOpts(new(appReader));
-            var newEntities = loader.Entities(groupIdentifier, relationshipSource);
-            entities.AddRange(newEntities);
-        }
+        var entities = loaders
+            .SelectMany(loader => loader.Entities(groupIdentifier, relationshipSource))
+            .ToListOpt();
 
         return l.Return(entities, $"{entities.Count} items of type {groupIdentifier}");
     }

@@ -54,18 +54,19 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
         var l = Log.IfSummary(LogSettings).Fn<(ICollection<IContentType>, ICollection<IEntity>)>(extensionPath);
         var fsLoader = fslGenerator.New(options: new()
         {
-            AppId = AppIdentity.AppId,
+            JsonReaderOptions = FileSystemLoaderOptions.CreateJsonOptionsGlobalLoad(AppIdentity.AppId, entitiesSource, LogSettings, Log),
+            //AppId = AppIdentity.AppId,
             Path = extensionPath,
             RepoType = RepositoryTypes.Folder,
             IgnoreMissing = true,
-            EntitiesSource = entitiesSource,
             LogSettings = LogSettings,
+
+            // Expect local entities to be very few...
+            EntityIdSeed = seed,
+            EntityIdDirection = -1,
+            TypeIdSeed = seed,
+            TypeIdDirection = -1,
         });
-        // Expect local entities to be very few...
-        fsLoader.EntityIdSeed = seed;
-        fsLoader.EntityIdDirection = -1;
-        fsLoader.TypeIdSeed = seed;
-        fsLoader.TypeIdDirection = -1;
 
         var types = fsLoader.ContentTypes();
         // WIP - ATM hard-wired to bundles, but should probably go through all instead...

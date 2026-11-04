@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
-
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.Data.Sys.Entities.Sources;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Sys.Utils.Assemblies;
@@ -72,22 +70,27 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         return l.Return(all, $"{all.Count} paths");
     }
 
-    [field: AllowNull, MaybeNull]
-    public ICollection<FileSystemLoader> Loaders => field ??= BuildLoaders(null, LogSettings);
-
     private ToSic.Sys.Logging.LogSettings LogSettings { get; set; } = new();
 
-    private ICollection<FileSystemLoader> BuildLoaders(IEntitiesSource? entitiesSource, ToSic.Sys.Logging.LogSettings logSettings)
+    internal ICollection<FileSystemLoader> BuildLoadersForGlobal(ToSic.Sys.Logging.LogSettings logSettings)
         => Paths
-            .Select(path => _fslGenerator
-                .New(new()
+            .Select((path, loaderIndex) => _fslGenerator.New(new()
                 {
-                    AppId = KnownAppsConstants.PresetAppId,
+                    JsonReaderOptions = FileSystemLoaderOptions.CreateJsonOptionsDyn(KnownAppsConstants.PresetAppId, logSettings, Log),
+                    //AppId = KnownAppsConstants.PresetAppId,
                     Path = path,
                     RepoType = Source,
                     IgnoreMissing = true,
-                    EntitiesSource = entitiesSource,
                     LogSettings = logSettings,
+
+                    // Set TypeID seed for loader so each loaded type has a unique ID
+                    EntityIdSeed = GlobalAppIdConstants.GlobalEntityIdMin +
+                                   GlobalAppIdConstants.GlobalEntitySourceSkip * (loaderIndex + 1),
+
+                    // Set TypeID seed for loader so each loaded type has a unique ID
+                    TypeIdSeed = GlobalAppIdConstants.GlobalContentTypeMin +
+                                 GlobalAppIdConstants.GlobalContentTypeSourceSkip * (loaderIndex + 1),
+
                 })
             )
             .ToListOpt();
@@ -107,24 +110,28 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         var builder = _stateBuilder.New().InitForPreset();
 
         var logDetails = LogSettings is { Enabled: true, Details: true };
+        ICollection<FileSystemLoader> entityLoaders;
         builder.Load("get app data package", appState =>
         {
             var l = Log.Fn("load app data package");
+
             // Prepare metadata lists & relationships etc.
             builder.InitMetadata();
             builder.SetNameAndFolder(KnownAppsConstants.PresetName, KnownAppsConstants.PresetName);
 
-            l.Do(timer: true, action: () =>
             {
-                var (contentTypes, entities) = LoadGlobalContentTypes(appState);
+                var l2 = Log.Fn(timer: true);
+                var loaders = BuildLoadersForGlobal(LogSettings);
+                var (nextLoaders, contentTypes, entities) = LoadGlobalContentTypes(loaders, appState);
                 // Just attach all global content-types to this app, as they belong here
                 builder.InitContentTypes(contentTypes);
 
                 // Note: all must be Entity, but this setup just ensures the compiler sees it that way
                 foreach (var entity in entities.OfType<Entity>())
                     builder.Add(entity, null, logDetails);
-                return "types loaded";
-            });
+                entityLoaders = nextLoaders;
+                l2.Done("types loaded");
+            }
 
             // load data
             try
@@ -138,17 +145,42 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
                 // Update 2024-09-01 2dm: made some changes, ATM _some_ of it already uses a shared source for relationships, but
                 // only on content-type-sub-entities, and a separate source for the others...?
                 l.A("Update Loaders to know about preloaded Content-Types - otherwise some features will not work");
-                var appTypes = builder.Reader.ContentTypes.ToListOpt();
-                foreach (var ldr in Loaders)
-                    ldr.ResetSerializer(appTypes);
+
+                // 2026-11-04 2dm: this is a rewrite of the previous non-functional-style code,
+                // but after analysis it appears that all code paths ended up resetting the loader again
+                // so it appears that it had no impact; will comment out for now.
+                // Old code was:
+                //var appTypes = builder.Reader.ContentTypes.ToListOpt();
+                //foreach (var ldr in Loaders)
+                //    ldr.ResetSerializer(appTypes);
+                // Rewrite was:
+                //var newLoaders = loaders
+                //    .Select(ldr =>
+                //        _fslGenerator.New(ldr.GetLatestOptions() with
+                //        {
+                //            PrefetchedContentTypesSource = appTypes
+                //        }))
+                //    .ToList();
+
+
+                // 2026-11-04 2dm: special case if app reader was specified
+                // so types are known and can be retrieved from the AppReader,
+                // and all other settings should not be relevant
+                var newLoaders = entityLoaders
+                    .Select(ldr =>
+                        _fslGenerator.New(ldr.GetLatestOptions() with
+                        {
+                            JsonReaderOptions = new(builder.Reader),
+                        }))
+                    .ToList();
 
                 l.A("Load items");
 
-                var entities = LoadGlobalEntities(builder.Reader);
+                var entities = LoadGlobalEntities(newLoaders, builder.Reader.AppId);
                 l.A($"Load entity {entities.Count} items");
                 
                 // Note: all must be Entity, but this setup just ensures the compiler sees it that way
-                foreach (var entity in entities.Where(e => e is Entity).Cast<Entity>()) 
+                foreach (var entity in entities.OfType<Entity>()) 
                     builder.Add(entity, null, logDetails);
             }
             catch (Exception ex)

@@ -2,10 +2,9 @@
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
-using ToSic.Eav.Persistence.File;
 using Xunit.Abstractions;
 
-namespace ToSic.Eav.ImportExport.Tests.Persistence.File;
+namespace ToSic.Eav.Persistence.File;
 
 internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(parentLog, "Ldr.Helper")
 {
@@ -15,13 +14,12 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         output.WriteLine($"path:'{testStorageRoot}'");
         var loader = loaderRaw.New(new()
         {
-            AppId = KnownAppsConstants.PresetAppId,
+            JsonReaderOptions = FileSystemLoaderOptions.CreateJsonOptionsDyn(KnownAppsConstants.PresetAppId, log: Log),
+            //AppId = KnownAppsConstants.PresetAppId,
             Path = testStorageRoot,
             RepoType = RepositoryTypes.TestingDoNotUse,
             IgnoreMissing = false,
-            EntitiesSource = null
         });
-        //var loader = loaderRaw;
         
         try
         {
@@ -42,11 +40,11 @@ internal class LoaderHelper(string scenarioDeep, ILog parentLog): HelperBase(par
         var loader = loaderRaw;
         loader.Setup(new()
         {
-            AppId = KnownAppsConstants.PresetAppId,
+            JsonReaderOptions = FileSystemLoaderOptions.CreateJsonOptionsDyn(KnownAppsConstants.PresetAppId, log: log),
+            //AppId = KnownAppsConstants.PresetAppId,
             Path = testRoot,
             RepoType = RepositoryTypes.TestingDoNotUse,
             IgnoreMissing = true,
-            EntitiesSource = null
         });
         ICollection<IContentType> cts;
         try

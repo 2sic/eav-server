@@ -18,7 +18,7 @@ partial class FileSystemLoader
     {
         var l = Log.Fn<Dictionary<string, JsonFormat>>();
         // #1. check that folder exists
-        if (!CheckPathExists(Options.Path) || !CheckPathExists(BundlesPath))
+        if (!CheckPathExists(MyOptions.Path) || !CheckPathExists(BundlesPath))
             return l.Return([], "path doesn't exist");
 
         const string infoIfError = "couldn't read bundle-file";
@@ -85,11 +85,11 @@ partial class FileSystemLoader
             var newContentTypes = contentTypes
                 .Select(ct =>
                 {
-                    TypeIdSeed += TypeIdDirection;
+                    MyOptions.TypeIdSeed += MyOptions.TypeIdDirection;
                     var typeWithOrigin = ctAssemblyKit.Type.CreateFrom(
                         ct.ContentType,
-                        id: TypeIdSeed,
-                        repoType: Options.RepoType,
+                        id: MyOptions.TypeIdSeed,
+                        repoType: MyOptions.RepoType,
                         repoAddress: path,
                         parentTypeId: EavConstants.PresetContentTypeFakeParent,
                         configZoneId: KnownAppsConstants.PresetZoneId,
@@ -144,8 +144,8 @@ partial class FileSystemLoader
             entities = entities
                 .Select(e =>
                 {
-                    EntityIdSeed += EntityIdDirection;
-                    var newId = EntityIdSeed;
+                    MyOptions.EntityIdSeed += MyOptions.EntityIdDirection;
+                    var newId = MyOptions.EntityIdSeed;
                     return dataAssembler.Entity.CreateFrom(e, id: newId, repositoryId: newId);
                 })
                 .ToListOpt();
