@@ -15,9 +15,9 @@ partial class FileSystemLoader
         var cleanName = (type.Scope + "." + type.NameId)
             .RemoveNonFilenameCharacters();
 
-        System.IO.Directory.CreateDirectory(ContentTypePath);
+        Directory.CreateDirectory(ContentTypePath);
 
-        var fileName = System.IO.Path.Combine(ContentTypePath, cleanName + ImpExpConstants.Extension(ImpExpConstants.Files.json));
+        var fileName = Path.Combine(ContentTypePath, cleanName + ImpExpConstants.Extension(ImpExpConstants.Files.json));
 
         System.IO.File.WriteAllText(fileName, json);
     }
@@ -28,9 +28,9 @@ partial class FileSystemLoader
 
         var cleanName = queryDef.EntityGuid.ToString()
             .RemoveNonFilenameCharacters();
-        var queryPath = System.IO.Path.Combine(Options.Path, AppDataFoldersConstants.QueriesFolder);
-        System.IO.Directory.CreateDirectory(queryPath);
-        var fileName = System.IO.Path.Combine(queryPath, cleanName + ImpExpConstants.Extension(ImpExpConstants.Files.json));
+        var queryPath = Path.Combine(MyOptions.Path, AppDataFoldersConstants.QueriesFolder);
+        Directory.CreateDirectory(queryPath);
+        var fileName = Path.Combine(queryPath, cleanName + ImpExpConstants.Extension(ImpExpConstants.Files.json));
 
         System.IO.File.WriteAllText(fileName, json);
     }

@@ -9,7 +9,7 @@ namespace ToSic.Eav.Persistence.File;
 
 partial class FileSystemLoader
 {
-    private string BundlesPath => System.IO.Path.Combine(Options.Path, AppDataFoldersConstants.BundlesFolder);
+    private string BundlesPath => Path.Combine(MyOptions.Path, AppDataFoldersConstants.BundlesFolder);
 
 
     public Dictionary<string, JsonFormat> JsonBundleBundles => field ??= GetJsonBundleBundles();
