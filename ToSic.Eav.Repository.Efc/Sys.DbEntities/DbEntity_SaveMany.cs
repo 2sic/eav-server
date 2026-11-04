@@ -17,14 +17,14 @@ partial class DbEntity
     {
         // wrong toggle, but it's something people don't have ATM
         //var useNewSave = DbContext.Features.IsEnabled(BuiltInFeatures.DataImportParallel);
-        var useParallel = DbStore.Features.IsEnabled(BuiltInFeatures.DatabaseWriteOptimized);
+        var useParallel = dbStore.Features.IsEnabled(BuiltInFeatures.DatabaseWriteOptimized);
 
         var l = LogSummary.Fn<List<EntityIdentity>>($"count:{entityOptionPairs.Count}; Optimized: {useParallel}");
 
         if (entityOptionPairs.Count == 0)
             return l.Return([], "Entities to save are empty, skip");
 
-        var saveProcess = new SaveEntityProcess(DbStore, dataAssembler, entityOptionPairs, Log);
+        var saveProcess = new SaveEntityProcess(dbStore, dataAssembler, entityOptionPairs, Log);
 
         var ids = useParallel
             ? SaveEntitiesParallel(saveProcess, entityOptionPairs)
@@ -50,7 +50,7 @@ partial class DbEntity
 
         ICollection<EntityProcessData> result = null!;
 
-        DbStore.DoInTransaction(() =>
+        dbStore.DoInTransaction(() =>
         {
             result = saveProcess.ProcessBatch1(data, true);
             result = saveProcess.ProcessBatch2(result, true);
@@ -76,7 +76,7 @@ partial class DbEntity
         var ids = new List<EntityIdentity>();
         var idx = 0;
 
-        DbStore.DoInTransaction(
+        dbStore.DoInTransaction(
             () => 
             {
                 List<EntityProcessData> batch1 = [];
@@ -117,7 +117,7 @@ partial class DbEntity
         var ids = new List<EntityIdentity>();
         var idx = 0;
 
-        DbStore.DoInTransaction(
+        dbStore.DoInTransaction(
             () =>
             {
                 foreach (var pair in entityOptionPairs)
@@ -128,7 +128,7 @@ partial class DbEntity
                     if (idx == DbConstant.MaxToLogDetails)
                         l.A($"Hit #{idx}, will stop logging details");
 
-                    DbStore.DoAndSaveWithoutChangeDetection(
+                    dbStore.DoAndSaveWithoutChangeDetection(
                         () =>
                         {
                             var saved = SaveEntity(pair, saveProcess, logDetails);

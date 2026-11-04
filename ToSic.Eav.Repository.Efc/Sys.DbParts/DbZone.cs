@@ -3,22 +3,24 @@ using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
+internal class DbZone(DbStorage.DbStorage dbStore) : HelperBase(dbStore.LogDetails, "Db.Zone")
 {
+    private ILog? LogSummary => dbStore.LogSummary == null ? null : field ??= Log;
+
     /// <summary>
     /// Creates a new Zone with a default App and Culture-Root-Dimension
     /// </summary>
     public int AddZone(string name)
     {
         var newZone = new TsDynDataZone { Name = name };
-        DbStore.SqlDb.Add(newZone);
+        dbStore.SqlDb.Add(newZone);
 
-        DbStore.Dimensions.AddRootCultureNode(EavConstants.CultureSystemKey, "Culture Root", newZone);
+        dbStore.Dimensions.AddRootCultureNode(EavConstants.CultureSystemKey, "Culture Root", newZone);
 
-        DbStore.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.DefaultAppGuid);
+        dbStore.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.DefaultAppGuid);
 
         // We reliably auto-init the site-app by default
-        DbStore.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.PrimaryAppGuid);
+        dbStore.App.AddAppAndSave(newZone.ZoneId, KnownAppsConstants.PrimaryAppGuid);
 
         return newZone.ZoneId;
     }
@@ -29,7 +31,7 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
     {
         var l = LogSummary.Fn<bool>();
 
-        var zonesWithoutPrimary = DbStore.SqlDb.TsDynDataZones
+        var zonesWithoutPrimary = dbStore.SqlDb.TsDynDataZones
             .Include(z => z.TsDynDataApps)
             .Include(z => z.TsDynDataDimensions)
             // Skip "default" zone as that is a single purpose technical zone
@@ -46,7 +48,7 @@ internal class DbZone(DbStorage.DbStorage db) : DbPartBase(db, "Db.Zone")
                 Zone = zone
             }).ToList();
 
-        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.AddRange(newZones));
+        dbStore.DoAndSaveWithoutChangeDetection(() => dbStore.SqlDb.AddRange(newZones));
 
         return l.ReturnTrue($"added {newZones.Count}");
     }

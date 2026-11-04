@@ -2,8 +2,10 @@
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssembler) : DbPartBase(dbStore, "Db.Publ")
+internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssembler) : HelperBase(dbStore.Log, "Db.Publ")
 {
+    private ILog? LogDetails => dbStore.LogDetails == null ? null : field ??= Log;
+
     /// <summary>
     /// Publish a Draft-Entity
     /// </summary>
@@ -13,7 +15,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
     internal void PublishDraftInDbEntity(int entityId, IEntity draftToPublishForJson)
     {
         var l = LogDetails.Fn($"{nameof(entityId)}:{entityId}");
-        var unpublishedDbEnt = DbStore.Entities.GetDbEntityFull(entityId, preferUntracked: true);
+        var unpublishedDbEnt = dbStore.Entities.GetDbEntityFull(entityId, preferUntracked: true);
         if (!unpublishedDbEnt.IsPublished)
             l.A("found item is draft, will use this to publish");
         else
@@ -24,17 +26,17 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
             l.A($"found draft: {draftId}");
             if (!draftId.HasValue)
                 throw new EntityAlreadyPublishedException($"EntityId {entityId} is already published");
-            unpublishedDbEnt = DbStore.Entities.GetDbEntityFull(draftId.Value, preferUntracked: true);
+            unpublishedDbEnt = dbStore.Entities.GetDbEntityFull(draftId.Value, preferUntracked: true);
         }
 
         // Publish Draft-Entity
         if (!unpublishedDbEnt.PublishedEntityId.HasValue)
         {
-            l.A($"there was no published (not branched), so will just set this to published; {DbStore.SqlDb.TrackingInfo()}");
-            DbStore.DoAndSaveWithoutChangeDetection(() =>
+            l.A($"there was no published (not branched), so will just set this to published; {dbStore.SqlDb.TrackingInfo()}");
+            dbStore.DoAndSaveWithoutChangeDetection(() =>
             {
                 unpublishedDbEnt.IsPublished = true;
-                DbStore.SqlDb.Update(unpublishedDbEnt);
+                dbStore.SqlDb.Update(unpublishedDbEnt);
             });
             l.Done("saved");
             return;
@@ -45,7 +47,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
         var publishedId = unpublishedDbEnt.PublishedEntityId.Value;
         l.A(
             "There is a published item, will update that with the draft-data and delete the draft afterwards");
-        var publishedEntity = DbStore.Entities.GetDbEntityFull(publishedId, preferUntracked: true);
+        var publishedEntity = dbStore.Entities.GetDbEntityFull(publishedId, preferUntracked: true);
         var json = unpublishedDbEnt.Json;
         var isJson = !string.IsNullOrEmpty(json);
         l.A($"this is a json:{isJson}");
@@ -56,7 +58,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
             // update the content-id
             var cloneWithPublishedId = dataAssembler.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
 
-            var serializer = DbStore.JsonWriteGenerator.New();
+            var serializer = dbStore.JsonWriteGenerator.New();
             json = serializer.Serialize(cloneWithPublishedId);
 
             l.A($"changed - final json: {json}");
@@ -65,25 +67,25 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
         publishedEntity.Json = json; // if it's using the new format
         publishedEntity.TransModifiedId = unpublishedDbEnt.TransModifiedId; // transfer last-modified date (not to today, but to last edit)
 
-        DbStore.DoInTransaction(() =>
+        dbStore.DoInTransaction(() =>
         {
-            DbStore.DoAndSaveWithoutChangeDetection(() =>
+            dbStore.DoAndSaveWithoutChangeDetection(() =>
             {
                 // Add Relationships and simple values
-                DbStore.Values.CloneRelationshipsAndQueueUntracked(unpublishedDbEnt, publishedEntity); 
-                DbStore.Values.CloneEntitySimpleValuesAndQueueUntracked(unpublishedDbEnt, publishedEntity);
+                dbStore.Values.CloneRelationshipsAndQueueUntracked(unpublishedDbEnt, publishedEntity); 
+                dbStore.Values.CloneEntitySimpleValuesAndQueueUntracked(unpublishedDbEnt, publishedEntity);
 
                 // Save the changes to the published entity
-                DbStore.SqlDb.Update(publishedEntity);
+                dbStore.SqlDb.Update(publishedEntity);
             });
 
             // Delete will touch many objects which were used before for cloning
             // which would cause trouble in the EF change tracking
-            DbStore.FlushChangeTracking();
+            dbStore.FlushChangeTracking();
 
             // Do delete
             // Do this change in a separate step, as the delete may touch properties which could mix in the change tracking
-            DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.Entities.DeleteEntities([unpublishedDbEnt.EntityId], false));
+            dbStore.DoAndSaveWithoutChangeDetection(() => dbStore.Entities.DeleteEntities([unpublishedDbEnt.EntityId], false));
         });
 
         l.Done("saved");
@@ -99,11 +101,11 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
     internal TsDynDataEntity ClearDraftBranchAndSetPublishedState(TsDynDataEntity publishedEntity, int? draftId = null, bool newPublishedState = true)
     {
         var l = LogDetails.Fn<TsDynDataEntity>($"clear draft branch for i:{publishedEntity.EntityId}, draft:{draftId}, state:{newPublishedState}");
-        var unpublishedEntityId = draftId ?? DbStore.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
+        var unpublishedEntityId = draftId ?? dbStore.Publishing.GetDraftBranchEntityId(publishedEntity.EntityId);
 
         // if additional draft exists, must clear that first
         if (unpublishedEntityId != null)
-            DbStore.Entities.DeleteEntities([unpublishedEntityId.Value]);
+            dbStore.Entities.DeleteEntities([unpublishedEntityId.Value]);
 
         publishedEntity.IsPublished = newPublishedState;
 
@@ -116,7 +118,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
     /// <param name="entityId">EntityId of the Published Entity</param>
     internal int? GetDraftBranchEntityId(int entityId)
     {
-        var draftId = DbStore.SqlDb.TsDynDataEntities
+        var draftId = dbStore.SqlDb.TsDynDataEntities
             .Where(e => e.PublishedEntityId == entityId && !e.TransDeletedId.HasValue)
             .Select(e => (int?) e.EntityId)
             .SingleOrDefault();
@@ -132,7 +134,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
     {
         var l = LogDetails.Fn<Dictionary<int, int?>>($"items: {entityIds.Count}", timer: true);
         var nullList = entityIds.Cast<int?>().ToList();
-        var ids = DbStore.SqlDb.TsDynDataEntities
+        var ids = dbStore.SqlDb.TsDynDataEntities
             .Where(e => nullList.Contains(e.PublishedEntityId) && !e.TransDeletedId.HasValue)
             .Select(e => new {e.EntityId, e.PublishedEntityId })
             .ToList();

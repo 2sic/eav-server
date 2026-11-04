@@ -100,25 +100,5 @@ internal class ValueLoaderStandard(EfcAppLoaderService appLoader, EntityDetailsL
             .ToListOpt();
 
     #endregion
-
-    // 2025-04-28: this is the old version, which was slower - remove ca. 2025-Q3 #EfcSpeedUpValueLoading
-    ///// <summary>
-    ///// Get the attributes of the entities we're loading.
-    ///// </summary>
-    ///// <param name="entityIdsFound"></param>
-    ///// <returns></returns>
-    ///// <remarks>
-    ///// Research 2024-08 PC 2dm shows that this is fairly slow, between 100 and 400ms for 1700 attributes (Tutorial App)
-    ///// </remarks>
-    //private List<ToSicEavValues> GetSqlValuesRaw(List<int> entityIdsFound)
-    //{
-    //    var l = Log.Fn<List<ToSicEavValues>>($"Attributes SQL for {entityIdsFound.Count} entities", timer: true);
-
-    //    var attributesRaw = ValueQueries
-    //        .ValuesOfIdsQuery(entityIdsFound)
-    //        .ToList();
-
-    //    return l.Return(attributesRaw, $"found {attributesRaw.Capacity} attributes");
-    //}
-
+    
 }

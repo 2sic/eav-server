@@ -1,10 +1,12 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
-using ToSic.Eav.Repository.Efc.Sys.DbParts;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbEntities;
 
-internal partial class DbEntity(DbStorage.DbStorage db, DataAssembler dataAssembler) : DbPartBase(db, "Db.Enty")
+internal partial class DbEntity(DbStorage.DbStorage dbStore, DataAssembler dataAssembler) : HelperBase(dbStore.Log, "Db.Enty")
 {
-    private IJsonDataWriter Serializer { get; } = db.JsonWriteGenerator.New();
+    private ILog? LogDetails => dbStore.LogDetails == null ? null : field ??= Log;
+    private ILog? LogSummary => dbStore.LogSummary == null ? null : field ??= Log;
+
+    private IJsonDataWriter Serializer { get; } = dbStore.JsonWriteGenerator.New();
 }

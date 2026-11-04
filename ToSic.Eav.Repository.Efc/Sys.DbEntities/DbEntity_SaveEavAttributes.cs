@@ -13,7 +13,7 @@ partial class DbEntity
     private bool ClearValuesInDbUntracked(int entityId)
     {
         var l = LogDetails.Fn<bool>(timer: true);
-        var val = DbStore.SqlDb.TsDynDataValues
+        var val = dbStore.SqlDb.TsDynDataValues
             .Include(v => v.TsDynDataValueDimensions)
             .Where(v => v.EntityId == entityId)
             .ToList();
@@ -22,8 +22,8 @@ partial class DbEntity
             return l.ReturnFalse("no changes");
 
         var dims = val.SelectMany(v => v.TsDynDataValueDimensions);
-        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.RemoveRange(dims));
-        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.RemoveRange(val));
+        dbStore.DoAndSaveWithoutChangeDetection(() => dbStore.SqlDb.RemoveRange(dims));
+        dbStore.DoAndSaveWithoutChangeDetection(() => dbStore.SqlDb.RemoveRange(val));
         return l.ReturnTrue("ok");
     }
 
@@ -127,7 +127,7 @@ partial class DbEntity
     internal void SaveAttributeChanges(ICollection<TsDynDataValue> changes)
     {
         var l = LogSummary.Fn($"Attributes: {changes.Count}", timer: true);
-        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.TsDynDataValues.AddRange(changes));
+        dbStore.DoAndSaveWithoutChangeDetection(() => dbStore.SqlDb.TsDynDataValues.AddRange(changes));
         l.Done();
     }
 }

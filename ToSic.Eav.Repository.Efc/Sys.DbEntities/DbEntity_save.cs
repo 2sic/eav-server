@@ -79,9 +79,9 @@ partial class DbEntity
         string? jsonExport = null;
         var tempLastSaveGuid = Guid.Empty;
 
-        var transactionId = DbStore.Versioning.GetTransactionId();
+        var transactionId = dbStore.Versioning.GetTransactionId();
 
-        DbStore.DoInTransaction(() =>
+        dbStore.DoInTransaction(() =>
         {
             #region Step 3: either create a new entity, or if it's an update, do draft/published checks to ensure correct data
 
@@ -109,7 +109,7 @@ partial class DbEntity
                     var l3 = l2.Fn($"id:{newEnt.EntityId}, guid:{newEnt.EntityGuid}");
                     dbEnt.Json = jsonExport;
                     dbEnt.ContentType = newEnt.Type.NameId;
-                    DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Update(dbEnt),
+                    dbStore.DoAndSaveWithoutChangeDetection(() => dbStore.SqlDb.Update(dbEnt),
                         "update json");
                     l3.Done();
                 }
@@ -121,7 +121,7 @@ partial class DbEntity
                 #region Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
 
                 // new: always change the draft if there is one! - it will then either get published, or not...
-                dbEnt = DbStore.Entities
+                dbEnt = dbStore.Entities
                     .GetDbEntityFull(newEnt.EntityId); // get the published one (entityId is always the published id)
 
                 var stateChanged = dbEnt.IsPublished != newEnt.IsPublished;
@@ -141,7 +141,7 @@ partial class DbEntity
                     if (stateChanged || hasAdditionalDraft)
                     {
                         // now reset the branch/entity-state to properly set the state / purge the draft
-                        dbEnt = DbStore.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId, newEnt.IsPublished);
+                        dbEnt = dbStore.Publishing.ClearDraftBranchAndSetPublishedState(dbEnt, existingDraftId, newEnt.IsPublished);
 
                         // update ID of the save-entity, as it's used again later on...
                         resetId = dbEnt.EntityId;
@@ -182,7 +182,7 @@ partial class DbEntity
 
                     // first, clean up all existing attributes / values (flush)
                     // this is necessary after remove, because otherwise EF state tracking gets messed up
-                    DbStore.DoAndSaveTracked(
+                    dbStore.DoAndSaveTracked(
                         () => dbEnt.TsDynDataValues.Clear(),
                         "Flush values"
                     );
@@ -199,7 +199,7 @@ partial class DbEntity
             {
                 // save all the values we just added
                 SaveAttributesAsEavUntracked(newEnt, so, attributeDefs, dbEnt.EntityId, zoneLangs, logDetails);
-                DbStore.Relationships.ChangeRelationships(newEnt, dbEnt.EntityId, attributeDefs, so);
+                dbStore.Relationships.ChangeRelationships(newEnt, dbEnt.EntityId, attributeDefs, so);
             }
             else if (isNew)
                 if (logDetails)
@@ -214,7 +214,7 @@ partial class DbEntity
 
             if (jsonExport == null)
                 throw new("trying to save version history entry, but jsonExport isn't ready");
-            DbStore.Versioning.AddAndSave(newEnt, dbEnt.EntityId, dbEnt.EntityGuid, DbVersioning.ParentRefForApp(dbEnt.AppId));
+            dbStore.Versioning.AddAndSave(newEnt, dbEnt.EntityId, dbEnt.EntityGuid, DbVersioning.ParentRefForApp(dbEnt.AppId));
 
             #endregion
 

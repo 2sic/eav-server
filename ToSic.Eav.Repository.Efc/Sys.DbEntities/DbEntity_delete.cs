@@ -2,7 +2,7 @@
 
 partial class DbEntity
 {
-    private int DeleteTransactionId => _deleteTransactionId.Get(() => DbStore.Versioning.GetTransactionId());
+    private int DeleteTransactionId => _deleteTransactionId.Get(() => dbStore.Versioning.GetTransactionId());
     private readonly LazyGet<int> _deleteTransactionId = new();
 
     /// <summary>
@@ -16,7 +16,7 @@ partial class DbEntity
 
         // get full entity again to be sure we are deleting everything - otherwise inbound unreliable
         // note that as this is a DB-entity, the EntityId is actually the repositoryId
-        var entities = DbStore.Entities.GetDbEntitiesFullUntracked(repositoryId);
+        var entities = dbStore.Entities.GetDbEntitiesFullUntracked(repositoryId);
 
         #region Delete Related Records (Values, Value-Dimensions, Relationships)
 
@@ -24,10 +24,10 @@ partial class DbEntity
         var valueDimensions = entities
             .SelectMany(e => e.TsDynDataValues.SelectMany(v => v.TsDynDataValueDimensions))
             .ToList();
-        DbStore.SqlDb.RemoveRange(valueDimensions);
+        dbStore.SqlDb.RemoveRange(valueDimensions);
 
         // Delete all Values
-        DbStore.SqlDb.RemoveRange(entities.SelectMany(e => e.TsDynDataValues).ToListOpt());
+        dbStore.SqlDb.RemoveRange(entities.SelectMany(e => e.TsDynDataValues).ToListOpt());
 
         // Delete all Parent-Relationships
         //DbStore.SqlDb.RemoveRange(entities.SelectMany(e => e.RelationshipsWithThisAsParent).ToListOpt());
@@ -39,14 +39,14 @@ partial class DbEntity
         {
             foreach (var relationship in entity.RelationshipsWithThisAsParent)
             {
-                var childEntityGuid = DbStore.Entities.GetDbEntitiesFullUntracked([relationship!.ChildEntityId!.Value])
+                var childEntityGuid = dbStore.Entities.GetDbEntitiesFullUntracked([relationship!.ChildEntityId!.Value])
                     .First().EntityGuid;
                 relationship.ChildExternalId = childEntityGuid;
                 relationship.ChildEntityId = null;
             }
         });
 
-        DbStore.SqlDb.UpdateRange(relationshipsWithThisAsParentToSoftDelete);
+        dbStore.SqlDb.UpdateRange(relationshipsWithThisAsParentToSoftDelete);
 
         //if (removeFromParents)
         //    DbStore.SqlDb.RemoveRange(entities.SelectMany(e => e.RelationshipsWithThisAsChild).ToListOpt());
@@ -66,12 +66,12 @@ partial class DbEntity
                 }
             });
 
-            DbStore.SqlDb.UpdateRange(relationshipsWithThisAsChildToSoftDelete);
+            dbStore.SqlDb.UpdateRange(relationshipsWithThisAsChildToSoftDelete);
         }
 
         #endregion
 
-        var draftBranchMap = DbStore.Publishing.GetDraftBranchMap(entities.Select(e => e.EntityId).ToList());
+        var draftBranchMap = dbStore.Publishing.GetDraftBranchMap(entities.Select(e => e.EntityId).ToList());
 
         entities.ForEach(entity =>
         {
@@ -91,62 +91,32 @@ partial class DbEntity
                 l.A("was draft, will really delete");
                 // Delete all Child-Relationships
                 if (!removeFromParents)
-                    DbStore.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToListOpt());
+                    dbStore.SqlDb.RemoveRange(entity.RelationshipsWithThisAsChild.ToListOpt());
             }
 
             // Also remove the entity itself
             RemoveEntityTrackedOrUntracked(entity);
         });
         if (autoSave)
-            DbStore.DoAndSaveWithoutChangeDetection(() => {});
+            dbStore.DoAndSaveWithoutChangeDetection(() => {});
 
         return l.ReturnTrue("DeleteEntity(...) done"); ;
     }
-
-    //private void MarkEntityAsDeletedTrackedOrUntracked(TsDynDataEntity entity)
-    //{
-    //    // Guard against tracking conflicts: if the context already tracks another instance of this key,
-    //    // update that tracked instance instead of attaching this untracked one.
-    //    var localTracked = DbStore.SqlDb.TsDynDataEntities.Local
-    //        .FirstOrDefault(e => e.EntityId == entity.EntityId);
-    //    if (localTracked != null && !ReferenceEquals(localTracked, entity))
-    //    {
-    //        if (entity.TransDeletedId != localTracked.TransDeletedId)
-    //            localTracked.TransDeletedId = entity.TransDeletedId;
-
-    //        DbStore.SqlDb.Entry(localTracked).Property(e => e.TransDeletedId).IsModified = true;
-    //        return;
-    //    }
-
-    //    DbStore.SqlDb.Attach(entity);
-    //    DbStore.SqlDb.Entry(entity).Property(e => e.TransDeletedId).IsModified = true;
-    //}
 
     private void RemoveEntityTrackedOrUntracked(TsDynDataEntity entity)
     {
         // Guard against tracking conflicts: if the context already tracks another instance of this key,
         // delete that tracked instance instead of attaching this untracked one.
-        var localTracked = DbStore.SqlDb.TsDynDataEntities.Local.FirstOrDefault(e => e.EntityId == entity.EntityId);
+        var localTracked = dbStore.SqlDb.TsDynDataEntities.Local.FirstOrDefault(e => e.EntityId == entity.EntityId);
         if (localTracked != null && !ReferenceEquals(localTracked, entity))
         {
             // ensure the deleted flag is copied if it was set on the untracked instance
             if (entity.TransDeletedId != localTracked.TransDeletedId)
                 localTracked.TransDeletedId = entity.TransDeletedId;
 
-            DbStore.SqlDb.Entry(localTracked).State = EntityState.Deleted;
+            dbStore.SqlDb.Entry(localTracked).State = EntityState.Deleted;
         }
         else
-            DbStore.SqlDb.Remove(entity);
+            dbStore.SqlDb.Remove(entity);
     }
-
-    //private void DeleteRelationshipsUntracked(ICollection<TsDynDataRelationship> relationships)
-    //{
-    //    var l = Log.Fn($"DeleteRelationships({relationships?.Count})");
-    //    if ((relationships?.Count ?? 0) == 0)
-    //        l.A("No relationships to delete");
-    //    else
-    //        DbContext.SqlDb.RemoveRange(relationships.ToList());
-    //    l.Done();
-    //}
-
 }

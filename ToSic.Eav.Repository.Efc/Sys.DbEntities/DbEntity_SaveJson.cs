@@ -27,6 +27,6 @@ partial class DbEntity
     {
         // in update scenarios, the old data could have been a db-model, so clear that
         ClearValuesInDbUntracked(entityId);
-        DbStore.Relationships.FlushChildrenRelationships([entityId]);
+        dbStore.Relationships.FlushChildrenRelationships([entityId]);
     }
 }

@@ -9,7 +9,7 @@ partial class DbContentType
 {
     public void AddOrUpdate(string staticName, string scope, string name, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
     {
-        DbStore.DoAndSaveTracked(() =>
+        dbStore.DoAndSaveTracked(() =>
         {
             var ct = TryGetTypeByStaticTracked(staticName);
 
@@ -18,42 +18,42 @@ partial class DbContentType
             {
                 ct.Name = name;
                 ct.Scope = scope;
-                ct.TransCreatedId = DbStore.Versioning.GetTransactionId();
+                ct.TransCreatedId = dbStore.Versioning.GetTransactionId();
                 return;
             }
 
             // If not exists, create new
-            DbStore.SqlDb.Add(PrepareNew(name, scope, usesConfigurationOfOtherSet, alwaysShareConfig));
+            dbStore.SqlDb.Add(PrepareNew(name, scope, usesConfigurationOfOtherSet, alwaysShareConfig));
         });
     }
 
     private TsDynDataContentType PrepareNew(string name, string scope, int? usesConfigurationOfOtherSet, bool alwaysShareConfig)
         => new()
         {
-            AppId = DbStore.AppId,
+            AppId = dbStore.AppId,
             Name = name,
             StaticName = Guid.NewGuid().ToString(),
             Scope = scope == "" ? null : scope,
             InheritContentTypeId = usesConfigurationOfOtherSet,
             IsGlobal = alwaysShareConfig,
-            TransCreatedId = DbStore.Versioning.GetTransactionId(),
+            TransCreatedId = dbStore.Versioning.GetTransactionId(),
         };
 
 
     public void Delete(string nameId)
-        => DbStore.DoAndSaveTracked(() =>
+        => dbStore.DoAndSaveTracked(() =>
         {
             var setToDelete = TryGetTypeByStaticTracked(nameId)
                               ?? throw new ArgumentException($@"Tried to delete but can't find {nameId}",
                                   nameof(nameId));
-            setToDelete.TransDeletedId = DbStore.Versioning.GetTransactionId();
+            setToDelete.TransDeletedId = dbStore.Versioning.GetTransactionId();
         });
 
 
     private int? GetOrCreateContentType(ContentType contentType)
     {
-        var newType = DbStore.ContentTypes
-            .GetDbContentTypeWithAttributesUntracked(DbStore.AppId)
+        var newType = dbStore.ContentTypes
+            .GetDbContentTypeWithAttributesUntracked(dbStore.AppId)
             .SingleOrDefault(a => a.StaticName == contentType.NameId);
 
         //var isUpdate = newType != null;
@@ -75,7 +75,7 @@ partial class DbContentType
         }
 
         // add new Content-Type, do basic configuration if possible, then save
-        newType = DbStore.ContentTypes.PrepareDbContentType(contentType.Name, contentType.NameId,
+        newType = dbStore.ContentTypes.PrepareDbContentType(contentType.Name, contentType.NameId,
                       contentType.Scope, false, null)
                   ?? throw new($"Can't create content type {contentType.Name}/{contentType.NameId}");
 
@@ -94,7 +94,7 @@ partial class DbContentType
 
         #endregion
 
-        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Add(newType));
+        dbStore.DoAndSaveWithoutChangeDetection(() => dbStore.SqlDb.Add(newType));
 
         return newType.ContentTypeId;
     }
@@ -126,7 +126,7 @@ partial class DbContentType
         // append all Attributes
         foreach (var newAtt in contentType.Attributes)
         {
-            var destAttribId = DbStore.Attributes.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
+            var destAttribId = dbStore.Attributes.GetOrCreateAttributeDefinition(contentTypeId, newAtt);
 
             // save additional entities containing AttributeMetaData for this attribute
             if (newAtt.Metadata != null!)
@@ -170,7 +170,7 @@ partial class DbContentType
         }
 
         var withOptions = saveOptions.AddToAll(entities);
-        DbStore.Save(withOptions); // don't use the standard save options, as this is attributes only
+        dbStore.Save(withOptions); // don't use the standard save options, as this is attributes only
     }
         
     /// <summary>
@@ -203,7 +203,7 @@ partial class DbContentType
             entities.Add(entity);
         }
         var withOptions = saveOptions.AddToAll(entities);
-        DbStore.Save(withOptions); // don't use the standard save options, as this is attributes only
+        dbStore.Save(withOptions); // don't use the standard save options, as this is attributes only
     }
 
 }

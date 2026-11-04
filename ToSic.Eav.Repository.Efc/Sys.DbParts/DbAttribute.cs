@@ -1,22 +1,21 @@
 ﻿using ToSic.Eav.Data.Sys;
-using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.AttDef")
+internal partial class DbAttribute(DbStorage.DbStorage dbStore) : HelperBase(dbStore.Log, "Db.AttDef")
 {
-    private IJsonDataWriter Serializer { get; } = db.JsonWriteGenerator.New();
+    private IJsonDataWriter Serializer { get; } = dbStore.JsonWriteGenerator.New();
 
     /// <summary>
     /// Set an Attribute as Title on a Content-Type
     /// </summary>
     public void SetTitleAttribute(int attributeId, int contentTypeId)
-        => DbStore.DoAndSaveTracked(() =>
+        => dbStore.DoAndSaveTracked(() =>
         {
             // unset other Attributes with isTitle=true
-            var all = DbStore.SqlDb.TsDynDataAttributes
+            var all = dbStore.SqlDb.TsDynDataAttributes
                 .Where(s => s.ContentTypeId == contentTypeId)
                 .ToListOpt();
 
@@ -37,7 +36,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         if (!AttributeExistsInSet(contentTypeId, newAtt.Name))
             return AppendToEndAndSave(contentTypeId, newAtt);
 
-        DbStore.ImportLogToBeRefactored.Add(new("Attribute already exists" + newAtt.Name, Message.MessageTypes.Information) );
+        dbStore.ImportLogToBeRefactored.Add(new("Attribute already exists" + newAtt.Name, Message.MessageTypes.Information) );
         return GetAttributeUntracked(contentTypeId, name: newAtt.Name).AttributeId;
     }
 
@@ -46,7 +45,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
     {
         try
         {
-            var root = DbStore.SqlDb.TsDynDataAttributes.AsNoTracking();
+            var root = dbStore.SqlDb.TsDynDataAttributes.AsNoTracking();
             return attributeId != 0
                 ? root.Single(a =>a.ContentTypeId == contentTypeId && a.AttributeId == attributeId)
                 : root.Single(a => a.ContentTypeId == contentTypeId && a.StaticName == name);
@@ -65,10 +64,10 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         if (string.IsNullOrWhiteSpace(newName))
             throw new("can't rename to something empty");
 
-        DbStore.DoAndSaveTracked(() =>
+        dbStore.DoAndSaveTracked(() =>
         {
             // ensure that it's in the set
-            var attr = DbStore.SqlDb.TsDynDataAttributes
+            var attr = dbStore.SqlDb.TsDynDataAttributes
                 .Single(a => a.AttributeId == attributeId && a.ContentTypeId == contentTypeId);
 
             attr.StaticName = newName;
@@ -80,7 +79,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
     /// </summary>
     private int AppendToEndAndSave(int contentTypeId, IContentTypeField fieldDef)
     {
-        var maxIndex = DbStore.SqlDb.TsDynDataAttributes
+        var maxIndex = dbStore.SqlDb.TsDynDataAttributes
             .AsNoTracking()
             .Where(a => a.ContentTypeId == contentTypeId)
             .ToListOpt() // important because it otherwise has problems with the next step...
@@ -100,8 +99,8 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         var sortOrder = newSortOrder ?? fieldDef.SortOrder;
         var sysSettings = Serializer.Serialize(fieldDef.SysSettings);
 
-        var contentType = DbStore.ContentTypes
-                              .GetDbContentTypeWithAttributesTracked(DbStore.AppId)
+        var contentType = dbStore.ContentTypes
+                              .GetDbContentTypeWithAttributesTracked(dbStore.AppId)
                               .SingleOrDefault(a => a.ContentTypeId == contentTypeId)
                           ?? throw new($"Can't find {contentTypeId} in DB.");
 
@@ -113,7 +112,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             throw new ArgumentException($@"An Field with the static name {nameId} already exists", nameof(nameId));
 
         // Set Field as Title if there's no title field in this set
-        if (DbStore.ProcessOptions.TypeAttributeAutoSetTitle)
+        if (dbStore.ProcessOptions.TypeAttributeAutoSetTitle)
             if (!contentType.TsDynDataAttributes.Any(a => a.IsTitle))
                 isTitle = true;
 
@@ -122,7 +121,7 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
         {
             Type = type,
             StaticName = nameId,
-            TransCreatedId = DbStore.Versioning.GetTransactionId(),
+            TransCreatedId = dbStore.Versioning.GetTransactionId(),
             Guid = fieldDef.Guid,
             SysSettings = sysSettings,
             ContentTypeId = contentType.ContentTypeId,
@@ -130,12 +129,12 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
             IsTitle = isTitle
         };
 
-        DbStore.DoAndSaveTracked(() =>
+        dbStore.DoAndSaveTracked(() =>
         {
-            DbStore.SqlDb.Add(newAttribute);
+            dbStore.SqlDb.Add(newAttribute);
 
             // If it's not a title, then we don't have to unset any old title fields, so exit early
-            if (!isTitle || !DbStore.ProcessOptions.TypeAttributeAutoCorrectTitle)
+            if (!isTitle || !dbStore.ProcessOptions.TypeAttributeAutoCorrectTitle)
                 return;
 
             // unset old Title Fields...
@@ -157,23 +156,23 @@ internal partial class DbAttribute(DbStorage.DbStorage db) : DbPartBase(db, "Db.
 
     public bool RemoveAttributeAndAllValuesAndSave(int attributeId)
     {
-        DbStore.DoInTransaction(() => DbStore.DoAndSaveWithoutChangeDetection(() =>
+        dbStore.DoInTransaction(() => dbStore.DoAndSaveWithoutChangeDetection(() =>
         {
             // Remove values and valueDimensions of this attribute
-            var values = DbStore.SqlDb.TsDynDataValues
+            var values = dbStore.SqlDb.TsDynDataValues
                 .AsNoTracking()
                 .Include(v => v.TsDynDataValueDimensions)
                 .Where(a => a.AttributeId == attributeId).ToList();
 
             foreach (var v in values)
-                DbStore.SqlDb.RemoveRange(v.TsDynDataValueDimensions);
+                dbStore.SqlDb.RemoveRange(v.TsDynDataValueDimensions);
 
-            var attr = DbStore.SqlDb.TsDynDataAttributes
+            var attr = dbStore.SqlDb.TsDynDataAttributes
                 .AsNoTracking()
                 .FirstOrDefault(a => a.AttributeId == attributeId);
 
             if (attr != null)
-                DbStore.SqlDb.Remove(attr);
+                dbStore.SqlDb.Remove(attr);
 
             // TODO: also consider removing metadata and formulas
 
