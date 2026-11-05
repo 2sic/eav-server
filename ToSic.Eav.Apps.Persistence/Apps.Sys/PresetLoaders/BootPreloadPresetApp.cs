@@ -15,11 +15,15 @@ internal sealed class BootPreloadPresetApp(
     LazySvc<IAppStateLoader> appLoader,
     AppsCacheSwitch appsCache,
     EavFeaturesLoader featuresLoader)
-    : BootProcessBase("SqlWUp", bootPhase: BootPhase.Loading, priority: LoadAppPriority, connect: [logStore, appLoader, appsCache, featuresLoader])
+    : ServiceBase("AppPst", connect: [logStore, appLoader, appsCache, featuresLoader]), IBootProcess
 {
-    public const int LoadAppPriority = 100;
+    public string NameId => Log.NameId;
 
-    public override void Run()
+    public BootPhase Phase => BootPhase.Loading;
+
+    public int Priority => 100; // very early
+    
+    public void Run()
     {
         var (main, lStandalone, lNormal) = BootLogHelper
             .GetLoggersForStandaloneLogs(logStore, Log, "AppPst", "Load Global Preset App");

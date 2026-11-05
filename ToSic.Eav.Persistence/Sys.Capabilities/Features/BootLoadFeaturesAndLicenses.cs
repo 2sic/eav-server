@@ -9,12 +9,14 @@ namespace ToSic.Sys.Capabilities.Features;
 /// <param name="featuresLoader"></param>
 [PrivateApi]
 internal sealed class BootLoadFeaturesAndLicenses(ILogStore logStore, EavFeaturesLoader featuresLoader)
-    : BootProcessBase("EavLnF",
-        bootPhase: BootPhase.Loading,
-        priority: 1000, // Depends on the preset app being loaded first, for the content-types
-        connect: [logStore, featuresLoader]
-    )
+    : ServiceBase("EavLnF", connect: [logStore, featuresLoader]), IBootProcess
 {
+    public string NameId => Log.NameId;
+
+    public BootPhase Phase => BootPhase.Loading;
+
+    public int Priority => 1000;  // Depends on the preset app being loaded first, for the content-types
+
     /// <summary>
     /// Prevent multiple Initializations; not sure why we had to add this.
     /// </summary>
@@ -23,7 +25,7 @@ internal sealed class BootLoadFeaturesAndLicenses(ILogStore logStore, EavFeature
     /// <summary>
     /// Do things we need at application start
     /// </summary>
-    public override void Run()
+    public void Run()
     {
         var l = BootLog.Log.Fn("Eav: StartUp", timer: true);
         
