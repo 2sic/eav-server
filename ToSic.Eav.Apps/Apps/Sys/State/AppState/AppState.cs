@@ -11,12 +11,19 @@ namespace ToSic.Eav.Apps.Sys.State;
 /// </summary>
 [PrivateApi("this is just fyi - was marked as internal till v16.09")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConnect
+internal partial class AppState: ServiceBase, ILogShouldNeverConnect
 {
+    /// <inheritdoc />
+    public int ZoneId { get; }
+
+    /// <inheritdoc />
+    public int AppId { get; }
+
+
     private static bool _loggedToBootLog;
 
     [PrivateApi("constructor, internal use only. should be internal, but ATM also used in FileAppStateLoader")]
-    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, string cacheKey, ILog parentLog): base(new(), $"App.St-{id.AppId}", connect: [])
+    private AppState(ParentAppState parentApp, IAppIdentity id, string nameId, string cacheKey, ILog parentLog): base($"App.St-{id.AppId}", connect: [])
     {
         // Track first time an app was built...
         if (!_loggedToBootLog)
@@ -29,7 +36,8 @@ internal partial class AppState: AppBase<DependenciesEmpty>, ILogShouldNeverConn
 
         var l = Log.Fn($"AppState for App {id.AppId}");
         this.LinkLog(parentLog, forceConnect: true);
-        InitAppBaseIds(id);
+        ZoneId = id.ZoneId;
+        AppId = id.AppId;
 
         ParentApp = parentApp;
         l.A($"Parent Inherits: Types: {parentApp.InheritContentTypes}, Entities: {parentApp.InheritEntities}");
