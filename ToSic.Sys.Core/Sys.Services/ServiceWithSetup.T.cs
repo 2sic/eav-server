@@ -7,7 +7,7 @@ public abstract class ServiceWithSetup<TServices, TOptions> : ServiceBase,
     IHasOptions<TOptions>,
     IServiceWithSetup<TOptions>
     where TServices : IDependencies
-    where TOptions : class, new()
+    where TOptions : class
 {
     /// <summary>
     /// Constructor for normal case, with services
@@ -39,9 +39,17 @@ public abstract class ServiceWithSetup<TServices, TOptions> : ServiceBase,
         => MyOptions = options;
 
     /// <summary>
-    /// Method to generate new / default options. You can override this to provide your own default options.
+    /// Method to generate new / default options.
+    /// This should usually not be called, but it might;
+    /// so if your service can work without valid options (or accesses options before setup), this would trigger.
+    ///
+    /// This could also be triggered, if the service was created without the correct Generator.
+    /// Note that it's always an option to just throw an exception.
+    /// 
+    /// You must override this to provide your own default options.
     /// </summary>
     /// <returns></returns>
+    /// <exception cref="ServiceOptionsRequiredException"></exception>
     protected virtual TOptions GetDefaultOptions()
-        => new();
+        => throw new ServiceOptionsRequiredException();
 }
