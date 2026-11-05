@@ -32,6 +32,7 @@ public static class StartupEavAppsPersistence
         services.TryAddTransient<IAppStateLoader, AppStateInFolderLoader>();
 
         // File System Loaders
+        services.TryAddTransient<AppFileSystemLoaderPaths>();
         services.TryAddTransient<IAppInputTypesLoader, AppFileSystemInputTypesLoader>();
         services.TryAddTransient<IAppContentTypesLoader, AppFileSystemContentTypesLoader>();
 

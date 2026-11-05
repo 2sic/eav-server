@@ -1,7 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Paths;
-using ToSic.Eav.Apps.Sys.PresetLoaders;
-using ToSic.Eav.Context;
-using ToSic.Eav.Context.Sys.ZoneMapper;
+﻿using ToSic.Eav.Apps.Sys.PresetLoaders;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
@@ -11,9 +8,11 @@ using ToSic.Eav.Sys;
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSystemLoader, FileSystemLoaderOptions> fslGenerator, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
-    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator]), IAppContentTypesLoader
+public class AppFileSystemContentTypesLoader(Generator<AppFileSystemLoaderPaths, AppFileSystemLoaderOptions> appFslPaths, Generator<FileSystemLoader, FileSystemLoaderOptions> fslGenerator)
+    : ServiceWithSetup<AppFileSystemLoaderOptions>(EavLogs.Eav + ".AppFSL", connect: [appFslPaths, fslGenerator]), IAppContentTypesLoader
 {
+    private AppFileSystemLoaderPaths AppFslPaths => field ??= appFslPaths.New(MyOptions);
+
     /// <inheritdoc />
     public PartialData TypesAndEntities(IEntitiesSource entitiesSource)
     {
@@ -51,15 +50,16 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
     private (ICollection<IContentType> ContentTypes, ICollection<IEntity> Entities) LoadDataFromOneExtensionPath(
         string extensionPath, int seed, IEntitiesSource entitiesSource)
     {
-        var l = Log.IfSummary(LogSettings).Fn<(ICollection<IContentType>, ICollection<IEntity>)>(extensionPath);
+        var logSettings = MyOptions.LogSettings;
+        var l = Log.IfSummary(logSettings).Fn<(ICollection<IContentType>, ICollection<IEntity>)>(extensionPath);
         var fsLoader = fslGenerator.New(options: new()
         {
-            JsonReaderOptions = FileSystemLoaderOptions.CreateJsonOptionsGlobalLoad(AppIdentity.AppId, entitiesSource, LogSettings, Log),
+            JsonReaderOptions = FileSystemLoaderOptions.CreateJsonOptionsGlobalLoad(MyOptions.AppReader.AppId, entitiesSource, logSettings, Log),
             //AppId = AppIdentity.AppId,
             Path = extensionPath,
             RepoType = RepositoryTypes.Folder,
             IgnoreMissing = true,
-            LogSettings = LogSettings,
+            LogSettings = logSettings,
 
             // Expect local entities to be very few...
             EntityIdSeed = seed,
@@ -80,13 +80,13 @@ public class AppFileSystemContentTypesLoader(ISite siteDraft, Generator<FileSyst
 
     private ICollection<string> GetAllExtensionDataPaths()
     {
-        var l = Log.IfSummary(LogSettings).Fn<ICollection<string>>(
-            $"Roots: {ExtensionsPath};{ExtensionsPathShared}");
+        var l = Log.IfSummary(MyOptions.LogSettings).Fn<ICollection<string>>(
+            $"Roots: {AppFslPaths.ExtensionsPath};{AppFslPaths.ExtensionsPathShared}");
 
         var roots = new[]
         {
-            ExtensionsPath,              // local
-            ExtensionsPathShared,        // shared
+            AppFslPaths.ExtensionsPath,              // local
+            AppFslPaths.ExtensionsPathShared,        // shared
         };
 
         var paths = roots
