@@ -1,4 +1,3 @@
-using ToSic.Eav.Data.Build;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using ToSic.Eav.Data;
@@ -202,59 +201,17 @@ public class ConditionalDraftSqlTests(DbStorage storage, Generator<EfcAppLoaderS
         Assert.Fail("Expected SQL blocking relationship was not observed within ten seconds.");
     }
 
-    private ExistingDraftSaveCondition Prepare()
-    {
-        fixture.SetupFixtureConfiguration(new ScenarioConditionalDraftSql());
-        boot.StartUp();
-        var appId = int.Parse(System.Environment.GetEnvironmentVariable("SXC_C3_APP")!);
-        var zoneId = ZoneId;
-        var entityId = int.Parse(System.Environment.GetEnvironmentVariable("SXC_C3_ENTITY")!);
-        var guid = Guid.Parse(System.Environment.GetEnvironmentVariable("SXC_C3_GUID")!);
-        storage.Setup(new(zoneId, appId, null, new()));
-        var database = storage.SqlDb.Database.GetDbConnection().Database;
-        Assert.StartsWith("SxcMcpC3_", database);
-        storage.SqlDb.Database.OpenConnection();
-        using (var marker = storage.SqlDb.Database.GetDbConnection().CreateCommand())
-        {
-            marker.CommandText = "SELECT CONVERT(nvarchar(64),value) FROM sys.extended_properties WHERE class=0 AND name=N'2sxc-mcp-c3-owner'";
-            Assert.Equal(System.Environment.GetEnvironmentVariable("SXC_C3_NONCE"), marker.ExecuteScalar());
-        }
-        // The generic test host does not run DNN's on-demand language synchronization.
-        // Provision the QA language only in this marked copy, through the native dimension service.
-        var dimensions = stores.New();
-        dimensions.Setup(new(zoneId, appId, null, new()));
-        using (dimensions.SqlDb)
-            if (!dimensions.SqlDb.TsDynDataDimensions.Any(d => d.ZoneId == zoneId && d.EnvironmentKey == "en-us"))
-                dimensions.Dimensions.AddOrUpdateZoneDimension("en-us", "English (C3 SQL fixture)", true);
-        var rows = storage.SqlDb.TsDynDataEntities.AsNoTracking().Where(e => e.AppId == appId && e.EntityGuid == guid && e.TransDeletedId == null).ToArray();
-        var published = rows.Single(e => e.EntityId == entityId && e.IsPublished);
-        var draft = rows.Single(e => e.PublishedEntityId == entityId && !e.IsPublished);
-        return new(appId, entityId, guid, published.Version, draft.EntityId, draft.Version);
-    }
+    private readonly ConditionalDraftSqlFixture _sql = new(storage, loaders, environment, saver, assembler, fixture, boot, stores);
+
+    private ExistingDraftSaveCondition Prepare() => _sql.Prepare();
 
     private void SaveTitle(DbStorage target, ExistingDraftSaveCondition expected, string title, bool conditional = true)
         => PrepareTitleSave(target, expected, title, conditional)();
 
     private Action PrepareTitleSave(DbStorage target, ExistingDraftSaveCondition expected, string title, bool conditional = true)
     {
-        var app = loaders.New().UseExistingDb(target.SqlDb).AppStateReaderRawTac(expected.AppId);
-        var original = app.List.Single(e => e.EntityGuid == expected.EntityGuid && !e.IsPublished);
-        var options = environment.SaveOptions(ZoneId) with
-        {
-            Languages = target.SqlDb.TsDynDataDimensions.AsNoTracking().Include(d => d.ParentNavigation)
-                .Where(d => d.ZoneId == ZoneId && d.Parent != null).ToList().Select(d => d.AsDimensionDefinition).ToList(),
-            PreserveUntouchedAttributes = true,
-            PreserveUnknownLanguages = true,
-            DraftShouldBranch = !conditional,
-            ExistingDraftCondition = conditional ? expected : null,
-        };
-        IEntity partial = assembler.CreateEntityTac(appId: expected.AppId, entityId: 0, contentType: original.Type,
-            values: new() { { "Title", title } });
-        partial = assembler.Entity.CreateFrom(partial, isPublished: false);
-        var merged = saver.TestCreateMergedForSavingTac(original, partial, options);
-        Assert.False(merged.IsPublished);
-
-        return () => target.Save(options.AddToAll([merged]));
+        var (entity, options) = _sql.PrepareTitle(target, expected, title, conditional);
+        return () => target.Save(options.AddToAll([entity]));
     }
 
     private TsDynDataEntity[] ReadPair(DbStorage target, ExistingDraftSaveCondition expected)

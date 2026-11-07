@@ -413,8 +413,14 @@ public class DbStorage(
         var l = LogSummary.Fn(timer: true);
         var before = _purgeAppCacheOnSave;
         _purgeAppCacheOnSave = false;
-        action.Invoke();
-        _purgeAppCacheOnSave = before;
+        try
+        {
+            action.Invoke();
+        }
+        finally
+        {
+            _purgeAppCacheOnSave = before;
+        }
         l.Done();
     }
 
