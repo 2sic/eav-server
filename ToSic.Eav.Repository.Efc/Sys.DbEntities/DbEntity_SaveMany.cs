@@ -24,6 +24,7 @@ partial class DbEntity
         if (entityOptionPairs.Count == 0)
             return l.Return([], "Entities to save are empty, skip");
 
+        ExistingDraftSaveGuard.RequireOwnedTransaction(dbStore, entityOptionPairs);
         var saveProcess = new SaveEntityProcess(dbStore, dataAssembler, entityOptionPairs, Log);
 
         var ids = useParallel
@@ -52,6 +53,7 @@ partial class DbEntity
 
         dbStore.DoInTransaction(() =>
         {
+            ExistingDraftSaveGuard.Demand(dbStore, entityOptionPairs);
             result = saveProcess.ProcessBatch1(data, true);
             result = saveProcess.ProcessBatch2(result, true);
         });
@@ -79,6 +81,7 @@ partial class DbEntity
         dbStore.DoInTransaction(
             () => 
             {
+                ExistingDraftSaveGuard.Demand(dbStore, entityOptionPairs);
                 List<EntityProcessData> batch1 = [];
 
                 foreach (var pair in entityOptionPairs)
@@ -120,6 +123,7 @@ partial class DbEntity
         dbStore.DoInTransaction(
             () =>
             {
+                ExistingDraftSaveGuard.Demand(dbStore, entityOptionPairs);
                 foreach (var pair in entityOptionPairs)
                 {
                     // Logging, but only the first 250 or so entries...

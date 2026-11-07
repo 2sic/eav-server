@@ -28,6 +28,12 @@ public record SaveOptions
     public bool DraftShouldBranch { get; init; } = true;
 
     /// <summary>
+    /// Optional SQL Server revision guard for updating one existing draft without branching or publishing.
+    /// Locks and comparison belong to the native save transaction. Null preserves ordinary save behavior.
+    /// </summary>
+    public ExistingDraftSaveCondition? ExistingDraftCondition { get; init; }
+
+    /// <summary>
     /// Internal message to attach to save operations, so it's easier to debug what's happening; optional; not much used yet.
     /// </summary>
     public string? Message { get; init; }
