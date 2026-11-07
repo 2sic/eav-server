@@ -116,6 +116,8 @@ partial class DbEntity
     /// <returns></returns>
     internal List<EntityIdentity> SaveEntitiesSerialOld(SaveEntityProcess saveProcess, ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
+        if (entityOptionPairs.Any(p => p.Partner.ExistingDraftCondition != null))
+            throw new NotSupportedException("Conditional draft saves require the current save pipeline.");
         var l = LogSummary.Fn<List<EntityIdentity>>();
         var ids = new List<EntityIdentity>();
         var idx = 0;

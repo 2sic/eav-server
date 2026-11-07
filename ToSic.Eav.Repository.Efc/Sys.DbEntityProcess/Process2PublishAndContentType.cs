@@ -10,7 +10,12 @@ internal class Process2PublishAndContentType: IEntityProcess
         // If we think we'll update an existing entity...
         // ...we have to check if we'll actually update the draft of the entity
         // ...or create a new draft (branch)
-        var (existingDraftId, hasAdditionalDraft, entity) = services.PublishingAnalyzer.GetDraftAndCorrectIdAndBranching(data.NewEntity, data.Options, data.LogDetails); // TODO: later just pass in data
+        var condition = data.Options.ExistingDraftCondition;
+        // The revision guard already locked and verified this exact pair. Address its physical draft
+        // directly: the ordinary non-branching path can otherwise replace the published header.
+        var (existingDraftId, hasAdditionalDraft, entity) = condition == null
+            ? services.PublishingAnalyzer.GetDraftAndCorrectIdAndBranching(data.NewEntity, data.Options, data.LogDetails)
+            : ((int?)null, false, services.DataAssembler.Entity.CreateFrom(data.NewEntity, id: condition.DraftId, publishedId: condition.EntityId));
         data = data with { NewEntity = entity, }; // may have been replaced with an updated IEntity during corrections
 
         var (contentTypeId, attributeDefs) = services.StructureAnalyzer.GetContentTypeAndAttribIds(data.SaveJson, data.NewEntity, data.LogDetails);
