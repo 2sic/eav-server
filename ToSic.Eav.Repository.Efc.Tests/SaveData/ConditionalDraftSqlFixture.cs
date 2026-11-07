@@ -16,6 +16,7 @@ public sealed class ConditionalDraftSqlFixture(DbStorage storage, Generator<EfcA
     IImportExportEnvironment environment, EntitySaver saver, DataAssembler assembler,
     FixtureStartupWithDb fixture, BootCoordinator boot, Generator<DbStorage> stores)
 {
+    private bool _ownershipVerified;
     public static int ZoneId => int.Parse(System.Environment.GetEnvironmentVariable("SXC_C3_ZONE")!);
 
     public ExistingDraftSaveCondition Prepare()
@@ -33,17 +34,24 @@ public sealed class ConditionalDraftSqlFixture(DbStorage storage, Generator<EfcA
             marker.CommandText = "SELECT CONVERT(nvarchar(64),value) FROM sys.extended_properties WHERE class=0 AND name=N'2sxc-mcp-c3-owner'";
             Assert.Equal(System.Environment.GetEnvironmentVariable("SXC_C3_NONCE"), marker.ExecuteScalar());
         }
+        _ownershipVerified = true;
         // The generic test host does not run DNN's on-demand language synchronization.
-        var dimensions = stores.New();
-        dimensions.Setup(new(ZoneId, appId, null, new()));
-        using (dimensions.SqlDb)
-            if (!dimensions.SqlDb.TsDynDataDimensions.Any(d => d.ZoneId == ZoneId && d.EnvironmentKey == "en-us"))
-                dimensions.Dimensions.AddOrUpdateZoneDimension("en-us", "English (C3 SQL fixture)", true);
+        EnsureLanguage("en-us", "English (C3 SQL fixture)");
         var rows = storage.SqlDb.TsDynDataEntities.AsNoTracking()
             .Where(e => e.AppId == appId && e.EntityGuid == guid && e.TransDeletedId == null).ToArray();
         var published = rows.Single(e => e.EntityId == entityId && e.IsPublished);
         var draft = rows.Single(e => e.PublishedEntityId == entityId && !e.IsPublished);
         return new(appId, entityId, guid, published.Version, draft.EntityId, draft.Version);
+    }
+
+    public void EnsureLanguage(string code, string name)
+    {
+        Assert.True(_ownershipVerified);
+        var dimensions = stores.New();
+        dimensions.Setup(new(ZoneId, storage.AppId, null, new()));
+        using (dimensions.SqlDb)
+            if (!dimensions.SqlDb.TsDynDataDimensions.Any(d => d.ZoneId == ZoneId && d.EnvironmentKey == code))
+                dimensions.Dimensions.AddOrUpdateZoneDimension(code, name, true);
     }
 
     public (IEntity Entity, SaveOptions Options) PrepareTitle(DbStorage target, ExistingDraftSaveCondition expected,
@@ -56,15 +64,19 @@ public sealed class ConditionalDraftSqlFixture(DbStorage storage, Generator<EfcA
             Languages = target.SqlDb.TsDynDataDimensions.AsNoTracking().Include(d => d.ParentNavigation)
                 .Where(d => d.ZoneId == ZoneId && d.Parent != null).ToList().Select(d => d.AsDimensionDefinition).ToList(),
             PreserveUntouchedAttributes = true,
+            PreserveExistingLanguages = true,
             PreserveUnknownLanguages = true,
             DraftShouldBranch = !conditional,
             ExistingDraftCondition = conditional ? expected : null,
         };
+        var titleAttribute = assembler.Attribute.CreateOrUpdate(null, "Title", title, ValueTypes.String, language: "en-us");
         IEntity partial = assembler.CreateEntityTac(appId: expected.AppId, entityId: 0, contentType: original.Type,
-            values: new() { { "Title", title } });
-        partial = assembler.Entity.CreateFrom(partial, isPublished: false);
-        var merged = saver.TestCreateMergedForSavingTac(original, partial, options);
+            typedValues: new() { { "Title", titleAttribute } }, isPublished: false);
+        var merged = MergePartial(original, partial, options);
         Assert.False(merged.IsPublished);
         return (merged, options);
     }
+
+    public IEntity MergePartial(IEntity original, IEntity partial, SaveOptions options)
+        => saver.TestCreateMergedForSavingTac(original, partial, options);
 }

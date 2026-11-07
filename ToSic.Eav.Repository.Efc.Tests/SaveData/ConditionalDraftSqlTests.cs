@@ -41,14 +41,17 @@ public sealed class C3SqlTheoryAttribute : TheoryAttribute
     }
 }
 
-[Startup(typeof(StartupTestsApps))]
+[Startup(typeof(StartupConditionalDraftSql))]
 public class ConditionalDraftSqlTests(DbStorage storage, Generator<EfcAppLoaderService> loaders, IImportExportEnvironment environment,
-    EntitySaver saver, DataAssembler assembler, FixtureStartupWithDb fixture, BootCoordinator boot, Generator<DbStorage> stores)
+    EntitySaver saver, DataAssembler assembler, FixtureStartupWithDb fixture, BootCoordinator boot, Generator<DbStorage> stores,
+    ConditionalDraftSqlFeatures features)
 {
-    [C3SqlFact]
-    public void Save_UpdatesExistingDraft_AndPreservesPublishedRow()
+    [C3SqlTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Save_UpdatesExistingDraft_AndPreservesPublishedRow(bool optimized)
     {
-        var expected = Prepare();
+        var expected = Prepare(optimized);
         var before = ReadPair(storage, expected);
         var title = "C3 conditional draft " + Guid.NewGuid().ToString("N");
         SaveTitle(storage, expected, title);
@@ -61,10 +64,12 @@ public class ConditionalDraftSqlTests(DbStorage storage, Generator<EfcAppLoaderS
         Assert.Equal(title, ReadTitle(storage, expected));
     }
 
-    [C3SqlFact]
-    public void Save_RejectsStaleRevisionAfterOrdinaryNativeWriter()
+    [C3SqlTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Save_RejectsStaleRevisionAfterOrdinaryNativeWriter(bool optimized)
     {
-        var expected = Prepare();
+        var expected = Prepare(optimized);
         var writer = stores.New();
         writer.Setup(new(ZoneId, expected.AppId, null, new()));
         using var writerDb = writer.SqlDb;
@@ -82,11 +87,13 @@ public class ConditionalDraftSqlTests(DbStorage storage, Generator<EfcAppLoaderS
     }
 
     [C3SqlTheory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void Save_RollsBackWhenSqlRejectsDraftUpdate(bool conditional)
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    public void Save_RollsBackWhenSqlRejectsDraftUpdate(bool conditional, bool optimized)
     {
-        var expected = Prepare();
+        var expected = Prepare(optimized);
         var before = ReadPair(storage, expected);
         var transactionCount = storage.SqlDb.TsDynDataTransactions.Count();
         var historyCount = storage.SqlDb.TsDynDataHistories.Count();
@@ -128,10 +135,12 @@ public class ConditionalDraftSqlTests(DbStorage storage, Generator<EfcAppLoaderS
         AssertPairUnchanged(before, ReadPair(storage, expected));
     }
 
-    [C3SqlFact]
-    public async Task Save_BlocksOrdinarySqlWriterBetweenRevisionCheckAndUpdate()
+    [C3SqlTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Save_BlocksOrdinarySqlWriterBetweenRevisionCheckAndUpdate(bool optimized)
     {
-        var expected = Prepare();
+        var expected = Prepare(optimized);
         var before = ReadPair(storage, expected);
         var title = "C3 serialized save " + Guid.NewGuid().ToString("N");
         var save = PrepareTitleSave(storage, expected, title);
@@ -203,7 +212,11 @@ public class ConditionalDraftSqlTests(DbStorage storage, Generator<EfcAppLoaderS
 
     private readonly ConditionalDraftSqlFixture _sql = new(storage, loaders, environment, saver, assembler, fixture, boot, stores);
 
-    private ExistingDraftSaveCondition Prepare() => _sql.Prepare();
+    private ExistingDraftSaveCondition Prepare(bool optimized = false)
+    {
+        features.Optimized = optimized;
+        return _sql.Prepare();
+    }
 
     private void SaveTitle(DbStorage target, ExistingDraftSaveCondition expected, string title, bool conditional = true)
         => PrepareTitleSave(target, expected, title, conditional)();
@@ -211,7 +224,12 @@ public class ConditionalDraftSqlTests(DbStorage storage, Generator<EfcAppLoaderS
     private Action PrepareTitleSave(DbStorage target, ExistingDraftSaveCondition expected, string title, bool conditional = true)
     {
         var (entity, options) = _sql.PrepareTitle(target, expected, title, conditional);
-        return () => target.Save(options.AddToAll([entity]));
+        return () =>
+        {
+            var checks = features.SaveModeChecks;
+            try { target.Save(options.AddToAll([entity])); }
+            finally { Assert.True(features.SaveModeChecks > checks); }
+        };
     }
 
     private TsDynDataEntity[] ReadPair(DbStorage target, ExistingDraftSaveCondition expected)

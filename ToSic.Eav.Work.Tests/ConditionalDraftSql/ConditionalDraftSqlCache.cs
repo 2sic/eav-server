@@ -3,6 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Repository.Efc.Tests.SaveData;
 
 namespace ToSic.Eav.Work.Tests.ConditionalDraftSql;
 
@@ -11,6 +12,7 @@ public class StartupConditionalDraftSqlWork : StartupTestWork
     public override void ConfigureServices(IServiceCollection services)
     {
         base.ConfigureServices(services);
+        ConditionalDraftSqlFeatures.Configure(services);
         var native = services.Single(s => s.ServiceType == typeof(IAppsCacheSwitchable) && s.ImplementationType?.Name == "AppsCache");
         services.Remove(native);
         services.AddSingleton(sp => new ConditionalDraftSqlCache((IAppsCacheSwitchable)ActivatorUtilities.CreateInstance(sp, native.ImplementationType!)));
