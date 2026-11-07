@@ -24,6 +24,7 @@ partial class DbEntity
         if (entityOptionPairs.Count == 0)
             return l.Return([], "Entities to save are empty, skip");
 
+        ExistingDraftSaveGuard.RequireOwnedTransaction(DbStore, entityOptionPairs);
         var saveProcess = new SaveEntityProcess(DbStore, dataAssembler, entityOptionPairs, Log);
 
         var ids = useParallel
@@ -52,6 +53,7 @@ partial class DbEntity
 
         DbStore.DoInTransaction(() =>
         {
+            ExistingDraftSaveGuard.Demand(DbStore, entityOptionPairs);
             result = saveProcess.ProcessBatch1(data, true);
             result = saveProcess.ProcessBatch2(result, true);
         });
@@ -79,6 +81,7 @@ partial class DbEntity
         DbStore.DoInTransaction(
             () => 
             {
+                ExistingDraftSaveGuard.Demand(DbStore, entityOptionPairs);
                 List<EntityProcessData> batch1 = [];
 
                 foreach (var pair in entityOptionPairs)
@@ -113,6 +116,8 @@ partial class DbEntity
     /// <returns></returns>
     internal List<EntityIdentity> SaveEntitiesSerialOld(SaveEntityProcess saveProcess, ICollection<IEntityPair<SaveOptions>> entityOptionPairs)
     {
+        if (entityOptionPairs.Any(p => p.Partner.ExistingDraftCondition != null))
+            throw new NotSupportedException("Conditional draft saves require the current save pipeline.");
         var l = LogSummary.Fn<List<EntityIdentity>>();
         var ids = new List<EntityIdentity>();
         var idx = 0;
@@ -120,6 +125,7 @@ partial class DbEntity
         DbStore.DoInTransaction(
             () =>
             {
+                ExistingDraftSaveGuard.Demand(DbStore, entityOptionPairs);
                 foreach (var pair in entityOptionPairs)
                 {
                     // Logging, but only the first 250 or so entries...
