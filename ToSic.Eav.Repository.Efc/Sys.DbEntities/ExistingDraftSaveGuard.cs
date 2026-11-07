@@ -66,7 +66,7 @@ internal static class ExistingDraftSaveGuard
                     TransDeletedId = reader.IsDBNull(6) ? null : reader.GetInt32(6), ContentTypeId = reader.GetInt32(7), Owner = "" });
         }
         if (!Matches(expected, rows))
-            throw new DbUpdateConcurrencyException("The published/draft pair changed before conditional save.", []);
+            throw new DBConcurrencyException("The published/draft pair changed before conditional save.");
     }
 
     internal static bool Matches(ExistingDraftSaveCondition expected, IReadOnlyList<TsDynDataEntity> rows)

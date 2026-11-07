@@ -343,32 +343,23 @@ public class DbStorage(
         var preserve = SqlDb.ChangeTracker.AutoDetectChangesEnabled;
         SqlDb.ChangeTracker.AutoDetectChangesEnabled = false;
 
-        // Wrap invoke in a try/catch to specifically catch tracking errors
-        //try {
-            action.Invoke();
-        //}
-        //catch (Exception ex)
-        //{
-        //    l.A($"error: action failed, {ex.Message}");
-        //    l.Ex(ex);
-        //    throw;
-        //}
-
         try
         {
+            action.Invoke();
             SqlDb.SaveChanges();
         }
         catch (Exception ex)
         {
             l.A($"error: save changes without change detection failed, {ex.Message}");
             l.Ex(ex);
+            throw;
         }
         finally
         {
             SqlDb.ChangeTracker.AutoDetectChangesEnabled = preserve;
+            IsWithinSave = false;
             l.Done();
         }
-        IsWithinSave = false;
     }
 
 
@@ -390,11 +381,23 @@ public class DbStorage(
             }
             catch (Exception e)
             {
-                ownTransaction?.Rollback();
+                try
+                {
+                    ownTransaction?.Rollback();
+                }
+                catch (Exception rollbackError)
+                {
+                    // SQL Server may already have aborted the transaction. Preserve the save failure.
+                    l.Ex(rollbackError);
+                }
                 l.A($"Transaction {randomId} failed / rollback");
                 l.A("transaction failed / rollback");
                 l.Ex(e);
                 throw;
+            }
+            finally
+            {
+                ownTransaction?.Dispose();
             }
         }
     }
