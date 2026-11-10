@@ -1,3 +1,4 @@
+using ToSic.Eav.Data.Build;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Sys.Capabilities.Features;
@@ -26,18 +27,23 @@ public class SharedFields : CustomDataSource
         LazySvc<ISysFeaturesService> features)
         : base(services, logName: "Eav.SharedFld", connect: [workAttributes, convertAttribute, features])
     {
-        ProvideOutRaw(() => Convert(convertAttribute, workAttributes.New(AppId).GetSharedFields(AttributeId)));
+        ProvideOutRaw(
+            () => Convert(convertAttribute, workAttributes.New(AppId).GetSharedFields(AttributeId)),
+            options: DynamicOptions
+        );
         ProvideOutRaw(
             () => FeatureEnabled(features)
                 ? Convert(convertAttribute, workAttributes.New(AppId).GetAncestors(AttributeId))
                 : [],
-            name: "Ancestors"
+            name: "Ancestors",
+            options: DynamicOptions
         );
         ProvideOutRaw(
             () => FeatureEnabled(features)
                 ? Convert(convertAttribute, workAttributes.New(AppId).GetDescendants(AttributeId))
                 : [],
-            name: "Descendants"
+            name: "Descendants",
+            options: DynamicOptions
         );
     }
 
@@ -45,7 +51,13 @@ public class SharedFields : CustomDataSource
         => convertAttribute.New()
             .Init(AppId, true)
             .Convert(fields)
-            .Select(field => new ContentTypeFieldModel(field) { Id = field.Id });
+            .Select(field => new ContentTypeFieldModel(field)
+            {
+                Id = field.Id,
+                Guid = field.Guid ?? Guid.Empty,
+            });
+
+    private static DataFactoryOptions DynamicOptions() => new() { AllowUnknownValueTypes = true };
 
     private bool FeatureEnabled(LazySvc<ISysFeaturesService> features)
         => features.Value.IsEnabled(BuiltInFeatures.ContentTypeFieldsReuseDefinitions);
