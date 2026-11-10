@@ -120,10 +120,4 @@ internal partial class DataFactory(
 
 
     #endregion
-
-    // #DropSpawnNew
-    //// #TODO: @2dm #RawEntity - #SpawnNewBadPattern
-    //public IDataFactory SpawnNew(DataFactoryOptions options)
-    //    => selfGenerator.New(options);
-
 }

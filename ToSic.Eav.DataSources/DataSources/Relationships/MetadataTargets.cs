@@ -99,7 +99,6 @@ public class MetadataTargets(
                 var ct = appState.TryGetContentType(key);
                 if (ct == null)
                     return [];
-                // #DropSpawnNew
                 var contentTypeFactory = genDataFactory.New(options: new() { AppId = AppId, WithMetadata = true });
                 var ctEntity = contentTypeFactory.Create(new ContentTypeUtil.ContentTypeSummary(ct, items: 0));
                 return [ctEntity];
