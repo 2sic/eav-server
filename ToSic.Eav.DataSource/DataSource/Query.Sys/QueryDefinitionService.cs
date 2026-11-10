@@ -78,7 +78,7 @@ public class QueryDefinitionService(
     }
 
 
-    internal IEntity? TryGetQueryEntity(IAppIdentity appIdentity, string? nameOrGuid, int recurseParents = 0) 
+    public IEntity? TryGetQueryEntity(IAppIdentity appIdentity, string? nameOrGuid, int recurseParents = 0) 
     {
         var l = Log.Fn<IEntity?>($"{nameOrGuid}, recurse: {recurseParents}");
 
