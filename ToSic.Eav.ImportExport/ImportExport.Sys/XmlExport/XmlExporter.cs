@@ -17,8 +17,8 @@ namespace ToSic.Eav.ImportExport.Sys.XmlExport;
 // should all get it from cache only!
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, IContextOfAppFactory appCtxFactory, IXmlExporterIntegration integration)
-    : ServiceWithSetup<XmlExporter.Options>($"{EavLogs.Eav}XmlExp", connect: [appsCatalog, xmlSerializer, appCtxFactory, integration])
+public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, IContextOfAppFactory appCtxFactory, Generator<IXmlExporterIntegration, IContextOfApp> integrationGen)
+    : ServiceWithSetup<XmlExporter.Options>($"{EavLogs.Eav}XmlExp", connect: [appsCatalog, xmlSerializer, appCtxFactory, integrationGen])
 {
     public record Options(
         AppExportSpecs Specs,
@@ -35,7 +35,6 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
     public IAppReader AppReader => MyOptions?.AppReader ?? throw new("Xml Exporter is not initialized - this is required before trying to export");
 
     private string AppStaticName => field ??= AppReader.Specs.NameId; // load late once initialized
-    //private AppExportSpecs _specs = null!;
     private List<string> _foldersForEntitiesThatAreNotDeleted = [];
     #endregion
 
@@ -50,8 +49,7 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
             .ToDictionary(
                 lng => lng.EnvironmentKey.ToLowerInvariant(),
                 lng => lng.Id
-            )
-        /*, AppReader*/);
+            ));
 
     /// <summary>
     /// Not that the overload of this must take care of creating the EavAppContext and calling the Constructor
@@ -62,13 +60,15 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
         var l = Log.Fn(message: "start XML exporter using app-package");
 
         var ctxOfApp = appCtxFactory.Create(options.Specs);
-        integration.Setup(ctxOfApp);
+        EnvXmlIntegration = integrationGen.New(ctxOfApp);
         base.Setup(options);
 
         // this must happen very early, to ensure that the file-lists etc. are correct for exporting when used externally
         InitExportXDocument(ctxOfApp.Site.DefaultCultureCode, EavSystemInfo.VersionString);
         l.Done();
     }
+
+    private IXmlExporterIntegration EnvXmlIntegration { get; set; } = null!;
 
     #endregion
 
@@ -214,7 +214,7 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
         #endregion
 
         // init files (add to queue)
-        integration.AddFilesToExportQueue();
+        EnvXmlIntegration.AddFilesToExportQueue();
 
         GetFoldersForEntitiesThatAreNotDeleted(entities);
 
@@ -307,7 +307,7 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
             var a = fileRegex.Match(valueString);
             // try to remember the file
             if (a.Success && a.Groups[XmlConstants.FileIdInRegEx].Length > 0)
-                integration.AddFileAndFolderToQueue(int.Parse(a.Groups[XmlConstants.FileIdInRegEx].Value));
+                EnvXmlIntegration.AddFileAndFolderToQueue(int.Parse(a.Groups[XmlConstants.FileIdInRegEx].Value));
         }
 
         return entityXElement;
@@ -318,14 +318,14 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
 
     #region Files & Pages
 
-    private XElement GetFilesXElements() => new(XmlConstants.PortalFiles, integration.ReferencedFileIds.Distinct().Select(GetFileXElement));
+    private XElement GetFilesXElements() => new(XmlConstants.PortalFiles, EnvXmlIntegration.ReferencedFileIds.Distinct().Select(GetFileXElement));
 
 
-    private XElement GetFoldersXElements() => new(XmlConstants.FolderGroup, integration.ReferencedFolderIds.Distinct().Select(GetFolderXElement));
+    private XElement GetFoldersXElements() => new(XmlConstants.FolderGroup, EnvXmlIntegration.ReferencedFolderIds.Distinct().Select(GetFolderXElement));
 
     private XElement? GetFileXElement(int fileId)
     {
-        var file = integration.ResolveFile(fileId);
+        var file = EnvXmlIntegration.ResolveFile(fileId);
 
         if (IsDeletedOrInvalid(file?.RelativePath))
             return null;
@@ -341,7 +341,7 @@ public class XmlExporter(XmlSerializer xmlSerializer, IAppsCatalog appsCatalog, 
 
     private XElement? GetFolderXElement(int folderId)
     {
-        var path = integration.ResolveFolderId(folderId).ForwardSlash();
+        var path = EnvXmlIntegration.ResolveFolderId(folderId).ForwardSlash();
 
         if (IsDeletedOrInvalid(path))
             return null;
