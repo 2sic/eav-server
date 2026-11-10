@@ -1,8 +1,6 @@
 using ToSic.Eav.Identity;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Zip;
-using ToSic.Eav.Persistence.Sys.Logging;
-using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Configuration;
 using ToSic.Sys.Users;
@@ -12,7 +10,7 @@ namespace ToSic.Eav.WebApi.Sys.ImportExport;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportAppService(
     IEnvironmentLogger envLogger,
-    ZipImport zipImport,
+    Generator<ZipImport, ZipImport.Options> zipImport,
     IGlobalConfiguration globalConfiguration,
     IUser user)
     : ServiceBase("Bck.Export", connect: [envLogger, zipImport, globalConfiguration, user])
@@ -25,12 +23,13 @@ public class ImportAppService(
         if (!string.IsNullOrEmpty(renameApp))
             l.A($"new app name: {renameApp}");
 
+        var zipImportInstance = zipImport.New(new(zoneId, null, user.IsSystemAdmin));
         try
         {
-            zipImport.Init(zoneId, null, user.IsSystemAdmin);
             var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
-            result.Success = zipImport.ImportZip(stream, temporaryDirectory, renameApp);
-            result.Messages.AddRange(zipImport.Messages);
+            var importResult = zipImportInstance.ImportZip(stream, temporaryDirectory, renameApp);
+            result.Success = importResult.Success;
+            result.Messages.AddRange(importResult.Messages);
             return l.ReturnAsOk(result);
         }
         catch (Exception ex)
@@ -38,7 +37,7 @@ public class ImportAppService(
             l.Ex(ex);
             envLogger.LogException(ex);
             result.Success = false;
-            result.Messages.AddRange(zipImport.Messages);
+            result.Messages.AddRange(zipImportInstance.Messages);
             return l.ReturnAsError(result);
         }
     }

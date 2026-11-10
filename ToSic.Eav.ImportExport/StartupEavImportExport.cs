@@ -24,7 +24,6 @@ public static class StartupEavImportExport
         services.TryAddTransient<XmlExporter>();    // new v22, now using composition, previously using inheritance
         services.TryAddTransient<ZipExport>();
         services.TryAddTransient<ZipImport>();
-        services.TryAddTransient<ZipImport.Dependencies>();
         services.TryAddTransient<ZipFromUrlImport>();
 
         services.TryAddTransient<ImportExportPathsAndOptions>();

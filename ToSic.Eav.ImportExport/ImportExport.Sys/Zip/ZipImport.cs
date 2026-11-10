@@ -8,31 +8,19 @@ using ToSic.Eav.Sys;
 namespace ToSic.Eav.ImportExport.Sys.Zip;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.Dependencies>(services, "Zip.Imp")
+public class ZipImport(Generator<AppFileManager> fileManGen, IImportExportEnvironment envSvc, Generator<XmlImportWithFiles> xmlImpExpFiles, AppCachePurger appCachePurger, IAppsCatalog appsCatalog)
+    : ServiceWithSetup<ZipImport.Options>("Zip.Imp", connect: [fileManGen, envSvc, xmlImpExpFiles, appCachePurger, appsCatalog])
 {
-    private int? _initialAppId;
-    private int _zoneId;
+    public record Options(int ZoneId, int? AppId, bool AllowCode);
+
+    public record Result(bool Success, List<Message> Messages);
+
+    private int ZoneId => MyOptions.ZoneId;
 
     public List<Message> Messages { get; } = [];
 
-    public bool AllowCodeImport;
+    public bool AllowCodeImport => MyOptions.AllowCode;
 
-    public record Dependencies(
-        Generator<AppFileManager> FileManagerGenerator,
-        IImportExportEnvironment Environment,
-        Generator<XmlImportWithFiles> XmlImpExpFiles,
-        AppCachePurger AppCachePurger,
-        IAppsCatalog AppsCatalog)
-        : DependenciesBase(connect: [FileManagerGenerator, Environment, XmlImpExpFiles, AppCachePurger, AppsCatalog]);
-
-
-    public ZipImport Init(int zoneId, int? appId, bool allowCode)
-    {
-        _initialAppId = appId;
-        _zoneId = zoneId;
-        AllowCodeImport = allowCode;
-        return this;
-    }
 
     /// <summary>
     /// Imports a ZIP file (from stream)
@@ -41,23 +29,12 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     /// <param name="temporaryDirectory">temporary storage</param>
     /// <param name="newName">App rename</param>
     /// <returns></returns>
-    public bool ImportZip(Stream zipStream, string temporaryDirectory, string? newName = null)
+    public Result ImportZip(Stream zipStream, string temporaryDirectory, string? newName = null)
         => ImportZipInternal(temporaryDirectory, newName, zipStream);
 
-    /// <summary>
-    /// Imports a ZIP file (from file)
-    /// </summary>
-    /// <param name="zipPath">path to ZIP file</param>
-    /// <param name="temporaryDirectory">temporary storage</param>
-    /// <param name="newName">App rename</param>
-    /// <param name="inheritAppId">optional inherit AppId</param>
-    /// <returns></returns>
-    public bool ImportZip(string zipPath, string temporaryDirectory, string? newName = null, int? inheritAppId = null)
-        => ImportZipInternal(temporaryDirectory, newName, null, zipPath, inheritAppId);
-
-    private bool ImportZipInternal(string temporaryDirectory, string? newName = null, Stream? zipStream = null, string? zipPath = null, int? inheritAppId = null)
+    private Result ImportZipInternal(string temporaryDirectory, string? newName = null, Stream? zipStream = null, string? zipPath = null, int? inheritAppId = null)
     {
-        var l = Log.Fn<bool>(parameters: $"{temporaryDirectory}, {nameof(newName)}:{newName}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
+        var l = Log.Fn<Result>(parameters: $"{temporaryDirectory}, {nameof(newName)}:{newName}, {nameof(zipPath)}:{zipPath}, {nameof(inheritAppId)}:{inheritAppId}");
         Exception? finalException = null;
 
         try
@@ -114,11 +91,11 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         if (finalException != null)
         {
             l.A("had found errors during import, will throw");
-            l.ReturnFalse("error");
+            l.Done("error");
             throw finalException; // must throw, to enable logging outside
         }
 
-        return l.ReturnTrue("ok");
+        return l.Return(new(true, Messages), "ok");
     }
 
 
@@ -160,7 +137,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         var l = Log.Fn($"{nameof(reName)}:'{reName}' {nameof(appDirectory)}:'{appDirectory}', ...");
 
         int appId;
-        var importer = Services.XmlImpExpFiles.New().Init(null, false);
+        var importer = xmlImpExpFiles.New().Init(null, false);
 
         var imp = new ImportXmlReader(
             Path.Combine(AppDataProtectedFolderPath(appDirectory, pendingApp), FolderConstants.AppDataFile),
@@ -187,7 +164,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
 
             // Version Checks (new in 08.03.03)
             // todo: register in DI and add to dependencies, then remove Init(log)
-            new VersionCheck(Services.Environment, l).EnsureVersions(imp.AppConfig);
+            new VersionCheck(envSvc, l).EnsureVersions(imp.AppConfig);
 
             var folder = imp.AppFolder;
 
@@ -206,25 +183,25 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
             if (!pendingApp)
             {
                 // Throw error if the app directory already exists
-                var appPath = Services.Environment.PathsAndOptions.TargetPath(folder);
+                var appPath = envSvc.PathsAndOptions.TargetPath(folder);
                 if (Directory.Exists(appPath))
                     throw new IOException($"App could not be installed, app-folder '{appPath}' already exists.");
             }
 
             HandlePortalFilesFolder(appDirectory, pendingApp);
 
-            importer.ImportApp(_zoneId, imp.XmlDoc, inheritAppId, out appId);
+            importer.ImportApp(ZoneId, imp.XmlDoc, inheritAppId, out appId);
         }
         else
         {
             l.A("will do content import");
-            appId = _initialAppId ?? Services.AppsCatalog.DefaultAppIdentity(_zoneId).AppId;
+            appId = MyOptions.AppId ?? appsCatalog.DefaultAppIdentity(ZoneId).AppId;
 
             var errMsg = importer.IsCompatible(imp.XmlDoc, skipSxcVersionCheck: true);
             if (errMsg == null)
                 HandlePortalFilesFolder(appDirectory, pendingApp);
 
-            importer.ImportXml(_zoneId, appId, parentAppId: null /* not sure if we never have a parent here */, imp.XmlDoc);
+            importer.ImportXml(ZoneId, appId, parentAppId: null /* not sure if we never have a parent here */, imp.XmlDoc);
         }
 
         importMessages.AddRange(importer.Messages);
@@ -237,7 +214,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
         // New in V11 - now that we just imported content types into the /system folder
         // the App must be refreshed to ensure these are available for working
         // Must happen after CopyAppFiles(...)
-        Services.AppCachePurger.PurgeApp(appId);
+        appCachePurger.PurgeApp(appId);
 
         l.Done("ok");
     }
@@ -257,10 +234,10 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     private void CopyAppFiles(List<Message> importMessages, int appId, string tempFolder)
     {
         var l = Log.Fn($"..., {appId}, {tempFolder}");
-        var templateRoot = Services.Environment.PathsAndOptions.TemplatesRoot(_zoneId, appId);
+        var templateRoot = envSvc.PathsAndOptions.TemplatesRoot(ZoneId, appId);
         var appTemplateRoot = Path.Combine(tempFolder, FolderConstants.ZipFolderForAppStuff);
         if (Directory.Exists(appTemplateRoot))
-            Services.FileManagerGenerator.New().SetFolder(appId, appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
+            fileManGen.New().SetFolder(appId, appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
         l.Done("ok");
     }
 
@@ -276,7 +253,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     public void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder, bool deleteGlobalTemplates = false, bool overwriteFiles = false)
     {
         var l = Log.Fn($"..., {appId}, {tempFolder}, {deleteGlobalTemplates}, {overwriteFiles}");
-        var globalTemplatesRoot = Services.Environment.PathsAndOptions.GlobalTemplatesRoot(_zoneId, appId);
+        var globalTemplatesRoot = envSvc.PathsAndOptions.GlobalTemplatesRoot(ZoneId, appId);
         var appTemplateRoot = Path.Combine(tempFolder, FolderConstants.ZipFolderForGlobalAppStuff);
         if (Directory.Exists(appTemplateRoot))
         {
@@ -284,7 +261,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
                 Zipping.TryToDeleteDirectory(globalTemplatesRoot, l);
 
             l.A("copy all files to app global template folder");
-            Services.FileManagerGenerator.New()
+            fileManGen.New()
                 .SetFolder(appId, appTemplateRoot)
                 .CopyAllFiles(globalTemplatesRoot, overwriteFiles, importMessages);
         }
@@ -303,7 +280,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
 
         if (Directory.Exists(portalTempRoot))
         {
-            var messages = Services.Environment.TransferFilesToSite(portalTempRoot, string.Empty);
+            var messages = envSvc.TransferFilesToSite(portalTempRoot, string.Empty);
             foreach (var message in messages) l.A(message.Text);
             Messages.AddRange(messages);
         }

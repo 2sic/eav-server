@@ -4,7 +4,7 @@ using ToSic.Eav.Testing.Scenarios;
 
 namespace ToSic.Eav.ImportAppsTests;
 
-public class ImportAppTests(ZipImport zipImport, DbStorage dbData, ZoneManager zoneManager)
+public class ImportAppTests(Generator<ZipImport, ZipImport.Options> zipImport, DbStorage dbData, ZoneManager zoneManager)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     #region Test Data
@@ -53,8 +53,9 @@ public class ImportAppTests(ZipImport zipImport, DbStorage dbData, ZoneManager z
 
         using (var fsSource = new FileStream(testFileName, FileMode.Open, FileAccess.Read))
         {
-            zipImport.Init(ZoneId, null, true);
-            succeeded = zipImport.ImportZip(fsSource, baseTestPath + @"Temp\");
+            var zipImportInstance = zipImport.New(new(ZoneId, null, true));
+            var importResult = zipImportInstance.ImportZip(fsSource, baseTestPath + @"Temp\");
+            succeeded = importResult.Success;
         }
         True(succeeded, "if fails, make sure the files are being copied to the build directory in the csproj");
     }

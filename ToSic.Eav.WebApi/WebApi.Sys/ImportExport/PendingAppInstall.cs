@@ -11,7 +11,7 @@ namespace ToSic.Eav.WebApi.Sys.ImportExport;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class PendingAppInstall(
     IEnvironmentLogger envLogger,
-    ZipImport zipImport,
+    Generator<ZipImport, ZipImport.Options> zipImport,
     IUser user,
     ISite site,
     ISysFeaturesService features)
@@ -32,9 +32,9 @@ public class PendingAppInstall(
             return l.ReturnAsOk(result);
         }
 
+        var zipImportInstance = zipImport.New(new(zoneId, null, user.IsSystemAdmin));
         try
         {
-            zipImport.Init(zoneId, null, user.IsSystemAdmin);
             foreach (var pendingAppDto in pendingApps)
             {
                 var appDirectory = Path.Combine(site.AppsRootPhysicalFull, pendingAppDto.ServerFolder);
@@ -44,7 +44,7 @@ public class PendingAppInstall(
                 var rename = pendingAppDto.ServerFolder.EqualsInsensitive(pendingAppDto.Folder)
                     ? string.Empty
                     : pendingAppDto.ServerFolder;
-                result.Success = zipImport.ImportApp(rename, appDirectory, importMessage, pendingApp: true);
+                result.Success = zipImportInstance.ImportApp(rename, appDirectory, importMessage, pendingApp: true);
                 result.Messages.AddRange(importMessage);
             }
             return l.ReturnAsOk(result);
@@ -53,7 +53,7 @@ public class PendingAppInstall(
         {
             envLogger.LogException(ex);
             result.Success = false;
-            result.Messages.AddRange(zipImport.Messages);
+            result.Messages.AddRange(zipImportInstance.Messages);
             return l.ReturnAsError(result);
         }
     }

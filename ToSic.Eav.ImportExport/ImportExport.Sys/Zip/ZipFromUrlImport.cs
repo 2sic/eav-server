@@ -5,31 +5,14 @@ using ToSic.Sys.Configuration;
 namespace ToSic.Eav.ImportExport.Sys.Zip;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZipFromUrlImport: ZipImport
+public class ZipFromUrlImport(Generator<ZipImport, ZipImport.Options> zipImport, IGlobalConfiguration globalConfiguration)
+    : ServiceWithSetup<ZipImport.Options>("Imp.ZipUrl", connect: [zipImport, globalConfiguration])
 {
-    #region DI Constructor
 
-    public ZipFromUrlImport(Dependencies services, IGlobalConfiguration globalConfiguration) : base(services)
+    public ZipImport.Result ImportUrl(string packageUrl, bool isAppImport, string? newName = null)
     {
-        ConnectLogs([
-            _globalConfiguration = globalConfiguration
-        ]);
-    }
-
-    private readonly IGlobalConfiguration _globalConfiguration;
-
-    #endregion
-
-    public new ZipFromUrlImport Init(int zoneId, int? appId, bool allowCode)
-    {
-        base.Init(zoneId, appId, allowCode);
-        return this;
-    }
-
-    public bool ImportUrl(string packageUrl, bool isAppImport, string? newName = null)
-    {
-        Log.A($"import zip from url:'{packageUrl}', isApp:{isAppImport}, {nameof(newName)}:'{newName}'");
-        var path = _globalConfiguration.TemporaryFolder();
+        var l = Log.Fn<ZipImport.Result>($"import zip from url:'{packageUrl}', isApp:{isAppImport}, {nameof(newName)}:'{newName}'");
+        var path = globalConfiguration.TemporaryFolder();
         if (path == null)
             throw new NullReferenceException("path for temporary is null - this won't work");
 
@@ -43,7 +26,7 @@ public class ZipFromUrlImport: ZipImport
         {
             try
             {
-                Log.A($"try to download:{packageUrl} to:{destinationPath}");
+                l.A($"try to download:{packageUrl} to:{destinationPath}");
                 var response = httpClient.GetAsync(packageUrl).Result; 
                 response.EnsureSuccessStatusCode();
 
@@ -52,19 +35,19 @@ public class ZipFromUrlImport: ZipImport
             }
             catch (HttpRequestException e)
             {
-                Log.Ex(e);
+                l.Ex(e);
                 throw new($"Could not download app package from '{packageUrl}'.", e);
             }
         }
-        bool success;
+        ZipImport.Result success;
 
-        var temporaryDirectory = Path.Combine(_globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
+        var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
 
         using (var file = File.OpenRead(destinationPath))
-            success = ImportZip(file, temporaryDirectory, newName);
+            success = zipImport.New(MyOptions).ImportZip(file, temporaryDirectory, newName);
 
         File.Delete(destinationPath);
 
-        return success;
+        return l.Return(success);
     }
 }
