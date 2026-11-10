@@ -33,8 +33,7 @@ public static class StartupEavDataSource
         services.TryAddTransient<QueryFactory>();
         services.TryAddTransient<QueryDefinitionFactory>();
         services.AddTransient<QueryDefinitionService>(); // new v21 SoC split QueryManager
-        services.TryAddTransient<QueryManager>();
-        services.TryAddTransient(typeof(QueryManager<>)); // new v20
+        services.TryAddTransient(typeof(QueryBuilder<>)); // new v20
         services.TryAddTransient<ConfigurationDataLoader>();
 
         services.TryAddTransient<IDataSourceCacheService, DataSourceCacheService>();

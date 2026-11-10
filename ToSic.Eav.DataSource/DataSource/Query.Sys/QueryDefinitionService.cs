@@ -55,30 +55,8 @@ public class QueryDefinitionService(
         }
     }
 
-    ///// <summary>
-    ///// Assembles a list of all queries / Queries configured for this app. 
-    ///// The queries internally are not assembled yet for performance reasons...
-    ///// ...but will be auto-assembled the moment they are accessed
-    ///// </summary>
-    ///// <returns></returns>
-    //public Dictionary<string, IQuery> AllQueries(IAppIdentity app, ILookUpEngine lookUps)
-    //{
-    //    var l = Log.Fn<Dictionary<string, IQuery>>();
-    //    var dict = new Dictionary<string, IQuery>(StringComparer.InvariantCultureIgnoreCase);
-    //    foreach (var entQuery in AllQueryEntities(app))
-    //    {
-    //        var delayedQuery = queryGenerator.New();
-    //        delayedQuery.Init(app.ZoneId, app.AppId, entQuery, lookUps);
-    //        // make sure it doesn't break if two queries have the same name...
-    //        var name = entQuery.GetBestTitle();
-    //        // ReSharper disable once CanSimplifyDictionaryLookupWithTryAdd
-    //        if (name != null && !dict.ContainsKey(name))
-    //            dict[name] = delayedQuery;
-    //    }
-    //    return l.Return(dict);
-    //}
 
-    internal IImmutableList<IEntity> AllQueryEntities(IAppIdentity appIdOrReader, int recurseParents = 0)
+    public IImmutableList<IEntity> AllQueryEntities(IAppIdentity appIdOrReader, int recurseParents = 0)
     {
         var l = Log.Fn<IImmutableList<IEntity>>($"App: {appIdOrReader.AppId}, recurse: {recurseParents}");
         var appReader = appReaders.Value.GetOrKeep(appIdOrReader)!;
@@ -99,16 +77,6 @@ public class QueryDefinitionService(
         return l.Return(queries, "ok");
     }
 
-    //public TQuery? TryGetQuery(IAppIdentity appIdentity, string? nameOrGuid, ILookUpEngine lookUps, int recurseParents = 0)
-    //{
-    //    var l = Log.Fn<TQuery>($"{nameOrGuid}, recurse: {recurseParents}");
-    //    var qEntity = TryGetQueryEntity(appIdentity, nameOrGuid, recurseParents);
-    //    if (qEntity == null)
-    //        return l.ReturnNull("not found");
-    //    var delayedQuery = queryGenerator.New();
-    //    delayedQuery.Init(appIdentity.ZoneId, appIdentity.AppId, qEntity, lookUps);
-    //    return l.Return(delayedQuery, "found");
-    //}
 
     internal IEntity? TryGetQueryEntity(IAppIdentity appIdentity, string? nameOrGuid, int recurseParents = 0) 
     {

@@ -1,7 +1,8 @@
-﻿using ToSic.Eav.DataSource.Sys.Caching;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.LookUp.Sys.Engines;
-using static System.String;
 using static System.StringComparer;
 
 
@@ -17,9 +18,49 @@ namespace ToSic.Eav.DataSource.Query.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
 public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> queryBuilder, LazySvc<QueryDefinitionFactory> queryDefBuilder)
-    : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.Query", connect: [queryBuilder, queryDefBuilder]), IQuery,
-        ICacheAlsoAffectsOut
+    : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.Query", connect: [queryBuilder, queryDefBuilder]),
+        IQuery,
+        ICacheAlsoAffectsOut,
+        IServiceWithSetup<Query.Options>
 {
+    #region Options and Setup
+
+    [PrivateApi]
+    public record Options(IAppIdentity Identity, IEntity QueryDef, ILookUpEngine? LookUpEngine /* IDataSource? Source*/); // #DropInOnQuery
+
+    /// <summary>
+    /// Initialize a full query object. This is necessary for it to work
+    /// </summary>
+    /// <returns></returns>
+    [PrivateApi]
+    public void Setup(Options options)
+    {
+        var (identity, queryDef, lookUpEngineOrNull/*, source*/) = options;
+        var l = Log.Fn($"{identity.Show()}");
+
+        ZoneId = identity.ZoneId;
+        AppId = identity.AppId;
+        Definition = queryDefBuilder.Value.Create(identity.AppId, queryDef);
+
+        if (lookUpEngineOrNull != null)
+            ((DataSourceConfiguration)Configuration).LookUpEngine = lookUpEngineOrNull;
+
+        // Note: 2dm - this got broken in 2026-02-10, but I have a feeling that it has no impact whatsoever.
+        // So I'll comment it out and keep till ca. 2027-06 #DropInOnQuery
+        //// hook up in, just in case we get parameters from an In
+        //if (source == null)
+        //{
+        //    l.A("found target for Query, will attach");
+        //    _inSource = source;
+        //}
+
+        l.Done();
+    }
+
+    #endregion
+
+
+
     #region Configuration-properties
 
     /// <inheritdoc />
@@ -27,62 +68,18 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
 
     private bool _requiresRebuildOfOut = true;
 
+    #endregion
+
+
+
+    #region Out and In
+
     /// <summary>
     /// Standard out. Note that the Out is not prepared until accessed the first time,
     /// when it will auto-assembles the query
     /// </summary>
     public override IReadOnlyDictionary<string, IDataStream> Out
-        => Data.Out.AsReadOnly();
-
-    #endregion
-
-    #region Internal Source - mainly for debugging or advanced uses of a query
-
-    /// <summary>
-    /// Inner source - mainly for debugging etc.
-    /// </summary>
-    [PrivateApi]
-    public IDataSource Source
-        => Data.Source;
-
-    #endregion
-
-    /// <summary>
-    /// Initialize a full query object. This is necessary for it to work
-    /// </summary>
-    /// <returns></returns>
-    [PrivateApi]
-    public void Init(int zoneId, int appId, IEntity queryDef, ILookUpEngine? lookUpEngineOrNull, IDataSource? source = null)
-    {
-        var l = Log.Fn($"{zoneId}/{appId}");
-
-        ZoneId = zoneId;
-        AppId = appId;
-        Definition = queryDefBuilder.Value.Create(appId, queryDef);
-        
-        if (lookUpEngineOrNull != null)
-            ((DataSourceConfiguration)Configuration).LookUpEngine = lookUpEngineOrNull;
-
-        // hook up in, just in case we get parameters from an In
-        if (source == null)
-        {
-            l.A("found target for Query, will attach");
-            _inSource = source;
-        }
-
-        l.Done();
-    }
-
-    [field: AllowNull, MaybeNull]
-    public override IReadOnlyDictionary<string, IDataStream> In
-        => _inSource?.In ?? (field ??= new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase));
-
-    private IDataSource? _inSource;
-
-
-
-    private (IDataSource Source, StreamDictionary Out) Data => _data ??= CreateOutWithAllStreams();
-    private (IDataSource Source, StreamDictionary Out)? _data;
+        => field ??= CreateOutWithAllStreams().Out.AsReadOnly();
 
     /// <summary>
     /// Create a stream for each data-type
@@ -96,44 +93,39 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
         return l.Return((queryInfos.Main, outWritable));
     }
 
+    
+    [field: AllowNull, MaybeNull]
+    public override IReadOnlyDictionary<string, IDataStream> In
+        => /*_inSource?.In ?? #DropInOnQuery */ (field ??= new Dictionary<string, IDataStream>(InvariantCultureIgnoreCase));
+    // #DropInOnQuery
+    //private IDataSource? _inSource;
+
+    #endregion
+
+
+
+
+    #region Params() API
+
+    private QueryParamsHelper ParamsHelper => field ??= new(Definition, () => !_requiresRebuildOfOut, Log);
 
     /// <inheritdoc />
-    public void Params(string key, string? value)
-    {
-        var l = Log.Fn($"{key}, {value}");
-        if (IsNullOrWhiteSpace(key))
-            throw new ArgumentNullException(nameof(key));
-        // if the query has already been built, and we're changing a value, make sure we'll regenerate the results
-        if (!_requiresRebuildOfOut)
-        {
-            l.A("Can't set param - query already compiled, error");
-            throw new("Can't set param any more, the query has already been compiled. " +
-                      "Always set params before accessing the data. " +
-                      "To Re-Run the query with other params, call Reset() first.");
-        }
-
-        Definition.ParamsDic[key] = value ?? "";
-        l.Done();
-    }
+    public void Params(string key, string? value) => ParamsHelper.Params(key, value);
 
     /// <inheritdoc />
-    public void Params(string key, object? value)
-        => Params(key, value?.ToString());
+    public void Params(string key, object? value) => ParamsHelper.Params(key, value?.ToString());
 
 
     /// <inheritdoc />
-    public void Params(string list)
-        => Params(QueryDefinitionParams.GenerateParamsDic(list, Log));
+    public void Params(string list) => ParamsHelper.Params(list);
 
     /// <inheritdoc />
-    public void Params(IDictionary<string, string> values)
-    {
-        foreach (var qP in values)
-            Params(qP.Key, qP.Value);
-    }
+    public void Params(IDictionary<string, string> values) => ParamsHelper.Params(values);
 
     /// <inheritdoc />
     public IDictionary<string, string> Params() => Definition.ParamsDic;
+
+    #endregion
 
     // # RemoveDataSourceReset v21
     /// <inheritdoc />
