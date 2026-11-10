@@ -45,5 +45,5 @@ public interface IEditController
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    bool Publish(int id);
+    Task<bool> Publish(int id);
 }
