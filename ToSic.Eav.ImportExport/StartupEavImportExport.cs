@@ -26,6 +26,8 @@ public static class StartupEavImportExport
         services.TryAddTransient<ZipImport>();
         services.TryAddTransient<ZipImport.Dependencies>();
         services.TryAddTransient<ZipFromUrlImport>();
+
+        services.TryAddTransient<ImportExportPathsAndOptions>();
         
         // export import stuff
         services.TryAddTransient<ExportImportValueConversion>();

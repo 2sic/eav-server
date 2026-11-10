@@ -206,7 +206,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
             if (!pendingApp)
             {
                 // Throw error if the app directory already exists
-                var appPath = Services.Environment.TargetPath(folder);
+                var appPath = Services.Environment.PathsAndOptions.TargetPath(folder);
                 if (Directory.Exists(appPath))
                     throw new IOException($"App could not be installed, app-folder '{appPath}' already exists.");
             }
@@ -257,7 +257,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     private void CopyAppFiles(List<Message> importMessages, int appId, string tempFolder)
     {
         var l = Log.Fn($"..., {appId}, {tempFolder}");
-        var templateRoot = Services.Environment.TemplatesRoot(_zoneId, appId);
+        var templateRoot = Services.Environment.PathsAndOptions.TemplatesRoot(_zoneId, appId);
         var appTemplateRoot = Path.Combine(tempFolder, FolderConstants.ZipFolderForAppStuff);
         if (Directory.Exists(appTemplateRoot))
             Services.FileManagerGenerator.New().SetFolder(appId, appTemplateRoot).CopyAllFiles(templateRoot, false, importMessages);
@@ -276,7 +276,7 @@ public class ZipImport(ZipImport.Dependencies services) : ServiceBase<ZipImport.
     public void CopyAppGlobalFiles(List<Message> importMessages, int appId, string tempFolder, bool deleteGlobalTemplates = false, bool overwriteFiles = false)
     {
         var l = Log.Fn($"..., {appId}, {tempFolder}, {deleteGlobalTemplates}, {overwriteFiles}");
-        var globalTemplatesRoot = Services.Environment.GlobalTemplatesRoot(_zoneId, appId);
+        var globalTemplatesRoot = Services.Environment.PathsAndOptions.GlobalTemplatesRoot(_zoneId, appId);
         var appTemplateRoot = Path.Combine(tempFolder, FolderConstants.ZipFolderForGlobalAppStuff);
         if (Directory.Exists(appTemplateRoot))
         {

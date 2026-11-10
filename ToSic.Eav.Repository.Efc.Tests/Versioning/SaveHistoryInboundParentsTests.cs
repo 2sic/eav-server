@@ -27,7 +27,7 @@ public class SaveHistoryInboundParentsTests(
     public void Save_IncludesInboundParentsInHistoryJson()
     {
         var test = new SaveData.SpecsDataEditing();
-        var so = environment.SaveOptions(test.ZoneId) with
+        var so = environment.PathsAndOptions.SaveOptions(test.ZoneId) with
         {
             PreserveUntouchedAttributes = true,
             PreserveUnknownLanguages = true,

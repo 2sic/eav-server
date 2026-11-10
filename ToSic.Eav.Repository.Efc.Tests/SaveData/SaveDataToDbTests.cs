@@ -24,7 +24,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
     public void LoadOneAndSaveUnchanged()
     {
         var test = new SpecsDataEditing();
-        var so = environment.SaveOptions(test.ZoneId);
+        var so = environment.PathsAndOptions.SaveOptions(test.ZoneId);
         dbData.Setup(new(test.ZoneId, test.AppId, null, new()));
         var transaction = dbData.SqlDb.Database.BeginTransaction();
 
@@ -52,7 +52,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
     public void LoadOneChangeABitAndSave()
     {
         var test = new SpecsDataEditing();
-        var so = environment.SaveOptions(test.ZoneId) with
+        var so = environment.PathsAndOptions.SaveOptions(test.ZoneId) with
         {
             PreserveUntouchedAttributes = true,
             PreserveUnknownLanguages = true,
@@ -96,7 +96,7 @@ public class SaveDataToDbTests(DbStorage dbData, Generator<EfcAppLoaderService> 
         var test = new SpecsDataEditing();
         var ctName = test.ContentTypeName;
         var ctTitle = "wonderful new title " + DateTime.Now;
-        var so = environment.SaveOptions(test.ZoneId) with
+        var so = environment.PathsAndOptions.SaveOptions(test.ZoneId) with
         {
             PreserveUntouchedAttributes = true,
             PreserveUnknownLanguages = true,

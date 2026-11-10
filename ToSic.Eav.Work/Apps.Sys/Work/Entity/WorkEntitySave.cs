@@ -23,7 +23,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntitySave(
     LazySvc<DataAssembler> dataAssembler,
     AppsCacheSwitch appsCache,
-    LazySvc<IImportExportEnvironment> environmentLazy,
+    LazySvc<ImportExportPathsAndOptions> environmentLazy,
     DataImportLogSettings importLogSettings,
     LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions
     )

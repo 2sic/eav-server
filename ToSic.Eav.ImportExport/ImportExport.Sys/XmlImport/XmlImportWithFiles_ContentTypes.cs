@@ -104,8 +104,8 @@ partial class XmlImportWithFiles
         // create ContentType
         var scope = xmlContentType.Attributes(XmlConstants.Scope).Any()
             ? xmlContentType.Attribute(XmlConstants.Scope)?.Value
-              ?? Services.Environment.FallbackContentTypeScope
-            : Services.Environment.FallbackContentTypeScope;
+              ?? Services.Environment.PathsAndOptions.FallbackContentTypeScope
+            : Services.Environment.PathsAndOptions.FallbackContentTypeScope;
         var ct = Services.TypeAssembler.Value.Type.Create(
             appId: AppId,
             id: 0,

@@ -65,7 +65,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
     public XmlImportWithFiles Init(string? defaultLanguage, bool allowUpdateOnSharedTypes)
     {
         // Prepare
-        DefaultLanguage = (defaultLanguage ?? Services.Environment.DefaultLanguage).ToLowerInvariant();
+        DefaultLanguage = (defaultLanguage ?? Services.Environment.PathsAndOptions.DefaultLanguage).ToLowerInvariant();
         AllowUpdateOnSharedTypes = allowUpdateOnSharedTypes;
         return this;
     }
