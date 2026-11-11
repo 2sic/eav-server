@@ -50,8 +50,7 @@ public class UiContextPartsEav(
             return result;
 
         // Otherwise also add the global app id
-        result.PrimaryApp = result.DefaultApp = new(1, 1);
-        return result;
+        return result with { PrimaryApp = new(1, 1), DefaultApp = new(1, 1) };
     }
 
     public ContextResourceWithApp? GetSite(Ctx flags)
@@ -67,9 +66,11 @@ public class UiContextPartsEav(
 
         // Otherwise also add the global appId
         var zoneId = Site.ZoneId;
-        result.DefaultApp = appsCatalog.DefaultAppIdentity(zoneId).PureIdentityExplicit();
-        result.PrimaryApp = appsCatalog.PrimaryAppIdentity(zoneId).PureIdentityExplicit();
-        return result;
+        return result with
+        {
+            DefaultApp = appsCatalog.DefaultAppIdentity(zoneId).PureIdentityExplicit(),
+            PrimaryApp = appsCatalog.PrimaryAppIdentity(zoneId).PureIdentityExplicit()
+        };
     }
 
     public WebResourceDto GetPage(Ctx flags) =>
@@ -82,22 +83,16 @@ public class UiContextPartsEav(
     {
         var isRealApp = MyOptions?.Specs != null && !MyOptions.Specs.IsContentApp();
         var user = siteCtxSvc.Context.User;
-        var dto = new ContextEnableDto
+        return new()
         {
             DebugMode = user.IsSystemAdmin ||
-                        features.Value.IsEnabled(BuiltInFeatures.EditUiAllowDebugModeForEditors)
+                        features.Value.IsEnabled(BuiltInFeatures.EditUiAllowDebugModeForEditors),
+            AppPermissions = ctx.HasFlag(CtxEnable.AppPermissions) ? isRealApp : null,
+            CodeEditor = ctx.HasFlag(CtxEnable.CodeEditor) ? user.IsSystemAdmin : null,
+            Query = ctx.HasFlag(CtxEnable.Query) ? isRealApp && user.IsSystemAdmin : null,
+            FormulaSave = ctx.HasFlag(CtxEnable.FormulaSave) ? user.IsSystemAdmin : null,
+            OverrideEditRestrictions = ctx.HasFlag(CtxEnable.OverrideEditRestrictions) ? user.IsSystemAdmin : null,
         };
-        if (ctx.HasFlag(CtxEnable.AppPermissions))
-            dto.AppPermissions = isRealApp;
-        if (ctx.HasFlag(CtxEnable.CodeEditor))
-            dto.CodeEditor = user.IsSystemAdmin;
-        if (ctx.HasFlag(CtxEnable.Query))
-            dto.Query = isRealApp && user.IsSystemAdmin;
-        if (ctx.HasFlag(CtxEnable.FormulaSave))
-            dto.FormulaSave = user.IsSystemAdmin;
-        if (ctx.HasFlag(CtxEnable.OverrideEditRestrictions))
-            dto.OverrideEditRestrictions = user.IsSystemAdmin;
-        return dto;
     }
 
     public string GetGettingStartedUrl() => EavConstants.UrlNotInitialized;
@@ -122,33 +117,38 @@ public class UiContextPartsEav(
         if (!flags.HasFlag(Ctx.AppEdit) && !flags.HasFlag(Ctx.AppAdvanced))
             return result;
 
-        result.IsGlobalApp = appSpecs.IsGlobalSettingsApp();
-        result.IsSiteApp = appSpecs.IsSiteSettingsApp();
-        // only check content if not global, as that has the same id
-        if (!result.IsGlobalApp)
-            result.IsContentApp = appSpecs.IsContentApp();
+        var isGlobal = appSpecs.IsGlobalSettingsApp();
+        result = result with
+        {
+            IsGlobalApp = isGlobal,
+            IsSiteApp = appSpecs.IsSiteSettingsApp(),
+            // only check content if not global, as that has the same id
+            IsContentApp = !isGlobal && appSpecs.IsContentApp()
+        };
 
         // Stop now if we don't need advanced infos
         if (!flags.HasFlag(Ctx.AppAdvanced))
             return result;
 
-        result.GettingStartedUrl = GetGettingStartedUrl();
-        result.Identifier = appSpecs.NameId;
+        result = result with
+        {
+            GettingStartedUrl = GetGettingStartedUrl(),
+            Identifier = appSpecs.NameId,
+            // #SiteApp v13
+            SettingsScope = isGlobal
+                ? "Global"
+                : appSpecs.IsSiteSettingsApp()
+                    ? "Site"
+                    : "App"
+        };
 
-        // #SiteApp v13
-        result.SettingsScope = appSpecs.IsGlobalSettingsApp()
-            ? "Global"
-            : appSpecs.IsSiteSettingsApp()
-                ? "Site"
-                : "App";
+        return result with
+        {
+            Permissions = new() { Count = appReader.Specs.Metadata.Permissions.Count() },
+            IsShared = appReader.IsShared(),
+            IsInherited = appReader.IsInherited()
+        };
 
-        result.Permissions = new() { Count = appReader.Specs.Metadata.Permissions.Count() };
-
-        result.IsShared = appReader.IsShared();
-        result.IsInherited = appReader.IsInherited();
-
-        // result.Icon = AppAssetThumbnail.GetUrl(appReader, paths!, globalPaths);
-        return result;
     }
 
     public ContextUserDto? GetUser(Ctx flags)
