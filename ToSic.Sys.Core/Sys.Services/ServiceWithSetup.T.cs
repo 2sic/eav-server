@@ -51,5 +51,5 @@ public abstract class ServiceWithSetup<TServices, TOptions> : ServiceBase,
     /// <returns></returns>
     /// <exception cref="ServiceOptionsRequiredException"></exception>
     protected virtual TOptions GetDefaultOptions()
-        => throw new ServiceOptionsRequiredException();
+        => throw new ServiceOptionsRequiredException(GetType());
 }

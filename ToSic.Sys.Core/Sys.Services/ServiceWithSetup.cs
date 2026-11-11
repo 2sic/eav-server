@@ -33,5 +33,5 @@ public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder np
     /// <returns></returns>
     /// <exception cref="ServiceOptionsRequiredException"></exception>
     protected virtual TOptions GetDefaultOptions()
-        => throw new ServiceOptionsRequiredException();
+        => throw new ServiceOptionsRequiredException(GetType());
 }
