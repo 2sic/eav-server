@@ -5,13 +5,8 @@
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IZoneMapper: IHasLog
+public interface IZoneMapper
 {
-    /// <summary>
-    /// Get the primary zoneId which belongs to the site.
-    /// </summary>
-    int GetZoneId(int siteId);
-
     /// <summary>
     /// Find the site of a Zone
     /// </summary>

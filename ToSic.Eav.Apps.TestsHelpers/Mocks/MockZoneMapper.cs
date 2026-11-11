@@ -6,8 +6,6 @@ namespace ToSic.Eav.Apps.Mocks;
 
 public class MockZoneMapper() : ServiceBase("Tst.MckZM"), IZoneMapper
 {
-    public int GetZoneId(int siteId) => -1;
-
     public ISite SiteOfZone(int zoneId) => new MockSite();
 
     public List<ISiteLanguageState> CulturesWithState(ISite site) => [];
