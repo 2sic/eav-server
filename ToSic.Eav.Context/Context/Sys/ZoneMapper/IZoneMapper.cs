@@ -18,16 +18,10 @@ public interface IZoneMapper: IHasLog
     ISite SiteOfZone(int zoneId);
 
     /// <summary>
-    /// Find the site of an App
-    /// </summary>
-    ISite SiteOfApp(int appId);
-
-    /// <summary>
     /// The cultures available on this tenant/zone combination
     /// the zone is necessary to determine what is enabled/disabled
     /// </summary>
     /// <returns></returns>
     List<ISiteLanguageState> CulturesWithState(ISite site);
 
-    List<ISiteLanguageState> CulturesEnabledWithState(ISite site);
 }

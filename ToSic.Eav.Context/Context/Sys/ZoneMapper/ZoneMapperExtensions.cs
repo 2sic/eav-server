@@ -16,13 +16,13 @@ public static class ZoneMapperExtensions
     /// <param name="siteFromDi"></param>
     /// <param name="appIdentity"></param>
     /// <returns></returns>
-    internal static ISite SiteOfAppIfSiteInvalid(this LazySvc<IZoneMapper> zoneMapperLazy, ISite siteFromDi, IAppIdentity appIdentity)
+    internal static ISite SiteOfAppIfSiteInvalid(this LazySvc<IAppSiteService> appSiteSvcLazy, ISite siteFromDi, IAppIdentity appIdentity)
     {
         if (siteFromDi.Id != EavConstants.NullId && siteFromDi.ZoneId == appIdentity.ZoneId)
             return siteFromDi;
 
-        var zoneMapper = zoneMapperLazy.Value;
-        var l = zoneMapper.Log.Fn<ISite>($"Trying to build path based on tenant.");
+        var appSiteSvc = appSiteSvcLazy.Value;
+        var l = (appSiteSvc as IHasLog)?.Log.Fn<ISite>($"Trying to build path based on tenant.");
         try
         {
             //if (siteFromDi.Id != Eav.Constants.NullId)
@@ -36,7 +36,7 @@ public static class ZoneMapperExtensions
             else if(siteFromDi.ZoneId != appIdentity.ZoneId) 
                 l.A($"SiteId = {siteFromDi.Id} - has different di-site-ZoneId:{siteFromDi.ZoneId} from app-ZoneID:{appIdentity.ZoneId}. Must be app is first accessed from another site. Will try to find SiteOfApp");
 
-            var correctedSite = zoneMapper.SiteOfApp(appIdentity.AppId);
+            var correctedSite = appSiteSvc.SiteOfApp(appIdentity.AppId);
             return l.Return(correctedSite, $"SiteId: {correctedSite?.Id}");
         }
         catch (Exception e)
@@ -46,5 +46,9 @@ public static class ZoneMapperExtensions
             return l.Return(siteFromDi, "error");
         }
     }
+
+    public static List<ISiteLanguageState> CulturesEnabledWithState(this IZoneMapper zoneMapper, ISite site)
+        => [.. zoneMapper.CulturesWithState(site).Where(c => c.IsEnabled)];
+
 
 }

@@ -34,6 +34,9 @@ public static class StartupEavContext
         // V13 Language Checks
         services.TryAddTransient<AppUserLanguageCheck>();
 
+        // v22 separate AppToZoneMapping
+        services.TryAddTransient<IAppSiteService, AppSiteSvc>();
+
         return services;
     }
 

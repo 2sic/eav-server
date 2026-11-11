@@ -6,11 +6,11 @@ using ToSic.Eav.Sys;
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppFileSystemLoaderPaths(ISite siteDraft, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IZoneMapper> zoneMapper)
-    : ServiceWithSetup<AppFileSystemLoaderOptions>($"{EavLogs.Eav}.AFSLPaths", connect: [appPathsLazy, zoneMapper])
+public class AppFileSystemLoaderPaths(ISite siteDraft, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IAppSiteService> appSiteSvc)
+    : ServiceWithSetup<AppFileSystemLoaderOptions>($"{EavLogs.Eav}.AFSLPaths", connect: [appPathsLazy, appSiteSvc])
 {
     private IAppPaths AppPaths => field
-        ??= appPathsLazy.Value.Get(MyOptions.AppReader, zoneMapper.SiteOfAppIfSiteInvalid(siteDraft, MyOptions.AppReader.PureIdentity()));
+        ??= appPathsLazy.Value.Get(MyOptions.AppReader, appSiteSvc.SiteOfAppIfSiteInvalid(siteDraft, MyOptions.AppReader.PureIdentity()));
 
     public string ExtensionsPath => field
         ??= Path.Combine(AppPaths.PhysicalPath, FolderConstants.AppExtensionsFolder);

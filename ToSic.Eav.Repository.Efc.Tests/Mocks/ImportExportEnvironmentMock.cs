@@ -5,12 +5,14 @@ using ToSic.Eav.Persistence.Sys.Logging;
 
 namespace ToSic.Eav.Repository.Efc.Tests.Mocks;
 
-public class ImportExportEnvironmentMock(IAppsCatalog appsCatalog)
+public class ImportExportEnvironmentMock(IAppsCatalog appsCatalog, ImportExportPathsAndOptions pathAndOptions)
     : ServiceBase("Mck.ImpExp", connect: [appsCatalog]), IImportExportEnvironment
 {
     // This should point to a subfolder in the bin, so that temp data is created there
     private string BasePath => TestFiles.GetTestPath("");
 
+
+    public ImportExportPathsAndOptions PathsAndOptions => pathAndOptions;
 
     public virtual List<Message> TransferFilesToSite(string sourceFolder, string destinationFolder)
     {

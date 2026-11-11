@@ -1,16 +1,14 @@
-﻿using ToSic.Eav.Apps;
-
-#pragma warning disable CS9113 // Parameter is unread.
+﻿#pragma warning disable CS9113 // Parameter is unread.
 
 namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
-internal class ZoneMapperUnknown(IAppsCatalog appsCatalog, WarnUseOfUnknown<ZoneMapperUnknown> _, Generator<ISite> siteFactory)
-    : ZoneMapperBase(appsCatalog, $"{LogScopes.NotImplemented}.ZonMap", connect: []), IIsUnknown
+internal class ZoneMapperUnknown(WarnUseOfUnknown<ZoneMapperUnknown> _, Generator<ISite> siteFactory)
+    : ServiceBase($"{LogScopes.NotImplemented}.ZonMap", connect: []), IZoneMapper, IIsUnknown
 {
-    public override int GetZoneId(int siteId) => siteId;
+    public int GetZoneId(int siteId) => siteId;
         
     // 2026-10-18 2dm: #DropSiteInitSeemsUnused
-    public override ISite SiteOfZone(int zoneId) => siteFactory.New(); // .Init(zoneId, null);
+    public ISite SiteOfZone(int zoneId) => siteFactory.New();
 
-    public override List<ISiteLanguageState> CulturesWithState(ISite site) => [];
+    public List<ISiteLanguageState> CulturesWithState(ISite site) => [];
 }
