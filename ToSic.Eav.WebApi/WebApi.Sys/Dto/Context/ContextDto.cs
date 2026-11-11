@@ -9,7 +9,7 @@ public record ContextDto
     [JsonIgnore(Condition = WhenWritingNull)]
     public ContextAppDto? App { get; set; }
     [JsonIgnore(Condition = WhenWritingNull)]
-    public ContextLanguageDto? Language { get; set; }
+    public ContextLanguageInfoDto? Language { get; set; }
     [JsonIgnore(Condition = WhenWritingNull)]
     public ContextUserDto? User { get; set; }
     [JsonIgnore(Condition = WhenWritingNull)]

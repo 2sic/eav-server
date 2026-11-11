@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.WebApi.Sys.Dto;
 
-public class ContextLanguageDto
+public record ContextLanguageInfoDto
 {
     public required string Primary { get; init; }
     public required string Current { get; init; }
