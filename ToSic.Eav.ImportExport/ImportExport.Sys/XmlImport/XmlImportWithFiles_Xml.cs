@@ -54,9 +54,9 @@ partial class XmlImportWithFiles
 
         l.A($"source def dim:{sourceDefaultDimensionId}");
 
-        var targetDimensions = Services.AppsCatalog.Zone(zoneId).Languages;
+        var targetDimensions = appsCatalog.Zone(zoneId).Languages;
 
-        XmlBuilder = Services.XmlToEntity.New(new(
+        XmlBuilder = xmlToEntity.New(new(
             AppId,
             DefaultLanguage,
             ImportLanguageMap.PrepareTargetToSourceLanguageMapping(targetDimensions, DefaultLanguage,sourceDimensions, sourceDefaultDimensionId, Log.IfDetails(LogSettings)),
@@ -76,12 +76,12 @@ partial class XmlImportWithFiles
         var importEntities = BuildEntities(entNodes, (int)TargetTypes.None);
 
 
-        var import = Services.ImporterLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, parentAppId: parentAppId);
+        var import = importerLazy.Value.Init(ZoneId, AppId, leaveExistingValuesUntouched, true, parentAppId: parentAppId);
 
         import.ImportIntoDb(importTypes, importEntities.Cast<Entity>().ToList());
 
         l.A($"Purging {ZoneId}/{AppId}");
-        Services.AppCachePurger.Purge(ZoneId, AppId);
+        appCachePurger.Purge(ZoneId, AppId);
 
         Messages.AddRange(import.Storage.ImportLogToBeRefactored);
 

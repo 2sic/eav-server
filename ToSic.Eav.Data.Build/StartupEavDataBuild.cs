@@ -71,7 +71,6 @@ public static class StartupEavDataBuild
         
         // Content Types From Code Build and Manage
         services.TryAddTransient<ContentTypesFromCodeBuilder>();
-        services.TryAddTransient<ContentTypesFromCodeBuilder.Dependencies>();
         services.TryAddTransient<ContentTypesFromCodeManager>();
 
         return services;

@@ -27,7 +27,7 @@ partial class XmlImportWithFiles
             p => int.Parse(p.Attribute(XmlConstants.FileIdAttr)!.Value),
             v => v.Attribute(XmlConstants.FolderNodePath)!.Value.ForwardSlash()
         );
-        Services.Environment.MapExistingFilesToImportSet(filesAndPaths, _fileIdCorrectionList);
+        environment.MapExistingFilesToImportSet(filesAndPaths, _fileIdCorrectionList);
         return l.ReturnTrue();
     }
 
@@ -46,7 +46,7 @@ partial class XmlImportWithFiles
             p => int.Parse(p.Attribute(XmlConstants.FolderNodeId)!.Value),
             v => v.Attribute(XmlConstants.FolderNodePath)!.Value.ForwardSlash()
         );
-        Services.Environment.CreateFoldersAndMapToImportIds(foldersAndPath, _folderIdCorrectionList, Messages);
+        environment.CreateFoldersAndMapToImportIds(foldersAndPath, _folderIdCorrectionList, Messages);
         return l.ReturnTrue();
     }
 

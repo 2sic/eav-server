@@ -47,7 +47,7 @@ partial class XmlImportWithFiles
                 appGuid = Guid.NewGuid().ToString();
 
             // Adding app to EAV
-            var storage = Services.StorageFactory.New(new(zoneId, null, null, Services.LogSettings.GetLogSettings(), SaveProcessOptions.CreateApp));
+            var storage = storageFactory.New(new(zoneId, null, null, LogSettings, SaveProcessOptions.CreateApp));
 
             // ParentApp
             parentAppId = inheritAppId ?? GetParentAppId(xmlSource, storage);
@@ -62,7 +62,7 @@ partial class XmlImportWithFiles
             return l.ReturnFalse(LogError("App was not created. Please try again or make sure the package you are importing is correct."));
 
         l.A("Purging all Zones");
-        Services.AppCachePurger.PurgeZoneList();
+        appCachePurger.PurgeZoneList();
         var result = ImportXml(zoneId, appId, parentAppId, doc);
         return l.Return(result, "done");
     }

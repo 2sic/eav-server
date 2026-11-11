@@ -11,12 +11,9 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 [method: PrivateApi]
-public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencies services)
-    : ServiceBase<ContentTypesFromCodeBuilder.Dependencies>(services, "Eav.CtFact")
+public class ContentTypesFromCodeBuilder(ContentTypeAssemblyKit typeAssemblyKit, IDataFactory dataFactory)
+    : ServiceBase("Eav.CtFact", connect: [typeAssemblyKit, dataFactory])
 {
-    public record Dependencies(ContentTypeAssemblyKit TypeAssemblyKit, IDataFactory DataFactory)
-        : DependenciesBase(connect: [TypeAssemblyKit, DataFactory]);
-
     // TODO: Should probably be something different...?
     public const int NoAppId = -1;
     public const string AnonymousTypeName = "AnonymousType";
@@ -51,7 +48,7 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
                     Label = ctName,
                     Description = desc
                 };
-                var entity = Services.DataFactory.Create(settings);
+                var entity = dataFactory.Create(settings);
                 return new List<IEntity> { entity };
             });
 
@@ -59,11 +56,11 @@ public class ContentTypesFromCodeBuilder(ContentTypesFromCodeBuilder.Dependencie
         var ctMetadata = new ContentTypeMetadata(typeId: ctNameId, title: ctName, source: ctMdSource);
 
         // 3. Create Attribute Information for the ContentType
-        var attributeHelper = new ContentTypesFromCodeAttributeHelper(Services, Log);
+        var attributeHelper = new ContentTypesFromCodeAttributeHelper(typeAssemblyKit, dataFactory, Log);
         var (attributes, builtInAttributeDecorator) = attributeHelper.Process(type);
 
         // 4. Create the ContentType
-        var contentType = Services.TypeAssemblyKit.Type.Create(
+        var contentType = typeAssemblyKit.Type.Create(
             appId,
             name: ctName,
             nameId: ctNameId,

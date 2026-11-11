@@ -8,21 +8,18 @@ using ToSic.Eav.Repositories.Sys;
 namespace ToSic.Eav.ImportExport.Sys.XmlImport;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services)
-    : ServiceBase<XmlImportWithFiles.Dependencies>(services, "Xml.ImpFil")
+public partial class XmlImportWithFiles(
+    LazySvc<ImportService> importerLazy,
+    Generator<IStorage, StorageOptions> storageFactory,
+    IImportExportEnvironment environment,
+    AppCachePurger appCachePurger,
+    IAppsCatalog appsCatalog,
+    Generator<XmlToEntity, XmlToEntity.Options> xmlToEntity,
+    LazySvc<DataAssembler> dataAssembler,
+    LazySvc<ContentTypeAssemblyKit> typeAssembler,
+    DataImportLogSettings dataImportLogSettings)
+    : ServiceBase("Xml.ImpFil", connect: [importerLazy, storageFactory, environment, appsCatalog, xmlToEntity, appCachePurger, dataAssembler, typeAssembler, dataImportLogSettings])
 {
-    public record Dependencies(
-        LazySvc<ImportService> ImporterLazy,
-        Generator<IStorage, StorageOptions> StorageFactory,
-        IImportExportEnvironment Environment,
-        AppCachePurger AppCachePurger,
-        IAppsCatalog AppsCatalog,
-        Generator<XmlToEntity, XmlToEntity.Options> XmlToEntity,
-        LazySvc<DataAssembler> DataAssembler,
-        LazySvc<ContentTypeAssemblyKit> TypeAssembler,
-        DataImportLogSettings LogSettings)
-        : DependenciesBase(connect: [ImporterLazy, StorageFactory, Environment, AppsCatalog, XmlToEntity, AppCachePurger, DataAssembler, TypeAssembler, LogSettings]);
-
     public int AppId { get; private set; }
     public int ZoneId { get; private set; }
 
@@ -43,7 +40,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
     #region Detailed Logging
 
     [field: AllowNull, MaybeNull]
-    private LogSettings LogSettings => field ??= Services.LogSettings.GetLogSettings();
+    private LogSettings LogSettings => field ??= dataImportLogSettings.GetLogSettings();
 
     /// <summary>
     /// Logger for the details of the deserialization process.
@@ -65,7 +62,7 @@ public partial class XmlImportWithFiles(XmlImportWithFiles.Dependencies services
     public XmlImportWithFiles Init(string? defaultLanguage, bool allowUpdateOnSharedTypes)
     {
         // Prepare
-        DefaultLanguage = (defaultLanguage ?? Services.Environment.PathsAndOptions.DefaultLanguage).ToLowerInvariant();
+        DefaultLanguage = (defaultLanguage ?? environment.PathsAndOptions.DefaultLanguage).ToLowerInvariant();
         AllowUpdateOnSharedTypes = allowUpdateOnSharedTypes;
         return this;
     }

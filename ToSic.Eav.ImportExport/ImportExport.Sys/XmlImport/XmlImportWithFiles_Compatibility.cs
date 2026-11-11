@@ -21,7 +21,7 @@ partial class XmlImportWithFiles
 
         var isEnvOk = IsCompatibleSingleVersion(rootNode,
             XmlConstants.MinEnvVersion,
-            Services.Environment.TenantVersion,
+            environment.TenantVersion,
             "Environment Version"
         );
         if (!isEnvOk)

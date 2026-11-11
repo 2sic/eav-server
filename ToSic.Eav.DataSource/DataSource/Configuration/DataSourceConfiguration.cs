@@ -9,17 +9,10 @@ namespace ToSic.Eav.DataSource;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 [method: PrivateApi]
-internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies services)
-    : ServiceBase<DataSourceConfiguration.Dependencies>(services, $"{DataSourceConstantsInternal.LogPrefix}.Config"),
+internal class DataSourceConfiguration(LazySvc<IZoneCultureResolver> zoneCultureResolverLazy)
+    : ServiceBase($"{DataSourceConstantsInternal.LogPrefix}.Config", connect: [zoneCultureResolverLazy]),
         IDataSourceConfiguration
 {
-    #region Dependencies - Must be in DI
-
-    [ShowApiWhenReleased(ShowApiMode.Never)]
-    public record Dependencies(LazySvc<IZoneCultureResolver> ZoneCultureResolverLazy)
-        : DependenciesBase(connect: [ZoneCultureResolverLazy]);
-
-    #endregion
 
     #region Constructor
 
@@ -133,7 +126,7 @@ internal class DataSourceConfiguration(DataSourceConfiguration.Dependencies serv
     [PrivateApi]
     [field: AllowNull, MaybeNull]
     private IEnumerable<ILookUp> OverrideLookUps => field
-        ??= [new LookUpInDataSource(DataSourceForIn, Services.ZoneCultureResolverLazy.Value)];
+        ??= [new LookUpInDataSource(DataSourceForIn, zoneCultureResolverLazy.Value)];
 
 
     public string? Get(string name)

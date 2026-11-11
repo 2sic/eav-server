@@ -19,7 +19,6 @@ public static class StartupEavDataSource
         // Dependencies, new in v15
         services.TryAddTransient<DataSourceBase.Dependencies>();
         services.TryAddTransient<IDataSourceConfiguration, DataSourceConfiguration>();
-        services.TryAddTransient<DataSourceConfiguration.Dependencies>();
         services.TryAddTransient<CustomDataSourceAdvanced.Dependencies>();
         services.TryAddTransient<CustomDataSource.Dependencies>();
 
