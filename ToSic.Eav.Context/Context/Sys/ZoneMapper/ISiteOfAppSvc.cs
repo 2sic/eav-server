@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IAppSiteService
+public interface ISiteOfAppSvc
 {
     ISite SiteOfApp(int appId);
 }

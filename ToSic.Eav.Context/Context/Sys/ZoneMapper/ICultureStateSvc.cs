@@ -5,7 +5,7 @@
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IZoneMapper
+public interface ICultureStateSvc
 {
     /// <summary>
     /// The cultures available on this tenant/zone combination

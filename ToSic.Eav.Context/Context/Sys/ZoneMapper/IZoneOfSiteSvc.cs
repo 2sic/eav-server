@@ -2,7 +2,7 @@
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IZoneFinder
+public interface IZoneOfSiteSvc
 {
     /// <summary>
     /// Get the primary zoneId which belongs to the site.

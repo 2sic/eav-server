@@ -15,12 +15,12 @@ namespace ToSic.Eav.DataSources.Sys;
     UiHint = "Languages of the current site"
 )]
 // ReSharper disable once UnusedMember.Global
-public class ZoneLanguages(CustomDataSource.Dependencies services, IZoneMapper zoneMapper, ISite site)
-    : CustomDataSource(services, logName: "Sxc.ZoneLangs", connect: [zoneMapper, site])
+public class ZoneLanguages(CustomDataSource.Dependencies services, ICultureStateSvc cultureStateSvc, ISite site)
+    : CustomDataSource(services, logName: "Sxc.ZoneLangs", connect: [cultureStateSvc, site])
 {
     /// <summary>
     /// Retrieve zone cultures with activation state for the current site.
     /// </summary>
     protected override IEnumerable<IRawData> GetDefault()
-        => zoneMapper.CulturesWithState(site).Cast<IRawEntityAutoConvert>();
+        => cultureStateSvc.CulturesWithState(site).Cast<IRawEntityAutoConvert>();
 }

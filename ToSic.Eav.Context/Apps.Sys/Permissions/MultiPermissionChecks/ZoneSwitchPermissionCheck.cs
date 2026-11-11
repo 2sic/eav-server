@@ -3,7 +3,7 @@ using ToSic.Eav.Context.Sys.ZoneMapper;
 
 namespace ToSic.Eav.Apps.Sys.Permissions;
 
-public class ZoneSwitchPermissionCheck(IContextOfSiteService ctxSvc, LazySvc<IZoneMapper> zoneMapper)
+public class ZoneSwitchPermissionCheck(IContextOfSiteService ctxSvc, LazySvc<ICultureStateSvc> zoneMapper)
     : ServiceBase("Sec.ZoneSw", connect: [zoneMapper])
 {
     /// <summary>

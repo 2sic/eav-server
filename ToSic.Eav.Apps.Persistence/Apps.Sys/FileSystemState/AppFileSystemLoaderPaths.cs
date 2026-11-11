@@ -6,7 +6,7 @@ using ToSic.Eav.Sys;
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppFileSystemLoaderPaths(ISite siteDraft, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<IAppSiteService> appSiteSvc)
+public class AppFileSystemLoaderPaths(ISite siteDraft, LazySvc<IAppPathsMicroSvc> appPathsLazy, LazySvc<ISiteOfAppSvc> appSiteSvc)
     : ServiceWithSetup<AppFileSystemLoaderOptions>($"{EavLogs.Eav}.AFSLPaths", connect: [appPathsLazy, appSiteSvc])
 {
     private IAppPaths AppPaths => field

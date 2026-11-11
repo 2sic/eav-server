@@ -17,7 +17,7 @@ namespace ToSic.Eav.Context.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppUserLanguageCheck(
     LazySvc<ISiteOfZoneSvc> zoneSiteSvc,
-    LazySvc<IZoneMapper> zoneMapperLazy,
+    LazySvc<ICultureStateSvc> zoneMapperLazy,
     IContextOfSiteService ctxSvc,
     LazySvc<PermissionCheckFactory> permCheckFactory,
     LazySvc<IAppReaderFactory> appReadersLazy,

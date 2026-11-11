@@ -2,8 +2,8 @@
 
 namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
-public class AppSiteSvc(ISiteOfZoneSvc siteOfZoneSvc, IAppsCatalog appsCatalog)
-    : ServiceBase("Eav.Ap2Zn", connect: [siteOfZoneSvc, appsCatalog]), IAppSiteService
+public class SiteOfAppSvc(ISiteOfZoneSvc siteOfZoneSvc, IAppsCatalog appsCatalog)
+    : ServiceBase("Eav.Ap2Zn", connect: [siteOfZoneSvc, appsCatalog]), ISiteOfAppSvc
 {
     /// <inheritdoc />
     public ISite SiteOfApp(int appId)

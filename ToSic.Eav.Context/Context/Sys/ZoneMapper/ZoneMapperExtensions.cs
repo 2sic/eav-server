@@ -16,7 +16,7 @@ public static class ZoneMapperExtensions
     /// <param name="siteFromDi"></param>
     /// <param name="appIdentity"></param>
     /// <returns></returns>
-    internal static ISite SiteOfAppIfSiteInvalid(this LazySvc<IAppSiteService> appSiteSvcLazy, ISite siteFromDi, IAppIdentity appIdentity)
+    internal static ISite SiteOfAppIfSiteInvalid(this LazySvc<ISiteOfAppSvc> appSiteSvcLazy, ISite siteFromDi, IAppIdentity appIdentity)
     {
         if (siteFromDi.Id != EavConstants.NullId && siteFromDi.ZoneId == appIdentity.ZoneId)
             return siteFromDi;
@@ -47,8 +47,8 @@ public static class ZoneMapperExtensions
         }
     }
 
-    public static List<ISiteLanguageState> CulturesEnabledWithState(this IZoneMapper zoneMapper, ISite site)
-        => [.. zoneMapper.CulturesWithState(site).Where(c => c.IsEnabled)];
+    public static List<ISiteLanguageState> CulturesEnabledWithState(this ICultureStateSvc cultureStateSvc, ISite site)
+        => [.. cultureStateSvc.CulturesWithState(site).Where(c => c.IsEnabled)];
 
 
 }

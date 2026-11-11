@@ -35,7 +35,7 @@ public static class StartupEavContext
         services.TryAddTransient<AppUserLanguageCheck>();
 
         // v22 separate AppToZoneMapping
-        services.TryAddTransient<IAppSiteService, AppSiteSvc>();
+        services.TryAddTransient<ISiteOfAppSvc, SiteOfAppSvc>();
 
         return services;
     }
@@ -52,8 +52,8 @@ public static class StartupEavContext
     public static IServiceCollection AddContextFallbacks(this IServiceCollection services)
     {
         services.TryAddTransient<ISite, SiteUnknown>();
-        services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
-        services.TryAddTransient<IZoneFinder, ZoneFinderUnknown>();
+        services.TryAddTransient<ICultureStateSvc, CultureStateSvcUnknown>();
+        services.TryAddTransient<IZoneOfSiteSvc, ZoneOfSiteSvcUnknown>();
         services.TryAddTransient<ISiteOfZoneSvc, SiteOfZoneSvcUnknown>();
 
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();

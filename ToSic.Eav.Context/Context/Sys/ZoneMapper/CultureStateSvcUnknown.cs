@@ -2,8 +2,8 @@
 
 namespace ToSic.Eav.Context.Sys.ZoneMapper;
 
-internal class ZoneMapperUnknown(WarnUseOfUnknown<ZoneMapperUnknown> _, Generator<ISite> siteFactory)
-    : ServiceBase($"{LogScopes.NotImplemented}.ZonMap", connect: []), IZoneMapper, IIsUnknown
+internal class CultureStateSvcUnknown(WarnUseOfUnknown<CultureStateSvcUnknown> _, Generator<ISite> siteFactory)
+    : ServiceBase($"{LogScopes.NotImplemented}.ZonMap", connect: []), ICultureStateSvc, IIsUnknown
 {
     public ISite SiteOfZone(int zoneId) => siteFactory.New();
 

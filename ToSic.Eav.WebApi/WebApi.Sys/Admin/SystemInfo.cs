@@ -27,7 +27,7 @@ public class SystemInfo : CustomDataSource
 {
     private readonly IAppsCatalog _appsCatalog;
     private readonly SystemFingerprint _fingerprint;
-    private readonly IZoneMapper _zoneMapper;
+    private readonly ICultureStateSvc _cultureStateSvc;
     private readonly IPlatformInfo _platform;
     private readonly ISite _site;
     private readonly LazySvc<ILicenseService> _licenseService;
@@ -37,16 +37,16 @@ public class SystemInfo : CustomDataSource
         Dependencies services,
         IAppsCatalog appsCatalog,
         SystemFingerprint fingerprint,
-        IZoneMapper zoneMapper,
+        ICultureStateSvc cultureStateSvc,
         IPlatformInfo platform,
         ISite site,
         LazySvc<ILicenseService> licenseService,
         IInsightsLogSnapshotReader snapshotReader)
-        : base(services, logName: "Sxc.SysInfo", connect: [appsCatalog, fingerprint, zoneMapper, platform, site, licenseService, snapshotReader])
+        : base(services, logName: "Sxc.SysInfo", connect: [appsCatalog, fingerprint, cultureStateSvc, platform, site, licenseService, snapshotReader])
     {
         _appsCatalog = appsCatalog;
         _fingerprint = fingerprint;
-        _zoneMapper = zoneMapper;
+        _cultureStateSvc = cultureStateSvc;
         _platform = platform;
         _site = site;
         _licenseService = licenseService;
@@ -70,7 +70,7 @@ public class SystemInfo : CustomDataSource
             SiteId: _site.Id,
             ZoneId: zoneId,
             Apps: _appsCatalog.Apps(zoneId).Count,
-            Languages: _zoneMapper.CulturesWithState(_site).Count
+            Languages: _cultureStateSvc.CulturesWithState(_site).Count
         );
 
         return l.Return([entity], "1");
