@@ -16,12 +16,13 @@ namespace ToSic.Eav.Context.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppUserLanguageCheck(
+    LazySvc<ISiteOfZoneSvc> zoneSiteSvc,
     LazySvc<IZoneMapper> zoneMapperLazy,
     IContextOfSiteService ctxSvc,
     LazySvc<PermissionCheckFactory> permCheckFactory,
     LazySvc<IAppReaderFactory> appReadersLazy,
     LazySvc<ISysFeaturesService> featuresLazy)
-    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneMapperLazy, ctxSvc, permCheckFactory, appReadersLazy, featuresLazy])
+    : ServiceBase($"{EavLogs.Eav}.LngChk", connect: [zoneSiteSvc, zoneMapperLazy, ctxSvc, permCheckFactory, appReadersLazy, featuresLazy])
 {
     /// <summary>
     /// Test if the current user has explicit language editing permissions
@@ -60,14 +61,13 @@ public class AppUserLanguageCheck(
         // app languages are different from languages in global app and because global
         // settings are in primary appid=1, zoneId=1 without portal site we just return empty list for it
         // in other cases we get the languages from the app state or from context (http headers)
-        var zoneMapper = zoneMapperLazy.Value;
         var site = appReaderOrNull != null
-            ? zoneMapper.SiteOfZone(appReaderOrNull.ZoneId)
+            ? zoneSiteSvc.Value.SiteOfZone(appReaderOrNull.ZoneId)
             : ctxSvc.Context.Site;
         if (site == null!) // probably not necessary, but just to be sure
             return l.Return([], "null site");
 
-        var languages = zoneMapper.CulturesWithState(site);
+        var languages = zoneMapperLazy.Value.CulturesWithState(site);
 
         // Check if ML-Permissions-Feature is enabled, otherwise don't check detailed permissions
         var mlFeatureEnabled = featuresLazy.Value.IsEnabled(BuiltInFeatures.PermissionsByLanguage);

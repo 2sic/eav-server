@@ -8,11 +8,6 @@
 public interface IZoneMapper
 {
     /// <summary>
-    /// Find the site of a Zone
-    /// </summary>
-    ISite SiteOfZone(int zoneId);
-
-    /// <summary>
     /// The cultures available on this tenant/zone combination
     /// the zone is necessary to determine what is enabled/disabled
     /// </summary>

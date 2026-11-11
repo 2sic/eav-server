@@ -28,8 +28,8 @@ namespace ToSic.Eav.DataSources.Sys;
     ],
     HelpLink = "https://github.com/2sic/2sxc/wiki/DotNet-DataSource-Zones")]
 // ReSharper disable once UnusedMember.Global
-public sealed class Zones(CustomDataSource.Dependencies services, IZoneMapper zoneMapper, IAppsCatalog appsCatalog)
-    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [zoneMapper, appsCatalog])
+public sealed class Zones(CustomDataSource.Dependencies services, ISiteOfZoneSvc siteOfZoneSvc, IAppsCatalog appsCatalog)
+    : CustomDataSource(services, $"{DataSourceConstantsInternal.LogPrefix}.Zones", connect: [siteOfZoneSvc, appsCatalog])
 {
     protected override IEnumerable<IRawData> GetDefault()
     {
@@ -41,7 +41,7 @@ public sealed class Zones(CustomDataSource.Dependencies services, IZoneMapper zo
             .OrderBy(z => z.ZoneId)
             .Select(zone =>
             {
-                var site = zoneMapper.SiteOfZone(zone.ZoneId);
+                var site = siteOfZoneSvc.SiteOfZone(zone.ZoneId);
 
                 return new ZoneRaw(
                     Id: zone.ZoneId,

@@ -54,6 +54,7 @@ public static class StartupEavContext
         services.TryAddTransient<ISite, SiteUnknown>();
         services.TryAddTransient<IZoneMapper, ZoneMapperUnknown>();
         services.TryAddTransient<IZoneFinder, ZoneFinderUnknown>();
+        services.TryAddTransient<ISiteOfZoneSvc, SiteOfZoneSvcUnknown>();
 
         services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
 
