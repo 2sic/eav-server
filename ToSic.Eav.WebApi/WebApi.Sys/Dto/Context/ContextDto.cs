@@ -1,9 +1,10 @@
-﻿using ToSic.Eav.WebApi.Sys.Context;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.WebApi.Sys.Context;
 using static System.Text.Json.Serialization.JsonIgnoreCondition;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-public class ContextDto
+public record ContextDto
 {
     [JsonIgnore(Condition = WhenWritingNull)]
     public ContextAppDto? App { get; set; }
@@ -25,7 +26,7 @@ public class ContextDto
     public IList<FeatureDto>? Features { get; set; }
 }
 
-public class WebResourceDto
+public record WebResourceDto
 {
     [JsonIgnore(Condition = WhenWritingNull)]
     public int? Id { get; set; }
@@ -35,10 +36,10 @@ public class WebResourceDto
     public string? SharedUrl { get; set; }
 }
 
-public class ContextResourceWithApp: WebResourceDto
+public record ContextResourceWithApp: WebResourceDto
 {
     [JsonIgnore(Condition = WhenWritingNull)]
-    public AppIdentity? DefaultApp { get; set; }
+    public AppIdentityPure? DefaultApp { get; set; }
     [JsonIgnore(Condition = WhenWritingNull)]
-    public AppIdentity? PrimaryApp { get; set; }
+    public AppIdentityPure? PrimaryApp { get; set; }
 }

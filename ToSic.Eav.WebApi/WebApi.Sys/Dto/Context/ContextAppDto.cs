@@ -3,7 +3,7 @@ using static System.Text.Json.Serialization.JsonIgnoreCondition;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 
-public class ContextAppDto: WebResourceDto
+public record ContextAppDto: WebResourceDto
 {
     public required string Name { get; init; }
     public string? Identifier { get; set; }

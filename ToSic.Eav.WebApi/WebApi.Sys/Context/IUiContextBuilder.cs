@@ -2,14 +2,8 @@
 
 namespace ToSic.Eav.WebApi.Sys.Context;
 
-public interface IUiContextBuilder: IHasLog
+public interface IUiContextBuilder: IServiceWithSetup<IAppReader?>
 {
-    /// <summary>
-    /// Initialize the context builder
-    /// </summary>
-    /// <returns></returns>
-    IUiContextBuilder InitApp(IAppReader? appReaderOrNull);
-
     /// <summary>
     /// Get the context based on the situation
     /// </summary>
