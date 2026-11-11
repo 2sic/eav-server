@@ -33,7 +33,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
 
     public record Dependencies(
         QueryFactory QueryFactory,
-        LazySvc<ConvertToEavLight> EntToDicLazy,
+        LazySvc<IConvertToEavLight> EntToDicLazy,
         LazySvc<QueryInspectionService> QueryInfoLazy,
         LazySvc<DataSourceCatalog> DataSourceCatalogLazy,
         Generator<IJsonDataReader, IJsonDataReader.Options> JsonSerializer,

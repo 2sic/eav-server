@@ -58,4 +58,11 @@ public interface IConvertToEavLight: IConvertEntity<EavLightEntity>, IConvertDat
 
     /// <inheritdoc />
     IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, string streams);
+
+    internal void AddSelectFields(ICollection<string> fields);
+
+    /// <summary>
+    /// Separate helper to create lightweight sub entities
+    /// </summary>
+    internal ConvertToJsonBasicLightSubEntities SubConverter { get; }
 }

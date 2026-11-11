@@ -16,7 +16,8 @@ namespace ToSic.Eav.DataFormats.EavLight;
 /// </summary>
 [PrivateApi("Hide Implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependencies>, IConvertToEavLight
+public partial class ConvertToEavLight(ConvertToEavLight.Dependencies services)
+    : ServiceBase<ConvertToEavLight.Dependencies>(services, "Eav.CnvE2D"), IConvertToEavLight
 {
     #region Constructor / DI
 
@@ -25,17 +26,6 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
         IValueConverter ValueConverter,
         IZoneCultureResolver ZoneCultureResolver)
         : DependenciesBase(connect: [AppReaders, ValueConverter, ZoneCultureResolver]);
-
-    /// <summary>
-    /// Important: this constructor is used both in inherited,
-    /// but also in EAV-code which uses only this object (so no inherited)
-    /// This is why it must be public, because otherwise it can't be constructed from eav?
-    /// </summary>
-    /// <param name="services"></param>
-    public ConvertToEavLight(Dependencies services) : this(services, "Eav.CnvE2D") { }
-
-    private ConvertToEavLight(Dependencies services, string logName) : base(services, logName) { }
-
 
     #endregion
 
@@ -50,34 +40,17 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
     /// <inheritdoc/>
     public bool WithPublishing { get; private set; }
         
-    [PrivateApi] public MetadataForSerialization MetadataFor { get; private set; } = new();
-    [PrivateApi] public ISubEntitySerialization Metadata { get; private set; } = new SubEntitySerialization();
+    [PrivateApi] public MetadataForSerialization MetadataFor { get; } = new();
+    [PrivateApi] public ISubEntitySerialization Metadata { get; } = new SubEntitySerialization();
 
     private bool WithEditInfos { get; set; }
 
-    // WIP v17
+    [PrivateApi("Actually Internal!")]
     public void AddSelectFields(ICollection<string> fields)
         => _presetFilters = new EntitySerializationDecoratorCreator(fields, WithGuid, Log).Generate();
 
     protected EntitySerializationDecorator PresetFilters => _presetFilters ??= new EntitySerializationDecoratorCreator(null, WithGuid, Log).Generate();
     private EntitySerializationDecorator? _presetFilters;
-
-    /// <inheritdoc/>
-    public void ConfigureForAdminUse()
-    {
-        WithGuid = true;
-        WithPublishing = true;
-        MetadataFor = new() { Serialize = true };
-        Metadata = new SubEntitySerialization
-        {
-            Serialize = true,
-            SerializeId = true,
-            SerializeTitle = true,
-            SerializeGuid = true
-        };
-        WithEditInfos = true;
-        LinksWithBothValues = true;
-    }
 
     /// <summary>
     /// WIP 17.02+ - should show link as file:42|https://...
@@ -98,8 +71,9 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
     /// <summary>
     /// Separate helper to create lightweight sub entities
     /// </summary>
+    [PrivateApi("Actually Internal!")]
     [field: AllowNull, MaybeNull]
-    internal ConvertToJsonBasicLightSubEntities SubConverter => field ??= new(Languages);
+    ConvertToJsonBasicLightSubEntities IConvertToEavLight.SubConverter => field ??= new(Languages);
 
 
     [PrivateApi("not public ATM")]
@@ -177,7 +151,7 @@ public partial class ConvertToEavLight : ServiceBase<ConvertToEavLight.Dependenc
                         // Special Case 2: Entity-List
                         ValueTypes.Entity when rawValue is IEnumerable<IEntity> entities
                             => serRels.Serialize == true
-                                ? SubConverter.CreateListOrCsvOfSubEntities(entities, serRels)
+                                ? ((IConvertToEavLight)this).SubConverter.CreateListOrCsvOfSubEntities(entities, serRels)
                                 : null,
                         _ => rawValue
                     };

@@ -62,7 +62,7 @@ public static class StartupWebApi
         // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
         // Here we only register the dependencies, as the final converter must be registered elsewhere
         services.TryAddTransient<ConvertToEavLight.Dependencies>();
-        services.TryAddTransient<ConvertToEavLight>();
+        services.TryAddTransient<IConvertToEavLight, ConvertToEavLight>();
 
         // json serialization converters eav related
         services.TryAddTransient<EavJsonConverter>();

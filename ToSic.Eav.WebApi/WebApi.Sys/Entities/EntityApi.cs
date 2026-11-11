@@ -50,10 +50,8 @@ public class EntityApi(
         var converter= entitiesToDicLazy.New();
 
         if (fullRequest is not null)
-        {
-            (converter as ConvertToEavLight).DoIfNotNull(c =>
-                c.AddSelectFields([.. SystemQueryOptionsParser.Parse(fullRequest).Select]));
-        }
+            converter.AddSelectFields([.. SystemQueryOptionsParser.Parse(fullRequest).Select]);
+
         return converter.Convert(list)!;
     }
     

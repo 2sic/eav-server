@@ -55,7 +55,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
 
         var typeMetadata = cType.Metadata;
 
-        var mdReferences = (ser as ConvertToEavLight)?
+        var mdReferences = ser
             .SubConverter
             .CreateListOfSubEntities(typeMetadata, SubEntitySerialization.NeverSerializeChildren());
 
