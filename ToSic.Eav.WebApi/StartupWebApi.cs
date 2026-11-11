@@ -17,6 +17,7 @@ using ToSic.Eav.WebApi.Sys.Helpers.Json;
 using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Sys.Logs;
+using ToSic.Sxc.Backend.Context;
 
 namespace ToSic.Eav;
 
@@ -90,6 +91,11 @@ public static class StartupWebApi
         // v22
         services.TryAddTransient<IAppDetailsService, AppDetailsService>();
         services.TryAddTransient<AppDetailsService>();
+
+        // v22 Context
+        services.TryAddTransient<IUiContextBuilder, UiContextBuilder>();  // v22 - default implementation, for re-implementations
+        services.TryAddTransient<UiContextPartsEav>();
+        services.TryAddTransient<IUiContextParts, UiContextPartsEav>();
 
         services.AddNetInfrastructure();
 

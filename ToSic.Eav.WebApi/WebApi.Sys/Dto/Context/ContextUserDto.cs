@@ -3,7 +3,7 @@
 /// <summary>
 /// Will be enhanced later
 /// </summary>
-public class ContextUserDto
+public record ContextUserDto
 {
     public required string Email { get; init; }
     public required Guid Guid { get; init; }
