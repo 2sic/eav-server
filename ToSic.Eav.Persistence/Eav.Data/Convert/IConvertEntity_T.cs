@@ -56,14 +56,6 @@ public interface IConvertEntity<out T>: IConvert<IEntity, T>, IConvert<IEntityWr
     /// </summary>
     string?[] Languages { get; set; }
 
-    // 2024-02-27 2dm removed from interface - clean up 2024-Q2
-    ///// <summary>
-    ///// Ensure all settings are so it includes guids etc.
-    ///// This is so the serializable information is useful for admin UIs
-    ///// </summary>
-    //[PrivateApi("Internal use only")]
-    //void ConfigureForAdminUse();
-        
 
     [PrivateApi("WIP")]
     TypeSerializationOptions Type { get; set; }

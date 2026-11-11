@@ -12,11 +12,11 @@ using static ToSic.Eav.Data.EntityDecorators.Sys.EntitySerializationDecorator;
 namespace ToSic.Eav.DataFormats.EavLight;
 
 /// <summary>
-/// A helper to serialize various combinations of entities, lists of entities etc
+/// A helper to serialize various combinations of entities, lists of entities etc.
 /// </summary>
 [PrivateApi("Hide Implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class ConvertToEavLight(ConvertToEavLight.Dependencies services)
+internal partial class ConvertToEavLight(ConvertToEavLight.Dependencies services)
     : ServiceBase<ConvertToEavLight.Dependencies>(services, "Eav.CnvE2D"), IConvertToEavLight
 {
     #region Constructor / DI
@@ -42,8 +42,6 @@ public partial class ConvertToEavLight(ConvertToEavLight.Dependencies services)
         
     [PrivateApi] public MetadataForSerialization MetadataFor { get; } = new();
     [PrivateApi] public ISubEntitySerialization Metadata { get; } = new SubEntitySerialization();
-
-    private bool WithEditInfos { get; set; }
 
     [PrivateApi("Actually Internal!")]
     public void AddSelectFields(ICollection<string> fields)
@@ -178,7 +176,7 @@ public partial class ConvertToEavLight(ConvertToEavLight.Dependencies services)
         AddMetadataAndFor(entity, entityValues, rules);
 
         // #SysData WIP
-        var useEditInfos = WithEditInfos || rules.WithEditInfos == true;
+        var useEditInfos = rules.WithEditInfos == true;
 
         // Special edit infos - _Title (old, maybe not needed), Stats, EditInfo for read-only etc.
         // 2024-03-05 2dm - basically when the $select is applied, don't add these anymore
