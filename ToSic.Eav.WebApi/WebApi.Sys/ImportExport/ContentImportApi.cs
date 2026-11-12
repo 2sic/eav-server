@@ -110,7 +110,11 @@ public class ContentImportApi(
         var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
         try
         {
-            var deserializer = jsonReaderLazy.New(new(_appReader) { PreferLocalAppTypes = true });
+            var deserializer = jsonReaderLazy.New(new(_appReader)
+            {
+                PreferLocalAppTypes = true,
+                LogSettings = LogSettings,
+            });
             // Since we're importing directly into this app, we prefer local content-types
             //deserializer.PreferLocalAppTypes = true;
 
