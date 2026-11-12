@@ -3,14 +3,10 @@
 namespace ToSic.Eav.Environment.Sys.ServerPaths;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public abstract class ServerPathsBase: IServerPaths
+public abstract class ServerPathsShared
 {
-    public abstract string FullAppPath(string virtualPath);
-
-    public abstract string FullContentPath(string virtualPath);
-
     [return: NotNullIfNotNull(nameof(fileReference))]
-    public string? FullPathOfReference(string? fileReference)
+    public static string? FullPathOfReference(string? fileReference, Func<int, string?> fullPathOfReference)
     {
         if (string.IsNullOrWhiteSpace(fileReference))
             return fileReference;
@@ -19,9 +15,7 @@ public abstract class ServerPathsBase: IServerPaths
         if (parts.IsPage)
             return fileReference;
 
-        return FullPathOfReference(parts.Id)
+        return fullPathOfReference(parts.Id)
             ?? fileReference;
     }
-
-    protected abstract string? FullPathOfReference(int id);
 }
