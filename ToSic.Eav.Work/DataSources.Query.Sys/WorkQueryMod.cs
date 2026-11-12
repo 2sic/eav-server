@@ -1,55 +1,20 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+﻿using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Targets;
 using static System.StringComparer;
 
-namespace ToSic.Eav.Apps.Sys.Work;
+namespace ToSic.Eav.DataSources.Query.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkQueryMod(
-    LazySvc<AppCachePurger> systemManagerLazy,
     LazySvc<QueryDefinitionService> queryDefSvc,
-    LazySvc<QueryDefinitionFactory> queryDefBuilder,
     AppWorkChain<WorkEntityCreate> entCreate,
     AppWorkChain<WorkEntityDelete> delete,
     AppWorkChain<WorkEntityUpdate> entUpdate)
-    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod",
-        connect: [systemManagerLazy, queryDefSvc, queryDefBuilder, delete, entCreate, entUpdate])
+    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod", connect: [queryDefSvc, delete, entCreate, entUpdate])
 {
-    public bool Delete(int id)
-    {
-        var l = Log.Fn<bool>($"delete a#{MyOptions.AppId}, id:{id}");
-
-        var entDelete = delete.New(MyOptions);
-
-        var canDeleteResult = entDelete.CheckForDeletePreWarnings(id);
-        if (canDeleteResult.HasMessages)
-            throw l.Done(new Exception(canDeleteResult.Messages));
-
-
-        // Get the Entity describing the Query and Query Parts (DataSources)
-        var qDef = queryDefSvc.Value.GetDefinition(MyOptions.AppReader, id);
-        //var qDef = queryDefBuilder.Value.Create(MyOptions.AppId, queryEntity);
-
-        var parts = qDef.Parts;
-        var mdItems = parts
-            .Select(ds => (ds as ICanBeEntity).Entity.Metadata.FirstOrDefault())
-            .Where(md => md != null)
-            .Select(md => md!.EntityId)
-            .ToListOpt();
-
-        // delete in the right order - first the outermost-dependents, then a layer in, and finally the top node
-        entDelete.Delete(mdItems);
-        entDelete.Delete(parts.Select(p => p.Id).ToListOpt());
-        entDelete.Delete(id);
-
-        // flush cache
-        systemManagerLazy.Value.PurgeApp(MyOptions.AppId);
-
-        return l.ReturnTrue();
-    }
 
     private QueryDefinition Get(int queryId)
         => queryDefSvc.Value.GetDefinition(MyOptions.AppReader, queryId);
@@ -88,7 +53,7 @@ public class WorkQueryMod(
     /// <param name="queryEntityGuid">EntityGuid of the Pipeline-Entity</param>
     private Dictionary<string, Guid> SavePartsAndGenerateRenameMap(IList<Dictionary<string, object>> partsDefinitions, Guid queryEntityGuid)
     {
-        Log.A($"save parts guid:{queryEntityGuid}");
+        var l = Log.Fn<Dictionary<string, Guid>>($"save parts guid:{queryEntityGuid}");
         var newDataSources = new Dictionary<string, Guid>();
 
         foreach (var ds in partsDefinitions)
@@ -122,7 +87,7 @@ public class WorkQueryMod(
             }
         }
 
-        return newDataSources;
+        return l.Return(newDataSources);
     }
 
     /// <summary>
@@ -149,10 +114,6 @@ public class WorkQueryMod(
             .Union(newDataSources)
             .ToListOpt();
 
-        //var entDelete = delete.New(MyOptions);
-        //foreach (var entToDel in existingEntityGuids.Where(guid => !newGuidsWithMore.Contains(guid)))
-        //    // force: true - force-delete the data-source part even if it still has metadata and stuff referencing it
-        //    entDelete.Delete(entToDel, force: true);
         var toDelete = existingEntityGuids.Where(guid => !newGuidsWithMore.Contains(guid)).ToArray();
         delete.New(MyOptions).Delete(toDelete, force: true);
         l.Done();

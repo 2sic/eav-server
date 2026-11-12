@@ -1,21 +1,20 @@
-﻿using ToSic.Eav.Data.Build.Sys;
+﻿using ToSic.Eav.Apps.Sys.Work;
+using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Apps.Sys.Work;
+namespace ToSic.Eav.DataSources.Query.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkQueryCopy(
     LazySvc<QueryDefinitionService> queryDefSvc,
     LazySvc<DataAssembler> builder,
-    //LazySvc<IJsonDataReader> jsonSerializer,
     AppWorkChain<WorkEntitySave> entSave)
-    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod", connect: [entSave, queryDefSvc, /*jsonSerializer,*/ builder])
+    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod", connect: [entSave, queryDefSvc, builder])
 {
-    //private LazySvc<IJsonDataReader> Serializer => field ??= jsonSerializer.SetInit(j => j.SetApp(MyOptions.AppReader));
 
     private QueryDefinition Get(int queryId) => queryDefSvc.Value.GetDefinition(MyOptions.AppReader, queryId);
 

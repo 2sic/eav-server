@@ -2,11 +2,14 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.Apps.Inspect.Sys;
-using ToSic.Eav.Apps.Inspect.Sys.Query;
 using ToSic.Eav.Apps.Inspect.Sys.WebApi;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Work;
+using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataFormats.EavLight.Sys;
+using ToSic.Eav.DataSources.ImportExport.Sys;
+using ToSic.Eav.DataSources.Query.Dev.Sys;
+using ToSic.Eav.DataSources.Query.Sys;
 using ToSic.Eav.ImportExport.Sys.XmlList;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Metadata.Requirements.Sys;
@@ -51,6 +54,7 @@ public static class StartupEavWork
         services.TryAddTransient<WorkAttributesMod>();
         services.TryAddTransient<WorkQueryMod>();
         services.TryAddTransient<WorkQueryCopy>();
+        services.TryAddTransient<WorkQueryDelete>();
 
         // v22 adding work App
         services.TryAddTransient<WorkAppsRemove>();
@@ -68,6 +72,12 @@ public static class StartupEavWork
         // export import stuff
         services.TryAddScoped<ExportListXml>();
         services.TryAddScoped<ImportListXml>();
+
+        // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
+        // Here we only register the dependencies, as the final converter must be registered elsewhere
+        services.TryAddTransient<ConvertEavLightForCode.Dependencies>();
+        services.TryAddTransient<IConvertToEavLight, ConvertEavLightForCode>();
+
 
         // v22 - Enable AppWorkCtx to be injected
         services.AddAppWorkContext();
@@ -91,6 +101,10 @@ public static class StartupEavWork
 
         // New v22
         services.TryAddTransient<ConvertEntityToEavLight>();
+        services.TryAddTransient<WorkQueryImport>();
+        services.TryAddTransient<WorkQuerySave>();
+        services.TryAddTransient<QueryDevSvc>();
+        services.TryAddTransient<QueryDevDebugSvc>();
 
         return services;
     }

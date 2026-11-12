@@ -1,16 +1,14 @@
-﻿using ToSic.Eav.Data.EntityDecorators.Sys;
-using ToSic.Eav.DataFormats.EavLight.Sys;
-using ToSic.Eav.Serialization.Sys.Options;
+﻿using ToSic.Eav.Serialization.Sys.Options;
 
-namespace ToSic.Eav.DataFormats.EavLight;
+namespace ToSic.Eav.DataFormats.EavLight.Sys;
 
 /// <summary>
 /// A helper to serialize various combinations of entities, lists of entities etc.
 /// </summary>
 [PrivateApi("Hide Implementation")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal partial class ConvertToEavLight(ConvertToEavLight.Dependencies services, ConvertEntityToEavLight convShared)
-    : ServiceBase<ConvertToEavLight.Dependencies>(services, "Eav.CnvE2D", connect: [convShared]), IConvertToEavLight
+internal partial class ConvertEavLightForCode(ConvertEavLightForCode.Dependencies services, ConvertEntityToEavLight convShared)
+    : ServiceBase<ConvertEavLightForCode.Dependencies>(services, "Eav.CnvE2D", connect: [convShared]), IConvertToEavLight
 {
     #region Constructor / DI
 
@@ -32,7 +30,7 @@ internal partial class ConvertToEavLight(ConvertToEavLight.Dependencies services
 
     [PrivateApi("Actually Internal!")]
     public void AddSelectFields(ICollection<string> fields)
-        => convShared.PresetFilters = new EntitySerializationDecoratorCreator(fields, WithGuid, Log).Generate();
+        => convShared.AddSelectFields(fields);
 
     #endregion
 

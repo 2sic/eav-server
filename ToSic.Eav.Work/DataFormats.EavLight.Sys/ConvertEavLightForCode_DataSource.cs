@@ -3,13 +3,13 @@ using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Convert;
 using static System.String;
 
-namespace ToSic.Eav.DataFormats.EavLight;
+namespace ToSic.Eav.DataFormats.EavLight.Sys;
 
 /// <summary>
 /// A helper to serialize various combinations of entities, lists of entities etc
 /// </summary>
 [PrivateApi("Hide implementation")]
-partial class ConvertToEavLight
+partial class ConvertEavLightForCode
 {
 
     #region Many variations of the Prepare-Statement expecting various kinds of input
@@ -40,11 +40,6 @@ partial class ConvertToEavLight
 
         // Pre-process the guids list to ensure they are guids
         var realGuids = DataSourceConvertHelper.SafeParseGuidList(filterGuids);
-        //var realGuids = filterGuids?
-        //                    .Select(str => Guid.TryParse(str, out var guid) ? guid : Guid.Empty)
-        //                    .Where(guid => guid != Guid.Empty)
-        //                    .ToArray()
-        //                ?? [];
 
 
         var allStreams = streamsList

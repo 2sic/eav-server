@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.Apps.Inspect.Sys;
 using ToSic.Eav.Apps.Inspect.Sys.WebApi;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.DataFormats.EavLight.Sys;
 using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Web.Sys;
 using ToSic.Eav.WebApi.Sys;
@@ -41,7 +42,6 @@ public static class StartupWebApi
         // APIs
         services.TryAddTransient<EntityPickerApi>();
         services.TryAddTransient<ContentTypeDtoService>();
-        services.TryAddTransient<QueryControllerBase.Dependencies>();
         services.TryAddTransient<ContentExportApi>();
         services.TryAddTransient<ContentImportApi>();
 
@@ -57,12 +57,6 @@ public static class StartupWebApi
         services.TryAddTransient<ImportAppService>();
         services.TryAddTransient<PendingAppsGet>();
         services.TryAddTransient<PendingAppInstall>();
-
-        // WIP Converter clean-up v12.05
-        // This is still needed on one EAV WebApi for DataSource to JsonBasic conversion
-        // Here we only register the dependencies, as the final converter must be registered elsewhere
-        services.TryAddTransient<ConvertToEavLight.Dependencies>();
-        services.TryAddTransient<IConvertToEavLight, ConvertToEavLight>();
 
         // json serialization converters eav related
         services.TryAddTransient<EavJsonConverter>();

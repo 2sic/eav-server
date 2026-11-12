@@ -4,7 +4,7 @@ using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSource.VisualQuery.Sys;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.DataSources.Query.Dev.Sys;
 
 [ContentType(Name = "DataSource", Guid = "2de41d89-3cb9-480a-ac3c-40f77fd3af4e", Scope = "System")]
 public class DataSourceDto : IRawEntityAutoConvert

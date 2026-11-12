@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
 
-namespace ToSic.Eav.DataFormats.EavLight;
+namespace ToSic.Eav.DataFormats.EavLight.Sys;
 
-partial class ConvertToEavLight
+partial class ConvertEavLightForCode
 {
     #region Many variations of the Convert-Statement expecting IEntity
 
@@ -13,11 +13,6 @@ partial class ConvertToEavLight
     #endregion
 
     #region Dynamic/Objects - which first must detect what it is
-
-    EavLightEntity IConvertToEavLight.Convert(IEntity entity)
-    {
-        throw new NotImplementedException();
-    }
 
     public IEnumerable<EavLightEntity> Convert(IEnumerable<object> list)
     {
@@ -53,18 +48,16 @@ partial class ConvertToEavLight
         };
 
     IEnumerable<EavLightEntity> IConvertToEavLight.Convert(IEnumerable<IEntityWrapper> list)
-    {
-        throw new NotImplementedException();
-    }
+        => convShared.Convert(list);
 
     EavLightEntity IConvertToEavLight.Convert(IEntityWrapper item)
-    {
-        throw new NotImplementedException();
-    }
+        => convShared.Convert(item);
 
     #endregion
 
-    public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntityWrapper> list) => convShared.Convert(list);
+    IEnumerable<EavLightEntity> IConvert<IEntityWrapper, EavLightEntity>.Convert(IEnumerable<IEntityWrapper> list)
+        => convShared.Convert(list);
 
-    public EavLightEntity Convert(IEntityWrapper item) => convShared.Convert(item);
+    EavLightEntity IConvert<IEntityWrapper, EavLightEntity>.Convert(IEntityWrapper item)
+        => convShared.Convert(item);
 }

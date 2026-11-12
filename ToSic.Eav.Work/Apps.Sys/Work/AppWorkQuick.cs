@@ -11,6 +11,9 @@ public class AppWorkQuick<TWork>(AppWorkContextService appWorkCtxSvc, Generator<
     : ServiceBase("Wrk.Quick", connect: [])
     where TWork : IServiceWithSetup<IAppWorkContext>
 {
+    [Obsolete("Warning: if you see this, you are using an AppWorkQuick when you should be using AppWorkChain which saves time.")]
+    public TWork New(IAppWorkContext ctx) => gen.New(ctx);
+
     public TWork New(int appId, bool? showDrafts = default)
         => gen.New(appWorkCtxSvc.ContextNew(appId, showDrafts));
     

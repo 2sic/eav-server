@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSource.Query.Sys.Inspect;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.DataSources.Query.Dev.Sys;
 
 public class QueryRunDto
 {

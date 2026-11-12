@@ -233,10 +233,14 @@ public partial class ConvertEntityToEavLight(
         return entityValues;
     }
 
+    [PrivateApi("Actually Internal!")]
+    public void AddSelectFields(ICollection<string> fields)
+        => PresetFilters = new EntitySerializationDecoratorCreator(fields, WithGuid, Log).Generate();
+
     internal EntitySerializationDecorator PresetFilters
     {
         get => field ??= new EntitySerializationDecoratorCreator(null, WithGuid, Log).Generate();
-        set;
+        private set;
     }
 
     /// <summary>

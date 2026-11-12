@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.DataFormats.EavLight.Sys;
 using ToSic.Eav.DataSource;
 
 using ToSic.Eav.DataSource.Sys;
@@ -59,10 +60,14 @@ public interface IConvertToEavLight: IConvertEntity<EavLightEntity>, IConvertDat
     /// <inheritdoc />
     IDictionary<string, IEnumerable<EavLightEntity>> Convert(IDataSource source, string streams);
 
+    [PrivateApi]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     internal void AddSelectFields(ICollection<string> fields);
 
     /// <summary>
     /// Separate helper to create lightweight sub entities
     /// </summary>
+    [PrivateApi]
+    [ShowApiWhenReleased(ShowApiMode.Never)]
     internal ConvertToJsonBasicLightSubEntities SubConverter { get; }
 }

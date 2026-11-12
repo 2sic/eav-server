@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.Inspect.Sys.Query;
+﻿using ToSic.Eav.DataSources.Query.Dev.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Admin.Query;

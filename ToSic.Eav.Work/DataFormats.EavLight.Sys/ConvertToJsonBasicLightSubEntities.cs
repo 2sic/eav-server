@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Serialization.Sys.Options;
 using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.DataFormats.EavLight;
+namespace ToSic.Eav.DataFormats.EavLight.Sys;
 
 /// <summary>
 /// Converter of lightweight sub-entities containing at most id/guid/title.

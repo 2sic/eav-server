@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.DataFormats.EavLight;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run.Startup;
@@ -18,10 +16,6 @@ public static class StartupEav
     /// <param name="useMel">Selects MEL logging with Insights instead of the default Legacy stack.</param>
     public static IServiceCollection AddEavAll(this IServiceCollection services, bool useMel = false)
     {
-        // standard IEntity conversion
-        // not sure where to put it, interface is in Core but the implementation in Web, also used by DataSources for json errors
-        services.TryAddTransient<IConvertToEavLight, ConvertToEavLight>();
-
         services
             // WebAPI & Work
             .AddEavInsights()

@@ -1,9 +1,10 @@
-﻿using ToSic.Eav.Data.Sys.Entities;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight.Sys;
 using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.Metadata;
 
-namespace ToSic.Eav.Apps.Inspect.Sys.Query;
+namespace ToSic.Eav.DataSources.Query.Dev.Sys;
 
 /// <inheritdoc />
 /// <summary>
