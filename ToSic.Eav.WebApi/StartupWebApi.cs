@@ -2,16 +2,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.ImportExport.Sys.JsonData;
+using ToSic.Eav.ImportExport.Sys.XmlData;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Ui.Edit.Sys;
 using ToSic.Eav.Ui.Edit.Sys.Load;
 using ToSic.Eav.Ui.Edit.Sys.Save;
 using ToSic.Eav.Web.Sys;
-using ToSic.Eav.WebApi.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Admin.Features;
-using ToSic.Eav.WebApi.Sys.Cms;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.Helpers.Json;
 using ToSic.Eav.WebApi.Sys.ImportExport;
@@ -40,7 +40,9 @@ public static class StartupWebApi
         // APIs
         services.TryAddTransient<EntityPickerApi>();
         services.TryAddTransient<ContentExportApi>();
-        services.TryAddTransient<ContentImportApi>();
+        services.TryAddTransient<ImportDataJson>();
+        services.TryAddTransient<ImportDataXml>();
+        services.TryAddTransient<ImportDataXmlPreview>();
 
         // Converters, new v16
         services.TryAddTransient<ConvertAttributeToRaw>();

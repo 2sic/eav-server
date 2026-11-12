@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.Persistence.Sys.Logging;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.ImportExport.Sys;
 
 public class ImportResultDto
 {

@@ -1,5 +1,5 @@
 ﻿// ReSharper disable MemberCanBePrivate.Global
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.ImportExport.Sys;
 
 public class ContentImportResultDto(bool success, object? detail)
 {

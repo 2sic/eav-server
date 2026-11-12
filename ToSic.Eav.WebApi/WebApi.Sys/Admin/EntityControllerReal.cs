@@ -1,6 +1,9 @@
 ﻿using ToSic.Eav.Context;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.ImportExport.Sys;
+using ToSic.Eav.ImportExport.Sys.JsonData;
 using ToSic.Eav.ImportExport.Sys.Options;
+using ToSic.Eav.ImportExport.Sys.XmlData;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.ImportExport;
@@ -14,13 +17,15 @@ public class EntityControllerReal(
     LazySvc<IContextOfSiteService> ctxSvc,
     LazySvc<IAppsCatalog> appsCatalog,
     LazySvc<ContentExportApi> contentExport,
-    LazySvc<ContentImportApi> contentImport,
+    AppWorkQuick<ImportDataJson> contentImport,
     AppWorkQuick<WorkTypePermissions> typePermissions,
     AppWorkQuick<WorkEntityDelete> entDelete,
+    AppWorkQuick<ImportDataXml> contentImportXml,
+    AppWorkQuick<ImportDataXmlPreview> contentImportXmlPreview,
     LazySvc<IUser> user,
     IResponseMaker responseMaker)
     : ServiceBase("Api.EntityRl",
-        connect: [ctxSvc, appsCatalog, contentExport, contentImport, entDelete, user, responseMaker]),
+        connect: [ctxSvc, appsCatalog, contentExport, contentImport, entDelete, contentImportXml, contentImportXmlPreview, user, responseMaker]),
         IEntityController
 {
     public const string LogSuffix = "Entity";
@@ -71,16 +76,16 @@ public class EntityControllerReal(
 
     /// <inheritdoc/>
     public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
-        => contentImport.Value.Init(args.AppId).XmlPreview(args);
+        => contentImportXmlPreview.New(args.AppId).XmlPreview(args);
 
 
     /// <inheritdoc/>
     public ContentImportResultDto XmlUpload(ContentImportArgsDto args)
-        => contentImport.Value.Init(args.AppId).XmlImport(args);
+        => contentImportXml.New(args.AppId).XmlImport(args);
 
 
     /// <inheritdoc/>
     public bool Upload(EntityImportDto args)
-        => contentImport.Value.Init(args.AppId).Import(args);
+        => contentImport.New(args.AppId).Import(args);
 
 }
