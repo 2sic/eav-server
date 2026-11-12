@@ -1,7 +1,7 @@
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.Apps.ImportExport.Sys.Dto;
 
 [ContentType(
     Name = "PendingApp",

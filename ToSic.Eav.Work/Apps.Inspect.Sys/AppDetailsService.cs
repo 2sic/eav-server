@@ -1,11 +1,12 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.Inspect.Sys.Models;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Context;
 using ToSic.Sys.Code.InfoSystem;
 
-namespace ToSic.Eav.WebApi.Sys.App.Details;
+namespace ToSic.Eav.Apps.Inspect.Sys;
 
 /// <summary>
 /// Core service to get details about an app, used by some data sources.

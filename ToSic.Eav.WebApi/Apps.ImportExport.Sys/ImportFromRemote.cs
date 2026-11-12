@@ -2,7 +2,7 @@
 using ToSic.Eav.ImportExport.Sys.Zip;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportFromRemote(IEnvironmentLogger envLogger, Generator<ZipFromUrlImport, ZipImport.Options> zipImportFromUrl, IUser user)

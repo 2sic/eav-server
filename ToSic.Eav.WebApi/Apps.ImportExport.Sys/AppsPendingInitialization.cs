@@ -1,8 +1,8 @@
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [PrivateApi]
 [VisualQuery(
@@ -14,7 +14,8 @@ namespace ToSic.Eav.WebApi.Sys.ImportExport;
     DataConfidentiality = DataConfidentiality.System,
     UiHint = "App packages waiting to be initialized")]
 // ReSharper disable once UnusedMember.Global
-public class AppsPendingInitialization : CustomDataSource
+public class AppsPendingInitialization(CustomDataSource.Dependencies services, LazySvc<PendingAppsGet> importApp)
+    : CustomDataSource(services, "Sxc.PendingApps", connect: [importApp])
 {
     /// <summary>
     /// The configuration for which zone to look in.
@@ -23,11 +24,7 @@ public class AppsPendingInitialization : CustomDataSource
     [Configuration(Field = "ZoneId")]
     public int OfZoneId => Configuration.GetThis(ZoneId);
 
-    public AppsPendingInitialization(Dependencies services, LazySvc<PendingAppsGet> importApp)
-        : base(services, "Sxc.PendingApps", connect: [importApp])
-        => ProvideOutRaw(() => Get(importApp));
-
-    private IEnumerable<PendingAppDto> Get(LazySvc<PendingAppsGet> pendingAppsGet)
-        => pendingAppsGet.Value.GetPendingApps(OfZoneId);
+    protected override IEnumerable<IRawData> GetDefault()
+        => importApp.Value.GetPendingApps(OfZoneId);
 
 }

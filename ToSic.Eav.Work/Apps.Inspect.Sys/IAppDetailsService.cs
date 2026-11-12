@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.Context;
+﻿using ToSic.Eav.Apps.Inspect.Sys.Models;
+using ToSic.Eav.Context;
 
-namespace ToSic.Eav.WebApi.Sys.App.Details;
+namespace ToSic.Eav.Apps.Inspect.Sys;
 
 /// <summary>
 /// The details service is used by some app data sources.

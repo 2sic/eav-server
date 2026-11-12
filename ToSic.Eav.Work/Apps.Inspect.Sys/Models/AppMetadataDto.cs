@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Dto;
+﻿namespace ToSic.Eav.Apps.Inspect.Sys.Models;
 
 public class AppMetadataDto
 {

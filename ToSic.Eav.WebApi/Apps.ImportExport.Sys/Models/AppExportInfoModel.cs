@@ -3,7 +3,7 @@
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [ContentType(
     Name = "AppStatistics",
@@ -11,8 +11,10 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "App Statistics Information",
     Scope = "System"
 )]
-public record AppExportInfoModel: RawEntity
+public record AppExportInfoModel: /*RawEntity,*/ IRawEntityAutoConvert
 {
+    public int Id { get; init; }
+
     [ContentTypeTitle]
     public required string Name { get; init; }
 
@@ -27,17 +29,17 @@ public record AppExportInfoModel: RawEntity
     public required int FilesCount { get; init; }
     public required int TransferableFilesCount { get; init; }
 
-    protected override IDictionary<string, object?> GetValues() => new Dictionary<string, object?>
-    {
-        { nameof(Name), Name },
-        { nameof(NameId), NameId },
-        { nameof(Version), Version },
-        { nameof(EntitiesCount), EntitiesCount },
-        { nameof(LanguagesCount), LanguagesCount },
-        { nameof(TemplatesCount), TemplatesCount },
-        { nameof(HasRazorTemplates), HasRazorTemplates },
-        { nameof(HasTokenTemplates), HasTokenTemplates },
-        { nameof(FilesCount), FilesCount },
-        { nameof(TransferableFilesCount), TransferableFilesCount },
-    };
+    //protected override IDictionary<string, object?> GetValues() => new Dictionary<string, object?>
+    //{
+    //    { nameof(Name), Name },
+    //    { nameof(NameId), NameId },
+    //    { nameof(Version), Version },
+    //    { nameof(EntitiesCount), EntitiesCount },
+    //    { nameof(LanguagesCount), LanguagesCount },
+    //    { nameof(TemplatesCount), TemplatesCount },
+    //    { nameof(HasRazorTemplates), HasRazorTemplates },
+    //    { nameof(HasTokenTemplates), HasTokenTemplates },
+    //    { nameof(FilesCount), FilesCount },
+    //    { nameof(TransferableFilesCount), TransferableFilesCount },
+    //};
 }

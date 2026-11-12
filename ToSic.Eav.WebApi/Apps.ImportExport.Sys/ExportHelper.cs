@@ -2,7 +2,7 @@
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 public class ExportHelper(
     Generator<ImpExpHelpers> impExpHelpers,

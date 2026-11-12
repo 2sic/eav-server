@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.ImportExport.Sys;
+using ToSic.Eav.Apps.Inspect.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Web.Sys;
@@ -9,7 +11,6 @@ using ToSic.Eav.WebApi.Sys.Admin.Features;
 using ToSic.Eav.WebApi.Sys.Admin.Metadata;
 using ToSic.Eav.WebApi.Sys.Admin.Query;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
-using ToSic.Eav.WebApi.Sys.App.Details;
 using ToSic.Eav.WebApi.Sys.Cms;
 using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
@@ -86,14 +87,20 @@ public static class StartupWebApi
         // v20 centralize log creation / access for an http request
         services.TryAddScoped<HttpRequestLoggingScoped>();
 
-        // v22
-        services.TryAddTransient<IAppDetailsService, AppDetailsService>();
-        services.TryAddTransient<AppDetailsService>();
-
         // v22 Context
         services.TryAddTransient<IUiContextService, UiContextService>();  // v22 - default implementation, for re-implementations
         services.TryAddTransient<EavUiContextPartsService>();
         services.TryAddTransient<IUiContextPartsService, EavUiContextPartsService>();
+
+        // v22 App moved here from Sxc
+        // Note: most of it should probably go to ToSic.Eav.Work, but this can't be done yet, because of WebApi/Http dependencies
+        services.TryAddTransient<ExportApp>();
+        services.TryAddTransient<ExportHelper>();
+        services.TryAddTransient<ImpExpHelpers>();
+        services.TryAddTransient<AppStateSyncSave>();   // new separate in v21.06
+        services.TryAddTransient<AppStateSyncRestore>();
+        services.TryAddTransient<ImportFromRemote>();
+
 
         services.AddNetInfrastructure();
 

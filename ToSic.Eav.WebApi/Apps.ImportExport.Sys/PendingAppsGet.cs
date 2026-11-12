@@ -1,11 +1,11 @@
+using ToSic.Eav.Apps.ImportExport.Sys.Dto;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.ImportExport.Sys.ImportHelpers;
 using ToSic.Eav.ImportExport.Sys.XmlImport;
 using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Sys.Dto;
 using ISite = ToSic.Eav.Context.ISite;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class PendingAppsGet(

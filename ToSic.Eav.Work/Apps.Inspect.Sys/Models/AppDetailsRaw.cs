@@ -1,8 +1,7 @@
 ﻿using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
-using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.App.Details;
+namespace ToSic.Eav.Apps.Inspect.Sys.Models;
 
 /// <summary>
 /// Detailed information about apps - including lightspeed configuration and more.

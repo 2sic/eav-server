@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Apps.ImportExport.Sys;
+using ToSic.Eav.Apps.Inspect.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.ImportExport.Sys.XmlList;
@@ -47,6 +49,9 @@ public static class StartupEavWork
         services.TryAddTransient<WorkQueryMod>();
         services.TryAddTransient<WorkQueryCopy>();
 
+        // v22 adding work App
+        services.TryAddTransient<WorkAppsRemove>();
+
         // Helpers to build stuff
         services.TryAddTransient<AppCreator>();
         services.TryAddTransient<ZoneCreator>();
@@ -68,6 +73,11 @@ public static class StartupEavWork
         services.TryAddTransient<WorkFieldsDataTypes>();
         services.TryAddTransient(typeof(AppWorkQuick<>));
         services.TryAddTransient(typeof(AppWorkChain<>));
+
+        // v22
+        services.TryAddTransient<AppDetailsService>();  // registration for composition
+        services.TryAddTransient<IAppDetailsService, AppDetailsService>();
+        services.TryAddTransient<WorkAppsInheritable>();
 
         return services;
     }

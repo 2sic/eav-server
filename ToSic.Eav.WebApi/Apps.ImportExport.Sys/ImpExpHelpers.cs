@@ -5,7 +5,7 @@ using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.Security;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImpExpHelpers(IAppReaderFactory appReadFac, IUser user, ISite site, IAppPathsMicroSvc appPathSvc)

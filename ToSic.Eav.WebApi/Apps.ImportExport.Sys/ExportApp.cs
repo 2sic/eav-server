@@ -1,7 +1,9 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.ImportExport.Sys;
+using ToSic.Eav.WebApi.Sys;
+using ToSic.Eav.WebApi.Sys.ImportExport;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportApp(ExportHelper exportHelper) : ServiceBase("Bck.Export", connect: [exportHelper])

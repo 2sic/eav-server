@@ -1,3 +1,4 @@
+using ToSic.Eav.Apps.ImportExport.Sys.Dto;
 using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Zip;
@@ -6,7 +7,7 @@ using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class PendingAppInstall(

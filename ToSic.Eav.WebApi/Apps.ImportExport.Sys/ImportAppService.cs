@@ -5,7 +5,7 @@ using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Configuration;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ImportAppService(
