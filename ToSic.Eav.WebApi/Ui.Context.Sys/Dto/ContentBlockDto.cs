@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Context;
+namespace ToSic.Eav.Ui.Context.Sys.Dto;
 
 public class ContentBlockDto : IdentifierDto
 {

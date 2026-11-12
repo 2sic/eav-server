@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Dto;
+﻿namespace ToSic.Eav.Ui.Context.Sys.Dto;
 
 /// <summary>
 /// Will be enhanced later

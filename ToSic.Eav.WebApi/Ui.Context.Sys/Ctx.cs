@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Context;
+﻿namespace ToSic.Eav.Ui.Context.Sys;
 
 [Flags] public enum Ctx
 {

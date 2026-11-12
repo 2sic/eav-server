@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.WebApi.Sys.Context;
+namespace ToSic.Eav.Ui.Context.Sys.Dto;
 
 public class FeatureDto(FeatureState state, bool forSystemTypes)
 {

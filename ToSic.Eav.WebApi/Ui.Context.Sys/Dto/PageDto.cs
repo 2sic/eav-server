@@ -1,12 +1,12 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Context;
+﻿namespace ToSic.Eav.Ui.Context.Sys.Dto;
 
 public class PageDto
 {
-    public required int Id;
-    public required string CultureCode;
-    public required string Name;
-    public required string Title;
-    public required string Url;
-    public required bool Visible;
-    public required SiteDto Portal;
+    public required int Id { get; init; }
+    public required string CultureCode { get; init; }
+    public required string Name { get; init; }
+    public required string Title { get; init; }
+    public required string Url { get; init; }
+    public required bool Visible { get; init; }
+    public required SiteDto Portal { get; init; }
 }

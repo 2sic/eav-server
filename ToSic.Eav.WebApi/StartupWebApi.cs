@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Web.Sys;
 using ToSic.Eav.WebApi.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
@@ -10,14 +11,12 @@ using ToSic.Eav.WebApi.Sys.Admin.Query;
 using ToSic.Eav.WebApi.Sys.ApiExplorer;
 using ToSic.Eav.WebApi.Sys.App.Details;
 using ToSic.Eav.WebApi.Sys.Cms;
-using ToSic.Eav.WebApi.Sys.Context;
 using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.Helpers.Json;
 using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Sys.Logs;
-using ToSic.Sxc.Backend.Context;
 
 namespace ToSic.Eav;
 
@@ -53,7 +52,7 @@ public static class StartupWebApi
         services.TryAddTransient<EntityApi>();
         services.TryAddTransient<EntitiesAdminData>();
         services.TryAddTransient<EditLoadActionGetForEditing>(); // WIP v21
-        services.TryAddTransient<IUiData, UiData>();
+        services.TryAddTransient<ContextFeaturesSvc>();
         services.TryAddTransient<ImportAppService>();
         services.TryAddTransient<PendingAppsGet>();
         services.TryAddTransient<PendingAppInstall>();
@@ -92,9 +91,9 @@ public static class StartupWebApi
         services.TryAddTransient<AppDetailsService>();
 
         // v22 Context
-        services.TryAddTransient<IUiContextBuilder, UiContextBuilder>();  // v22 - default implementation, for re-implementations
-        services.TryAddTransient<UiContextPartsEav>();
-        services.TryAddTransient<IUiContextParts, UiContextPartsEav>();
+        services.TryAddTransient<IUiContextService, UiContextService>();  // v22 - default implementation, for re-implementations
+        services.TryAddTransient<EavUiContextPartsService>();
+        services.TryAddTransient<IUiContextPartsService, EavUiContextPartsService>();
 
         services.AddNetInfrastructure();
 

@@ -5,32 +5,42 @@ using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Context;
 using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Sys.Cms;
-using ToSic.Eav.WebApi.Sys.Dto;
-using ToSic.Sxc.Backend.Context;
+using ToSic.Eav.Ui.Context.Sys.Dto;
 using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.WebApi.Sys.Context;
+namespace ToSic.Eav.Ui.Context.Sys;
 
-public class UiContextPartsEav(
+/// <summary>
+/// The main <see cref="IUiContextPartsService"/> implementation, building all the common parts.
+/// </summary>
+/// <remarks>
+/// This is `sealed` on purpose, to encourage composition over inheritance.
+/// If you want to implement your own version, implement the interface instead of inheriting from this class.
+///
+/// This service is registered both as the default <see cref="IUiContextPartsService"/>
+/// but also with its own name <see cref="EavUiContextPartsService"/>.
+/// Overriding implementations would use <see cref="EavUiContextPartsService"/> as a dependency,
+/// and pre-register as the default <see cref="IUiContextPartsService"/> to override the default implementation.
+/// </remarks>
+[method: PrivateApi]
+public sealed class EavUiContextPartsService(
     IContextOfSiteService siteCtxSvc,
     LazySvc<ISysFeaturesService> features,
-    LazySvc<IUiData> uiDataLazy,
+    LazySvc<ContextFeaturesSvc> uiDataLazy,
     LazySvc<AppUserLanguageCheck> appUserLanguages,
     IAppPathsMicroSvc appPaths,
     IAppsCatalog appsCatalog)
-    : ServiceBase("Sxc.CtxPrt", connect: [siteCtxSvc, appUserLanguages, features, uiDataLazy, appPaths, appsCatalog]), IUiContextParts
+    : ServiceBase("Sxc.CtxPrt", connect: [siteCtxSvc, appUserLanguages, features, uiDataLazy, appPaths, appsCatalog]), IUiContextPartsService
 {
     public void Setup(IAppReader? options) => AppReader = options;
 
     private IAppReader? AppReader { get; set; }
 
     private ISite Site => field ??= siteCtxSvc.Context.Site;
-    protected int ZoneId => siteCtxSvc.Context.Site.ZoneId;
 
     public ContextLanguageInfoDto? GetLanguage(Ctx flags)
     {
-        if (ZoneId == 0)
+        if (siteCtxSvc.Context.Site.ZoneId == 0)
             return null;
         var site = Site;
 

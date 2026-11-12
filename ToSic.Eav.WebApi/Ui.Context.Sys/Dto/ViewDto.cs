@@ -1,11 +1,11 @@
 ﻿using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Context;
+namespace ToSic.Eav.Ui.Context.Sys.Dto;
 
 public class ViewDto : IdentifierDto
 {
-    public required string Name;
-    public string? Path;
-    public required IEnumerable<ContentBlockDto> Blocks;
+    public required string Name { get; init; }
+    public string? Path { get; init; }
+    public required IEnumerable<ContentBlockDto> Blocks { get; init; }
 
 }
