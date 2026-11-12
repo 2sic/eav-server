@@ -1,10 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Eav.Apps.ImportExport.Sys;
-using ToSic.Eav.Data.ContentTypes.Sys;
-using ToSic.Eav.ImportExport.Sys.JsonData;
-using ToSic.Eav.ImportExport.Sys.XmlData;
-using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Ui.Edit.Sys;
 using ToSic.Eav.Ui.Edit.Sys.Load;
@@ -14,7 +9,6 @@ using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Admin.Features;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.Helpers.Json;
-using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Sys.Logs;
 
@@ -27,7 +21,6 @@ public static class StartupWebApi
     {
         // Real Controller Implementations https://go.2sxc.org/proxy-controllers
         services.TryAddTransient<FeatureControllerReal>();
-        services.TryAddTransient<WorkMetadataGet>();
         services.TryAddTransient<EntityControllerReal>();
         services.TryAddTransient<FieldControllerReal>();
         services.TryAddTransient<ZoneControllerReal>();
@@ -39,20 +32,11 @@ public static class StartupWebApi
 
         // APIs
         services.TryAddTransient<EntityPickerApi>();
-        services.TryAddTransient<ContentExportApi>();
-        services.TryAddTransient<ImportDataJson>();
-        services.TryAddTransient<ImportDataXml>();
-        services.TryAddTransient<ImportDataXmlPreview>();
 
-        // Converters, new v16
-        services.TryAddTransient<ConvertAttributeToRaw>();
-        services.TryAddTransient<ConvertContentTypeToRaw>();
 
         // Internal API helpers
         services.TryAddTransient<EditLoadActionGetForEditing>(); // WIP v21
         services.TryAddTransient<ContextFeaturesSvc>();
-        services.TryAddTransient<ImportAppService>();
-        services.TryAddTransient<PendingAppInstall>();
 
         // json serialization converters eav related
         services.TryAddTransient<EavJsonConverter>();
@@ -82,14 +66,6 @@ public static class StartupWebApi
         services.TryAddTransient<EavUiContextPartsService>();
         services.TryAddTransient<IUiContextPartsService, EavUiContextPartsService>();
 
-        // v22 App moved here from Sxc
-        // Note: most of it should probably go to ToSic.Eav.Work, but this can't be done yet, because of WebApi/Http dependencies
-        services.TryAddTransient<ExportApp>();
-        services.TryAddTransient<ExportHelper>();
-        services.TryAddTransient<ImpExpHelpers>();
-        services.TryAddTransient<AppStateSyncSave>();   // new separate in v21.06
-        services.TryAddTransient<AppStateSyncRestore>();
-        services.TryAddTransient<ImportFromRemote>();
 
 
         services.AddNetInfrastructure();

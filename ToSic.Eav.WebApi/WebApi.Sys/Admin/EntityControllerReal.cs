@@ -4,7 +4,6 @@ using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys.JsonData;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.XmlData;
-using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Sys.Security.Permissions;
@@ -16,17 +15,18 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 public class EntityControllerReal(
     LazySvc<IContextOfSiteService> ctxSvc,
     LazySvc<IAppsCatalog> appsCatalog,
-    LazySvc<ContentExportApi> contentExport,
     AppWorkQuick<ImportDataJson> contentImport,
     AppWorkQuick<WorkTypePermissions> typePermissions,
     AppWorkQuick<WorkEntityDelete> entDelete,
     AppWorkQuick<ImportDataXml> contentImportXml,
     AppWorkQuick<ImportDataXmlPreview> contentImportXmlPreview,
+    AppWorkQuick<ExportDataXml> exportDataXml,
+    AppWorkQuick<ExportEntityJson> exportEntityJson,
     LazySvc<IUser> user,
     IResponseMaker responseMaker)
     : ServiceBase("Api.EntityRl",
-        connect: [ctxSvc, appsCatalog, contentExport, contentImport, entDelete, contentImportXml, contentImportXmlPreview, user, responseMaker]),
-        IEntityController
+        connect: [ctxSvc, appsCatalog, contentImport, entDelete, contentImportXml, contentImportXmlPreview, exportDataXml, exportEntityJson, user, responseMaker])
+        // IEntityController
 {
     public const string LogSuffix = "Entity";
 
@@ -46,12 +46,12 @@ public class EntityControllerReal(
 
 
     /// <inheritdoc/>
-    public THttpResponseType Json(int appId, int id, string prefix, bool withMetadata)
-        => contentExport.Value.Init(appId).DownloadEntityAsJson(user.Value, id, prefix, withMetadata);
+    public FileResult Json(int appId, int id, string prefix, bool withMetadata)
+        => exportEntityJson.New(appId).DownloadEntityAsJson(user.Value, id, prefix, withMetadata);
 
 
     /// <inheritdoc/>
-    public THttpResponseType Download(
+    public FileResult Download(
         int appId,
         string language,
         string defaultLanguage,
@@ -59,9 +59,8 @@ public class EntityControllerReal(
         ExportSelection recordExport,
         ExportResourceReferenceMode resourcesReferences,
         ExportLanguageResolution languageReferences, 
-        string? selectedIds = null)
-    {
-        var (content, fileName) = contentExport.Value.Init(appId)
+        string? selectedIds = null) =>
+        exportDataXml.New(appId)
             .ExportContent(
                 user.Value,
                 language, defaultLanguage, contentType,
@@ -69,9 +68,6 @@ public class EntityControllerReal(
                 languageReferences,
                 selectedIds
             );
-
-        return responseMaker.File(fileContent: content, fileName: fileName);
-    }
 
 
     /// <inheritdoc/>
