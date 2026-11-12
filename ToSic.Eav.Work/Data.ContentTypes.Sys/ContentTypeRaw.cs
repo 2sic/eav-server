@@ -1,10 +1,8 @@
-﻿using ToSic.Eav.Data.ContentTypes;
-using ToSic.Eav.Data.Raw;
+﻿using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Ui.Edit.Sys.Dto;
-using ToSic.Eav.WebApi.Sys.Security;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 [ContentType(
     Name = "ContentTypeSpecs", // "ContentType", 2026-08-05 2dm, renaming this, as it's not a real content type
@@ -12,7 +10,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "Content type details",
     Scope = "System"
 )]
-public class ContentTypeDto: IRawEntityAutoConvert
+public class ContentTypeRaw: IRawEntityAutoConvert
 {
 
     public required int Id { get; init; }

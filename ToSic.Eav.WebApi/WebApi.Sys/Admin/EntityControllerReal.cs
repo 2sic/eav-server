@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.Context;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.WebApi.Sys.Dto;
-using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Sys.Security.Permissions;
@@ -13,37 +13,28 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 public class EntityControllerReal(
     LazySvc<IContextOfSiteService> ctxSvc,
     LazySvc<IAppsCatalog> appsCatalog,
-    LazySvc<EntityApi> entityApi,
     LazySvc<ContentExportApi> contentExport,
     LazySvc<ContentImportApi> contentImport,
+    AppWorkQuick<WorkTypePermissions> typePermissions,
+    AppWorkQuick<WorkEntityDelete> entDelete,
     LazySvc<IUser> user,
     IResponseMaker responseMaker)
     : ServiceBase("Api.EntityRl",
-        connect: [ctxSvc, appsCatalog, entityApi, contentExport, contentImport, user, responseMaker]),
+        connect: [ctxSvc, appsCatalog, contentExport, contentImport, entDelete, user, responseMaker]),
         IEntityController
 {
     public const string LogSuffix = "Entity";
 
 
     /// <inheritdoc/>
-    /// 2rb: replaced by EntitiesAdmin datasource
-    //public IEnumerable<Dictionary<string, object>> List(int appId, string contentType)
-    //    => entityApi.Value.InitOrThrowBasedOnGrants(context.Value, appsCatalog.Value.AppIdentity(appId), contentType, GrantSets.ReadSomething)
-    //        .GetEntitiesForAdmin(contentType);
-
-
-    /// <inheritdoc/>
     public void Delete(string contentType, int appId, int? id, Guid? guid, bool force = false, int? parentId = null, string? parentField = null)
     {
-        var catalog = appsCatalog.Value;
+        var showDrafts = typePermissions.New(appId).GetDraftPermissionAndThrowIfNotAllowed(contentType, GrantSets.DeleteSomething);
+        var deleteSvc = entDelete.New(appId, showDrafts);
         if (id.HasValue)
-            entityApi.Value
-                .InitOrThrowBasedOnGrants(ctxSvc.Value.Context, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
-                .Delete(contentType, id.Value, force, parentId, parentField);
+            deleteSvc.Delete(id.Value, contentType, force: force, parentId: parentId, parentField: parentField);
         else if (guid.HasValue)
-            entityApi.Value
-                .InitOrThrowBasedOnGrants(ctxSvc.Value.Context, catalog.AppIdentity(appId), contentType, GrantSets.DeleteSomething)
-                .Delete(contentType, guid.Value, force, parentId, parentField);
+            deleteSvc.Delete([guid.Value], contentType: contentType, force: force, parentId: parentId, parentField: parentField);
         else
             throw new($"When using '{nameof(Delete)}' you must use 'id' or 'guid' parameters.");
     }
@@ -92,7 +83,4 @@ public class EntityControllerReal(
     public bool Upload(EntityImportDto args)
         => contentImport.Value.Init(args.AppId).Import(args);
 
-
-    /// <inheritdoc/>
-    //public dynamic Usage(int appId, Guid guid) => _entityBackend.Value.Init(Log).Usage(appId, guid);
 }

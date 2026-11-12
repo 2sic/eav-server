@@ -11,16 +11,16 @@ namespace ToSic.Eav.WebApi.Sys;
 public class ContentTypeDtoService(
     AppWorkChain<WorkEntities> workEntities,
     AppWorkChain<WorkAttributes> attributes,
-    Generator<ConvertAttributeToDto> convAttrDto,
-    ConvertContentTypeToDto convTypeDto)
-    : ServiceWithSetup<IAppWorkContext>("Api.EavCTC", connect: [attributes, convAttrDto, convTypeDto, workEntities])
+    Generator<ConvertAttributeToRaw> convAttrDto,
+    ConvertContentTypeToRaw convTypeRaw)
+    : ServiceWithSetup<IAppWorkContext>("Api.EavCTC", connect: [attributes, convAttrDto, convTypeRaw, workEntities])
 {
 
     #region Content-Type Get, Delete, Save
 
-    public IList<ContentTypeDto> List(int appId, string? scope = null, bool withStatistics = false)
+    public IList<ContentTypeRaw> List(int appId, string? scope = null, bool withStatistics = false)
     {
-        var l = Log.Fn<IList<ContentTypeDto>>($"scope:{scope}, stats:{withStatistics}");
+        var l = Log.Fn<IList<ContentTypeRaw>>($"scope:{scope}, stats:{withStatistics}");
         //var appCtxPlus = workEntities.CtxSvc.ContextPlus(appId);
 
         // should use app-manager and return each type 1x only
@@ -37,7 +37,7 @@ public class ContentTypeDtoService(
             .ToList();
 
         var filteredType = ofScopeAndOrdered
-            .Select(t => convTypeDto.Convert(t, appEntities.Get(t.Name).Count()))
+            .Select(t => convTypeRaw.Convert(t, appEntities.Get(t.Name).Count()))
             .ToList(); // must convert to list, otherwise it happens late when DI isn't available anymore
 
         return l.ReturnAsOk(filteredType);

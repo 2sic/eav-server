@@ -1,6 +1,7 @@
 using ToSic.Eav.Apps.Inspect.Sys.WebApi.Models;
 using ToSic.Eav.Data;
 using ToSic.Eav.Data.Build.Sys;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.DataSources.Query.Dev.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 
@@ -23,8 +24,8 @@ public class VerifyContentTypeFieldsOfTypeObject(ContentTypesFromCodeManager con
     {
         { typeof(InputTypeInfoRaw), nameof(InputTypeInfoRaw.UiAssets) },
         { typeof(AppWebApiEndpointRaw), nameof(AppWebApiEndpointRaw.parameters) },
-        { typeof(ContentTypeDto), nameof(ContentTypeDto.Properties) },
-        { typeof(ContentTypeFieldDto), nameof(ContentTypeFieldDto.InputTypeConfig) },
+        { typeof(ContentTypeRaw), nameof(ContentTypeRaw.Properties) },
+        { typeof(ContentTypeFieldRaw), nameof(ContentTypeFieldRaw.InputTypeConfig) },
         { typeof(DataSourceDto), nameof(DataSourceDto.Out) },
     };
 }

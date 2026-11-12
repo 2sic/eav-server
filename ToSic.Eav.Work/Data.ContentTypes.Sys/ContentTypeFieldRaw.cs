@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.WebApi.Sys.Security;
+using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 [ContentType(
     Name = "ContentTypeField",
@@ -13,7 +12,7 @@ namespace ToSic.Eav.WebApi.Sys.Dto;
     Description = "Content type field details",
     Scope = "System"
 )]
-public class ContentTypeFieldDto: IRawEntityAutoConvert
+public class ContentTypeFieldRaw: IRawEntityAutoConvert
 {
     public int Id { get; init; }
     public int SortOrder { get; init; }

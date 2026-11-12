@@ -1,4 +1,5 @@
 using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Raw;
 using ToSic.Eav.WebApi.Sys.Dto;
 
@@ -12,7 +13,7 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
     Description = "Field definition used while editing content types",
     Scope = "System"
 )]
-public record ContentTypeFieldModel(ContentTypeFieldDto field) : RawEntity
+public record ContentTypeFieldModel(ContentTypeFieldRaw field) : RawEntity
 {
     protected override IDictionary<string, object?> GetValues() =>
         new Dictionary<string, object?>

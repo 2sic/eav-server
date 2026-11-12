@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.ContentTypes.Fields;
 using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
@@ -8,21 +9,21 @@ using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.WebApi.Sys;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
-public class ConvertAttributeToDto(
+public class ConvertAttributeToRaw(
     LazySvc<IConvertToEavLight> convertToLight,
     AppWorkChain<WorkInputTypes> genInputTypes,
     LazySvc<AppWorkContextService> appWorkCtxSvc,
     AppWorkChain<RecommendedMetadataService> genMdRead)
     : ServiceBase("Cnv.AtrDto", connect: [genInputTypes, convertToLight, genMdRead]),
-        IConvert<PairTypeWithAttribute, ContentTypeFieldDto>
+        IConvert<PairTypeWithAttribute, ContentTypeFieldRaw>
 {
-    public ConvertAttributeToDto Init(int appId, bool withContentType)
+    public ConvertAttributeToRaw Init(int appId, bool withContentType)
     {
-        var l = Log.Fn<ConvertAttributeToDto>($"{appId}, withContentType:{withContentType}");
+        var l = Log.Fn<ConvertAttributeToRaw>($"{appId}, withContentType:{withContentType}");
         _appId = appId;
         _withContentType = withContentType;
         return l.Return(this);
@@ -33,18 +34,18 @@ public class ConvertAttributeToDto(
 
     private IAppWorkContext WorkCtx => field ??= appWorkCtxSvc.Value.ContextNew(_appId);
 
-    public IEnumerable<ContentTypeFieldDto> Convert(IEnumerable<PairTypeWithAttribute> list)
+    public IEnumerable<ContentTypeFieldRaw> Convert(IEnumerable<PairTypeWithAttribute> list)
     {
-        var l = Log.Fn<IEnumerable<ContentTypeFieldDto>>();
+        var l = Log.Fn<IEnumerable<ContentTypeFieldRaw>>();
         var result = list
             .Select(Convert)
             .ToList();
         return l.Return(result, $"{result.Count}");
     }
 
-    public ContentTypeFieldDto Convert(PairTypeWithAttribute? item)
+    public ContentTypeFieldRaw Convert(PairTypeWithAttribute? item)
     {
-        var l = Log.Fn<ContentTypeFieldDto>();
+        var l = Log.Fn<ContentTypeFieldRaw>();
         if (item == null)
             return l.ReturnNull("no item")!;
 
@@ -59,7 +60,7 @@ public class ConvertAttributeToDto(
         var isRecommended = IsRecommended(a.AttributeId.ToString(), imageDecorator);
         var imgDecorator = a.Metadata.First(typeName: imageDecorator);
 
-        var dto= new ContentTypeFieldDto
+        var dto= new ContentTypeFieldRaw
         {
             Id = a.AttributeId,
             SortOrder = a.SortOrder,

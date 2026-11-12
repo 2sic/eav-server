@@ -1,4 +1,5 @@
 using ToSic.Eav.Data.Build;
+using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Sys.Capabilities.Features;
@@ -23,7 +24,7 @@ public class SharedFields : CustomDataSource
     public SharedFields(
         Dependencies services,
         AppWorkQuick<WorkAttributes> workAttributes,
-        Generator<ConvertAttributeToDto> convertAttribute,
+        Generator<ConvertAttributeToRaw> convertAttribute,
         LazySvc<ISysFeaturesService> features)
         : base(services, logName: "Eav.SharedFld", connect: [workAttributes, convertAttribute, features])
     {
@@ -47,7 +48,7 @@ public class SharedFields : CustomDataSource
         );
     }
 
-    private IEnumerable<ContentTypeFieldModel> Convert(Generator<ConvertAttributeToDto> convertAttribute, List<PairTypeWithAttribute> fields)
+    private IEnumerable<ContentTypeFieldModel> Convert(Generator<ConvertAttributeToRaw> convertAttribute, List<PairTypeWithAttribute> fields)
         => convertAttribute.New()
             .Init(AppId, true)
             .Convert(fields)

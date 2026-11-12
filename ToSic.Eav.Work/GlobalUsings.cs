@@ -4,6 +4,7 @@ global using System;
 global using System.Collections.Generic;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Linq;
+global using System.Text.Json.Serialization;
 global using ToSic.Eav.Data;
 global using ToSic.Sys.DI;
 global using ToSic.Sys.Documentation;

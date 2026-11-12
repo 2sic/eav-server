@@ -1,29 +1,23 @@
 ﻿using ToSic.Eav.Apps.Sys.State;
+using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataFormats.EavLight.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata.Recommendations.Sys;
-using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Sys;
 using static System.String;
 
-namespace ToSic.Eav.WebApi.Sys.Admin.Metadata;
+namespace ToSic.Eav.Metadata.Sys;
 
 /// <summary>
 /// Web API Controller for MetaData
 /// Metadata-entities (content-items) are additional information about some other object
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class MetadataControllerReal(
-    AppWorkContextService appWorkCtxSvc,
-    IConvertToEavLight converter,
-    IAppReaderFactory appReaders,
-    ITargetTypeService metadataTargets,
-    AppWorkChain<RecommendedMetadataService> mdRead)
-    : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [appWorkCtxSvc, converter, appReaders, metadataTargets, mdRead]),
-        IMetadataController
+public class WorkMetadataGet(IConvertToEavLight converter, ITargetTypeService metadataTargets, AppWorkChain<RecommendedMetadataService> mdRead)
+    : ServiceWithSetup<IAppWorkContext>($"{EavLogs.WebApi}.{LogSuffix}Rl", connect: [converter, metadataTargets, mdRead])
 {
     public const string LogSuffix = "MetaDt";
 
@@ -33,8 +27,7 @@ public class MetadataControllerReal(
     public MetadataListDto Get(int appId, int targetType, string keyType, string key, string? contentType = null)
     {
         var l = Log.Fn<MetadataListDto>($"appId:{appId},targetType:{targetType},keyType:{keyType},key:{key},contentType:{contentType}");
-        var ctx = appWorkCtxSvc.ContextNew(appId);
-        //var appReader = appReaders.Get(appId);
+        var ctx = MyOptions;
 
         var (entityList, mdFor) = GetExistingEntitiesAndMd(targetType, keyType, key, contentType, ctx.AppReader.Metadata);
 
@@ -44,7 +37,6 @@ public class MetadataControllerReal(
             throw l.Done(new Exception($"Was not able to convert '{key}' to key-type {keyType}, must cancel"));
         }
 
-        //mdRead.Value.Setup(appReader, appId);
         var mdReader = mdRead.New(ctx);
 
         // When retrieving all items, make sure that permissions are _not_ included

@@ -3,14 +3,16 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.Apps.Inspect.Sys;
 using ToSic.Eav.Apps.Inspect.Sys.WebApi;
+using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataFormats.EavLight.Sys;
+using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Web.Sys;
 using ToSic.Eav.WebApi.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Admin.Features;
-using ToSic.Eav.WebApi.Sys.Admin.Metadata;
 using ToSic.Eav.WebApi.Sys.Admin.Query;
 using ToSic.Eav.WebApi.Sys.Cms;
 using ToSic.Eav.WebApi.Sys.Entities;
@@ -29,7 +31,7 @@ public static class StartupWebApi
     {
         // Real Controller Implementations https://go.2sxc.org/proxy-controllers
         services.TryAddTransient<FeatureControllerReal>();
-        services.TryAddTransient<MetadataControllerReal>();
+        services.TryAddTransient<WorkMetadataGet>();
         services.TryAddTransient<EntityControllerReal>();
         services.TryAddTransient<FieldControllerReal>();
         services.TryAddTransient<ZoneControllerReal>();
@@ -46,12 +48,10 @@ public static class StartupWebApi
         services.TryAddTransient<ContentImportApi>();
 
         // Converters, new v16
-        services.TryAddTransient<ConvertAttributeToDto>();
-        services.TryAddTransient<ConvertContentTypeToDto>();
+        services.TryAddTransient<ConvertAttributeToRaw>();
+        services.TryAddTransient<ConvertContentTypeToRaw>();
 
         // Internal API helpers
-        services.TryAddTransient<EntityApi>();
-        services.TryAddTransient<EntitiesAdminData>();
         services.TryAddTransient<EditLoadActionGetForEditing>(); // WIP v21
         services.TryAddTransient<ContextFeaturesSvc>();
         services.TryAddTransient<ImportAppService>();

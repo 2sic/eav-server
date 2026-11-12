@@ -1,3 +1,4 @@
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 
@@ -25,9 +26,9 @@ public class EntitiesAdmin : DataSourceBase
 
     #endregion
 
-    public EntitiesAdmin(Dependencies services, LazySvc<EntitiesAdminData> entitiesAdminData)
+    public EntitiesAdmin(Dependencies services, AppWorkQuick<EntitiesAdminData> entitiesAdminData)
         : base(services, logName: "Eav.EntitiesAdmin", connect: [entitiesAdminData])
     {
-        ProvideOut(() => entitiesAdminData.Value.GetEntities(AppId, ContentType));
+        ProvideOut(() => entitiesAdminData.New(AppId).GetEntities(ContentType));
     }
 }

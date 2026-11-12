@@ -5,6 +5,7 @@ using ToSic.Eav.Apps.Inspect.Sys;
 using ToSic.Eav.Apps.Inspect.Sys.WebApi;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Work;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataFormats.EavLight.Sys;
 using ToSic.Eav.DataSources.ImportExport.Sys;
@@ -105,6 +106,10 @@ public static class StartupEavWork
         services.TryAddTransient<WorkQuerySave>();
         services.TryAddTransient<QueryDevSvc>();
         services.TryAddTransient<QueryDevDebugSvc>();
+        services.TryAddTransient<WorkTypePermissions>();
+
+        // v22 moving here...
+        services.TryAddTransient<EntitiesAdminData>();
 
         return services;
     }

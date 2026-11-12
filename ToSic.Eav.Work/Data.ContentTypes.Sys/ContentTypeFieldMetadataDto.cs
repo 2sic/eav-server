@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Dto;
+﻿namespace ToSic.Eav.Data.ContentTypes.Sys;
 
 public record ContentTypeFieldMetadataDto
 {

@@ -1,32 +1,30 @@
-﻿using ToSic.Eav.Data.ContentTypes;
-using ToSic.Eav.Data.ContentTypes.Sys;
-using ToSic.Eav.Data.Sys.Ancestors;
+﻿using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Serialization.Sys.Options;
-using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.WebApi.Sys;
+namespace ToSic.Eav.Data.ContentTypes.Sys;
 
-public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLight)
-    : ServiceBase("Cnv.TypDto", connect: [convertToEavLight]), IConvert<IContentType, ContentTypeDto>
+public class ConvertContentTypeToRaw(LazySvc<IConvertToEavLight> convertToEavLight)
+    : ServiceBase("Cnv.TypDto", connect: [convertToEavLight]), IConvert<IContentType, ContentTypeRaw>
 {
     public bool Debug { get; set; }
 
-    public IEnumerable<ContentTypeDto> Convert(IEnumerable<IContentType> list)
+    public IEnumerable<ContentTypeRaw> Convert(IEnumerable<IContentType> list)
     {
-        var l = Log.Fn<IEnumerable<ContentTypeDto>>();
+        var l = Log.Fn<IEnumerable<ContentTypeRaw>>();
         var result = list.Select(i => Convert(i)).ToList();
         return l.Return(result, $"{result.Count}");
     }
 
-    public ContentTypeDto Convert(IContentType item) => Convert(item, -1);
+    public ContentTypeRaw Convert(IContentType item) => Convert(item, -1);
 
     private int _convertIteration = 0;
 
-    public ContentTypeDto Convert(IContentType cType, int itemCount)
+    public ContentTypeRaw Convert(IContentType cType, int itemCount)
     {
-        var l = Log.Fn<ContentTypeDto>($"for json app:{cType.AppId}, type:'{cType.Name}' / '{cType.NameId}'; iteration: {_convertIteration++}");
+        var l = Log.Fn<ContentTypeRaw>($"for json app:{cType.AppId}, type:'{cType.Name}' / '{cType.NameId}'; iteration: {_convertIteration++}");
 
         // Note 2024-03-04 2dm - had errors with expired IServiceProvide getting deeper Metadata
         // This should just make it quiet, but there could be a deeper underlying issue.
@@ -61,7 +59,7 @@ public class ConvertContentTypeToDto(LazySvc<IConvertToEavLight> convertToEavLig
 
         var permissionCount = typeMetadata.Permissions.Count();
 
-        var jsonReady = new ContentTypeDto
+        var jsonReady = new ContentTypeRaw
         {
             Id = cType.Id,
             Name = cType.Name,
