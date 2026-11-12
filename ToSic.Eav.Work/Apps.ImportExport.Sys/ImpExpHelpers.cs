@@ -1,8 +1,8 @@
 ﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Context;
-using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.Security;
+using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 
 namespace ToSic.Eav.Apps.ImportExport.Sys;
@@ -34,8 +34,7 @@ public class ImpExpHelpers(IAppReaderFactory appReadFac, IUser user, ISite site,
         if (!user.IsSystemAdmin && appIdentity.ZoneId != contextZoneId)
         {
             l.ReturnNull("error");
-            throw HttpException.PermissionDenied(
-                "Tried to access app from another zone. Requires SuperUser permissions.");
+            throw new PermissionDeniedException("Tried to access app from another zone. Requires SuperUser permissions.");
         }
 
         var app = appReadFac.Get(appIdentity);

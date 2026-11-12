@@ -1,7 +1,5 @@
 ﻿using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.ImportExport.Sys;
-using ToSic.Eav.WebApi.Sys;
-using ToSic.Eav.WebApi.Sys.ImportExport;
 
 namespace ToSic.Eav.Apps.ImportExport.Sys;
 
@@ -19,11 +17,11 @@ public class ExportApp(ExportHelper exportHelper) : ServiceBase("Bck.Export", co
         return l.Return(result, $"{result.Issues.Count} issues");
     }
 
-    public FileToUploadToClient Export(
+    public FileResult Export(
         AppExportSpecs specs,
         Func<(IEnumerable<PathCaseItem> App, IEnumerable<PathCaseItem> Shared)>? getReferences = null)
     {
-        var l = Log.Fn<FileToUploadToClient>(specs.Dump());
+        var l = Log.Fn<FileResult>(specs.Dump());
 
         var (appReader, zipExport) = exportHelper.GetZipExportAndCheckZoneSwitchPermissions(specs);
 

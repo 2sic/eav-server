@@ -17,18 +17,11 @@ namespace ToSic.Eav.WebApi.Sys.Licenses;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LicenseControllerReal(
-    // 2026-08-26 2dm disabled, was used in the LicenseControllerReal.Summary()
-    //LazySvc<ILicenseService> licenseServiceLazy,
-    //LazySvc<ISysFeaturesService> featuresLazy,
-    //LazySvc<LicenseCatalog> licenseCatalog,
     LazySvc<IGlobalConfiguration> globalConfiguration,
     SystemFingerprint fingerprint,
     LazySvc<EavFeaturesLoader> featuresLoader)
-    : ServiceBase("Bck.Lics",
-        connect:
-        [
-            /*licenseServiceLazy, featuresLazy, licenseCatalog, */ globalConfiguration, fingerprint, featuresLoader
-        ]), ILicenseController
+    : ServiceBase("Bck.Lics", connect: [globalConfiguration, fingerprint, featuresLoader]),
+        ILicenseController
 {
     // auto-download license file
     private const string DefaultLicenseFileName = "default.license.json";
@@ -48,46 +41,6 @@ public class LicenseControllerReal(
             return field;
         }
     }
-
-    // 2026-08-26 2dm disabled, was used in the LicenseControllerReal.Summary()
-    ///// <inheritdoc />
-    //public IEnumerable<LicenseDto> Summary()
-    //{
-    //    var licSvc = licenseServiceLazy.Value;
-    //    var licenses = licenseCatalog.Value.List
-    //        .Where(l => !l.FeatureLicense)
-    //        .OrderBy(l => l.Priority);
-
-    //    var allFeatures = featuresLazy.Value.All.ToListOpt();
-
-    //    var dto = licenses
-    //        .Select(l =>
-    //        {
-    //            var state = licSvc.State(l);
-    //            var isEnabled = licSvc.IsEnabled(l);
-
-    //            var features = allFeatures
-    //                .Where(f => f.Aspect.LicenseRules.Any(lr => lr.FeatureSet.Name == l.Name))
-    //                .OrderBy(f => f.NameId)
-    //                .Select(f => new FeatureStateDto(f))
-    //                .ToList();
-
-    //            return new LicenseDto
-    //            {
-    //                Name = l.Name,
-    //                Priority = l.Priority,
-    //                Guid = l.Guid,
-    //                Description = l.Description,
-    //                AutoEnable = l.AutoEnable,
-    //                IsEnabled = isEnabled,
-    //                Expires = state?.Expiration,
-    //                Features = features,
-    //            };
-    //        });
-
-    //    return dto;
-    //}
-
 
 
     /// <summary>

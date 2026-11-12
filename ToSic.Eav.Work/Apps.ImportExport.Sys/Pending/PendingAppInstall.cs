@@ -1,4 +1,3 @@
-using ToSic.Eav.Apps.ImportExport.Sys.Dto;
 using ToSic.Eav.Context;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Zip;
@@ -6,6 +5,7 @@ using ToSic.Eav.Persistence.Sys.Logging;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Users;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.ImportExport.Sys;
 
@@ -18,7 +18,7 @@ public class PendingAppInstall(
     ISysFeaturesService features)
     : ServiceBase("Bck.Export", connect: [envLogger, zipImport, user, site, features])
 {
-    public ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppDto> pendingApps)
+    public ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppRaw> pendingApps)
     {
         var l = Log.Fn<ImportResultDto>("Install pending apps start");
         var result = new ImportResultDto();

@@ -42,8 +42,4 @@
     <ProjectReference Include="..\ToSic.Sys.OData\ToSic.Sys.OData.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="WebApi.Sys\Admin\Metadata\" />
-  </ItemGroup>
-
 </Project>

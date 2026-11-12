@@ -1,5 +1,3 @@
-using ToSic.Eav.Data.Raw;
-
 namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 [ContentType(

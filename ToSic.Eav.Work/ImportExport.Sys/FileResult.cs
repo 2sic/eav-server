@@ -1,6 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Sys.ImportExport;
+﻿namespace ToSic.Eav.ImportExport.Sys;
 
-public record FileToUploadToClient
+public record FileResult
 {
     public required string FileName { get; init; }
     public required string ContentType { get; init; }

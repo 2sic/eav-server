@@ -1,4 +1,6 @@
-﻿#if NETFRAMEWORK
+﻿
+using ToSic.Eav.ImportExport.Sys;
+#if NETFRAMEWORK
 using System.Net;
 using System.Net.Http;
 #endif
@@ -9,7 +11,7 @@ public static class FileToUploadToClientExtensions
 {
 #if NETFRAMEWORK
 
-    public static THttpResponseType ToHttpResponse(this FileToUploadToClient file)
+    public static THttpResponseType ToHttpResponse(this FileResult file)
     {
         var fileContent = new MemoryStream(file.FileBytes);
         var response = new HttpResponseMessage(HttpStatusCode.OK) {Content = new StreamContent(fileContent)};
@@ -22,7 +24,7 @@ public static class FileToUploadToClientExtensions
         return response;
     }
 #else
-    public static THttpResponseType ToHttpResponse(this FileToUploadToClient file) =>
+    public static THttpResponseType ToHttpResponse(this FileResult file) =>
         new Microsoft.AspNetCore.Mvc.FileContentResult(file.FileBytes, MimeTypeConstants.FallbackType)
         {
             FileDownloadName = file.FileName

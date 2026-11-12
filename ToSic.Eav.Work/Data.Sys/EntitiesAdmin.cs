@@ -1,8 +1,6 @@
-using ToSic.Eav.Data.Sys;
-using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 
-namespace ToSic.Eav.WebApi.Sys.Admin;
+namespace ToSic.Eav.Data.Sys;
 
 [PrivateApi]
 [VisualQuery(

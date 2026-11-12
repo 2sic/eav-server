@@ -1,4 +1,4 @@
-﻿using ToSic.Eav.Apps.ImportExport.Sys.Dto;
+﻿using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 
@@ -9,10 +9,6 @@ public interface IAppController
     void App(int zoneId, int appId, bool fullDelete = true);
 
     void App(int zoneId, string name, int? inheritAppId = null);
-
-    // Replaced by DataSource System.AppStatistics through query System.SysData.
-    // Use app/auto/query/System.SysData/Default with SysDataSource=System.AppStatistics.
-    //AppExportInfoDto Statistics(int zoneId, int appId);
 
     bool FlushCache(int zoneId, int appId);
 
@@ -35,5 +31,5 @@ public interface IAppController
     ImportResultDto Import(int zoneId);
 
 
-    ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppDto> pendingApps);
+    ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppRaw> pendingApps);
 }

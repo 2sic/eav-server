@@ -55,7 +55,6 @@ public static class StartupWebApi
         services.TryAddTransient<EditLoadActionGetForEditing>(); // WIP v21
         services.TryAddTransient<ContextFeaturesSvc>();
         services.TryAddTransient<ImportAppService>();
-        services.TryAddTransient<PendingAppsGet>();
         services.TryAddTransient<PendingAppInstall>();
 
         // json serialization converters eav related

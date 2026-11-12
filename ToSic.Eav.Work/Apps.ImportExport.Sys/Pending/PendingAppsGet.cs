@@ -1,4 +1,3 @@
-using ToSic.Eav.Apps.ImportExport.Sys.Dto;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.ImportExport.Sys.ImportHelpers;
 using ToSic.Eav.ImportExport.Sys.XmlImport;
@@ -8,10 +7,7 @@ using ISite = ToSic.Eav.Context.ISite;
 namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class PendingAppsGet(
-    AppFinder appFinder,
-    ISite site,
-    Generator<XmlImportWithFiles> xmlImpExpFiles)
+public class PendingAppsGet(AppFinder appFinder, ISite site, Generator<XmlImportWithFiles> xmlImpExpFiles)
     : ServiceBase("Bck.Export", connect: [appFinder, site, xmlImpExpFiles])
 {
     /// <summary>
@@ -20,10 +16,10 @@ public class PendingAppsGet(
     /// - are not installed as apps yet
     /// - have an App_Data/app.xml
     /// </summary>
-    public IEnumerable<PendingAppDto> GetPendingApps(int zoneId)
+    public IEnumerable<PendingAppRaw> GetPendingApps(int zoneId)
     {
-        var l = Log.Fn<IEnumerable<PendingAppDto>>($"list all app folders for zoneId.{zoneId}");
-        var result = new List<PendingAppDto>();
+        var l = Log.Fn<IEnumerable<PendingAppRaw>>($"list all app folders for zoneId.{zoneId}");
+        var result = new List<PendingAppRaw>();
 
         foreach (var directoryPath in Directory.GetDirectories(site.AppsRootPhysicalFull))
         {
@@ -48,7 +44,7 @@ public class PendingAppsGet(
             {
                 var importer = xmlImpExpFiles.New().Init(null, false);
                 var importXmlReader = new ImportXmlReader(appXml, importer, l);
-                var pendingAppDto = new PendingAppDto
+                var pendingAppDto = new PendingAppRaw
                 {
                     ServerFolder = folderName,
                     Name = importXmlReader.DisplayName,

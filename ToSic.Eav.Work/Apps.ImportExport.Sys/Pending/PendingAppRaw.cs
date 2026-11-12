@@ -1,7 +1,6 @@
 using ToSic.Eav.Data.ContentTypes;
-using ToSic.Eav.Data.Raw;
 
-namespace ToSic.Eav.Apps.ImportExport.Sys.Dto;
+namespace ToSic.Eav.Apps.ImportExport.Sys;
 
 [ContentType(
     Name = "PendingApp",
@@ -9,7 +8,7 @@ namespace ToSic.Eav.Apps.ImportExport.Sys.Dto;
     Description = "App package waiting to be initialized",
     Scope = "System"
 )]
-public record PendingAppDto : IRawEntityAutoConvert
+public record PendingAppRaw : IRawEntityAutoConvert
 {
     // folder as it's stored on the server
     public required string ServerFolder { get; init; }

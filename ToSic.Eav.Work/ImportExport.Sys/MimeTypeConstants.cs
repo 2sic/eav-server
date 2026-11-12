@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys;
+﻿namespace ToSic.Eav.ImportExport.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class MimeTypeConstants

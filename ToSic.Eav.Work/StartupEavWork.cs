@@ -5,7 +5,6 @@ using ToSic.Eav.Apps.Inspect.Sys;
 using ToSic.Eav.Apps.Inspect.Sys.WebApi;
 using ToSic.Eav.Apps.Install.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
-using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataFormats.EavLight.Sys;
@@ -116,6 +115,7 @@ public static class StartupEavWork
         // Note that it's not really part of .Web, but we want it to be quite late so we don't need
         // to move up dependencies which it has.
         services.TryAddTransient<IPlatformAppInstaller, PlatformAppInstallerUnknown>();
+        services.TryAddTransient<PendingAppsGet>();
 
         return services;
     }
