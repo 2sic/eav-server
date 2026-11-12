@@ -7,6 +7,9 @@ namespace ToSic.Eav.WebApi.Sys.Context;
 public class UiContextBuilder(Generator<IUiContextParts, IAppReader?> contextPartsGen)
     : ServiceWithSetup<IAppReader?>("Eav.UiCtx", connect: [contextPartsGen]), IUiContextBuilder
 {
+    // The app/template chooser requests context before an app has been selected.
+    protected override IAppReader? GetDefaultOptions() => null;
+
     public IUiContextParts ContextParts => field ??= contextPartsGen.New(MyOptions);
 
     /// <inheritdoc />

@@ -20,6 +20,9 @@ public class UiContextPartsEav(
     IAppsCatalog appsCatalog)
     : ServiceWithSetup<IAppReader?>("Sxc.CtxPrt", connect: [siteCtxSvc, languagesBackend, features, uiDataLazy, appPaths, appsCatalog]), IUiContextParts
 {
+    // The app/template chooser requests context before an app has been selected.
+    protected override IAppReader? GetDefaultOptions() => null;
+
     private ISite Site => field ??= siteCtxSvc.Context.Site;
     protected int ZoneId => siteCtxSvc.Context.Site.ZoneId;
 
