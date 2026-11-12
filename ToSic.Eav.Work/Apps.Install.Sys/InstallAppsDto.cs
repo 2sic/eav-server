@@ -1,11 +1,12 @@
 ﻿
 // ReSharper disable InconsistentNaming
 
-namespace ToSic.Eav.WebApi.Sys.Install;
+namespace ToSic.Eav.Apps.Install.Sys;
 
 // TODO: @2rb
-// probably just rename these to ...Raw
-// and add [ContentType] etc. with new random guids https://guidgenerator.com/
+// These are only used between the service and the data-source.
+// Change the InstallSettingsSvc to already return the raw data, so that these DTOs can be removed 
+// and there is no additional conversion.
 
 public class InstallAppsDto
 {

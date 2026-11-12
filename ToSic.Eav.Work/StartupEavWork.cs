@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.Apps.Inspect.Sys;
 using ToSic.Eav.Apps.Inspect.Sys.WebApi;
+using ToSic.Eav.Apps.Install.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Sys;
@@ -110,6 +111,11 @@ public static class StartupEavWork
 
         // v22 moving here...
         services.TryAddTransient<EntitiesAdminData>();
+
+        // basic environment, pages, modules etc.
+        // Note that it's not really part of .Web, but we want it to be quite late so we don't need
+        // to move up dependencies which it has.
+        services.TryAddTransient<IPlatformAppInstaller, PlatformAppInstallerUnknown>();
 
         return services;
     }
