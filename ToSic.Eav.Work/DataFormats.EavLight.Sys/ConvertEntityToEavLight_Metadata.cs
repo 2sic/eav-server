@@ -2,10 +2,13 @@
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Serialization.Sys.Options;
 
-namespace ToSic.Eav.DataFormats.EavLight;
+namespace ToSic.Eav.DataFormats.EavLight.Sys;
 
-partial class ConvertToEavLight
+partial class ConvertEntityToEavLight
 {
+    private MetadataForSerialization MetadataFor { get; } = new();
+    private ISubEntitySerialization Metadata { get; } = new SubEntitySerialization();
+
     private void AddMetadataAndFor(IEntity entity, IDictionary<string, object?> entityValues, EntitySerializationDecorator rules)
     {
         // if rules.MetadataFor are not set, then respect WithMetadataFor
@@ -20,7 +23,7 @@ partial class ConvertToEavLight
         if (itemMdRules.Serialize != true || !entity.Metadata.Any())
             return;
 
-        entityValues.Add(AttributeNames.JsonKeyMetadata, ((IConvertToEavLight)this).SubConverter.CreateListOfSubEntities(entity.Metadata, itemMdRules));
+        entityValues.Add(AttributeNames.JsonKeyMetadata, SubConverter.CreateListOfSubEntities(entity.Metadata, itemMdRules));
     }
 
 

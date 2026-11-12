@@ -1,9 +1,10 @@
-﻿using ToSic.Eav.Data.EntityDecorators.Sys;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.EntityDecorators.Sys;
 using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.DataFormats.EavLight;
+namespace ToSic.Eav.DataFormats.EavLight.Sys;
 
-partial class ConvertToEavLight
+partial class ConvertEntityToEavLight
 {
     /// <summary>
     /// Add Id, Guid and possibly AppId (new v15).
@@ -13,7 +14,7 @@ partial class ConvertToEavLight
     {
         // Id - on by default
         // ...only if these are not already existing with this name in the entity itself as an internal value
-        if (rules.SerializeId ?? true) 
+        if (rules.SerializeId ?? true)
             AddOrReplaceValue(entityValues, AttributeNames.IdNiceName, entity.EntityId);
 
         if (rules.SerializeAppId ?? false)

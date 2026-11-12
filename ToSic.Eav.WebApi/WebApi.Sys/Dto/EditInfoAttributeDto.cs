@@ -1,4 +1,5 @@
-﻿using static System.Text.Json.Serialization.JsonIgnoreCondition;
+﻿using ToSic.Eav.Ui.Edit.Sys.Dto;
+using static System.Text.Json.Serialization.JsonIgnoreCondition;
 
 namespace ToSic.Eav.WebApi.Sys.Dto;
 

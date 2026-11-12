@@ -33,23 +33,23 @@ public interface IConvertEntity<out T>: IConvert<IEntity, T>, IConvert<IEntityWr
     [PrivateApi("Exact name / functionality not final yet, but this may have leaked to public use, not sure")]
     bool WithPublishing { get; }
 
-    /// <summary>
-    /// Settings to configure the For-serialization
-    /// </summary>
-    /// <remarks>
-    /// Added in 12.05, was never public
-    /// </remarks>
-    [PrivateApi]
-    MetadataForSerialization MetadataFor { get; }
+    ///// <summary>
+    ///// Settings to configure the For-serialization
+    ///// </summary>
+    ///// <remarks>
+    ///// Added in 12.05, was never public
+    ///// </remarks>
+    //[PrivateApi]
+    //MetadataForSerialization MetadataFor { get; }
 
-    /// <summary>
-    /// Settings to configure the Metadata-serialization
-    /// </summary>
-    /// <remarks>
-    /// Added in 12.05, was never public
-    /// </remarks>
-    [PrivateApi]
-    ISubEntitySerialization Metadata { get; }
+    ///// <summary>
+    ///// Settings to configure the Metadata-serialization
+    ///// </summary>
+    ///// <remarks>
+    ///// Added in 12.05, was never public
+    ///// </remarks>
+    //[PrivateApi]
+    //ISubEntitySerialization Metadata { get; }
 
     /// <summary>
     /// Languages to prefer when looking up the values

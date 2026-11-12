@@ -1,20 +1,21 @@
-﻿using ToSic.Eav.Data.Sys;
+﻿using System.Text.Json.Serialization;
+using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Sys.Ancestors;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.Ui.Edit.Sys.Dto;
 
 /// <summary>
 /// Extends common DTOs to inform about it being read-only, and why
 /// </summary>
 public class EditInfoDto
 {
-    public bool ReadOnly { get; set; }
+    public bool ReadOnly { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? ReadOnlyMessage { get; set; }
+    public string? ReadOnlyMessage { get; init; }
 
     /// <summary>
-    /// Empty Constructor for deserialization - important
+    /// Explicit Empty Constructor for deserialization - important
     /// </summary>
     public EditInfoDto() {}
 

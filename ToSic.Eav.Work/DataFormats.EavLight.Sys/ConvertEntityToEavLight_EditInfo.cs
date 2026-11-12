@@ -1,8 +1,8 @@
-﻿using ToSic.Eav.WebApi.Sys.Dto;
+﻿using ToSic.Eav.Ui.Edit.Sys.Dto;
 
-namespace ToSic.Eav.DataFormats.EavLight;
+namespace ToSic.Eav.DataFormats.EavLight.Sys;
 
-partial class ConvertToEavLight
+partial class ConvertEntityToEavLight
 {
 
     private static void AddStatistics(IEntity entity, IDictionary<string, object?> entityValues)
@@ -24,4 +24,9 @@ partial class ConvertToEavLight
         }
         catch { /* ignore */ }
     }
+}
+
+public interface IConvertEntityToEavLightExtraProcessor
+{
+    public EavLightEntity Process(ConvertEntityToEavLight converter, IEntity entity, EavLightEntity eavLightEntity);
 }

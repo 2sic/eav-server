@@ -2,9 +2,11 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.Apps.Inspect.Sys;
+using ToSic.Eav.Apps.Inspect.Sys.Query;
 using ToSic.Eav.Apps.Inspect.Sys.WebApi;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Work;
+using ToSic.Eav.DataFormats.EavLight.Sys;
 using ToSic.Eav.ImportExport.Sys.XmlList;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Metadata.Requirements.Sys;
@@ -85,6 +87,10 @@ public static class StartupEavWork
         services.TryAddTransient<AppWebApiControllerAnalyzer>();
         services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
         services.TryAddTransient<IAppExplorerControllerDependency, AppExplorerControllerDependencyUnknown>();
+        services.TryAddTransient<QueryGetDtoWip>();
+
+        // New v22
+        services.TryAddTransient<ConvertEntityToEavLight>();
 
         return services;
     }

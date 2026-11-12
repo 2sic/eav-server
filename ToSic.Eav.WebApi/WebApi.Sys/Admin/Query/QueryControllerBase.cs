@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using ToSic.Eav.Apps.Inspect.Sys.Query;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataSource;
@@ -32,98 +33,67 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
     public record Dependencies(
         QueryFactory QueryFactory,
         LazySvc<IConvertToEavLight> EntToDicLazy,
+        LazySvc<QueryGetDtoWip> QueryGetDtoWipLazy,
         LazySvc<QueryInspectionService> QueryInfoLazy,
-        LazySvc<DataSourceCatalog> DataSourceCatalogLazy,
         Generator<IJsonDataReader, IJsonDataReader.Options> JsonSerializer,
         Generator<PassThrough> PassThrough,
         LazySvc<QueryDefinitionService> QueryDefSvc,
-        Generator<IAppReaderFactory> AppStates,
+        //Generator<IAppReaderFactory> AppStates,
         AppWorkQuick<WorkQueryMod> WorkUnitQueryMod,
         AppWorkQuick<WorkQueryCopy> WorkUnitQueryCopy)
         : DependenciesBase(connect:
         [
-            QueryFactory, EntToDicLazy, QueryInfoLazy, DataSourceCatalogLazy, JsonSerializer, PassThrough,
-            QueryDefSvc, AppStates, WorkUnitQueryMod, WorkUnitQueryCopy
+            QueryFactory, EntToDicLazy, QueryGetDtoWipLazy, QueryInfoLazy, JsonSerializer, PassThrough,
+            QueryDefSvc, WorkUnitQueryMod, WorkUnitQueryCopy
         ]);
 
     #endregion
 
-    /// <summary>
-    /// Get a Pipeline with DataSources
-    /// </summary>
-    public QueryDefinitionDto Get(int appId, int? id = null)
-    {
-        var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
+    ///// <summary>
+    ///// Get a Pipeline with DataSources
+    ///// </summary>
+    //public QueryDefinitionDto Get(int appId, int? id = null)
+    //{
+    //    var l = Log.Fn<QueryDefinitionDto>($"a#{appId}, id:{id}");
 
-        if (!id.HasValue)
-            return l.Return(new(), "no id, empty");
+    //    if (!id.HasValue)
+    //        return l.Return(new(), "no id, empty");
 
-        var appState = Services.AppStates.New().Get(appId);
-        var qDef = Services.QueryDefSvc.Value.GetDefinition(appState, id.Value);
+    //    var appState = Services.AppStates.New().Get(appId);
+    //    var qDef = Services.QueryDefSvc.Value.GetDefinition(appState, id.Value);
 
-        #region Deserialize some Entity-Values
+    //    #region Deserialize some Entity-Values
 
-        var pipeline = (qDef as ICanBeEntity).Entity.AsDictionary();
-        pipeline[nameof(QueryDefinition.StreamWiring)] = qDef.Connections;
+    //    var pipeline = (qDef as ICanBeEntity).Entity.AsDictionary();
+    //    pipeline[nameof(QueryDefinition.StreamWiring)] = qDef.Connections;
 
-        var converter = Services.EntToDicLazy.Value;
-        converter.Type.Serialize = true;
-        converter.Type.WithDescription = true;
-        converter.WithGuid = true;
+    //    var converter = Services.EntToDicLazy.Value;
+    //    converter.Type.Serialize = true;
+    //    converter.Type.WithDescription = true;
+    //    converter.WithGuid = true;
 
-        //foreach (var part in qDef.Parts)
-        //{
-        //    var partDto = part.AsDictionary();
-        //    var metadata = appState.Metadata.GetMetadata(TargetTypes.Entity, part.Guid);
-        //    partDto.Add("Metadata", converter.Convert(metadata));
-        //    queryDto.DataSources.Add(partDto);
-        //}
+    //    var dataSources = qDef.Parts
+    //        .Select(part =>
+    //        {
+    //            var partDto = part.AsDictionary();
+    //            var metadata = appState.Metadata.GetMetadata(TargetTypes.Entity, part.Guid);
+    //            partDto.Add("Metadata", converter.Convert(metadata));
+    //            return partDto;
+    //        })
+    //        .ToListOpt();
 
-        var dataSources = qDef.Parts
-            .Select(part =>
-            {
-                var partDto = part.AsDictionary();
-                var metadata = appState.Metadata.GetMetadata(TargetTypes.Entity, part.Guid);
-                partDto.Add("Metadata", converter.Convert(metadata));
-                return partDto;
-            })
-            .ToListOpt();
-
-        var queryDto = new QueryDefinitionDto
-        {
-            Pipeline = pipeline!,
-            DataSources = dataSources!,
-        };
+    //    var queryDto = new QueryDefinitionDto
+    //    {
+    //        Pipeline = pipeline!,
+    //        DataSources = dataSources!,
+    //    };
 
 
-        #endregion
+    //    #endregion
 
-        return l.ReturnAsOk(queryDto);
-    }
+    //    return l.ReturnAsOk(queryDto);
+    //}
 
-    /// <summary>
-    /// Get installed DataSources from .NET Runtime but only those with [PipelineDesigner Attribute]
-    /// </summary>
-    /// <param name="appIdentity"></param>
-    public IEnumerable<DataSourceDto> DataSources(AppIdentity appIdentity)
-    {
-        var l = Log.Fn<IEnumerable<DataSourceDto>>($"a#{appIdentity.AppId}");
-        var dsCat = Services.DataSourceCatalogLazy.Value;
-        var installedDataSources = Services.DataSourceCatalogLazy.Value.GetAll(true, appIdentity.AppId);
-
-        var result = installedDataSources
-            .Select(ds =>
-            {
-                var outNames = ds.VisualQuery?.DynamicOut == true
-                    ? null
-                    : dsCat.GetOutStreamNames(ds);
-                return new DataSourceDto(ds, outNames);
-            })
-            .OrderBy(ds => ds.TypeNameForUi) // sort for better debugging in F12
-            .ToListOpt();
-
-        return l.Return(result, result.Count.ToString());
-    }
 
     /// <summary>
     /// Save Pipeline
@@ -150,7 +120,7 @@ public abstract class QueryControllerBase(QueryControllerBase.Dependencies servi
 
         Services.WorkUnitQueryMod.New(appId: appId).Update(id, data.DataSources, newDsGuids, data.Pipeline, wirings);
 
-        return l.ReturnAsOk(Get(appId, id));
+        return l.ReturnAsOk(Services.QueryGetDtoWipLazy.Value.Get(appId, id));
     }
 
     /// <summary>

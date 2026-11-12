@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataFormats.EavLight;
+using ToSic.Eav.DataFormats.EavLight.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Metadata.Sys;
@@ -86,7 +87,7 @@ public class MetadataControllerReal(
         foreach (var item in result.Items)
             if (item.TryGetValue(AttributeNames.TitleNiceName, out var title)
                 && title == null
-                && item.TryGetValue(ConvertToEavLight.InternalTypeField, out var typeInfo))
+                && item.TryGetValue(ConvertEntityToEavLight.InternalTypeField, out var typeInfo))
             {
                 if (typeInfo is JsonType { Name: not null } typeDic) 
                     item[AttributeNames.TitleNiceName] = typeDic.Name;

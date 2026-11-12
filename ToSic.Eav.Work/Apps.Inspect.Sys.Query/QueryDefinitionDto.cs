@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Admin.Query;
+﻿namespace ToSic.Eav.Apps.Inspect.Sys.Query;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public record QueryDefinitionDto

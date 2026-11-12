@@ -1,8 +1,9 @@
-﻿using ToSic.Eav.Data.Sys;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Sys;
 
-namespace ToSic.Eav.DataFormats.EavLight;
+namespace ToSic.Eav.DataFormats.EavLight.Sys;
 
-partial class ConvertToEavLight
+partial class ConvertEntityToEavLight
 {
     private static void AddPublishingInformation(IEntity entity, IDictionary<string, object?> entityValues, IAppReadEntities appState)
     {

@@ -6,32 +6,18 @@ partial class ConvertToEavLight
 {
     #region Many variations of the Convert-Statement expecting IEntity
 
-    /// <inheritdoc/>
-    public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntity> entities)
-    {
-        var l = Log.Fn<IEnumerable<EavLightEntity>>(timer: true);
-        var topEntities = MaxItems == 0
-            ? entities
-            : entities.Take(MaxItems);
-        var result = topEntities
-            .Select(GetDictionaryFromEntity)
-            .ToListOpt();
-        return l.ReturnAsOk(result);
-    }
+    public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntity> list) => convShared.Convert(list);
 
-    /// <inheritdoc/>
-    public EavLightEntity Convert(IEntity entity)
-    {
-        var l = Log.Fn<EavLightEntity>(timer: true);
-        var result = entity == null!
-            ? null!
-            : GetDictionaryFromEntity(entity);
-        return l.ReturnAsOk(result);
-    }
+    public EavLightEntity Convert(IEntity item) => convShared.Convert(item);
 
     #endregion
 
     #region Dynamic/Objects - which first must detect what it is
+
+    EavLightEntity IConvertToEavLight.Convert(IEntity entity)
+    {
+        throw new NotImplementedException();
+    }
 
     public IEnumerable<EavLightEntity> Convert(IEnumerable<object> list)
     {
@@ -53,7 +39,7 @@ partial class ConvertToEavLight
                     entity = dynEnt.Entity;
                 if (entity == null)
                     throw new("tried to convert an item, but it was not a known Entity-type");
-                return GetDictionaryFromEntity(entity);
+                return convShared.GetDictionaryFromEntity(entity);
             })
             .ToListOpt();
     }
@@ -66,12 +52,19 @@ partial class ConvertToEavLight
             _ => throw new ArgumentException(@"expected an IEntity or IEntityWrapper like a DynamicEntity, but got something else", nameof(item))
         };
 
+    IEnumerable<EavLightEntity> IConvertToEavLight.Convert(IEnumerable<IEntityWrapper> list)
+    {
+        throw new NotImplementedException();
+    }
+
+    EavLightEntity IConvertToEavLight.Convert(IEntityWrapper item)
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion
 
-    public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntityWrapper> list)
-        => Convert(list as IEnumerable<object>);
+    public IEnumerable<EavLightEntity> Convert(IEnumerable<IEntityWrapper> list) => convShared.Convert(list);
 
-    /// <inheritdoc />
-    public EavLightEntity Convert(IEntityWrapper item)
-        => Convert(item.Entity);
+    public EavLightEntity Convert(IEntityWrapper item) => convShared.Convert(item);
 }

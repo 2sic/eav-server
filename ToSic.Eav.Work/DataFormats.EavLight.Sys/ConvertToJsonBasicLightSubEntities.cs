@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Serialization.Sys.Options;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.DataFormats.EavLight;
 
@@ -6,7 +7,7 @@ namespace ToSic.Eav.DataFormats.EavLight;
 /// Converter of lightweight sub-entities containing at most id/guid/title.
 /// </summary>
 /// <param name="languages"></param>
-internal class ConvertToJsonBasicLightSubEntities(string?[] languages)
+public class ConvertToJsonBasicLightSubEntities(string?[] languages)
 {
     internal object CreateListOrCsvOfSubEntities(IEnumerable<IEntity> items, ISubEntitySerialization rules)
     {
@@ -32,7 +33,7 @@ internal class ConvertToJsonBasicLightSubEntities(string?[] languages)
             : ids.ToArray();
     }
 
-    internal IEnumerable<EavLightEntityReference> CreateListOfSubEntities(IEnumerable<IEntity> items, ISubEntitySerialization rules)
+    public IEnumerable<EavLightEntityReference> CreateListOfSubEntities(IEnumerable<IEntity> items, ISubEntitySerialization rules)
         => items.Select(e => new EavLightEntityReference
         {
             Id = rules.SerializeId == true ? e?.EntityId : null,
