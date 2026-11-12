@@ -1,10 +1,21 @@
+using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.WebApi.Sys.Security;
 
 namespace ToSic.Eav.WebApi.Sys.Context;
 
-public record ContextLanguageDto
+public record ContextLanguageDto()
 {
+    [SetsRequiredMembers]
+    public ContextLanguageDto(AppLanguageState state): this()
+    {
+        Code = state.Code;
+        Culture = state.Culture;
+        IsAllowed = state.IsAllowed;
+        IsEnabled = state.IsEnabled;
+        Permissions = null;
+    }
+
     public required string Code { get; init; }
 
     public string NameId => Code.ToLowerInvariant();

@@ -14,6 +14,11 @@ using IMetadataSource = ToSic.Eav.Metadata.Sys.IMetadataSource;
 
 namespace ToSic.Eav.Context.Sys;
 
+// #CandidateForSplit
+// This should probably be split into 2 classes
+// 1. AppLanguagesWithPermissions (second part of this)
+// 2. AppUserLanguageCheck (first part of this)
+
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppUserLanguageCheck(
     LazySvc<ISiteOfZoneSvc> zoneSiteSvc,

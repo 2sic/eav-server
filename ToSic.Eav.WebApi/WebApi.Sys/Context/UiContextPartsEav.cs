@@ -3,6 +3,7 @@ using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Paths;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Context;
+using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Sys;
 using ToSic.Eav.WebApi.Sys.Cms;
 using ToSic.Eav.WebApi.Sys.Dto;
@@ -15,11 +16,15 @@ public class UiContextPartsEav(
     IContextOfSiteService siteCtxSvc,
     LazySvc<ISysFeaturesService> features,
     LazySvc<IUiData> uiDataLazy,
-    LazySvc<ContextLanguageDtoService> languagesBackend,
+    LazySvc<AppUserLanguageCheck> appUserLanguages,
     IAppPathsMicroSvc appPaths,
     IAppsCatalog appsCatalog)
-    : ServiceWithSetup<IAppReader?>("Sxc.CtxPrt", connect: [siteCtxSvc, languagesBackend, features, uiDataLazy, appPaths, appsCatalog]), IUiContextParts
+    : ServiceBase("Sxc.CtxPrt", connect: [siteCtxSvc, appUserLanguages, features, uiDataLazy, appPaths, appsCatalog]), IUiContextParts
 {
+    public void Setup(IAppReader? options) => AppReader = options;
+
+    private IAppReader? AppReader { get; set; }
+
     private ISite Site => field ??= siteCtxSvc.Context.Site;
     protected int ZoneId => siteCtxSvc.Context.Site.ZoneId;
 
@@ -29,7 +34,9 @@ public class UiContextPartsEav(
             return null;
         var site = Site;
 
-        var converted = languagesBackend.Value.GetLanguagesOfApp(MyOptions);
+        var converted = appUserLanguages.Value.LanguagesWithPermissions(AppReader)
+            .Select(state => new ContextLanguageDto(state))
+            .ToList();
 
         return new()
         {
@@ -81,7 +88,7 @@ public class UiContextPartsEav(
 
     public ContextEnableDto GetEnable(CtxEnable ctx)
     {
-        var isRealApp = MyOptions?.Specs != null && !MyOptions.Specs.IsContentApp();
+        var isRealApp = AppReader?.Specs != null && !AppReader.Specs.IsContentApp();
         var user = siteCtxSvc.Context.User;
         return new()
         {
@@ -99,11 +106,10 @@ public class UiContextPartsEav(
 
     public ContextAppDto? GetApp(Ctx flags)
     {
-        if (MyOptions == null)
+        if (AppReader == null)
             return null;
-        var appReader = MyOptions;
-        var appSpecs = appReader.Specs;
-        var paths = appPaths.Get(appReader, Site);
+        var appSpecs = AppReader.Specs;
+        var paths = appPaths.Get(AppReader, Site);
         var result = new ContextAppDto
         {
             Id = appSpecs.AppId,
@@ -144,9 +150,9 @@ public class UiContextPartsEav(
 
         return result with
         {
-            Permissions = new() { Count = appReader.Specs.Metadata.Permissions.Count() },
-            IsShared = appReader.IsShared(),
-            IsInherited = appReader.IsInherited()
+            Permissions = new() { Count = AppReader.Specs.Metadata.Permissions.Count() },
+            IsShared = AppReader.IsShared(),
+            IsInherited = AppReader.IsInherited()
         };
 
     }

@@ -5,9 +5,14 @@ namespace ToSic.Eav.WebApi.Sys.Context;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class UiContextBuilder(Generator<IUiContextParts, IAppReader?> contextPartsGen)
-    : ServiceWithSetup<IAppReader?>("Eav.UiCtx", connect: [contextPartsGen]), IUiContextBuilder
+    : ServiceBase("Eav.UiCtx", connect: [contextPartsGen]), IUiContextBuilder
 {
-    public IUiContextParts ContextParts => field ??= contextPartsGen.New(MyOptions);
+    public void Setup(IAppReader? options) => AppReader = options;
+    
+    private IAppReader? AppReader { get; set; }
+    
+    public IUiContextParts ContextParts => field ??= contextPartsGen.New(AppReader);
+
 
     /// <inheritdoc />
     public ContextDto Get(Ctx flags, CtxEnable enableFlags)
@@ -18,15 +23,31 @@ public class UiContextBuilder(Generator<IUiContextParts, IAppReader?> contextPar
         // 3. This also means if the switch is off, it's off
         return new()
         {
-            App = flags.HasFlag(Ctx.AppBasic) || flags.HasFlag(Ctx.AppAdvanced) ? ContextParts.GetApp(flags) : null,
-            Enable = enableFlags != CtxEnable.None ? ContextParts.GetEnable(enableFlags) : null,
-            Language = flags.HasFlag(Ctx.Language) ? ContextParts.GetLanguage(flags) : null,
-            Page = flags.HasFlag(Ctx.Page) ? ContextParts.GetPage(flags) : null,
-            Site = flags.HasFlag(Ctx.Site) ? ContextParts.GetSite(flags) : null,
-            System = flags.HasFlag(Ctx.System) ? ContextParts.GetSystem(flags) : null,
-            User = flags.HasFlag(Ctx.User) ? ContextParts.GetUser(flags) : null,
-            Features = flags.HasFlag(Ctx.Features) || flags.HasFlag(Ctx.FeaturesForSystemTypes) ? ContextParts.GetFeatures(flags) : null
+            App = TryGet(flags.HasFlag(Ctx.AppBasic) || flags.HasFlag(Ctx.AppAdvanced), () => ContextParts.GetApp(flags)),
+            Enable = TryGet(enableFlags != CtxEnable.None, () => ContextParts.GetEnable(enableFlags)),
+            Language = TryGet(flags.HasFlag(Ctx.Language), () => ContextParts.GetLanguage(flags)),
+            Page = TryGet(flags.HasFlag(Ctx.Page), () => ContextParts.GetPage(flags)),
+            Site = TryGet(flags.HasFlag(Ctx.Site), () => ContextParts.GetSite(flags)),
+            System = TryGet(flags.HasFlag(Ctx.System), () => ContextParts.GetSystem(flags)),
+            User = TryGet(flags.HasFlag(Ctx.User), () => ContextParts.GetUser(flags)),
+            Features = TryGet(flags.HasFlag(Ctx.Features) || flags.HasFlag(Ctx.FeaturesForSystemTypes), () => ContextParts.GetFeatures(flags))
         };
 
     }
+
+    private T? TryGet<T>(bool condition, Func<T?> getter) where T : class
+    {
+        if (!condition)
+            return null;
+        try
+        {
+            return getter();
+        }
+        catch (Exception e)
+        {
+            Log.A($"Error while getting context part {typeof(T).Name}: {e.Message}");
+            return null;
+        }
+    }
+
 }

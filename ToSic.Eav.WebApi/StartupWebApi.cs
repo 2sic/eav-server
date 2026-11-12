@@ -36,7 +36,6 @@ public static class StartupWebApi
         services.TryAddTransient<LicenseControllerReal>();
 
         // Various Backends
-        services.TryAddTransient<ContextLanguageDtoService>();
         services.TryAddTransient<SaveEntities>();
 
         // APIs
