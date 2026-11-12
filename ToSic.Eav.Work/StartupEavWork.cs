@@ -71,6 +71,7 @@ public static class StartupEavWork
         services.AddAppWorkContext();
 
         // v22
+        services.TryAddTransient<WorkApps>();
         services.TryAddTransient<WorkFieldsDataTypes>();
         services.TryAddTransient(typeof(AppWorkQuick<>));
         services.TryAddTransient(typeof(AppWorkChain<>));
