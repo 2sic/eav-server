@@ -170,7 +170,9 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
                     .Select(ldr =>
                         _fslGenerator.New(ldr.GetLatestOptions() with
                         {
-                            JsonReaderOptions = new(builder.Reader),
+                            // Keep the caller's LogSettings: new reader options default to all-on,
+                            // which would log every entity in detail even if details are disabled.
+                            JsonReaderOptions = new(builder.Reader) { LogSettings = LogSettings },
                         }))
                     .ToList();
 
