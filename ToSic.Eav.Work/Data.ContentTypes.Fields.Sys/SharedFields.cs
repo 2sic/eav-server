@@ -1,10 +1,11 @@
+using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.WebApi.Sys.Admin;
+namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 [PrivateApi]
 [VisualQuery(

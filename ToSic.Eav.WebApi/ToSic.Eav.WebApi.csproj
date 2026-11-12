@@ -43,9 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Apps.Inspect.Sys\" />
     <Folder Include="WebApi.Sys\Admin\Metadata\" />
-    <Folder Include="WebApi.Sys\ApiExplorer\" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,9 @@
+using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Admin;
+namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 [PrivateApi]
 [VisualQuery(
@@ -19,12 +19,12 @@ public class InputTypes : CustomDataSource
 {
     public InputTypes(
         Dependencies services,
-        AppWorkContextService appWorkContextService,
+        AppWorkContextService workCtxSvc,
         AppWorkChain<WorkInputTypes> inputTypes,
         AppWorkChain<WorkFieldsDataTypes> fieldsDataTypes)
-        : base(services, logName: "Sxc.InpTyp", connect: [appWorkContextService, inputTypes, fieldsDataTypes])
+        : base(services, logName: "Sxc.InpTyp", connect: [workCtxSvc, inputTypes, fieldsDataTypes])
     {
-        var ctx = new Lazy<IAppWorkContext>(() => appWorkContextService.ContextNew(AppId));
+        var ctx = new Lazy<IAppWorkContext>(() => workCtxSvc.ContextNew(AppId));
         
         ProvideOutRaw(() => GetInputTypes(inputTypes.New(ctx.Value)), name: "InputTypes");
 

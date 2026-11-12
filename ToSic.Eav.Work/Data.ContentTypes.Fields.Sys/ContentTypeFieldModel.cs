@@ -1,9 +1,6 @@
-using ToSic.Eav.Data.ContentTypes;
-using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Raw;
-using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Admin;
+namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 // TODO: This should be reworked, probably make the DTO the real content-type definer, and just add GetValues?
 
