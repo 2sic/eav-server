@@ -7,7 +7,10 @@ public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder np
     : ServiceBase(logName, npo, connect: connect),
         IHasOptions<TOptions>,
         IServiceWithSetup<TOptions>
-        where TOptions : class
+        // Note: `class` not `class?`
+        // the interface is `class?` but since by default ServiceWithSetup will throw if null,
+        // we're trying to make sure that there are warnings if done that way
+        where TOptions : class 
 {
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]

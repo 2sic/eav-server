@@ -10,7 +10,7 @@
 /// <typeparam name="TOptions">The options to configure the service</typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazyInitLog
-     where TService : IServiceWithSetup<TOptions> where TOptions : class
+     where TService : IServiceWithSetup<TOptions> where TOptions : class?
 {
     /// <summary>
     /// Factory method to generate a new service
