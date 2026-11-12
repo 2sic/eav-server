@@ -1,12 +1,12 @@
+using ToSic.Eav.Apps.Inspect.Sys.WebApi.Models;
+using ToSic.Eav.Data.Raw;
 using ToSic.Eav.DataSource;
 using ToSic.Eav.DataSource.VisualQuery;
-using ToSic.Eav.Data.Raw;
 using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Sys.Admin;
-using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.Users;
+using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
+namespace ToSic.Eav.Apps.Inspect.Sys.WebApi;
 
 [PrivateApi]
 [VisualQuery(

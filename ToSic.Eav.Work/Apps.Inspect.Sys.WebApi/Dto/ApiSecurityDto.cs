@@ -1,6 +1,6 @@
 // ReSharper disable InconsistentNaming
 
-namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
+namespace ToSic.Eav.Apps.Inspect.Sys.WebApi.Dto;
 
 public class ApiSecurityDto
 {

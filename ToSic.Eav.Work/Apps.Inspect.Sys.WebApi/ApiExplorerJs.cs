@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
+﻿namespace ToSic.Eav.Apps.Inspect.Sys.WebApi;
 
 [PrivateApi]
 internal class ApiExplorerJs

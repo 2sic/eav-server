@@ -1,6 +1,6 @@
-using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Eav.Apps.Inspect.Sys.WebApi.Models;
 
-namespace ToSic.Eav.WebApi.Sys.Admin;
+namespace ToSic.Eav.Apps.Inspect.Sys.WebApi;
 
 public class AppExplorerControllerDependencyUnknown : ServiceBase, IAppExplorerControllerDependency
 {

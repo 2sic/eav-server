@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
+using ToSic.Eav.Apps.Inspect.Sys.WebApi.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
+namespace ToSic.Eav.Apps.Inspect.Sys.WebApi;
 
 internal class ApiInspectorUnknown: ServiceBase, IApiInspector
 {

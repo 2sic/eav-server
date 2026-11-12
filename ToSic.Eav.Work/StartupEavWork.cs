@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.Apps.Inspect.Sys;
+using ToSic.Eav.Apps.Inspect.Sys.WebApi;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.ImportExport.Sys.XmlList;
@@ -78,6 +79,11 @@ public static class StartupEavWork
         services.TryAddTransient<AppDetailsService>();  // registration for composition
         services.TryAddTransient<IAppDetailsService, AppDetailsService>();
         services.TryAddTransient<WorkAppsInheritable>();
+
+        // APIs - moved here from WebApi 2026-11-12
+        services.TryAddTransient<AppWebApiControllerAnalyzer>();
+        services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
+        services.TryAddTransient<IAppExplorerControllerDependency, AppExplorerControllerDependencyUnknown>();
 
         return services;
     }

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.Apps.Inspect.Sys;
+using ToSic.Eav.Apps.Inspect.Sys.WebApi;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Web.Sys;
@@ -10,7 +11,6 @@ using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Admin.Features;
 using ToSic.Eav.WebApi.Sys.Admin.Metadata;
 using ToSic.Eav.WebApi.Sys.Admin.Query;
-using ToSic.Eav.WebApi.Sys.ApiExplorer;
 using ToSic.Eav.WebApi.Sys.Cms;
 using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
@@ -116,10 +116,6 @@ public static class StartupWebApi
     /// <returns></returns>
     public static IServiceCollection AddEavWebApiTypedAfterEav(this IServiceCollection services)
     {
-        // APIs
-        services.TryAddTransient<AppWebApiControllerAnalyzer>();
-        services.TryAddTransient<IApiInspector, ApiInspectorUnknown>();
-        services.TryAddTransient<IAppExplorerControllerDependency, AppExplorerControllerDependencyUnknown>();
         // The ResponseMaker must be registered as generic, so that any specific registration will have priority
         services.TryAddScoped<IResponseMaker, ResponseMakerToOverride>();
         return services;

@@ -1,8 +1,10 @@
 using System.Reflection;
+using ToSic.Eav.Apps.Inspect.Sys.WebApi.Dto;
+using ToSic.Eav.Apps.Inspect.Sys.WebApi.Models;
 using ToSic.Eav.Sys;
-using ToSic.Eav.WebApi.Sys.Dto;
+using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
+namespace ToSic.Eav.Apps.Inspect.Sys.WebApi;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWebApiControllerAnalyzer(IApiInspector inspector)

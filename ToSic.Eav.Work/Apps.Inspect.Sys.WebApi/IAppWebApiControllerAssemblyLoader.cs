@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ToSic.Eav.WebApi.Sys.ApiExplorer;
+namespace ToSic.Eav.Apps.Inspect.Sys.WebApi;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAppWebApiControllerAssemblyLoader
