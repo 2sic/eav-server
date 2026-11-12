@@ -4,12 +4,14 @@ using ToSic.Eav.Apps.ImportExport.Sys;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Ui.Context.Sys;
+using ToSic.Eav.Ui.Edit.Sys;
+using ToSic.Eav.Ui.Edit.Sys.Load;
+using ToSic.Eav.Ui.Edit.Sys.Save;
 using ToSic.Eav.Web.Sys;
 using ToSic.Eav.WebApi.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Admin.Features;
 using ToSic.Eav.WebApi.Sys.Cms;
-using ToSic.Eav.WebApi.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.Helpers.Json;
 using ToSic.Eav.WebApi.Sys.ImportExport;
@@ -37,7 +39,6 @@ public static class StartupWebApi
 
         // APIs
         services.TryAddTransient<EntityPickerApi>();
-        services.TryAddTransient<ContentTypeDtoService>();
         services.TryAddTransient<ContentExportApi>();
         services.TryAddTransient<ContentImportApi>();
 

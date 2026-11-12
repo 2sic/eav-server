@@ -1,8 +1,10 @@
 ﻿using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Ui.Context.Sys.Dto;
+using ToSic.Eav.Ui.Edit.Sys.Load;
+using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.Ui.Edit.Sys;
 
 public record EditDtoShared
 {

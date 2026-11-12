@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Dto;
+﻿namespace ToSic.Eav.Ui.Edit.Sys.Load;
 
 /// <summary>
 /// A helper to provide data to entity-pickers in a strange format

@@ -6,20 +6,6 @@ namespace ToSic.Eav.WebApi.Sys.Admin;
 public interface IEntityController
 {
     /// <summary>
-    /// Get all entities of a specific type in the app
-    /// </summary>
-    /// <param name="appId"></param>
-    /// <param name="contentType"></param>
-    /// <returns></returns>
-    /// <remarks>
-    /// Needs edit-permissions, as the item-list can also be accessed from the toolbar in certain cases.
-    /// Will do permission checks internally.
-    /// </remarks>
-
-    // 2rb: replaced by EntitiesAdmin datasource
-    //IEnumerable<Dictionary<string, object>> List(int appId, string contentType);
-
-    /// <summary>
     /// Delete an item from the admin-UI
     /// </summary>
     /// <param name="contentType"></param>
@@ -84,15 +70,4 @@ public interface IEntityController
     /// Used to be POST ContentImport/Import
     /// </summary>
     bool Upload(EntityImportDto args);
-
-    ///// <summary>
-    ///// New feature in 11.03 - Usage Statistics
-    ///// </summary>
-    ///// <param name="appId"></param>
-    ///// <param name="guid"></param>
-    ///// <returns></returns>
-    ///// <remarks>
-    ///// New in 2sxc 11.03
-    ///// </remarks>
-    //dynamic Usage(int appId, Guid guid);
 }

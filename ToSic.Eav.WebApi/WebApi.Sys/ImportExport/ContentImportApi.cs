@@ -40,7 +40,6 @@ public class ContentImportApi(
     #endregion
 
 
-    [HttpPost]
     public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
     {
         var l = Log.Fn<ContentImportResultDto>("eval content - start" + args.DebugInfo);
@@ -64,7 +63,6 @@ public class ContentImportApi(
         return l.Return(result);
     }
 
-    [HttpPost]
     public ContentImportResultDto XmlImport(ContentImportArgsDto args)
     {
         var l = Log.Fn<ContentImportResultDto>(args.DebugInfo);
@@ -102,7 +100,6 @@ public class ContentImportApi(
         return l.Return(importer);
     }
 
-    [HttpPost]
     public bool Import(EntityImportDto args)
     {
         var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);

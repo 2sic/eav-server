@@ -1,6 +1,6 @@
 ﻿using ToSic.Sys.Data;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.Ui.Edit.Sys.Load;
 
 /// <summary>
 /// API Keys to use in the UI - such as Google Maps, Google Translate etc.

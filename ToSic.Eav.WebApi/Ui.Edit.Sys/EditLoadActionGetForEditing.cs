@@ -3,7 +3,7 @@ using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.WebApi.Sys.Dto;
 using ToSic.Sys.HookUp;
 
-namespace ToSic.Eav.WebApi.Sys.Entities;
+namespace ToSic.Eav.Ui.Edit.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EditLoadActionGetForEditing(AppWorkContextService appWorkCtxSvc, EntityAssembler entityAssembler)

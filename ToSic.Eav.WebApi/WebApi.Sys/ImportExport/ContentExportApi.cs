@@ -87,7 +87,6 @@ public class ContentExportApi(
         return l.ReturnAsOk((fileContent, fileName));
     }
 
-    [HttpGet]
     public THttpResponseType DownloadTypeAsJson(IUser user, string name)
     {
         var l = Log.Fn<THttpResponseType>($"get fields type:{name}");
@@ -105,7 +104,6 @@ public class ContentExportApi(
         return l.ReturnAsOk(responseMaker.File(typeJson, fileName, MimeTypeConstants.Json));
     }
 
-    [HttpGet]
     public THttpResponseType DownloadEntityAsJson(IUser user, int id, string prefix, bool withMetadata)
     {
         var l = Log.Fn<THttpResponseType>($"get fields id:{id}");
@@ -121,7 +119,6 @@ public class ContentExportApi(
             .RemoveNonFilenameCharacters()));
     }
 
-    [HttpGet]
     public THttpResponseType JsonBundleExport(IUser user, Guid exportConfiguration, int indentation)
     {
         var l = Log.Fn<THttpResponseType>($"create Json Bundle Export for ExportConfiguration:{exportConfiguration}");

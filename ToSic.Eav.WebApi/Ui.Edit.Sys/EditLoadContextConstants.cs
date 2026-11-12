@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Entities;
+﻿namespace ToSic.Eav.Ui.Edit.Sys;
 
 public class EditLoadContextConstants
 {

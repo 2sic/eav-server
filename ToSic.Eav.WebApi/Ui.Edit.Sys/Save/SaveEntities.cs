@@ -3,8 +3,7 @@ using ToSic.Eav.Data.Sys.EntityPair;
 using ToSic.Eav.Data.Sys.Save;
 using ToSic.Eav.WebApi.Sys.Dto;
 
-
-namespace ToSic.Eav.WebApi.Sys.Cms;
+namespace ToSic.Eav.Ui.Edit.Sys.Save;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class SaveEntities(EntityAssembler entityAssembler, AppWorkChain<WorkEntitySave> workEntSave)

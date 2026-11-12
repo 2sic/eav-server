@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Dto;
+﻿using ToSic.Eav.WebApi.Sys.Dto;
+
+namespace ToSic.Eav.Ui.Edit.Sys.Load;
 
 public class EditPrefetchDto
 {
