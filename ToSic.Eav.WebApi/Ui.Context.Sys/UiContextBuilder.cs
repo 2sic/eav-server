@@ -17,10 +17,6 @@ public class UiContextBuilder(Generator<IUiContextParts, IAppReader?> contextPar
     /// <inheritdoc />
     public ContextDto Get(Ctx flags, CtxEnable enableFlags)
     {
-        // logic for activating each part
-        // 1. either that switch is on
-        // 2. or the null-check: all is on
-        // 3. This also means if the switch is off, it's off
         return new()
         {
             App = TryGet(flags.HasFlag(Ctx.AppBasic) || flags.HasFlag(Ctx.AppAdvanced), () => ContextParts.GetApp(flags)),
