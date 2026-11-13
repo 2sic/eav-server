@@ -12,6 +12,7 @@ public class StartupTestWork: StartupTestsApps
         base.ConfigureServices(services);
         services
             .AddEavWork()
+            .AddEavWorkDataSourceProviders()
             .AddWorkFallbackServices();
     }
 }

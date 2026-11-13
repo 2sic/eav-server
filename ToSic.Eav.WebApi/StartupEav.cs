@@ -21,6 +21,7 @@ public static class StartupEav
             .AddEavInsights()
             .AddEavWebApi()
             .AddEavWork()
+            .AddEavWorkDataSourceProviders()
             // Apps
             .AddEavAppsPersistence()
             .AddEavContext()

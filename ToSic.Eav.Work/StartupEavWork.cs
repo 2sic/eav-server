@@ -9,6 +9,7 @@ using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataFormats.EavLight.Sys;
+using ToSic.Eav.DataSource.DataProviders;
 using ToSic.Eav.DataSources.ImportExport.Sys;
 using ToSic.Eav.DataSources.Query.Dev.Sys;
 using ToSic.Eav.DataSources.Query.Sys;
@@ -151,6 +152,27 @@ public static class StartupEavWork
         services.TryAddTransient<ImportFromRemote>();
 
         services.TryAddTransient<WorkMetadataGet>();
+
+        // Stats - with providers coming from elsewhere
+        services.AddEavWorkDataSourceProviders();
+
+        return services;
+    }
+
+    /// <summary>
+    /// This will add keyed data-source providers.
+    /// Some may be replaced by platform implementations
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    /// <remarks>
+    /// All calls in here MUST use TryAddTransient, and never without the Try
+    /// </remarks>
+    public static IServiceCollection AddEavWorkDataSourceProviders(this IServiceCollection services)
+    {
+        // "original"
+        services.TryAddTransient<AppStatisticsProvider>();   // for inheritance
+        services.TryAddKeyedTransient<IDataSourceRawDataProviderWithCtx, AppStatisticsProvider>(AppStatisticsProvider.NameId);
 
         return services;
     }
