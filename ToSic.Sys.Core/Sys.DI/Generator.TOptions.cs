@@ -20,24 +20,21 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
     {
         var instance = sp.Build<TService>(Log);
         //_initCall?.Invoke(instance);
-
-        if (instance is IServiceWithSetup<TOptions> settable)
-            settable.Setup(options);
-        else
-            throw new NotSupportedException($"The service {nameof(TOptions)} doesn't support setting options");
-        return instance;
+        return SetupOrThrow(options, instance);
     }
 
     public TService New(string key, TOptions options)
     {
         var instance = sp.Build<TService>(key, Log);
-        //_initCall?.Invoke(instance);
+        return SetupOrThrow(options, instance);
+    }
 
-        if (instance is IServiceWithSetup<TOptions> settable)
-            settable.Setup(options);
-        else
-            throw new NotSupportedException($"The service {nameof(TOptions)} doesn't support setting options");
-        return instance;
+    public TService? TryNew(string key, TOptions options)
+    {
+        var instance = sp.TryBuild<TService>(key, Log);
+        return instance == null
+            ? instance
+            : SetupOrThrow(options, instance);
     }
 
     /// <summary>
@@ -53,6 +50,14 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
     /// _if_ they support logging.
     /// </summary>
     public ILog? Log { get; private set; }
+
+    private static TService SetupOrThrow(TOptions options, TService instance)
+    {
+        if (instance is not IServiceWithSetup<TOptions> settable)
+            throw new NotSupportedException($"The service {typeof(TService).Name} doesn't support setting options of type {typeof(TOptions).Name}");
+        settable.Setup(options);
+        return instance;
+    }
 
 //    /// <summary>
 //    /// Set the init-command as needed

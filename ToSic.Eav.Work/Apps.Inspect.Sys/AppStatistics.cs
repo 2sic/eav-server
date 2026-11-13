@@ -14,12 +14,13 @@ namespace ToSic.Eav.Apps.Inspect.Sys;
     UiHint = "Export statistics for the current app"
 )]
 // ReSharper disable once UnusedMember.Global
-public class AppStatistics(CustomDataSource.Dependencies services, AppWorkQuick<IDataSourceRawDataProviderWithCtx> data)
+public class AppStatistics(CustomDataSource.Dependencies services, AppWorkQuick<DataSourceProviderBroker> data)
     : CustomDataSource(services, logName: "Sxc.AppStats", connect: [data])
 {
     [Configuration(Field = "ZoneId")]
     public int OfZoneId => Configuration.GetThis(ZoneId);
 
     protected override IEnumerable<IRawData> GetDefault()
-        => data.New(AppStatisticsProvider.NameId, new AppIdentity(OfZoneId, AppId)).Provide(Configuration);
+        => data.New(new AppIdentity(OfZoneId, AppId))
+            .Provide(AppStatisticsProvider.NameId /*+ "x"*/, Configuration);
 }
