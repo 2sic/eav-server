@@ -26,7 +26,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
     #region Options and Setup
 
     [PrivateApi]
-    public record Options(IAppIdentity Identity, IEntity QueryDef, ILookUpEngine? LookUpEngine /* IDataSource? Source*/); // #DropInOnQuery
+    public record Options(IAppIdentity Identity, IEntity QueryDef, ILookUpEngine? LookUpEngine);
 
     /// <summary>
     /// Initialize a full query object. This is necessary for it to work
@@ -35,7 +35,7 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
     [PrivateApi]
     public void Setup(Options options)
     {
-        var (identity, queryDef, lookUpEngineOrNull/*, source*/) = options;
+        var (identity, queryDef, lookUpEngineOrNull) = options;
         var l = Log.Fn($"{identity.Show()}");
 
         ZoneId = identity.ZoneId;
@@ -44,15 +44,6 @@ public class Query(DataSourceBase.Dependencies services, LazySvc<QueryFactory> q
 
         if (lookUpEngineOrNull != null)
             ((DataSourceConfiguration)Configuration).LookUpEngine = lookUpEngineOrNull;
-
-        // Note: 2dm - this got broken in 2026-02-10, but I have a feeling that it has no impact whatsoever.
-        // So I'll comment it out and keep till ca. 2027-06 #DropInOnQuery
-        //// hook up in, just in case we get parameters from an In
-        //if (source == null)
-        //{
-        //    l.A("found target for Query, will attach");
-        //    _inSource = source;
-        //}
 
         l.Done();
     }
