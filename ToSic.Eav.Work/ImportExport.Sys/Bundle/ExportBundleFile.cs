@@ -1,11 +1,9 @@
-﻿using ToSic.Eav.ImportExport.Sys;
-using ToSic.Eav.WebApi.Sys.Security;
+﻿using ToSic.Eav.WebApi.Sys.Security;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Users;
-using FileResult = ToSic.Eav.ImportExport.Sys.FileResult;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.ImportExport.Sys.Bundle;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportBundleFile(AppWorkChain<ExportBundlePrepare> exportBundlePrepare, LazySvc<ISysFeaturesService> features)

@@ -1,15 +1,15 @@
 ﻿using System.Text;
 
-namespace ToSic.Eav.Serialization.Sys;
+namespace ToSic.Sys.Utils;
 
 /// <summary>
 /// https://stackoverflow.com/questions/11743160/how-do-i-encode-and-decode-a-base64-string
 /// </summary>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class Base64
+public static class Base64
 {
-    public static string? Encode(string? plainText)
+    public static string? Utf8ToBase64(this string? plainText)
     {
         if (plainText == null)
             return null;
@@ -17,7 +17,8 @@ public class Base64
         return Convert.ToBase64String(plainTextBytes);
     }
 
-    public static string? Decode(string? base64EncodedData)
+    [return: NotNullIfNotNull(nameof(base64EncodedData))]
+    public static string? Base64ToUtf8(this string? base64EncodedData)
     {
         if (base64EncodedData == null)
             return null;

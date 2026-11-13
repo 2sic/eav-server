@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.Serialization;
+using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.ImportExport.Sys.JsonData;
 
@@ -10,27 +11,18 @@ public class ImportDataJson(
     : ServiceWithSetup<IAppWorkContext>("Api.EaCtIm", connect: [workEntSave, jsonReaderLazy, importLogSettings])
 {
 
-    #region Detailed Logging
-
-    [field: AllowNull, MaybeNull]
-    private LogSettings LogSettings => field ??= importLogSettings.GetLogSettings();
-
-    #endregion
-
-
-
-    public bool Import(EntityImportDto args)
+    public bool Import(DataFileImportOptions args)
     {
-        var l = Log.Fn<bool>(message: "import json item" + args.DebugInfo);
+        var l = Log.Fn<bool>(message: "import json item" + args);
         try
         {
             var deserializer = jsonReaderLazy.New(new(MyOptions.AppReader)
             {
                 PreferLocalAppTypes = true,
-                LogSettings = LogSettings,
+                LogSettings = importLogSettings.GetLogSettings(),
             });
 
-            var listToImport = new List<IEntity> { deserializer.Deserialize(args.GetContentString()) };
+            var listToImport = new List<IEntity> { deserializer.Deserialize(args.ContentBase64.Base64ToUtf8()) };
 
             workEntSave.New(MyOptions).Import(listToImport);
 

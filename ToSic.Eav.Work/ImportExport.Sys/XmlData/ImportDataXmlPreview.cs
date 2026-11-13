@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.WebApi.Sys.Dto;
-
-namespace ToSic.Eav.ImportExport.Sys.XmlData;
+﻿namespace ToSic.Eav.ImportExport.Sys.XmlData;
 
 /// <inheritdoc />
 [ShowApiWhenReleased(ShowApiMode.Never)]
@@ -8,16 +6,16 @@ public class ImportDataXmlPreview(AppWorkChain<ImportDataXml> contentImportXml)
     : ServiceWithSetup<IAppWorkContext>("Api.EaCtIm", connect: [contentImportXml])
 {
 
-    public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
+    public ContentImportResult XmlPreview(ContentFileImportOptions args)
     {
-        var l = Log.Fn<ContentImportResultDto>("eval content - start" + args.DebugInfo);
+        var l = Log.Fn<ContentImportResult>("eval content - start" + args.DebugInfo);
 
         var import = contentImportXml.New(MyOptions).PrepareXmlImport(args);
         if (import.ErrorLog.HasErrors)
             l.ReturnAsError(new(!import.ErrorLog.HasErrors, import.ErrorLog.Errors));
 
         var stats = import.Preparations;
-        var result = new ContentImportResultDto(!import.ErrorLog.HasErrors, new ImportStatisticsDto
+        var result = new ContentImportResult(!import.ErrorLog.HasErrors, new ImportStatisticsDto
         {
             AmountOfEntitiesCreated = stats.EntitiesToCreate,
             AmountOfEntitiesDeleted = stats.DeleteCount,

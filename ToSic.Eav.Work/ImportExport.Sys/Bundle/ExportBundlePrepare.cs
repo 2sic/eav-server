@@ -1,8 +1,7 @@
-﻿using ToSic.Eav.ImportExport.Sys;
-using ToSic.Eav.Models;
+﻿using ToSic.Eav.Models;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.ImportExport.Sys.Bundle;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportBundlePrepare(Generator<IJsonDataWriter> jsonSerializer)

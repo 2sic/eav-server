@@ -7,7 +7,7 @@ using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Capabilities.SysFeatures;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.ImportExport.Sys.Bundle;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportBundleSave(AppWorkChain<ExportBundlePrepare> exportBundlePrepare, IAppPathsMicroSvc appPathSvc, LazySvc<ISysFeaturesService> features)

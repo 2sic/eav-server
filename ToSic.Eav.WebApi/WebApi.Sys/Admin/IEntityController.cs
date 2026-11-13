@@ -59,17 +59,17 @@ public interface IEntityController
     /// This seems to be for XML import of a list
     /// Used to be POST ContentImport/EvaluateContent
     /// </summary>
-    ContentImportResultDto XmlPreview(ContentImportArgsDto args);
+    ContentImportResult XmlPreview(ContentFileImportOptions args);
         
     /// <summary>
     /// This seems to be for XML import of a list
     /// Used to be POST ContentImport/ImportContent
     /// </summary>
-    ContentImportResultDto XmlUpload(ContentImportArgsDto args);
+    ContentImportResult XmlUpload(ContentFileImportOptions args);
         
     /// <summary>
     /// This is the single-item json import
     /// Used to be POST ContentImport/Import
     /// </summary>
-    bool Upload(EntityImportDto args);
+    bool Upload(DataFileImportOptions args);
 }

@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
-using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.ImportExport.Sys.Bundle;
 internal class JsonBundleBuilder(IAppReader appReader, ILog parentLog) : HelperBase(parentLog, "Eav.BDHlp")
 {
     internal JsonBundle BundleBuild(ExportConfiguration export, IJsonDataWriter serializer)

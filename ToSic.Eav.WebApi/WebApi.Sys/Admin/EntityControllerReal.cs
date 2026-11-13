@@ -71,17 +71,17 @@ public class EntityControllerReal(
 
 
     /// <inheritdoc/>
-    public ContentImportResultDto XmlPreview(ContentImportArgsDto args)
+    public ContentImportResult XmlPreview(ContentFileImportOptions args)
         => contentImportXmlPreview.New(args.AppId).XmlPreview(args);
 
 
     /// <inheritdoc/>
-    public ContentImportResultDto XmlUpload(ContentImportArgsDto args)
+    public ContentImportResult XmlUpload(ContentFileImportOptions args)
         => contentImportXml.New(args.AppId).XmlImport(args);
 
 
     /// <inheritdoc/>
-    public bool Upload(EntityImportDto args)
+    public bool Upload(DataFileImportOptions args)
         => contentImport.New(args.AppId).Import(args);
 
 }
