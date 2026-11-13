@@ -1,3 +1,4 @@
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.DataSource.VisualQuery;
@@ -28,19 +29,19 @@ public class SharedFields : CustomDataSource
         : base(services, logName: "Eav.SharedFld", connect: [workAttributes, convertAttribute, features])
     {
         ProvideOutRaw(
-            () => Convert(convertAttribute, workAttributes.New(AppId).GetSharedFields(AttributeId)),
+            () => Convert(convertAttribute, workAttributes.New(this.PureIdentity()).GetSharedFields(AttributeId)),
             options: DynamicOptions
         );
         ProvideOutRaw(
             () => FeatureEnabled(features)
-                ? Convert(convertAttribute, workAttributes.New(AppId).GetAncestors(AttributeId))
+                ? Convert(convertAttribute, workAttributes.New(this.PureIdentity()).GetAncestors(AttributeId))
                 : [],
             name: "Ancestors",
             options: DynamicOptions
         );
         ProvideOutRaw(
             () => FeatureEnabled(features)
-                ? Convert(convertAttribute, workAttributes.New(AppId).GetDescendants(AttributeId))
+                ? Convert(convertAttribute, workAttributes.New(this.PureIdentity()).GetDescendants(AttributeId))
                 : [],
             name: "Descendants",
             options: DynamicOptions

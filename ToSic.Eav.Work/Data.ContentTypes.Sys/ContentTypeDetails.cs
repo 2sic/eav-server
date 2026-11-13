@@ -1,3 +1,4 @@
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.DataSource.VisualQuery;
 
@@ -35,9 +36,9 @@ public class ContentTypeDetails : CustomDataSource
         : base(services, logName: "Eav.CtDetails", connect: [workEntities, convTypeRaw, workAttributes, convAttrDto])
     {
 
-        ProvideOutRaw(() => GetContentTypeDetails(workEntities.New(AppId), convTypeRaw));
+        ProvideOutRaw(() => GetContentTypeDetails(workEntities.New(this.PureIdentity()), convTypeRaw));
 
-        ProvideOutRaw(() => GetFields(workAttributes.New(AppId), convAttrDto), name: "Fields");
+        ProvideOutRaw(() => GetFields(workAttributes.New(this.PureIdentity()), convAttrDto), name: "Fields");
     }
 
     private IEnumerable<ContentTypeRaw> GetContentTypeDetails(WorkEntities workEntities,

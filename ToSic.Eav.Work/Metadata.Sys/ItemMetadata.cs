@@ -1,4 +1,5 @@
 using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Build;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.DataFormats.EavLight;
@@ -33,10 +34,10 @@ public class ItemMetadata : CustomDataSource
         Generator<IConvertToEavLight> converters)
         : base(services, "Sxc.ItemMd", connect: [metadata, appReaders, converters])
     {
-        var md = metadata.New(AppId);
-        ProvideOutRaw(() => Recommendations(md), name: "Recommendations");
+        var md = new Lazy<WorkMetadataGet>(() => metadata.New(this.PureIdentity()));
+        ProvideOutRaw(() => Recommendations(md.Value), name: "Recommendations");
         ProvideOutRaw(() => Items(appReaders, converters), name: "Items", options: DynamicOptions);
-        ProvideOutRaw(() => Target(md), name: "For");
+        ProvideOutRaw(() => Target(md.Value), name: "For");
     }
 
     private MetadataListDto Result(WorkMetadataGet workMetadata)
@@ -94,8 +95,10 @@ public class ItemMetadata : CustomDataSource
     private IEnumerable<MetadataForRaw> Target(WorkMetadataGet workMetadata)
         => [new(Result(workMetadata).For)];
 
+    // TODO: @2rb get rid of this, make the data returned by Items() a RawEntityAutoConvert and then drop the options on top
     private static DataFactoryOptions DynamicOptions() => new() { AllowUnknownValueTypes = true };
 
+    // ReSharper disable UnusedMember.Local
     private sealed class MetadataRecommendationRaw(MetadataRecommendation recommendation) : IRawEntityAutoConvert
     {
         public string ContentTypeId => recommendation.Id;
@@ -125,4 +128,5 @@ public class ItemMetadata : CustomDataSource
         [ContentTypeTitle]
         public string? Title => target.Title;
     }
+    // ReSharper restore UnusedMember.Local
 }

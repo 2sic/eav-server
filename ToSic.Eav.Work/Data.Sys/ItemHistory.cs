@@ -1,3 +1,4 @@
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.DataSource.VisualQuery;
 
@@ -20,7 +21,7 @@ public class ItemHistory(CustomDataSource.Dependencies services, AppWorkQuick<Wo
     public int EntityId => Configuration.GetThis(0);
 
     protected override IEnumerable<IRawData> GetDefault()
-        => versioning.New(appId: AppId)
+        => versioning.New(this.PureIdentity())
             .VersionHistory(EntityId)
             .Select(history => new ItemHistoryRaw(history));
 
