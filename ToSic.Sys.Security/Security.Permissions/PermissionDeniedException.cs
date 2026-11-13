@@ -2,4 +2,4 @@
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class PermissionDeniedException(string? message) : Exception(message ?? "Permission Denied");
+public class PermissionDeniedException(string? message) : UnauthorizedAccessException(message ?? "Permission Denied");

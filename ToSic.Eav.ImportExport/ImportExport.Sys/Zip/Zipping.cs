@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
 using System.Text;
 using ToSic.Eav.Security.Files;
+using ToSic.Sys.Security.Permissions;
 
 namespace ToSic.Eav.ImportExport.Sys.Zip;
 
