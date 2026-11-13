@@ -15,13 +15,6 @@ public class ImpExpHelpers(IAppReaderFactory appReadFac, IUser user, ISite site,
     /// Get an app - but only allow zone change if super-user
     /// </summary>
     /// <returns></returns>
-    internal IAppReader GetReaderAfterZoneSwitchPermissionCheck(int appId) =>
-        GetReaderAfterZoneSwitchPermissionCheck(site.ToAppIdentity(appId));
-
-    /// <summary>
-    /// Get an app - but only allow zone change if super-user
-    /// </summary>
-    /// <returns></returns>
     internal IAppReader GetReaderAfterZoneSwitchPermissionCheck(IAppIdentity appIdentity)
     {
         var l = Log.Fn<IAppReader>($"superuser: {user.IsSystemAdmin}; appIdentity: {appIdentity.Show()}");
