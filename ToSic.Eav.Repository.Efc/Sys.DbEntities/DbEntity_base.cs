@@ -8,5 +8,5 @@ internal partial class DbEntity(DbStorage.DbStorage dbStore, DataAssembler dataA
     private ILog? LogDetails => dbStore.LogDetails == null ? null : field ??= Log;
     private ILog? LogSummary => dbStore.LogSummary == null ? null : field ??= Log;
 
-    private IJsonDataWriter Serializer { get; } = dbStore.JsonWriteGenerator.New();
+    private IJsonDataWriter Serializer { get; } = dbStore.NewJsonDataWriter();
 }

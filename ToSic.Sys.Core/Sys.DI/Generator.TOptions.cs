@@ -19,7 +19,7 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
     public TService New(TOptions options)
     {
         var instance = sp.Build<TService>(Log);
-        _initCall?.Invoke(instance);
+        //_initCall?.Invoke(instance);
 
         if (instance is IServiceWithSetup<TOptions> settable)
             settable.Setup(options);
@@ -42,22 +42,22 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
     /// </summary>
     public ILog? Log { get; private set; }
 
-    /// <summary>
-    /// Set the init-command as needed
-    /// </summary>
-    /// <param name="newInitCall"></param>
-    public Generator<TService, TOptions> SetInit(Action<TService> newInitCall)
-    {
-#if DEBUG
-        // Warn if we're accidentally replacing init-call, but only do this on debug
-        // In most cases it has no consequences, but we should write code that avoids this
-        if (_initCall != null)
-            throw new($"You tried to call {nameof(SetInit)} twice. This should never happen");
-#endif
-        _initCall = newInitCall;
-        return this;
-    }
-    private Action<TService>? _initCall;
+//    /// <summary>
+//    /// Set the init-command as needed
+//    /// </summary>
+//    /// <param name="newInitCall"></param>
+//    public Generator<TService, TOptions> SetInit(Action<TService> newInitCall)
+//    {
+//#if DEBUG
+//        // Warn if we're accidentally replacing init-call, but only do this on debug
+//        // In most cases it has no consequences, but we should write code that avoids this
+//        if (_initCall != null)
+//            throw new($"You tried to call {nameof(SetInit)} twice. This should never happen");
+//#endif
+//        _initCall = newInitCall;
+//        return this;
+//    }
+//    private Action<TService>? _initCall;
 
 
 }

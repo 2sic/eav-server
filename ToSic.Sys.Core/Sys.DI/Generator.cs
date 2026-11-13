@@ -32,7 +32,7 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     public TService New()
     {
         var service = sp.Build<TService>(Log);
-        _initCall?.Invoke(service);
+        //_initCall?.Invoke(service);
         return service;
     }
 
@@ -47,36 +47,36 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     public TService New(string key)
     {
         var service = sp.Build<TService>(key, Log);
-        _initCall?.Invoke(service);
+        //_initCall?.Invoke(service);
         return service;
     }
     
     public TService? TryNew(string key)
     {
         var service = sp.TryBuild<TService>(key, Log);
-        if (service == null)
-            return null;
-        _initCall?.Invoke(service);
+        //if (service == null)
+        //    return null;
+        //_initCall?.Invoke(service);
         return service;
     }
     
     #endregion
 
 
-    #region SetInit
+    //#region SetInit
 
-    /// <summary>
-    /// Set the init-command as needed
-    /// </summary>
-    /// <param name="newInitCall"></param>
-    /// <param name="allowReplace">Allow replacing the set-init</param>
-    public Generator<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
-    {
-        _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
-        return this;
-    }
-    private Action<TService>? _initCall;
+    ///// <summary>
+    ///// Set the init-command as needed
+    ///// </summary>
+    ///// <param name="newInitCall"></param>
+    ///// <param name="allowReplace">Allow replacing the set-init</param>
+    //public Generator<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
+    //{
+    //    _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
+    //    return this;
+    //}
+    //private Action<TService>? _initCall;
 
-    #endregion
+    //#endregion
 
 }

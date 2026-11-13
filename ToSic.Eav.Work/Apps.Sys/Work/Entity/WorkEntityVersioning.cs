@@ -3,9 +3,6 @@ using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Serialization;
-using ToSic.Eav.Serialization.Sys;
-
-
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -44,8 +41,9 @@ public class WorkEntityVersioning(
             .Deserialize(timelineItem);
 
         // Restore Entity
-        import.SetInit(i => i.Init(MyOptions.ZoneId, MyOptions.AppId, false, false))
-            .Value.ImportIntoDb([], new List<Entity> { (Entity)newVersion });
+        import.Value
+            .Init(MyOptions.ZoneId, MyOptions.AppId, false, false)
+            .ImportIntoDb([], new List<Entity> { (Entity)newVersion });
 
         // Delete Draft (if any)
         var entityDraft = db.Publishing.GetDraftBranchEntityId(entityId);

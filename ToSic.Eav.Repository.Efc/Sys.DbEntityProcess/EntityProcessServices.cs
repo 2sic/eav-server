@@ -26,7 +26,7 @@ internal class EntityProcessServices(
 
     public DataAssembler DataAssembler = dataAssembler;
 
-    public IJsonDataWriter Serializer { get; } = dbStorage.JsonWriteGenerator.New();
+    public IJsonDataWriter Serializer { get; } = dbStorage.NewJsonDataWriter();
 
 
     [field: AllowNull, MaybeNull]

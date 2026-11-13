@@ -142,7 +142,12 @@ public class DbStorage(
         }
     }
 
-    internal Generator<IJsonDataWriter> JsonWriteGenerator { get; } = jsonWriteGenerator;
+    internal IJsonDataWriter NewJsonDataWriter()
+    {
+        var writer = jsonWriteGenerator.New();
+        writer.ConfigureLogging(LogSettings);
+        return writer;
+    }
 
     internal ISysFeaturesService Features => features;
 
@@ -194,7 +199,6 @@ public class DbStorage(
         LogDetails = null;
         LogSummary = null;
 
-        JsonWriteGenerator.SetInit(ser => ser.ConfigureLogging(logSettings), allowReplace: true);
         l.Done();
     }
 

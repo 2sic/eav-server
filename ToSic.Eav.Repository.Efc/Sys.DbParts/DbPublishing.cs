@@ -58,7 +58,7 @@ internal class DbPublishing(DbStorage.DbStorage dbStore, DataAssembler dataAssem
             // update the content-id
             var cloneWithPublishedId = dataAssembler.Entity.CreateFrom(draftToPublishForJson, id: publishedId);
 
-            var serializer = dbStore.JsonWriteGenerator.New();
+            var serializer = dbStore.NewJsonDataWriter();
             json = serializer.Serialize(cloneWithPublishedId);
 
             l.A($"changed - final json: {json}");

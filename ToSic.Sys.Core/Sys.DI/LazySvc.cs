@@ -43,7 +43,7 @@ public class LazySvc<TService>(IServiceProvider sp)
     public TService Value => _valueGet.Get(() =>
     {
         var value = sp.Build<TService>(Log);
-        _initCall?.Invoke(value);
+        //_initCall?.Invoke(value);
         return value;
     })!;
     private readonly LazyGetAndReset<TService> _valueGet = new();
@@ -53,21 +53,21 @@ public class LazySvc<TService>(IServiceProvider sp)
     #endregion
 
 
-    #region SetInit
+    //#region SetInit
 
-    /// <summary>
-    /// Set the init-command as needed
-    /// </summary>
-    /// <param name="newInitCall"></param>
-    /// <param name="allowReplace">Allow replacing the set-init</param>
-    public LazySvc<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
-    {
-        _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
-        return this;
-    }
-    private Action<TService>? _initCall;
+    ///// <summary>
+    ///// Set the init-command as needed
+    ///// </summary>
+    ///// <param name="newInitCall"></param>
+    ///// <param name="allowReplace">Allow replacing the set-init</param>
+    //public LazySvc<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
+    //{
+    //    _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
+    //    return this;
+    //}
+    //private Action<TService>? _initCall;
 
-    #endregion
+    //#endregion
 
     // 2026-10-18 2dm: this seems to be an old experiment
     // AFAIK it's only used in tests, so it should be clearly unavailable for normal builds

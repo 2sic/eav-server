@@ -26,7 +26,7 @@ internal partial class DbVersioning(DbStorage.DbStorage dbStore, LazySvc<Compres
             .ToList();
 
         var parentsByChild = GetInboundParentsByChildIds(ids);
-        var serializer = dbStore.JsonWriteGenerator.New();
+        var serializer = dbStore.NewJsonDataWriter();
 
         var historyEntries = items
             .Select(i =>

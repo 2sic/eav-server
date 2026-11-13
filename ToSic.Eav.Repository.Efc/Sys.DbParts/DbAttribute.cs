@@ -6,7 +6,7 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
 internal partial class DbAttribute(DbStorage.DbStorage dbStore) : HelperBase(dbStore.Log, "Db.AttDef")
 {
-    private IJsonDataWriter Serializer { get; } = dbStore.JsonWriteGenerator.New();
+    private IJsonDataWriter Serializer { get; } = dbStore.NewJsonDataWriter();
 
     /// <summary>
     /// Set an Attribute as Title on a Content-Type
