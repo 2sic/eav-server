@@ -18,7 +18,11 @@ public abstract record ModelFromEntityFull: ModelFromEntity, IModelFromEntityBas
     /// Constructor which already includes the data to wrap; rarely used.
     /// </summary>
     /// <param name="entity"></param>
-    protected ModelFromEntityFull(IEntity entity) : base(entity) { }
+    protected ModelFromEntityFull(IEntity entity) : base(entity)
+    { }
+
+    protected ModelFromEntityFull(IEntity entity, string?[] languages) : base(entity, languages)
+    { }
 
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
