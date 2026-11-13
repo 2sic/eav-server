@@ -18,9 +18,9 @@ public class InstallSettingsSvc(
     : ServiceBase("Ins.Install", connect: [ctxSvc, platformAppInstaller, featureService, appSettingsStack, workApps])
 {
     
-    public InstallAppsDto InstallSettings(bool isContentApp)
+    internal InstallAppsRaw InstallSettings(bool isContentApp)
     {
-        var l = Log.Fn<InstallAppsDto>();
+        var l = Log.Fn<InstallAppsRaw>();
 
         // Get Remote Install URL
         var site = ctxSvc.Value.Context.Site;
@@ -29,13 +29,12 @@ public class InstallSettingsSvc(
 
         // Get list of already installed Apps
         var appsOfThisSite = workApps.Value.GetApps(site)
-            .Select(a => new AppDtoLight
-            {
-                name = a.Specs.Name,
-                guid = a.Specs.NameId,
-                version = a.Specs.VersionSafe(),
-            })
-            .ToListOpt();
+            .Select(a => new InstalledAppRaw(
+                Name: a.Specs.Name,
+                AppGuid: a.Specs.NameId,
+                Version: a.Specs.VersionSafe()
+            ))
+            .ToList();
 
         // Get list of allow/forbid rules for the App installer
         var settingsSources = appSettingsStack.Value
@@ -48,8 +47,8 @@ public class InstallSettingsSvc(
         var ruleEntities = rules.Result as IEnumerable<IEntity>; // note: Result is null if nothing found...
         var rulesFinal = ruleEntities?
             .Select(e =>
-                e.ToModel<SiteSetupAutoInstallAppsRule>(options: ToModelOptions.DisableTypeNameCheck)!.GetRuleDto())
-            .ToListOpt();
+                e.ToModel<SiteSetupAutoInstallAppsRule>(options: ToModelOptions.DisableTypeNameCheck)!.ToRaw())
+            .ToList() ?? [];
 
         if (!featureService.Value.IsEnabled(BuiltInFeatures.AppAutoInstallerConfigurable.NameId))
         {
@@ -57,11 +56,10 @@ public class InstallSettingsSvc(
             rulesFinal = [];
         }
 
-        return l.Return(new()
-        {
-            remoteUrl = url,
-            installedApps = appsOfThisSite,
-            rules = rulesFinal,
-        });
+        return l.Return(new(
+            Settings: new(url),
+            InstalledApps: appsOfThisSite,
+            Rules: rulesFinal
+        ));
     }
 }

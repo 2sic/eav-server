@@ -1,5 +1,4 @@
 using ToSic.Eav.Data.Build;
-using ToSic.Eav.Data.ContentTypes;
 using ToSic.Eav.DataSource.VisualQuery;
 
 namespace ToSic.Eav.Apps.Install.Sys;
@@ -21,41 +20,12 @@ public class AppInstallation : CustomDataSource
     public AppInstallation(Dependencies services, LazySvc<InstallSettingsSvc> install)
         : base(services, "Sxc.AppInstall", connect: [install])
     {
-        var result = new Lazy<InstallAppsDto>(() => install.Value.InstallSettings(IsContentApp));
+        var result = new Lazy<InstallAppsRaw>(() => install.Value.InstallSettings(IsContentApp));
 
-        ProvideOutRaw(name: "Settings", data: () => Settings(result.Value), options: Options);
-        ProvideOutRaw(name: "InstalledApps", data: () => InstalledApps(result.Value), options: Options);
-        ProvideOutRaw(name: "Rules", data: () => Rules(result.Value), options: Options);
+        ProvideOutRaw(name: "Settings", data: () => new[] { result.Value.Settings }, options: Options);
+        ProvideOutRaw(name: "InstalledApps", data: () => result.Value.InstalledApps, options: Options);
+        ProvideOutRaw(name: "Rules", data: () => result.Value.Rules, options: Options);
     }
-
-    private IEnumerable<InstallationSettingsRaw> Settings(InstallAppsDto result)
-        => [new(result.remoteUrl)];
-    private IEnumerable<InstalledAppRaw> InstalledApps(InstallAppsDto result)
-        => result.installedApps.Select(app => new InstalledAppRaw(app));
-    private IEnumerable<InstallRuleRaw> Rules(InstallAppsDto result)
-        => result.rules?.Select(rule => new InstallRuleRaw(rule)) ?? [];
 
     private static DataFactoryOptions Options() => new();
-
-    // ReSharper disable NotAccessedPositionalProperty.Local
-    private sealed record InstallationSettingsRaw(string RemoteUrl) : IRawEntityAutoConvert;
-
-    private sealed class InstalledAppRaw(AppDtoLight app) : IRawEntityAutoConvert
-    {
-        [ContentTypeTitle]
-        public string Name => app.name;
-        public string AppGuid => app.guid;
-        public string Version => app.version;
-    }
-
-    private sealed class InstallRuleRaw(AppInstallRuleDto rule) : IRawEntityAutoConvert
-    {
-        [ContentTypeTitle]
-        public string Name => rule.name;
-        public string AppGuid => rule.appGuid;
-        public string Mode => rule.mode;
-        public string Target => rule.target;
-        public string Url => rule.url;
-    }
-    // ReSharper restore NotAccessedPositionalProperty.Local
 }

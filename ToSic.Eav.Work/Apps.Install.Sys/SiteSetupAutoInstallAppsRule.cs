@@ -26,12 +26,11 @@ internal record SiteSetupAutoInstallAppsRule : ModelFromEntity
 
     public string Url => GetThis("");
 
-    public AppInstallRuleDto GetRuleDto() => new()
-    {
-        name = Title,
-        appGuid = AppGuid,
-        mode = Mode,
-        target = Target,
-        url = Url,
-    };
+    public InstallRuleRaw ToRaw() => new(
+        Name: Title,
+        AppGuid: AppGuid,
+        Mode: Mode,
+        Target: Target,
+        Url: Url
+    );
 }
