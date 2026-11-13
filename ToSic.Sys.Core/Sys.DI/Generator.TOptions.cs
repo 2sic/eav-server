@@ -28,6 +28,18 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
         return instance;
     }
 
+    public TService New(string key, TOptions options)
+    {
+        var instance = sp.Build<TService>(key, Log);
+        //_initCall?.Invoke(instance);
+
+        if (instance is IServiceWithSetup<TOptions> settable)
+            settable.Setup(options);
+        else
+            throw new NotSupportedException($"The service {nameof(TOptions)} doesn't support setting options");
+        return instance;
+    }
+
     /// <summary>
     /// Initializer to attach the log to the generator.
     /// The log is later given to generated objects.
