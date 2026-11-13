@@ -47,15 +47,10 @@ public class SharedFields : CustomDataSource
         );
     }
 
-    private IEnumerable<ContentTypeFieldModel> Convert(Generator<ConvertAttributeToRaw> convertAttribute, List<PairTypeWithAttribute> fields)
+    private IEnumerable<ContentTypeFieldRaw> Convert(Generator<ConvertAttributeToRaw> convertAttribute, List<PairTypeWithAttribute> fields)
         => convertAttribute.New()
             .Init(AppId, true)
-            .Convert(fields)
-            .Select(field => new ContentTypeFieldModel(field)
-            {
-                Id = field.Id,
-                Guid = field.Guid ?? Guid.Empty,
-            });
+            .Convert(fields);
 
     private static DataFactoryOptions DynamicOptions() => new() { AllowUnknownValueTypes = true };
 

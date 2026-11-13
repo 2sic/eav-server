@@ -19,7 +19,7 @@ public class ContentTypeFieldRaw: IRawEntityAutoConvert
     public required string Type { get; init; }
     public required string InputType { get; init; }
     
-    [ContentTypeTitle]  // todo
+    [ContentTypeTitle]
     public required string StaticName { get; init; }
     
     public bool IsTitle { get; init; }
