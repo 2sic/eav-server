@@ -6,7 +6,8 @@ namespace ToSic.Eav.Apps.Views.Sys;
 
 public static class AppReaderViewsExtensions
 {
-    public static List<IEntity> GetAllViewEntities(this WorkEntities appEntities, IAppReader appReader) => appReader
+    public static List<IEntity> GetAllViewEntities(this WorkEntities appEntities)
+        => appEntities.MyOptions.AppReader
         .GetCache()
         .PiggyBackGetExpiring(() => appEntities
             .Get(AppConstants.TemplateContentType)

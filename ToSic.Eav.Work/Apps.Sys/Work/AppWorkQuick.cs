@@ -22,4 +22,8 @@ public class AppWorkQuick<TWork>(AppWorkContextService appWorkCtxSvc, Generator<
     
     public TWork New(IAppReader appReader, bool? showDrafts = default)
         => gen.New(appWorkCtxSvc.ContextNew(appReader, showDrafts));
+
+    // WIP new experiment with named keys
+    public TWork New(string key, IAppIdentity appIdentity, bool? showDrafts = default)
+        => gen.New(key, appWorkCtxSvc.ContextNew(appIdentity, showDrafts));
 }
