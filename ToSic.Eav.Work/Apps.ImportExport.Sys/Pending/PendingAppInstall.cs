@@ -19,10 +19,10 @@ public class PendingAppInstall(
     ISysFeaturesService features)
     : ServiceBase("Bck.Export", connect: [envLogger, zipImport, user, site, features])
 {
-    public ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppRaw> pendingApps)
+    public ImportResult InstallPendingApps(int zoneId, IEnumerable<PendingAppRaw> pendingApps)
     {
-        var l = Log.Fn<ImportResultDto>("Install pending apps start");
-        var result = new ImportResultDto();
+        var l = Log.Fn<ImportResult>("Install pending apps start");
+        var result = new ImportResult();
 
         // If feature disabled, exit early with message
         if (!features.IsEnabled(BuiltInFeatures.AppSyncWithSiteFiles))

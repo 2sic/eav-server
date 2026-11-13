@@ -35,5 +35,5 @@ public interface IAppPartsController
     /// <param name="zoneId"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
-    ImportResultDto Import(int zoneId, int appId);
+    ImportResult Import(int zoneId, int appId);
 }

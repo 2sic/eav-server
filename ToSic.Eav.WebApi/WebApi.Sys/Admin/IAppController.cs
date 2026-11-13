@@ -26,10 +26,10 @@ public interface IAppController
     /// Reset an App to the last xml state
     /// </summary>
     /// <returns></returns>
-    Task<ImportResultDto> Reset(int zoneId, int appId, bool withPortalFiles);
+    Task<ImportResult> Reset(int zoneId, int appId, bool withPortalFiles);
 
-    ImportResultDto Import(int zoneId);
+    ImportResult Import(int zoneId);
 
 
-    ImportResultDto InstallPendingApps(int zoneId, IEnumerable<PendingAppRaw> pendingApps);
+    ImportResult InstallPendingApps(int zoneId, IEnumerable<PendingAppRaw> pendingApps);
 }

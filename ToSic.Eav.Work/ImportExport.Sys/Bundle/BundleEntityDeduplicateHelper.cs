@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.ImportExport.Json.V1;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.ImportExport.Sys.Bundle;
 internal class BundleEntityDeduplicateHelper(ILog parentLog) : HelperBase(parentLog, "Eav.BDHlp")
 {
 

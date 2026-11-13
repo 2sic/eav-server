@@ -29,15 +29,15 @@ public class AppStateSyncRestore(
     ISysFeaturesService features)
     : ServiceBase("Bck.Export",
         connect: [xmlImportWithFilesLazy, impExpHelpers, workAppsRemove, site, user, env, zipImport, features]),
-        IWork<AppStateSyncRestore.Parameters, ImportResultDto>
+        IWork<AppStateSyncRestore.Parameters, ImportResult>
 {
     public record Parameters(int ZoneId, int AppId, string DefaultLanguage, bool WithSiteFiles): IAppIdentity;
 
-    public async Task<Package<ImportResultDto>> Handle(WorkContext context, Package<Parameters> package)
+    public async Task<Package<ImportResult>> Handle(WorkContext context, Package<Parameters> package)
     {
         var parameters = package.Data;
-        var l = Log.Fn<ImportResultDto>($"Reset App {parameters.Show()}");
-        var result = new ImportResultDto();
+        var l = Log.Fn<ImportResult>($"Reset App {parameters.Show()}");
+        var result = new ImportResult();
 
 
         if (features.IsEnabled(BuiltInFeatures.AppStateSyncRestoreDisabled))

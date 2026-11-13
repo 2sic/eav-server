@@ -2,7 +2,6 @@
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.LogSettings;
 using ToSic.Eav.ImportExport.Sys.XmlList;
-using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.ImportExport.Sys.XmlData;
 
@@ -11,16 +10,9 @@ public class ImportDataXml(LazySvc<ImportListXml> importListXml, AppCachePurger 
     : ServiceWithSetup<IAppWorkContext>("Api.EaCtIm", connect: [importListXml, appCachePurger, appsCatalog, importLogSettings])
 {
     
-    #region Detailed Logging
-
-    [field: AllowNull, MaybeNull]
-    private LogSettings LogSettings => field ??= importLogSettings.GetLogSettings();
-
-    #endregion
-
-    public ContentImportResultDto XmlImport(ContentImportArgsDto args)
+    public ContentImportResult XmlImport(ContentFileImportOptions args)
     {
-        var l = Log.Fn<ContentImportResultDto>(args.DebugInfo);
+        var l = Log.Fn<ContentImportResult>(args.DebugInfo);
 
         var import = PrepareXmlImport(args);
 
@@ -33,7 +25,7 @@ public class ImportDataXml(LazySvc<ImportListXml> importListXml, AppCachePurger 
         return l.Return(new(!import.ErrorLog.HasErrors, null), $"done, errors: {import.ErrorLog.HasErrors}");
     }
 
-    public ImportListXml PrepareXmlImport(ContentImportArgsDto args)
+    public ImportListXml PrepareXmlImport(ContentFileImportOptions args)
     {
         var l = Log.Fn<ImportListXml>($"prepare xml import {args.DebugInfo}");
         var contextLanguages = appsCatalog
@@ -51,7 +43,7 @@ public class ImportDataXml(LazySvc<ImportListXml> importListXml, AppCachePurger 
             args.DefaultLanguage,
             args.ClearEntities,
             args.ImportResourcesReferences,
-            LogSettings
+            importLogSettings.GetLogSettings()
         );
         return l.Return(importer);
     }

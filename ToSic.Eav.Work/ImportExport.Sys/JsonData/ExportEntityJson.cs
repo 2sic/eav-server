@@ -1,11 +1,10 @@
 ﻿using ToSic.Eav.Data.Sys.Entities;
-using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Sys.Security;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.ImportExport.Sys.JsonData;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportEntityJson(Generator<IJsonDataWriter> jsonSerializer)

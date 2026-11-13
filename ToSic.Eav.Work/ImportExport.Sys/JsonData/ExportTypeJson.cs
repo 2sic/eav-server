@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.ImportExport.Sys;
-using ToSic.Eav.Serialization;
+﻿using ToSic.Eav.Serialization;
 using ToSic.Eav.WebApi.Sys.Security;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.WebApi.Sys.ImportExport;
+namespace ToSic.Eav.ImportExport.Sys.JsonData;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportTypeJson(Generator<IJsonDataWriter> jsonSerializer)

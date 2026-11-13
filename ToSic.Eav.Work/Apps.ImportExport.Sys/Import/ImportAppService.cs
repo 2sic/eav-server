@@ -16,10 +16,10 @@ public class ImportAppService(
     IUser user)
     : ServiceBase("Bck.Export", connect: [envLogger, zipImport, globalConfiguration, user])
 {
-    public ImportResultDto Import(Stream stream, int zoneId, string renameApp)
+    public ImportResult Import(Stream stream, int zoneId, string renameApp)
     {
-        var l = Log.Fn<ImportResultDto>("start import app from stream");
-        var result = new ImportResultDto();
+        var l = Log.Fn<ImportResult>("start import app from stream");
+        var result = new ImportResult();
 
         if (!string.IsNullOrEmpty(renameApp))
             l.A($"new app name: {renameApp}");

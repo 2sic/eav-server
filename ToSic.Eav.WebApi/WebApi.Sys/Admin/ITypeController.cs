@@ -43,7 +43,7 @@ public interface ITypeController
     /// New in 2sxc 11.07
     /// </remarks>
     /// <returns></returns>
-    ImportResultDto Import(int zoneId, int appId);
+    ImportResult Import(int zoneId, int appId);
 
     /// <summary>
     /// Json Bundle Export
