@@ -20,13 +20,12 @@ public class AppWorkContextService(
     }
     
     public IAppWorkContext ContextNew(IAppReader appReader, bool? showDrafts = default)
-        => new AppWorkContext(appReader, this, showDrafts);
+        => new AppWorkContext(appReader, this, dbGen, showDrafts);
     public IAppWorkContext ContextNew(int appId, bool? showDrafts = default)
         => ContextNew(appReaders.Value.Get(appId), showDrafts);
     public IAppWorkContext ContextNew(IAppIdentity appIdentity, bool? showDrafts = default)
         => ContextNew(appReaders.Value.GetOrKeep(appIdentity), showDrafts);
 
-    internal Generator<DbStorage, StorageOptions> DbGenerator => dbGen;
     internal LazySvc<IDataSourcesService> DataSourcesSvc => dataSourceSvc;
 
 }

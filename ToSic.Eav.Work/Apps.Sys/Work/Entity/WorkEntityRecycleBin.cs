@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using ToSic.Eav.ImportExport.Json.Sys;
-using ToSic.Eav.Repository.Efc.Sys.DbParts;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Sys.DbParts;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Utils;
@@ -11,8 +12,8 @@ using ToSic.Sys.Utils.Compression;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcy", connect: [compressor, jsonSerializer])
+public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer, Generator<DbStorage, StorageOptions> dbGen)
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcy", connect: [compressor, jsonSerializer, dbGen])
 {
     /// <summary>
     /// Old SQL name, which is still used as a key in the history table, so we need to keep it here as a constant.
@@ -45,7 +46,7 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJso
 
         var appId = MyOptions.AppId;
         var appRefId = DbVersioning.ParentRefForApp(appId)!;
-        var db = MyOptions.NewDbStorage().SqlDb;
+        var db = dbGen.New(new(MyOptions.AppReader)).SqlDb;
 
         var softDeletedItems = LoadSoftDeletedRecycleBinItems(db, appId, appRefId, dateFrom, dateTo, contentType);
         var historyOnlyItems = LoadHistoryOnlyRecycleBinItems(db, appId, appRefId, dateFrom, dateTo, contentType);

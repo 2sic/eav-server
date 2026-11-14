@@ -1,7 +1,11 @@
-﻿namespace ToSic.Eav.Apps.Sys.Work;
+﻿using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
+
+namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkFieldsDataTypes(): ServiceWithSetup<IAppWorkContext>("Wrk.FDT")
+public class WorkFieldsDataTypes(Generator<DbStorage, StorageOptions> dbGen)
+    : ServiceWithSetup<IAppWorkContext>("Wrk.FDT", connect: [dbGen])
 {
     /// <summary>
     /// Get all known data types, like "String", "Number" etc. from DB.
@@ -10,7 +14,7 @@ public class WorkFieldsDataTypes(): ServiceWithSetup<IAppWorkContext>("Wrk.FDT")
     public string[] DataTypes()
     {
         var l = Log.Fn<string[]>();
-        var result = MyOptions.NewDbStorage().Attributes.DataTypeNames();
+        var result = dbGen.New(new(MyOptions.AppReader)).Attributes.DataTypeNames();
         return l.Return(result, $"{result.Length}");
     }
     

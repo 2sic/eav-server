@@ -5,7 +5,9 @@ using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Capabilities.Features;
@@ -20,8 +22,9 @@ public class WorkEntityRecycle(
     LazySvc<ImportService> import,
     Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer,
     LazySvc<Compressor> compressor,
-    ISysFeaturesService featuresService)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService])
+    ISysFeaturesService featuresService,
+    Generator<DbStorage, StorageOptions> dbGen)
+    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService, dbGen])
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
@@ -45,7 +48,7 @@ public class WorkEntityRecycle(
         if (transactionId <= 0)
             throw new ArgumentOutOfRangeException(nameof(transactionId));
 
-        var db = MyOptions.NewDbStorage().SqlDb;
+        var db = dbGen.New(new(MyOptions.AppReader)).SqlDb;
         EnsureTransactionExists(db, transactionId);
 
         var appId = MyOptions.AppId;
@@ -275,7 +278,7 @@ public class WorkEntityRecycle(
         if (entitiesWithParents.Count == 0)
             return;
 
-        var db = MyOptions.NewDbStorage().SqlDb;
+        var db = dbGen.New(new(MyOptions.AppReader)).SqlDb;
 
         var childIdsByGuid = BuildChildIdsByGuid(appId, db, entitiesWithParents, restoredEntitiesByGuid);
         if (childIdsByGuid.Count == 0)

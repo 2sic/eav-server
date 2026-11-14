@@ -2,6 +2,8 @@
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.Versions;
+using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Serialization;
 
 namespace ToSic.Eav.Apps.Sys.Work;
@@ -10,19 +12,20 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class WorkEntityVersioning(
     AppCachePurger appCachePurger,
     LazySvc<ImportService> import,
-    Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer)
-    : ServiceWithSetup<IAppWorkContext>("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import])
+    Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer,
+    Generator<DbStorage, StorageOptions> dbGen)
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import, dbGen])
 {
 
     public List<ItemHistory> VersionHistory(int id, bool includeData = true)
-        => MyOptions.NewDbStorage().Versioning.GetHistoryList(id, includeData);
+        => dbGen.New(new(MyOptions.AppReader)).Versioning.GetHistoryList(id, includeData);
 
     /// <summary>
     /// Restore an Entity to the specified Version by creating a new Version using the Import
     /// </summary>
     public void VersionRestore(int entityId, int transactionId)
     {
-        var db = MyOptions.NewDbStorage();
+        var db = dbGen.New(new(MyOptions.AppReader));
 
         // Get Entity in specified Version/TransactionId from DataTimeline using XmlImport
         string? timelineItem;

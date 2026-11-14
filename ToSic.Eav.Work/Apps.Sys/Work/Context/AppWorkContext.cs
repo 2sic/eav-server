@@ -1,9 +1,10 @@
-﻿using ToSic.Eav.Repository.Efc.Sys.DbStorage;
+﻿using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppWorkContext(IAppReader appReader, AppWorkContextService ctxSvc, bool? showDrafts = default) : IAppWorkContext
+public class AppWorkContext(IAppReader appReader, AppWorkContextService ctxSvc, Generator<DbStorage, StorageOptions> dbGen, bool? showDrafts = default) : IAppWorkContext
 {
     /// <inheritdoc />
     public int ZoneId { get; } = appReader.ZoneId;
@@ -23,11 +24,6 @@ public class AppWorkContext(IAppReader appReader, AppWorkContextService ctxSvc, 
         });
 
     [field: AllowNull, MaybeNull]
-    public DbStorage DbStorage => field ??= NewDbStorage();
+    public DbStorage DbStorage => field ??= dbGen.New(new(AppReader));
     
-    /// <inheritdoc />
-    public DbStorage NewDbStorage() => ctxSvc.DbGenerator.New(new(AppReader));
-
-    public IAppWorkContext FreshContext(IAppReader freshReader) => ctxSvc.ContextNew(freshReader);
-
 }

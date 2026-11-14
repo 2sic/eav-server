@@ -15,7 +15,4 @@ public class AppWorkContextNotReplaced: IAppWorkContext
     public IAppReader AppReader => throw new ArgumentNullException(ErrorMessage);
     public DbStorage DbStorage => throw new ArgumentNullException(ErrorMessage);
     public IDataSource Data => throw new ArgumentNullException(ErrorMessage);
-    public DbStorage NewDbStorage() => throw new ArgumentNullException(ErrorMessage);
-
-    public IAppWorkContext FreshContext(IAppReader freshReader) => throw new ArgumentNullException(ErrorMessage);
 }
