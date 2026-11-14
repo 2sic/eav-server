@@ -72,11 +72,12 @@ partial class DbVersioning
             })
             .ToList();
 
-        var versionNumber = entityVersions.Count;	// add version number decrement to prevent additional sorting
-        foreach (var entityHistoryItem in entityVersions)
-            entityHistoryItem.VersionNumber = versionNumber--;
+        // Version number decrement for UI, starting with count as the highest value
+        var historyWithDecrementingNumbers = entityVersions
+            .Select((item, index) => item with { VersionNumber = entityVersions.Count - index })
+            .ToList();
 
-        return entityVersions;
+        return historyWithDecrementingNumbers;
     }
 
 }

@@ -13,7 +13,7 @@ public class WorkInputTypes(
     LazySvc<IAppReaderFactory> appReaders,
     Generator<IAppInputTypesLoader, AppFileSystemLoaderOptions> appFileSystemLoaderLazy,
     LazySvc<AppWorkContextService> ctxSvc)
-    : ServiceWithSetup<IAppWorkContext>("ApS.InpGet", connect: [appWorkCtxSvc, appReaders, appFileSystemLoaderLazy, ctxSvc])
+    : ServiceWithSetup<IAppDataContext>("ApS.InpGet", connect: [appWorkCtxSvc, appReaders, appFileSystemLoaderLazy, ctxSvc])
 {
     /// <summary>
     /// Retrieve a list of all input types known to the current system

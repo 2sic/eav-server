@@ -24,7 +24,7 @@ public class WorkEntityRecycle(
     LazySvc<Compressor> compressor,
     ISysFeaturesService featuresService,
     Generator<DbStorage, StorageOptions> dbGen)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService, dbGen])
+    : ServiceWithSetup<IAppDataContext>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService, dbGen])
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 

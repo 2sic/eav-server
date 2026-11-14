@@ -1,24 +1,21 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Sys;
-using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Serialization;
 
-namespace ToSic.Eav.Apps.Sys.Work;
+namespace ToSic.Eav.Data.Versions.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityVersioning(
+public class WorkEntityVersionRestore(
     AppCachePurger appCachePurger,
     LazySvc<ImportService> import,
     Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer,
     Generator<DbStorage, StorageOptions> dbGen)
-    : ServiceWithSetup<IAppWorkContext>("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import, dbGen])
+    : ServiceWithSetup<IAppDataContext>("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import, dbGen])
 {
-
-    public List<ItemHistory> VersionHistory(int id, bool includeData = true)
-        => dbGen.New(new(MyOptions.AppReader)).Versioning.GetHistoryList(id, includeData);
 
     /// <summary>
     /// Restore an Entity to the specified Version by creating a new Version using the Import

@@ -1,16 +1,17 @@
 ﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Data.Versions.Sys;
 using ToSic.Eav.ImportExport.Integration;
-using ToSic.Eav.Persistence.Versions;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Testing.Scenarios;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
+using ItemHistory = ToSic.Eav.Persistence.Versions.ItemHistory;
 
 namespace ToSic.Eav.Versioning;
 
 [Startup(typeof(StartupTestWork))]
-public class VersioningTests(Generator<DbStorage, StorageOptions> dbDataGenerator, AppWorkQuick<WorkEntityVersioning> workEntityVersioning, ITestOutputHelper output)
+public class VersioningTests(Generator<DbStorage, StorageOptions> dbDataGenerator, AppWorkQuick<WorkEntityVersionsGet> workEntityVersioning, ITestOutputHelper output)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
 {
     #region Test Data

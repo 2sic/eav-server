@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer, Generator<DbStorage, StorageOptions> dbGen)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntRcy", connect: [compressor, jsonSerializer, dbGen])
+    : ServiceWithSetup<IAppDataContext>("Wrk.EntRcy", connect: [compressor, jsonSerializer, dbGen])
 {
     /// <summary>
     /// Old SQL name, which is still used as a key in the history table, so we need to keep it here as a constant.

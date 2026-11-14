@@ -7,6 +7,7 @@ using ToSic.Eav.Apps.Install.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Data.ContentTypes.Sys;
 using ToSic.Eav.Data.Sys;
+using ToSic.Eav.Data.Versions.Sys;
 using ToSic.Eav.DataFormats.EavLight;
 using ToSic.Eav.DataFormats.EavLight.Sys;
 using ToSic.Eav.DataSource.DataProviders;
@@ -55,7 +56,8 @@ public static class StartupEavWork
         services.TryAddTransient<WorkEntityRecycleBin>();
         services.TryAddTransient<WorkEntityRecycle>();
         services.TryAddTransient<WorkEntityPublish>();
-        services.TryAddTransient<WorkEntityVersioning>();
+        services.TryAddTransient<WorkEntityVersionRestore>();
+        services.TryAddTransient<WorkEntityVersionsGet>();
         services.TryAddTransient<WorkContentTypesMod>();
         services.TryAddTransient<WorkAttributes>();
         services.TryAddTransient<WorkAttributesMod>();
@@ -178,6 +180,8 @@ public static class StartupEavWork
         services.TryAddTransient<AppStatisticsProvider>();   // for inheritance
         services.TryAddKeyedTransient<IRawDataProviderWithCtx, AppStatisticsProvider>(AppStatisticsProvider.NameId);
 
+        services.TryAddTransient<WorkEntityVersionsGet>();   // for inheritance
+        services.TryAddKeyedTransient<IRawDataProviderWithCtx, WorkEntityVersionsGet>(WorkEntityVersionsGet.NameId);
         return services;
     }
 

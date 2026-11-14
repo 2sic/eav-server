@@ -18,11 +18,11 @@ public class InputTypes : CustomDataSource
     public InputTypes(
         Dependencies services,
         AppWorkContextService workCtxSvc,
-        AppWorkChain<WorkInputTypes> inputTypes,
-        AppWorkChain<WorkFieldsDataTypes> fieldsDataTypes)
+        AppDataChain<WorkInputTypes> inputTypes,
+        AppDataChain<WorkFieldsDataTypes> fieldsDataTypes)
         : base(services, logName: "Sxc.InpTyp", connect: [workCtxSvc, inputTypes, fieldsDataTypes])
     {
-        var ctx = new Lazy<IAppWorkContext>(() => workCtxSvc.ContextNew(AppId));
+        var ctx = new Lazy<IAppDataContext>(() => workCtxSvc.ContextNew(AppId));
         
         ProvideOutRaw(() => GetInputTypes(inputTypes.New(ctx.Value)), name: "InputTypes");
 

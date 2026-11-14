@@ -5,7 +5,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkFieldsDataTypes(Generator<DbStorage, StorageOptions> dbGen)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.FDT", connect: [dbGen])
+    : ServiceWithSetup<IAppDataContext>("Wrk.FDT", connect: [dbGen])
 {
     /// <summary>
     /// Get all known data types, like "String", "Number" etc. from DB.
