@@ -4,6 +4,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
@@ -38,7 +39,7 @@ public class WorkEntityRecycleBinTests(
         var dc = dbDataGenerator.New(new(TestSpecs.ZoneId, TestSpecs.AppId));
 
         // Create a new entity (so we don't mutate scenario-fixed entities).
-        var appReader = dc.Loader.AppReaderRaw(TestSpecs.AppId, new());
+        var appReader = dc.Loader.AppStateReaderRawTac(TestSpecs.AppId);
         var templateEntity = appReader.List.First();
         var now = DateTime.UtcNow;
 
@@ -106,7 +107,7 @@ public class WorkEntityRecycleBinTests(
         True(dbEnt!.IsPublished);
         NotNull(dbEnt!.TransDeletedId);
 
-        var appReader2 = dc2.Loader.AppReaderRaw(TestSpecs.AppId, new());
+        var appReader2 = dc2.Loader.AppStateReaderRawTac(TestSpecs.AppId);
         var recycler = workEntityRecycleBin.New(appReader2);
         var items = recycler.Get();
 
@@ -132,7 +133,7 @@ public class WorkEntityRecycleBinTests(
         // Arrange
         var dc = dbDataGenerator.New(new(TestSpecs.ZoneId, TestSpecs.AppId));
 
-        var appReader = dc.Loader.AppReaderRaw(TestSpecs.AppId, new());
+        var appReader = dc.Loader.AppStateReaderRawTac(TestSpecs.AppId);
         var templateEntity = appReader.List.First();
 
         var sourceId = int.MaxValue;

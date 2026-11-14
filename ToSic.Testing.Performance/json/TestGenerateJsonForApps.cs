@@ -4,6 +4,7 @@ using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Data;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Serialization;
 using ToSic.Eav.Serialization.Sys;
 
@@ -28,7 +29,7 @@ public class TestGenerateJsonForApps(EavDbContext db, Generator<IJsonDataWriter>
 
     public void LoadApp(int appId)
     {
-        AppReaderRaw = ((IAppsAndZonesLoaderWithRaw)loaderGenerator.New()).AppReaderRaw(appId, new());
+        AppReaderRaw = loaderGenerator.New().AppStateReaderRawTac(appId);
     }
 
     internal IAppReader AppReaderRaw;
@@ -53,7 +54,7 @@ public class TestGenerateJsonForApps(EavDbContext db, Generator<IJsonDataWriter>
     /// <param name="appId"></param>
     public void GenerateJsonForAllEntitiesOfApp(int appId)
     {
-        var package = ((IAppsAndZonesLoaderWithRaw)loaderGenerator.New()).AppReaderRaw(appId, new());
+        var package = loaderGenerator.New().AppStateReaderRawTac(appId);
         var ser = jsonWriteGen.New();
         var upd = package.List.ToDictionary(e => e.EntityId, e => ser.Serialize(e));
 

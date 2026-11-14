@@ -3,6 +3,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Eav.Testing.Scenarios;
@@ -48,7 +49,7 @@ public class DeleteHistoryInboundParentsTests(
         NotNull(templateRel);
 
         // Create a new entity to delete (so we don't mutate scenario-fixed entities).
-        var appReader = dc.Loader.AppReaderRaw(TestSpecs.AppId, new());
+        var appReader = dc.Loader.AppStateReaderRawTac(TestSpecs.AppId);
         var templateEntity = appReader.List.First();
         var now = DateTime.UtcNow;
 
