@@ -8,11 +8,6 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkContextNotReplaced: IAppWorkContext
 {
-    public AppWorkContextNotReplaced()
-    {
-         // throw new ArgumentNullException(ErrorMessage);
-    }
-
     private const string ErrorMessage = $"A service seems to request {nameof(IAppWorkContext)} but in a place where it was not previously injected.";
 
     public int ZoneId => throw new ArgumentNullException(ErrorMessage);

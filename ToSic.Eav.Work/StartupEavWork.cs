@@ -171,11 +171,11 @@ public static class StartupEavWork
     public static IServiceCollection AddEavWorkDataSourceProviders(this IServiceCollection services)
     {
         // Broker
-        services.TryAddTransient<DataSourceProviderBroker>();
+        services.TryAddTransient<RawDataProviderBroker>();
 
         // "original"
         services.TryAddTransient<AppStatisticsProvider>();   // for inheritance
-        services.TryAddKeyedTransient<IDataSourceRawDataProviderWithCtx, AppStatisticsProvider>(AppStatisticsProvider.NameId);
+        services.TryAddKeyedTransient<IRawDataProviderWithCtx, AppStatisticsProvider>(AppStatisticsProvider.NameId);
 
         return services;
     }

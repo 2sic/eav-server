@@ -2,7 +2,7 @@
 
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IDataSourceRawDataProviderWithCtx: IServiceWithSetup<IAppWorkContext>
+public interface IRawDataProviderWithCtx: IServiceWithSetup<IAppWorkContext>
 {
     public IEnumerable<IRawData> Provide(IDataSourceConfiguration configuration);
 }

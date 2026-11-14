@@ -16,7 +16,7 @@ public class AppStatisticsProvider(
     ExportHelper exportHelper,
     ISite site)
     : ServiceWithSetup<IAppWorkContext>("Bck.Export", connect: [workEntities, cultureStateSvc, site, exportHelper]),
-        IDataSourceRawDataProviderWithCtx
+        IRawDataProviderWithCtx
 {
     public const string NameId = "System.AppStatistics";
 

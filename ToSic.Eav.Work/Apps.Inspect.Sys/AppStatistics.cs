@@ -14,7 +14,7 @@ namespace ToSic.Eav.Apps.Inspect.Sys;
     UiHint = "Export statistics for the current app"
 )]
 // ReSharper disable once UnusedMember.Global
-public class AppStatistics(CustomDataSource.Dependencies services, AppWorkQuick<DataSourceProviderBroker> data)
+public class AppStatistics(CustomDataSource.Dependencies services, AppWorkQuick<RawDataProviderBroker> data)
     : CustomDataSource(services, logName: "Sxc.AppStats", connect: [data])
 {
     [Configuration(Field = "ZoneId")]
