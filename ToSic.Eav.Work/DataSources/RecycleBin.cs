@@ -1,7 +1,9 @@
-﻿using ToSic.Eav.Apps.Sys;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.DataSource.VisualQuery;
 using ToSic.Eav.DataSources.Sys;
+using ToSic.Eav.Repositories.Sys;
 using ToSic.Sys.Capabilities.Features;
 using ToSic.Sys.Utils;
 
@@ -32,14 +34,15 @@ public class RecycleBin : CustomDataSource
 
     #endregion
 
-    public RecycleBin(Dependencies services, AppWorkQuick<WorkEntityRecycleBin> recycleBin, FeaturesForDataSources featuresForDs)
-        : base(services, logName: "CDS.RecycleBin", connect: [recycleBin, featuresForDs])
+    public RecycleBin(Dependencies services, LazySvc<IAppReaderFactory> apps, Generator<IStoreRecycleBin, IAppReader> recycleBin, FeaturesForDataSources featuresForDs)
+        : base(services, logName: "CDS.RecycleBin", connect: [recycleBin, apps, featuresForDs])
     {
-        var bin = new Lazy<WorkEntityRecycleBin>(() => recycleBin.New(this.PureIdentity()));
+        var bin = new Lazy<IStoreRecycleBin>(() => recycleBin.New(apps.Value.Get(this.PureIdentity())));
         ProvideOutRaw(
             () => GetList(bin.Value).Entities,
             options: () => new()
             {
+                // TODO: @2rb - fix this so it's from the content-type
                 TypeName = "RecycleBin",
             });
 
@@ -48,7 +51,8 @@ public class RecycleBin : CustomDataSource
             name: "ContentTypes",
             options: () => new()
             {
-                AutoId = true,
+                // TODO: @2rb - fix this so it's from the content-type
+                AutoId = true,  // TODO: @2rb - I don't think this is needed
                 TypeName = "ContentTypes",
             });
 
@@ -59,23 +63,24 @@ public class RecycleBin : CustomDataSource
 
     private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) _cache = (null!, null!); // temp null at start
 
-    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) GetList(WorkEntityRecycleBin recycleBin)
+    private (IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes) GetList(IStoreRecycleBin recycleBin)
     {
         var l = Log.Fn<(IEnumerable<IRawEntity> Entities, IEnumerable<IRawEntity> ContentTypes)>($"DateFrom:{DateFrom}, DateTo:{DateTo}, ContentType:{ContentType}");
 
         if (_cache.Entities != null)
             return l.Return(_cache, "from cache");
 
-        var items = recycleBin.Get(DateFrom, DateTo);
+        var items = recycleBin.Get(new(DateFrom, DateTo, ContentType.NullIfNoValue()));
 
-        var ct = ContentType;
-        var itemsOfContentType = string.IsNullOrEmpty(ct)
-        ? items
-        : items.Where(i => i.TypeName.EqualsInsensitive(ct));
+        // 2dm 2026-11-14 changed call to include the type name above, so this should not be necessary
+        //var typeName = ContentType;
+        //var itemsOfContentType = string.IsNullOrEmpty(typeName)
+        //? items
+        //: items.Where(i => i.TypeName.EqualsInsensitive(typeName));
 
-        // TODO: @2rb - make the underlying RecycleBinItem an AutoConvert with all necessary properties
+        // TODO: @2rb - make the underlying RecycleBinItem an AutoConvert with all necessary properties incl. type name
         // and then drop the options on top
-        var list = itemsOfContentType
+        var list = items // itemsOfContentType
             .Select(r => new RawEntity
             {
                 Id = r.Id,
@@ -95,7 +100,7 @@ public class RecycleBin : CustomDataSource
             })
             .ToList();
 
-        // TODO: @2rb - make this a Raw-AutoConvert with all necessary properties
+        // TODO: @2rb - make this a Raw-AutoConvert with all necessary properties incl. type name
         // and then drop the options on top
         var contentTypes = items
             .GroupBy(i => i.TypeNameId)

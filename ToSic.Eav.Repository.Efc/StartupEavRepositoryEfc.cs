@@ -5,6 +5,7 @@ using ToSic.Eav.Metadata.Targets;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
 using ToSic.Eav.Persistence.Efc.Sys.Services;
 using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Db.RecycleBin;
 using ToSic.Eav.Repository.Efc.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 using ToSic.Sys.Boot;
@@ -41,6 +42,9 @@ public static class StartupEavRepositoryEfc
         services.AddTransient<IBootProcess, BootWarmUpEavSql>();
 
         services.TryAddTransient<IStorage, DbStorage>();
+
+        services.TryAddTransient<IStoreRecycleBin, DbStoreRecycleBin>();
+
         return services;
     }
 }

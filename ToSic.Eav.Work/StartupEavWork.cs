@@ -21,6 +21,8 @@ using ToSic.Eav.ImportExport.Sys.XmlList;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Metadata.Requirements.Sys;
 using ToSic.Eav.Metadata.Sys;
+using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Db.RecycleBin;
 
 namespace ToSic.Eav;
 
@@ -53,7 +55,6 @@ public static class StartupEavWork
         services.TryAddTransient<WorkMetadata>();
         services.TryAddTransient<WorkFieldList>();
         services.TryAddTransient<WorkEntityDelete>();
-        services.TryAddTransient<WorkEntityRecycleBin>();
         services.TryAddTransient<WorkEntityRecycle>();
         services.TryAddTransient<WorkEntityPublish>();
         services.TryAddTransient<WorkEntityVersionRestore>();

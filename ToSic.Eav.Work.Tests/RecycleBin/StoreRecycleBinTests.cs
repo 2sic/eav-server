@@ -17,9 +17,9 @@ using Xunit.DependencyInjection;
 namespace ToSic.Eav.Work.Tests.RecycleBin;
 
 [Startup(typeof(StartupTestWork))]
-public class WorkEntityRecycleBinTests(
+public class StoreRecycleBinTests(
     Generator<DbStorage, StorageOptions> dbDataGenerator,
-    AppWorkQuick<WorkEntityRecycleBin> workEntityRecycleBin,
+    Generator<IStoreRecycleBin, IAppReader> workEntityRecycleBin,
     ImportService importService,
     DataAssembler dataAssembler)
     : IClassFixture<DoFixtureStartup<ScenarioBasic>>
@@ -109,7 +109,7 @@ public class WorkEntityRecycleBinTests(
 
         var appReader2 = dc2.Loader.AppStateReaderRawTac(TestSpecs.AppId);
         var recycler = workEntityRecycleBin.New(appReader2);
-        var items = recycler.Get();
+        var items = recycler.Get(new());
 
         var found = items.FirstOrDefault(i => i.Id == childId);
         var sample = string.Join(", ", items.Take(10).Select(i => $"{i.Id}:{i.Guid}"));
@@ -184,8 +184,8 @@ public class WorkEntityRecycleBinTests(
         dc.SqlDb.SaveChanges();
 
         // Act
-        var recycler = workEntityRecycleBin.New(appId: TestSpecs.AppId);
-        var items = recycler.Get();
+        var recycler = workEntityRecycleBin.New(appReader);
+        var items = recycler.Get(new());
 
         // Assert
         var found = items.FirstOrDefault(i => i.Id == sourceId);

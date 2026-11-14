@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using ToSic.Eav.Persistence.Efc.Sys.DbContext;
-using ToSic.Eav.Persistence.Efc.Sys.DbModels;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
@@ -9,47 +7,30 @@ using ToSic.Eav.Sys;
 using ToSic.Sys.Utils;
 using ToSic.Sys.Utils.Compression;
 
-namespace ToSic.Eav.Apps.Sys.Work;
+namespace ToSic.Eav.Repository.Efc.Db.RecycleBin;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer, Generator<DbStorage, StorageOptions> dbGen)
-    : ServiceWithSetup<IAppDataContext>("Wrk.EntRcy", connect: [compressor, jsonSerializer, dbGen])
+public class DbStoreRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer, Generator<DbStorage, StorageOptions> dbGen)
+    : ServiceWithSetup<IAppReader>("Wrk.EntRcy", connect: [compressor, jsonSerializer, dbGen]),
+        IStoreRecycleBin
 {
     /// <summary>
     /// Old SQL name, which is still used as a key in the history table, so we need to keep it here as a constant.
     /// </summary>
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
-    public sealed record RecycleBinItem(
-        int Id,
-        Guid Guid,
-        int AppId,
-        string TypeNameId,
-        string TypeName,
-        int TransactionId,
-        DateTime Deleted,
-        string? DeletedBy,
-        string? ParentRef
-    )
-    {
-        public string? Json { get; init; }
-        public DateTime? FilterDateFrom { get; init; }
-        public DateTime? FilterDateTo { get; init; }
-        public string? FilterContentType { get; init; }
-    };
-
     private sealed record HistoryDeletedEntityRow(int EntityId, Guid? EntityGuid, int DeletedTransactionId, DateTime Timestamp, string? Json, byte[]? CJson);
 
-    public IReadOnlyList<RecycleBinItem> Get(DateTime? dateFrom = null, DateTime? dateTo = null, string? contentType = null)
+    public IReadOnlyList<IStoreRecycleBin.RecycleBinItem> Get(IStoreRecycleBin.Parameters parameters)
     {
-        var l = Log.Fn<IReadOnlyList<RecycleBinItem>>();
+        var l = Log.Fn<IReadOnlyList<IStoreRecycleBin.RecycleBinItem>>();
 
         var appId = MyOptions.AppId;
         var appRefId = DbVersioning.ParentRefForApp(appId)!;
-        var db = dbGen.New(new(MyOptions.AppReader)).SqlDb;
+        var db = dbGen.New(new(MyOptions)).SqlDb;
 
-        var softDeletedItems = LoadSoftDeletedRecycleBinItems(db, appId, appRefId, dateFrom, dateTo, contentType);
-        var historyOnlyItems = LoadHistoryOnlyRecycleBinItems(db, appId, appRefId, dateFrom, dateTo, contentType);
+        var softDeletedItems = LoadSoftDeletedRecycleBinItems(db, appId, appRefId, parameters);
+        var historyOnlyItems = LoadHistoryOnlyRecycleBinItems(db, appId, appRefId, parameters);
 
         var items = softDeletedItems
             .Concat(historyOnlyItems)
@@ -59,8 +40,9 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJso
         return l.Return(items, $"found:{items.Count}");
     }
 
-    private static List<RecycleBinItem> LoadSoftDeletedRecycleBinItems(EavDbContext db, int appId, string appRefId, DateTime? dateFrom, DateTime? dateTo, string? contentType)
+    private static List<IStoreRecycleBin.RecycleBinItem> LoadSoftDeletedRecycleBinItems(EavDbContext db, int appId, string appRefId, IStoreRecycleBin.Parameters parameters)
     {
+        var (dateFrom, dateTo, contentType) = parameters;
         var baseQuery = TsDynDataEntitiesBaseQuery(db, appId);
 
         return baseQuery
@@ -93,7 +75,7 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJso
             .Where(txBundle => string.IsNullOrWhiteSpace(contentType)
                         || txBundle.ContentTypeStaticName == contentType
                         || txBundle.ContentTypeName == contentType)
-            .Select(txBundle => new RecycleBinItem(
+            .Select(txBundle => new IStoreRecycleBin.RecycleBinItem(
                 Id: txBundle.ent.EntityId,
                 Guid: txBundle.ent.EntityGuid,
                 AppId: txBundle.ent.AppId,
@@ -155,8 +137,9 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJso
         return baseQuery;
     }
 
-    private List<RecycleBinItem> LoadHistoryOnlyRecycleBinItems(EavDbContext db, int appId, string parentRef, DateTime? dateFrom, DateTime? dateTo, string? contentType)
+    private List<IStoreRecycleBin.RecycleBinItem> LoadHistoryOnlyRecycleBinItems(EavDbContext db, int appId, string parentRef, IStoreRecycleBin.Parameters parameters)
     {
+        var (dateFrom, dateTo, contentType) = parameters;
         var historyRows = LoadHistoryDeletedEntitiesLatest(db, appId, parentRef, dateFrom, dateTo);
         if (historyRows.Count == 0)
             return [];
@@ -184,7 +167,7 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJso
                 var json = ResolveHistoryJson(h);
                 var entity = TryDeserializeEntity(json);
 
-                return new RecycleBinItem(
+                return new IStoreRecycleBin.RecycleBinItem(
                     Id: h.EntityId,
                     Guid: h.EntityGuid ?? entity?.EntityGuid ?? Guid.Empty,
                     AppId: appId,
@@ -219,7 +202,7 @@ public class WorkEntityRecycleBin(LazySvc<Compressor> compressor, Generator<IJso
 
         try
         {
-            var serializer = jsonSerializer.New(new(MyOptions.AppReader));
+            var serializer = jsonSerializer.New(new(MyOptions));
             return serializer.Deserialize(json);
         }
         catch

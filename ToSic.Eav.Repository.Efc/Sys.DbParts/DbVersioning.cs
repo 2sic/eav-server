@@ -154,6 +154,11 @@ internal partial class DbVersioning(DbStorage.DbStorage dbStore, LazySvc<Compres
 
     #endregion
 
+    /// <summary>
+    /// Returns the code for the parent columns in the history table, for apps of a specified id;
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <returns>A string like "app-123" for an app with ID 123</returns>
     internal static string? ParentRefForApp(int appId)
         => appId > 0 ? $"app-{appId}" : null;
 
