@@ -12,10 +12,10 @@ namespace ToSic.Eav.Apps.Inspect.Sys;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppStatisticsProvider(
     ICultureStateSvc cultureStateSvc,
-    AppWorkChain<WorkEntities> workEntities,
+    AppDataChain<WorkEntities> workEntities,
     ExportHelper exportHelper,
     ISite site)
-    : ServiceWithSetup<IAppWorkContext>("Bck.Export", connect: [workEntities, cultureStateSvc, site, exportHelper]),
+    : ServiceWithSetup<IAppDataContext>("Bck.Export", connect: [workEntities, cultureStateSvc, site, exportHelper]),
         IRawDataProviderWithCtx
 {
     public const string NameId = "System.AppStatistics";

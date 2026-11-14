@@ -8,7 +8,7 @@ namespace ToSic.Eav.ImportExport.Sys.JsonData;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportEntityJson(Generator<IJsonDataWriter> jsonSerializer)
-    : ServiceWithSetup<IAppWorkContext>("Api.EaCtEx", connect: [jsonSerializer])
+    : ServiceWithSetup<IAppDataContext>("Api.EaCtEx", connect: [jsonSerializer])
 {
 
     public FileResult DownloadEntityAsJson(IUser user, int id, string prefix, bool withMetadata)

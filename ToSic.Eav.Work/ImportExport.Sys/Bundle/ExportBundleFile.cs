@@ -6,8 +6,8 @@ using ToSic.Sys.Users;
 namespace ToSic.Eav.ImportExport.Sys.Bundle;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ExportBundleFile(AppWorkChain<ExportBundlePrepare> exportBundlePrepare, LazySvc<ISysFeaturesService> features)
-    : ServiceWithSetup<IAppWorkContext>("Api.EaCtEx", connect: [exportBundlePrepare, features])
+public class ExportBundleFile(AppDataChain<ExportBundlePrepare> exportBundlePrepare, LazySvc<ISysFeaturesService> features)
+    : ServiceWithSetup<IAppDataContext>("Api.EaCtEx", connect: [exportBundlePrepare, features])
 {
 
     public FileResult JsonBundleExport(IUser user, Guid exportConfiguration, int indentation)

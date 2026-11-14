@@ -10,3 +10,14 @@
 public class AppWorkChain<TWork>(IServiceProvider sp)
     : Generator<TWork, IAppWorkContext>(sp)
     where TWork : IServiceWithSetup<IAppWorkContext>;
+
+
+/// <summary>
+/// WIP 2026-11-14 2dm
+/// </summary>
+/// <typeparam name="TWork"></typeparam>
+/// <param name="sp"></param>
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public class AppDataChain<TWork>(IServiceProvider sp)
+    : Generator<TWork, IAppDataContext>(sp)
+    where TWork : IServiceWithSetup<IAppDataContext>;

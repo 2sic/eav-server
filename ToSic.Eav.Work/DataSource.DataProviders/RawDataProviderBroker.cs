@@ -10,8 +10,8 @@
 /// so the request still returns a result sequence containing error information.
 /// </remarks>
 /// <param name="providerGenerator">Underlying data provider generator - to be chained / updated with the current context.</param>
-public class RawDataProviderBroker(AppWorkChain<IRawDataProviderWithCtx> providerGenerator)
-    : ServiceWithSetup<IAppWorkContext>("Dta.RawPrv", connect: [providerGenerator])
+public class RawDataProviderBroker(AppDataChain<IRawDataProviderWithCtx> providerGenerator)
+    : ServiceWithSetup<IAppDataContext>("Dta.RawPrv", connect: [providerGenerator])
 {
     public IEnumerable<IRawData> Provide(string name, IDataSourceConfiguration configuration)
     {

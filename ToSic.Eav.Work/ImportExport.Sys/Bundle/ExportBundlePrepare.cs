@@ -5,7 +5,7 @@ namespace ToSic.Eav.ImportExport.Sys.Bundle;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportBundlePrepare(Generator<IJsonDataWriter> jsonSerializer)
-    : ServiceWithSetup<IAppWorkContext>("Api.EaCtEx", connect: [jsonSerializer])
+    : ServiceWithSetup<IAppDataContext>("Api.EaCtEx", connect: [jsonSerializer])
 {
     
     internal (ExportConfiguration export, string fileContent) CreateBundleExport(Guid exportConfiguration, int indentation)

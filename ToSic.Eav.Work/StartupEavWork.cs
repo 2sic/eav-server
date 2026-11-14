@@ -94,6 +94,7 @@ public static class StartupEavWork
         services.TryAddTransient<WorkFieldsDataTypes>();
         services.TryAddTransient(typeof(AppWorkQuick<>));
         services.TryAddTransient(typeof(AppWorkChain<>));
+        services.TryAddTransient(typeof(AppDataChain<>));
 
         // v22
         services.TryAddTransient<AppDetailsService>();  // registration for composition
@@ -203,6 +204,7 @@ public static class StartupEavWork
     {
         // Make sure that when nothing was overridden, we will get an exception, so that we don't accidentally use a missing context
         services.TryAddTransient<AppWorkContextNotReplaced>();
+        services.TryAddTransient(OverrideService<IAppDataContext>.Register<AppWorkContextNotReplaced>());
         services.TryAddTransient(OverrideService<IAppWorkContext>.Register<AppWorkContextNotReplaced>());
 
         return services;

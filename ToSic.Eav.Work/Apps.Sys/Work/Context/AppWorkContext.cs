@@ -28,6 +28,6 @@ public class AppWorkContext(IAppReader appReader, AppWorkContextService ctxSvc, 
     /// <inheritdoc />
     public DbStorage NewDbStorage() => ctxSvc.DbGenerator.New(new(AppReader));
 
-    public IAppWorkContext FreshContext(IAppReader? freshReader = null) => ctxSvc.ContextNew(freshReader ?? AppReader);
+    public IAppWorkContext FreshContext(IAppReader freshReader) => ctxSvc.ContextNew(freshReader);
 
 }

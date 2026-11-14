@@ -10,7 +10,7 @@
 /// <param name="messages">List of messages</param>
 internal class RawDataProviderError(IEnumerable<string> messages) : IRawDataProviderWithCtx
 {
-    public void Setup(IAppWorkContext options) { /*ignore*/ }
+    public void Setup(IAppDataContext options) { /*ignore*/ }
 
     public IEnumerable<IRawData> Provide(IDataSourceConfiguration configuration)
         => messages.Select(m => new RawProviderError(m));

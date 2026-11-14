@@ -12,7 +12,7 @@ namespace ToSic.Eav.Data.Sys;
 /// <param name="typePermissions"></param>
 [PrivateApi]
 public class WorkTypePermissions(IContextOfSiteService ctxSvc, Generator<MultiPermissionsTypes, MultiPermissionsTypes.Options> typePermissions)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntAdm", connect: [ctxSvc, typePermissions])
+    : ServiceWithSetup<IAppDataContext>("Wrk.EntAdm", connect: [ctxSvc, typePermissions])
 {
     public void ThrowIfNotAllowed(string? contentType, List<Grants> grants)
         => GetDraftPermissionAndThrowIfNotAllowed(contentType, grants);

@@ -8,8 +8,8 @@ public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder np
         IHasOptions<TOptions>,
         IServiceWithSetup<TOptions>
         // Note: `class` not `class?`
-        // the interface is `class?` but since by default ServiceWithSetup will throw if null,
-        // we're trying to make sure that there are warnings if done that way
+        // the interface is `class?` but since by default ServiceWithSetup will throw if `null`,
+        // we're making sure you get compile warnings when initializing with `null`
         where TOptions : class 
 {
     /// <inheritdoc />
@@ -20,6 +20,7 @@ public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder np
         private set;
     }
 
+    /// <inheritdoc />
     public virtual void Setup(TOptions options)
         => MyOptions = options;
 
@@ -33,7 +34,6 @@ public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder np
     /// 
     /// You must override this to provide your own default options.
     /// </summary>
-    /// <returns></returns>
     /// <exception cref="ServiceOptionsRequiredException"></exception>
     protected virtual TOptions GetDefaultOptions()
         => throw new ServiceOptionsRequiredException(GetType());

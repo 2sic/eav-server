@@ -11,8 +11,8 @@ namespace ToSic.Eav.Data.Sys;
 /// Shared entity loading and serialization setup for admin data sources.
 /// </summary>
 [PrivateApi]
-public class EntitiesAdminData(IContextOfSiteService ctxSvc, AppWorkChain<WorkEntities> workEntities, AppWorkChain<WorkTypePermissions> typePermissions)
-    : ServiceWithSetup<IAppWorkContext>("Wrk.EntAdm", connect: [ctxSvc, workEntities, typePermissions])
+public class EntitiesAdminData(IContextOfSiteService ctxSvc, AppDataChain<WorkEntities> workEntities, AppDataChain<WorkTypePermissions> typePermissions)
+    : ServiceWithSetup<IAppDataContext>("Wrk.EntAdm", connect: [ctxSvc, workEntities, typePermissions])
 {
     public IEnumerable<IEntity> GetEntities(string? contentType)
     {

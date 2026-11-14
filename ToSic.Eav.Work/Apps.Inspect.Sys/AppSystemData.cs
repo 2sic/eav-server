@@ -111,7 +111,7 @@ public class AppSystemData : CustomDataSource
         });
     }
 
-    private (string? Settings, string? Resources) GetTypeNames(IAppsCatalog appsCatalog, IAppWorkContext context)
+    private (string? Settings, string? Resources) GetTypeNames(IAppsCatalog appsCatalog, IAppDataContext context)
     {
         var app = appsCatalog.AppIdentity(AppId);
         var isPrimary = app.AppId == appsCatalog.PrimaryAppIdentity(app.ZoneId).AppId;
@@ -129,7 +129,7 @@ public class AppSystemData : CustomDataSource
         );
     }
 
-    private static bool HasConfigurationType(IAppWorkContext context, string typeName)
+    private static bool HasConfigurationType(IAppDataContext context, string typeName)
         => context.AppReader.ContentTypes.Any(type =>
             type.Scope == ScopeConstants.SystemConfiguration && type.Name == typeName);
 }

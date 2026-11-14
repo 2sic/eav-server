@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
-    : ServiceWithSetup<IAppWorkContext>("ApS.EnRead", connect: [dataSourceFactory])
+    : ServiceWithSetup<IAppDataContext>("ApS.EnRead", connect: [dataSourceFactory])
 {
     /// <summary>
     /// All entities in the app - this also includes system entities like data-source configuration etc.
@@ -46,7 +46,7 @@ public class WorkEntities(LazySvc<IDataSourcesService> dataSourceFactory)
     public IEntity? Get(Guid entityGuid) => MyOptions.AppReader.List.GetOne(entityGuid);
 
 
-    public IEnumerable<IEntity> Get(string contentTypeName, /*IAppWorkCtxForDiWip? overrideWorkCtx = default,*/ Uri? fullRequest = null)
+    public IEnumerable<IEntity> Get(string contentTypeName, Uri? fullRequest = null)
         => Get(MyOptions.Data, contentTypeName, fullRequest);
 
     private IEnumerable<IEntity> Get(IDataSource dataSource, string contentTypeName, Uri? fullRequest = null)

@@ -9,7 +9,7 @@ namespace ToSic.Eav.ImportExport.Sys.XmlData;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportDataXml(IAppsCatalog appsCatalog, Generator<ExportListXml> exportListXmlGenerator)
-    : ServiceWithSetup<IAppWorkContext>("Api.EaCtEx", connect: [exportListXmlGenerator, appsCatalog])
+    : ServiceWithSetup<IAppDataContext>("Api.EaCtEx", connect: [exportListXmlGenerator, appsCatalog])
 {
     public FileResult ExportContent(IUser user,
         string language,

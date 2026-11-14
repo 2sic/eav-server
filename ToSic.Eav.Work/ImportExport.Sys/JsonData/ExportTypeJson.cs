@@ -6,7 +6,7 @@ namespace ToSic.Eav.ImportExport.Sys.JsonData;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ExportTypeJson(Generator<IJsonDataWriter> jsonSerializer)
-    : ServiceWithSetup<IAppWorkContext>("Api.EaCtEx", connect: [jsonSerializer])
+    : ServiceWithSetup<IAppDataContext>("Api.EaCtEx", connect: [jsonSerializer])
 {
 
     public FileResult DownloadTypeAsJson(IUser user, string name)
