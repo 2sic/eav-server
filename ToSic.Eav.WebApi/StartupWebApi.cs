@@ -28,7 +28,8 @@ public static class StartupWebApi
         services.TryAddTransient<LicenseControllerReal>();
 
         // Various Backends
-        services.TryAddTransient<SaveEntities>();
+        services.TryAddTransient<SaveHelperSaveBundles>();
+        services.TryAddTransient<SaveHelperGetFinalIds>();
 
         // APIs
         services.TryAddTransient<EntityPickerApi>();
