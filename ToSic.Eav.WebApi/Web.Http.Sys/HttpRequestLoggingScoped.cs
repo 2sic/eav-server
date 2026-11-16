@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Web.Sys;
+﻿namespace ToSic.Eav.Web.Http.Sys;
 
 /// <summary>
 /// WIP trying to move responsibility of creating a log for any request to a central place.

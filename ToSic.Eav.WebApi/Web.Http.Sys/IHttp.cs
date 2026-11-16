@@ -1,11 +1,12 @@
-﻿#if NETFRAMEWORK
+﻿
+using System.Collections.Specialized;
 using System.Web;
+#if NETFRAMEWORK
 #else
 using Microsoft.AspNetCore.Http;
 #endif
-using System.Collections.Specialized;
 
-namespace ToSic.Sxc.Web.Sys.Http;
+namespace ToSic.Eav.Web.Http.Sys;
 
 /// <summary>
 /// Goal is that anything on this will be able to provide HttpContext operations as needed

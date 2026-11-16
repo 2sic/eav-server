@@ -1,17 +1,15 @@
 ﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Eav.Context;
-using ToSic.Sxc.Web.Sys.Http;
-using ToSic.Sys.Utils;
+using ToSic.Eav.Web.Http.Sys;
 
-namespace ToSic.Sxc.Context.Sys;
+namespace ToSic.Eav.Context.Sys;
 
 /// <summary>
 /// This helps API calls to get the app which is currently needed
 /// It does not perform security checks ATM and maybe never will
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class ContextBuilderService(ISite site, LazySvc<IHttp> http, LazySvc<AppFinder> appFinder, Generator<IContextOfAppFactory> appCtxGenerator)
-    : ServiceBase("Api.FindAp", connect: [http, appFinder, appCtxGenerator]), IContextBuilderService
+internal class WebApiAppContextBuilderService(ISite site, LazySvc<IHttp> http, LazySvc<AppFinder> appFinder, Generator<IContextOfAppFactory> appCtxGenerator)
+    : ServiceBase("Api.FindAp", connect: [http, appFinder, appCtxGenerator]), IWebApiAppContextBuilderService
 {
     #region Inject App using Name
 

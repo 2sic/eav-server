@@ -1,10 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Ui.Edit.Sys;
 using ToSic.Eav.Ui.Edit.Sys.Load;
 using ToSic.Eav.Ui.Edit.Sys.Save;
-using ToSic.Eav.Web.Sys;
+using ToSic.Eav.Web.Http.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Admin.Features;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
@@ -63,6 +64,7 @@ public static class StartupWebApi
         services.TryAddScoped<HttpRequestLoggingScoped>();
 
         // v22 Context
+        services.TryAddTransient<IWebApiAppContextBuilderService, WebApiAppContextBuilderService>();
         services.TryAddTransient<IUiContextService, UiContextService>();  // v22 - default implementation, for re-implementations
         services.TryAddTransient<EavUiContextPartsService>();
         services.TryAddTransient<IUiContextPartsService, EavUiContextPartsService>();

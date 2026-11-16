@@ -1,8 +1,6 @@
-﻿using ToSic.Eav.Context;
+﻿namespace ToSic.Eav.Context.Sys;
 
-namespace ToSic.Sxc.Context.Sys;
-
-public interface IContextBuilderService
+public interface IWebApiAppContextBuilderService
 {
     IContextOfApp? TryFindAppFromPath(string? nameOrPath);
 
