@@ -1,85 +1,90 @@
-using ToSic.Eav.DataSource.OData;
-using ToSic.Eav.DataSource.Sys;
-using ToSic.Eav.Services;
-using ToSic.Sys.OData;
-using static ToSic.Eav.DataSource.DataSourceConstants;
 
-namespace ToSic.Eav.DataSources;
+// 2026-11-16 2dm - turned off for now, believe it's not used
+// I think this was an early iteration of OData, but not really used
+// since it was replaced by another mechanism
 
-/// <summary>
-/// DataSource which applies OData system query options ($filter, $orderby, $top, $skip, $select) to the upstream stream.
-/// It parses a raw OData query string and builds the corresponding ValueFilter/ValueSort pipeline.
-/// </summary>
-[PrivateApi("Internal only, probably not used for real, as it's now a standard feature of any query")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-[VisualQuery(
-    NiceName = "OData",
-    UiHint = "Filter and sort using OData options like $filter, $orderby, $top, $skip",
-    Icon = DataSourceIcons.FilterList,
-    Type = DataSourceType.Filter,
-    NameId = "ea87b773-efd2-4751-939b-76601bbd23d1", // "ToSic.Eav.DataSources.OData, ToSic.Eav.DataSources",
-    In = [InStreamDefaultRequired],
-    Audience = Audience.System,
-    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter", // TODO: change
-    HelpLink = "https://go.2sxc.org/DsOData")]
-public sealed class OData : DataSourceBase
-{
-    #region Configuration
+//using ToSic.Eav.DataSource.OData;
+//using ToSic.Eav.DataSource.Sys;
+//using ToSic.Eav.Services;
+//using ToSic.Sys.OData;
+//using static ToSic.Eav.DataSource.DataSourceConstants;
 
-    /// <summary>
-    /// Raw OData query string to apply, for example: `"$filter=Title eq 'Hello'&amp;$orderby=Created desc&amp;$top=10"`.
-    /// Can start with `?` and may contain any supported system options.
-    /// </summary>
-    [Configuration(Field = "EntityIds")] // TODO: change
-    public string? ODataQueryString
-    {
-        get => Configuration.GetThis();
-        set => Configuration.SetThisObsolete(value);
-    }
+//namespace ToSic.Eav.DataSources;
 
-    #endregion
+///// <summary>
+///// DataSource which applies OData system query options ($filter, $orderby, $top, $skip, $select) to the upstream stream.
+///// It parses a raw OData query string and builds the corresponding ValueFilter/ValueSort pipeline.
+///// </summary>
+//[PrivateApi("Internal only, probably not used for real, as it's now a standard feature of any query")]
+//[ShowApiWhenReleased(ShowApiMode.Never)]
+//[VisualQuery(
+//    NiceName = "OData",
+//    UiHint = "Filter and sort using OData options like $filter, $orderby, $top, $skip",
+//    Icon = DataSourceIcons.FilterList,
+//    Type = DataSourceType.Filter,
+//    NameId = "ea87b773-efd2-4751-939b-76601bbd23d1", // "ToSic.Eav.DataSources.OData, ToSic.Eav.DataSources",
+//    In = [InStreamDefaultRequired],
+//    Audience = Audience.System,
+//    ConfigurationType = "|Config ToSic.Eav.DataSources.EntityIdFilter", // TODO: change
+//    HelpLink = "https://go.2sxc.org/DsOData")]
+//public sealed class OData : DataSourceBase
+//{
+//    #region Configuration
 
-    #region Ctor / DI
+//    /// <summary>
+//    /// Raw OData query string to apply, for example: `"$filter=Title eq 'Hello'&amp;$orderby=Created desc&amp;$top=10"`.
+//    /// Can start with `?` and may contain any supported system options.
+//    /// </summary>
+//    [Configuration(Field = "EntityIds")] // TODO: change
+//    public string? ODataQueryString
+//    {
+//        get => Configuration.GetThis();
+//        set => Configuration.SetThisObsolete(value);
+//    }
+
+//    #endregion
+
+//    #region Ctor / DI
     
-    public OData(Dependencies parentServices, LazySvc<IDataSourcesService> dataSourceFactory)
-        : base(parentServices, $"{DataSourceConstantsInternal.LogPrefix}.OData", connect: [parentServices, dataSourceFactory])
-    {
-        _engine = new ODataQueryEngine(dataSourceFactory.Value);
-        ProvideOut(GetODataResult);
-    }
+//    public OData(Dependencies parentServices, LazySvc<IDataSourcesService> dataSourceFactory)
+//        : base(parentServices, $"{DataSourceConstantsInternal.LogPrefix}.OData", connect: [parentServices, dataSourceFactory])
+//    {
+//        _engine = new ODataQueryEngine(dataSourceFactory.Value);
+//        ProvideOut(GetODataResult);
+//    }
 
-    private readonly ODataQueryEngine _engine;
+//    private readonly ODataQueryEngine _engine;
 
-    #endregion
+//    #endregion
 
-    private IImmutableList<IEntity> GetODataResult()
-    {
-        var l = Log.Fn<IImmutableList<IEntity>>();
-        Configuration.Parse();
+//    private IImmutableList<IEntity> GetODataResult()
+//    {
+//        var l = Log.Fn<IImmutableList<IEntity>>();
+//        Configuration.Parse();
 
-        // Ensure we have an upstream
-        var inList = TryGetIn();
-        if (inList is null)
-            return l.ReturnAsError(Error.TryGetInFailed());
-        if (!inList.Any())
-            return l.Return(inList, "empty");
+//        // Ensure we have an upstream
+//        var inList = TryGetIn();
+//        if (inList is null)
+//            return l.ReturnAsError(Error.TryGetInFailed());
+//        if (!inList.Any())
+//            return l.Return(inList, "empty");
 
-        var raw = ODataQueryString;
-        if (string.IsNullOrWhiteSpace(raw))
-            return l.Return(inList, "no odata");
+//        var raw = ODataQueryString;
+//        if (string.IsNullOrWhiteSpace(raw))
+//            return l.Return(inList, "no odata");
 
-        // Parse OData options (safe against malformed % etc.)
-        var options = SystemQueryOptionsParser.Parse(raw!);
-        if (!options.AllRaw.Any())
-            return l.Return(inList, "no system options");
+//        // Parse OData options (safe against malformed % etc.)
+//        var options = SystemQueryOptionsParser.Parse(raw!);
+//        if (!options.AllRaw.Any())
+//            return l.Return(inList, "no system options");
 
-        // Build query AST and pipeline, then apply skip/top during execution
-        var query = options.ToQuery();
+//        // Build query AST and pipeline, then apply skip/top during execution
+//        var query = options.ToQuery();
 
-        // Use the upstream data source (not this) as the root for filtering/sorting
-        var upstream = In[StreamDefaultName].Source;
+//        // Use the upstream data source (not this) as the root for filtering/sorting
+//        var upstream = In[StreamDefaultName].Source;
 
-        var result = _engine.Execute(upstream, query);
-        return l.ReturnAsOk(result.Items.ToImmutableOpt());
-    }
-}
+//        var result = _engine.Execute(upstream, query);
+//        return l.ReturnAsOk(result.Items.ToImmutableOpt());
+//    }
+//}
