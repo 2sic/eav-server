@@ -37,6 +37,8 @@ public static class StartupEavDataSource
         services.TryAddTransient<IDataSourceCacheService, DataSourceCacheService>();
         services.TryAddTransient<IListCacheSvc, ListCacheSvc>();
 
+        services.TryAddTransient(typeof(QueryBuilder<>));   // new v20, moved to Eav v22
+
         services.AddDataSourceFallbacks();
 
         return services;
