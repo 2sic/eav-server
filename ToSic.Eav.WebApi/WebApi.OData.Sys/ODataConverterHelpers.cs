@@ -5,7 +5,7 @@ namespace ToSic.Eav.WebApi.OData.Sys;
 
 public static class ODataConverterHelpers
 {
-    internal static IConvertToEavLight PrepareDataConverter(this Generator<IConvertToEavLight> dataConverter, ODataOptions options, bool withGuid, bool isEditor)
+    internal static IConvertToEavLight PrepareDataConverter(this Generator<IConvertToEavLight> dataConverter, ODataOptions options, bool withGuid/*, bool isEditor #DropWithEdit*/)
     {
         var dc = dataConverter.New();
         dc.WithGuid = withGuid;

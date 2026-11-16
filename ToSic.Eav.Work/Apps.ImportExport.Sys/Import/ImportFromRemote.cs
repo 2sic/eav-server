@@ -16,20 +16,17 @@ public class ImportFromRemote(IEnvironmentLogger envLogger, Generator<ZipFromUrl
         l.A("install package:" + packageUrl);
         if (!user.IsSiteAdmin)
             throw new("must be admin");
-        ZipImport.Result result;
 
-        
-        var importer = zipImportFromUrl.New(new(zoneId, appId, AllowCode: true));
         try
         {
-            result = importer.ImportUrl(packageUrl, isApp, newName);
+            var importer = zipImportFromUrl.New(new(zoneId, appId, AllowCode: true));
+            var result = importer.ImportFromUrl(packageUrl, newName);
+            return l.Return(result, result.ToString());
         }
         catch (Exception ex)
         {
             envLogger.LogException(ex);
             throw new($"An error occurred while installing the app: {ex.Message}", ex);
         }
-
-        return l.Return(result, result.ToString());
     }
 }

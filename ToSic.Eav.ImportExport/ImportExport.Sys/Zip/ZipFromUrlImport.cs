@@ -9,9 +9,9 @@ public class ZipFromUrlImport(Generator<ZipImport, ZipImport.Options> zipImport,
     : ServiceWithSetup<ZipImport.Options>("Imp.ZipUrl", connect: [zipImport, globalConfiguration])
 {
 
-    public ZipImport.Result ImportUrl(string packageUrl, bool isAppImport, string? newName = null)
+    public ZipImport.Result ImportFromUrl(string packageUrl, string? newName = null)
     {
-        var l = Log.Fn<ZipImport.Result>($"import zip from url:'{packageUrl}', isApp:{isAppImport}, {nameof(newName)}:'{newName}'");
+        var l = Log.Fn<ZipImport.Result>($"import zip from url:'{packageUrl}', {nameof(newName)}:'{newName}'");
         var path = globalConfiguration.TemporaryFolder();
         if (path == null)
             throw new NullReferenceException("path for temporary is null - this won't work");
@@ -22,6 +22,7 @@ public class ZipFromUrlImport(Generator<ZipImport, ZipImport.Options> zipImport,
 
         var destinationPath = Path.Combine(tempDirectory.FullName, Path.GetRandomFileName() + ".zip");
 
+        // Retrieve the remote ZIP file and save it to the temporary directory
         using (var httpClient = new HttpClient())
         {
             try
@@ -39,10 +40,11 @@ public class ZipFromUrlImport(Generator<ZipImport, ZipImport.Options> zipImport,
                 throw new($"Could not download app package from '{packageUrl}'.", e);
             }
         }
-        ZipImport.Result success;
 
         var temporaryDirectory = Path.Combine(globalConfiguration.TemporaryFolder(), Guid.NewGuid().GuidCompress().Substring(0, 8));
 
+        // Import the zip and app.xml
+        ZipImport.Result success;
         using (var file = File.OpenRead(destinationPath))
             success = zipImport.New(MyOptions).ImportZip(file, temporaryDirectory, newName);
 

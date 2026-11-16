@@ -8,9 +8,6 @@ public interface IInstallController
     /// <returns></returns>
     bool Resume();
 
-    // Replaced by DataSource System.AppInstallation through query System.SysData.
-    //InstallAppsDto InstallSettings(bool isContentApp);
-
     /// <summary>
     /// Before this was GET Installer/InstallPackage
     /// </summary>

@@ -17,7 +17,7 @@ public class AppQueryODataHelper(Generator<IConvertToEavLight> dataConverter, ID
 {
 
 
-    internal IDictionary<string, IEnumerable<EavLightEntity>> ApplyOData(IDataSource query, IDictionary<string, ODataOptions> streams, string[]? filterGuids, bool withGuid = false, bool withEdit = false)
+    internal IDictionary<string, IEnumerable<EavLightEntity>> ApplyOData(IDataSource query, IDictionary<string, ODataOptions> streams, string[]? filterGuids, bool withGuid = false/*, bool withEdit = false #DropWithEdit*/)
     {
         var l = Log.Fn<IDictionary<string, IEnumerable<EavLightEntity>>>();
         var oDataEngine = new ODataQueryEngine(dataSourcesService);
@@ -43,7 +43,7 @@ public class AppQueryODataHelper(Generator<IConvertToEavLight> dataConverter, ID
 
                 // If it's not the one to apply OData to, exit here.
                 if (!streamName.EqualsInsensitive(streamToFilter))
-                    return lStream.Return((name: streamName, list: dataConverter.PrepareDataConverter(stream.Value, withGuid, withEdit).Convert(sourceStream)), "not in processing list");
+                    return lStream.Return((name: streamName, list: dataConverter.PrepareDataConverter(stream.Value, withGuid/*, withEdit #DropWithEdit*/).Convert(sourceStream)), "not in processing list");
 
                 // Apply OData to this stream
                 // For the internal processing, we need it to be in an IDataSource
@@ -58,7 +58,7 @@ public class AppQueryODataHelper(Generator<IConvertToEavLight> dataConverter, ID
 
                 // The filtered OData path must still honor that stream's $select,
                 // otherwise adding $filter/$orderby/$top causes the selected fields to be lost.
-                var converted = dataConverter.PrepareDataConverter(stream.Value, withGuid, withEdit).Convert(entities);
+                var converted = dataConverter.PrepareDataConverter(stream.Value, withGuid/*, withEdit #DropWithEdit*/).Convert(entities);
                 return lStream.Return((name: streamName, list: converted), "applied OData and converted");
             })
             .ToDictionary(
