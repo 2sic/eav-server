@@ -1,4 +1,6 @@
 using ToSic.Eav.Apps;
+using ToSic.Eav.Data.ContentTypes;
+using ToSic.Eav.Data.Raw;
 
 namespace ToSic.Eav.Repositories.Sys;
 
@@ -11,7 +13,12 @@ public interface IStoreRecycleBin: IServiceWithSetup<IAppReader>
 
     IReadOnlyList<RecycleBinItem> Get(Parameters parameters);
 
-    // TODO: @2rb - fix this, make it auto-convert etc.
+    [ContentType(
+        Name = "RecycleBin",
+        Guid = "0e451b14-b3f7-49f1-bb85-dfc17ba3d047",
+        Description = "Deleted entity in the recycle bin",
+        Scope = "System"
+    )]
     public sealed record RecycleBinItem(
         int Id,
         Guid Guid,
@@ -22,11 +29,11 @@ public interface IStoreRecycleBin: IServiceWithSetup<IAppReader>
         DateTime Deleted,
         string? DeletedBy,
         string? ParentRef
-    )
+    ) : IRawEntityAutoConvert
     {
+        [ContentTypeTitle]
+        public string Title => $"{TypeName} ({Id})";
+
         public string? Json { get; init; }
-        public DateTime? FilterDateFrom { get; init; }
-        public DateTime? FilterDateTo { get; init; }
-        public string? FilterContentType { get; init; }
     };
 }
