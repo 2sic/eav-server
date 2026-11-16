@@ -3,7 +3,7 @@ using ToSic.Eav.ImportExport.Sys;
 
 namespace ToSic.Eav.WebApi.Admin.Sys;
 
-public interface IQueryController
+public interface IQueryController: IAppAdminWebApiController
 {
     void Clone(int appId, int id);
 

@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.WebApi.Admin.Sys;
 
-public interface ITypeController
+public interface ITypeController: IAppAdminWebApiController
 {
     /// <summary>
     /// Create a ghost-content-type (very advanced feature)

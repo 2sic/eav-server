@@ -3,7 +3,7 @@ using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Admin.Sys;
 
-public interface IAppPartsController
+public interface IAppPartsController: IAppAdminWebApiController
 {
     /// <summary>
     /// Used to be GET ImportExport/ExportContent

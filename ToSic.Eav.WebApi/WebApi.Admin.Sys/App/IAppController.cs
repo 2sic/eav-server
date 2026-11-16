@@ -3,7 +3,7 @@ using ToSic.Eav.ImportExport.Sys;
 
 namespace ToSic.Eav.WebApi.Admin.Sys;
 
-public interface IAppController
+public interface IAppController: IAppAdminWebApiController
 {
     void App(int zoneId, int appId, bool fullDelete = true);
 

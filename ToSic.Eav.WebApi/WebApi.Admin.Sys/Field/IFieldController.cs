@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Eav.WebApi.Admin.Sys;
 
-public interface IFieldController
+public interface IFieldController: IAppAdminWebApiController
 {
     /// <summary>
     /// Add a field to the content type

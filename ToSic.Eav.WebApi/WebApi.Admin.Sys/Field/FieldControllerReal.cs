@@ -2,18 +2,22 @@
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class FieldControllerReal(AppWorkQuick<WorkAttributesMod> attributesMod)
-    : ServiceBase("Api.FieldRl", connect: [attributesMod]), IFieldController
+    : ServiceBase("Api.FieldRl", connect: [attributesMod])
 {
     public const string LogSuffix = "Field";
 
 
     #region Fields - Get, Reorder, Data-Types (for dropdown), etc.
+
+    /// <inheritdoc cref="IFieldController.Add"/>
     public int Add(int appId, int contentTypeId, string staticName, string type, string inputType, int index)
         => attributesMod.New(appId).AddField(contentTypeId, staticName, type, inputType, index);
 
+    /// <inheritdoc cref="IFieldController.Delete"/>
     public bool Delete(int appId, int contentTypeId, int attributeId)
         => attributesMod.New(appId).Delete(contentTypeId, attributeId);
 
+    /// <inheritdoc cref="IFieldController.Sort"/>
     public bool Sort(int appId, int contentTypeId, string order)
         => attributesMod.New(appId).Reorder(contentTypeId, order.Trim('[', ']'));
 

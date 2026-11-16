@@ -8,11 +8,11 @@ namespace ToSic.Eav.WebApi.Admin.Sys;
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class ZoneControllerReal(ISite site, LazySvc<ZoneManager> zoneManager)
-    : ServiceBase("Api.ZoneRl", connect: [site, zoneManager]), IZoneController
+    : ServiceBase("Api.ZoneRl", connect: [site, zoneManager])
 {
     public const string LogSuffix = "Zone";
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="IZoneController.SwitchLanguage" />
     public void SwitchLanguage(string cultureCode, bool enable)
     {
         var l = Log.Fn($"switch language:{cultureCode}, to:{enable}");

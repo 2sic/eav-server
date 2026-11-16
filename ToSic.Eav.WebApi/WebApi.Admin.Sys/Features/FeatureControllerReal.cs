@@ -8,7 +8,7 @@ public class FeatureControllerReal(
     // Must be lazy, to avoid log being filled with sys-loading infos when this service is being used
     LazySvc<EavFeaturesLoader> systemLoaderLazy,
     LazySvc<ISysFeaturesService> featuresLazy)
-    : ServiceBase("Bck.Feats", connect: [systemLoaderLazy, featuresLazy]), IFeatureController
+    : ServiceBase("Bck.Feats", connect: [systemLoaderLazy, featuresLazy])
 {
     public const string LogSuffix = "Feats";
 

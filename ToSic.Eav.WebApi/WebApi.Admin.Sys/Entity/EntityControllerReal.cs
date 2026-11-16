@@ -25,7 +25,6 @@ public class EntityControllerReal(
     IResponseMaker responseMaker)
     : ServiceBase("Api.EntityRl",
         connect: [ctxSvc, appsCatalog, contentImport, entDelete, contentImportXml, contentImportXmlPreview, exportDataXml, exportEntityJson, user, responseMaker])
-        // IEntityController
 {
     public const string LogSuffix = "Entity";
 

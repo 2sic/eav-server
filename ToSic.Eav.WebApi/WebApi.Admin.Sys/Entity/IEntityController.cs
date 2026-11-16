@@ -3,7 +3,7 @@ using ToSic.Eav.ImportExport.Sys.Options;
 
 namespace ToSic.Eav.WebApi.Admin.Sys;
 
-public interface IEntityController
+public interface IEntityController: IAppAdminWebApiController
 {
     /// <summary>
     /// Delete an item from the admin-UI
