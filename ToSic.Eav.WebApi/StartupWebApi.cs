@@ -7,6 +7,7 @@ using ToSic.Eav.Ui.Edit.Sys.Load;
 using ToSic.Eav.Ui.Edit.Sys.Save;
 using ToSic.Eav.Web.Http.Sys;
 using ToSic.Eav.WebApi.Admin.Sys;
+using ToSic.Eav.WebApi.App.Sys;
 using ToSic.Eav.WebApi.OData.Sys;
 using ToSic.Eav.WebApi.Sys.Admin;
 using ToSic.Eav.WebApi.Sys.Admin.Features;
@@ -71,7 +72,8 @@ public static class StartupWebApi
         services.TryAddTransient<EavUiContextPartsService>();
         services.TryAddTransient<IUiContextPartsService, EavUiContextPartsService>();
 
-        // Odata v21
+        // Moved here v22 (previously Sxc)
+        services.TryAddTransient<AppWebApiQueryRunSvc>();
         services.TryAddTransient<AppQueryODataHelper>();
 
         services.AddNetInfrastructure();
