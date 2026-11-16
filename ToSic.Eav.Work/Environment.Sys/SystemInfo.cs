@@ -148,7 +148,7 @@ public class SystemInfo : CustomDataSource
 
     [ContentType(
         Name = "SystemInfo",
-        Guid = "6ed9998e-7087-41c5-a26e-207e07359531",
+        Guid = "e18ebabc-418d-4c76-a9e7-e3734bf51b0b",
         Description = "System information",
         Scope = "System"
     )]

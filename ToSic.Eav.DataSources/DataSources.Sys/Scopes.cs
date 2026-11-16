@@ -56,7 +56,7 @@ public sealed class Scopes(CustomDataSource.Dependencies services, IAppReaderFac
 
     [ToSic.Eav.Data.ContentTypes.ContentType(
         Name = "Scope",
-        Guid = "f134e3c1-f09f-4fbc-85be-de43a64c6eed",
+        Guid = "7e0af7c0-5d07-4148-8435-480f3ebdf5f0",
         Description = "Data Scope",
         Scope = "System"
     )]
