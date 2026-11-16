@@ -4,7 +4,7 @@
 /// WIP trying to move responsibility of creating a log for any request to a central place.
 /// Goal is to make this available in other places where it may not be easy to connect to an existing log.
 /// </summary>
-public class HttpRequestLoggingScoped(ILogStore logStore) : ServiceWithSetup<HttpRequestLoggingScoped.Opts>("Web.HttpReqLog")
+public class HttpRequestLoggingScoped(ILogStore logStore) : ServiceWithSetup<HttpRequestLoggingScoped.Options>("Web.HttpReqLog")
 {
     // 2026-08-07 2dm - believe that options are always required
     //protected override Opts GetDefaultOptions() => new();
@@ -13,7 +13,7 @@ public class HttpRequestLoggingScoped(ILogStore logStore) : ServiceWithSetup<Htt
     /// Setup - may be called multiple times as we need a generator to get it, and it will always return the same (scoped) instance.
     /// </summary>
     /// <param name="options"></param>
-    public override void Setup(Opts options)
+    public override void Setup(Options options)
     {
         if (_setupWasAlreadyCalled)
             return;
@@ -43,7 +43,7 @@ public class HttpRequestLoggingScoped(ILogStore logStore) : ServiceWithSetup<Htt
     /// <summary>
     /// Class to hold options for the HttpRequestLoggingService
     /// </summary>
-    public record Opts
+    public record Options
     {
         [field: AllowNull, MaybeNull]
         public string Segment
