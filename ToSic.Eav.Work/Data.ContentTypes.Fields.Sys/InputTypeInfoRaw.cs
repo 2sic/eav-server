@@ -2,7 +2,7 @@ namespace ToSic.Eav.Data.ContentTypes.Fields.Sys;
 
 [ContentType(
     Name = "InputTypeInfo",
-    Guid = "8c0b688e-c79a-4180-8123-5d1959f3a89f",
+    Guid = "ede9f818-c4ad-46a3-b738-55c0d4a43218",
     Description = "Input type information",
     Scope = "System"
 )]

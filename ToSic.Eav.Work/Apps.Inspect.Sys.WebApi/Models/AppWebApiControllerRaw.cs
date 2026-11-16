@@ -4,7 +4,7 @@ namespace ToSic.Eav.Apps.Inspect.Sys.WebApi.Models;
 
 [ContentType(
     Name = "AppWebApiControllerDetails",
-    Guid = "70179265-0a90-4605-953a-91d237bed938",
+    Guid = "1fb5f818-188c-48f5-b61c-ebc0ff48ca81",
     Description = "App WebApi controller details",
     Scope = "System"
 )]

@@ -4,7 +4,7 @@ using ToSic.Eav.DataSource.VisualQuery.Sys;
 
 namespace ToSic.Eav.DataSources.Query.Dev.Sys;
 
-[ContentType(Name = "DataSource", Guid = "2de41d89-3cb9-480a-ac3c-40f77fd3af4e", Scope = "System")]
+[ContentType(Name = "DataSource", Guid = "b322baf3-6e2e-4c5d-8f90-01e4b6035ab8", Scope = "System")]
 public class DataSourceDto : IRawEntityAutoConvert
 {
     public DataSourceDto(DataSourceInfo dsInfo, ICollection<string>? outNameList)
