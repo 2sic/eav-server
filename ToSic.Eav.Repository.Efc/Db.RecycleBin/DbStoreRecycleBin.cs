@@ -86,10 +86,7 @@ public class DbStoreRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDa
                 txBundle.tx != null ? txBundle.tx.User : null,
                 appRefId)
             {
-                Json = txBundle.ent.Json,
-                FilterDateFrom = dateFrom,
-                FilterDateTo = dateTo,
-                FilterContentType = contentType
+                Json = txBundle.ent.Json
             })
             .ToList();
     }
@@ -178,10 +175,7 @@ public class DbStoreRecycleBin(LazySvc<Compressor> compressor, Generator<IJsonDa
                     DeletedBy: tx.User,
                     ParentRef: parentRef)
                 {
-                    Json = json,
-                    FilterDateFrom = dateFrom,
-                    FilterDateTo = dateTo,
-                    FilterContentType = contentType
+                    Json = json
                 };
             })
             .Where(i => string.IsNullOrWhiteSpace(contentType) 
