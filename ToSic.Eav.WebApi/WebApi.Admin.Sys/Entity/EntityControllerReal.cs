@@ -5,11 +5,10 @@ using ToSic.Eav.ImportExport.Sys.JsonData;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.XmlData;
 using ToSic.Eav.WebApi.Sys.Helpers.Http;
-using ToSic.Eav.WebApi.Sys.ImportExport;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 
-namespace ToSic.Eav.WebApi.Sys.Admin;
+namespace ToSic.Eav.WebApi.Admin.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EntityControllerReal(

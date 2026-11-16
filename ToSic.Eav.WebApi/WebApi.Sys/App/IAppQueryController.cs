@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.DataFormats.EavLight;
-using ToSic.Eav.WebApi.Sys.Admin.Query;
 
-namespace ToSic.Eav.WebApi.Sys.Admin.App;
+namespace ToSic.Eav.WebApi.Sys.App;
 
 /// <summary>
 /// In charge of delivering Pipeline-Queries on the fly

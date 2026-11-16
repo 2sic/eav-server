@@ -1,7 +1,6 @@
 ﻿using ToSic.Eav.ImportExport.Sys;
-using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Admin;
+namespace ToSic.Eav.WebApi.Admin.Sys;
 
 public interface ITypeController
 {

@@ -1,7 +1,7 @@
 using System.Globalization;
 using ToSic.Eav.Context;
 
-namespace ToSic.Eav.WebApi.Sys.Admin;
+namespace ToSic.Eav.WebApi.Admin.Sys;
 
 /// <summary>
 /// This one supplies portal-wide (or cross-portal) settings / configuration

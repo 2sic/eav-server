@@ -1,8 +1,7 @@
 ﻿using ToSic.Eav.DataSources.Query.Dev.Sys;
 using ToSic.Eav.ImportExport.Sys;
-using ToSic.Eav.ImportExport.Sys.JsonData;
 
-namespace ToSic.Eav.WebApi.Sys.Admin.Query;
+namespace ToSic.Eav.WebApi.Admin.Sys;
 
 public interface IQueryController
 {
