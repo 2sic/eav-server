@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Specialized;
-using System.Web;
 #if NETFRAMEWORK
+using System.Web;
 #else
 using Microsoft.AspNetCore.Http;
 #endif
@@ -30,13 +30,6 @@ public interface IHttp
     /// The standardized QueryString parameters so it works on all platforms
     /// </summary>
     NameValueCollection QueryStringParams { get; }
-
-    /// <summary>
-    /// QueryString params as KeyValue Pairs.
-    /// We don't use a dictionary, because sometimes the same key can occur twice.
-    /// </summary>
-    /// <returns></returns>
-    List<KeyValuePair<string, string>> QueryStringKeyValuePairs();
 
     string? GetCookie(string cookieName);
 }

@@ -95,6 +95,7 @@ public static class StartupWebApi
 #if NETCOREAPP
         // Helper to get header, query string and route information from current request
         services.TryAddScoped<RequestHelper>();
+        services.TryAddTransient<IHttp, HttpHybrid>();
 #endif
 
         return services;
