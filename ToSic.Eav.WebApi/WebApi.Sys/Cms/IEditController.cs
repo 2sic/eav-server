@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Ui.Edit.Sys;
+using ToSic.Eav.WebApi.Admin.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 
 namespace ToSic.Eav.WebApi.Sys.Cms;
@@ -7,7 +8,7 @@ namespace ToSic.Eav.WebApi.Sys.Cms;
 /// This is the Contract / Interface for the edit controller.
 /// All WebAPI implementations of Edit should be based on this, so we can tell at compile time if they are compatible
 /// </summary>
-public interface IEditController
+public interface IEditController: IAppAdminWebApiController
 {
     /// <summary>
     /// Load data for the edit UI. 

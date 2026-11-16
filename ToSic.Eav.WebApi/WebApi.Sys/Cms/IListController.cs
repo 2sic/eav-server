@@ -1,6 +1,8 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Cms;
+﻿using ToSic.Eav.WebApi.Admin.Sys;
 
-public interface IListController
+namespace ToSic.Eav.WebApi.Sys.Cms;
+
+public interface IListController: IAppAdminWebApiController
 {
     /// <summary>
     /// used to be GET Module/ChangeOrder

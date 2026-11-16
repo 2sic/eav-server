@@ -23,6 +23,8 @@ public class LicenseControllerReal(
     : ServiceBase("Bck.Lics", connect: [globalConfiguration, fingerprint, featuresLoader]),
         ILicenseController
 {
+    public const string LogSuffix = "License";
+
     // auto-download license file
     private const string DefaultLicenseFileName = "default.license.json";
 

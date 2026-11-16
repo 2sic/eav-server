@@ -1,6 +1,8 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Licenses;
+﻿using ToSic.Eav.WebApi.Admin.Sys;
 
-public interface ILicenseController
+namespace ToSic.Eav.WebApi.Sys.Licenses;
+
+public interface ILicenseController: IAppAdminWebApiController
 {
     // Replaced by DataSources System.Licenses and System.FeatureStates through query System.SysData.
     //IEnumerable<LicenseDto> Summary();

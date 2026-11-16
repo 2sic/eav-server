@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Sys.Capabilities.Features;
 
-namespace ToSic.Eav.WebApi.Sys.Admin.Features;
+namespace ToSic.Eav.WebApi.Admin.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class FeatureControllerReal(

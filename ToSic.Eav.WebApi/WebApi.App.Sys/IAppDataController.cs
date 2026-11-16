@@ -1,11 +1,13 @@
-﻿namespace ToSic.Eav.WebApi.App.Sys;
+﻿using ToSic.Eav.WebApi.Admin.Sys;
+
+namespace ToSic.Eav.WebApi.App.Sys;
 
 /// <summary>
 /// Direct access to app-content items, simple manipulations etc.
 /// Should check for security at each standard call - to see if the current user may do this
 /// Then we can reduce security access level to anonymous, because each method will do the security check
 /// </summary>
-public interface IAppDataController
+public interface IAppDataController: IAppAdminWebApiController
 {
     /// <summary>
     /// Get all Entities of specified Type

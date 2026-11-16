@@ -1,6 +1,8 @@
-﻿namespace ToSic.Eav.WebApi.Sys.Install;
+﻿using ToSic.Eav.WebApi.Admin.Sys;
 
-public interface IInstallController
+namespace ToSic.Eav.WebApi.Sys.Install;
+
+public interface IInstallController: IAppAdminWebApiController
 {
     /// <summary>
     /// Finish system installation which had somehow been interrupted
