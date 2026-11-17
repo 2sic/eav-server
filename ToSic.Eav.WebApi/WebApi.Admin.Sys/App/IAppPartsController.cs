@@ -14,6 +14,7 @@ public interface IAppPartsController: IAppAdminWebApiController
     /// <param name="entityIdsString"></param>
     /// <param name="templateIdsString"></param>
     /// <returns></returns>
+    // UI test: App administration > Import / Export > Export App Parts > select parts and export.
     THttpResponseType Export(int zoneId, int appId, string contentTypeIdsString, string entityIdsString, string templateIdsString);
 
 
@@ -25,6 +26,7 @@ public interface IAppPartsController: IAppAdminWebApiController
     /// <param name="appId"></param>
     /// <param name="scope"></param>
     /// <returns></returns>
+    // UI test: App administration > Import / Export > Export App Parts; opening the dialog loads this overview.
     ExportPartsOverviewDto Get(int zoneId, int appId, string scope);
 
 
@@ -34,5 +36,6 @@ public interface IAppPartsController: IAppAdminWebApiController
     /// <param name="zoneId"></param>
     /// <param name="appId"></param>
     /// <returns></returns>
+    // UI test: App administration > Import / Export > Import App Parts.
     ImportResult Import(int zoneId, int appId);
 }

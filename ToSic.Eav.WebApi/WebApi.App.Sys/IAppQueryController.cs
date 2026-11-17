@@ -26,6 +26,7 @@ public interface IAppQueryController
     /// will check security internally, so assume the endpoint doesn't need to check security first
     /// </remarks>
     /// <returns></returns>
+    // UI test: App administration > Queries > REST API > select a query and run a GET example in the current app context.
     IDictionary<string, IEnumerable<EavLightEntity>> Query(string name,
         int? appId = null,
         string? stream = null,
@@ -47,6 +48,7 @@ public interface IAppQueryController
     /// will check security internally, so assume the endpoint doesn't need to check security first
     /// </remarks>
     /// <returns></returns>
+    // UI test: App administration > Queries > REST API > select a query and run a POST example in the current app context.
     IDictionary<string, IEnumerable<EavLightEntity>> QueryPost(string name,
         QueryParametersDtoFromClient more,
         int? appId = null,
@@ -65,6 +67,7 @@ public interface IAppQueryController
     /// will check security internally, so assume the endpoint doesn't need to check security first
     /// </remarks>
     /// <returns></returns>
+    // UI test: App administration > Queries > REST API > choose the app-path scenario and run a GET example.
     IDictionary<string, IEnumerable<EavLightEntity>> PublicQuery(
         string appPath, 
         string name,
@@ -84,6 +87,7 @@ public interface IAppQueryController
     /// will check security internally, so assume the endpoint doesn't need to check security first
     /// </remarks>
     /// <returns></returns>
+    // UI test: App administration > Queries > REST API > choose the app-path scenario and run a POST example.
     IDictionary<string, IEnumerable<EavLightEntity>> PublicQueryPost(
         string appPath,
         string name,

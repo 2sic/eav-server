@@ -17,6 +17,7 @@ public interface IEditController: IAppAdminWebApiController
     /// <param name="items">Identifier objects telling the backend what to provide - usually in the POST.</param>
     /// <param name="appId">AppId of the app we're working in</param>
     /// <returns>Complex object containing the edit-data</returns>
+    // UI test: Open any item edit dialog; loading the form calls this endpoint.
     Task<EditLoadDto> Load(List<ItemIdentifier> items, int appId);
 
     /// <summary>
@@ -27,6 +28,7 @@ public interface IEditController: IAppAdminWebApiController
     /// <param name="appId">Current App ID</param>
     /// <param name="partOfPage">Tell the save operation if this may be tied to a page-publishing workflow</param>
     /// <returns></returns>
+    // UI test: Open any item edit dialog, change a value, and save.
     Task<Dictionary<Guid, int>> Save(EditSaveDto package, int appId, bool partOfPage);
     
     /// <summary>
@@ -40,6 +42,7 @@ public interface IEditController: IAppAdminWebApiController
     /// <param name="guid">Item GUID (optional). Relevant for checking ADAM links inside an item.</param>
     /// <param name="field">Item field (optional). Relevant for checking ADAM links inside an item.</param>
     /// <returns></returns>
+    // UI test: Edit an item with a hyperlink / ADAM field and resolve or preview a page/file link.
     LinkInfoDto LinkInfo(string link, int appId, string? contentType = default, Guid guid = default, string? field = default);
 
     /// <summary>
@@ -47,5 +50,6 @@ public interface IEditController: IAppAdminWebApiController
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
+    // UI test: Not called by eav-ui; publishing state is currently submitted through cms/edit/save.
     Task<bool> Publish(int id);
 }

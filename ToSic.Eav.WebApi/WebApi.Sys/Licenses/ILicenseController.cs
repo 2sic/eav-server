@@ -12,6 +12,7 @@ public interface ILicenseController: IAppAdminWebApiController
     /// </summary>
     /// <returns>LicenseFileResultDto</returns>
     /// <exception cref="ArgumentException"></exception>
+    // UI test: Apps management > Registration / License > upload a license file.
     LicenseFileResultDto Upload();
 
 
@@ -20,5 +21,6 @@ public interface ILicenseController: IAppAdminWebApiController
     /// </summary>
     /// <returns>LicenseFileResultDto</returns>
     /// <exception cref="ArgumentException"></exception>
+    // UI test: Apps management > Registration / License > retrieve the registered license.
     LicenseFileResultDto Retrieve();
 }

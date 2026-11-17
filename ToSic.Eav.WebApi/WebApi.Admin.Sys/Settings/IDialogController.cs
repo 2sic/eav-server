@@ -8,5 +8,6 @@ public interface IDialogController: IAppAdminWebApiController
     /// </summary>
     /// <param name="appId"></param>
     /// <returns></returns>
+    // UI test: Open any eav-ui dialog or administration screen; its startup loads these settings.
     DialogContextStandaloneDto Settings(int appId);
 }

@@ -20,6 +20,7 @@ public interface IEntityController: IAppAdminWebApiController
     /// Needs edit-permissions, as the item-list can also be accessed from the toolbar in certain cases.
     /// Will do permission checks internally.
     /// </remarks>
+    // UI test: App administration > Data > open a content type > delete an item.
     void Delete(string contentType, int appId, int? id = null, Guid? guid = null, bool force = false, int? parentId = null,
         string? parentField = null);
 
@@ -29,6 +30,7 @@ public interface IEntityController: IAppAdminWebApiController
     /// <remarks>
     /// Will do permission checks internally.
     /// </remarks>
+    // UI test: App administration > Data > open a content type > item menu > Export JSON.
     THttpResponseType Json(int appId, int id, string prefix, bool withMetadata);
 
     /// <summary>
@@ -43,6 +45,7 @@ public interface IEntityController: IAppAdminWebApiController
     /// <param name="languageReferences"></param>
     /// <param name="selectedIds"></param>
     /// <returns></returns>
+    // UI test: App administration > Data > open a content type > Export Content.
     THttpResponseType Download(
         int appId, 
         string language, 
@@ -57,17 +60,20 @@ public interface IEntityController: IAppAdminWebApiController
     /// This seems to be for XML import of a list
     /// Used to be POST ContentImport/EvaluateContent
     /// </summary>
+    // UI test: App administration > Data > open a content type > Import Content; selecting a file runs the preview.
     ContentImportResult XmlPreview(ContentFileImportOptions args);
         
     /// <summary>
     /// This seems to be for XML import of a list
     /// Used to be POST ContentImport/ImportContent
     /// </summary>
+    // UI test: App administration > Data > open a content type > Import Content > Import.
     ContentImportResult XmlUpload(ContentFileImportOptions args);
         
     /// <summary>
     /// This is the single-item json import
     /// Used to be POST ContentImport/Import
     /// </summary>
+    // UI test: App administration > Data > open a content type > Import Item.
     bool Upload(DataFileImportOptions args);
 }

@@ -9,6 +9,7 @@ public interface IZoneController: IAppAdminWebApiController
     /// Enable / disable a language in the EAV
     /// </summary>
     /// <returns></returns>
+    // UI test: Apps management > Site Languages > enable or disable a language.
     void SwitchLanguage(string cultureCode, bool enable);
 
 }

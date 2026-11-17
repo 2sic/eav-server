@@ -11,6 +11,7 @@ public interface IListController: IAppAdminWebApiController
     /// <param name="fields"></param>
     /// <param name="index"></param>
     /// <param name="toIndex"></param>
+    // UI test: Not called by eav-ui; Manage Content List reordering posts the complete list to Items instead.
     void Move(Guid? parent, string fields, int index, int toIndex);
 
     /// <summary>
@@ -19,13 +20,19 @@ public interface IListController: IAppAdminWebApiController
     /// <param name="parent"></param>
     /// <param name="part"></param>
     /// <param name="index"></param>
+    // UI test: Manage Content List > remove an item from the list.
     void Delete(Guid? parent, string part, int index);
 
+    // UI test: Replace Content dialog > select an item, or add an item to the list.
     void Replace(Guid parent, string part, int index, int entityId, bool add = false);
+    // UI test: Open Replace Content; loading the dialog retrieves the available replacements.
     ReplacementListDto ReplaceOptions(Guid parent, string part, int index, string? contentType = null);
 
+    // UI test: Open Manage Content List; loading the dialog retrieves the current items.
     List<EntityInListDto> Items(Guid parent, string part);
+    // UI test: Manage Content List > reorder items and save.
     bool Items(Guid parent, List<EntityInListDto> list, string part);
 
+    // UI test: Open Manage Content List; its header/metadata section loads this endpoint.
     List<EntityInListDto> ContentBlockHeader(Guid parent);
 }

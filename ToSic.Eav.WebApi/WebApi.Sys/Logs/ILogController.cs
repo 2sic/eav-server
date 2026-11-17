@@ -7,5 +7,6 @@ public interface ILogController: IHasLog
     /// </summary>
     /// <param name="duration"></param>
     /// <returns></returns>
+    // UI test: Apps management > System Info > activate extended page logging.
     string EnableDebug(int duration = 1);
 }
