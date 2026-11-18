@@ -1,7 +1,6 @@
-﻿using ToSic.Eav.Apps.Sys;
-using ToSic.Sys.Utils;
+﻿using ToSic.Sys.Utils;
 
-namespace ToSic.Eav.Apps.Views.Sys;
+namespace ToSic.Eav.Apps.Assets.Sys;
 
 public class AppPathTokenHelper
 {

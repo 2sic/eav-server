@@ -27,5 +27,13 @@ public class ViewConstants
     //internal const string FieldPublishEnable = "PublishData";
     //internal const string FieldPublishStreams = "StreamsToPublish";
 
+    internal const string TypeRazorValue = "C# Razor";
+    internal const string FieldPipeline = "Pipeline";
+
+    /// <summary>
+    /// Old fake field name for adding a toolbar
+    /// </summary>
+    public const string FieldToolbar = "Toolbar";
+
 
 }
