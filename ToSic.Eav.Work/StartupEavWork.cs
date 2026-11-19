@@ -6,6 +6,7 @@ using ToSic.Eav.Apps.Inspect.Sys.WebApi;
 using ToSic.Eav.Apps.Install.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.Publishing.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Versions.Sys;
 using ToSic.Eav.DataFormats.EavLight;
@@ -21,8 +22,6 @@ using ToSic.Eav.ImportExport.Sys.XmlList;
 using ToSic.Eav.Metadata.Recommendations.Sys;
 using ToSic.Eav.Metadata.Requirements.Sys;
 using ToSic.Eav.Metadata.Sys;
-using ToSic.Eav.Repositories.Sys;
-using ToSic.Eav.Repository.Efc.Db.RecycleBin;
 
 namespace ToSic.Eav;
 
@@ -197,6 +196,8 @@ public static class StartupEavWork
     /// </remarks>
     public static IServiceCollection AddWorkFallbackServices(this IServiceCollection services)
     {
+        // v23 moved here from Sxc
+        services.TryAddTransient<IDataPublishingService, PublishingServiceUnknown>();
         return services;
     }
     
