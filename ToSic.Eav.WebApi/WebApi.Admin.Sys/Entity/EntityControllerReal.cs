@@ -4,7 +4,6 @@ using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.ImportExport.Sys.JsonData;
 using ToSic.Eav.ImportExport.Sys.Options;
 using ToSic.Eav.ImportExport.Sys.XmlData;
-using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 
@@ -21,10 +20,9 @@ public class EntityControllerReal(
     AppWorkQuick<ImportDataXmlPreview> contentImportXmlPreview,
     AppWorkQuick<ExportDataXml> exportDataXml,
     AppWorkQuick<ExportEntityJson> exportEntityJson,
-    LazySvc<IUser> user,
-    IResponseMaker responseMaker)
+    LazySvc<IUser> user)
     : ServiceBase("Api.EntityRl",
-        connect: [ctxSvc, appsCatalog, contentImport, entDelete, contentImportXml, contentImportXmlPreview, exportDataXml, exportEntityJson, user, responseMaker])
+        connect: [ctxSvc, appsCatalog, contentImport, entDelete, contentImportXml, contentImportXmlPreview, exportDataXml, exportEntityJson, user])
 {
     public const string LogSuffix = "Entity";
 

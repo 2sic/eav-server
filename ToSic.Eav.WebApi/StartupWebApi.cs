@@ -48,15 +48,15 @@ public static class StartupWebApi
 
         // ResponseMaker must be scoped, as the api-controller must init this for use in other parts
         // This ensures that generic backends (.net framework/core) can create a response object
-#if NETCOREAPP
+//#if NETCOREAPP
         // In .net core, it does not need to be initialized in the controller.
-        services.TryAddScoped<IResponseMaker, ResponseMakerNetCore>();
-#else
+        //services.TryAddScoped<IResponseMaker, ResponseMakerNetCore>();
+//#else
         // The initial dummy, which will always throw an exception if used. This is to ensure that the ResponseMaker is always overridden in the EAV WebApi.
-        services.TryAddTransient<ResponseMakerToOverride>();
+        //services.TryAddTransient<ResponseMakerToOverride>();
         // The true registration for the IResponseMaker, requiring override.
-        services.TryAddTransient<IResponseMaker>(OverrideService<IResponseMaker>.Register<ResponseMakerToOverride>());
-#endif
+        //services.TryAddTransient<IResponseMaker>(OverrideService<IResponseMaker>.Register<ResponseMakerToOverride>());
+//#endif
 
         // Helper to decouple Insights from WebApi
         services.TryAddTransient<IHttpExceptionMaker, HttpExceptionMaker>();
@@ -89,7 +89,7 @@ public static class StartupWebApi
     public static IServiceCollection AddEavWebApiTypedAfterEav(this IServiceCollection services)
     {
         // The ResponseMaker must be registered as generic, so that any specific registration will have priority
-        services.TryAddScoped<IResponseMaker, ResponseMakerToOverride>();
+        //services.TryAddScoped<IResponseMaker, ResponseMakerToOverride>();
         return services;
     }
 
