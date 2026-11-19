@@ -1,5 +1,6 @@
 ﻿using System.Xml.XPath;
 using ToSic.Eav.Apps.AppReader.Sys;
+using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Data.Sys.Ancestors;
 using ToSic.Eav.Data.ContentTypes.Sys;
@@ -37,7 +38,6 @@ public class ZipExport(
     //protected override Options GetDefaultOptions() => new();
 
 
-    private const string SexyContentContentGroupName = "2SexyContent-ContentGroup";
     private const string SourceControlDataFolder = FolderConstants.DataFolderProtected;
     private const string SourceControlDataFile = FolderConstants.AppDataFile;
 
@@ -324,7 +324,7 @@ public class ZipExport(
 
         if (!specs.IncludeContentGroups)
             entities = entities
-                .Where(p => p.Type.NameId != SexyContentContentGroupName)
+                .Where(p => p.Type.NameId != AppConstants.ContentGroupTypeName)
                 .ToList();
 
         // Exclude ParentApp entities

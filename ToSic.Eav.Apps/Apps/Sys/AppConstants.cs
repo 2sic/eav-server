@@ -44,4 +44,14 @@ public class AppConstants
     /// </summary>
     public const string TemplateContentType = Settings.TemplateContentType;
 
+    /// <summary>
+    /// Old name, leftover, ATM can't change quickly...
+    /// </summary>
+    /// <remarks>
+    /// This is not the right place for it, since content-blocks are not
+    /// an EAV concept.
+    /// But since some services need it, it's best to keep it in a central place.
+    /// </remarks>
+    public const string ContentGroupTypeName = "2SexyContent-ContentGroup";
+
 }
