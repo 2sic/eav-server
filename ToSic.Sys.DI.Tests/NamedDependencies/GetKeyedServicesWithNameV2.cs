@@ -13,6 +13,7 @@ public class GetKeyedServicesWithNameV2
     private class NamedJohn : INamedService;
 
     private class NamedJoe : INamedService;
+    private class NamedMarc : INamedService;
 
     [Fact]
     public void NoRegistrations_HasNone()
@@ -31,6 +32,8 @@ public class GetKeyedServicesWithNameV2
         sc.AddKeyedTransient<INamedService, NamedJohn>(nameof(NamedJohn));
         sc.AddKeyedTransient<INamedService, NamedJoe>(nameof(NamedJoe));
         sc.AddKeyedServiceEnumeration<string, INamedService>();
+        // this one won't get discovered, because order matters
+        sc.AddKeyedTransient<INamedService, NamedMarc>(nameof(NamedMarc));
         var sp = sc.BuildServiceProvider();
         return sp;
     }

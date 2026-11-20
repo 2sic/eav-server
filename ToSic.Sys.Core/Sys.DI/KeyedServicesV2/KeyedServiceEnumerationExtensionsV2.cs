@@ -2,9 +2,7 @@
 
 namespace ToSic.Sys.DI;
 
-public record KeyedService<TKey, TService>(TKey Key, TService Service) where TService : notnull;
-
-public static class KeyedServiceEnumerationExtensions
+public static class KeyedServiceEnumerationExtensionsV2
 {
     // Call this on IServiceCollection before BuildServiceProvider()
     public static IServiceCollection AddKeyedServiceEnumeration<TKey, TService>(
@@ -30,7 +28,7 @@ public static class KeyedServiceEnumerationExtensions
     }
 
     // Convenience helper for runtime resolution via IServiceProvider
-    public static IEnumerable<KeyedService<TKey, TService>> GetKeyedServicesWithKeys<TKey, TService>(
+    public static IEnumerable<KeyedService<TKey, TService>> GetKeyedServicesWithKeysV2<TKey, TService>(
         this IServiceProvider provider)
         where TService : class
     {
