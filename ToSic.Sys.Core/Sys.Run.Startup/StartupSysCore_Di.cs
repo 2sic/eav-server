@@ -25,9 +25,6 @@ public static partial class StartupSysCore
         // Warnings for mock implementations
         services.TryAddTransient(typeof(WarnUseOfUnknown<>));
 
-        // Empty Dependencies
-        services.TryAddTransient<DependenciesEmpty>();
-
         // New keyed service registry v22.02
         services.AddKeyedServiceRegistry();
 
