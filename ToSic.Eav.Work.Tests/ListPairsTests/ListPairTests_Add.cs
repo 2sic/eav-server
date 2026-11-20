@@ -1,6 +1,8 @@
 ﻿namespace ToSic.Eav.ListPairsTests;
 
-public partial class ListPairTests
+using static ListPairTestHelpers;
+
+public class ListPairTestsAdd
 {
 
     [Fact]

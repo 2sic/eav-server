@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Apps.Sys.Work;
+﻿namespace ToSic.Eav.Data.ListSlots.Sys;
 
 /// <summary>
 /// This is responsible for managing / changing list-pairs of entities.
@@ -8,7 +8,7 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class CoupledIdLists: HelperBase
 {
-    public Dictionary<string, List<int?>> Lists = new(StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, List<int?>> Lists { get; }
 
     /// <summary>
     /// Constructor
@@ -17,11 +17,26 @@ public class CoupledIdLists: HelperBase
     /// <param name="parentLog"></param>
     public CoupledIdLists(Dictionary<string, List<int?>> lists, ILog parentLog) : base(parentLog, "App.LstPai")
     {
-        foreach (var keyValuePair in lists) Lists.Add(keyValuePair.Key, keyValuePair.Value);
-        SyncListLengths();
-
-        if(Lists.Count == 0)
+        var l = Log.Fn();
+        // Quick pre-validation - if there are no lists, something is wrong and we should break early
+        if (lists.Count == 0)
             throw new("Lists Modifier needs at least 1 list, can't continue");
+
+        // Determine how many values should be in each list, and then ensure that all lists have the same length.
+        // This is important because we are working with coupled lists, and they need to be in sync.
+        var expectedValuesCount = lists.First().Value.Count;
+        l.A($"length: {expectedValuesCount}");
+
+        // Sync lengths of values in the list
+        // This does various clean-up, because historic data can often be mismatched.
+        // For example, a list-pair of content/presentation may not be in correct state,
+        // so this ensures that everything is in sync.
+        Lists = lists.ToDictionary(
+            kv => kv.Key,
+            kv => kv.Value.SetLength(expectedValuesCount),
+            StringComparer.InvariantCultureIgnoreCase);
+
+        l.Done();
     }
 
     /// <summary>
@@ -29,42 +44,42 @@ public class CoupledIdLists: HelperBase
     /// </summary>
     /// <param name="index">Index to add to - 0 based</param>
     /// <param name="ids"></param>
-    public Dictionary<string, object?> Add(int? index, int?[] ids)
+    public Dictionary<string, List<int?>> Add(int? index, int?[] ids)
     {
-        Log.A($"add content/pres at order:{index}");
+        var l = Log.Fn<Dictionary<string, List<int?>>>($"add content/pres at order:{index}");
         var max = Lists.First().Value.Count; // max is at the end of the list
-        index = index ?? max;
+        index ??= max;
         if (index > max)
             index = max;
         if (index < 0)
             index = 0;
         var i = 0;
-        Lists.ForEach(l => l.InsertOrAppend(index.Value, ids[i++]));
-        return Lists.ToObject();
+        Lists.ForEach(slot => slot.InsertOrAppend(index.Value, ids[i++]));
+        return l.Return(Lists, "ok");
     }
 
     /// <summary>
     /// Removes entries from the coupled pair.
     /// </summary>
     /// <param name="index">Index to remove, 0 based</param>
-    public Dictionary<string, object?> Remove(int index)
+    public Dictionary<string, List<int?>> Remove(int index)
     {
-        Log.A($"remove content and pres items order:{index}");
-        Lists.ForEach(l => l.RemoveIfInRange(index));
-        return Lists.ToObject();
+        var l = Log.Fn<Dictionary<string, List<int?>>>($"remove content and pres items order:{index}");
+        Lists.ForEach(slot => slot.RemoveIfInRange(index));
+        return l.Return(Lists, "ok");
     }
 
     /// <summary>
     /// Move an item in the coupled lists
     /// </summary>
     /// <returns></returns>
-    public Dictionary<string, object?> Move(int sourceIndex, int targetIndex)
+    public Dictionary<string, List<int?>> Move(int sourceIndex, int targetIndex)
     {
-        var l = Log.Fn<Dictionary<string, object?>>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
+        var l = Log.Fn<Dictionary<string, List<int?>>>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
         var hasChanges = Lists.Values
             .Aggregate(false, (prev, lstItem) => lstItem.Move(sourceIndex, targetIndex) || prev);
         return hasChanges
-            ? l.Return(Lists.ToObject(), "ok")
+            ? l.Return(Lists, "ok")
             : l.Return([],"outside of range, no changes");
     }
 
@@ -73,9 +88,9 @@ public class CoupledIdLists: HelperBase
     /// </summary>
     /// <param name="newSequence">List of index-IDs how it should be sorted now</param>
     /// <returns></returns>
-    public Dictionary<string, object?> Reorder(int[] newSequence)
+    public Dictionary<string, List<int?>> Reorder(int[] newSequence)
     {
-        var l = Log.Fn<Dictionary<string, object?>>($"seq:[{string.Join(",", newSequence)}]");
+        var l = Log.Fn<Dictionary<string, List<int?>>>($"seq:[{string.Join(",", newSequence)}]");
         // some error checks
         if (newSequence.Length != Lists.First().Value.Count)
         {
@@ -99,7 +114,7 @@ public class CoupledIdLists: HelperBase
             }
         });
 
-        return l.Return(Lists.ToObject(), "ok");
+        return l.Return(Lists, "ok");
     }
 
     /// <summary>
@@ -108,44 +123,34 @@ public class CoupledIdLists: HelperBase
     /// <param name="index"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public Dictionary<string, object?> Replace(int index, (bool, int?)[] values)
+    public Dictionary<string, List<int?>> Replace(int index, (bool MayReplace, int? Values)[] values)
     {
-        var l = Log.Fn<Dictionary<string, object?>>($"index: {index}");
+        var l = Log.Fn<Dictionary<string, List<int?>>>($"index: {index}");
         if (index == -1)
             throw l.Ex(new Exception("Sort order is never -1 any more; deprecated"));
 
         // if necessary, increase length on all
         var i = 0;
-        var ok = Lists.Values.Aggregate(false, (prev, lst) =>
+        var ok = Lists.Values.Aggregate(false, (hasChanges, lst) =>
         {
             lst.EnsureListLength(index + 1);
-            var set = values[i++];
-            var changed = set.Item1 && ReplaceItemAtIndexIfChanged(lst, index, set.Item2);
-            return prev || changed;
+            var configPair = values[i++];
+            if (!configPair.MayReplace)
+                return hasChanges;
+            var (thisHasChanged, _) = ReplaceItemAtIndexIfChanged(lst, index, configPair.Values);
+            return hasChanges || thisHasChanged;
         });
 
         return ok
-            ? l.Return(Lists.ToObject())
+            ? l.Return(Lists)
             : l.Return([]);
     }
 
-    private static bool ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)
+    private static (bool HasChanged, List<int?> List) ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)
     {
         if (listMain[index] == entityId)
-            return false;
+            return (false, listMain);
         listMain[index] = entityId;
-        return true;
-    }
-
-    /// <summary>
-    /// This method does various clean-up, because historic data can often be mismatched.
-    /// For example, a list-pair of content/presentation may not be in correct state, so this ensures that everything
-    /// is in sync.
-    /// </summary>
-    /// <returns></returns>
-    private void SyncListLengths()
-    {
-        var expectedLength = Lists.First().Value.Count;
-        Log.Do($"length: {expectedLength}", () => Lists.Skip(1).ForEach(l => l.SetLength(expectedLength)));
+        return (true, listMain);
     }
 }

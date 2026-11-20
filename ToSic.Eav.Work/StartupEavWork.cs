@@ -6,6 +6,7 @@ using ToSic.Eav.Apps.Inspect.Sys.WebApi;
 using ToSic.Eav.Apps.Install.Sys;
 using ToSic.Eav.Apps.Sys.Initializers;
 using ToSic.Eav.Data.ContentTypes.Sys;
+using ToSic.Eav.Data.ListSlots.Sys;
 using ToSic.Eav.Data.Publishing.Sys;
 using ToSic.Eav.Data.Sys;
 using ToSic.Eav.Data.Versions.Sys;
@@ -52,7 +53,7 @@ public static class StartupEavWork
         services.TryAddTransient<WorkEntityCreate>();
         services.TryAddTransient<WorkEntityUpdate>();
         services.TryAddTransient<WorkMetadata>();
-        services.TryAddTransient<WorkFieldList>();
+        services.TryAddTransient<WorkListSlots>();
         services.TryAddTransient<WorkEntityDelete>();
         services.TryAddTransient<WorkEntityRecycle>();
         services.TryAddTransient<WorkEntityPublish>();

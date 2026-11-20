@@ -1,6 +1,10 @@
-﻿namespace ToSic.Eav.ListPairsTests;
+﻿using ToSic.Eav.Data.ListSlots.Sys;
 
-public partial class ListPairTests
+namespace ToSic.Eav.ListPairsTests;
+
+using static ListPairTestHelpers;
+
+public class ListPairTestsReorder
 {
 
     [Fact]
