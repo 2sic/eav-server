@@ -14,7 +14,7 @@ public class ListPairTestsMove
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.MoveSlot(0, 1, null!);
+        pair.MoveSlotTac(0, 1, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 2, null);
         AssertPositions(pair, 1, 1, 101);
@@ -29,7 +29,7 @@ public class ListPairTestsMove
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.MoveSlot(1, 0, null!);
+        pair.MoveSlotTac(1, 0, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 2, null);
         AssertPositions(pair, 1, 1, 101);
@@ -43,7 +43,7 @@ public class ListPairTestsMove
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.MoveSlot(0, 0, null!);
+        pair.MoveSlotTac(0, 0, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);
@@ -57,7 +57,7 @@ public class ListPairTestsMove
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.MoveSlot(1, 1, null!);
+        pair.MoveSlotTac(1, 1, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);
@@ -71,7 +71,7 @@ public class ListPairTestsMove
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.MoveSlot(0, 2, null!);
+        pair.MoveSlotTac(0, 2, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 2, null);
         AssertPositions(pair, 1, null, 103);
@@ -86,7 +86,7 @@ public class ListPairTestsMove
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.MoveSlot(2, 3, null!);
+        pair.MoveSlotTac(2, 3, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);
@@ -101,7 +101,7 @@ public class ListPairTestsMove
             [101, null, 103, 104, null, null],
             PName,
             CName);
-        var changes = pair.MoveSlot(3, 4, null!);
+        var changes = pair.MoveSlotTac(3, 4, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);
@@ -118,7 +118,7 @@ public class ListPairTestsMove
             [101, null, 103, 104, null, null],
             PName,
             CName);
-        var changes = pair.MoveSlot(3, 9, null!);
+        var changes = pair.MoveSlotTac(3, 9, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);
@@ -135,7 +135,7 @@ public class ListPairTestsMove
             [101, null, 103, 104, null, null],
             PName,
             CName);
-        var changes = pair.MoveSlot(7, 9, null!);
+        var changes = pair.MoveSlotTac(7, 9, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);

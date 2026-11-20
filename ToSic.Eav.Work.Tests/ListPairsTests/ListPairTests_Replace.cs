@@ -34,7 +34,7 @@ public class ListPairTestsReplace
             [Coupled0Def, /*Coupled1Def*/ null, Coupled2Def, /*Coupled3Def*/ null, /*Coupled4Def*/ null, /*Coupled5Def*/ null],
             PName,
             CName);
-        var result = pair.ReplaceSlot(index, [
+        var result = pair.ReplaceSlotTac(index, [
             (true, Values: PrimaryReplacement),
             (MayReplace: updatePair, Values: CoupledReplacement)
         ], null!);

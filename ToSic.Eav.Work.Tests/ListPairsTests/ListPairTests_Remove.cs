@@ -14,7 +14,7 @@ public class ListPairTestsRemove
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.RemoveSlots(0, null!);
+        pair.RemoveSlotsTac(0, null!);
         AssertLength(pair, 3);
         AssertPositions(pair, 0, 2, null);
         //Assert.Equal(pair.PrimaryIds.First(), 2);
@@ -28,7 +28,7 @@ public class ListPairTestsRemove
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.RemoveSlots(1, null!);
+        pair.RemoveSlotsTac(1, null!);
         AssertLength(pair, 3);
         AssertPositions(pair, 0, 1, 101);
         //Assert.Equal(pair.PrimaryIds.First(), 1);
@@ -45,7 +45,7 @@ public class ListPairTestsRemove
             [101, null, 103, 104, null, null],
             PName,
             CName);
-        pair.RemoveSlots(3, null!);
+        pair.RemoveSlotsTac(3, null!);
         AssertLength(pair, 3);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, pair.First().Value.Count() -1, null, 103);
@@ -68,7 +68,7 @@ public class ListPairTestsRemove
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.RemoveSlots(addPosition, null!);
+        pair.RemoveSlotsTac(addPosition, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);

@@ -68,7 +68,7 @@ public class ListPairTestsReorder
         var pair = CoupledIdLists([1, 2, null, 44],
             [101, null, 103, 444],
             PName, CName);
-        pair.ReorderSlots(newSequence, null!);
+        pair.ReorderSlotsTac(newSequence, null!);
         return pair;
     }
 }
