@@ -9,11 +9,11 @@ public static class ValidatorErrors
     /// Determine if errors exist, and return that state
     /// </summary>
     /// <returns></returns>
-    public static HttpExceptionAbstraction? BuildExceptionIfHasIssues(string errors, ILog? log, string? logMessage = null)
+    public static Exception? BuildExceptionIfHasIssues(string errors, ILog? log, string? logMessage = null)
     {
-        var l = log.Fn<HttpExceptionAbstraction?>();
+        var l = log.Fn<Exception?>();
         var hasErrors = errors != "";
-        var preparedException = hasErrors ? HttpException.BadRequest(errors) : null;
+        var preparedException = hasErrors ? new Exception(errors) : null;
         if (logMessage != null)
             l.A($"{nameof(logMessage)}:{logMessage}");
         if (hasErrors)

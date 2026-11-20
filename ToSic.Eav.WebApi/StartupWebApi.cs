@@ -9,7 +9,6 @@ using ToSic.Eav.Web.Http.Sys;
 using ToSic.Eav.WebApi.Admin.Sys;
 using ToSic.Eav.WebApi.App.Sys;
 using ToSic.Eav.WebApi.OData.Sys;
-using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Eav.WebApi.Sys.Helpers.Json;
 using ToSic.Eav.WebApi.Sys.Licenses;
 using ToSic.Eav.WebApi.Sys.Logs;
@@ -58,9 +57,6 @@ public static class StartupWebApi
         //services.TryAddTransient<IResponseMaker>(OverrideService<IResponseMaker>.Register<ResponseMakerToOverride>());
 //#endif
 
-        // Helper to decouple Insights from WebApi
-        services.TryAddTransient<IHttpExceptionMaker, HttpExceptionMaker>();
-
         // v20 centralize log creation / access for an http request
         services.TryAddScoped<HttpRequestLoggingScoped>();
 
@@ -97,7 +93,7 @@ public static class StartupWebApi
     {
 #if NETCOREAPP
         // Helper to get header, query string and route information from current request
-        services.TryAddScoped<RequestHelper>();
+        services.TryAddScoped<ToSic.Eav.WebApi.Sys.Helpers.Http.RequestHelper>();
         services.TryAddTransient<IHttp, HttpHybrid>();
 #endif
 

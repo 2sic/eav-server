@@ -1,13 +1,12 @@
 ﻿using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Serialization;
-using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Razor.Blade;
 using static ToSic.Eav.Sys.Insights.HtmlHelpers.InsightsHtmlBase;
 using static ToSic.Razor.Blade.Tag;
 
 namespace ToSic.Eav.Sys.Insights.Data;
 
-internal class InsightsEntity(AppWorkQuick<WorkEntities> workEntities, Generator<IJsonDataWriter> jsonSerializer, IHttpExceptionMaker exceptionMaker)
+internal class InsightsEntity(AppWorkQuick<WorkEntities> workEntities, Generator<IJsonDataWriter> jsonSerializer)
     : InsightsProvider(new() { Name = Link, Title = "Entity Details" }, connect: [workEntities, jsonSerializer])
 {
     public static string Link = "Entity";
@@ -26,7 +25,7 @@ internal class InsightsEntity(AppWorkQuick<WorkEntities> workEntities, Generator
         else if (Guid.TryParse(NameId, out var entityGuid))
             ent = entities.Get(entityGuid)!;
         else
-            throw exceptionMaker.BadRequest("can't use entityId - must be number or guid");
+            throw new ArgumentException("can't use entityId - must be number or guid");
 
         var ser = jsonSerializer.New();
         var json = ser.Serialize(ent);

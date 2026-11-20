@@ -37,9 +37,9 @@ public class AppWebApiQueryRunSvc(AppQueryODataHelper oDataHelper, Generator<ICo
     public IDictionary<string, IEnumerable<EavLightEntity>> RunQuery(AppCtxAndLookup appInfo, string queryName, QueryParametersDtoFromClient? more, string? stream = null, bool? includeGuid = false)
     {
         var l = Log.Fn<IDictionary<string, IEnumerable<EavLightEntity>>>($"'{queryName}', stream: '{stream}', inclGuid: {includeGuid}");
-        
+
         if (string.IsNullOrEmpty(queryName))
-            throw l.Ex(HttpException.MissingParam(nameof(queryName)));
+            throw l.Ex(new ArgumentException($"Missing Parameter: {nameof(queryName)}"));
 
         var query = GetQueryAndDoPermissionChecks(queryName, appInfo);
 
@@ -83,7 +83,7 @@ public class AppWebApiQueryRunSvc(AppQueryODataHelper oDataHelper, Generator<ICo
         if (query == null)
         {
             var msg = $"query '{queryName}' not found";
-            throw l.Done(new HttpExceptionAbstraction(HttpStatusCode.NotFound, msg, "query not found"));
+            throw l.Done(new KeyNotFoundException(msg));
         }
 
         l.A($"Check permission on query {query.Definition.Id}");
@@ -94,7 +94,7 @@ public class AppWebApiQueryRunSvc(AppQueryODataHelper oDataHelper, Generator<ICo
         if (!(readExplicitlyAllowed || appInfo.AppCtx.User.IsContentAdmin))
         {
             var msg = $"Request not allowed. User does not have read permissions for query '{queryName}'";
-            throw l.Done(new HttpExceptionAbstraction(HttpStatusCode.Unauthorized, msg, "Request not allowed"));
+            throw l.Done(new PermissionDeniedException("Request not allowed; " + msg));
         }
 
         return l.Return(query);
