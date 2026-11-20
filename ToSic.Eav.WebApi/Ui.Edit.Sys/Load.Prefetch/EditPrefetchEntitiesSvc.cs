@@ -3,10 +3,10 @@ using ToSic.Sys.Users;
 using static System.String;
 
 
-namespace ToSic.Eav.Ui.Edit.Sys.Load;
+namespace ToSic.Eav.Ui.Edit.Sys.Load.Prefetch;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class EntityPickerApi(AppWorkQuick<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user)
+public class EditPrefetchEntitiesSvc(AppWorkQuick<WorkEntities> workEntities, IZoneCultureResolver cultureResolver, IUser user)
     : ServiceBase("Api.EntPck", connect: [cultureResolver, workEntities, user])
 {
     /// <summary>
@@ -26,8 +26,7 @@ public class EntityPickerApi(AppWorkQuick<WorkEntities> workEntities, IZoneCultu
                 : null;
             l.A($"tried to get '{contentTypeName}' - found: {contentType != null}");
             if (contentType == null)
-                return l.Return([],
-                    "A type was specified but not found, will return empty list");
+                return l.Return([], "A type was specified but not found, will return empty list");
         }
 
         List<IEntity> list;
@@ -36,7 +35,7 @@ public class EntityPickerApi(AppWorkQuick<WorkEntities> workEntities, IZoneCultu
         if (contentType != null)
         {
             l.A($"filter by type:{contentType.Name}");
-            list = appEnts.Get(contentTypeName!).ToList();
+            list = [.. appEnts.Get(contentTypeName!)];
         }
         else
         {
@@ -44,13 +43,13 @@ public class EntityPickerApi(AppWorkQuick<WorkEntities> workEntities, IZoneCultu
             l.A($"Will restrict by scope if user is not system admin: {user.IsSystemAdmin}");
             list = allowFromAllScopes
                 // Get all the data which the current user may see (filtering drafts etc.)
-                ? appEnts.MyOptions.Data.List.ToList()
+                ? [.. appEnts.MyOptions.Data.List]
                 // Get all content only, and maybe configuration
-                : appEnts.OnlyContent(withConfiguration: user.IsSystemAdmin).ToList(); // only super user should also get Configuration
+                : [.. appEnts.OnlyContent(withConfiguration: user.IsSystemAdmin)]; // only super user should also get Configuration
         }
 
         // optionally filter by IDs
-        if (items != null && items.Count > 0)
+        if (items is { Count: > 0 })
         {
             l.A($"filter by {items.Count} ids");
             var guids = items.Select(Guid.Parse);
@@ -68,7 +67,7 @@ public class EntityPickerApi(AppWorkQuick<WorkEntities> workEntities, IZoneCultu
                 Value = e.EntityGuid,
                 Text = GetTitle(e, languagePriorities)
             })
-            .OrderBy(set => set.Text.ToString())
+            .OrderBy(set => set.Text.ToString(), StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         return l.Return(entities, $"found⋮{entities.Count}");

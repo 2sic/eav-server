@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Ui.Edit.Sys;
-using ToSic.Eav.Ui.Edit.Sys.Load;
+using ToSic.Eav.Ui.Edit.Sys.Load.Prefetch;
 using ToSic.Eav.Ui.Edit.Sys.Save;
 using ToSic.Eav.Web.Http.Sys;
 using ToSic.Eav.WebApi.Admin.Sys;
@@ -33,7 +33,7 @@ public static class StartupWebApi
         services.TryAddTransient<SaveHelperGetFinalIds>();
 
         // APIs
-        services.TryAddTransient<EntityPickerApi>();
+        services.TryAddTransient<EditPrefetchEntitiesSvc>();
 
 
         // Internal API helpers
@@ -70,11 +70,19 @@ public static class StartupWebApi
         services.TryAddTransient<AppWebApiQueryRunSvc>();
         services.TryAddTransient<AppQueryODataHelper>();
 
+        services.AddEavWebApiPrefetch();
+
         services.AddNetInfrastructure();
 
         return services;
     }
 
+
+    public static IServiceCollection AddEavWebApiPrefetch(this IServiceCollection services)
+    {
+        services.TryAddKeyedTransient<IEditLoadPrefetchProvider, EditLoadActivityPrefetchEntity>(EditLoadActivityPrefetchEntity.NameId);
+        return services;
+    }
 
     /// <summary>
     /// Add typed EAV WebApi objects.

@@ -60,8 +60,12 @@ public record EditLoadDto : EditDtoShared
     /// <summary>
     /// Contain pre-fetched data to reduce callbacks just to look up data which obviously will be needed
     /// </summary>
+    /// <remarks>
+    /// Typically contains `Entities`, `Adam`, and `Links` which are needed for the UI to work, but which are not part of the main data.
+    /// This is done as an unnamed dictionary, so that generic providers can be used to add data.
+    /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public EditPrefetchDto? Prefetch { get; set; }
+    public Dictionary<string, object>? Prefetch { get; set; }
 
     /// <summary>
     /// Contains additional settings such as default GPS coordinates, content-types needed by pickers etc.

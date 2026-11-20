@@ -1,4 +1,4 @@
-﻿namespace ToSic.Eav.Ui.Edit.Sys.Load;
+﻿namespace ToSic.Eav.Ui.Edit.Sys.Load.Prefetch;
 
 /// <summary>
 /// A helper to provide data to entity-pickers in a strange format
