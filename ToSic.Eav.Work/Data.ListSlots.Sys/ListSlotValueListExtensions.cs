@@ -67,6 +67,6 @@ internal static class ListSlotValueListExtensions
     internal static Dictionary<string, object?> ToObject<T>(this Dictionary<string, T> list)
         => list.ToDictionary(
             x => x.Key,
-            x => x.Value as object
+            object? (x) => x.Value
         );
 }
