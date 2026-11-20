@@ -63,12 +63,12 @@ public class ListPairTestsReorder
     public void ReorderErrorOutOfRange() 
         => Throws<ArgumentOutOfRangeException>(() => GenerateListAndReorder([3, 7, 0, 1]));
 
-    private static CoupledIdLists GenerateListAndReorder(int[] newSequence)
+    private static Dictionary<string, List<int?>> GenerateListAndReorder(int[] newSequence)
     {
         var pair = CoupledIdLists([1, 2, null, 44],
             [101, null, 103, 444],
             PName, CName);
-        pair.Reorder(newSequence);
+        pair.ReorderSlots(newSequence, null!);
         return pair;
     }
 }

@@ -6,18 +6,11 @@
 /// like the Content items on a ContentBlock
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class CoupledIdLists: HelperBase
+internal static class CoupledListsExtensions
 {
-    public Dictionary<string, List<int?>> Lists { get; }
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="lists">Lists to use for working on</param>
-    /// <param name="parentLog"></param>
-    public CoupledIdLists(Dictionary<string, List<int?>> lists, ILog parentLog) : base(parentLog, "App.LstPai")
+    public static Dictionary<string, List<int?>> Stabilize(this Dictionary<string, List<int?>> lists, ILog log)
     {
-        var l = Log.Fn();
+        var l = log.Fn<Dictionary<string, List<int?>>>();
         // Quick pre-validation - if there are no lists, something is wrong and we should break early
         if (lists.Count == 0)
             throw new("Lists Modifier needs at least 1 list, can't continue");
@@ -31,75 +24,69 @@ public class CoupledIdLists: HelperBase
         // This does various clean-up, because historic data can often be mismatched.
         // For example, a list-pair of content/presentation may not be in correct state,
         // so this ensures that everything is in sync.
-        Lists = lists.ToDictionary(
+        var result = lists.ToDictionary(
             kv => kv.Key,
             kv => kv.Value.SetLength(expectedValuesCount),
             StringComparer.InvariantCultureIgnoreCase);
 
-        l.Done();
+        return l.Return(result, $"ok, length of each element: {expectedValuesCount}");
     }
 
     /// <summary>
     /// If SortOrder is not specified, adds at the end
     /// </summary>
+    /// <param name="lists"></param>
     /// <param name="index">Index to add to - 0 based</param>
     /// <param name="ids"></param>
-    public Dictionary<string, List<int?>> Add(int? index, int?[] ids)
+    /// <param name="log"></param>
+    public static Dictionary<string, List<int?>> AddSlot(this Dictionary<string, List<int?>> lists, int? index, int?[] ids, ILog? log)
     {
-        var l = Log.Fn<Dictionary<string, List<int?>>>($"add content/pres at order:{index}");
-        var max = Lists.First().Value.Count; // max is at the end of the list
+        var l = log.Fn<Dictionary<string, List<int?>>>($"add content/pres at order:{index}");
+        var max = lists.First().Value.Count; // max is at the end of the list
         index ??= max;
         if (index > max)
             index = max;
         if (index < 0)
             index = 0;
         var i = 0;
-        Lists.ForEach(slot => slot.InsertOrAppend(index.Value, ids[i++]));
-        return l.Return(Lists, "ok");
-    }
-
-    /// <summary>
-    /// Removes entries from the coupled pair.
-    /// </summary>
-    /// <param name="index">Index to remove, 0 based</param>
-    public Dictionary<string, List<int?>> Remove(int index)
-    {
-        var l = Log.Fn<Dictionary<string, List<int?>>>($"remove content and pres items order:{index}");
-        Lists.ForEach(slot => slot.RemoveIfInRange(index));
-        return l.Return(Lists, "ok");
+        lists.ForEach(slot => slot.InsertOrAppend(index.Value, ids[i++]));
+        return l.Return(lists, "ok");
     }
 
     /// <summary>
     /// Move an item in the coupled lists
     /// </summary>
     /// <returns></returns>
-    public Dictionary<string, List<int?>> Move(int sourceIndex, int targetIndex)
+    public static Dictionary<string, List<int?>> MoveSlot(this Dictionary<string, List<int?>> lists, int sourceIndex, int targetIndex, ILog? log)
     {
-        var l = Log.Fn<Dictionary<string, List<int?>>>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
-        var hasChanges = Lists.Values
+        var l = log.Fn<Dictionary<string, List<int?>>>($"reorder entities before:{sourceIndex} to after:{targetIndex}");
+        var hasChanges = lists.Values
             .Aggregate(false, (prev, lstItem) => lstItem.Move(sourceIndex, targetIndex) || prev);
         return hasChanges
-            ? l.Return(Lists, "ok")
+            ? l.Return(lists, "ok")
             : l.Return([],"outside of range, no changes");
     }
+
 
     /// <summary>
     /// Reorder the pair of sequences
     /// </summary>
+    /// <param name="original"></param>
     /// <param name="newSequence">List of index-IDs how it should be sorted now</param>
+    /// <param name="log"></param>
     /// <returns></returns>
-    public Dictionary<string, List<int?>> Reorder(int[] newSequence)
+    public static Dictionary<string, List<int?>> ReorderSlots(this Dictionary<string, List<int?>> original, int[] newSequence, ILog? log)
     {
-        var l = Log.Fn<Dictionary<string, List<int?>>>($"seq:[{string.Join(",", newSequence)}]");
+        var l = log.Fn<Dictionary<string, List<int?>>>($"seq:[{string.Join(",", newSequence)}]");
         // some error checks
-        if (newSequence.Length != Lists.First().Value.Count)
+        if (newSequence.Length != original.First().Value.Count)
         {
             const string msg = "Error: Can't re-order - list length is different";
             throw l.Done(new Exception(msg));
         }
 
         const int usedMarker = int.MinValue;
-        Lists.ForEach(lst =>
+        original.ForEach(lst =>
         {
             var copy = lst.ToListOpt();
             lst.Clear();
@@ -114,24 +101,27 @@ public class CoupledIdLists: HelperBase
             }
         });
 
-        return l.Return(Lists, "ok");
+        return l.Return(original, "ok");
     }
+
 
     /// <summary>
     /// Replace an item in the primary list, and optionally also in the coupled list. 
     /// </summary>
+    /// <param name="original"></param>
     /// <param name="index"></param>
     /// <param name="values"></param>
+    /// <param name="log"></param>
     /// <returns></returns>
-    public Dictionary<string, List<int?>> Replace(int index, (bool MayReplace, int? Values)[] values)
+    public static Dictionary<string, List<int?>> ReplaceSlot(this Dictionary<string, List<int?>> original, int index, (bool MayReplace, int? Values)[] values, ILog? log)
     {
-        var l = Log.Fn<Dictionary<string, List<int?>>>($"index: {index}");
+        var l = log.Fn<Dictionary<string, List<int?>>>($"index: {index}");
         if (index == -1)
             throw l.Ex(new Exception("Sort order is never -1 any more; deprecated"));
 
         // if necessary, increase length on all
         var i = 0;
-        var ok = Lists.Values.Aggregate(false, (hasChanges, lst) =>
+        var ok = original.Values.Aggregate(false, (hasChanges, lst) =>
         {
             lst.EnsureListLength(index + 1);
             var configPair = values[i++];
@@ -142,15 +132,31 @@ public class CoupledIdLists: HelperBase
         });
 
         return ok
-            ? l.Return(Lists)
+            ? l.Return(original)
             : l.Return([]);
+
+        // Helper, in future should become fully functional, ATM not given
+        static (bool HasChanged, List<int?> List) ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)
+        {
+            if (listMain[index] == entityId)
+                return (false, listMain);
+            listMain[index] = entityId;
+            return (true, listMain);
+        }
     }
 
-    private static (bool HasChanged, List<int?> List) ReplaceItemAtIndexIfChanged(List<int?> listMain, int index, int? entityId)
+    /// <summary>
+    /// Removes entries from the coupled pair.
+    /// </summary>
+    /// <param name="original">The original dictionary of lists</param>
+    /// <param name="index">Index to remove, 0 based</param>
+    /// <param name="log">Optional log instance</param>
+    public static Dictionary<string, List<int?>> RemoveSlots(this Dictionary<string, List<int?>> original, int index, ILog? log)
     {
-        if (listMain[index] == entityId)
-            return (false, listMain);
-        listMain[index] = entityId;
-        return (true, listMain);
+        var l = log.Fn<Dictionary<string, List<int?>>>($"remove content and pres items order:{index}");
+        original.ForEach(slot => slot.RemoveIfInRange(index));
+        return l.Return(original, "ok");
     }
+
+
 }

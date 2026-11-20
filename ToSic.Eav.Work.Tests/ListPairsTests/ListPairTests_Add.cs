@@ -1,4 +1,6 @@
-﻿namespace ToSic.Eav.ListPairsTests;
+﻿using ToSic.Eav.Data.ListSlots.Sys;
+
+namespace ToSic.Eav.ListPairsTests;
 
 using static ListPairTestHelpers;
 
@@ -12,7 +14,7 @@ public class ListPairTestsAdd
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.Add(0, [999,777]);
+        pair.AddSlot(0, [999,777], null!);
         AssertLength(pair, 5);
         AssertPositions(pair,0, 999, 777);
         AssertPositions(pair, 1, 1, 101);
@@ -26,7 +28,7 @@ public class ListPairTestsAdd
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.Add(1, [999, 777]);
+        pair.AddSlot(1, [999, 777], null!);
         AssertLength(pair, 5);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 999, 777);
@@ -40,7 +42,7 @@ public class ListPairTestsAdd
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.Add(3, [999, 777]);
+        pair.AddSlot(3, [999, 777], null!);
         AssertLength(pair, 5);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);
@@ -59,7 +61,7 @@ public class ListPairTestsAdd
         var pair = CoupledIdLists([1, 2, null, 3],
             [101, null, 103, null, null, null],
             PName, CName);
-        pair.Add(addPosition, [999, 777]);
+        pair.AddSlot(addPosition, [999, 777], null!);
         AssertLength(pair, 5);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);

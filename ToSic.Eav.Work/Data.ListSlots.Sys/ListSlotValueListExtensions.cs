@@ -9,7 +9,7 @@ namespace ToSic.Eav.Data.ListSlots.Sys;
 /// <remarks>
 /// Someday maybe move to something like ToSic.Eav.Generics if used elsewhere.
 /// </remarks>>
-public static class ListSlotValueListExtensions
+internal static class ListSlotValueListExtensions
 {
     internal static void EnsureListLength<T>(this List<T?> listMain, int length)
     {
@@ -64,7 +64,7 @@ public static class ListSlotValueListExtensions
             action.Invoke(keyValuePair.Value);
     }
 
-    public static Dictionary<string, object?> ToObject<T>(this Dictionary<string, T> list)
+    internal static Dictionary<string, object?> ToObject<T>(this Dictionary<string, T> list)
         => list.ToDictionary(
             x => x.Key,
             x => x.Value as object

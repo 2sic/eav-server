@@ -27,18 +27,18 @@ public class ListPairTestsReplace
 
     #region Setup
 
-    private static CoupledIdLists ReplaceAtX(int index, bool updatePair)
+    private static Dictionary<string, List<int?>> ReplaceAtX(int index, bool updatePair)
     {
         var pair = CoupledIdLists(
             [Primary0Def, Primary1Def, /*Primary2Def*/ null, Primary3Def],
             [Coupled0Def, /*Coupled1Def*/ null, Coupled2Def, /*Coupled3Def*/ null, /*Coupled4Def*/ null, /*Coupled5Def*/ null],
             PName,
             CName);
-        pair.Replace(index, [
+        var result = pair.ReplaceSlot(index, [
             (true, Values: PrimaryReplacement),
             (MayReplace: updatePair, Values: CoupledReplacement)
-        ]);
-        return pair;
+        ], null!);
+        return result;
     }
 
     #endregion

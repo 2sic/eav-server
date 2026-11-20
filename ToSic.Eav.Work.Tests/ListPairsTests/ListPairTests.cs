@@ -10,12 +10,12 @@ public class ListPairTests
     [Fact]
     public void UnmatchedPairsAutoFixShort()
     {
-        var pair = new CoupledIdLists(
-            new()
+        var pair = 
+            new Dictionary<string, List<int?>>
             {
                 {PName, [1, 2, null, 3] },
                 {CName, [null, null] }
-            }, null);
+            }.Stabilize(null!);
         AssertLength(pair, 4);
     }
 

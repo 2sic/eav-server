@@ -7,29 +7,26 @@ internal static class ListPairTestHelpers
     public const string PName = "Primary";
     public const string CName = "Coupled";
 
-    public static CoupledIdLists CoupledIdLists(List<int?> primary, List<int?> coupled,
-        string primaryField, string coupledField)
+    public static Dictionary<string, List<int?>> CoupledIdLists(List<int?> primary, List<int?> coupled,
+        string primaryField, string coupledField) =>
+        new Dictionary<string, List<int?>>
+        {
+
+            {primaryField, primary},
+            {coupledField, coupled }
+        }.Stabilize(null!);
+
+    internal static void AssertLength(Dictionary<string, List<int?>> list, int expectedLength)
     {
-        return new(
-            new()
-            {
-                {primaryField, primary},
-                {coupledField, coupled }
-            }, null);
+        var itemsNotWithLength = list.Values.Where(sublist => sublist.Count != expectedLength);
+        Equal(0, itemsNotWithLength.Count());
     }
 
-    internal static void AssertLength(CoupledIdLists pair, int expectedLength)
+    internal static void AssertPositions(Dictionary<string, List<int?>> list, int position, int? primary, int? coupled)
     {
-        var itemsNotWithLength = pair.Lists.Values.Where(list => list.Count != expectedLength);
-        Equal(0, itemsNotWithLength.Count());//, "lengths should now match");
-        //Assert.Equal(expectedLength, pair.CoupledIds.Count, $"length was expected to be {expectedLength}");
-    }
-
-    internal static void AssertPositions(CoupledIdLists pair, int position, int? primary, int? coupled)
-    {
-        var found = pair.Lists.Values.First()[position];
+        var found = list.Values.First()[position];
         Equal(primary, found);//, $"Primary at {position} expected to be {primary} but was {found}");
-        found = pair.Lists.Values.Skip(1).First()[position];
+        found = list.Values.Skip(1).First()[position];
         Equal(coupled, found);//, $"Primary at {position} expected to be {primary} but was {found}");
     }
 
