@@ -22,7 +22,7 @@ public class OverrideGeneratorWithOptions(IServiceProvider sp)
         IAnimal BirthSuper();
     }
 
-    private abstract class Animal(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : IAnimal
+    private abstract class Animal(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : IAnimal
     {
         public string Name => GetType().Name;
         
@@ -32,11 +32,11 @@ public class OverrideGeneratorWithOptions(IServiceProvider sp)
         public IAnimal BirthSuper() => getPupS.New();
     }
 
-    private class AnimalDefault(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
-    private class AnimalDog(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
-    private class AnimalMonkey(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
+    private class AnimalDefault(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
+    private class AnimalDog(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
+    private class AnimalMonkey(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
 
-    internal class CustomizableCage(Lazy<IAnimal> animal, LazySvc<IAnimal> aniLz, Generator<IAnimal> aniGen, GeneratorSo<IAnimal> aniGenS): IServiceWithSetup<CustomizableCage.Options>
+    internal class CustomizableCage(Lazy<IAnimal> animal, LazySvc<IAnimal> aniLz, GeneratorBasic<IAnimal> aniGen, Generator<IAnimal> aniGenS): IServiceWithSetup<CustomizableCage.Options>
     {
         internal record Options(string Color);
         private Options _opts = null!;
@@ -61,10 +61,10 @@ public class OverrideGeneratorWithOptions(IServiceProvider sp)
         services.TryAddTransient(typeof(LazySvc<>));
 
         // Generator - now
-        services.TryAddTransient(typeof(Generator<>));      // Classic generator
-        services.TryAddTransient(typeof(Generator<,>));     // Classic Generator with Options
-        services.TryAddTransient(typeof(GeneratorSo<>));    // Super generator
-        services.TryAddTransient(typeof(GeneratorSo<,>));   // Super Generator with Options
+        services.TryAddTransient(typeof(GeneratorBasic<>));      // Classic generator
+        services.TryAddTransient(typeof(GeneratorBasic<,>));     // Classic Generator with Options
+        services.TryAddTransient(typeof(Generator<>));    // Super generator
+        services.TryAddTransient(typeof(Generator<,>));   // Super Generator with Options
 
         // Register the default animal, and the default service for IAnimal
         services.TryAddTransient<AnimalDefault>();
@@ -89,7 +89,7 @@ public class OverrideGeneratorWithOptions(IServiceProvider sp)
     {
         using (OverrideService<IAnimal>.Use<AnimalDog>())
         {
-            var evalInside = sp.GetRequiredService<GeneratorSo<CustomizableCage, CustomizableCage.Options>>();
+            var evalInside = sp.GetRequiredService<Generator<CustomizableCage, CustomizableCage.Options>>();
             Equal("Red", evalInside.New(new("Red")).Color);
             Equal(nameof(AnimalDog), evalInside.New(new("Red")).LazyAnimal.Name);
         }
@@ -100,7 +100,7 @@ public class OverrideGeneratorWithOptions(IServiceProvider sp)
     {
         using (OverrideService<IAnimal>.Use<AnimalDog>())
         {
-            var evalInside = sp.GetRequiredService<GeneratorSo<CustomizableCage, CustomizableCage.Options>>();
+            var evalInside = sp.GetRequiredService<Generator<CustomizableCage, CustomizableCage.Options>>();
             for (var i = 0; i < 5; i++)
             {
                 Equal("Red", evalInside.New(new("Red")).Color);
@@ -112,10 +112,10 @@ public class OverrideGeneratorWithOptions(IServiceProvider sp)
     [Fact]
     public void GeneratorMainOutsideClassicFails()
     {
-        GeneratorSo<CustomizableCage, CustomizableCage.Options> evalOutside;
+        Generator<CustomizableCage, CustomizableCage.Options> evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalMonkey>())
         {
-            evalOutside = sp.GetRequiredService<GeneratorSo<CustomizableCage, CustomizableCage.Options>>();
+            evalOutside = sp.GetRequiredService<Generator<CustomizableCage, CustomizableCage.Options>>();
         }
 
         // Standard lazy fails, for child and grand child

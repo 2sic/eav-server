@@ -9,7 +9,7 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkQuick<TWork>(AppWorkContextService appWorkCtxSvc, Generator<TWork, IAppWorkContext> gen)
     : ServiceBase("Wrk.Quick", connect: [])
-    where TWork : IServiceWithSetup<IAppWorkContext>
+    where TWork : class, IServiceWithSetup<IAppWorkContext>
 {
     [Obsolete("Warning: if you see this, you are using an AppWorkQuick when you should be using AppWorkChain which saves time.")]
     public TWork New(IAppWorkContext ctx) => gen.New(ctx);

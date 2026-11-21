@@ -8,7 +8,7 @@
 /// </remarks>
 /// <typeparam name="TService">The service to generate. It must implement <see cref="IServiceWithSetup{TOptions}"/></typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class GeneratorSo<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
+public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     where TService: class
 {
     /// <summary>
@@ -62,8 +62,3 @@ public class GeneratorSo<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
 
     #endregion
 }
-
-[PrivateApi("Test-Class for comparisons, not meant for production.")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class GeneratorSupportingOverride<TService>(IServiceProvider sp)
-    : GeneratorSo<TService>(sp) where TService : class;

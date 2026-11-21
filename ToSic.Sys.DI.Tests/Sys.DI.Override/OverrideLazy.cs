@@ -22,7 +22,7 @@ public class OverrideLazy(IServiceProvider sp)
         IAnimal BirthSuper();
     }
 
-    private abstract class Animal(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : IAnimal
+    private abstract class Animal(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : IAnimal
     {
         public string Name => GetType().Name;
         
@@ -32,26 +32,18 @@ public class OverrideLazy(IServiceProvider sp)
         public IAnimal BirthSuper() => getPupS.New();
     }
 
-    private class AnimalDefault(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
-    private class AnimalDog(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
-    private class AnimalMonkey(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
-    private class AnimalElephant(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
-    private class AnimalBird(Lazy<IAnimal> al, LazySvc<IAnimal> als, Generator<IAnimal> genPupC, GeneratorSo<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
+    private class AnimalDefault(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
+    private class AnimalDog(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
+    private class AnimalMonkey(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
+    private class AnimalElephant(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
+    private class AnimalBird(Lazy<IAnimal> al, LazySvc<IAnimal> als, GeneratorBasic<IAnimal> genPupC, Generator<IAnimal> getPupS) : Animal(al, als, genPupC, getPupS);
 
-    internal class Cage(Lazy<IAnimal> animal, LazySvc<IAnimal> aniLz, Generator<IAnimal> aniGen, GeneratorSo<IAnimal> aniGenS)
+    internal class Cage(Lazy<IAnimal> animal, LazySvc<IAnimal> aniLz, GeneratorBasic<IAnimal> aniGen, Generator<IAnimal> aniGenS)
     {
         public IAnimal LazyAnimal => animal.Value;
         public IAnimal SuperLazyAnimal => aniLz.Value;
         public IAnimal GenerateAnimal() => aniGen.New();
         public IAnimal GenerateAnimalSuper() => aniGenS.New();
-    }
-
-    internal class CustomizableCage: IServiceWithSetup<CustomizableCage.Options>
-    {
-        internal record Options(string Color);
-        private Options _opts = null!;
-        public void Setup(Options options) => _opts = options;
-        public string Color => _opts?.Color ?? "Missing";
     }
 
     #endregion
@@ -67,10 +59,10 @@ public class OverrideLazy(IServiceProvider sp)
         services.TryAddTransient(typeof(LazySvc<>));
 
         // Generator - now
-        services.TryAddTransient(typeof(Generator<>));      // Classic generator
-        services.TryAddTransient(typeof(Generator<,>));     // Classic Generator with Options
-        services.TryAddTransient(typeof(GeneratorSo<>));    // Super generator
-        services.TryAddTransient(typeof(GeneratorSo<,>));   // Super Generator with Options
+        services.TryAddTransient(typeof(GeneratorBasic<>));      // Classic generator
+        services.TryAddTransient(typeof(GeneratorBasic<,>));     // Classic Generator with Options
+        services.TryAddTransient(typeof(Generator<>));    // Super generator
+        services.TryAddTransient(typeof(Generator<,>));   // Super Generator with Options
 
         // Register the default animal, and the default service for IAnimal
         services.TryAddTransient<AnimalDefault>();
@@ -82,8 +74,6 @@ public class OverrideLazy(IServiceProvider sp)
         services.TryAddTransient<AnimalMonkey>();
         services.TryAddTransient<AnimalElephant>();
         services.TryAddTransient<AnimalBird>();
-
-        services.TryAddTransient<CustomizableCage>();
     });
 
     #endregion
@@ -197,10 +187,10 @@ public class OverrideLazy(IServiceProvider sp)
     [Fact]
     public void GeneratorMainOutsideClassicFails()
     {
-        Generator<IAnimal> evalOutside;
+        GeneratorBasic<IAnimal> evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalMonkey>())
         {
-            evalOutside = sp.GetService<Generator<IAnimal>>()!;
+            evalOutside = sp.GetService<GeneratorBasic<IAnimal>>()!;
         }
 
         // Standard lazy fails, for child and grand child
@@ -210,10 +200,10 @@ public class OverrideLazy(IServiceProvider sp)
     [Fact]
     public void GeneratorMainOutsideSuperWorks()
     {
-        GeneratorSo<IAnimal> evalOutside;
+        Generator<IAnimal> evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalMonkey>())
         {
-            evalOutside = sp.GetService<GeneratorSo<IAnimal>>()!;
+            evalOutside = sp.GetService<Generator<IAnimal>>()!;
         }
 
         // Standard lazy fails, for child and grand child

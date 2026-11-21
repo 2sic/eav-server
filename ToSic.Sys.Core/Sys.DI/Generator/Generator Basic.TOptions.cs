@@ -9,7 +9,7 @@
 /// <typeparam name="TService">The service to generate. It must implement <see cref="IServiceWithSetup{TOptions}"/></typeparam>
 /// <typeparam name="TOptions">The options to configure the service</typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazyInitLog
+public class GeneratorBasic<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazyInitLog
      where TService : class, IServiceWithSetup<TOptions>
      where TOptions : class?
 {

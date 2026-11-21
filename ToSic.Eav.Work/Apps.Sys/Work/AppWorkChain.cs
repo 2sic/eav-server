@@ -9,7 +9,7 @@
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkChain<TWork>(IServiceProvider sp)
     : Generator<TWork, IAppWorkContext>(sp)
-    where TWork : IServiceWithSetup<IAppWorkContext>;
+    where TWork : class, IServiceWithSetup<IAppWorkContext>;
 
 
 /// <summary>
@@ -20,4 +20,4 @@ public class AppWorkChain<TWork>(IServiceProvider sp)
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppDataChain<TWork>(IServiceProvider sp)
     : Generator<TWork, IAppDataContext>(sp)
-    where TWork : IServiceWithSetup<IAppDataContext>;
+    where TWork : class, IServiceWithSetup<IAppDataContext>;
