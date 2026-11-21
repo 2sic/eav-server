@@ -17,12 +17,24 @@
 /// Notes
 /// 
 /// * Constructor should never be called as it's only meant to be used with Dependency Injection.
+/// * For testing, use the `LazySvcInjectable` in the TestHelpers project, which allows you to provide a pre-created object.
 /// </remarks>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class LazySvc<TService>(IServiceProvider sp)
     : ILazyLike<TService>, IHasLog, ILazyInitLog
     where TService : class
 {
+    #region Get / New / Value
+
+    public virtual TService Value => _valueGet.Get(() => sp.Build<TService>(Log))!;
+    private readonly LazyGet<TService> _valueGet = new();
+
+    public bool IsValueCreated => _valueGet.IsValueCreated;
+
+    #endregion
+
+
+
     #region Logging
 
     /// <inheritdoc/>
@@ -36,49 +48,4 @@ public class LazySvc<TService>(IServiceProvider sp)
     public ILog? Log { get; private set; }
 
     #endregion
-
-    
-    #region Get / New / Value
-
-    public TService Value => _valueGet.Get(() =>
-    {
-        var value = sp.Build<TService>(Log);
-        //_initCall?.Invoke(value);
-        return value;
-    })!;
-    private readonly LazyGetAndReset<TService> _valueGet = new();
-
-    public bool IsValueCreated => _valueGet.IsValueCreated;
-
-    #endregion
-
-
-    //#region SetInit
-
-    ///// <summary>
-    ///// Set the init-command as needed
-    ///// </summary>
-    ///// <param name="newInitCall"></param>
-    ///// <param name="allowReplace">Allow replacing the set-init</param>
-    //public LazySvc<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
-    //{
-    //    _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
-    //    return this;
-    //}
-    //private Action<TService>? _initCall;
-
-    //#endregion
-
-    // 2026-10-18 2dm: this seems to be an old experiment
-    // AFAIK it's only used in tests, so it should be clearly unavailable for normal builds
-#if DEBUG
-
-    /// <summary>
-    /// EXPERIMENTAL - replace a service with an already prepared one, to bypass the default factory in edge cases
-    /// </summary>
-    /// <param name="replacement"></param>
-    public void Inject(TService replacement)
-        => _valueGet.Set(replacement);
-
-#endif
 }
