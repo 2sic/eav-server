@@ -57,7 +57,7 @@ public class OverrideLazy(IServiceProvider sp)
     
 
     [Fact]
-    public void Lazy()
+    public void LazyInsideWorks()
     {
         Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
@@ -72,15 +72,59 @@ public class OverrideLazy(IServiceProvider sp)
             evalOutside = sp.GetService<Cage>();
         }
         
+        //// Standard lazy fails, for child and grand child
+        //Equal("Default", evalOutside?.LazyAnimal.Name);
+        //Equal("Default", evalOutside?.LazyAnimal.LazyChild.Name);
+        //Equal("Default", evalOutside?.LazyAnimal.LazierChild.Name);
+        
+        //// Works
+        //Equal("Dog", evalOutside?.LazierAnimal.Name);
+        //Equal("Dog", evalOutside?.LazierAnimal.LazierChild.Name);
+        //Equal("Dog", evalOutside?.LazierAnimal.LazierChild.LazierChild.Name);
+        
+        //// If lazy again inside it, will not work
+        //Equal("Default", evalOutside?.LazierAnimal.LazyChild.Name);
+    }
+
+    [Fact]
+    public void LazyOutsideClassicFailsClassicOutsideFails()
+    {
+        Cage? evalOutside;
+        using (OverrideService<IAnimal>.Use<AnimalDog>())
+        {
+            evalOutside = sp.GetService<Cage>();
+        }
+        
         // Standard lazy fails, for child and grand child
         Equal("Default", evalOutside?.LazyAnimal.Name);
         Equal("Default", evalOutside?.LazyAnimal.LazyChild.Name);
         Equal("Default", evalOutside?.LazyAnimal.LazierChild.Name);
+    }
+
+    [Fact]
+    public void LazyOutsideNewWorks()
+    {
+        Cage? evalOutside;
+        using (OverrideService<IAnimal>.Use<AnimalDog>())
+        {
+            evalOutside = sp.GetService<Cage>();
+        }
         
         // Works
         Equal("Dog", evalOutside?.LazierAnimal.Name);
         Equal("Dog", evalOutside?.LazierAnimal.LazierChild.Name);
         Equal("Dog", evalOutside?.LazierAnimal.LazierChild.LazierChild.Name);
+        
+    }
+
+    [Fact]
+    public void LazyOutsideNewWithInnerClassicFailsWorks()
+    {
+        Cage? evalOutside;
+        using (OverrideService<IAnimal>.Use<AnimalDog>())
+        {
+            evalOutside = sp.GetService<Cage>();
+        }
         
         // If lazy again inside it, will not work
         Equal("Default", evalOutside?.LazierAnimal.LazyChild.Name);
