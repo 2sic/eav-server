@@ -6,33 +6,38 @@ namespace ToSic.Sys.DI.Override;
 
 public class OverrideLazy(IServiceProvider sp)
 {
+    /// <summary>
+    /// This will be the name of an animal if the override mechanism fails,
+    /// since it will return a <see cref="AnimalDefault"/>.
+    /// </summary>
+    private const string NameIfLazyFails = nameof(AnimalDefault);
     #region Classes
 
     internal interface IAnimal
     {
         string Name { get; }
-        IAnimal LazyChild { get; }
-        IAnimal LazierChild { get; }
+        IAnimal ClassicLazyChild { get; }
+        IAnimal SuperLazyChild { get; }
     }
 
-    private abstract class Animal(Lazy<IAnimal> lazy, LazySupportingOverride<IAnimal> lazier) : IAnimal
+    private abstract class Animal(Lazy<IAnimal> lazy, LazySvc<IAnimal> lazier) : IAnimal
     {
-        public string Name => GetType().Name.Substring("Animal".Length);
+        public string Name => GetType().Name;
         
-        public IAnimal LazyChild => lazy.Value;
-        public IAnimal LazierChild => lazier.Value;
+        public IAnimal ClassicLazyChild => lazy.Value;
+        public IAnimal SuperLazyChild => lazier.Value;
     }
 
-    private class AnimalDefault(Lazy<IAnimal> lazy, LazySupportingOverride<IAnimal> lazier) : Animal(lazy, lazier);
-    private class AnimalDog(Lazy<IAnimal> lazy, LazySupportingOverride<IAnimal> lazier) : Animal(lazy, lazier);
-    private class AnimalMonkey(Lazy<IAnimal> lazy, LazySupportingOverride<IAnimal> lazier) : Animal(lazy, lazier);
-    private class AnimalElephant(Lazy<IAnimal> lazy, LazySupportingOverride<IAnimal> lazier) : Animal(lazy, lazier);
-    private class AnimalBird(Lazy<IAnimal> lazy, LazySupportingOverride<IAnimal> lazier) : Animal(lazy, lazier);
+    private class AnimalDefault(Lazy<IAnimal> lazy, LazySvc<IAnimal> lazier) : Animal(lazy, lazier);
+    private class AnimalDog(Lazy<IAnimal> lazy, LazySvc<IAnimal> lazier) : Animal(lazy, lazier);
+    private class AnimalMonkey(Lazy<IAnimal> lazy, LazySvc<IAnimal> lazier) : Animal(lazy, lazier);
+    private class AnimalElephant(Lazy<IAnimal> lazy, LazySvc<IAnimal> lazier) : Animal(lazy, lazier);
+    private class AnimalBird(Lazy<IAnimal> lazy, LazySvc<IAnimal> lazier) : Animal(lazy, lazier);
 
-    internal class Cage(Lazy<IAnimal> animal, LazySupportingOverride<IAnimal> lazier)
+    internal class Cage(Lazy<IAnimal> animal, LazySvc<IAnimal> lazier)
     {
-        public IAnimal LazyAnimal => animal.Value;
-        public IAnimal LazierAnimal => lazier.Value;
+        public IAnimal ClassicLazyAnimal => animal.Value;
+        public IAnimal SuperLazyAnimal => lazier.Value;
     }
 
     #endregion
@@ -40,12 +45,13 @@ public class OverrideLazy(IServiceProvider sp)
     public class Startup() : QuickStartup(services =>
     {
         services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
-        services.TryAddTransient(typeof(LazySupportingOverride<>));
+        services.TryAddTransient(typeof(LazySvc<>));
 
-
+        // Register the default animal, and the default service for IAnimal
         services.TryAddTransient<AnimalDefault>();
         services.TryAddTransient(OverrideService<IAnimal>.Register<AnimalDefault>());
 
+        // Register the remaining animals, so we can override them in the tests
         services.TryAddTransient<Cage>();
         services.TryAddTransient<AnimalDog>();
         services.TryAddTransient<AnimalMonkey>();
@@ -57,37 +63,21 @@ public class OverrideLazy(IServiceProvider sp)
     
 
     [Fact]
-    public void LazyInsideWorks()
+    public void LazyInsideAllVariantsWork()
     {
-        Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
         {
             var evalInside = sp.GetRequiredService<Cage>();
-            Equal("Dog", evalInside.LazyAnimal.Name);
-            Equal("Dog", evalInside.LazierAnimal.Name);
+            Equal(nameof(AnimalDog), evalInside.ClassicLazyAnimal.Name);
+            Equal(nameof(AnimalDog), evalInside.SuperLazyAnimal.Name);
             
-            Equal("Dog", evalInside.LazyAnimal.LazyChild.Name);
-            Equal("Dog", evalInside.LazyAnimal.LazierChild.Name);
-            
-            evalOutside = sp.GetService<Cage>();
+            Equal(nameof(AnimalDog), evalInside.ClassicLazyAnimal.ClassicLazyChild.Name);
+            Equal(nameof(AnimalDog), evalInside.ClassicLazyAnimal.SuperLazyChild.Name);
         }
-        
-        //// Standard lazy fails, for child and grand child
-        //Equal("Default", evalOutside?.LazyAnimal.Name);
-        //Equal("Default", evalOutside?.LazyAnimal.LazyChild.Name);
-        //Equal("Default", evalOutside?.LazyAnimal.LazierChild.Name);
-        
-        //// Works
-        //Equal("Dog", evalOutside?.LazierAnimal.Name);
-        //Equal("Dog", evalOutside?.LazierAnimal.LazierChild.Name);
-        //Equal("Dog", evalOutside?.LazierAnimal.LazierChild.LazierChild.Name);
-        
-        //// If lazy again inside it, will not work
-        //Equal("Default", evalOutside?.LazierAnimal.LazyChild.Name);
     }
 
     [Fact]
-    public void LazyOutsideClassicFailsClassicOutsideFails()
+    public void LazyOutsideClassicFails()
     {
         Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
@@ -96,13 +86,13 @@ public class OverrideLazy(IServiceProvider sp)
         }
         
         // Standard lazy fails, for child and grand child
-        Equal("Default", evalOutside?.LazyAnimal.Name);
-        Equal("Default", evalOutside?.LazyAnimal.LazyChild.Name);
-        Equal("Default", evalOutside?.LazyAnimal.LazierChild.Name);
+        Equal(NameIfLazyFails, evalOutside?.ClassicLazyAnimal.Name);
+        Equal(NameIfLazyFails, evalOutside?.ClassicLazyAnimal.ClassicLazyChild.Name);
+        Equal(NameIfLazyFails, evalOutside?.ClassicLazyAnimal.SuperLazyChild.Name);
     }
 
     [Fact]
-    public void LazyOutsideNewWorks()
+    public void LazyOutsideSuperWorks()
     {
         Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
@@ -111,14 +101,14 @@ public class OverrideLazy(IServiceProvider sp)
         }
         
         // Works
-        Equal("Dog", evalOutside?.LazierAnimal.Name);
-        Equal("Dog", evalOutside?.LazierAnimal.LazierChild.Name);
-        Equal("Dog", evalOutside?.LazierAnimal.LazierChild.LazierChild.Name);
+        Equal(nameof(AnimalDog), evalOutside?.SuperLazyAnimal.Name);
+        Equal(nameof(AnimalDog), evalOutside?.SuperLazyAnimal.SuperLazyChild.Name);
+        Equal(nameof(AnimalDog), evalOutside?.SuperLazyAnimal.SuperLazyChild.SuperLazyChild.Name);
         
     }
 
     [Fact]
-    public void LazyOutsideNewWithInnerClassicFailsWorks()
+    public void LazyOutsideWithInnerClassicFails()
     {
         Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
@@ -126,7 +116,7 @@ public class OverrideLazy(IServiceProvider sp)
             evalOutside = sp.GetService<Cage>();
         }
         
-        // If lazy again inside it, will not work
-        Equal("Default", evalOutside?.LazierAnimal.LazyChild.Name);
+        // If lazy again deep down, that level will not work
+        Equal(NameIfLazyFails, evalOutside?.SuperLazyAnimal.ClassicLazyChild.Name);
     }
 }
