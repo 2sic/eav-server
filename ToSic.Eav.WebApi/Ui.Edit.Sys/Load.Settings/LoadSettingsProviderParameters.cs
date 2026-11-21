@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Ui.Edit.Sys.Load.Settings;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class LoadSettingsProviderParameters
+public record LoadSettingsProviderParameters
 {
     public required IContextOfApp ContextOfApp { get; init; }
 

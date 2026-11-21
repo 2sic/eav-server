@@ -12,27 +12,35 @@ namespace ToSic.Eav.Ui.Edit.Sys.Load.Activities;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EditLoadActivitySettingsHelper(
-    Generator<IJsonDataWriter> jsonSerializerGenerator,
+    Generator<IJsonDataWriter> jsonSerializers,
     IEnumerable<ILoadSettingsProvider> loadSettingsProviders,
     IEnumerable<ILoadSettingsContentTypesProvider> loadSettingsTypesProviders,
     AppWorkChain<WorkEntities> appEntities)
-    : ServiceBase("Api.LodSet",
-        connect: [jsonSerializerGenerator, loadSettingsProviders, appEntities]),
+    : ServiceBase("Api.LodSet", connect: [jsonSerializers, loadSettingsProviders, loadSettingsTypesProviders, appEntities]),
         IWork<EditLoadDto, EditLoadDto>
 {
     public record ActionContext(List<IContentType> UsedTypes);
 
-    public async Task<Package<EditLoadDto>> Handle(WorkContext actionCtx, Package<EditLoadDto> package) =>
-        package with
+    public async Task<Package<EditLoadDto>> Handle(WorkContext actionCtx, Package<EditLoadDto> package)
+    {
+        var appCtx = actionCtx.Get<IContextOfApp>(EditLoadContextConstants.AppContext);
+        var contentTypes = actionCtx.Get<List<IContentType>>(EditLoadContextConstants.UsedTypes);
+        var appWorkCtx = actionCtx.Get<IAppWorkContext>(EditLoadContextConstants.AppWorkCtx);
+        var lspParameters = new LoadSettingsProviderParameters
+        {
+            ContextOfApp = appCtx,
+            ContentTypes = contentTypes,
+            InputTypes = [] // to be filled later
+        };
+
+        return package with
         {
             Data = package.Data with
             {
-                Settings = GetSettings(actionCtx.Get<IContextOfApp>(EditLoadContextConstants.AppContext),
-                    actionCtx.Get<List<IContentType>>(EditLoadContextConstants.UsedTypes),
-                    package.Data.ContentTypes,
-                    actionCtx.Get<IAppWorkContext>(EditLoadContextConstants.AppWorkCtx)),
+                Settings = GetSettings(lspParameters, package.Data.ContentTypes, appWorkCtx),
             },
         };
+    }
 
     /// <summary>
     /// WIP v15.
@@ -41,7 +49,7 @@ public class EditLoadActivitySettingsHelper(
     /// - later get from settings
     /// </summary>
     /// <returns></returns>
-    private EditSettingsDto GetSettings(IContextOfApp contextOfApp, List<IContentType> contentTypes, List<JsonContentType> jsonTypes, IAppWorkContext appWorkCtx)
+    private EditSettingsDto GetSettings(LoadSettingsProviderParameters lspParameters, List<JsonContentType> jsonTypes, IAppWorkContext appWorkCtx)
     {
         var l = Log.Fn<EditSettingsDto>();
         var allInputTypes = jsonTypes
@@ -51,10 +59,8 @@ public class EditLoadActivitySettingsHelper(
             .Distinct()
             .ToList();
 
-        var lspParameters = new LoadSettingsProviderParameters
+        lspParameters = lspParameters with
         {
-            ContextOfApp = contextOfApp,
-            ContentTypes = contentTypes,
             InputTypes = allInputTypes
         };
 
@@ -115,7 +121,7 @@ public class EditLoadActivitySettingsHelper(
 
         // Setup Type Serializer - same as EditLoadBackend
         // 2026-10-30 2dm #JsonWriteToDo:
-        var serializerForTypes = jsonSerializerGenerator.New();
+        var serializerForTypes = jsonSerializers.New();
         var serSettings = new JsonSerializationSettings
         {
             CtIncludeInherited = true,
@@ -162,8 +168,10 @@ public class EditLoadActivitySettingsHelper(
                 .ToList();
 
             // 2026-10-30 2dm #JsonWriteToDo:
-            var jsonSerializer = jsonSerializerGenerator.New();
-            var result = entities.Select(e => jsonSerializer.ToJson(e)).ToList();
+            var jsonSerializer = jsonSerializers.New();
+            var result = entities
+                .Select(e => jsonSerializer.ToJson(e))
+                .ToList();
 
             return l.Return(result, $"{result.Count}");
         }
