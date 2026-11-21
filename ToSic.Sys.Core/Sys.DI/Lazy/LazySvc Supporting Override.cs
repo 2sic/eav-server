@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace ToSic.Sys.DI;
+﻿namespace ToSic.Sys.DI;
 
 /// <summary>
 /// Helps us create lazy **Service** objects.
@@ -29,7 +27,10 @@ public class LazySvc<TService>(IServiceProvider sp)
         ILazyInitLog
     where TService : class
 {
-    private readonly Func<ILog?, TService> _factory = CreateFactory(sp);
+    /// <summary>
+    /// The factory, which MUST be created at construction time.
+    /// </summary>
+    private readonly Func<ILog?, TService> _factory = GeneratorForOverrides<TService>.CreateFactory(sp);
 
     #region Get / New / Value
 
@@ -41,54 +42,8 @@ public class LazySvc<TService>(IServiceProvider sp)
     #endregion
 
 
-    /// <summary>
-    /// Helper callback Function to get a service from a service provider.
-    /// It will be called from ExecutionContext.Run, restoring the "using" context which existed when
-    /// this <see cref="LazySupportingOverride{T}"/> was initially created.
-    /// </summary>
-    /// <remarks>
-    /// Defined as a reusable static callback delegate
-    /// to avoid allocations during ExecutionContext.Run later on.
-    /// </remarks>
-    private static readonly ContextCallback RestoreContextAndResolve =
-        state =>
-        {
-            // Unpack the parameters passed in
-            var (serviceProvider, resultBox) = ((IServiceProvider, ResultBox<TService>))state!;
 
-            // Get the service, and add it to the box, so the caller can extract it again.
-            resultBox.Value = serviceProvider.GetRequiredService<TService>();
-        };
 
-    private static Func<ILog?, TService> CreateFactory(IServiceProvider provider)
-    {
-        // 1. Single reference read (~2ns, 0 bytes allocated)
-        // Will capture all AsyncLocal values, including the current override context, so that it can be restored later.
-        var capturedContext = ExecutionContext.Capture();
-
-        // 2. Return a function holding this context,
-        // which will be the factory once it's needed
-        return (log) =>
-        {
-            // Fast Path: Active override context exists on current thread
-            if (OverrideService<TService>.CurrentFactory != null)
-                return provider.Build<TService>(log);
-
-            // Fallback Path: Deferred access outside 'using' block
-            if (capturedContext == null)
-                return provider.Build<TService>(log);
-            
-            // Prepare the result holder box
-            var box = new ResultBox<TService>();
-
-            // Run within the restored context
-            ExecutionContext.Run(capturedContext, RestoreContextAndResolve, (provider, box));
-            return box.Value!;
-
-        };
-    }
-
-    private class ResultBox<TValue> { public TValue? Value; }
 
 
     #region Logging

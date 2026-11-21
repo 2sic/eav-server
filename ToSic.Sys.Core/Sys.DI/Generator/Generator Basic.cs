@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Sys.DI;
 
 /// <summary>
-/// Lazy generator to create multiple new services/objects of a specific type.
+/// Generator to create multiple new services/objects of a specific type.
 /// </summary>
 /// <remarks>
 /// Constructor should only be used in DI context and never be called directly.
@@ -29,6 +29,14 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     /// <returns></returns>
     public TService New(string key) => sp.Build<TService>(key, Log);
 
+    /// <summary>
+    /// Factory method to generate a new service using a name/keyed.
+    /// </summary>
+    /// <param name="key">The key/name of the service to generate.</param>
+    /// <remarks>
+    /// New in v22
+    /// </remarks>
+    /// <returns></returns>
     public TService? TryNew(string key) => sp.TryBuild<TService>(key, Log);
 
     #endregion

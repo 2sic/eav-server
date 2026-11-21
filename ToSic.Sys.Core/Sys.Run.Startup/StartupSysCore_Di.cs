@@ -19,8 +19,8 @@ public static partial class StartupSysCore
         services.TryAddTransient(typeof(LazySvc<>));
 
         // Service Generators
-        services.TryAddTransient(typeof(Generator<>));
-        services.TryAddTransient(typeof(Generator<,>));
+        services.TryAddTransient(typeof(Generator<>));      // Classic generator
+        services.TryAddTransient(typeof(Generator<,>));     // Generator with Options
 
         // Warnings for mock implementations
         services.TryAddTransient(typeof(WarnUseOfUnknown<>));

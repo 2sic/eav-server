@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Sys.DI;
 
 /// <summary>
-/// Lazy generator to create multiple new services/objects of a specific type.
+/// Generator to create multiple new services/objects of a specific type requiring options for setup.
 /// </summary>
 /// <remarks>
 /// Constructor should only be used in DI context and never be called directly.
@@ -10,7 +10,8 @@
 /// <typeparam name="TOptions">The options to configure the service</typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazyInitLog
-     where TService : IServiceWithSetup<TOptions> where TOptions : class?
+     where TService : class, IServiceWithSetup<TOptions>
+     where TOptions : class?
 {
     /// <summary>
     /// Factory method to generate a new service
@@ -20,7 +21,7 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
     public TService New(TOptions options)
     {
         var instance = sp.Build<TService>(Log);
-        return SetupOrThrow(options, instance);
+        return GeneratorShared.SetupOrThrow(options, instance);
     }
 
     /// <summary>
@@ -33,7 +34,7 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
     public TService New(string key, TOptions options)
     {
         var instance = sp.Build<TService>(key, Log);
-        return SetupOrThrow(options, instance);
+        return GeneratorShared.SetupOrThrow(options, instance);
     }
 
     /// <summary>
@@ -48,25 +49,10 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
         var instance = sp.TryBuild<TService>(key, Log);
         return instance == null
             ? instance
-            : SetupOrThrow(options, instance);
+            : GeneratorShared.SetupOrThrow(options, instance);
     }
 
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="options"></param>
-    /// <param name="instance"></param>
-    /// <returns></returns>
-    /// <exception cref="NotSupportedException">Throws if the provided options have the wrong type.</exception>
-    /// <exception cref="NullReferenceException">Throws if the service is null.</exception>
-    private static TService SetupOrThrow(TOptions options, TService instance)
-    {
-        if (instance is not IServiceWithSetup<TOptions> settable)
-            throw new NotSupportedException($"The service {typeof(TService).Name} doesn't support setting options of type {typeof(TOptions).Name}");
-        settable.Setup(options);
-        return instance;
-    }
 
 
     #region Logging
@@ -86,5 +72,4 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
     public ILog? Log { get; private set; }
 
     #endregion
-
 }
