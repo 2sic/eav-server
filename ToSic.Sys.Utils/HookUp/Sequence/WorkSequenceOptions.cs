@@ -21,9 +21,9 @@ public record WorkSequenceOptions
             ? workSafe.OrderBy(w =>
                 ((w as IWorkSequenceOrder)?.WorkSequenceOrder ?? fallback)
                 .ToString("000000000") +
-                (SortByName ? w!.GetType().Name : ""))
+                (SortByName ? w!.GetType().Name : ""), StringComparer.OrdinalIgnoreCase)
             : workSafe;
-        return workList.ToList();
+        return [.. workList];
     }
 
 }
