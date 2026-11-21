@@ -1,6 +1,7 @@
-﻿using ToSic.Eav.WebApi.Sys.Dto;
+﻿using ToSic.Eav.Ui.Edit.Sys;
+using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Cms;
+namespace ToSic.Eav.Ui.History.Sys;
 
 public interface IHistoryController: IHasLog
 {

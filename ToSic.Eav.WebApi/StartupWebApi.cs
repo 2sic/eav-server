@@ -3,8 +3,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.Context.Sys;
 using ToSic.Eav.Ui.Context.Sys;
 using ToSic.Eav.Ui.Edit.Sys;
+using ToSic.Eav.Ui.Edit.Sys.Load.Activities;
+using ToSic.Eav.Ui.Edit.Sys.Load.Links;
 using ToSic.Eav.Ui.Edit.Sys.Load.Prefetch;
+using ToSic.Eav.Ui.Edit.Sys.Load.Settings;
 using ToSic.Eav.Ui.Edit.Sys.Save;
+using ToSic.Eav.Ui.History.Sys;
 using ToSic.Eav.Web.Http.Sys;
 using ToSic.Eav.WebApi.Admin.Sys;
 using ToSic.Eav.WebApi.App.Sys;
@@ -27,6 +31,7 @@ public static class StartupWebApi
         services.TryAddTransient<ZoneControllerReal>();
         services.TryAddTransient<LogControllerReal>();
         services.TryAddTransient<LicenseControllerReal>();
+        services.TryAddTransient<HistoryControllerReal>();
 
         // Various Backends
         services.TryAddTransient<SaveHelperSaveBundles>();
@@ -70,7 +75,7 @@ public static class StartupWebApi
         services.TryAddTransient<AppWebApiQueryRunSvc>();
         services.TryAddTransient<AppQueryODataHelper>();
 
-        services.AddEavWebApiPrefetch();
+        services.AddEavWebApiEdit();
 
         services.AddNetInfrastructure();
 
@@ -78,9 +83,33 @@ public static class StartupWebApi
     }
 
 
-    public static IServiceCollection AddEavWebApiPrefetch(this IServiceCollection services)
+    public static IServiceCollection AddEavWebApiEdit(this IServiceCollection services)
     {
+        // Edit Load Identity Providers
+        services.TryAddTransient<EditLoadIdentifierProviders>();
+        services.AddTransient<IEditLoadIdentifierProvider, EditLoadIdentifierProviderMetadataSingleton>();
+
+        // Prefetch Edit Load
         services.TryAddKeyedTransient<IEditLoadPrefetchProvider, EditLoadActivityPrefetchEntity>(EditLoadActivityPrefetchEntity.NameId);
+        services.TryAddKeyedTransient<IEditLoadPrefetchProvider, EditLoadActivityPrefetchLinks>(EditLoadActivityPrefetchLinks.NameId);
+
+        // Edit Load Helpers / Activities
+        services.TryAddTransient<EditLoadActivityAddContentTypes>();
+        services.TryAddTransient<EditLoadActivityAddNecessaryInputTypes>();
+        services.TryAddTransient<EditLoadActivityAddContext>();
+        services.TryAddTransient<EditLoadActivityAddRequiredFeatures>();
+        services.TryAddTransient<EditLoadActivityAddPrefetch>();
+        services.TryAddTransient<EditLoadActivitySettingsHelper>();
+        services.TryAddTransient<EditLoadActivityConvertRequest>();
+
+        // Load Settings Providers
+        services.AddTransient<ILoadSettingsContentTypesProvider, LoadSettingsForPickerSources>();
+        services.AddTransient<ILoadSettingsProvider, LoadSettingsForContentType>();
+
+        // SaveData PreSave
+        services.TryAddTransient<DataValidatorContentTypeDataStore>();
+
+
         return services;
     }
 
@@ -94,6 +123,12 @@ public static class StartupWebApi
     {
         // The ResponseMaker must be registered as generic, so that any specific registration will have priority
         //services.TryAddScoped<IResponseMaker, ResponseMakerToOverride>();
+        return services;
+    }
+
+    public static IServiceCollection AddEavWebApiFallbacks(this IServiceCollection services)
+    {
+        services.TryAddTransient<ILinkResolver, LinkResolverUnknown>();
         return services;
     }
 

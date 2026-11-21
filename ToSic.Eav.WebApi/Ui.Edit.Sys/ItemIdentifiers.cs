@@ -1,7 +1,7 @@
 ﻿using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Ui.Edit.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Dto;
+namespace ToSic.Eav.Ui.Edit.Sys;
 
 public record ItemIdentifier
 {
@@ -122,35 +122,4 @@ public record ItemIdentifier
     public int? ContentBlockAppId { get; init; }
 
     #endregion
-}
-
-public record BundleWithHeader
-{
-    public required ItemIdentifier Header { get; init; }     
-}
-
-public record BundleWithHeaderOptional<TEntity>
-{
-    public ItemIdentifier? Header { get; init; }     
-    public TEntity? Entity { get; init; }
-
-}
-public record BundleWithHeader<TEntity>: BundleWithHeader
-{
-    public required TEntity Entity { get; init; }
-
-}
-
-public static class ItemIdentifierExtension
-{
-    /// <summary>
-    /// Access the Parent GUID in scenarios where it must exist, or throw error
-    /// </summary>
-    /// <remarks>
-    /// ParentOrError property was converted to extension method to avoid exceptions on STJ json deserialization
-    /// </remarks>
-    public static Guid GetParentEntityOrError(this ItemIdentifier itemIdentifier) =>
-        itemIdentifier.Parent
-        ?? throw new ArgumentNullException(nameof(itemIdentifier.Parent),
-            "Trying to access 'Parent' to save in list, but it's null");
 }

@@ -1,9 +1,8 @@
-﻿using ToSic.Eav.Ui.Edit.Sys;
-using ToSic.Eav.Ui.Edit.Sys.Load;
+﻿using ToSic.Eav.Ui.Edit.Sys.Load.Links;
 using ToSic.Eav.WebApi.Admin.Sys;
 using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.WebApi.Sys.Cms;
+namespace ToSic.Eav.Ui.Edit.Sys;
 
 /// <summary>
 /// This is the Contract / Interface for the edit controller.
@@ -44,7 +43,7 @@ public interface IEditController: IAppAdminWebApiController
     /// <param name="field">Item field (optional). Relevant for checking ADAM links inside an item.</param>
     /// <returns></returns>
     // UI test: Edit an item with a hyperlink / ADAM field and resolve or preview a page/file link.
-    LinkInfoDto LinkInfo(string link, int appId, string? contentType = default, Guid guid = default, string? field = default);
+    Task<LinkInfoDto> LinkInfo(string link, int appId, string? contentType = default, Guid guid = default, string? field = default);
 
     /// <summary>
     /// Used to be GET Module/Publish

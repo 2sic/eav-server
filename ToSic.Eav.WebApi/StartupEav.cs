@@ -52,6 +52,7 @@ public static class StartupEav
     public static IServiceCollection AddEavAllFallbacks(this IServiceCollection services)
     {
         services
+            .AddEavWebApiFallbacks()
             .AddWorkFallbackServices()
             .AddContextFallbacks()
             .AddAppPersistenceFallbackServices()

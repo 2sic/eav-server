@@ -1,6 +1,6 @@
 ﻿using ToSic.Eav.WebApi.Sys.Dto;
 
-namespace ToSic.Eav.Ui.Edit.Sys.Load;
+namespace ToSic.Eav.Ui.Edit.Sys.Load.Links;
 
 public class LinkInfoDto
 {
