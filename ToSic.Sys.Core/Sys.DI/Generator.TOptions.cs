@@ -15,20 +15,34 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
     /// <summary>
     /// Factory method to generate a new service
     /// </summary>
-    /// <returns></returns>
+    /// <param name="options">Options for setting up the service, usually non-null, or it will throw an error once it's accessed</param>
+    /// <returns>The service, ready and initialized.</returns>
     public TService New(TOptions options)
     {
         var instance = sp.Build<TService>(Log);
-        //_initCall?.Invoke(instance);
         return SetupOrThrow(options, instance);
     }
 
+    /// <summary>
+    /// Retrieve a keyed service by key, with options.
+    /// </summary>
+    /// <param name="key">Key used in the registration - will throw if not found</param>
+    /// <param name="options">Options for setting up the service, usually non-null, or it will throw an error once it's accessed</param>
+    /// <returns>The service, ready and initialized.</returns>
+    /// <exception cref="NotSupportedException">Throws if the provided options have the wrong type.</exception>
     public TService New(string key, TOptions options)
     {
         var instance = sp.Build<TService>(key, Log);
         return SetupOrThrow(options, instance);
     }
 
+    /// <summary>
+    /// Try to retrieve a keyed service by key, with options.
+    /// </summary>
+    /// <param name="key">Key used in the registration - will return null</param>
+    /// <param name="options">Options for setting up the service, usually non-null, or it will throw an error once it's accessed</param>
+    /// <returns>The service, ready and initialized - or null.</returns>
+    /// <exception cref="NotSupportedException">Throws if the provided options have the wrong type.</exception>
     public TService? TryNew(string key, TOptions options)
     {
         var instance = sp.TryBuild<TService>(key, Log);
@@ -36,6 +50,26 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
             ? instance
             : SetupOrThrow(options, instance);
     }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="options"></param>
+    /// <param name="instance"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException">Throws if the provided options have the wrong type.</exception>
+    /// <exception cref="NullReferenceException">Throws if the service is null.</exception>
+    private static TService SetupOrThrow(TOptions options, TService instance)
+    {
+        if (instance is not IServiceWithSetup<TOptions> settable)
+            throw new NotSupportedException($"The service {typeof(TService).Name} doesn't support setting options of type {typeof(TOptions).Name}");
+        settable.Setup(options);
+        return instance;
+    }
+
+
+    #region Logging
 
     /// <summary>
     /// Initializer to attach the log to the generator.
@@ -51,30 +85,6 @@ public class Generator<TService, TOptions>(IServiceProvider sp) : IHasLog, ILazy
     /// </summary>
     public ILog? Log { get; private set; }
 
-    private static TService SetupOrThrow(TOptions options, TService instance)
-    {
-        if (instance is not IServiceWithSetup<TOptions> settable)
-            throw new NotSupportedException($"The service {typeof(TService).Name} doesn't support setting options of type {typeof(TOptions).Name}");
-        settable.Setup(options);
-        return instance;
-    }
-
-//    /// <summary>
-//    /// Set the init-command as needed
-//    /// </summary>
-//    /// <param name="newInitCall"></param>
-//    public Generator<TService, TOptions> SetInit(Action<TService> newInitCall)
-//    {
-//#if DEBUG
-//        // Warn if we're accidentally replacing init-call, but only do this on debug
-//        // In most cases it has no consequences, but we should write code that avoids this
-//        if (_initCall != null)
-//            throw new($"You tried to call {nameof(SetInit)} twice. This should never happen");
-//#endif
-//        _initCall = newInitCall;
-//        return this;
-//    }
-//    private Action<TService>? _initCall;
-
+    #endregion
 
 }

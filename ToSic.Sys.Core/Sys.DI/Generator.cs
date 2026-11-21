@@ -11,6 +11,30 @@
 public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     where TService: class
 {
+    #region Get / New / Value
+
+    /// <summary>
+    /// Factory method to generate a new service
+    /// </summary>
+    /// <returns></returns>
+    public TService New() => sp.Build<TService>(Log);
+
+    /// <summary>
+    /// Factory method to generate a new service using a name/keyed.
+    /// </summary>
+    /// <param name="key">The key/name of the service to generate.</param>
+    /// <remarks>
+    /// New in v22
+    /// </remarks>
+    /// <returns></returns>
+    public TService New(string key) => sp.Build<TService>(key, Log);
+
+    public TService? TryNew(string key) => sp.TryBuild<TService>(key, Log);
+
+    #endregion
+
+
+
     #region Logging
 
     /// <inheritdoc/>
@@ -21,62 +45,4 @@ public class Generator<TService>(IServiceProvider sp) : IHasLog, ILazyInitLog
     public ILog? Log { get; private set; }
 
     #endregion
-
-    
-    #region Get / New / Value
-
-    /// <summary>
-    /// Factory method to generate a new service
-    /// </summary>
-    /// <returns></returns>
-    public TService New()
-    {
-        var service = sp.Build<TService>(Log);
-        //_initCall?.Invoke(service);
-        return service;
-    }
-
-    /// <summary>
-    /// Factory method to generate a new service using a name/keyed.
-    /// </summary>
-    /// <param name="key">The key/name of the service to generate.</param>
-    /// <remarks>
-    /// New in v22
-    /// </remarks>
-    /// <returns></returns>
-    public TService New(string key)
-    {
-        var service = sp.Build<TService>(key, Log);
-        //_initCall?.Invoke(service);
-        return service;
-    }
-    
-    public TService? TryNew(string key)
-    {
-        var service = sp.TryBuild<TService>(key, Log);
-        //if (service == null)
-        //    return null;
-        //_initCall?.Invoke(service);
-        return service;
-    }
-    
-    #endregion
-
-
-    //#region SetInit
-
-    ///// <summary>
-    ///// Set the init-command as needed
-    ///// </summary>
-    ///// <param name="newInitCall"></param>
-    ///// <param name="allowReplace">Allow replacing the set-init</param>
-    //public Generator<TService> SetInit(Action<TService> newInitCall, bool allowReplace = false)
-    //{
-    //    _initCall = LazyHelpers.ThrowIfInitAlreadySet(_initCall, newInitCall, allowReplace);
-    //    return this;
-    //}
-    //private Action<TService>? _initCall;
-
-    //#endregion
-
 }
