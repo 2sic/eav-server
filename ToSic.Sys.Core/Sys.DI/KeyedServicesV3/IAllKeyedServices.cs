@@ -19,7 +19,7 @@ public interface IAllKeyedServices<TKey, TService>
 /// <typeparam name="TService"></typeparam>
 /// <param name="provider"></param>
 /// <param name="registry"></param>
-internal sealed class AllKeyedServices<TKey, TService>(IServiceProvider provider, KeyedServiceRegistry registry)
+internal sealed class AllKeyedServices<TKey, TService>(ISysServiceProvider provider, KeyedServiceRegistry registry)
     : IAllKeyedServices<TKey, TService>
     where TService : class
 {

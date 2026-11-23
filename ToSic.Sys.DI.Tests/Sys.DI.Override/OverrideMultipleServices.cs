@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.DI.Override;
 
-public class OverrideMultipleServices(IServiceProvider sp)
+public class OverrideMultipleServices(ISysServiceProvider sp)
 {
     #region Test Classes
 
@@ -40,6 +41,7 @@ public class OverrideMultipleServices(IServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
+        services.AddSysCoreDi();
         services.TryAddTransient<Cage>();
 
         services.TryAddTransient<AnimalDefault>();

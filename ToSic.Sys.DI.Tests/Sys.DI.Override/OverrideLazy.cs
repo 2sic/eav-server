@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.Run.Startup;
 
 
 namespace ToSic.Sys.DI.Override;
 
-public class OverrideLazy(IServiceProvider sp)
+public class OverrideLazy(ISysServiceProvider sp)
 {
     /// <summary>
     /// This will be the name of an animal if the override mechanism fails,
@@ -54,15 +55,16 @@ public class OverrideLazy(IServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
+        services.AddSysCoreDi();
         // Lazy - classic and super
-        services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
-        services.TryAddTransient(typeof(LazySvc<>));
+        //services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
+        //services.TryAddTransient(typeof(LazySvc<>));
 
         // Generator - now
         services.TryAddTransient(typeof(GeneratorBasic<>));      // Classic generator
         services.TryAddTransient(typeof(GeneratorBasic<,>));     // Classic Generator with Options
-        services.TryAddTransient(typeof(Generator<>));    // Super generator
-        services.TryAddTransient(typeof(Generator<,>));   // Super Generator with Options
+        //services.TryAddTransient(typeof(Generator<>));    // Super generator
+        //services.TryAddTransient(typeof(Generator<,>));   // Super Generator with Options
 
         // Register the default animal, and the default service for IAnimal
         services.TryAddTransient<AnimalDefault>();
@@ -100,7 +102,7 @@ public class OverrideLazy(IServiceProvider sp)
     }
 
     [Fact]
-    public void LazyOutsideClassicFails()
+    public void LazyOutsideClassicUsedToFailNowWorks()
     {
         Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
@@ -109,9 +111,9 @@ public class OverrideLazy(IServiceProvider sp)
         }
         
         // Standard lazy fails, for child and grand child
-        Equal(NameIfLazyFails, evalOutside?.LazyAnimal.Name);
-        Equal(NameIfLazyFails, evalOutside?.LazyAnimal.LazyChild.Name);
-        Equal(NameIfLazyFails, evalOutside?.LazyAnimal.SuperLazyChild.Name);
+        Equal(nameof(AnimalDog), evalOutside?.LazyAnimal.Name);
+        Equal(nameof(AnimalDog), evalOutside?.LazyAnimal.LazyChild.Name);
+        Equal(nameof(AnimalDog), evalOutside?.LazyAnimal.SuperLazyChild.Name);
     }
 
     [Fact]
@@ -130,7 +132,7 @@ public class OverrideLazy(IServiceProvider sp)
     }
 
     [Fact]
-    public void LazyOutsideWithInnerClassicFails()
+    public void LazyOutsideWithInnerClassicUsedToFailNowWorks()
     {
         Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
@@ -139,7 +141,7 @@ public class OverrideLazy(IServiceProvider sp)
         }
         
         // If lazy again deep down, that level will not work
-        Equal(NameIfLazyFails, evalOutside?.SuperLazyAnimal.LazyChild.Name);
+        Equal(nameof(AnimalDog), evalOutside?.SuperLazyAnimal.LazyChild.Name);
     }
 
     #endregion
@@ -185,7 +187,7 @@ public class OverrideLazy(IServiceProvider sp)
     }
 
     [Fact]
-    public void GeneratorMainOutsideClassicFails()
+    public void GeneratorMainOutsideClassicUsedToFailNowWorks()
     {
         GeneratorBasic<IAnimal> evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalMonkey>())
@@ -194,7 +196,7 @@ public class OverrideLazy(IServiceProvider sp)
         }
 
         // Standard lazy fails, for child and grand child
-        Equal(NameIfLazyFails, evalOutside.New().Name);
+        Equal(nameof(AnimalMonkey), evalOutside.New().Name);
     }
 
     [Fact]
@@ -216,7 +218,7 @@ public class OverrideLazy(IServiceProvider sp)
     }
 
     [Fact]
-    public void GeneratorOutsideClassicFails()
+    public void GeneratorOutsideClassicUsedToFailNowWorks()
     {
         Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
@@ -225,9 +227,9 @@ public class OverrideLazy(IServiceProvider sp)
         }
 
         // Standard lazy fails, for child and grand child
-        Equal(NameIfLazyFails, evalOutside?.GenerateAnimal().Name);
-        Equal(NameIfLazyFails, evalOutside?.GenerateAnimal().BirthLazy().Name);
-        Equal(NameIfLazyFails, evalOutside?.GenerateAnimal().BirthLazy().Name);
+        Equal(nameof(AnimalDog), evalOutside?.GenerateAnimal().Name);
+        Equal(nameof(AnimalDog), evalOutside?.GenerateAnimal().BirthLazy().Name);
+        Equal(nameof(AnimalDog), evalOutside?.GenerateAnimal().BirthLazy().Name);
     }
 
     [Fact]
@@ -247,7 +249,7 @@ public class OverrideLazy(IServiceProvider sp)
     }
 
     [Fact]
-    public void GeneratorOutsideWithInnerClassicFails()
+    public void GeneratorOutsideWithInnerClassicUsedToFailNowWorks()
     {
         Cage? evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalDog>())
@@ -256,8 +258,8 @@ public class OverrideLazy(IServiceProvider sp)
         }
 
         // If lazy again deep down, that level will not work
-        Equal(NameIfLazyFails, evalOutside?.GenerateAnimalSuper().BirthLazy().Name);
-        Equal(NameIfLazyFails, evalOutside?.GenerateAnimalSuper().LazyChild.Name);
+        Equal(nameof(AnimalDog), evalOutside?.GenerateAnimalSuper().BirthLazy().Name);
+        Equal(nameof(AnimalDog), evalOutside?.GenerateAnimalSuper().LazyChild.Name);
     }
 
     #endregion

@@ -16,7 +16,7 @@ public static class IServiceProviderExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="serviceProvider"></param>
     /// <returns></returns>
-    public static T Build<T>(this IServiceProvider serviceProvider)
+    public static T Build<T>(this ISysServiceProvider serviceProvider)
     {
         // 1. Try to first check registered types, otherwise try to find in DLLs etc. using Activator Utilities
 
@@ -24,7 +24,8 @@ public static class IServiceProviderExtensions
         //try
         //{
             var found = serviceProvider.GetService<T>();
-            if (found != null) return found;
+            if (found != null)
+                return found;
         //}
         //catch (Exception ex)
         //{
@@ -45,11 +46,11 @@ public static class IServiceProviderExtensions
     /// <param name="serviceProvider"></param>
     /// <param name="key"></param>
     /// <returns></returns>
-    public static T Build<T>(this IServiceProvider serviceProvider, string key)
+    public static T Build<T>(this ISysServiceProvider serviceProvider, string key)
         => serviceProvider.GetKeyedService<T>(key)
-           ?? throw new InvalidOperationException($"Service with key '{key}' not found.");
+           ?? throw new InvalidOperationException($"Service of type '{typeof(T).Name}' with key '{key}' not found.");
 
-    public static T? TryBuild<T>(this IServiceProvider serviceProvider, string key)
+    public static T? TryBuild<T>(this ISysServiceProvider serviceProvider, string key)
         => serviceProvider.GetKeyedService<T>(key);
 
     /// <summary>
@@ -59,7 +60,7 @@ public static class IServiceProviderExtensions
     /// <param name="serviceProvider"></param>
     /// <param name="parentLog"></param>
     /// <returns></returns>
-    public static T Build<T>(this IServiceProvider serviceProvider, ILog? parentLog)
+    public static T Build<T>(this ISysServiceProvider serviceProvider, ILog? parentLog)
     {
         // temp: debug with try-catch, as we're getting some strange problems
         //try
@@ -85,14 +86,14 @@ public static class IServiceProviderExtensions
     /// <param name="key"></param>
     /// <param name="parentLog"></param>
     /// <returns></returns>
-    public static T Build<T>(this IServiceProvider serviceProvider, string key, ILog? parentLog)
+    public static T Build<T>(this ISysServiceProvider serviceProvider, string key, ILog? parentLog)
     {
         var service = serviceProvider.Build<T>(key);
         if (service is IHasLog withLog && parentLog != null)
             withLog.LinkLog(parentLog);
         return service;
     }
-    public static T? TryBuild<T>(this IServiceProvider serviceProvider, string key, ILog? parentLog)
+    public static T? TryBuild<T>(this ISysServiceProvider serviceProvider, string key, ILog? parentLog)
     {
         var service = serviceProvider.TryBuild<T>(key);
         if (service is IHasLog withLog && parentLog != null)
@@ -102,7 +103,7 @@ public static class IServiceProviderExtensions
 
 
 
-    public static T Build<T>(this IServiceProvider serviceProvider, Type type, ILog? parentLog = null) where T: class
+    public static T Build<T>(this ISysServiceProvider serviceProvider, Type type, ILog? parentLog = null) where T: class
     {
         // Try to first check registered types, otherwise try to find in DLLs etc. using Activator Utilities
         var service = serviceProvider.GetService(type)

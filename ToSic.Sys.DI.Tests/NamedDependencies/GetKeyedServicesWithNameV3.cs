@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ToSic.Sys.DI;
+using ToSic.Sys.Run.Startup;
+
 // ReSharper disable ClassNeverInstantiated.Local
 
 
@@ -36,6 +38,7 @@ public class GetKeyedServicesWithNameV3
     private static ServiceProvider BuildServiceProviderWithNamed()
     {
         var sc = new ServiceCollection();
+        sc.AddSysCoreDi();
         sc.AddKeyedTransient<INamedService, NamedJohn>(nameof(NamedJohn));
         sc.AddKeyedTransient<INamedService, NamedJoe>(nameof(NamedJoe));
         sc.AddKeyedServiceRegistry();

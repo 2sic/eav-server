@@ -5,4 +5,4 @@
 /// </summary>
 /// <param name="sp"></param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class DataFactoryGenerator(IServiceProvider sp) : Generator<IDataFactory, DataFactoryOptions>(sp);
+public class DataFactoryGenerator(ISysServiceProvider sp) : Generator<IDataFactory, DataFactoryOptions>(sp);

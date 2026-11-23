@@ -2,7 +2,7 @@
 
 namespace ToSic.Sys.DI.Override;
 
-public class OverrideDiagnostics(IServiceProvider sp)
+public class OverrideDiagnostics()
 {
     #region Classes
 

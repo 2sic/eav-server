@@ -31,7 +31,7 @@
 /// </remarks>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class LazySvcClassic<TService>(IServiceProvider sp)
+public class LazySvc<TService>(ISysServiceProvider sp) // (IServiceProvider sp)
     : ILazyLike<TService>, IHasLog, ILazyInitLog
     where TService : class
 {
@@ -63,5 +63,5 @@ public class LazySvcClassic<TService>(IServiceProvider sp)
 
 [PrivateApi("Test-Class for comparisons, not meant for production.")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class LazySvcBasic<TService>(IServiceProvider sp)
-    : LazySvcClassic<TService>(sp) where TService : class;
+public class LazySvcBasic<TService>(ISysServiceProvider sp)
+    : LazySvc<TService>(sp) where TService : class;

@@ -1,5 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.CompilerServices;
 
 namespace ToSic.Sys.DI;
 
@@ -15,6 +15,8 @@ namespace ToSic.Sys.DI;
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public static partial class OverrideService<TService> where TService : class
 {
+    #region Current Frame Info
+
     /// <summary>
     /// Special container to hold the replaced factory function for the current async context.
     /// </summary>
@@ -43,11 +45,17 @@ public static partial class OverrideService<TService> where TService : class
         for (var f = CurrentFrame.Value; f != null; f = f.Parent)
             yield return f;
     }
-    
+
     /// <summary>
     /// Gets the current active factory delegate.
     /// </summary>
-    public static Func<IServiceProvider, TService>? CurrentFactory => CurrentFrame.Value?.Factory;
+    public static Func<ISysServiceProvider, TService>? CurrentFactory => CurrentFrame.Value?.Factory;
+
+    #endregion
+
+
+
+    #region Use / Begin Implementations
 
     /// <summary>
     /// Use Overload 1: Supply a type (preserves transient lifetime via DI container)
@@ -80,20 +88,24 @@ public static partial class OverrideService<TService> where TService : class
     /// <param name="factory">The factory function to use.</param>
     /// <param name="hint">An optional hint for debugging purposes.</param>
     /// <param name="cName">The caller member name (automatic)</param>
-    public static IDisposable Use(Func<IServiceProvider, TService> factory, string? hint = null, [CallerMemberName] string? cName = null)
+    public static IDisposable Use(Func<ISysServiceProvider, TService> factory, string? hint = null, [CallerMemberName] string? cName = null)
     {
         var parentFrame = CurrentFrame.Value;
 
         // Push a new Frame onto the stack
         CurrentFrame.Value = new(factory, OverrideCount + 1, parentFrame, hint, cName);
 
-        return new Scope(parentFrame);
+        // Track globally that an ambient override is active on this thread
+        var trackerScope = AmbientOverrideTracker.Increment();
+
+        return new Scope(parentFrame, trackerScope);
     }
 
     /// <summary>
     /// Idempotent Begin: Only applies if no override exists
     /// </summary>
     /// <typeparam name="TImplementation"></typeparam>
+    /// <param name="hint">An optional hint for debugging purposes.</param>
     /// <param name="cName">The caller member name (automatic)</param>
     /// <returns></returns>
     public static IDisposable UseIfNotOverridden<TImplementation>(string? hint = null, [CallerMemberName] string? cName = null)
@@ -102,10 +114,17 @@ public static partial class OverrideService<TService> where TService : class
             ? NoOpScope.Instance
             : Use<TImplementation>(hint: hint, cName: cName);
 
-    public static IDisposable UseIfNotOverridden(Func<IServiceProvider, TService> factory, string? hint = null, [CallerMemberName] string? cName = null)
+    public static IDisposable UseIfNotOverridden(Func<ISysServiceProvider, TService> factory, string? hint = null, [CallerMemberName] string? cName = null)
         => IsOverridden
             ? NoOpScope.Instance
             : Use(factory, hint: hint, cName: cName);
+
+    #endregion
+
+
+
+
+    #region Frames and Scopes (holding Frames)
 
     /// <summary>
     /// Private Frame Node (Immutable linked-list node)
@@ -114,21 +133,28 @@ public static partial class OverrideService<TService> where TService : class
     /// <param name="Depth"></param>
     /// <param name="Parent"></param>
     /// <param name="CallerName"></param>
-    private sealed record Frame(Func<IServiceProvider, TService> Factory, int Depth, Frame? Parent, string? Hint, string? CallerName);
+    private sealed record Frame(
+        Func<ISysServiceProvider, TService> Factory,
+        int Depth,
+        Frame? Parent,
+        string? Hint,
+        string? CallerName);
 
     /// <summary>
     /// Private Scope Handle
     /// </summary>
     /// <param name="previousFrame"></param>
-    private sealed class Scope(Frame? previousFrame) : IDisposable
+    private sealed class Scope(Frame? previousFrame, IDisposable trackerScope) : IDisposable
     {
         private bool _disposed;
 
         public void Dispose()
         {
-            if (_disposed) return;
+            if (_disposed)
+                return;
             // Pop the Frame off the stack
             CurrentFrame.Value = previousFrame;
+            trackerScope.Dispose();
             _disposed = true;
         }
     }
@@ -141,4 +167,6 @@ public static partial class OverrideService<TService> where TService : class
         public static readonly NoOpScope Instance = new();
         public void Dispose() { }
     }
+
+    #endregion
 }

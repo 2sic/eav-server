@@ -31,7 +31,7 @@ public static class KeyedServiceRegistryExtensions
     /// <param name="provider"></param>
     /// <returns></returns>
     public static IEnumerable<KeyedService<TKey, TService>> GetKeyedServicesWithKeys<TKey, TService>(
-        this IServiceProvider provider)
+        this ISysServiceProvider provider)
         where TService : class
     {
         return [.. provider.GetRequiredService<IAllKeyedServices<TKey, TService>>()];

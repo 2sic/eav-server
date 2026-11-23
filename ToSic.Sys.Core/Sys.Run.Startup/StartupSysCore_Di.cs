@@ -12,6 +12,12 @@ public static partial class StartupSysCore
     /// <returns></returns>
     public static IServiceCollection AddSysCoreDi(this IServiceCollection services)
     {
+        // Special Service Provider which is context aware
+        // This is necessary, because IServiceProvider would always revert to the original one
+        // which is not aware of the context.
+        // This eliminates the need for rewriting all the registrations.
+        services.TryAddTransient<ISysServiceProvider, ContextualServiceProvider>();
+
         // Lazy objects in General
         services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
 

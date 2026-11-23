@@ -1,12 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Sys;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.HookUp;
 using ToSic.Sys.Run.Startup;
 
 namespace ToSic.HookUp.WorkSequenceTests;
 
-public class WorkSequenceManualTests(IServiceProvider sp)
+public class WorkSequenceManualTests()
 {
     #region Work Steps
 

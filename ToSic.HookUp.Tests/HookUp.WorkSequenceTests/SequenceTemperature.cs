@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Sys;
 using ToSic.Sys.DI;
 using ToSic.Sys.HookUp;
 using ToSic.Sys.Run.Startup;
@@ -7,7 +6,7 @@ using Xunit.Sdk;
 
 namespace ToSic.HookUp.WorkSequenceTests;
 
-public class SequenceTemperature(IServiceProvider sp)
+public class SequenceTemperature(ISysServiceProvider sp)
 {
     #region Work Steps
 
@@ -40,6 +39,7 @@ public class SequenceTemperature(IServiceProvider sp)
     public class Startup(): QuickStartup(services =>
     {
         // Celsius to Fahrenheit sequence, just for testing multiple implementations of the same interface
+        services.AddSysCoreDi();
         services.AddTransient<ICelsiusToFahrenheitSequence, CelsiusToFahrenheit1>();
         services.AddTransient<ICelsiusToFahrenheitSequence, CelsiusToFahrenheit2>();
         services.AddTransient<ICelsiusToFahrenheitSequence, CelsiusToFahrenheit7Skip>();

@@ -1,66 +1,74 @@
-﻿namespace ToSic.Sys.DI;
+﻿//using Microsoft.Extensions.DependencyInjection;
 
-/// <summary>
-/// Helper used by LazySvc and Generator.
-/// </summary>
-/// <typeparam name="TService"></typeparam>
-internal static class GeneratorForOverrides<TService> where TService : class
-{
-    /// <summary>
-    /// Helper callback Function to get a service from a service provider.
-    /// It will be called from ExecutionContext.Run, restoring the "using" context which existed when
-    /// this <see cref="LazySupportingOverride{T}"/> was initially created.
-    /// </summary>
-    /// <remarks>
-    /// Defined as a reusable static callback delegate
-    /// to avoid allocations during ExecutionContext.Run later on.
-    /// </remarks>
-    internal static readonly ContextCallback RestoreContextAndResolve =
-        state =>
-        {
-            // Unpack the parameters passed in
-            var (serviceProvider, resultBox) = ((IServiceProvider, ResultBoxBasic<TService>))state!;
+//namespace ToSic.Sys.DI;
 
-            // Get the service, and add it to the box, so the caller can extract it again.
-            resultBox.Value = serviceProvider.Build<TService>(resultBox.Log);
-        };
+///// <summary>
+///// Helper used by LazySvc and Generator.
+///// </summary>
+///// <typeparam name="TService"></typeparam>
+//internal static class GeneratorForOverrides<TService> where TService : class
+//{
+//    /// <summary>
+//    /// Helper callback Function to get a service from a service provider.
+//    /// It will be called from ExecutionContext.Run, restoring the "using" context which existed when
+//    /// this <see cref="LazySvc{T}"/> was initially created.
+//    /// </summary>
+//    /// <remarks>
+//    /// Defined as a reusable static callback delegate
+//    /// to avoid allocations during ExecutionContext.Run later on.
+//    /// </remarks>
+//    internal static readonly ContextCallback RestoreContextAndResolve =
+//        state =>
+//        {
+//            // Unpack the parameters passed in
+//            var (serviceProvider, resultBox) = ((IServiceProvider, ResultBoxBasic<TService>))state!;
 
-    internal static Func<ILog?, TService> CreateFactory(IServiceProvider provider)
-    {
-        // 1. Single reference read (~2ns, 0 bytes allocated)
-        // Will capture all AsyncLocal values, including the current override context, so that it can be restored later.
-        var capturedContext = ExecutionContext.Capture();
+//            // Get the service, and add it to the box, so the caller can extract it again.
+//            resultBox.Value = serviceProvider.Build<TService>(resultBox.Log);
+//        };
 
-        // 2. Return a function holding this context,
-        // which will be the factory once it's needed
-        return log =>
-        {
-            // Fast Path: Active override context exists on current thread
-            if (OverrideService<TService>.CurrentFactory != null)
-                return provider.Build<TService>(log);
+//    internal static Func<ILog?, TService> CreateFactory(IServiceProvider provider)
+//    {
+//        // 1. Single reference read (~2ns, 0 bytes allocated)
+//        // Will capture all AsyncLocal values, including the current override context, so that it can be restored later.
+//        var capturedContext = ExecutionContext.Capture();
+//        var capturedHasOverrides = AmbientOverrideTracker.HasActiveOverrides;
 
-            // Fallback Path: Deferred access outside 'using' block
-            if (capturedContext == null)
-                return provider.Build<TService>(log);
+//        // 2. Return a function holding this context,
+//        // which will be the factory once it's needed
+//        return log =>
+//        {
+//            // Scenario 1: The current executing thread ALREADY has an active override context.
+//            // Do NOT run ExecutionContext.Run(), as that would overwrite live thread overrides!
+//            if (AmbientOverrideTracker.HasActiveOverrides)
+//                return provider.Build<TService>(log);
 
-            // Prepare the result holder box
-            var box = new ResultBoxBasic<TService> { Log = log };
+//            // Fast Path: Active override context exists on current thread
+//            if (OverrideService<TService>.CurrentFactory != null)
+//                return provider.Build<TService>(log);
 
-            // Create a context copy, because at least in .net 4.8 it causes problems
-            // Error: Cannot apply a context that has been marshaled across AppDomains, that was not acquired through a Capture operation or that has already been the argument to a Set call.
-            // Note that it doesn't seem to happen in .net 10, but we keep it for safety.
-            var contextCopy = capturedContext.CreateCopy();
+//            // Fallback Path: Deferred access outside 'using' block
+//            if (capturedContext == null)
+//                return provider.Build<TService>(log);
 
-            // Run within the restored context
-            ExecutionContext.Run(contextCopy, RestoreContextAndResolve, (provider, box));
-            return box.Value!;
+//            // Prepare the result holder box
+//            var box = new ResultBoxBasic<TService> { Log = log };
 
-        };
-    }
+//            // Create a context copy, because at least in .net 4.8 it causes problems
+//            // Error: Cannot apply a context that has been marshaled across AppDomains, that was not acquired through a Capture operation or that has already been the argument to a Set call.
+//            // Note that it doesn't seem to happen in .net 10, but we keep it for safety.
+//            var contextCopy = capturedContext.CreateCopy();
 
-    private record ResultBoxBasic<TValue>
-    {
-        public TValue? Value;
-        public ILog? Log;
-    }
-}
+//            // Run within the restored context
+//            ExecutionContext.Run(contextCopy, RestoreContextAndResolve, (provider, box));
+//            return box.Value!;
+
+//        };
+//    }
+
+//    private record ResultBoxBasic<TValue>
+//    {
+//        public TValue? Value;
+//        public ILog? Log;
+//    }
+//}

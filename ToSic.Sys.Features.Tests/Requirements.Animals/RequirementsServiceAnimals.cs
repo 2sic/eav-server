@@ -4,7 +4,7 @@ using static ToSic.Sys.Features.Requirements.Animals.MockAnimalRequirementsCheck
 
 namespace ToSic.Sys.Features.Requirements.Animals;
 
-public class RequirementsServiceAnimals(IRequirementsService requirementsService, IServiceProvider provider, Generator<IRequirementCheck> generator)
+public class RequirementsServiceAnimals(IRequirementsService requirementsService, ISysServiceProvider provider, Generator<IRequirementCheck> generator)
 {
     public class Startup() : QuickStartup(services => services
         .AddSysCapabilitiesAndSysCore()

@@ -29,7 +29,7 @@ internal class DependenciesLogHelper
         HasLogs.AddRange(hasLog);
 
         // Temporary warning to detect if IServiceProvider is being passed in
-        if (services.Any(s => s is IServiceProvider))
+        if (services.Any(s => s is ISystemServiceProviderExplicit))
             throw new("IServiceProvider should not be passed in as a dependency.");
     }
 

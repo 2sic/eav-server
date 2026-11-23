@@ -9,7 +9,7 @@ using ToSic.Sys.Utils.Types;
 namespace ToSic.Eav.Ui.Edit.Sys.Save;
 
 [PrivateApi]
-public class DataValidatorContentTypeDataStore(IServiceProvider sp) : ServiceBase("Val.DtStor")
+public class DataValidatorContentTypeDataStore(ISysServiceProvider sp) : ServiceBase("Val.DtStor")
 {
 
     /// <summary>

@@ -5,7 +5,7 @@
 public static class ModelFactoryShared
 {
     [return: NotNullIfNotNull(nameof(item))]
-    public static TModel? CreateStatic<TSource, TModel>(IServiceProvider sp, TSource? item, ToModelOptions options)
+    public static TModel? CreateStatic<TSource, TModel>(ISysServiceProvider sp, TSource? item, ToModelOptions options)
         where TModel : class, IModelFromEntity
     {
         var wrapper = sp.Build<TModel>();

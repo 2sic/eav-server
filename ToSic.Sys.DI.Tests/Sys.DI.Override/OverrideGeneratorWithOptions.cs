@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.Run.Startup;
 
 
 namespace ToSic.Sys.DI.Override;
 
-public class OverrideGeneratorWithOptions(IServiceProvider sp)
+public class OverrideGeneratorWithOptions(ISysServiceProvider sp)
 {
     /// <summary>
     /// This will be the name of an animal if the override mechanism fails,
@@ -56,15 +57,12 @@ public class OverrideGeneratorWithOptions(IServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
-        // Lazy - classic and super
-        services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
-        services.TryAddTransient(typeof(LazySvc<>));
+        // Add Lazy and Super-Generators
+        services.AddSysCoreDi();
 
         // Generator - now
         services.TryAddTransient(typeof(GeneratorBasic<>));      // Classic generator
         services.TryAddTransient(typeof(GeneratorBasic<,>));     // Classic Generator with Options
-        services.TryAddTransient(typeof(Generator<>));    // Super generator
-        services.TryAddTransient(typeof(Generator<,>));   // Super Generator with Options
 
         // Register the default animal, and the default service for IAnimal
         services.TryAddTransient<AnimalDefault>();
@@ -110,7 +108,7 @@ public class OverrideGeneratorWithOptions(IServiceProvider sp)
     }
 
     [Fact]
-    public void GeneratorMainOutsideClassicFails()
+    public void GeneratorMainOutsideClassicUsedToFailNowWorks()
     {
         Generator<CustomizableCage, CustomizableCage.Options> evalOutside;
         using (OverrideService<IAnimal>.Use<AnimalMonkey>())
@@ -120,7 +118,23 @@ public class OverrideGeneratorWithOptions(IServiceProvider sp)
 
         // Standard lazy fails, for child and grand child
         Equal("Red", evalOutside.New(new("Red")).Color);
-        Equal(NameIfLazyFails, evalOutside.New(new("Red")).LazyAnimal.Name);
+        Equal(nameof(AnimalMonkey), evalOutside.New(new("Red")).LazyAnimal.Name);
+
+    }
+    [Fact]
+    public void GeneratorMainOutsideValueUnknown()
+    {
+        Generator<CustomizableCage, CustomizableCage.Options> evalOutside;
+        var monkey = sp.GetRequiredService<AnimalMonkey>();
+        using (OverrideService<IAnimal>.Use(monkey))
+        {
+            evalOutside = sp
+                .GetRequiredService<ISysServiceProvider>()
+                .GetRequiredService<Generator<CustomizableCage, CustomizableCage.Options>>();
+        }
+
+        // Standard lazy fails, for child and grand child
+        Equal(nameof(AnimalMonkey), evalOutside.New(new("Red")).LazyAnimal.Name);
 
     }
 

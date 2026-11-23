@@ -14,7 +14,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
 {
     #region Constructor and DI
 
-    public AppStateInFolderLoader(IServiceProvider sp, Generator<FileSystemLoader, FileSystemLoaderOptions> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
+    public AppStateInFolderLoader(ISysServiceProvider sp, Generator<FileSystemLoader, FileSystemLoaderOptions> fslGenerator, Generator<IAppStateBuilder> stateBuilder)
         : base("Eav.RunTme", connect: [/* sp (never) */ fslGenerator, stateBuilder])
     {
         _serviceProvider = sp;
@@ -29,7 +29,7 @@ public partial class AppStateInFolderLoader : ServiceBase, IAppStateLoader
         AppStateInFolderGlobalLog.LoadLog ??= Log;
     }
 
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ISysServiceProvider _serviceProvider;
     private readonly Generator<IAppStateBuilder> _stateBuilder;
     private readonly Generator<FileSystemLoader, FileSystemLoaderOptions> _fslGenerator;
 

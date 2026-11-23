@@ -9,4 +9,4 @@
 /// <typeparam name="TService"></typeparam>
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class LazyImplementation<TService>(IServiceProvider sp) : Lazy<TService>(sp.Build<TService>);
+public class LazyImplementation<TService>(ISysServiceProvider sp) : Lazy<TService>(sp.Build<TService>);

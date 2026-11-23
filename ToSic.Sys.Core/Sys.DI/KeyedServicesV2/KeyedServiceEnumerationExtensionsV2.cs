@@ -1,37 +1,39 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿// 2026-11-23 2dm - not using KeyedServicesV2
 
-namespace ToSic.Sys.DI;
+//using Microsoft.Extensions.DependencyInjection;
 
-public static class KeyedServiceEnumerationExtensionsV2
-{
-    // Call this on IServiceCollection before BuildServiceProvider()
-    public static IServiceCollection AddKeyedServiceEnumeration<TKey, TService>(
-        this IServiceCollection services)
-        where TService : class
-    {
-        // Discover all distinct keys registered for TService
-        var keys = services
-            .Where(d => d.ServiceType == typeof(TService) && d is { IsKeyedService: true, ServiceKey: TKey })
-            .Select(d => (TKey)d.ServiceKey)
-            .Distinct()
-            .ToList();
+//namespace ToSic.Sys.DI;
 
-        // Register a transient resolver that pairs each key with its resolved service(s)
-        services.AddTransient<IEnumerable<KeyedService<TKey, TService>>>(sp =>
-        [
-            .. keys.SelectMany(key =>
-                sp.GetKeyedServices<TService>(key)
-                    .Select(instance => new KeyedService<TKey, TService>(key, instance)))
-        ]);
+//public static class KeyedServiceEnumerationExtensionsV2
+//{
+//    // Call this on IServiceCollection before BuildServiceProvider()
+//    public static IServiceCollection AddKeyedServiceEnumeration<TKey, TService>(
+//        this IServiceCollection services)
+//        where TService : class
+//    {
+//        // Discover all distinct keys registered for TService
+//        var keys = services
+//            .Where(d => d.ServiceType == typeof(TService) && d is { IsKeyedService: true, ServiceKey: TKey })
+//            .Select(d => (TKey)d.ServiceKey)
+//            .Distinct()
+//            .ToList();
 
-        return services;
-    }
+//        // Register a transient resolver that pairs each key with its resolved service(s)
+//        services.AddTransient<IEnumerable<KeyedService<TKey, TService>>>(sp =>
+//        [
+//            .. keys.SelectMany(key =>
+//                sp.GetKeyedServices<TService>(key)
+//                    .Select(instance => new KeyedService<TKey, TService>(key, instance)))
+//        ]);
 
-    // Convenience helper for runtime resolution via IServiceProvider
-    public static IEnumerable<KeyedService<TKey, TService>> GetKeyedServicesWithKeysV2<TKey, TService>(
-        this IServiceProvider provider)
-        where TService : class
-    {
-        return provider.GetRequiredService<IEnumerable<KeyedService<TKey, TService>>>();
-    }
-}
+//        return services;
+//    }
+
+//    // Convenience helper for runtime resolution via IServiceProvider
+//    public static IEnumerable<KeyedService<TKey, TService>> GetKeyedServicesWithKeysV2<TKey, TService>(
+//        this IServiceProvider provider)
+//        where TService : class
+//    {
+//        return provider.GetRequiredService<IEnumerable<KeyedService<TKey, TService>>>();
+//    }
+//}

@@ -7,7 +7,7 @@
 /// <typeparam name="TWork"></typeparam>
 /// <param name="sp"></param>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppWorkChain<TWork>(IServiceProvider sp)
+public class AppWorkChain<TWork>(ISysServiceProvider sp)
     : Generator<TWork, IAppWorkContext>(sp)
     where TWork : class, IServiceWithSetup<IAppWorkContext>;
 
@@ -18,6 +18,6 @@ public class AppWorkChain<TWork>(IServiceProvider sp)
 /// <typeparam name="TWork"></typeparam>
 /// <param name="sp"></param>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppDataChain<TWork>(IServiceProvider sp)
+public class AppDataChain<TWork>(ISysServiceProvider sp)
     : Generator<TWork, IAppDataContext>(sp)
     where TWork : class, IServiceWithSetup<IAppDataContext>;

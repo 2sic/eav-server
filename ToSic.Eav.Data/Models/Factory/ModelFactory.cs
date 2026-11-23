@@ -6,7 +6,7 @@ namespace ToSic.Eav.Models.Factory;
 /// <summary>
 /// Generic simple wrapper factory which uses Dependency Injection to create wrappers.
 /// </summary>
-internal class ModelFactory(IServiceProvider sp): IModelFactory
+internal class ModelFactory(ISysServiceProvider sp): IModelFactory
 {
     [return: NotNullIfNotNull(nameof(item))]
     public TModel? Create<TSource, TModel>(TSource? item, ToModelOptions options)

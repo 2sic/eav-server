@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.DI.Override;
 
 /// <summary>
 /// Verify standard DI works, before trying to create sub-scopes.
 /// </summary>
-public class StandardDiBasics(IServiceProvider sp)
+public class StandardDiBasics(ISysServiceProvider sp)
 {
     #region Test Classes
 
@@ -29,6 +30,7 @@ public class StandardDiBasics(IServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
+        services.AddSysCoreDi();
         services.TryAddTransient<MockCarTransient>();
         services.TryAddScoped<MockRoadScoped>();
     });
