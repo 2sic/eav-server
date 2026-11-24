@@ -55,16 +55,12 @@ public class OverrideLazy(ISysServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
-        services.AddSysCoreDi();
         // Lazy - classic and super
-        //services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
-        //services.TryAddTransient(typeof(LazySvc<>));
+        services.AddSysCoreDi();
 
         // Generator - now
         services.TryAddTransient(typeof(GeneratorBasic<>));      // Classic generator
         services.TryAddTransient(typeof(GeneratorBasic<,>));     // Classic Generator with Options
-        //services.TryAddTransient(typeof(Generator<>));    // Super generator
-        //services.TryAddTransient(typeof(Generator<,>));   // Super Generator with Options
 
         // Register the default animal, and the default service for IAnimal
         services.TryAddTransient<AnimalDefault>();
