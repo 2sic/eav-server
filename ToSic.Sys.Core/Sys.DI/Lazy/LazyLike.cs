@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Sys.DI;
 
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[PrivateApi, ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyLike<TService>(TService value) : ILazyLike<TService>
 {
     public TService Value { get; } = value;

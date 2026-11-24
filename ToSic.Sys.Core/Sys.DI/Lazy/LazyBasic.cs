@@ -7,6 +7,5 @@
 /// Note that most code in the ToSic Namespace will prefer <see cref="LazySvc{TService}"/>
 /// </summary>
 /// <typeparam name="TService"></typeparam>
-[PrivateApi]
-[ShowApiWhenReleased(ShowApiMode.Never)]
+[PrivateApi, ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazyImplementation<TService>(ISysServiceProvider sp) : Lazy<TService>(sp.Build<TService>);

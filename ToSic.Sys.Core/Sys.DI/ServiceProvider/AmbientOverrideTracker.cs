@@ -1,6 +1,6 @@
 ﻿namespace ToSic.Sys.DI;
 
-public static class AmbientOverrideTracker
+internal static class AmbientOverrideTracker
 {
     private static readonly AsyncLocal<int> ActiveOverrideCount = new();
 

@@ -6,4 +6,5 @@
 /// <remarks>
 /// Very experimental!!!
 /// </remarks>
+[InternalApi_DoNotUse_MayChangeWithoutNotice("WIP v22.02")]
 public interface ISysServiceProvider : ISystemServiceProviderExplicit;

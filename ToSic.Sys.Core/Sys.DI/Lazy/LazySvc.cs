@@ -1,15 +1,5 @@
 ﻿namespace ToSic.Sys.DI;
 
-// *** IMPORTANT 2dm 2026-11-21 ***
-//
-// This was our old implementation of LazySvc.
-// As of now, we don't plan to use it anymore.
-// Reason is that we need a LazySvc which is aware of Overridable Services.
-// So we created one in a separate file, and use that one from now on.
-//
-// It's kept here for reference, probably remove 2027-Q1
-
-
 /// <summary>
 /// Helps us create lazy **Service** objects.
 /// </summary>
@@ -29,7 +19,7 @@
 /// * Constructor should never be called as it's only meant to be used with Dependency Injection.
 /// * For testing, use the `LazySvcInjectable` in the TestHelpers project, which allows you to provide a pre-created object.
 /// </remarks>
-[PrivateApi]
+[PrivateApi("Will probably be replaced with classic Lazy once logging is gone")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class LazySvc<TService>(ISysServiceProvider sp) // (IServiceProvider sp)
     : ILazyLike<TService>, IHasLog, ILazyInitLog
@@ -60,8 +50,3 @@ public class LazySvc<TService>(ISysServiceProvider sp) // (IServiceProvider sp)
 
     #endregion
 }
-
-[PrivateApi("Test-Class for comparisons, not meant for production.")]
-[ShowApiWhenReleased(ShowApiMode.Never)]
-public class LazySvcBasic<TService>(ISysServiceProvider sp)
-    : LazySvc<TService>(sp) where TService : class;

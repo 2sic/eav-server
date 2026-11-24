@@ -4,6 +4,7 @@
 /// Internal value transporter for the Ctx for setting the value in the override.
 /// </summary>
 /// <typeparam name="TService"></typeparam>
+[PrivateApi, ShowApiWhenReleased(ShowApiMode.Never)]
 internal sealed class CtxValue<TService>() where TService : class
 {
     internal CtxValue(TService value): this()

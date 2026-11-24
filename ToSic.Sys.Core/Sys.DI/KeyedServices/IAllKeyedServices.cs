@@ -14,6 +14,8 @@ namespace ToSic.Sys.DI;
 /// </remarks>
 /// <typeparam name="TKey">Key type, usually string</typeparam>
 /// <typeparam name="TService">Implementation type</typeparam>
+[InternalApi_DoNotUse_MayChangeWithoutNotice("WIP v22.02")]
+[ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IAllKeyedServices<TKey, TService>
     : IEnumerable<KeyValuePair<TKey, TService>>
     where TService : class

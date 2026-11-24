@@ -7,10 +7,12 @@ namespace ToSic.Sys.DI;
 /// This is useful for testing or for scenarios where you want to temporarily replace a service with a different implementation.
 /// </summary>
 /// <remarks>
-/// The service can be consumed anywhere, but will throw an error if no override was given (and <see cref="IsSet"/> is not checked first).
+/// The service can be consumed anywhere,
+/// but will throw an error if no override was given (and <see cref="IsSet"/> is not checked first).
+/// You can also use <see cref="ValueOptional"/> to ignore not-found values.
 /// </remarks>
 /// <typeparam name="TService"></typeparam>
-[PrivateApi]
+[InternalApi_DoNotUse_MayChangeWithoutNotice]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public sealed class Ctx<TService>(ISysServiceProvider sp)
     where TService : class
