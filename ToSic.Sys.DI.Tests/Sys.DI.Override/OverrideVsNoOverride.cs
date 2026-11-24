@@ -25,7 +25,7 @@ public class OverrideVsNoOverride(ISysServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
-        services.AddSysCoreDi();
+        services.AddSysCoreDiServiceProviderTac();
         // Note: any scoped which we would ever want to override
         // must be registered as transient, and just created once.
         // so we could have the implementation as scoped

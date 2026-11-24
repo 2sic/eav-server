@@ -33,7 +33,8 @@ public class OverrideSameServiceStacked(ISysServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
-        services.AddSysCoreDi();
+        services
+            .AddSysCoreDiServiceProviderTac();
         services.TryAddTransient<AnimalDefault>();
         services.TryAddTransient(OverrideService<IAnimal>.Register<AnimalDefault>());
 

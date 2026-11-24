@@ -30,7 +30,7 @@ public class StandardDiBasics(ISysServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
-        services.AddSysCoreDi();
+        services.AddSysCoreDiServiceProviderTac();
         services.TryAddTransient<MockCarTransient>();
         services.TryAddScoped<MockRoadScoped>();
     });

@@ -1,4 +1,5 @@
-﻿using ToSic.Sys.DI;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.DI;
 using ToSic.Sys.Requirements;
 using static ToSic.Sys.Features.Requirements.Animals.MockAnimalRequirementsCheck;
 
@@ -9,7 +10,7 @@ public class RequirementsServiceAnimals(IRequirementsService requirementsService
     public class Startup() : QuickStartup(services => services
         .AddSysCapabilitiesAndSysCore()
         // V22 - moving requirement checks to keyed services
-        .AddKeyedTransientWithMarker<IRequirementCheck, MockAnimalRequirementsCheck>(Animal)
+        .TryAddKeyedTransient<IRequirementCheck, MockAnimalRequirementsCheck>(Animal)
     );
 
     private static Requirement RequiresElephant => new(Animal, Elephant);
@@ -17,7 +18,11 @@ public class RequirementsServiceAnimals(IRequirementsService requirementsService
 
     [Fact]
     public void VerifySetup_HasOneMoreKeyedChecker()
-        => Equal(SysCapabilitiesTestConstants.RequirementChecksInDiByDefault + 1, provider.GetAllKeysForService<IRequirementCheck>().Count());
+        => Equal(SysCapabilitiesTestConstants.RequirementChecksInDiByDefault + 1, provider.Build<IAllKeyedServices<string, IRequirementCheck>>().Count());
+
+    [Fact]
+    public void VerifySetup_HasOneMoreKeyChecker()
+        => Equal(SysCapabilitiesTestConstants.RequirementChecksInDiByDefault + 1, provider.Build<IAllKeyedServices<string, IRequirementCheck>>().Keys.Count());
 
     [Fact]
     public void VerifySetup_HasAnimalChecker()

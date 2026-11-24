@@ -44,7 +44,7 @@ public class OverrideSubDependency(ISysServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
-        services.AddSysCoreDi();
+        services.AddSysCoreDiServiceProviderTac();
         services.TryAddTransient<MealDefault>();
         services.TryAddTransient(OverrideService<IMeal>.Register<MealDefault>());
         

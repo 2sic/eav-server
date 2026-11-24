@@ -21,30 +21,32 @@ public class GetKeyedServicesWithNameV3
     {
         public int Count => services.Count();
 
-        public IEnumerable<KeyedService<string, INamedService>> Services => services;
+        public IEnumerable<KeyValuePair<string, INamedService>> Services => services;
     }
 
     [Fact]
     public void NoRegistrations_HasNone()
     {
         var sp = new ServiceCollection()
+            .AddSysCoreDiServiceProviderTac()
+            .AddSysCoreDiKeyRegistryTac()
             .BuildServiceProvider();
 
         // If no requirement checkers are registered, GetAllKeysForService should return an empty enumerable.
-        Empty(sp.GetAllKeysForService<INamedService>());
+        Empty(sp.GetService<IAllKeyedServices<string, INamedService>>()!);
     }
 
 
     private static ServiceProvider BuildServiceProviderWithNamed()
     {
-        var sc = new ServiceCollection();
-        sc.AddSysCoreDi();
-        sc.AddKeyedTransient<INamedService, NamedJohn>(nameof(NamedJohn));
-        sc.AddKeyedTransient<INamedService, NamedJoe>(nameof(NamedJoe));
-        sc.AddKeyedServiceRegistry();
-        // this one won't get discovered, because order matters
-        sc.AddKeyedTransient<INamedService, NamedMarc>(nameof(NamedMarc));
-        sc.AddTransient<KeyedRegistryUser>();
+        var sc = new ServiceCollection()
+            .AddSysCoreDiServiceProviderTac()
+            .AddSysCoreDiKeyRegistryTac()
+            .AddKeyedTransient<INamedService, NamedJohn>(nameof(NamedJohn))
+            .AddKeyedTransient<INamedService, NamedJoe>(nameof(NamedJoe))
+            // this one won't get discovered, because order matters
+            .AddKeyedTransient<INamedService, NamedMarc>(nameof(NamedMarc))
+            .AddTransient<KeyedRegistryUser>();
         var sp = sc.BuildServiceProvider();
         return sp;
     }
@@ -67,7 +69,7 @@ public class GetKeyedServicesWithNameV3
             BuildServiceProviderWithNamed()
                 .GetRequiredService<IAllKeyedServices<string, INamedService>>()
                 .First(pair => pair.Key == nameof(NamedJohn))
-                .Service
+                .Value
         );
 
     [Fact]

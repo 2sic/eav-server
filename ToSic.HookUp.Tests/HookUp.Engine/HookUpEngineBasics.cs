@@ -6,7 +6,10 @@ namespace ToSic.HookUp.Engine;
 
 public class HookUpEngineBasics(IHookUp hookUp)
 {
-    public class Startup() : QuickStartup(s => s.AddHookUp());
+    public class Startup() : QuickStartup(s => s
+        .AddSysCoreDiAllTac()
+        .AddHookUp()
+    );
 
     [Fact]
     public void HookUp_NotNull()

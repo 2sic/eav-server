@@ -39,7 +39,8 @@ public class OverrideRequired(ISysServiceProvider sp)
     {
         // Register the MockChildScopeOnlyTransientPreRegistered as a transient service
         // we'll later access it through the interface, but
-        services.AddSysCoreDi();
+        services
+            .AddSysCoreDiServiceProviderTac();
         services.TryAddTransient(OverrideService<ICarInitiallyUndefined>.Register(() => new CarUndefinedWillThrow()));
         services.TryAddTransient<ICarFord>();  // make sure the underlying real implementation can be resolved
     });

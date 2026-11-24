@@ -41,7 +41,8 @@ public class OverrideMultipleServices(ISysServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
-        services.AddSysCoreDi();
+        services
+            .AddSysCoreDiServiceProviderTac();
         services.TryAddTransient<Cage>();
 
         services.TryAddTransient<AnimalDefault>();

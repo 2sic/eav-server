@@ -39,7 +39,7 @@ public class SequenceTemperature(ISysServiceProvider sp)
     public class Startup(): QuickStartup(services =>
     {
         // Celsius to Fahrenheit sequence, just for testing multiple implementations of the same interface
-        services.AddSysCoreDi();
+        services.AddSysCoreDiAllTac();
         services.AddTransient<ICelsiusToFahrenheitSequence, CelsiusToFahrenheit1>();
         services.AddTransient<ICelsiusToFahrenheitSequence, CelsiusToFahrenheit2>();
         services.AddTransient<ICelsiusToFahrenheitSequence, CelsiusToFahrenheit7Skip>();

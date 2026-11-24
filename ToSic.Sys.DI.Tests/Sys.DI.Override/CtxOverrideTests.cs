@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.DI.Override;
@@ -27,7 +28,9 @@ public class CtxOverrideTests(ISysServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
-        services.AddSysCoreDi();
+        services
+            .AddSysCoreDiServiceProviderTac()
+            .AddSysCoreDiContextTac();
 
         // Register an empty Ctx so that asking for it in DI doesn't throw an error
         // It will still not work unless the specific Ctx is registered,
@@ -48,7 +51,7 @@ public class CtxOverrideTests(ISysServiceProvider sp)
     [Fact]
     public void RegisteredForgotGivesProperException()
     {
-        var x = sp.Build<Ctx<Cage>>();
+        var x = sp.GetRequiredService<Ctx<Cage>>();
         Throws<CtxNotAssignedException>(() => x.Value);
     }
 
@@ -56,16 +59,16 @@ public class CtxOverrideTests(ISysServiceProvider sp)
     public void RegisteredCorrectForgotSetGivesProperException()
     {
         //var x = sp.Build<Ctx<Animal>>();
-        Throws<CtxNotAssignedException>(() => sp.Build<Ctx<Animal>>().Value);
+        Throws<CtxNotAssignedException>(() => sp.GetRequiredService<Ctx<Animal>>().Value);
     }
 
     [Fact]
     public void OverrideClassicSignatureWorks()
     {
-        var dog = sp.Build<AnimalDog>();
+        var dog = sp.GetRequiredService<AnimalDog>();
         using (OverrideService<CtxValue<Animal>>.Use(new CtxValue<Animal>(dog)))
         {
-            var x = sp.Build<Ctx<Animal>>();
+            var x = sp.GetRequiredService<Ctx<Animal>>();
             True(x.IsSet);
             Equal("AnimalDog", x.Value.Name);
         }
@@ -74,10 +77,10 @@ public class CtxOverrideTests(ISysServiceProvider sp)
     [Fact]
     public void OverrideCtxUseWorks()
     {
-        var dog = sp.Build<AnimalDog>();
+        var dog = sp.GetRequiredService<AnimalDog>();
         using (Ctx<Animal>.Use(dog))
         {
-            var x = sp.Build<Ctx<Animal>>();
+            var x = sp.GetRequiredService<Ctx<Animal>>();
             True(x.IsSet);
             Equal("AnimalDog", x.Value.Name);
         }

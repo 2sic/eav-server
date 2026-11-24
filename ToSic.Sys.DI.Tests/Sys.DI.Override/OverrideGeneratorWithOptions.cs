@@ -58,7 +58,10 @@ public class OverrideGeneratorWithOptions(ISysServiceProvider sp)
     public class Startup() : QuickStartup(services =>
     {
         // Add Lazy and Super-Generators
-        services.AddSysCoreDi();
+        services
+            .AddSysCoreDiServiceProviderTac()
+            .AddSysCoreDiLazyAndGeneratorsTac()
+            .AddSysCoreDiContextTac();
 
         // Generator - now
         services.TryAddTransient(typeof(GeneratorBasic<>));      // Classic generator

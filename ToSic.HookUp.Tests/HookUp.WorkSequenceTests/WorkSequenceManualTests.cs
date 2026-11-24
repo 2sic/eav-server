@@ -28,7 +28,6 @@ public class WorkSequenceManualTests()
         services.TryAddTransient<IWork<MathOperation>, Multiply>();
         services.TryAddTransient<IWork<MathOperation>, Divide>();
         services.TryAddTransient<IWork<MathOperation>, Add>();
-
         services.AddHookUp();
     });
 

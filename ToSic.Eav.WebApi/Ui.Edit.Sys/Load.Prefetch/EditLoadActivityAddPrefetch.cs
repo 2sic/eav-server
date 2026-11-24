@@ -43,7 +43,7 @@ public class EditLoadActivityAddPrefetch(IAllKeyedServices<string, IEditLoadPref
                     => new
                     {
                         provider.Key,
-                        Result = await provider.Service.Handle(actionCtx, editData.ToPackage())
+                        Result = await provider.Value.Handle(actionCtx, editData.ToPackage())
                     }));
 
             return result2.ToDictionary(x => x.Key, x => x.Result.Data);

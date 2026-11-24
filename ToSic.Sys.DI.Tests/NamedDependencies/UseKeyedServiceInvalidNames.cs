@@ -24,7 +24,7 @@ public class UseKeyedServiceInvalidName(ISysServiceProvider serviceProvider)
     /// Add the faulty service to the DI container, so we can test if it throws an error when requested.
     /// </summary>
     public class Startup() : QuickStartup(s => s
-        .AddSysCoreDi()
+        .AddSysCoreDiServiceProviderTac()
         .AddMockNamedServices()
         .AddTransient<WouldNeedInvalidName>()
     );

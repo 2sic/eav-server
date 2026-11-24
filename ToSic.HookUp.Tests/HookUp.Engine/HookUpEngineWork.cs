@@ -8,6 +8,7 @@ namespace ToSic.HookUp.Engine;
 public class HookUpEngineWork(IHookUp hookUp, MockWorkStringAddWorld workAddWorld, MockWorkStringLength workStringLength)
 {
     public class Startup() : QuickStartup(s => s
+        .AddSysCoreDiAllTac()
         .AddHookUp()
         .AddMockNamedServices());
 

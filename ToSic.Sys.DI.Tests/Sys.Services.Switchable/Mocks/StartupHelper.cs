@@ -12,5 +12,5 @@ public static class StartupHelper
             .AddTransient<IMockSwitchableService, MockSwitchableSkip>()
             .AddSysCoreLogging() // dependency of service switches
             .AddSysCoreDiServiceSwitchers()
-            .AddSysCoreDi();
+            .AddSysCoreDiAllTac();
 }

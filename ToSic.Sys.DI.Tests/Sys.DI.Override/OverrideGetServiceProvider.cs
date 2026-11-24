@@ -52,28 +52,29 @@ public class OverrideGetServiceProvider(ISysServiceProvider sp)
     #region Startup / Service Registration
 
     public class Startup() : QuickStartup(services =>
-        services.AddMyModule(services =>
-        {
-            services.AddSysCoreDi();
-            // Lazy - classic and super
-            //services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
-            //services.TryAddTransient(typeof(LazySvc<>));
+    {
+        services
+            .AddSysCoreDiServiceProviderTac()
+            .AddSysCoreDiLazyAndGeneratorsTac();
+        // Lazy - classic and super
+        //services.TryAddTransient(typeof(Lazy<>), typeof(LazyImplementation<>));
+        //services.TryAddTransient(typeof(LazySvc<>));
 
-            // Generator - now
-            services.TryAddTransient(typeof(GeneratorBasic<>)); // Classic generator
-            services.TryAddTransient(typeof(GeneratorBasic<,>)); // Classic Generator with Options
-            //services.TryAddTransient(typeof(Generator<>)); // Super generator
-            //services.TryAddTransient(typeof(Generator<,>)); // Super Generator with Options
+        // Generator - now
+        services.TryAddTransient(typeof(GeneratorBasic<>)); // Classic generator
+        services.TryAddTransient(typeof(GeneratorBasic<,>)); // Classic Generator with Options
+        //services.TryAddTransient(typeof(Generator<>)); // Super generator
+        //services.TryAddTransient(typeof(Generator<,>)); // Super Generator with Options
 
-            // Register the default animal, and the default service for IAnimal
-            services.TryAddTransient<AnimalDefault>();
-            services.TryAddTransient(OverrideService<IAnimal>.Register<AnimalDefault>());
+        // Register the default animal, and the default service for IAnimal
+        services.TryAddTransient<AnimalDefault>();
+        services.TryAddTransient(OverrideService<IAnimal>.Register<AnimalDefault>());
 
-            // Register the remaining animals, so we can override them in the tests
-            services.TryAddTransient<Cage>();
-            services.TryAddTransient<AnimalDog>();
-            services.TryAddTransient<AnimalMonkey>();
-        }));
+        // Register the remaining animals, so we can override them in the tests
+        services.TryAddTransient<Cage>();
+        services.TryAddTransient<AnimalDog>();
+        services.TryAddTransient<AnimalMonkey>();
+    });
 
     #endregion
 
