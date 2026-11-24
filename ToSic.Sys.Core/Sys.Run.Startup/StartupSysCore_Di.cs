@@ -31,6 +31,13 @@ public static partial class StartupSysCore
         // Warnings for mock implementations
         services.TryAddTransient(typeof(WarnUseOfUnknown<>));
 
+        // Context Services
+        // Register an empty Ctx so that asking for it in DI doesn't throw an error
+        // It will still not work unless the specific Ctx is registered,
+        // but it will allow for clearer error messages to indicate missing registration.
+        services.TryAddTransient(typeof(Ctx<>));
+        services.TryAddTransient(typeof(CtxValue<>));
+
         // New keyed service registry v22.02
         services.AddKeyedServiceRegistry();
 

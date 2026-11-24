@@ -32,9 +32,10 @@ public class CtxOverrideTests(ISysServiceProvider sp)
         // Register an empty Ctx so that asking for it in DI doesn't throw an error
         // It will still not work unless the specific Ctx is registered,
         // but it will allow for clearer error messages to indicate missing registration.
-        services.TryAddTransient(typeof(Ctx<>));
+        //services.TryAddTransient(typeof(Ctx<>));
+        //services.TryAddTransient(typeof(CtxValue<>));
         // services.TryAddTransient(OverrideService < Ctx<,> > typeof(Ctx<>));
-        services.TryAddTransient(Ctx<Animal>.Register());
+        //services.TryAddTransient(Ctx<Animal>.Register());
         services.TryAddTransient<Cage>();
 
         services.TryAddTransient<AnimalDefault>();
@@ -48,23 +49,36 @@ public class CtxOverrideTests(ISysServiceProvider sp)
     public void RegisteredForgotGivesProperException()
     {
         var x = sp.Build<Ctx<Cage>>();
-        Throws<CtxNotRegisteredException>(() => x.Value);
+        Throws<CtxNotAssignedException>(() => x.Value);
     }
 
     [Fact]
     public void RegisteredCorrectForgotSetGivesProperException()
     {
-        var x = sp.Build<Ctx<Animal>>();
-        Throws<CtxRegisteredButNotAssignedException>(() => x.Value);
+        //var x = sp.Build<Ctx<Animal>>();
+        Throws<CtxNotAssignedException>(() => sp.Build<Ctx<Animal>>().Value);
     }
 
     [Fact]
-    public void Test2()
+    public void OverrideClassicSignatureWorks()
     {
         var dog = sp.Build<AnimalDog>();
-        using (OverrideService<Ctx<Animal>>.Use(Ctx<Animal>.Transport(dog)))
+        using (OverrideService<CtxValue<Animal>>.Use(new CtxValue<Animal>(dog)))
         {
             var x = sp.Build<Ctx<Animal>>();
+            True(x.IsSet);
+            Equal("AnimalDog", x.Value.Name);
+        }
+    }
+
+    [Fact]
+    public void OverrideCtxUseWorks()
+    {
+        var dog = sp.Build<AnimalDog>();
+        using (Ctx<Animal>.Use(dog))
+        {
+            var x = sp.Build<Ctx<Animal>>();
+            True(x.IsSet);
             Equal("AnimalDog", x.Value.Name);
         }
     }
