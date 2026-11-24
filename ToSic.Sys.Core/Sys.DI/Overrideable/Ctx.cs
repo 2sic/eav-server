@@ -44,7 +44,9 @@ public sealed class Ctx<TService>(ISysServiceProvider sp)
     /// This is the only property that will not throw an exception if the value was not set.
     /// </summary>
     public TService? ValueOptional => field
-        ??= _overrideFactoryAtCreation?.Invoke(sp).Value;
+        ??= _valueOptional.Get(() => _overrideFactoryAtCreation?.Invoke(sp).Value);
+
+    private readonly LazyGet<TService?> _valueOptional = new();
 
     /// <summary>
     /// Register a replacement for the context.
