@@ -1,0 +1,26 @@
+﻿using ToSic.Eav.DataSource.DataProviders;
+using ToSic.Eav.DataSource.VisualQuery;
+
+namespace ToSic.Eav.Apps.Inspect.Sys;
+
+[PrivateApi]
+[VisualQuery(
+    NiceName = "App Statistics",
+    NameId = "2bb27fae-fc52-412c-91f0-3276a4567dec",
+    NameIds = ["System.AppStatistics"],
+    Type = DataSourceType.System,
+    Audience = Audience.System,
+    DataConfidentiality = DataConfidentiality.Confidential,
+    UiHint = "Export statistics for the current app"
+)]
+// ReSharper disable once UnusedMember.Global
+public class AppStatistics(CustomDataSource.Dependencies services, AppWorkQuick<RawDataProviderBroker> data)
+    : CustomDataSource(services, logName: "Sxc.AppStats", connect: [data])
+{
+    [Configuration(Field = "ZoneId")]
+    public int OfZoneId => Configuration.GetThis(ZoneId);
+
+    protected override IEnumerable<IRawData> GetDefault()
+        => data.New(new AppIdentity(OfZoneId, AppId))
+            .Provide(AppStatisticsProvider.NameId /*+ "x"*/, Configuration);
+}

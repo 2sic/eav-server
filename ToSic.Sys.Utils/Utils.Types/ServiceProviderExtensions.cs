@@ -7,7 +7,7 @@ namespace ToSic.Sys.Utils.Types;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public static class ServiceProviderExtensions
 {
-    public static Result<T> BuildByName<T>(this IServiceProvider sp, string fullName) where T : class
+    public static Result<T> BuildByName<T>(this ISysServiceProvider sp, string fullName) where T : class
     {
         if (string.IsNullOrWhiteSpace(fullName))
             return new(null, null, "Type name is null or empty");

@@ -19,14 +19,14 @@ public class WorkEntityDelete(Generator<IAppStateBuilder> stateBuilder)
     //    return l.Return(Delete([idToDelete], force: force));
     //}
     
-    public bool Delete(IEnumerable<Guid> guids, bool force = false)
+    public bool Delete(IEnumerable<Guid> guids, string? contentType = null,bool force = false, int? parentId = null, string? parentField = null)
     {
         var l = Log.Fn<bool>($"delete guid:{guids}");
         // todo: check if GetMostCurrentDbEntity... can't be in the app-layer
         var idToDelete = guids
             .Select(guid => MyOptions.DbStorage.Entities.GetStandaloneDbEntityStub(guid, preferUntracked: true).EntityId)
             .ToArray();
-        return l.Return(Delete(idToDelete, force: force));
+        return l.Return(Delete(idToDelete, contentType: contentType, force: force, parentId: parentId, parentField: parentField));
     }
 
 

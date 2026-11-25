@@ -91,7 +91,7 @@ public record Feature: Aspect
     /// The link which will be used to show more details online.
     /// eg: https://patrons.2sxc.org/rf?ContentSecurityPolicy
     /// </summary>
-    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+    [field: AllowNull, MaybeNull]
     public virtual string Link
     {
         get => field ??= $"{PatronsUrl}/rf?{NameId}";
@@ -100,10 +100,10 @@ public record Feature: Aspect
 
     public required ICollection<FeatureLicenseRule> LicenseRules { get; init; }
 
-    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+    [field: AllowNull, MaybeNull]
     public IReadOnlyList<FeatureLicenseRule> LicenseRulesList => field ??= CreateLicenseRules(LicenseRules, NameId, Guid);
 
-    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+    [field: AllowNull, MaybeNull]
     public Requirement Requirement => field ??= new(FeatureConstants.RequirementFeature, NameId);
 
 #pragma warning restore CS9264 // Non-nullable property must contain a non-null value when exiting constructor. Consider adding the 'required' modifier, or declaring the property as nullable, or adding '[field: MaybeNull, AllowNull]' attributes.

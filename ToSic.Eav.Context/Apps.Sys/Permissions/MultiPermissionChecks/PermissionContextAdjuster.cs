@@ -7,9 +7,9 @@ namespace ToSic.Eav.Apps.Sys.Permissions;
 /// Helper to update a context to match the correct site - like when using modules across different sites.
 /// </summary>
 /// <param name="ctxSvc"></param>
-/// <param name="zoneMapper"></param>
-public class PermissionContextAdjuster(IContextOfSiteService ctxSvc, LazySvc<IZoneMapper> zoneMapper)
-    : ServiceBase("Sec.ZoneSw", connect: [zoneMapper])
+/// <param name="zoneSiteSvc"></param>
+public class PermissionContextAdjuster(IContextOfSiteService ctxSvc, LazySvc<ISiteOfZoneSvc> zoneSiteSvc)
+    : ServiceBase("Sec.ZoneSw", connect: [zoneSiteSvc])
 {
     /// <summary>
     /// Adjust the previous context to another site, if the site is different - for further security checks.
@@ -40,7 +40,7 @@ public class PermissionContextAdjuster(IContextOfSiteService ctxSvc, LazySvc<IZo
             ? site
             // if the app is of another zone check that, but in multi-zone portals this won't find anything, so use current zone
             // todo: probably enhance with a Site.IsMultiZone check
-            : zoneMapper.Value.SiteOfZone(app.ZoneId)
+            : zoneSiteSvc.Value.SiteOfZone(app.ZoneId)
               ?? site;
         l.Done($"ready for app:{app.Show()} tenant/zone:{result.Id}/{site.ZoneId} same:{isSameSite}");
         return result;

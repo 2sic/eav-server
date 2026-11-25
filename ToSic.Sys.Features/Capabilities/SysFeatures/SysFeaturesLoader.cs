@@ -8,7 +8,7 @@ namespace ToSic.Sys.Capabilities.SysFeatures;
 /// </summary>
 /// <param name="sp"></param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
-public class SysFeaturesLoader(IServiceProvider sp)
+public class SysFeaturesLoader(ISysServiceProvider sp)
     : ServiceBase("Eav.SysCap", connect: [/* never! sp*/ ])
 {
     public IList<FeatureState> Load()

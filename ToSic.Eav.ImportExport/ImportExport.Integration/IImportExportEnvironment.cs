@@ -5,6 +5,7 @@ namespace ToSic.Eav.ImportExport.Integration;
 
 public interface IImportExportEnvironment: IHasLog
 {
+    public ImportExportPathsAndOptions PathsAndOptions { get; }
 
     //List<Message> Messages { get; }
 
@@ -20,21 +21,21 @@ public interface IImportExportEnvironment: IHasLog
 
     Version TenantVersion { get; }
 
-    string ModuleVersion { get; }
+    //string ModuleVersion { get; }
 
-    /// <summary>
-    /// This is used for import-cases, where the scope
-    /// is missing in the file
-    /// </summary>
-    string FallbackContentTypeScope { get; }
+    ///// <summary>
+    ///// This is used for import-cases, where the scope
+    ///// is missing in the file
+    ///// </summary>
+    //string FallbackContentTypeScope { get; }
 
     //todo: this is now available ein the normal IEnvironment, try to move all use cases to that
-    string DefaultLanguage { get; }
-    string TemplatesRoot(int zoneId, int appId);
-    string GlobalTemplatesRoot(int zoneId, int appId);
-    string TargetPath(string folder);
+    //string DefaultLanguage { get; }
+    //string TemplatesRoot(int zoneId, int appId);
+    //string GlobalTemplatesRoot(int zoneId, int appId);
+    //string TargetPath(string folder);
     void MapExistingFilesToImportSet(Dictionary<int, string> filesAndPaths, Dictionary<int, int> fileIdMap);
     void CreateFoldersAndMapToImportIds(Dictionary<int, string> foldersAndPath, Dictionary<int, int> folderIdCorrectionList, List<Message> importLog);
 
-    SaveOptions SaveOptions(int zoneId);
+    //SaveOptions SaveOptions(int zoneId);
 }

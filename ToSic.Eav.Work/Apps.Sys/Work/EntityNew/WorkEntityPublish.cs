@@ -6,32 +6,34 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityPublish(AppsCacheSwitch appsCache)
-    : ServiceBase("AWk.EntPub", connect: [appsCache])
+    : ServiceWithSetup<IAppWorkContext>("AWk.EntPub", connect: [appsCache])
 {
     /// <summary>
     /// Publish many entities
     /// </summary>
-    public void Publish(IAppWorkContext appWorkCtx, int[] entityIds)
+    public void Publish(int[] entityIds)
     {
         var l = Log.Fn(Log.Try(() => $"Publish({entityIds.Length} items [{string.Join(",", entityIds)}])"));
         foreach (var eid in entityIds)
             try
             {
-                PublishWithoutPurge(appWorkCtx, eid);
+                PublishWithoutPurge(eid);
             }
             catch (EntityAlreadyPublishedException)
             {
                  /* ignore */
             }
         // Tell the cache to do a partial update
-        appsCache.Update(appWorkCtx, entityIds);
+        appsCache.Update(MyOptions, entityIds);
         l.Done();
     }
 
 
-    private bool PublishWithoutPurge(IAppWorkContext appWorkCtx, int entityId)
+    private bool PublishWithoutPurge(int entityId)
     {
         var l = Log.Fn<bool>($"{entityId}");
+
+        var appWorkCtx = MyOptions;
 
         // 1. make sure we're publishing the draft, because the entityId might be the published one...
         var contEntity = appWorkCtx.AppReader.List.FindRepoId(entityId);

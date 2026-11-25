@@ -10,6 +10,9 @@ public record StorageOptions(int? ZoneId, int? AppId, int? ParentAppId = null, L
     public StorageOptions(IAppReader appReader) : this(appReader.ZoneId, appReader.AppId, appReader.GetParentCache()?.AppId)
     { }
 
+    public StorageOptions(IAppIdentity appIdentity) : this(appIdentity.ZoneId, appIdentity.AppId)
+    { }
+
     public LogSettings LogSettings { get; init; } = LogSettings ?? new();
 
     public SaveProcessOptions ProcessOptions { get; init; } = ProcessOptions ?? new();

@@ -51,13 +51,6 @@ public interface IQuery: IDataSource, IDataSourceReset
     /// <summary>
     /// Get the current list of params.
     /// </summary>
-    /// <returns>The list of params as they are configured in this moment.</returns>
+    /// <returns>The list of params as they are configured at this moment.</returns>
     IDictionary<string, string> Params();
-
-
-    ///// <summary>
-    ///// Inner source - mainly for debugging etc.
-    ///// </summary>
-    //[PrivateApi]
-    //IDataSource Source { get; }
 }

@@ -5,24 +5,11 @@ namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 /// <summary>
 /// Step 3b: Check published (only if not new) - make sure we don't have multiple drafts
 /// </summary>
-internal class Process6Versioning(): Process0Base("Db.EPr6Vr")
+internal class Process6Versioning: IEntityProcess
 {
-    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
-        => throw new NotSupportedException("Single item call not supported");
-    //{
-    //    var l = services.LogDetails.Fn<EntityProcessData>();
-    //    if (data.JsonExport == null)
-    //        return data with
-    //        {
-    //            Exception = new("trying to save version history entry, but jsonExport isn't ready")
-    //        };
-    //    services.DbStorage.Versioning.AddToHistoryQueue(data.DbEntity!.EntityId, data.DbEntity!.EntityGuid, data.JsonExport);
-    //    return l.Return(data);
-    //}
-
-    public override ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
+    public ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
     {
-        var l = GetLogCall(services, logProcess);
+        var l = this.GetLogCall(services, logProcess);
 
         // History snapshots should additionally capture inbound parent relationships (Parents).
         var itemsForHistory = data

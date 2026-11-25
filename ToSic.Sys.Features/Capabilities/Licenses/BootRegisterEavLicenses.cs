@@ -4,12 +4,19 @@ using static ToSic.Sys.Capabilities.Licenses.BuiltInLicenses;
 namespace ToSic.Sys.Capabilities.Licenses;
 
 internal sealed class BootRegisterEavLicenses(LicenseCatalog licenseCatalog)
-    : BootProcessBase("EavLic", bootPhase: BootPhase.Registrations, connect: [licenseCatalog])
+    : ServiceBase("EavLic", connect: [licenseCatalog]), IBootProcess
 {
+
+    public string NameId => Log.NameId;
+
+    public BootPhase Phase => BootPhase.Registrations;
+
+    public int Priority => 999;
+
     /// <summary>
     /// Implementation of boot to register licenses
     /// </summary>
-    public override void Run() => licenseCatalog.Register(EavFeatureSets);
+    public void Run() => licenseCatalog.Register(EavFeatureSets);
 
     /// <summary>
     /// List of all feature sets / licenses.

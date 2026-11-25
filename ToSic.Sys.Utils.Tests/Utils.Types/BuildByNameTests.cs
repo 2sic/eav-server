@@ -1,15 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.DI;
 
 namespace ToSic.Sys.Utils.Types;
 
-public class BuildByNameTests(IServiceProvider sp)
+public class BuildByNameTests(ISysServiceProvider sp)
 {
     private interface IMockClass;
     private class MockClass : IMockClass;
 
     private interface IMockWrong;
 
-    public class Startup() : QuickStartup(sc => sc.TryAddTransient<MockClass>());
+    public class Startup() : QuickStartup(sc =>
+    {
+        sc.TryAddTransient<ISysServiceProvider, ContextualServiceProvider>();
+        sc.TryAddTransient<MockClass>();
+    });
     
     private const string MockClassFullName = "ToSic.Sys.Utils.Types.BuildByNameTests+MockClass";
     

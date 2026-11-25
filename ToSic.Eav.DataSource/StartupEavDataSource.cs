@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Eav.DataSource.Query.Sys;
+using ToSic.Eav.DataSource.Query.Sys.Inspect;
 using ToSic.Eav.DataSource.Sys.AppDataSources;
 using ToSic.Eav.DataSource.Sys.Caching;
 using ToSic.Eav.DataSource.Sys.Catalog;
@@ -19,7 +20,6 @@ public static class StartupEavDataSource
         // Dependencies, new in v15
         services.TryAddTransient<DataSourceBase.Dependencies>();
         services.TryAddTransient<IDataSourceConfiguration, DataSourceConfiguration>();
-        services.TryAddTransient<DataSourceConfiguration.Dependencies>();
         services.TryAddTransient<CustomDataSourceAdvanced.Dependencies>();
         services.TryAddTransient<CustomDataSource.Dependencies>();
 
@@ -33,13 +33,13 @@ public static class StartupEavDataSource
         services.TryAddTransient<QueryFactory>();
         services.TryAddTransient<QueryDefinitionFactory>();
         services.AddTransient<QueryDefinitionService>(); // new v21 SoC split QueryManager
-        services.TryAddTransient<QueryManager>();
-        services.TryAddTransient(typeof(QueryManager<>)); // new v20
         services.TryAddTransient<ConfigurationDataLoader>();
 
         services.TryAddTransient<IDataSourceCacheService, DataSourceCacheService>();
         services.TryAddTransient<IListCacheSvc, ListCacheSvc>();
 
+        services.TryAddTransient(typeof(QueryBuilder<>));   // new v20, moved to Eav v22
+        services.TryAddTransient<QueryInspectionService>();
         services.AddDataSourceFallbacks();
 
         return services;

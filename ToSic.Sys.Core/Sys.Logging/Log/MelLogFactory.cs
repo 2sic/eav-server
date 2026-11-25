@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Collections.Immutable;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace ToSic.Sys.Logging;
@@ -92,7 +91,12 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             return;
 
         var activity = Activity.Current;
-        var resultText = hasResult ? ResultText(result) : null;
+        
+        // 2026-11-09 2dm: Had to disable this, caused side effect
+        // Specific case was that razor render resulted a complex object, which only parsed certain code once
+        // By triggering a "ToString()" the exception stayed here, and the output never got it.
+        // So don't do this.
+        string? resultText = null; // hasResult ? ResultText(result) : null;
         IReadOnlyList<KeyValuePair<string, object?>> state =
         [
             new("Message", string.IsNullOrWhiteSpace(completionMessage) ? operation : $"{operation} {completionMessage}"),
@@ -123,18 +127,18 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             return;
 
         var activity = Activity.Current;
-        var state = new List<KeyValuePair<string, object?>>
-        {
+        List<KeyValuePair<string, object?>> state =
+        [
             new("Message", "Log specs"),
             new("LogName", logName),
             new("Segment", segment),
             new("TraceId", activity?.TraceId.ToString()),
             new("SpanId", activity?.SpanId.ToString()),
-            new("LogGroupId", SegmentContext.GroupId)
-        };
-        state.Add(new("Specs", specs.ToImmutableDictionary()));
-        state.AddRange(specs.Select(pair => new KeyValuePair<string, object?>(pair.Key, pair.Value)));
-        state.Add(new("{OriginalFormat}", "{Message}"));
+            new("LogGroupId", SegmentContext.GroupId),
+            new("Specs", specs.ToImmutableDictionary()),
+            .. specs.Select(pair => new KeyValuePair<string, object?>(pair.Key, pair.Value)),
+            new("{OriginalFormat}", "{Message}")
+        ];
         logger.Log(LogLevel.Trace, default, (IReadOnlyList<KeyValuePair<string, object?>>)state, null, static (values, _) => values[0].Value?.ToString() ?? "");
     }
 
@@ -149,20 +153,24 @@ internal sealed class MelLog(ILogger logger, ILogFactory factory, string categor
             SegmentContext.Link(parentMel.SegmentContext);
     }
 
-    private static string ResultText(object? result)
-    {
-        if (result == null)
-            return "null";
-        try
-        {
-            return result.ToString() ?? "";
-        }
-        catch
-        {
-            // A diagnostic ToString must never turn successful application code into a failure.
-            return "[result conversion failed]";
-        }
-    }
+    // 2026-11-09 2dm: Had to disable this, caused side effect
+    // Specific case was that razor render resulted a complex object, which only parsed certain code once
+    // By triggering a "ToString()" the exception stayed here, and the output never got it.
+    // So don't do this.
+    //private static string ResultText(object? result)
+    //{
+    //    if (result == null)
+    //        return "null";
+    //    try
+    //    {
+    //        return result.ToString() ?? "";
+    //    }
+    //    catch
+    //    {
+    //        // A diagnostic ToString must never turn successful application code into a failure.
+    //        return "[result conversion failed]";
+    //    }
+    //}
 }
 
 internal sealed class MelSegmentContext
@@ -195,8 +203,7 @@ internal sealed class MelSegmentContext
     private bool References(MelSegmentContext context)
     {
         var current = this;
-        MelSegmentContext? parent;
-        while ((parent = current._parent.Value) != null)
+        while (current._parent.Value is { } parent)
         {
             if (ReferenceEquals(parent, context))
                 return true;

@@ -10,7 +10,7 @@ partial class DbEntity
     {
         LogDetails.A(nameof(GetEntityQuery));
 
-        return DbStore.SqlDb.TsDynDataEntities.AsNoTrackingOptional(DbStore.Features, preferUntracked)
+        return dbStore.SqlDb.TsDynDataEntities.AsNoTrackingOptional(dbStore.Features, preferUntracked)
             .Include(e => e.RelationshipsWithThisAsParent)
             .Include(e => e.RelationshipsWithThisAsChild)
             .Include(e => e.TsDynDataValues)
@@ -36,8 +36,8 @@ partial class DbEntity
     internal TsDynDataEntity GetDbEntityStub(int entityId, bool preferUntracked = false)
     {
         var l = LogDetails.Fn<TsDynDataEntity>($"Get {entityId}");
-        var found = DbStore.SqlDb.TsDynDataEntities
-            .AsNoTrackingOptional(DbStore.Features, preferUntracked)
+        var found = dbStore.SqlDb.TsDynDataEntities
+            .AsNoTrackingOptional(dbStore.Features, preferUntracked)
             .Single(e => e.EntityId == entityId);
         return l.ReturnAsOk(found);
     }
@@ -56,8 +56,8 @@ partial class DbEntity
         //    .ToArray();
 
         // var found = DbContext.SqlDb.ToSicEavEntities.Where(e => repositoryIds.Contains(e.EntityId)).ToArray();
-        var found = DbStore.SqlDb.TsDynDataEntities
-            .AsNoTrackingOptional(DbStore.Features, preferUntracked)
+        var found = dbStore.SqlDb.TsDynDataEntities
+            .AsNoTrackingOptional(dbStore.Features, preferUntracked)
             .Include(e => e.RelationshipsWithThisAsParent)
             .Where(e => Enumerable.Contains(repositoryIds, e.EntityId))
             .ToArray();
@@ -89,24 +89,16 @@ partial class DbEntity
     }
 
 
-    //internal IQueryable<ToSicEavEntities> GetEntitiesByGuid(Guid entityGuid)
-    //    => EntityQuery.Where(e => e.EntityGuid == entityGuid
-    //                              && !e.TransDeletedId.HasValue
-    //                              && !e.AttributeSet.TransDeletedId.HasValue
-    //                                // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
-    //                                // && DbContext.AppIds.Contains(e.AppId));
-    //                                && Enumerable.Contains(DbContext.AppIds, e.AppId));
-
     internal IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid entityGuid, bool preferUntracked = false)
         //=> EntityQuery
-        => DbStore.SqlDb.TsDynDataEntities
-            .AsNoTrackingOptional(DbStore.Features, preferUntracked)
+        => dbStore.SqlDb.TsDynDataEntities
+            .AsNoTrackingOptional(dbStore.Features, preferUntracked)
             .Where(e => e.EntityGuid == entityGuid
                                        && e.TransDeletedId == null
                                        && !e.ContentTypeNavigation.TransDeletedId.HasValue
                                        // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                                        // && DbContext.AppIds.Contains(e.AppId));
-                                       && Enumerable.Contains(DbStore.AppIds, e.AppId)
+                                       && Enumerable.Contains(dbStore.AppIds, e.AppId)
             );
 
     /// <summary>
@@ -144,8 +136,8 @@ partial class DbEntity
     // 2020-10-07 2dm experiment with fewer requests
     private IQueryable<TsDynDataEntity> GetEntityStubsByGuid(Guid[] entityGuids, bool preferUntracked = false)
         //=> EntityQuery
-        => DbStore.SqlDb.TsDynDataEntities
-            .AsNoTrackingOptional(DbStore.Features, preferUntracked)
+        => dbStore.SqlDb.TsDynDataEntities
+            .AsNoTrackingOptional(dbStore.Features, preferUntracked)
             // 2026-08-03 stv commented because of bug in MySql.EntityFrameworkCore 10.0.9 (Connector/NET 26.7.0): https://bugs.mysql.com/bug.php?id=121029
             //.Where(e =>
             //    // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
@@ -157,7 +149,7 @@ partial class DbEntity
                         && e.ContentTypeNavigation.TransDeletedId == null
                         // commented because of https://github.com/npgsql/efcore.pg/issues/3461, we can go back with net10.0
                         // && DbContext.AppIds.Contains(e.AppId)
-                        && Enumerable.Contains(DbStore.AppIds, e.AppId)
+                        && Enumerable.Contains(dbStore.AppIds, e.AppId)
             );
 
     // MySql.EntityFrameworkCore 10.0.9 (Connector/NET 26.7.0) cannot bind Guid[] collection parameters: https://bugs.mysql.com/bug.php?id=121029

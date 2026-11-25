@@ -1,13 +1,15 @@
-using System.Data;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Utils.Compression;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> compressor) : DbPartBase(db, "Db.Version")
+internal partial class DbVersioning(DbStorage.DbStorage dbStore, LazySvc<Compressor> compressor) : HelperBase(dbStore.Log, "Db.Version")
 {
+    private ILog? LogDetails => dbStore.LogDetails == null ? null : field ??= Log;
+
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
     internal List<TsDynDataHistory> PrepareHistoryEntriesWithInboundParents(
@@ -24,13 +26,13 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
             .ToList();
 
         var parentsByChild = GetInboundParentsByChildIds(ids);
-        var serializer = DbStore.JsonSerializerGenerator.New();
+        var serializer = dbStore.NewJsonDataWriter();
 
         var historyEntries = items
             .Select(i =>
             {
                 // Prepare json package
-                var jsonPackage = serializer.ToJson(i.Entity, metadataDepth);
+                var jsonPackage = serializer.ToJson(i.Entity, metadataDepth)!;
 
                 // Check if we must store any parents-references along with it
                 var parents = parentsByChild.TryGetValue(i.EntityId, out var foundParents) && foundParents.Count > 0
@@ -62,7 +64,7 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
 
         // Note: Relationship has a global query filter for TransDeletedId == null.
         // We want only active inbound relations at the time the history snapshot is created.
-        var inbound = DbStore.SqlDb.TsDynDataRelationships
+        var inbound = dbStore.SqlDb.TsDynDataRelationships
             .AsNoTracking()
             .Where(r => r.ChildEntityId != null && entityIds.Contains(r.ChildEntityId.Value))
             .Select(r => new
@@ -98,11 +100,11 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
     /// </summary>
     internal int GetTransactionId()
     {
-        var userName = DbStore.UserIdentityToken;
+        var userName = dbStore.UserIdentityToken;
         if (_mainTransactionId != 0)
             return _mainTransactionId;
 
-        var provider = DbStore.SqlDb.Database.ProviderName;
+        var provider = dbStore.SqlDb.Database.ProviderName;
         var (insertSql, identitySql) = provider switch
         {
             "Microsoft.EntityFrameworkCore.SqlServer" =>
@@ -116,7 +118,7 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
             _ => throw new NotSupportedException($"Unsupported EF Core database provider '{provider}'.")
         };
 
-        var connection = DbStore.SqlDb.Database.GetDbConnection();
+        var connection = dbStore.SqlDb.Database.GetDbConnection();
         if (connection.State != ConnectionState.Open)
             connection.Open();
 
@@ -131,7 +133,7 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
         user.Value = userName ?? (object)DBNull.Value;
         command.Parameters.Add(user);
 
-        var currentTransaction = DbStore.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
+        var currentTransaction = dbStore.SqlDb.Database.CurrentTransaction?.GetDbTransaction();
         if (currentTransaction != null)
             command.Transaction = currentTransaction;
 
@@ -152,15 +154,14 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
 
     #endregion
 
+    /// <summary>
+    /// Returns the code for the parent columns in the history table, for apps of a specified id;
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <returns>A string like "app-123" for an app with ID 123</returns>
     internal static string? ParentRefForApp(int appId)
         => appId > 0 ? $"app-{appId}" : null;
 
-    ///// <summary>
-    ///// Save an entity to versioning, which is already serialized
-    ///// </summary>
-
-    //internal void AddAndSave(int entityId, Guid entityGuid, string? parentRef, string serialized)
-    //    => Save([PrepareHistoryEntry(entityId, entityGuid, parentRef, serialized)]);
 
     internal TsDynDataHistory PrepareHistoryEntry(int entityId, Guid entityGuid, string? parentRef, string serialized)
         => new()
@@ -183,8 +184,8 @@ internal partial class DbVersioning(DbStorage.DbStorage db, LazySvc<Compressor> 
     internal void Save(ICollection<TsDynDataHistory> queue)
     {
         var l = LogDetails.Fn(timer: true);
-        DbStore.DoAndSaveWithoutChangeDetection(
-            () => DbStore.SqlDb.TsDynDataHistories.AddRange(queue)
+        dbStore.DoAndSaveWithoutChangeDetection(
+            () => dbStore.SqlDb.TsDynDataHistories.AddRange(queue)
         );
         l.Done();
     }

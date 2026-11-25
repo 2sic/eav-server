@@ -1,5 +1,6 @@
 ﻿using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.ContentTypes.Fields;
+using ToSic.Eav.Data.ContentTypes.Fields.Sys;
 using ToSic.Eav.Data.Processing;
 using ToSic.Eav.Data.Sys.Values;
 using ToSic.Eav.Metadata;
@@ -16,11 +17,11 @@ public class WorkAttributesMod(
     AppWorkChain<WorkMetadata> workMetadata,
     AppWorkChain<WorkAttributes> workAttributes,
     Generator<ContentTypeFieldAssembler, DataAssemblerOptions> fieldAssembler,
-    Generator<IDataDeserializer> dataDeserializer,
+    Generator<IJsonDataWriter> serializerGen,
     LazySvc<ISysFeaturesService> features,
     LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions)
     : ServiceWithSetup<IAppWorkContext>("Wrk.AttMod",
-        connect: [fieldAssembler, workMetadata, workAttributes, features, dataDeserializer, contentTypeChangeActions])
+        connect: [fieldAssembler, workMetadata, workAttributes, features, serializerGen, contentTypeChangeActions])
 {
 
     #region Add Field
@@ -142,9 +143,8 @@ public class WorkAttributesMod(
         if (!features.Value.IsEnabled(ContentTypeFieldsReuseDefinitions.Guid))
             l.W("Setting up field share but feature is not enabled / licensed.");
 
-        var serializer = dataDeserializer.New();
-        serializer.Initialize(MyOptions.AppId, new List<IContentType>(), null);
-
+        var serializer = serializerGen.New();
+    
         // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
         var db = MyOptions.DbStorage;
         db.DoAndSaveTracked(() =>
@@ -159,7 +159,7 @@ public class WorkAttributesMod(
                 attribute.Guid = Guid.NewGuid();
 
             // update with the Share = share (hide we'll ignore for now, it's for future needs)
-            attribute.SysSettings = serializer.Serialize(new()
+            attribute.SysSettings = serializer.Serialize(new ContentTypeFieldSysSettings()
             {
                 Share = share,
             });
@@ -180,8 +180,7 @@ public class WorkAttributesMod(
             l.W("Setting up field share but feature is not enabled / licensed.");
 
         // Prepare serializer
-        var serializer = dataDeserializer.New();
-        serializer.Initialize(MyOptions.AppId, new List<IContentType>(), null);
+        var serializer = serializerGen.New();
 
         // Update DB, and then flush the app-cache as necessary, same as any other fieldDef change
         var db = MyOptions.DbStorage;
@@ -193,7 +192,7 @@ public class WorkAttributesMod(
             contentTypeId = attribute.ContentTypeId;
 
             // set InheritMetadataOf to the guid above(as string)
-            attribute.SysSettings = serializer.Serialize(new()
+            attribute.SysSettings = serializer.Serialize(new ContentTypeFieldSysSettings()
             {
                 Inherit = null,
                 InheritNameOfPrimary = false,

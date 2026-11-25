@@ -11,15 +11,15 @@ public static partial class OverrideService<TService>
     /// <typeparam name="TService">Service type or interface</typeparam>
     /// <typeparam name="TImplementation">Implementation type</typeparam>
     /// <returns>A factory function to create the service instance</returns>
-    public static Func<IServiceProvider, TService> Register<TImplementation>()
+    public static Func<ISystemServiceProviderExplicit, TService> Register<TImplementation>()
         where TImplementation : class, TService
     {
         // Check if an override is active in the current async context
         return sp => CurrentFactory is { } overrideFactory
             // 1. Return from new factory
-            ? overrideFactory(sp)
+            ? overrideFactory(sp.GetSysServiceProvider())
             // 2. Fall back to the default implementation in the SAME scope
-            : sp.GetRequiredService<TImplementation>();
+            : sp.GetSysServiceProvider().GetRequiredService<TImplementation>();
     }
 
     /// <summary>
@@ -29,16 +29,16 @@ public static partial class OverrideService<TService>
     /// </summary>
     /// <typeparam name="TImplementation"></typeparam>
     /// <returns></returns>
-    public static Func<IServiceProvider, TService> RegisterScoped<TImplementation>()
+    public static Func<ISystemServiceProviderExplicit, TService> RegisterScoped<TImplementation>()
         where TImplementation : class, TService
     {
         // Check if an override is active in the current async context
         TService? cache = null;
         return sp => CurrentFactory is { } overrideFactory
             // 1. Return from new factory
-            ? overrideFactory(sp)
+            ? overrideFactory(sp.GetSysServiceProvider())
             // 2. Fall back to the default implementation in the SAME scope
-            : cache ??= sp.GetRequiredService<TImplementation>();
+            : cache ??= sp.GetSysServiceProvider().GetRequiredService<TImplementation>();
     }
     
     /// <summary>
@@ -46,10 +46,10 @@ public static partial class OverrideService<TService>
     /// </summary>
     /// <typeparam name="TService">Service type or interface</typeparam>
     /// <returns>A factory function to create the service instance</returns>
-    public static Func<IServiceProvider, TService> Register()
+    public static Func<ISystemServiceProviderExplicit, TService> Register()
         => Register<TService>();
 
-    public static Func<IServiceProvider, TService> RegisterScoped()
+    public static Func<ISystemServiceProviderExplicit, TService> RegisterScoped()
         => RegisterScoped<TService>();
 
     /// <summary>
@@ -57,12 +57,12 @@ public static partial class OverrideService<TService>
     /// </summary>
     /// <param name="factory">A factory function to create the service instance</param>
     /// <returns>A factory function to create the service instance</returns>
-    public static Func<IServiceProvider, TService> Register(Func<TService> factory)
+    public static Func<ISystemServiceProviderExplicit, TService> Register(Func<TService> factory)
     {
         // Check if an override is active in the current async context
         return sp => CurrentFactory is { } overrideFactory
             // 1. Return from new factory
-            ? overrideFactory(sp)
+            ? overrideFactory(sp.GetSysServiceProvider())
             // 2. Fall back to the default implementation in the SAME scope
             : factory();
     }
@@ -72,14 +72,13 @@ public static partial class OverrideService<TService>
     /// </summary>
     /// <param name="factory">A factory function to create the service instance</param>
     /// <returns>A factory function to create the service instance</returns>
-    public static Func<IServiceProvider, TService> Register(Func<IServiceProvider, TService> factory)
+    public static Func<ISystemServiceProviderExplicit, TService> Register(Func<ISystemServiceProviderExplicit, TService> factory)
     {
         // Check if an override is active in the current async context
         return sp => CurrentFactory is { } overrideFactory
             // 1. Return from new factory
-            ? overrideFactory(sp)
+            ? overrideFactory(sp.GetSysServiceProvider())
             // 2. Fall back to the default implementation in the SAME scope
-            : factory(sp);
+            : factory(sp.GetSysServiceProvider());
     }
-
 }

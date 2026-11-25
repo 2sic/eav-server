@@ -28,14 +28,14 @@ public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect 
     /// The dictionary containing all the items.
     /// Case-insensitive.
     /// </summary>
-    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+    [field: AllowNull, MaybeNull]
     public IReadOnlyDictionary<string, T> Dictionary
     {
         get => field ??= new ReadOnlyDictionary<string, T>(_master);
         private set;
     }
 
-    [field: System.Diagnostics.CodeAnalysis.AllowNull, System.Diagnostics.CodeAnalysis.MaybeNull]
+    [field: AllowNull, MaybeNull]
     public IReadOnlyCollection<T> List
     {
         get => field ??= new ReadOnlyCollection<T>(_master.Values.ToListOpt());
@@ -53,12 +53,11 @@ public abstract class GlobalCatalogBase<T>: ServiceBase, ILogShouldNeverConnect 
     {
         var l = Log.Fn($"Will add {items.Length} items");
         // add all features if it doesn't yet exist, otherwise update
-        foreach (var f in items)
-            if (f != null)
-            {
-                l.A($"Adding {f.NameId}");
-                _master.AddOrUpdate(f.NameId, f, (_, _) => f);
-            }
+        foreach (var f in items.Where(f => f != null))
+        {
+            l.A($"Adding {f.NameId}");
+            _master.AddOrUpdate(f.NameId, f, (_, _) => f);
+        }
 
         // Reset the read-only dictionary
         Dictionary = null!;

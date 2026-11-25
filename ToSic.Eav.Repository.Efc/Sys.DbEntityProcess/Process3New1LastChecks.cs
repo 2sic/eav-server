@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
-internal class Process3New1LastChecks() : Process0Base("DB.EPr3n1")
+internal class Process3New1LastChecks: IEntityProcess
 {
-    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
+    public EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
         var l = services.LogDetails.Fn<EntityProcessData>();
 
@@ -19,5 +19,8 @@ internal class Process3New1LastChecks() : Process0Base("DB.EPr3n1")
         });
 
     }
+
+    public ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
+        => this.Process(services, data, logProcess, ProcessOne);
 
 }

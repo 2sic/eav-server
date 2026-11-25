@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ToSic.Eav.Apps.Persistence.Tests\ToSic.Eav.Apps.Persistence.Tests.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Data\ToSic.Eav.Data.csproj" />
     <ProjectReference Include="..\ToSic.Eav.ImportExport\ToSic.Eav.ImportExport.csproj" />
     <ProjectReference Include="..\ToSic.Eav.Persistence.Efc\ToSic.Eav.Persistence.Efc.csproj" />

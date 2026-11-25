@@ -8,8 +8,8 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// Lightweight tool to check if an app has everything. If not, it will generate all objects needed to then create what's missing.
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppInitializedChecker(AppWorkQuick<AppInitializer> appInitGenerator) : ServiceBase("Eav.AppBld",
-    connect: [appInitGenerator]), IAppInitializedChecker
+public class AppInitializedChecker(AppWorkQuick<AppInitializer> appInitGenerator)
+    : ServiceBase("Eav.AppBld", connect: [appInitGenerator]), IAppInitializedChecker
 {
     /// <inheritdoc />
     public bool EnsureAppConfiguredAndInformIfRefreshNeeded(IAppReader appReader, string? newAppName, CodeRefTrail codeRefTrail, ILog parentLog)

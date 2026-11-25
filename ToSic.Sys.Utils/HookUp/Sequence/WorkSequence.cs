@@ -47,7 +47,7 @@ internal class WorkSequenceBase<TWork, TData>(IEnumerable<TWork> works, Func<Wor
         {
             try
             {
-                var updated = await work.Handle(new(), payload);
+                var updated = await work.Handle(context, payload);
                 switch (updated.Decision)
                 {
                     // Stop, exit now

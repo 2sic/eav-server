@@ -1,0 +1,42 @@
+﻿using ToSic.Eav.Ui.Edit.Sys.Dto;
+using static System.Text.Json.Serialization.JsonIgnoreCondition;
+
+namespace ToSic.Eav.WebApi.Sys.Dto;
+
+public class EditInfoAttributeDto: EditInfoDto
+{
+    public EditInfoAttributeDto(IContentType contentType, IContentTypeField fieldDef): base(contentType)
+    {
+        // If ReadOnly is true, then the base call already found it to be read only, and we don't add anything
+        if (ReadOnly)
+        {
+            DisableSort = true;
+            DisableRename = true;
+            DisableMetadata = true; // don't disable, as it should be available
+            DisableDelete = true;
+            return;
+        }
+
+        // Check if the fieldDef is inherited from elsewhere #SharedFieldDefinition
+        var sysSettings = fieldDef.SysSettings;
+        if (sysSettings == null) return;
+        ReadOnly = sysSettings.Inherit != null || sysSettings.InheritMetadataMainGuid != null;
+        if (!ReadOnly) return;
+
+        ReadOnlyMessage = "this fieldDef inherits from another fieldDef";
+        EnableInherit = true;
+        DisableSort = false;
+        DisableDelete = false;
+        DisableRename = sysSettings.InheritNameOfPrimary;
+        DisableMetadata = sysSettings.InheritMetadataOfPrimary;
+        DisableEdit = DisableMetadata;
+    }
+
+    [JsonIgnore(Condition = WhenWritingDefault)] public bool DisableSort { get; }
+    [JsonIgnore(Condition = WhenWritingDefault)] public bool DisableRename { get; }
+    [JsonIgnore(Condition = WhenWritingDefault)] public bool DisableMetadata { get; }
+    [JsonIgnore(Condition = WhenWritingDefault)] public bool DisableDelete { get; }
+    [JsonIgnore(Condition = WhenWritingDefault)] public bool DisableEdit { get; }
+    [JsonIgnore(Condition = WhenWritingDefault)] public bool EnableInherit { get; }
+
+}

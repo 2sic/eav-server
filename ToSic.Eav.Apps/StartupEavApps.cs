@@ -9,6 +9,7 @@ using ToSic.Eav.Apps.Sys.State;
 using ToSic.Eav.Apps.Sys.State.AppStateBuilder;
 using ToSic.Eav.Data.Global.Sys;
 using ToSic.Eav.Data.Sys.Global;
+using ToSic.Eav.Environment.Sys.ServerPaths;
 
 // ReSharper disable once CheckNamespace
 namespace ToSic.Eav.Run.Startup;
@@ -56,6 +57,8 @@ public static class StartupEavApps
     /// </remarks>
     public static IServiceCollection AddAppFallbackServices(this IServiceCollection services)
     {
+        services.TryAddTransient<IServerPaths, ServerPathsUnknown>();
+
         return services;
     }
 

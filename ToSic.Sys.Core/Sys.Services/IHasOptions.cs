@@ -6,7 +6,7 @@
 /// <typeparam name="TOptions">Options used to configure this service, usually a record.</typeparam>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public interface IHasOptions<out TOptions>
-    where TOptions : class
+    where TOptions : class?
 {
     /// <summary>
     /// The options instance for this service, read-only.

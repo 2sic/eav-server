@@ -3,7 +3,7 @@
   <Import Project="../SharedImports/CsProj.Props/AllImportsForTestCode-Sys.props" />
 
   <PropertyGroup>
-    <RootNamespace>ToSic.Sys</RootNamespace>
+    <RootNamespace>ToSic</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

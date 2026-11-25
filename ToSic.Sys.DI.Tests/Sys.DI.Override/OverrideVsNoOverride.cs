@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.DI.Override;
 
-public class OverrideVsNoOverride(IServiceProvider sp)
+public class OverrideVsNoOverride(ISysServiceProvider sp)
 {
     #region Classes / Interfaces
 
@@ -24,6 +25,7 @@ public class OverrideVsNoOverride(IServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
+        services.AddSysCoreDiServiceProviderTac();
         // Note: any scoped which we would ever want to override
         // must be registered as transient, and just created once.
         // so we could have the implementation as scoped

@@ -10,7 +10,7 @@ namespace ToSic.Eav.DataSource.Sys.Catalog;
 [PrivateApi]
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public partial class DataSourceCatalog(
-    IServiceProvider serviceProvider,
+    ISysServiceProvider serviceProvider,
     LazySvc<IAppDataSourcesLoader> appDataSourcesLoader,
     MemoryCacheService memoryCacheService)
     : ServiceBase("DS.DsCat", connect: [appDataSourcesLoader, memoryCacheService /*, never! add serviceProvider! - it will cause errors of already-disposed at random places */])

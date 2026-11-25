@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.DI.Override;
 
-public class OverrideRequired(IServiceProvider sp)
+public class OverrideRequired(ISysServiceProvider sp)
 {
     #region Classes and interfaces to use
 
@@ -38,6 +39,8 @@ public class OverrideRequired(IServiceProvider sp)
     {
         // Register the MockChildScopeOnlyTransientPreRegistered as a transient service
         // we'll later access it through the interface, but
+        services
+            .AddSysCoreDiServiceProviderTac();
         services.TryAddTransient(OverrideService<ICarInitiallyUndefined>.Register(() => new CarUndefinedWillThrow()));
         services.TryAddTransient<ICarFord>();  // make sure the underlying real implementation can be resolved
     });

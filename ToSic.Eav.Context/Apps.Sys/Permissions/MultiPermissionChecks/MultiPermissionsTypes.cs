@@ -18,15 +18,12 @@ public class MultiPermissionsTypes(IAppReaderFactory appReaderFactory, Permissio
     {
         var appState = appReaderFactory.GetOrKeep(MyOptions.App);
         return MyOptions.ContentTypes.Distinct()
-            .ToDictionary(
-                t => t,
-                s => BuildTypePermissionChecker(appState, s)
-            );
+            .ToDictionary(t => t, BuildTypePermissionChecker);
 
         // <summary>
         // Creates a permission checker for a type in this app
         // </summary>
-        IPermissionCheck BuildTypePermissionChecker(IAppReader appState, string typeName)
+        IPermissionCheck BuildTypePermissionChecker(string typeName)
         {
             var l = Log.Fn<IPermissionCheck>($"BuildTypePermissionChecker({typeName})");
             var app = MyOptions.App;

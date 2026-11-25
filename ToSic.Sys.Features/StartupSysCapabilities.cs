@@ -76,8 +76,8 @@ public static class StartupSysCapabilities
         // V14 Requirements Checks - don't use try-add, as we'll add many
         services.TryAddTransient<IRequirementsService, RequirementsService>();
         // V22 - moving requirement checks to keyed services
-        services.AddKeyedTransientWithMarker<IRequirementCheck, FeatureRequirementCheck>(FeatureConstants.RequirementFeature);
-        services.AddKeyedTransientWithMarker<IRequirementCheck, SysFeatureRequirementCheck>(FeatureConstants.RequirementSysCapability);
+        services.AddKeyedTransient<IRequirementCheck, FeatureRequirementCheck>(FeatureConstants.RequirementFeature);
+        services.AddKeyedTransient<IRequirementCheck, SysFeatureRequirementCheck>(FeatureConstants.RequirementSysCapability);
 
         return services;
     }

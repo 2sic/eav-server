@@ -3,8 +3,10 @@ using ToSic.Eav.Data.Sys.Save;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels")
+internal class DbRelationship(DbStorage.DbStorage dbStore) : HelperBase(dbStore.Log, "Db.Rels")
 {
+    private ILog? LogDetails => dbStore.LogDetails == null ? null : field ??= Log;
+    private ILog? LogSummary => dbStore.LogSummary == null ? null : field ??= Log;
 
     /// <summary>
     /// Update Relationships of an Entity
@@ -28,21 +30,21 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
         // Delete all existing relationships (important, because the order, which is part of the key, is important afterward)
         // this is necessary after remove, because otherwise EF state tracking gets messed up
         if (existingRelationships.Count > 0)
-            DbStore.DoAndSaveWithoutChangeDetection(
-                () => DbStore.SqlDb.TsDynDataRelationships.RemoveRange(existingRelationships),
+            dbStore.DoAndSaveWithoutChangeDetection(
+                () => dbStore.SqlDb.TsDynDataRelationships.RemoveRange(existingRelationships),
                 $"found existing rels⋮{existingRelationships.Count} to flush");
         else
             l.A("No existing relationships to remove; skip.");
 
         // now save the changed relationships
-        DbStore.DoAndSaveWithoutChangeDetection(() =>
+        dbStore.DoAndSaveWithoutChangeDetection(() =>
             {
                 foreach (var p in packages)
                 {
                     var newEntityIds = p.Targets.ToList();
                     // Create new relationships which didn't exist before
                     for (var i = 0; i < newEntityIds.Count; i++)
-                        DbStore.SqlDb.TsDynDataRelationships.Add(new()
+                        dbStore.SqlDb.TsDynDataRelationships.Add(new()
                         {
                             AttributeId = p.AttributeId,
                             ChildEntityId = newEntityIds[i],
@@ -70,7 +72,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
             .Select(g => g.First())
             .ToList();
 
-        DbStore.DoInTransaction(() =>
+        dbStore.DoInTransaction(() =>
             {
                 FlushChildrenRelationships(fullFlush);
 
@@ -81,7 +83,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                     .ToArray();
                 if (parentIds.Any(p => p <= 0))
                     throw new("some parent has no id provided, can't update relationships");
-                var parents = DbStore.Entities.GetDbEntitiesWithChildren(parentIds);
+                var parents = dbStore.Entities.GetDbEntitiesWithChildren(parentIds);
                 LogDetails.A("Found parents to map:" + parents.Length);
 
                 var allTargets = list
@@ -93,7 +95,7 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                     .Distinct()
                     .ToArray();
                 LogDetails.A("Total target IDs: " + allTargets.Length);
-                var dbTargetIds = DbStore.Entities.GetMostCurrentDbEntities(allTargets);
+                var dbTargetIds = dbStore.Entities.GetMostCurrentDbEntities(allTargets);
                 LogDetails.A("Total target entities (should match): " + dbTargetIds.Count);
 
                 var updates = list
@@ -125,37 +127,6 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
                     .ToListOpt();
 
                 UpdateEntityRelationshipsAndSaveUntracked(updates);
-
-
-                // Old before 2025-07-29; del ca. 2025-Q3
-                //foreach (var relationship in _saveQueue)
-                //{
-                //    var entityWithChildren = parents.Single(e => e.EntityId == relationship.ParentEntityId);
-                //    // start with the ID list - or if it doesn't exist, a new list
-                //    var childEntityIds = relationship.ChildEntityIds ?? [];
-                //    // if additional / alternative guids were specified, use those
-                //    if (childEntityIds.Count == 0 && relationship.ChildEntityGuids != null)
-                //        foreach (var childGuid in relationship.ChildEntityGuids)
-                //            try
-                //            {
-                //                childEntityIds.Add(childGuid.HasValue
-                //                    ? dbTargetIds.TryGetValue(childGuid.Value, out var id)
-                //                        ? id
-                //                        : new int?()
-                //                    : new());
-                //            }
-                //            catch (InvalidOperationException)
-                //            {
-                //                // ignore, may occur if the child entity doesn't exist / wasn't created successfully
-                //            }
-                //    updates.Add(new()
-                //    {
-                //        AttributeId = relationship.AttributeId,
-                //        EntityStubWithChildren = entityWithChildren,
-                //        Targets = childEntityIds
-                //    });
-                //}
-                //UpdateEntityRelationshipsAndSaveUntracked(updates);
             }
         );
 
@@ -178,46 +149,18 @@ internal class DbRelationship(DbStorage.DbStorage db) : DbPartBase(db, "Db.Rels"
 
         // intermediate save (important) so that EF state tracking works
         // ^^^ note: not sure if this is still relevant
-        DbStore.DoAndSaveWithoutChangeDetection(() =>
+        dbStore.DoAndSaveWithoutChangeDetection(() =>
         {
-            var ent = DbStore.SqlDb.TsDynDataEntities
+            var ent = dbStore.SqlDb.TsDynDataEntities
                 .Include(e => e.RelationshipsWithThisAsParent)
                 .Where(e => Enumerable.Contains(parentIds, e.EntityId))
                 .SelectMany(e => e.RelationshipsWithThisAsParent)
                 .ToListOpt();
 
-            DbStore.SqlDb.TsDynDataRelationships.RemoveRange(ent);
+            dbStore.SqlDb.TsDynDataRelationships.RemoveRange(ent);
         });
         l.Done();
     }
-
-
-    // old before 2025-07-29; del ca. 2025-Q3
-    //internal void FlushChildrenRelationships(ICollection<int> parentIds)
-    //{
-    //    var l = LogSummary.Fn($"will do full-flush for {parentIds.Count} items", timer: true);
-    //    // Delete all existing relationships - but not the target, just the relationship
-    //    // note: can't use .Clear(), as that will try to actually delete the children
-    //    if (parentIds is not { Count: > 0 })
-    //    {
-    //        l.Done("no parent IDs");
-    //        return;
-    //    }
-
-    //    foreach (var id in parentIds)
-    //    {
-    //        var ent = DbContext.SqlDb.TsDynDataEntities
-    //            .Include(e => e.RelationshipsWithThisAsParent)
-    //            .Single(e => e.EntityId == id);
-
-    //        foreach (var relationToDelete in ent.RelationshipsWithThisAsParent)
-    //            DbContext.SqlDb.TsDynDataRelationships.Remove(relationToDelete);
-    //    }
-
-    //    // intermediate save (important) so that EF state tracking works
-    //    DbContext.SqlDb.SaveChanges();
-    //    l.Done();
-    //}
 
     internal void ChangeRelationships(IEntity eToSave, int entityId, List<TsDynDataAttribute> attributeDefs, SaveOptions so)
     {

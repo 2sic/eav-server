@@ -7,22 +7,24 @@ public class JsonDynamic(JsonTestHelpers jsonTestHelpers) : IClassFixture<DoFixt
     [Fact]
     public void DeserializeDynamicByDefaultMustFail()
     {
-        var serializer = jsonTestHelpers.SerializerOfApp(Specs.AppId);
+        var serializer = jsonTestHelpers.JsonWriterOfApp(Specs.AppId);
         var json = jsonTestHelpers.GetJsonOfEntity(Specs.AppId, Specs.TestItemToSerialize, serializer);
 
-        serializer.Deserialize(json); // should work
+        var deser = jsonTestHelpers.JsonReaderOfApp(Specs.AppId);
+        deser.Deserialize(json); // should work
 
         var jsonDynamic = ChangeTypeOfJson(Specs, json, "something-dynamic");
-        Throws<FormatException>(() => serializer.Deserialize(jsonDynamic));
+        Throws<FormatException>(() => deser.Deserialize(jsonDynamic));
     }
 
 
     [Fact]
     public void DeserializeDynamic()
     {
-        var serializer = jsonTestHelpers.SerializerOfApp(Specs.AppId);
-        var json = jsonTestHelpers.GetJsonOfEntity(Specs.AppId, Specs.TestItemToSerialize, serializer);
+        var deser = jsonTestHelpers.JsonWriterOfApp(Specs.AppId);
+        var json = jsonTestHelpers.GetJsonOfEntity(Specs.AppId, Specs.TestItemToSerialize, deser);
 
+        var serializer = jsonTestHelpers.JsonReaderOfApp(Specs.AppId);
         var ent = serializer.Deserialize(json); // should work
         Equal(Specs.TestItemAttributeCount, ent.Attributes.Count);//, "orig has 4 attribs");
 

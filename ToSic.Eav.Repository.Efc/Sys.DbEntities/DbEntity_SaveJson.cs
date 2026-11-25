@@ -16,7 +16,7 @@ partial class DbEntity
         {
             if (logDetails)
                 LogDetails.A("Error serializing - will repeat with detailed with logging");
-            Serializer.LinkLog(Log);
+            (Serializer as IHasLog)?.LinkLog(Log);
             jsonExport = Serializer.Serialize(newEnt);
         }
 
@@ -27,6 +27,6 @@ partial class DbEntity
     {
         // in update scenarios, the old data could have been a db-model, so clear that
         ClearValuesInDbUntracked(entityId);
-        DbStore.Relationships.FlushChildrenRelationships([entityId]);
+        dbStore.Relationships.FlushChildrenRelationships([entityId]);
     }
 }

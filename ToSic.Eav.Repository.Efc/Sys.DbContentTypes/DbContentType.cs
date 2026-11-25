@@ -1,13 +1,11 @@
-﻿using ToSic.Eav.Repository.Efc.Sys.DbParts;
+﻿namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
 
-namespace ToSic.Eav.Repository.Efc.Sys.DbContentTypes;
-
-internal partial class DbContentType(DbStorage.DbStorage db) : DbPartBase(db, "Db.Type")
+internal partial class DbContentType(DbStorage.DbStorage dbStore) : HelperBase(dbStore.Log, "Db.Type")
 {
     private TsDynDataContentType? TryGetTypeByStaticTracked(string staticName)
-        => DbStore.SqlDb.TsDynDataContentTypes
+        => dbStore.SqlDb.TsDynDataContentTypes
             .FirstOrDefault(a =>
-                a.AppId == DbStore.AppId
+                a.AppId == dbStore.AppId
                 && a.StaticName == staticName/* && a.TransDeletedId == null*/
             );
 }

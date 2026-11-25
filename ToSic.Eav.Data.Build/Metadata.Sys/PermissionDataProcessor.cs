@@ -1,6 +1,7 @@
 ﻿using ToSic.Eav.Data;
 using ToSic.Eav.Data.Processing;
 using ToSic.Sys.HookUp;
+using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 using static ToSic.Eav.Data.Processing.DataProcessingEvents;
 
@@ -35,7 +36,7 @@ public class WorkEntityBlockUsers(IUser user): IWork<PermissionCheckPayload, IEn
             {
                 Data = null,
                 Decision = ResultState.Error,
-                Exceptions = [new UnauthorizedAccessException($"User is not authorized to {package.Data.Action} this entity.")]
+                Exceptions = [new PermissionDeniedException($"User is not authorized to {package.Data.Action} this entity.")]
             });
 
 

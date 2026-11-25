@@ -1,14 +1,14 @@
 ﻿using ToSic.Eav.Sys.Insights.HtmlHelpers;
 using ToSic.Eav.Sys.Insights.Sys;
-using ToSic.Eav.WebApi.Sys.Helpers.Http;
 using ToSic.Razor.Blade;
+using ToSic.Sys.Security.Permissions;
 using ToSic.Sys.Users;
 using static System.StringComparer;
 
 namespace ToSic.Eav.Sys.Insights;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache> dsCache, IEnumerable<IInsightsProvider> insightsProviders, IHttpExceptionMaker exceptionMaker)
+public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache> dsCache, IEnumerable<IInsightsProvider> insightsProviders)
     : ServiceBase("Api.SysIns", connect: [user, dsCache, insightsProviders])
 {
     public const string LogSuffix = "Insight";
@@ -68,7 +68,8 @@ public class InsightsControllerReal(IUser user, LazySvc<InsightsDataSourceCache>
 
     private void ThrowIfNotSystemAdmin()
     {
-        if (!user.IsSystemAdmin) throw exceptionMaker.PermissionDenied("requires Superuser permissions");
+        if (!user.IsSystemAdmin)
+            throw new PermissionDeniedException("requires Superuser permissions");
     }
     
 }

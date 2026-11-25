@@ -1,32 +1,33 @@
 ﻿using System.Text.Json;
 using ToSic.Eav.Apps.Sys.Extensions;
-using ToSic.Eav.Apps.Sys.Paths;
-using ToSic.Eav.Context;
-using ToSic.Eav.Context.Sys.ZoneMapper;
-using ToSic.Eav.Persistence.File;
 using ToSic.Eav.Sys;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys.FileSystemState;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppFileSystemInputTypesLoader(ISite siteDraft,
-    Generator<FileSystemLoader> fslGenerator,
-    LazySvc<IAppPathsMicroSvc> appPathsLazy,
-    LazySvc<IZoneMapper> zoneMapper,
-    ExtensionManifestService manifestService)
-    : AppFileSystemLoaderBase(siteDraft, appPathsLazy, zoneMapper, connect: [fslGenerator, manifestService]), IAppInputTypesLoader
+public class AppFileSystemInputTypesLoader(Generator<AppFileSystemLoaderPaths, AppFileSystemLoaderOptions> appFslPaths, ExtensionManifestService manifestService)
+    : ServiceWithSetup<AppFileSystemLoaderOptions>(EavLogs.Eav + ".AppFSL", connect: [appFslPaths, manifestService]), IAppInputTypesLoader
 {
+    #region Constants
+
+    public const string FieldFolderPrefix = "field-";
+    public const string JsFile = "index.js";
+
+    #endregion
+
+    private AppFileSystemLoaderPaths AppFslPaths => field ??= appFslPaths.New(MyOptions);
+
     /// <inheritdoc />
     public ICollection<InputTypeInfo> InputTypes()
     {
         var l = Log.Fn<ICollection<InputTypeInfo>>();
 
         // Local app paths
-        var inputTypes = GetInputTypes(ExtensionsPath, AppConstants.AppPathPlaceholder);
+        var inputTypes = GetInputTypes(AppFslPaths.ExtensionsPath, AppConstants.AppPathPlaceholder);
 
         // Shared app paths, merge in, but don't override any existing ones
-        inputTypes = MergeInputTypes(inputTypes, GetInputTypes(ExtensionsPathShared, AppConstants.AppPathSharedPlaceholder));
+        inputTypes = MergeInputTypes(inputTypes, GetInputTypes(AppFslPaths.ExtensionsPathShared, AppConstants.AppPathSharedPlaceholder));
 
         return l.Return(inputTypes, $"OK, count:{inputTypes.Count}");
 

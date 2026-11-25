@@ -4,6 +4,7 @@ using ToSic.Eav.Apps;
 using ToSic.Eav.ImportExport.Json.V1;
 using ToSic.Eav.ImportExport.Sys;
 using ToSic.Eav.Persistence.Efc.Sys.DbModels;
+using ToSic.Eav.Repositories;
 using ToSic.Eav.Repositories.Sys;
 using ToSic.Eav.Repository.Efc.Sys.DbParts;
 using ToSic.Eav.Repository.Efc.Sys.DbStorage;
@@ -53,7 +54,7 @@ public class WorkEntityRecycleTests(
         NotNull(templateRel);
 
         // Create a new entity (so we don't mutate scenario-fixed entities).
-        var appReader = dc.Loader.AppReaderRaw(TestSpecs.AppId, new());
+        var appReader = dc.Loader.AppStateReaderRawTac(TestSpecs.AppId);
         var templateEntity = appReader.List.First();
         var now = DateTime.UtcNow;
 
@@ -202,7 +203,7 @@ public class WorkEntityRecycleTests(
         // Arrange
         var dc = dbDataGenerator.New(new(TestSpecs.ZoneId, TestSpecs.AppId));
 
-        var appReader = dc.Loader.AppReaderRaw(TestSpecs.AppId, new());
+        var appReader = dc.Loader.AppStateReaderRawTac(TestSpecs.AppId);
         var templateEntity = appReader.List.First();
 
         // Pick an existing relationship to get a valid parent + fieldDef.
@@ -310,7 +311,7 @@ public class WorkEntityRecycleTests(
         // Arrange
         var dc = dbDataGenerator.New(new(TestSpecs.ZoneId, TestSpecs.AppId));
 
-        var appReader = dc.Loader.AppReaderRaw(TestSpecs.AppId, new());
+        var appReader = dc.Loader.AppStateReaderRawTac(TestSpecs.AppId);
         var templateEntity = appReader.List.First();
 
         // Find a content-type in this app which definitely has attributes.

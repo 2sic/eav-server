@@ -26,8 +26,9 @@ public record QueryDefinition : ModelFromEntityFull
     internal static readonly string TypeName = "DataPipeline";
 
     /// <summary>
-    /// The appid inside which the query will run, _not where it is stored!_ <br/>
-    /// This can differ, because certain global queries (stored in the global app) will run in a specific app - for example to retrieve all ContentTypes of that app.
+    /// The appid inside which the query will run, **not where it is stored!** <br/>
+    /// This can differ, because certain **global** queries (stored in the global app)
+    /// will run in a specific app - for example to retrieve all ContentTypes of that app.
     /// </summary>
     public int AppId => field == KnownAppsConstants.AppIdEmpty
         ? Entity.AppId

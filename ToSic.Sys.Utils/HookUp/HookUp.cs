@@ -9,7 +9,7 @@ public interface IHookUp
     IHookUpWork<TData> StartWith<TData>(TData data);
 }
 
-internal class HookUpBase(IServiceProvider serviceProvider): ServiceBase("Hup.HookUp"), IHookUp
+internal class HookUpBase(ISysServiceProvider serviceProvider): ServiceBase("Hup.HookUp"), IHookUp
 {
     public IHookUpWork<TData> StartWith<TData>(TData data)
         => new HookUp<TData>(null, data.ToPackage(), serviceProvider);
@@ -25,7 +25,7 @@ public interface IHookUpWork
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public interface IHookUpWork<TData>: IHookUpWork, IHasLog
 {
-    internal IServiceProvider ServiceProvider { get; }
+    internal ISysServiceProvider ServiceProvider { get; }
     public Package<TData> Package { get; }
     internal WorkContext Context { get; }
 
@@ -40,9 +40,9 @@ public interface IHookUpWork<TData>: IHookUpWork, IHasLog
     //Task<IHookUpWork<TOutput>> Work<TOutput>(IWork<TData, TOutput> work);
 }
 
-internal class HookUp<TData>(WorkContext? context, Package<TData>  package, IServiceProvider serviceProvider) : ServiceBase("Hup.HookUp"), IHookUpWork<TData>
+internal class HookUp<TData>(WorkContext? context, Package<TData>  package, ISysServiceProvider serviceProvider) : ServiceBase("Hup.HookUp"), IHookUpWork<TData>
 {
-    public IServiceProvider ServiceProvider => serviceProvider;
+    public ISysServiceProvider ServiceProvider => serviceProvider;
     public Package<TData> Package => package;
 
     public WorkContext Context

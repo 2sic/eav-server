@@ -66,7 +66,6 @@ public sealed class Paging: DataSourceBase
     public Paging(Dependencies services, DataFactoryGenerator genDataFactory)
         : base(services, $"{DataSourceConstantsInternal.LogPrefix}.Paging", connect: [genDataFactory])
     {
-        // #DropSpawnNew
         ProvideOut(GetList);
         ProvideOut(() => GetPaging(genDataFactory), "Paging");
     }

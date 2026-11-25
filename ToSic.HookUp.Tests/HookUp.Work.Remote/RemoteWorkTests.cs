@@ -8,7 +8,7 @@ namespace ToSic.HookUp.Work.Remote;
 public class RemoteWorkTests(RemoteWork<IWork<string, string>, string, string> remoteWork)
 {
     public class Startup() : QuickStartup(s => s
-        .AddSysCoreDi()
+        .AddSysCoreDiAllTac()
         .AddHookUp()
         .AddMockNamedServices());
 

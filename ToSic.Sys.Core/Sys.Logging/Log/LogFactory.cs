@@ -23,7 +23,7 @@ public static class LogFactory
     }
 
     /// <summary>Connects the selected MEL stack to the host-owned logger factory without selecting another mode.</summary>
-    public static void Bind(IServiceProvider services)
+    public static void Bind(ISysServiceProvider services)
     {
         if (!ReferenceEquals(services.GetRequiredService<ILogFactory>(), Selector.Current))
             throw new InvalidOperationException("DI logging factory differs from the selected factory.");

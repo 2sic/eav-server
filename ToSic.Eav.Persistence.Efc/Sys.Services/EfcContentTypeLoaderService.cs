@@ -17,7 +17,7 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 internal class EfcContentTypeLoaderService(
     EfcAppLoaderService efcAppLoader,
     Generator<IAppContentTypesLoader, AppFileSystemLoaderOptions> appFileContentTypesLoader,
-    Generator<IDataDeserializer> dataDeserializer,
+    Generator<IJsonDataReader, IJsonDataReader.Options> dataDeserializer,
     ContentTypeAssemblyKit ctAssemblyKit,
     IAppStateCacheService appStates,
     ISysFeaturesService featuresSvc)
@@ -92,6 +92,7 @@ internal class EfcContentTypeLoaderService(
         // 2. After loading the types, access the app-state of each of these IDs to ensure it's loaded already
 
         var l = Log.Fn<IImmutableList<IContentType>>(timer: true);
+        var logDetails = Log.IfDetails(efcAppLoader.LogSettings);
         // Load from DB
         var sqlTime = Stopwatch.StartNew();
 
@@ -108,8 +109,7 @@ internal class EfcContentTypeLoaderService(
 
         sqlTime.Stop();
 
-        var serializer = dataDeserializer.New();
-        serializer.Initialize(appId: appId, types: [], allEntities: null);
+        var deserializer = dataDeserializer.New(new(appId: appId, types: []));
 
         var contentTypes = contentTypesSql
             .Select(set => new
@@ -132,7 +132,7 @@ internal class EfcContentTypeLoaderService(
                         // metadata: attrMetadata,
                         metaSourceFinder: () => source,
                         guid: a.Guid,
-                        sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
+                        sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, logDetails)
                     )),
                 IsGhost = set.InheritContentTypeId,
                 SharedDefinitionId = set.InheritContentTypeId,
@@ -182,7 +182,7 @@ internal class EfcContentTypeLoaderService(
                                 metaSourceFinder: () => appStates.Get(s.AppId),
                                 // #SharedFieldDefinition
                                 //guid: a.Guid, // 2023-10-25 Tonci didn't have this, not sure why, must check before I just add. probably guid should come from the "master"
-                                sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, Log)
+                                sysSettings: JsonDeserializeAttribute.SysSettings(a.StaticName, a.SysSettings, logDetails)
                                 // Before v20
                                 //sysSettings: serializer.DeserializeAttributeSysSettings(a.StaticName, a.SysSettings)
                             )

@@ -1,9 +1,9 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
 
 
-internal class Process4JsonValues(): Process0Base("Db.EPr4JV")
+internal class Process4JsonValues: IEntityProcess
 {
-    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
+    public EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
         if (!data.SaveJson)
             return data;
@@ -22,4 +22,8 @@ internal class Process4JsonValues(): Process0Base("Db.EPr4JV")
 
         return l.Return(data);
     }
+
+    public ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
+        => this.Process(services, data, logProcess, ProcessOne);
+
 }

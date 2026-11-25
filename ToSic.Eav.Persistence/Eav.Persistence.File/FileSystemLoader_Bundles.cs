@@ -9,7 +9,7 @@ namespace ToSic.Eav.Persistence.File;
 
 partial class FileSystemLoader
 {
-    private string BundlesPath => System.IO.Path.Combine(Options.Path, AppDataFoldersConstants.BundlesFolder);
+    private string BundlesPath => Path.Combine(MyOptions.Path, AppDataFoldersConstants.BundlesFolder);
 
 
     public Dictionary<string, JsonFormat> JsonBundleBundles => field ??= GetJsonBundleBundles();
@@ -18,11 +18,10 @@ partial class FileSystemLoader
     {
         var l = Log.Fn<Dictionary<string, JsonFormat>>();
         // #1. check that folder exists
-        if (!CheckPathExists(Options.Path) || !CheckPathExists(BundlesPath))
+        if (!CheckPathExists(MyOptions.Path) || !CheckPathExists(BundlesPath))
             return l.Return([], "path doesn't exist");
 
         const string infoIfError = "couldn't read bundle-file";
-        var jsonBundles = new Dictionary<string, JsonFormat>();
         try
         {
             // #2 find all bundle files in folder and unpack/deserialize to JsonFormat
@@ -35,9 +34,9 @@ partial class FileSystemLoader
             //        l.A("Loading json bundle" + p);
             //        jsonBundles[p] = Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p));
             //    });
-            jsonBundles = bundleFiles.ToDictionary(
+            var jsonBundles = bundleFiles.ToDictionary(
                 p => p,
-                p => Serializer.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p))
+                p => JsonReader.UnpackAndTestGenericJsonV1(System.IO.File.ReadAllText(p))
             );
             return l.Return(jsonBundles, $"found {jsonBundles.Count}");
         }
@@ -62,7 +61,7 @@ partial class FileSystemLoader
             return l.Return([]);
 
         var contentTypes = JsonBundleBundles
-            .SelectMany(json => BuildContentTypesInBundles(Serializer, json.Key, json.Value))
+            .SelectMany(json => BuildContentTypesInBundles(JsonReader, json.Key, json.Value))
             //.Where(ct => ct != null)
             .ToListOpt();
 
@@ -76,7 +75,7 @@ partial class FileSystemLoader
     /// Build contentTypes from bundle json
     /// </summary>
     /// <returns></returns>
-    private ICollection<ContentTypeWithEntities> BuildContentTypesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson)
+    private ICollection<ContentTypeWithEntities> BuildContentTypesInBundles(IJsonDataReader ser, string path, JsonFormat bundleJson)
     {
         var l = Log.Fn<ICollection<ContentTypeWithEntities>>($"path: {path}");
         try
@@ -86,11 +85,11 @@ partial class FileSystemLoader
             var newContentTypes = contentTypes
                 .Select(ct =>
                 {
-                    TypeIdSeed += TypeIdDirection;
+                    MyOptions.TypeIdSeed += MyOptions.TypeIdDirection;
                     var typeWithOrigin = ctAssemblyKit.Type.CreateFrom(
                         ct.ContentType,
-                        id: TypeIdSeed,
-                        repoType: Options.RepoType,
+                        id: MyOptions.TypeIdSeed,
+                        repoType: MyOptions.RepoType,
                         repoAddress: path,
                         parentTypeId: EavConstants.PresetContentTypeFakeParent,
                         configZoneId: KnownAppsConstants.PresetZoneId,
@@ -119,7 +118,7 @@ partial class FileSystemLoader
 
         var entities = JsonBundleBundles
             .SelectMany(json =>
-                BuildEntitiesInBundles(Serializer, json.Key, json.Value, relationshipSource))
+                BuildEntitiesInBundles(JsonReader, json.Key, json.Value, relationshipSource))
             .Where(entity => entity != null!)
             .ToListOpt();
 
@@ -133,7 +132,7 @@ partial class FileSystemLoader
     /// Build entities from bundle json
     /// </summary>
     /// <returns></returns>
-    private IEnumerable<IEntity> BuildEntitiesInBundles(JsonSerializer ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource)
+    private IEnumerable<IEntity> BuildEntitiesInBundles(IJsonDataReader ser, string path, JsonFormat bundleJson, IEntitiesSource relationshipSource)
     {
         var l = Log.Fn<IEnumerable<IEntity>>($"Build entities from bundle json: {path}.");
         try
@@ -145,8 +144,8 @@ partial class FileSystemLoader
             entities = entities
                 .Select(e =>
                 {
-                    EntityIdSeed += EntityIdDirection;
-                    var newId = EntityIdSeed;
+                    MyOptions.EntityIdSeed += MyOptions.EntityIdDirection;
+                    var newId = MyOptions.EntityIdSeed;
                     return dataAssembler.Entity.CreateFrom(e, id: newId, repositoryId: newId);
                 })
                 .ToListOpt();

@@ -8,12 +8,18 @@ namespace ToSic.Sys.Utils.Assemblies;
 /// <param name="logStore"></param>
 [InternalApi_DoNotUse_MayChangeWithoutNotice]
 public sealed class BootWarmUpAssemblies(ILogStore logStore)
-    : BootProcessBase("SqlWUp", bootPhase: BootPhase.WarmUp)
+    : ServiceBase("SqlWUp", connect: [logStore]), IBootProcess
 {
+    public string NameId => Log.NameId;
+
+    public BootPhase Phase => BootPhase.WarmUp;
+
+    public int Priority => 999;
+
     /// <summary>
     /// This will index the assemblies and put them in a list for future/faster lookup.
     /// </summary>
-    public override void Run()
+    public void Run()
     {
         var (_, lStandalone, lNormal) = BootLogHelper
             .GetLoggersForStandaloneLogs(logStore, Log, "AssLdr", "Load Assemblies");

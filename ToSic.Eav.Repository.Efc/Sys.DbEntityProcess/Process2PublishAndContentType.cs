@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Repository.Efc.Sys.DbEntityProcess;
-internal class Process2PublishAndContentType() : Process0Base("DB.EPrc2")
+internal class Process2PublishAndContentType: IEntityProcess
 {
-    public override EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
+    public EntityProcessData ProcessOne(EntityProcessServices services, EntityProcessData data)
     {
         var l = services.LogDetails.Fn<EntityProcessData>();
 
@@ -31,5 +31,8 @@ internal class Process2PublishAndContentType() : Process0Base("DB.EPrc2")
 
         return l.Return(data);
     }
+
+    public ICollection<EntityProcessData> Process(EntityProcessServices services, ICollection<EntityProcessData> data, bool logProcess)
+        => this.Process(services, data, logProcess, ProcessOne);
 
 }

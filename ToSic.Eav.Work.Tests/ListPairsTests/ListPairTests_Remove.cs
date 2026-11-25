@@ -1,6 +1,10 @@
-﻿namespace ToSic.Eav.ListPairsTests;
+﻿using ToSic.Eav.Data.ListSlots.Sys;
 
-public partial class ListPairTests
+namespace ToSic.Eav.ListPairsTests;
+
+using static ListPairTestHelpers;
+
+public class ListPairTestsRemove
 {
 
     [Fact]
@@ -10,7 +14,7 @@ public partial class ListPairTests
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.Remove(0);
+        pair.RemoveSlotsTac(0, null!);
         AssertLength(pair, 3);
         AssertPositions(pair, 0, 2, null);
         //Assert.Equal(pair.PrimaryIds.First(), 2);
@@ -24,7 +28,7 @@ public partial class ListPairTests
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.Remove(1);
+        pair.RemoveSlotsTac(1, null!);
         AssertLength(pair, 3);
         AssertPositions(pair, 0, 1, 101);
         //Assert.Equal(pair.PrimaryIds.First(), 1);
@@ -41,10 +45,10 @@ public partial class ListPairTests
             [101, null, 103, 104, null, null],
             PName,
             CName);
-        pair.Remove(3);
+        pair.RemoveSlotsTac(3, null!);
         AssertLength(pair, 3);
         AssertPositions(pair, 0, 1, 101);
-        AssertPositions(pair, pair.Lists.First().Value.Count() -1, null, 103);
+        AssertPositions(pair, pair.First().Value.Count() -1, null, 103);
         //Assert.Equal(pair.PrimaryIds.First(), 1);
         //Assert.Equal(pair.CoupledIds.First(), 101);
         //Assert.Equal(pair.PrimaryIds.Last(), null);
@@ -64,7 +68,7 @@ public partial class ListPairTests
             [101, null, 103, null, null, null],
             PName,
             CName);
-        pair.Remove(addPosition);
+        pair.RemoveSlotsTac(addPosition, null!);
         AssertLength(pair, 4);
         AssertPositions(pair, 0, 1, 101);
         AssertPositions(pair, 1, 2, null);

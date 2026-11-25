@@ -26,11 +26,11 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class AppInitializer(
     LazySvc<DataAssembler> builder,
     Generator<IAppsAndZonesLoaderWithRaw> repoLoader,
-    AppWorkChain<WorkEntitySave> entitySave,
+    AppWorkQuick<WorkEntitySave> entitySaveWithNewCtx,
     AppWorkChain<WorkContentTypesMod> contentTypesMod,
     AppCachePurger cachePurger,
     IAppReaderFactory appReaders)
-    : ServiceWithSetup<IAppWorkContext>("Eav.AppBld", connect: [contentTypesMod, entitySave, builder, cachePurger, repoLoader, appReaders])
+    : ServiceWithSetup<IAppWorkContext>("Eav.AppBld", connect: [builder, repoLoader, entitySaveWithNewCtx, contentTypesMod, cachePurger, appReaders])
 {
 
     protected readonly AppCachePurger CachePurger = cachePurger;
@@ -46,7 +46,7 @@ public class AppInitializer(
         var appReader = MyOptions.AppReader;
         codeRefTrail.WithHere().AddMessage($"App: {appReader.AppId}");
         
-        // If all parts already exist, exit early.
+        // 1. If all parts already exist, exit early.
         if (AppInitializedChecker.CheckIfAllPartsExist(appReader, codeRefTrail, out var appConfig, out var appResources,
                 out var appSettings, Log))
             return l.ReturnTrue("ok");
@@ -56,8 +56,8 @@ public class AppInitializer(
         // Get appName from cache/specs
         var appName = appReader.Specs.NameId;
 
-        // Start with the list of things to add
-        // If the appConfig is null, we need to add it, otherwise we don't.
+        // 2. Start with the list of things to add
+        // 2.1. If the appConfig is null, we need to add it, otherwise we don't.
         List<AddContentTypeAndOrEntityTask> addList = appConfig != null
             ? []
             :
@@ -78,16 +78,21 @@ public class AppInitializer(
             ];
 
 
-        // Add new (empty) ContentType for Settings
+        // 2.2. Add new (empty) ContentType for Settings
         if (appSettings == null)
             addList.Add(new(TypeAppSettings, []));
 
-        // add new (empty) ContentType for Resources
+        // 2.3. Add new (empty) ContentType for Resources
         if (appResources == null)
             addList.Add(new(TypeAppResources, []));
 
-        // If any of the type definitions are missing, create these first
-        if (CreateAllMissingContentTypes(addList))
+        // 3. Re-Check if we actually found something to add, otherwise exit early
+        if (!addList.Any())
+            return l.ReturnTrue("ok");
+
+        // 4. If any of the type definitions are missing, create these first
+        var newTypesWereCreated = CreateAllMissingContentTypes(MyOptions.AppReader, addList);
+        if (newTypesWereCreated)
         {
             // since the types were re-created, we must flush it from the cache
             // this is because other APIs may access the AppStates (though they shouldn't)
@@ -96,27 +101,23 @@ public class AppInitializer(
             appReader = repoLoader.New().AppReaderRaw(appReader.AppId, codeRefTrail.WithHere());
         }
 
-        // Check if we have anything to add
-        // By reasoning it must always be true, otherwise we would have exited early
-        // so this condition is actually a bit irrelevant, but we're just making sure
-        if (addList.Any())
-        {
-            // Create a new context and new DB connection, using the latest AppReader
-            var newContext = MyOptions.FreshContext(appReader);
-            var entSaver = entitySave.New(newContext);
-            var saveOptions = entSaver.SaveOptions();
+        // 5. Add any data (after the types certainly exist)
+        // Create a **new** context and new DB connection, using the latest AppReader
+        // it's really important that we use the NEW appReader
+        var entSaver = entitySaveWithNewCtx.New(appReader);
+        var saveOptions = entSaver.SaveOptions();
             
-            // Create list to add with save options
-            var entitySavePairs = addList
-                .Select(addTask => AppMetadataEnsureTypeAndConstructEntityToAdd(appReader, addTask))
-                .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
-                .ToListOpt();
-            entSaver.Save(entitySavePairs);
-        }
+        // Create list to add with save options
+        var entitySavePairs = addList
+            .Select(addTask => AppMetadataEnsureTypeAndConstructEntityToAdd(appReader, addTask))
+            .Select(e => new EntityPair<SaveOptions>(e, saveOptions))
+            .ToListOpt();
+        entSaver.Save(entitySavePairs);
 
-        // Reset App-State to ensure it's reloaded with the added configuration
+        // 6. Reset App-State to ensure it's reloaded with the added configuration
         CachePurger.Purge(appReader);
 
+        // 7. Return informing that we created something
         return l.ReturnFalse("ok");
     }
 
@@ -131,13 +132,13 @@ public class AppInitializer(
         };
 
 
-    private bool CreateAllMissingContentTypes(List<AddContentTypeAndOrEntityTask> newItems)
+    private bool CreateAllMissingContentTypes(IAppReader appReader, List<AddContentTypeAndOrEntityTask> newItems)
     {
         var l = Log.Fn<bool>($"Check for {newItems.Count}");
         var typesMod = contentTypesMod.New(MyOptions);
         var addedTypes = false;
         foreach (var item in newItems)
-            if (item.InAppType && FindContentType(MyOptions.AppReader, item.SetName, item.InAppType) == null)
+            if (item.InAppType && FindContentType(appReader, item.SetName, item.InAppType) == null)
             {
                 l.A("couldn't find type, will create");
                 // create App-Man if not created yet

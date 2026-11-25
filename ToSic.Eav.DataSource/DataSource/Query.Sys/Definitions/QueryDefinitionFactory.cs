@@ -20,7 +20,7 @@ public class QueryDefinitionFactory(DataSourceCatalog dsCatalog) : ServiceBase("
     ///  The entity should have the correct metadata and properties to be used as a query definition, otherwise this will fail.
     /// This is usually used to create a QueryDefinition from an entity stored in the database, but it can also be used to create a QueryDefinition from an entity created in memory (e.g. for testing purposes).
     /// </remarks>
-    /// <param name="appId"></param>
+    /// <param name="appId">This is important, as the query definition can be in global apps, while running in another app context.</param>
     /// <param name="entity"></param>
     /// <returns></returns>
     public QueryDefinition Create(int appId, IEntity entity)

@@ -90,11 +90,11 @@ public class AppsCacheMultiTenantTests
             new()
             {
                 Active = true,
-                DimensionId = 0,
+                Id = 0,
                 EnvironmentKey = "en-us",
                 Key = "en-us",
                 Name = "English",
-                Parent = null
+                ParentId = null
             }
         ]);
         return new Dictionary<int, Zone> { { 1, zone } };

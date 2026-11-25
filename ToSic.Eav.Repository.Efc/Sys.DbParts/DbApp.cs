@@ -7,7 +7,7 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ToSic.Eav.Repository.Efc.Sys.DbParts;
 
-internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
+internal class DbApp(DbStorage.DbStorage dbStore) : HelperBase(dbStore.Log, "Db.App")
 {
     /// <summary>
     /// Add a new App
@@ -29,7 +29,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
         catch { /* ignore */ }
 
         // save is required to ensure AppId is created - required for follow-up changes like EnsureSharedAttributeSets();
-        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Add(newApp)); 
+        dbStore.DoAndSaveWithoutChangeDetection(() => dbStore.SqlDb.Add(newApp)); 
 
         return (newApp.AppId, newApp.Name);
     }
@@ -43,9 +43,9 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
 
     internal void SetInheritanceAndSave(int appId, int inheritAppId)
     {
-        var app = DbStore.SqlDb.TsDynDataApps.First(a => a.AppId == appId);
+        var app = dbStore.SqlDb.TsDynDataApps.First(a => a.AppId == appId);
         app.SysSettings = InheritanceSettingsJson(inheritAppId);
-        DbStore.DoAndSaveWithoutChangeDetection(() => DbStore.SqlDb.Update(app));
+        dbStore.DoAndSaveWithoutChangeDetection(() => dbStore.SqlDb.Update(app));
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
     {
         // Other apps can store entities using this app's inherited content types.
         // Include soft-deleted rows, since they still hold database references.
-        var dependentAppIds = DbStore.SqlDb.TsDynDataEntities
+        var dependentAppIds = dbStore.SqlDb.TsDynDataEntities
             .IgnoreQueryFilters()
             .Where(e => e.AppId != appId && e.ContentTypeNavigation.AppId == appId)
             .Select(e => e.AppId)
@@ -67,10 +67,10 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
         if (dependentAppIds.Length > 0)
             throw new InvalidOperationException($"Cannot delete or reset app {appId} because its content types are still used by apps: {string.Join(", ", dependentAppIds)}. Remove those apps or resolve their dependencies first.");
 
-        DbStore.Versioning.GetTransactionId();
+        dbStore.Versioning.GetTransactionId();
 
         // Delete app
-        DbStore.DoInTransaction(() =>
+        dbStore.DoInTransaction(() =>
             {
                 // Explanation: as json entities were added much later, the built-in SP to delete apps doesn't handle them correctly
                 // We could update the Stored Procedure, but that's always hard to handle, so we prefer to just do it in code
@@ -102,14 +102,14 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
                     WHERE e.EntityId IN ({jsonEntitiesInAppSql})"
                     , DbConstant.RepoIdForJsonEntities, appId, AppLoadConstants.TypeAppConfig);
 #else
-                var jsonEntitiesInApp = DbStore.SqlDb.TsDynDataEntities
+                var jsonEntitiesInApp = dbStore.SqlDb.TsDynDataEntities
                     .Where(e => e.ContentTypeId == DbConstant.RepoIdForJsonEntities && e.AppId == appId);
                 if (!fullDelete)
                     jsonEntitiesInApp = jsonEntitiesInApp
                         .Where(e => e.ContentType != AppLoadConstants.TypeAppConfig);
 
                 var jsonEntityIds = jsonEntitiesInApp.Select(e => e.EntityId);
-                DbStore.SqlDb.TsDynDataRelationships
+                dbStore.SqlDb.TsDynDataRelationships
                     .Where(r => jsonEntityIds.Contains(r.ChildEntityId ?? 0) || jsonEntityIds.Contains(r.ParentEntityId))
                     .ExecuteDelete();
                 jsonEntitiesInApp.ExecuteDelete();
@@ -197,35 +197,35 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
                 DELETE FROM TsDynDataApp WHERE AppId = @p0
             ", appId);
 #else
-        var entities = DbStore.SqlDb.TsDynDataEntities
+        var entities = dbStore.SqlDb.TsDynDataEntities
             .Where(e => e.AppId == appId);
         var entityIds = entities.Select(e => e.EntityId);
-        var values = DbStore.SqlDb.TsDynDataValues
+        var values = dbStore.SqlDb.TsDynDataValues
             .Where(v => entityIds.Contains(v.EntityId));
         var valueIds = values.Select(v => v.ValueId);
 
-        DbStore.SqlDb.TsDynDataValueDimensions
+        dbStore.SqlDb.TsDynDataValueDimensions
             .Where(vd => valueIds.Contains(vd.ValueId))
             .ExecuteDelete();
         values.ExecuteDelete();
-        DbStore.SqlDb.TsDynDataRelationships
+        dbStore.SqlDb.TsDynDataRelationships
             .Where(r => entityIds.Contains(r.ParentEntityId))
             .ExecuteDelete();
-        DbStore.SqlDb.TsDynDataRelationships
+        dbStore.SqlDb.TsDynDataRelationships
             .Where(r => entityIds.Contains(r.ChildEntityId ?? 0))
             .ExecuteDelete();
         entities.ExecuteDelete();
 
-        var contentTypes = DbStore.SqlDb.TsDynDataContentTypes
+        var contentTypes = dbStore.SqlDb.TsDynDataContentTypes
             .Where(ct => ct.AppId == appId);
         var contentTypeIds = contentTypes.Select(ct => ct.ContentTypeId);
-        DbStore.SqlDb.TsDynDataAttributes
+        dbStore.SqlDb.TsDynDataAttributes
             .Where(a => contentTypeIds.Contains(a.ContentTypeId))
             .ExecuteDelete();
         contentTypes.ExecuteDelete();
 
         if (alsoDeleteAppEntry)
-            DbStore.SqlDb.TsDynDataApps
+            dbStore.SqlDb.TsDynDataApps
                 .Where(a => a.AppId == appId)
                 .ExecuteDelete();
 #endif
@@ -234,7 +234,7 @@ internal class DbApp(DbStorage.DbStorage db) : DbPartBase(db, "Db.App")
 #if NETFRAMEWORK
     private void ExecuteSqlCommand(string sql, params object[] parameters)
     {
-        DbStore.SqlDb.Database.ExecuteSqlCommand(sql, parameters);
+        dbStore.SqlDb.Database.ExecuteSqlCommand(sql, parameters);
     }
 #endif
 }

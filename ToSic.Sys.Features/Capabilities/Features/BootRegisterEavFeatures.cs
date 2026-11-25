@@ -4,12 +4,18 @@ using static ToSic.Sys.Capabilities.Features.BuiltInFeatures;
 namespace ToSic.Sys.Capabilities.Features;
 
 internal sealed class BootRegisterEavFeatures(FeaturesCatalog featuresCatalog)
-    : BootProcessBase("EavFts", bootPhase: BootPhase.Registrations, connect: [featuresCatalog])
+    : ServiceBase("EavFts", connect: [featuresCatalog]), IBootProcess
 {
+    public string NameId => Log.NameId;
+
+    public BootPhase Phase => BootPhase.Registrations;
+
+    public int Priority => 999;
+
     /// <summary>
     /// Register Eav features during boot
     /// </summary>
-    public override void Run() => featuresCatalog.Register(EavFeatures);
+    public void Run() => featuresCatalog.Register(EavFeatures);
 
     private static readonly Feature[] EavFeatures =
     [

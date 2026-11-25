@@ -13,7 +13,7 @@ internal class EntityBuildHelper(
     DataAssembler dataAssembler,
     ContentTypeAssemblyKit ctAssemblyKit,
     IAppReader appReader,
-    IDataDeserializer serializer,
+    IJsonDataReader serializer,
     Dictionary<int, ICollection<TempRelationshipList>> relatedEntities,
     Dictionary<int, ICollection<TempAttributeWithValues>> attributes,
     string primaryLanguage,

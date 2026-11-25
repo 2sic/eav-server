@@ -1,0 +1,56 @@
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Data.Sys.Entities;
+using ToSic.Eav.ImportExport.Sys;
+using ToSic.Eav.Repositories.Sys;
+using ToSic.Eav.Repository.Efc.Sys.DbStorage;
+using ToSic.Eav.Serialization;
+
+namespace ToSic.Eav.Data.Versions.Sys;
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public class WorkEntityVersionRestore(
+    AppCachePurger appCachePurger,
+    LazySvc<ImportService> import,
+    Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer,
+    Generator<DbStorage, StorageOptions> dbGen)
+    : ServiceWithSetup<IAppDataContext>("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import, dbGen])
+{
+
+    /// <summary>
+    /// Restore an Entity to the specified Version by creating a new Version using the Import
+    /// </summary>
+    public void VersionRestore(int entityId, int transactionId)
+    {
+        var db = dbGen.New(new(MyOptions.AppReader));
+
+        // Get Entity in specified Version/TransactionId from DataTimeline using XmlImport
+        string? timelineItem;
+        try
+        {
+            timelineItem = db.Versioning.GetItem(entityId, transactionId).Json
+                           ?? throw new InvalidOperationException("Json data was null");
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException($"Error getting EntityId {entityId} with TransactionId {transactionId} from History. {ex.Message}");
+        }
+        
+        var newVersion = jsonSerializer
+            .New(new(MyOptions.AppReader))
+            .Deserialize(timelineItem);
+
+        // Restore Entity
+        import.Value
+            .Init(MyOptions.ZoneId, MyOptions.AppId, false, false)
+            .ImportIntoDb([], new List<Entity> { (Entity)newVersion });
+
+        // Delete Draft (if any)
+        var entityDraft = db.Publishing.GetDraftBranchEntityId(entityId);
+        if (entityDraft.HasValue)
+            db.Entities.DeleteEntities([entityDraft.Value]);
+
+        appCachePurger.Purge(MyOptions.PureIdentity());
+    }
+
+}

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace ToSic.Sys;
+namespace ToSic;
 
 /// <summary>
 /// Quick helper to create a startup class with a single action to configure services.

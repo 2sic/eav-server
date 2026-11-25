@@ -1,4 +1,6 @@
-﻿using ToSic.Eav.DataSource.Query.Sys;
+﻿using ToSic.Eav.Apps;
+using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.DataSource.Query.Sys;
 using ToSic.Eav.DataSource.Sys;
 using ToSic.Eav.DataSource.Sys.Streams;
 using ToSic.Eav.LookUp.Sources;
@@ -26,7 +28,7 @@ namespace ToSic.Eav.DataSources;
 [method: PrivateApi]
 
 // ReSharper disable once UnusedMember.Global
-public class QueryRun(DataSourceBase.Dependencies services, Generator<Query> queryGenerator)
+public class QueryRun(DataSourceBase.Dependencies services, Generator<Query, Query.Options> queryGenerator)
     : DataSourceBase(services, $"{DataSourceConstantsInternal.LogPrefix}.QryRun", connect: [queryGenerator])
 {
     #region Configuration-properties
@@ -102,8 +104,7 @@ public class QueryRun(DataSourceBase.Dependencies services, Generator<Query> que
         l.A($"Found query '{queryDef.GetBestTitle()}' ({queryDef.EntityId}), will continue");
 
         // create the query & set params
-        var query = queryGenerator.New();
-        query.Init(ZoneId, AppId, queryDef, LookUpWithoutParams());
+        var query = queryGenerator.New(new(this.PureIdentity(), queryDef, LookUpWithoutParams()));
         query.Params(ResolveParams(configEntity));
         return l.ReturnAsOk(query);
     }

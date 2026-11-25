@@ -57,7 +57,7 @@ public class ImportService(
         _appId = appId;
         _zoneId = zoneId;
 
-        SaveOptions = importExportEnvironment.SaveOptions(_zoneId) with
+        SaveOptions = importExportEnvironment.PathsAndOptions.SaveOptions(_zoneId) with
         {
             SkipExistingAttributes = skipExistingAttributes,
             PreserveUntouchedAttributes = preserveUntouchedAttributes,
@@ -188,11 +188,11 @@ public class ImportService(
         var l = LogSummary.Fn(timer: true);
         // Here's the problem! #badmergeofmetadata
         var toUpdate = contentTypes.Select(type => MergeContentTypeUpdateWithExisting(appReader, type));
-        var so = importExportEnvironment.SaveOptions(_zoneId) with
+        var so = importExportEnvironment.PathsAndOptions.SaveOptions(_zoneId) with
         {
             DiscardAttributesNotInType = true,
         };
-        Storage.Save(toUpdate.ToList(), so);
+        Storage.Save([.. toUpdate], so);
         l.Done();
     }
 

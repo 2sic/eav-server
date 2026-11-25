@@ -69,9 +69,9 @@ partial class XmlImportWithFiles
                 Guid? guid = null;
                 if (Guid.TryParse(xmlField.Attribute(XmlConstants.Guid)?.Value, out var result))
                     guid = result;
-                var sysSettings = JsonDeserializeAttribute.SysSettings(nameId, xmlField.Attribute(XmlConstants.SysSettings)?.Value, Log);
+                var sysSettings = JsonDeserializeAttribute.SysSettings(nameId, xmlField.Attribute(XmlConstants.SysSettings)?.Value, LogDetails);
 
-                var attribute = Services.TypeAssembler.Value.Field
+                var attribute = typeAssembler.Value.Field
                     .Create(
                         appId: AppId,
                         name: nameId,
@@ -104,9 +104,9 @@ partial class XmlImportWithFiles
         // create ContentType
         var scope = xmlContentType.Attributes(XmlConstants.Scope).Any()
             ? xmlContentType.Attribute(XmlConstants.Scope)?.Value
-              ?? Services.Environment.FallbackContentTypeScope
-            : Services.Environment.FallbackContentTypeScope;
-        var ct = Services.TypeAssembler.Value.Type.Create(
+              ?? environment.PathsAndOptions.FallbackContentTypeScope
+            : environment.PathsAndOptions.FallbackContentTypeScope;
+        var ct = typeAssembler.Value.Type.Create(
             appId: AppId,
             id: 0,
             name: typeName,

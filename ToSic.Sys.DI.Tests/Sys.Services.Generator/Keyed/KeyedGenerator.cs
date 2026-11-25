@@ -6,7 +6,11 @@ namespace ToSic.Sys.Services.Generator.Keyed;
 
 public class KeyedGenerator(Generator<IMockNamedService> generator)
 {
-    public class Startup() : QuickStartup(s => s.AddMockNamedServices().AddSysCoreDi());
+    public class Startup() : QuickStartup(s => s
+        .AddSysCoreDiServiceProviderTac()
+        .AddSysCoreDiLazyAndGeneratorsTac()
+        .AddMockNamedServices()
+    );
 
     [Fact]
     public void GetAbcWorks()

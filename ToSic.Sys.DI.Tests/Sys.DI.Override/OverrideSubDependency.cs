@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ToSic.Sys.Run.Startup;
 
 namespace ToSic.Sys.DI.Override;
 
 /// <summary>
 /// Verify standard DI works, before trying to create sub-scopes.
 /// </summary>
-public class OverrideSubDependency(IServiceProvider sp)
+public class OverrideSubDependency(ISysServiceProvider sp)
 {
     #region Test Classes
 
@@ -43,6 +44,7 @@ public class OverrideSubDependency(IServiceProvider sp)
 
     public class Startup() : QuickStartup(services =>
     {
+        services.AddSysCoreDiServiceProviderTac();
         services.TryAddTransient<MealDefault>();
         services.TryAddTransient(OverrideService<IMeal>.Register<MealDefault>());
         

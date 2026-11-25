@@ -12,7 +12,7 @@ public class LanguageAssembler(): ServiceWithSetup<DataAssemblerOptions>("DTA.La
     protected override DataAssemblerOptions GetDefaultOptions() => new();
 
     public Language CreateFrom(ILanguage orig, bool? readOnly) =>
-        new(orig.Key, readOnly ?? orig.ReadOnly, orig.DimensionId);
+        new(orig.Key, readOnly ?? orig.ReadOnly, orig.Id);
 
     public IImmutableList<ILanguage> Merge(IEnumerable<ILanguage> languages, List<ILanguage> updates)
     {

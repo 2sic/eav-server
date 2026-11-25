@@ -1,5 +1,4 @@
-﻿using ToSic.Eav.DataSource;
-using ToSic.Eav.Repository.Efc.Sys.DbStorage;
+﻿using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 
 namespace ToSic.Eav.Apps.Sys.Work;
 
@@ -9,11 +8,6 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppWorkContextNotReplaced: IAppWorkContext
 {
-    public AppWorkContextNotReplaced()
-    {
-         // throw new ArgumentNullException(ErrorMessage);
-    }
-
     private const string ErrorMessage = $"A service seems to request {nameof(IAppWorkContext)} but in a place where it was not previously injected.";
 
     public int ZoneId => throw new ArgumentNullException(ErrorMessage);
@@ -21,7 +15,4 @@ public class AppWorkContextNotReplaced: IAppWorkContext
     public IAppReader AppReader => throw new ArgumentNullException(ErrorMessage);
     public DbStorage DbStorage => throw new ArgumentNullException(ErrorMessage);
     public IDataSource Data => throw new ArgumentNullException(ErrorMessage);
-    public DbStorage NewDbStorage() => throw new ArgumentNullException(ErrorMessage);
-
-    public IAppWorkContext FreshContext(IAppReader? freshReader = null) => throw new ArgumentNullException(ErrorMessage);
 }

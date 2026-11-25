@@ -1,0 +1,79 @@
+﻿using ToSic.Eav.ImportExport.Sys;
+using ToSic.Eav.ImportExport.Sys.Options;
+
+namespace ToSic.Eav.WebApi.Admin.Sys;
+
+public interface IEntityController: IAppAdminWebApiController
+{
+    /// <summary>
+    /// Delete an item from the admin-UI
+    /// </summary>
+    /// <param name="contentType"></param>
+    /// <param name="appId"></param>
+    /// <param name="id"></param>
+    /// <param name="guid"></param>
+    /// <param name="force"></param>
+    /// <param name="parentId"></param>
+    /// <param name="parentField"></param>
+    /// <remarks>
+    /// Id or guid is required.
+    /// Needs edit-permissions, as the item-list can also be accessed from the toolbar in certain cases.
+    /// Will do permission checks internally.
+    /// </remarks>
+    // UI test: App administration > Data > open a content type > delete an item.
+    void Delete(string contentType, int appId, int? id = null, Guid? guid = null, bool force = false, int? parentId = null,
+        string? parentField = null);
+
+    /// <summary>
+    /// Used to be GET ContentExport/DownloadEntityAsJson
+    /// </summary>
+    /// <remarks>
+    /// Will do permission checks internally.
+    /// </remarks>
+    // UI test: App administration > Data > open a content type > item menu > Export JSON.
+    THttpResponseType Json(int appId, int id, string prefix, bool withMetadata);
+
+    /// <summary>
+    /// Used to be GET ContentExport/ExportContent
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <param name="language"></param>
+    /// <param name="defaultLanguage"></param>
+    /// <param name="contentType"></param>
+    /// <param name="recordExport"></param>
+    /// <param name="resourcesReferences"></param>
+    /// <param name="languageReferences"></param>
+    /// <param name="selectedIds"></param>
+    /// <returns></returns>
+    // UI test: App administration > Data > open a content type > Export Content.
+    THttpResponseType Download(
+        int appId, 
+        string language, 
+        string defaultLanguage, 
+        string contentType,
+        ExportSelection recordExport, 
+        ExportResourceReferenceMode resourcesReferences,
+        ExportLanguageResolution languageReferences, 
+        string? selectedIds = null);
+
+    /// <summary>
+    /// This seems to be for XML import of a list
+    /// Used to be POST ContentImport/EvaluateContent
+    /// </summary>
+    // UI test: App administration > Data > open a content type > Import Content; selecting a file runs the preview.
+    ContentImportResult XmlPreview(ContentFileImportOptions args);
+        
+    /// <summary>
+    /// This seems to be for XML import of a list
+    /// Used to be POST ContentImport/ImportContent
+    /// </summary>
+    // UI test: App administration > Data > open a content type > Import Content > Import.
+    ContentImportResult XmlUpload(ContentFileImportOptions args);
+        
+    /// <summary>
+    /// This is the single-item json import
+    /// Used to be POST ContentImport/Import
+    /// </summary>
+    // UI test: App administration > Data > open a content type > Import Item.
+    bool Upload(DataFileImportOptions args);
+}

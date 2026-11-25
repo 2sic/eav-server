@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.ImportExport.Sys.Xml;
+using ToSic.Eav.Sys;
 
 // 2dm: must disable NullRef warnings, because there a lot of warnings when processing XML, 
 // ...and these are real errors which should blow
@@ -20,7 +21,7 @@ partial class XmlImportWithFiles
 
         var isEnvOk = IsCompatibleSingleVersion(rootNode,
             XmlConstants.MinEnvVersion,
-            Services.Environment.TenantVersion,
+            environment.TenantVersion,
             "Environment Version"
         );
         if (!isEnvOk)
@@ -35,7 +36,7 @@ partial class XmlImportWithFiles
 
         var isSxcOk = IsCompatibleSingleVersion(rootNode,
             XmlConstants.MinModVersion,
-            new(Services.Environment.ModuleVersion),
+            EavSystemInfo.Version,
             "2sxc Version"
         );
 

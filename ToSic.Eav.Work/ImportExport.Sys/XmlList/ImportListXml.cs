@@ -1,6 +1,5 @@
 ﻿using System.Xml.Linq;
 using ToSic.Eav.Apps;
-using ToSic.Eav.Apps.Sys.Work;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Dimensions;
 using ToSic.Eav.Data.Sys.Entities;
@@ -199,7 +198,7 @@ public partial class ImportListXml(
                     try
                     {
                         entityAttributes.TryGetValue(valName, out var existingAttr2);
-                        var preConverted = valueConverter.Value.PreConvertReferences(value, ctAttribute.Type, ResolveLinks);
+                        var preConverted = valueConverter.Value.PreConvertReferences(value, ctAttribute.Type, ResolveLinks, LogDetails);
                         var valRefAttribute = DataAssembler.Attribute.CreateOrUpdate(originalOrNull: existingAttr2, name: valName, value: preConverted, type: valType, language: nodeLang);
                         entityAttributes = DataAssembler.AttributeList.Replace(entityAttributes, valRefAttribute);
 

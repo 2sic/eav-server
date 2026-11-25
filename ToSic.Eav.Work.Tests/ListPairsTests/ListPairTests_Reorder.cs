@@ -1,6 +1,10 @@
-﻿namespace ToSic.Eav.ListPairsTests;
+﻿using ToSic.Eav.Data.ListSlots.Sys;
 
-public partial class ListPairTests
+namespace ToSic.Eav.ListPairsTests;
+
+using static ListPairTestHelpers;
+
+public class ListPairTestsReorder
 {
 
     [Fact]
@@ -59,12 +63,12 @@ public partial class ListPairTests
     public void ReorderErrorOutOfRange() 
         => Throws<ArgumentOutOfRangeException>(() => GenerateListAndReorder([3, 7, 0, 1]));
 
-    private static CoupledIdLists GenerateListAndReorder(int[] newSequence)
+    private static Dictionary<string, List<int?>> GenerateListAndReorder(int[] newSequence)
     {
         var pair = CoupledIdLists([1, 2, null, 44],
             [101, null, 103, 444],
             PName, CName);
-        pair.Reorder(newSequence);
+        pair.ReorderSlotsTac(newSequence, null!);
         return pair;
     }
 }

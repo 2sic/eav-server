@@ -1,12 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using ToSic.Sys;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using ToSic.Sys.HookUp;
 using ToSic.Sys.Run.Startup;
 
 namespace ToSic.HookUp.WorkSequenceTests;
 
-public class WorkSequenceManualTests(IServiceProvider sp)
+public class WorkSequenceManualTests()
 {
     #region Work Steps
 
@@ -30,7 +28,6 @@ public class WorkSequenceManualTests(IServiceProvider sp)
         services.TryAddTransient<IWork<MathOperation>, Multiply>();
         services.TryAddTransient<IWork<MathOperation>, Divide>();
         services.TryAddTransient<IWork<MathOperation>, Add>();
-
         services.AddHookUp();
     });
 

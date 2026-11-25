@@ -14,7 +14,7 @@ namespace ToSic.Eav.Data.Build.Sys;
 /// For content types generated from code attributes.
 /// </summary>
 /// <param name="parentLog"></param>
-internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.Dependencies services, ILog parentLog)
+internal class ContentTypesFromCodeAttributeHelper(ContentTypeAssemblyKit typeAssemblyKit, IDataFactory dataFactory, ILog parentLog)
     : HelperBase(parentLog, "CTC.AttHlp")
 {
     private const int NoAppId = ContentTypesFromCodeBuilder.NoAppId;
@@ -137,11 +137,11 @@ internal class ContentTypesFromCodeAttributeHelper(ContentTypesFromCodeBuilder.D
                 // Create list of metadata with description; must be null if no metadata
                 var mdItems = FieldSettingsGeneralMinimal
                     .FromCodeAttributeOrNull(specs)
-                    .NullOrGetWith(mdRaw => services.DataFactory.Create([mdRaw]))
+                    .NullOrGetWith(mdRaw => dataFactory.Create([mdRaw]))
                     ?.ToListOpt();
 
                 // Return the field definition
-                return services.TypeAssemblyKit.Field.Create(
+                return typeAssemblyKit.Field.Create(
                     NoAppId,
                     name: attrName,
                     type: attrType,

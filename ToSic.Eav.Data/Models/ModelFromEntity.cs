@@ -18,6 +18,7 @@ namespace ToSic.Eav.Models;
 public abstract partial record ModelFromEntity
     : IModelFromEntity,         // Model will be built using an entity
         IModelSetup<IEntity>,   // Allow setting up the wrapper with an entity
+        IModelSetup<ModelEntityWithLanguagesOption>,
         ICanBeEntity            // Allow retrieving the entity directly if needed
 {
     #region Constructors & Setup
@@ -37,6 +38,8 @@ public abstract partial record ModelFromEntity
     /// <param name="entity">Entity to wrap</param>
     protected ModelFromEntity(IEntity entity)
         => Entity = entity;
+    protected ModelFromEntity(IEntity entity, string?[] languages): this(entity)
+        => LookupLanguages = languages;
 
     /// <summary>
     /// The underlying entity.
@@ -53,6 +56,12 @@ public abstract partial record ModelFromEntity
         Entity = source!;
         return true;
     }
+    public bool SetupModel(ModelEntityWithLanguagesOption? source)
+    {
+        Entity = source?.Entity!;
+        LookupLanguages = source?.Languages ?? [];
+        return true;
+    }
 
     #endregion
 
@@ -61,7 +70,7 @@ public abstract partial record ModelFromEntity
     /// If an inheriting class needs to support it, it must set it in its constructor.
     /// </summary>
     [PrivateApi]
-    protected string?[] LookupLanguages { get; init; } = [];
+    protected string?[] LookupLanguages { get; private set; } = [];
 
 
     /// <summary>
@@ -88,4 +97,7 @@ public abstract partial record ModelFromEntity
     [return: NotNullIfNotNull(nameof(fallback))]
     protected T? GetThis<T>(T? fallback, [CallerMemberName] string propertyName = default!)
         => Get(propertyName, fallback);
+
 }
+
+public record ModelEntityWithLanguagesOption(IEntity Entity, string?[] Languages);

@@ -2,14 +2,15 @@
 
 // #NoEditorBrowsableBecauseOfInheritance
 //[ShowApiWhenReleased(ShowApiMode.Never)]
-
-
 [InternalApi_DoNotUse_MayChangeWithoutNotice("Still WIP as of v22")]
 public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder npo = default, object[]? connect = default)
     : ServiceBase(logName, npo, connect: connect),
         IHasOptions<TOptions>,
         IServiceWithSetup<TOptions>
-        where TOptions : class //, new()
+        // Note: `class` not `class?`
+        // the interface is `class?` but since by default ServiceWithSetup will throw if `null`,
+        // we're making sure you get compile warnings when initializing with `null`
+        where TOptions : class 
 {
     /// <inheritdoc />
     [field: AllowNull, MaybeNull]
@@ -19,6 +20,7 @@ public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder np
         private set;
     }
 
+    /// <inheritdoc />
     public virtual void Setup(TOptions options)
         => MyOptions = options;
 
@@ -32,8 +34,7 @@ public abstract class ServiceWithSetup<TOptions>(string logName, NoParamOrder np
     /// 
     /// You must override this to provide your own default options.
     /// </summary>
-    /// <returns></returns>
     /// <exception cref="ServiceOptionsRequiredException"></exception>
     protected virtual TOptions GetDefaultOptions()
-        => throw new ServiceOptionsRequiredException();
+        => throw new ServiceOptionsRequiredException(GetType());
 }

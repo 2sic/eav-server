@@ -1,10 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ToSic.Eav.Data.Build.Sys;
 using ToSic.Eav.Data.Sys.Entities.Sources;
-using ToSic.Eav.ImportExport.Json.Sys;
 using ToSic.Eav.Metadata.Sys;
 using ToSic.Eav.Persistence.Sys.Loaders;
-using ToSic.Eav.Serialization.Sys;
 using ToSic.Eav.Sys;
 using static ToSic.Eav.ImportExport.Sys.ImpExpConstants;
 
@@ -13,78 +11,39 @@ using static ToSic.Eav.ImportExport.Sys.ImpExpConstants;
 namespace ToSic.Eav.Persistence.File;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenerator, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
-    : ServiceBase($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, dataAssembler, ctAssemblyKit]), IContentTypeLoader, IServiceWithSetup<FileSystemLoaderOptions>
+public partial class FileSystemLoader(Generator<IJsonDataReader, IJsonDataReader.Options> serializerGenerator, Generator<IJsonDataWriter> jsonWriter, DataAssembler dataAssembler, ContentTypeAssemblyKit ctAssemblyKit)
+    : ServiceWithSetup<FileSystemLoaderOptions>($"{EavLogs.Eav}.FsLoad", connect: [serializerGenerator, jsonWriter, dataAssembler, ctAssemblyKit]), IContentTypeLoader
 {
-    private FileSystemLoaderOptions Options { get; set; } = null!;
+    /// <summary>
+    /// Get Options to create  new loaders with similar settings - IMPORTANT: must preserve the counts.
+    /// Later should rework to
+    /// 1. have counters as private variables
+    /// 2. merge them into the result returned here
+    /// </summary>
+    public FileSystemLoaderOptions GetLatestOptions() => MyOptions;
 
-    public void Setup(FileSystemLoaderOptions options) => Options = options;
 
     #region json serializer
 
     [field: AllowNull, MaybeNull]
-    public JsonSerializer Serializer
-    {
-        get => field ??= GenerateSerializer();
-        private set;
-    }
-
-    private JsonSerializer NewSerializer()
-    {
-        var ser = serializerGenerator.New();
-        ser.ConfigureLogging(Options.LogSettings);
-        return ser;
-    }
-
-    private JsonSerializer GenerateSerializer()
-    {
-        var ser = NewSerializer();
-
-        var entitySource = Options.EntitiesSource;
-        var l = Log.Fn<JsonSerializer>($"Create new JSON serializer, has EntitiesSource: {entitySource != null}; is desired type: {entitySource is IHasMetadataSourceAndExpiring}");
-        // #SharedFieldDefinition
-        // Also provide AppState if possible, for new #SharedFieldDefinition
-        if (entitySource is IHasMetadataSourceAndExpiring withAppState)
-            ser.DeserializationSettings = new()
-            {
-                MetadataSource = withAppState,
-                // Just a note: this will only apply to attribute-metadata with related entities
-                // but won't cover Content-Type metadata with related entities
-                // ATM this doesn't matter, because we don't have any related entities in Content-Types
-                // if we ever need it, check out how it's done on the AppLoader
-            };
-        ser.Initialize(Options.AppId, [], entitySource);
-        ser.AssumeUnknownTypesAreDynamic = true;
-        return l.Return(ser);
-    }
-
-    internal void ResetSerializer(IAppReader appReader)
-        => Serializer = NewSerializer().SetApp(appReader);
-
-    internal void ResetSerializer(ICollection<IContentType> types)
-    {
-        var serializer = NewSerializer();
-        serializer.Initialize(Options.AppId, types, null);
-        Serializer = serializer;
-    }
+    private IJsonDataReader JsonReader => field ??= serializerGenerator.New(MyOptions.JsonReaderOptions);
 
     #endregion
 
     #region Queries & Configuration
 
-    public IList<IEntity> Entities(string folder, IEntitiesSource relationships)
+    public IList<IEntity> Entities(string folder, IEntitiesSource relationshipsSource)
     {
-        var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{EntityIdSeed}", timer: true);
+        var l = Log.Fn<IList<IEntity>>($"Entities in {folder} with idSeed:{MyOptions.EntityIdSeed}", timer: true);
             
         // #1. check that folder exists
-        var subPath = Path.Combine(Options.Path, folder);
-        if (!CheckPathExists(Options.Path) || !CheckPathExists(subPath))
+        var subPath = Path.Combine(MyOptions.Path, folder);
+        if (!CheckPathExists(MyOptions.Path) || !CheckPathExists(subPath))
             return l.Return([], "Path doesn't exist, return none");
 
         // #2. WIP - Allow relationships between loaded items
         // If we are loading from a larger context, then we have a reference to a list
         // which will be repopulated later, so only create a new one if there is none
-        var relationshipsSource = relationships;
 
         // #3A. special case for entities in bundles.
         if (folder == AppDataFoldersConstants.BundlesFolder)
@@ -105,12 +64,11 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             .ToListOpt();
 
         // TEMP: DEBUG SERIALIZER SETTINGS
-        l.A($"Serializer: '{Serializer.LogDsDetails}'");
+        // l.A($"Serializer: '{(JsonReader as JsonDataReader)?.LogDsDetails}'");
 
         // #3.2 load entity-items from folder
-        var jsonSerializer = Serializer;
         var entities = jsons
-            .Select(json => LoadAndBuildEntity(jsonSerializer, json, ++EntityIdSeed, relationshipsSource))
+            .Select(json => LoadAndBuildEntity(JsonReader, json, ++MyOptions.EntityIdSeed, relationshipsSource))
             .Where(entity => entity != null)
             .Cast<IEntity>()
             .ToListOpt();
@@ -124,13 +82,8 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
     #region ContentType
 
-    public int EntityIdSeed = -1;
-    public int EntityIdDirection = 1;
-    public int TypeIdSeed = -1;
-    public int TypeIdDirection = 1;
-
     public ICollection<IContentType> ContentTypes()
-        => ContentTypes(Options.AppId, null! /* unused */);
+        => ContentTypes(MyOptions.JsonReaderOptions.AppId, null! /* unused */);
 
     /// <inheritdoc />
     /// <param name="appId">this is not used ATM - just for interface compatibility, must always be 0</param>
@@ -145,12 +98,12 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
     public (IList<IContentType> ContentTypes, IList<IEntity> Entities) ContentTypesWithEntities()
     {
-        var l = Log.Fn<(IList<IContentType> ContentTypes, IList<IEntity> Entities)>($"ContentTypes in {Options.AppId}", timer: true);
+        var l = Log.Fn<(IList<IContentType> ContentTypes, IList<IEntity> Entities)>($"ContentTypes in {MyOptions.JsonReaderOptions.AppId}", timer: true);
             
         // #1. check that folder exists
         var pathCt = ContentTypePath;
         List<IContentType> contentTypes;
-        if (CheckPathExists(Options.Path) && CheckPathExists(pathCt))
+        if (CheckPathExists(MyOptions.Path) && CheckPathExists(pathCt))
         {
             // #2 find all content-type files in folder
             var jsonFiles = Directory
@@ -159,9 +112,9 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
             // #3 load content-types from folder
             contentTypes = jsonFiles
-                .Select(json => LoadAndBuildCt(Serializer, json))
-                .Where(ct => ct != null)
-                .ToList()!;
+                .Select(json => LoadAndBuildCt(JsonReader, json))
+                .OfType<IContentType>()
+                .ToList();
         }
         else
         {
@@ -183,8 +136,8 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
 
         var entities = bundlesCtAndEntities
             .SelectMany(set => set.Entities)
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            .Where(e => e != null)
+            // ReSharper disable once RedundantEnumerableCastCall
+            .OfType<IEntity>()
             .GroupBy(e => e.EntityGuid)
             .Select(g => g.First())
             .ToListOpt();
@@ -193,13 +146,13 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
         return l.Return((contentTypes, entities), $"Content Types: {contentTypes.Count}; Entities: {entities.Count}");
     }
 
-    private string ContentTypePath => Path.Combine(Options.Path, AppDataFoldersConstants.TypesFolder);
+    private string ContentTypePath => Path.Combine(MyOptions.Path, AppDataFoldersConstants.TypesFolder);
 
     /// <summary>
     /// Try to load a content-type file, but if anything fails, just return a null
     /// </summary>
     /// <returns></returns>
-    private IContentType? LoadAndBuildCt(JsonSerializer ser, string path)
+    private IContentType? LoadAndBuildCt(IJsonDataReader ser, string path)
     {
         var l = Log.Fn<IContentType?>($"Path: {path}", timer: true);
         var infoIfError = "couldn't read type-file";
@@ -211,8 +164,8 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
             var ct = ser.DeserializeContentType(json);
 
             infoIfError = "couldn't set source/parent";
-            TypeIdSeed += TypeIdDirection;
-            ct = ctAssemblyKit.Type.CreateFrom(ct, id: TypeIdSeed, repoType: Options.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
+            MyOptions.TypeIdSeed += MyOptions.TypeIdDirection;
+            ct = ctAssemblyKit.Type.CreateFrom(ct, id: MyOptions.TypeIdSeed, repoType: MyOptions.RepoType, parentTypeId: EavConstants.PresetContentTypeFakeParent, repoAddress: path);
             return l.Return(ct, $"file size was: {json.Length}");
         }
 #pragma warning disable CS0162 // Unreachable code detected
@@ -246,7 +199,7 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     /// If anything fails, just return a null
     /// </summary>
     /// <returns></returns>
-    private IEntity? LoadAndBuildEntity(JsonSerializer ser, string path, int id, IEntitiesSource? relationshipSource = null)
+    private IEntity? LoadAndBuildEntity(IJsonDataReader ser, string path, int id, IEntitiesSource? relationshipSource = null)
     {
         var l = Log.Fn<IEntity>($"Loading {path}");
         try
@@ -277,8 +230,9 @@ public partial class FileSystemLoader(Generator<JsonSerializer> serializerGenera
     private bool CheckPathExists(string path)
     {
         var l = Log.Fn<bool>($"Check path exists: {path}");
-        if (Directory.Exists(path)) return l.ReturnTrue("ok");
-        if (!Options.IgnoreMissing)
+        if (Directory.Exists(path))
+            return l.ReturnTrue("ok");
+        if (!MyOptions.IgnoreMissing)
             throw new DirectoryNotFoundException("directory '" + path + "' not found, and couldn't ignore");
         l.A("path: doesn't exist, but ignore");
         return l.ReturnFalse("not found");

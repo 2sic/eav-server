@@ -3,7 +3,7 @@
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkAttributes() : ServiceWithSetup<IAppWorkContext>("Wrk.Attrib")
+public class WorkAttributes() : ServiceWithSetup<IAppDataContext>("Wrk.Attrib")
 {
     public List<PairTypeWithAttribute> GetFields(string staticName)
     {

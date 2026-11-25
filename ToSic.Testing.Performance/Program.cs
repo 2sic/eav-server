@@ -82,7 +82,7 @@ class Program
         Console.ReadKey();
     }
 
-    private static void RunTestGenerateJson(ServiceProvider serviceProvider)
+    private static void RunTestGenerateJson(ISysServiceProvider serviceProvider)
     {
         var tester = serviceProvider.GetRequiredService<TestGenerateJsonForApps>(); 
         
@@ -109,7 +109,7 @@ class Program
         Console.WriteLine($"ser time: {serTime.Elapsed} for {count} items");
     }
 
-    public static ServiceProvider SetupServiceProvider()
+    public static ISysServiceProvider SetupServiceProvider()
     {
         var sc = new ServiceCollection();
         new StartupTestsApps().ConfigureServices(sc);
@@ -117,7 +117,7 @@ class Program
         sc.TryAddTransient<TestLoadPresetApp>();
         sc.AddFixtureHelpers();
         var serviceProvider = sc.BuildServiceProvider();
-        return serviceProvider;
+        return serviceProvider.GetSysServiceProvider();
     }
 }
 

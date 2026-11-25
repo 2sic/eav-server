@@ -1,5 +1,6 @@
 // Global using directives
 
+global using System.Diagnostics.CodeAnalysis;
 global using ToSic.Sys.DI;
 global using ToSic.Sys.Documentation;
 global using ToSic.Sys.Logging;

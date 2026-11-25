@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Data.Sys.Entities;
 using ToSic.Eav.ImportExport.Sys.Xml;
 using ToSic.Eav.ImportExport.Tests.Persistence.File;
 using ToSic.Eav.Repositories;
@@ -19,9 +20,9 @@ public class XmlSerializationTests(XmlSerializer xmlSerializer, IAppsAndZonesLoa
         //var zone = new ZoneRuntime().Init(test.ZoneId, Log);
         var languageMap = appsCatalog
             .Zone(test.ZoneId).LanguagesActive
-            .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
-        var exBuilder = xmlSerializer.Init(languageMap, appReader);
-        var xmlEnt = exBuilder.Serialize(test.TestItemToSerialize);
+            .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.Id);
+        var exBuilder = xmlSerializer.Init(languageMap/*, appReader*/);
+        var xmlEnt = exBuilder.Serialize(appReader.List.FindRepoId(test.TestItemToSerialize) ?? throw new NullReferenceException($"Entity {test.TestItemToSerialize} not found, can't serialize"));
         True(xmlEnt.Length > 200, "should get a long xml string");
         output.WriteLine(xmlEnt);
         //Assert.Equal(xmlstring, xmlEnt, "xml strings should be identical");
@@ -35,8 +36,8 @@ public class XmlSerializationTests(XmlSerializer xmlSerializer, IAppsAndZonesLoa
         var appReader = repoLoader.AppStateReaderRawTac(appId);
         var languageMap = appsCatalog
             .Zone(test.ZoneId).LanguagesActive
-            .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.DimensionId);
-        var exBuilder = xmlSerializer.Init(languageMap, appReader);
+            .ToDictionary(l => l.EnvironmentKey.ToLowerInvariant(), l => l.Id);
+        var exBuilder = xmlSerializer.Init(languageMap/*, appReader*/);
 
         var maxCount = 500;
         var skip = 0;
@@ -50,7 +51,7 @@ public class XmlSerializationTests(XmlSerializer xmlSerializer, IAppsAndZonesLoa
 
                 //var xml = xmlbuilder.XmlEntity(appEntity.EntityId);
                 //var xmlstring = xml.ToString();
-                var xmlEnt = exBuilder.Serialize(appEntity.EntityId);
+                var xmlEnt = exBuilder.Serialize(appReader.List.FindRepoId(appEntity.EntityId) ?? throw new NullReferenceException($"Entity {appEntity.EntityId} not found, can't serialize"));
                 //Assert.Equal(xmlstring, xmlEnt,
                 //    $"xml of item {count} strings should be identical - but was not on xmlEnt {appEntity.EntityId}");
 

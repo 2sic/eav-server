@@ -38,43 +38,30 @@ internal class SaveEntityProcess(DbStorage.DbStorage dbStorage, DataAssembler da
         return data;
     }
 
-    private List<IEntityProcess> GetStandardProcessBatch1()
-    {
-        List<IEntityProcess> processors = 
-        [
-            new Process1Preflight(),
-            new Process2PublishAndContentType(),
+    private static List<IEntityProcess> GetStandardProcessBatch1() =>
+    [
+        new Process1Preflight(),
+        new Process2PublishAndContentType(),
 
-            new Process3New1LastChecks(),
-            new Process3New2DbStoreNewHeaders(),
-            new Process3New3DbStoreJson(),
+        new Process3New1LastChecks(),
+        new Process3New2DbStoreNewHeaders(),
+        new Process3New3DbStoreJson(),
 
-            new Process3Upd1DbPreloadExisting(),
-            new Process3Upd2PrepareUpdate(),
-            new Process3Upd3ClearValues(),
+        new Process3Upd1DbPreloadExisting(),
+        new Process3Upd2PrepareUpdate(),
+        new Process3Upd3ClearValues(),
 
-            new Process4TableValues(),
-            new Process4JsonValues(),
+        new Process4TableValues(),
+        new Process4JsonValues(),
 
-            //new Process5TableRelationships(),
-            //new Process6Versioning(),
-        ];
+        //new Process5TableRelationships(),
+        //new Process6Versioning(),
+    ];
 
-        foreach (var process in processors)
-            process.LinkLog(Services.LogDetails);
-        return processors;
-    }
-    private List<IEntityProcess> GetStandardProcessBatch2()
-    {
-        List<IEntityProcess> processors = 
-        [
-            new Process5TableRelationships(),
+    private static List<IEntityProcess> GetStandardProcessBatch2() =>
+    [
+        new Process5TableRelationships(),
 
-            new Process6Versioning(),
-        ];
-
-        foreach (var process in processors)
-            process.LinkLog(Services.LogDetails);
-        return processors;
-    }
+        new Process6Versioning(),
+    ];
 }

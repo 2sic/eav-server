@@ -25,11 +25,11 @@ public class TypeExporter(ITestOutputHelper output, IAppsAndZonesLoaderWithRaw l
         var fileSysLoader = fsLoader;
         fileSysLoader.Setup(new()
         {
-            AppId = KnownAppsConstants.PresetAppId,
+            JsonReaderOptions = FileSystemLoaderOptions.CreateJsonOptionsDyn(KnownAppsConstants.PresetAppId, log: Log),
+            //AppId = KnownAppsConstants.PresetAppId,
             Path = exportStorageRoot,
             RepoType = RepositoryTypes.TestingDoNotUse,
             IgnoreMissing = true,
-            EntitiesSource = null
         });
 
         var time = Stopwatch.StartNew();

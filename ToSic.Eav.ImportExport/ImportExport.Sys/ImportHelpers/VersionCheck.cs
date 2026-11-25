@@ -2,6 +2,7 @@
 using ToSic.Eav.Apps.AppReader.Sys;
 using ToSic.Eav.ImportExport.Integration;
 using ToSic.Eav.ImportExport.Sys.Xml;
+using ToSic.Eav.Sys;
 
 namespace ToSic.Eav.ImportExport.Sys.ImportHelpers;
 
@@ -30,7 +31,7 @@ internal class VersionCheck(IImportExportEnvironment env, ILog parentLog) : Help
         var l = Log.Fn($"{reqVersionNode}, {reqVersionNodePlatform}");
         if (reqVersionNode != null)
         {
-            var vEav = Version.Parse(env.ModuleVersion);
+            var vEav = EavSystemInfo.Version;
             var reqEav = Version.Parse(reqVersionNode);
             if (reqEav.CompareTo(vEav) == 1) // required is bigger
                 throw new("this app requires eav/2sxc version " + reqVersionNode +
