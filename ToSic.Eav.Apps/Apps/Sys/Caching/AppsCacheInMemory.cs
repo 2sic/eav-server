@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using ToSic.Eav.Apps.Sys.Loaders;
+﻿using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Persistence.Sys.AppState;
 using ToSic.Sys.Utils;
 
@@ -15,7 +14,7 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// 2. Or create a lightweight wrapper and inject this as <see cref="IAppsCache"/> (it is also registered in DI).
 /// </remarks>
 [PrivateApi]
-internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
+internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService, IAppsCacheState state, LazySvc<IAppsAndZonesLoader> loaders)
     : IAppsCache
 {
     #region Keyed Service Identity
@@ -29,14 +28,14 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
 
     #endregion
 
-    public IReadOnlyDictionary<int, Zone> Zones(IZoneLoader tools)
+    public IReadOnlyDictionary<int, Zone> Zones()
     {
         // Cache zones per-tenant runtime key; if unavailable, skip caching to avoid cross-tenant bleed.
         if (!TryZoneCacheKey(out var cacheKey))
-            return new ZoneCachePresetHelper().AddPresetZone(tools.Zones());
+            return new ZoneCachePresetHelper().AddPresetZone(loaders.Value.Zones());
 
         // Lazy ensures only one LoadZones per tenant key, even under concurrency.
-        var lazy = ZoneAppCaches.GetOrAdd(cacheKey, _ => new(() => new ZoneCachePresetHelper().AddPresetZone(tools.Zones())));
+        var lazy = state.ZonesWithApps.GetOrAdd(cacheKey, _ => new(() => new ZoneCachePresetHelper().AddPresetZone(loaders.Value.Zones())));
         return lazy.Value;
     }
 
@@ -59,32 +58,28 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
         }
     }
 
-    // Per-tenant zone cache keyed by runtime key.
-    private static readonly ConcurrentDictionary<string, Lazy<IReadOnlyDictionary<int, Zone>>> ZoneAppCaches = new();
 
 
     #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
 
-    // Global app-state cache shared by all instances; entries are runtime-key scoped.
-    private static readonly ConcurrentDictionary<string, IAppStateCache> Caches = new();
 
     /// <inheritdoc />
     public bool Has(IAppIdentity app)
-        => Caches.ContainsKey(appCacheKeyService.AppCacheKey(app));
+        => state.AppStates.ContainsKey(appCacheKeyService.AppCacheKey(app));
 
     [PrivateApi]
     public void Add(IAppStateCache appState)
-        => Caches.Set(appCacheKeyService.AppCacheKey(appState), appState);
+        => state.AppStates.Set(appCacheKeyService.AppCacheKey(appState), appState);
 
 
     /// <inheritdoc />
-    public IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools)
-        => Caches.GetOrBuild(appCacheKeyService, tools, app);
+    public IAppStateCache Get(IAppIdentity app)
+        => state.AppStates.GetOrBuild(appCacheKeyService, loaders, app);
 
 
     /// <inheritdoc />
-    public void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools)
-        => Caches.GetOrBuild(appCacheKeyService, tools, app, primaryLanguage);
+    public void Load(IAppIdentity app, string primaryLanguage)
+        => state.AppStates.GetOrBuild(appCacheKeyService, loaders, app, primaryLanguage);
 
     #endregion
 
@@ -92,7 +87,7 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
     #region Update
 
     /// <inheritdoc />
-    public void Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
+    public void Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log)
     {
         var entityIds = entities.ToArray();
         var l = log.Fn($"{appIdentity}, {entityIds.Length} entities");
@@ -100,10 +95,10 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
         if (!Has(appIdentity))
             l.Done("not cached, won't update; probably updating an app in the process of being created.");
         //throw new NullReferenceException($"Trying to update an app which doesn't exist in the cache. This should never happen."); 
-        var appState = Get(appIdentity, tools);
+        var appState = Get(appIdentity);
         if (appState == null)
             throw new NullReferenceException($"AppState was returned null. This should never happen.");
-        tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, new(), [.. entityIds]);
+        loaders.Value.Update(appState, AppStateLoadSequence.ItemLoad, new(), [.. entityIds]);
         l.Done("ok");
     }
 
@@ -116,9 +111,9 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
     public void Purge(IAppIdentity app)
     {
         var key = appCacheKeyService.AppCacheKey(app);
-        if (Caches.TryGetValue(key, out var inCache))
+        if (state.AppStates.TryGetValue(key, out var inCache))
             inCache?.PreRemove();
-        Caches.TryRemove(key, out _);
+        state.AppStates.TryRemove(key, out _);
     }
 
     #endregion
@@ -126,11 +121,11 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
     #region Zones
 
     [PrivateApi]
-    public int ZoneIdOfApp(int appId, IZoneLoader tools)
+    public int ZoneIdOfApp(int appId)
     {
         try
         {
-            var zones = Zones(tools);
+            var zones = Zones();
             return zones.Single(z => z.Value.Apps.Any(a => a.Key == appId)).Key;
         }
         catch (Exception ex)
@@ -140,7 +135,7 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
     }
 
     /// <inheritdoc />
-    public void PurgeZones() => ZoneAppCaches.Clear();
+    public void PurgeZones() => state.ZonesWithApps.Clear();
 
     #endregion
 }

@@ -16,9 +16,8 @@ public interface IAppsCache: IHasIdentityNameId, ILogShouldNeverConnect
     /// Retrieve an app from the cache or build it if not yet available.
     /// </summary>
     /// <param name="app">App identifier.</param>
-    /// <param name="tools">Current service provider, in case the app must be retrieved / generated</param>
     /// <returns>The <see cref="IAppStateCache"/> of the app.</returns>
-    IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools);
+    IAppStateCache Get(IAppIdentity app);
 
     #endregion
 
@@ -28,10 +27,10 @@ public interface IAppsCache: IHasIdentityNameId, ILogShouldNeverConnect
     ///// The list of zones, which internally contains the list of apps. 
     ///// </summary>
     [PrivateApi]
-    IReadOnlyDictionary<int, Zone> Zones(IZoneLoader tools);
+    IReadOnlyDictionary<int, Zone> Zones();
 
     [PrivateApi]
-    int ZoneIdOfApp(int appId, IZoneLoader tools);
+    int ZoneIdOfApp(int appId);
 
     #endregion
 
@@ -69,9 +68,8 @@ public interface IAppsCache: IHasIdentityNameId, ILogShouldNeverConnect
     /// <param name="app">App identifier.</param>
     /// <param name="entities">List of entities which need to be updates.</param>
     /// <param name="log">Log object to log what's happening.</param>
-    /// <param name="tools"></param>
     /// <returns>The updated <see cref="IAppStateCache"/> or null, if it wasn't in the cache so didn't need updating.</returns>
-    void Update(IAppIdentity app, IEnumerable<int> entities, ILog log, IAppLoaderTools tools);
+    void Update(IAppIdentity app, IEnumerable<int> entities, ILog log);
 
     [PrivateApi("wip 12.10+")]
     void Add(IAppStateCache appState);
@@ -86,8 +84,7 @@ public interface IAppsCache: IHasIdentityNameId, ILogShouldNeverConnect
     /// </summary>
     /// <param name="app">App identifier.</param>
     /// <param name="primaryLanguage">Primary language, lower case.</param>
-    /// <param name="tools"></param>
-    void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools);
+    void Load(IAppIdentity app, string primaryLanguage);
 
     #endregion
 

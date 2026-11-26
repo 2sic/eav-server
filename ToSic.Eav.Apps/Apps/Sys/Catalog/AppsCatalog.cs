@@ -1,5 +1,4 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
-using ToSic.Eav.Apps.Sys.Loaders;
 
 namespace ToSic.Eav.Apps.Sys.Catalog;
 
@@ -10,10 +9,11 @@ namespace ToSic.Eav.Apps.Sys.Catalog;
 /// </summary>
 [PrivateApi("internal")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppsCatalog(IAppsCacheSelector appsCacheSelector, LazySvc<IAppLoaderTools> appLoaderTools) : IAppsCatalog
+public class AppsCatalog(IAppsCacheSelector appsCacheSelector)
+    : IAppsCatalog
 {
     public IAppIdentityPure AppIdentity(int appId)
-        => new AppIdentityPure(appsCacheSelector.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader()), appId);
+        => new AppIdentityPure(appsCacheSelector.Value.ZoneIdOfApp(appId), appId);
 
     public IAppIdentityPure PrimaryAppIdentity(int zoneId)
         => new AppIdentityPure(zoneId, Zones[zoneId].PrimaryAppId);
@@ -29,7 +29,7 @@ public class AppsCatalog(IAppsCacheSelector appsCacheSelector, LazySvc<IAppLoade
 
     [field: AllowNull, MaybeNull]
     public IReadOnlyDictionary<int, Zone> Zones => field
-        ??= appsCacheSelector.Value.Zones(appLoaderTools.Value.RepositoryLoader());
+        ??= appsCacheSelector.Value.Zones();
 
     public Zone Zone(int zoneId)
         => Zones.TryGetValue(zoneId, out var zone)
