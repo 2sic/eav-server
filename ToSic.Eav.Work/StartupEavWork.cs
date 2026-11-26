@@ -42,11 +42,11 @@ public static class StartupEavWork
         // v17
         services.TryAddTransient<IRequirementsService, RequirementsServiceUnknown>();
 
+        // v22 - Enable AppWork and allow AppWorkCtx to be injected
+        services.AddAppWorkContext();
+        services.AddAppWorkInjectContext();
+
         // New part v16 with better architecture
-        services.TryAddTransient<AppWorkContextService>();
-        //services.TryAddTransient(typeof(GenWorkPlus<>));
-        //services.TryAddTransient(typeof(GenWorkDb<>));
-        //services.TryAddTransient(typeof(GenWorkBasic<>));
         services.TryAddTransient<WorkEntities>();
         services.TryAddTransient<WorkInputTypes>();
         services.TryAddTransient<WorkEntitySave>();
@@ -89,15 +89,9 @@ public static class StartupEavWork
         services.TryAddTransient<IConvertToEavLight, ConvertEavLightForCode>();
 
 
-        // v22 - Enable AppWorkCtx to be injected
-        services.AddAppWorkContext();
-
         // v22
         services.TryAddTransient<WorkApps>();
         services.TryAddTransient<WorkFieldsDataTypes>();
-        services.TryAddTransient(typeof(AppWorkQuick<>));
-        services.TryAddTransient(typeof(AppWorkChain<>));
-        services.TryAddTransient(typeof(AppDataChain<>));
 
         // v22
         services.TryAddTransient<AppDetailsService>();  // registration for composition
@@ -207,7 +201,7 @@ public static class StartupEavWork
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddAppWorkContext(this IServiceCollection services)
+    public static IServiceCollection AddAppWorkInjectContext(this IServiceCollection services)
     {
         // Make sure that when nothing was overridden, we will get an exception, so that we don't accidentally use a missing context
         services.TryAddTransient<AppWorkContextNotReplaced>();
@@ -217,4 +211,18 @@ public static class StartupEavWork
         return services;
     }
 
+    /// <summary>
+    /// New / WIP v22
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddAppWorkContext(this IServiceCollection services)
+    {
+        services.TryAddTransient<AppWorkContextService>();
+        services.TryAddTransient(typeof(AppWorkQuick<>));
+        services.TryAddTransient(typeof(AppWorkChain<>));
+        services.TryAddTransient(typeof(AppDataChain<>));
+
+        return services;
+    }
 }
