@@ -42,7 +42,7 @@ public class CtxOverrideTests(ISysServiceProvider sp)
         services.TryAddTransient<Cage>();
 
         services.TryAddTransient<AnimalDefault>();
-        services.TryAddTransient(OverrideService<Animal>.Register<AnimalDefault>());
+        //services.TryAddTransient(OverrideService<Animal>.Register<AnimalDefault>());
         services.TryAddTransient<AnimalDog>();
         services.TryAddTransient<AnimalMonkey>();
     });

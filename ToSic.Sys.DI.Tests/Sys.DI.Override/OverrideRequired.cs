@@ -41,6 +41,7 @@ public class OverrideRequired(ISysServiceProvider sp)
         // we'll later access it through the interface, but
         services
             .AddSysCoreDiServiceProviderTac();
+        // TODO: restoring...
         services.TryAddTransient(OverrideService<ICarInitiallyUndefined>.Register(() => new CarUndefinedWillThrow()));
         services.TryAddTransient<ICarFord>();  // make sure the underlying real implementation can be resolved
     });
