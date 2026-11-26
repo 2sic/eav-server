@@ -1,12 +1,14 @@
 ﻿namespace ToSic.Eav.Context.Sys.ZoneCulture;
 
-internal sealed class ZoneCultureResolverUnknown: IZoneCultureResolver, IIsUnknown
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public sealed class ZoneCultureResolverUnknown(WarnUseOfUnknown<ZoneCultureResolverUnknown> _) : IZoneCultureResolver, IIsUnknown
 {
-    public ZoneCultureResolverUnknown(WarnUseOfUnknown<ZoneCultureResolverUnknown> _)
-    {
-
-    }
-
     public string DefaultCultureCode => "en-us";
     public string CurrentCultureCode => "en-us";
+}
+
+[ShowApiWhenReleased(ShowApiMode.Never)]
+public record ZoneCultureInfo(string CurrentCultureCode, string DefaultCultureCode) : IZoneCultureResolver
+{
+
 }

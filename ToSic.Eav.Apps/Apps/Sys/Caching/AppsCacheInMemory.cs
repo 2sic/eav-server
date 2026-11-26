@@ -76,11 +76,6 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService, IAppsCa
     public IAppStateCache Get(IAppIdentity app)
         => state.AppStates.GetOrBuild(appCacheKeyService, loaders, app);
 
-
-    /// <inheritdoc />
-    public void Load(IAppIdentity app, string primaryLanguage)
-        => state.AppStates.GetOrBuild(appCacheKeyService, loaders, app, primaryLanguage);
-
     #endregion
 
 
@@ -98,7 +93,7 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService, IAppsCa
         var appState = Get(appIdentity);
         if (appState == null)
             throw new NullReferenceException($"AppState was returned null. This should never happen.");
-        loaders.Value.Update(appState, AppStateLoadSequence.ItemLoad, new(), [.. entityIds]);
+        loaders.Value.Update(appState, AppStateLoadSequence.ItemLoad, codeRefTrail: new(), entityIds: [.. entityIds]);
         l.Done("ok");
     }
 

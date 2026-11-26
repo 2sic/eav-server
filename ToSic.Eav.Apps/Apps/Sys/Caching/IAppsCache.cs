@@ -76,16 +76,4 @@ public interface IAppsCache: IHasIdentityNameId, ILogShouldNeverConnect
 
     #endregion
 
-    #region PreLoading of Cache when the primary language needs to be specified
-
-    /// <summary>
-    /// Load an app into cache, specifying the primary language.
-    /// This is used in scenarios, where the primary language cannot be auto-detected, so it's set explicitly.
-    /// </summary>
-    /// <param name="app">App identifier.</param>
-    /// <param name="primaryLanguage">Primary language, lower case.</param>
-    void Load(IAppIdentity app, string primaryLanguage);
-
-    #endregion
-
 }

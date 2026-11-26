@@ -126,7 +126,7 @@ public class AppsCacheMultiTenantTests
 
         public ILog? Log => null;
 
-        public string PrimaryLanguage { get; set; } = "en-us";
+        //public string PrimaryLanguage { get; set; } = "en-us";
 
         public IAppStateCache AppState(int appId, CodeRefTrail codeRefTrail) =>
             throw new NotImplementedException();
