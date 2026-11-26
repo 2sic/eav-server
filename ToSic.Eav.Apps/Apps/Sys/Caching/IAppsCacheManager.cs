@@ -1,6 +1,4 @@
-﻿using ToSic.Eav.Apps.Sys.Loaders;
-
-namespace ToSic.Eav.Apps.Sys.Caching;
+﻿namespace ToSic.Eav.Apps.Sys.Caching;
 
 /// <summary>
 /// Marks the objects which are responsible for caching <see cref="IAppStateCache"/> in memory. <br/>
@@ -8,7 +6,7 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IAppsCache: IHasIdentityNameId, ILogShouldNeverConnect
+public interface IAppsCacheManager: IHasIdentityNameId, ILogShouldNeverConnect
 {
     #region Get an App
 

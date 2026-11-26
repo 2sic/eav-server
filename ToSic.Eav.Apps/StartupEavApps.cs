@@ -48,10 +48,10 @@ public static class StartupEavApps
         services.TryAddKeyedSingleton<IAppsCacheState, AppsCacheStateInMemory>(AppsCacheStateInMemory.DefaultNameId); // New v22.03, preparing to use Keyed instead of Switchable
 
         // Register the default memory cache, which should only be used if something wants to override it.
-        services.TryAddTransient<AppsCacheInMemory>();
+        services.TryAddTransient<AppsCacheManager>();
 
         // Register with the default name
-        services.TryAddKeyedTransient<IAppsCache, AppsCacheInMemory>(AppsCacheInMemory.DefaultNameId); // New v22, preparing to use Keyed instead of Switchable
+        services.TryAddKeyedTransient<IAppsCacheManager, AppsCacheManager>(AppsCacheManager.DefaultNameId); // New v22, preparing to use Keyed instead of Switchable
 
         // This is still WIP, depends a bit on how we implement the farm.
         services.TryAddScoped<IAppsCacheSelector, AppsCacheSelector>();

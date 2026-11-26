@@ -10,12 +10,12 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// <remarks>
 /// To replace this, you can implement your own IAppsCache and register it in the DI system.
 ///
-/// 1. Either create a full replacement implementing <see cref="IAppsCache"/> and register it both as <see cref="IAppsCache"/> and as the key it's using.
-/// 2. Or create a lightweight wrapper and inject this as <see cref="IAppsCache"/> (it is also registered in DI).
+/// 1. Either create a full replacement implementing <see cref="IAppsCacheManager"/> and register it both as <see cref="IAppsCacheManager"/> and as the key it's using.
+/// 2. Or create a lightweight wrapper and inject this as <see cref="IAppsCacheManager"/> (it is also registered in DI).
 /// </remarks>
 [PrivateApi]
-internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService, IAppsCacheState state, LazySvc<IAppsAndZonesLoader> loaders)
-    : IAppsCache
+internal class AppsCacheManager(IAppCacheKeyService appCacheKeyService, IAppsCacheState state, LazySvc<IAppsAndZonesLoader> loaders)
+    : IAppsCacheManager
 {
     #region Keyed Service Identity
 

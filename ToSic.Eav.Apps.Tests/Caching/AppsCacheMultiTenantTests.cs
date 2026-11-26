@@ -15,8 +15,8 @@ public class AppsCacheCollection { }
 [Collection("AppsCache")]
 public class AppsCacheMultiTenantTests
 {
-    private IAppsCache CreateAppsCacheTac(IAppCacheKeyService appCacheKeyService, LazySvc<IAppsAndZonesLoader> loaders)
-        => new AppsCacheInMemory(appCacheKeyService, new AppsCacheStateInMemory(), loaders);
+    private IAppsCacheManager CreateAppsCacheTac(IAppCacheKeyService appCacheKeyService, LazySvc<IAppsAndZonesLoader> loaders)
+        => new AppsCacheManager(appCacheKeyService, new AppsCacheStateInMemory(), loaders);
 
     [Fact]
     public void ZonesAreIsolatedByAppCacheKey()
