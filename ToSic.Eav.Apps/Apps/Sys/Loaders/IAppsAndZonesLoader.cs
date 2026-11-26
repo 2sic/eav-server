@@ -10,7 +10,7 @@ namespace ToSic.Eav.Apps.Sys.Loaders;
 /// For more advanced operations, especially when creating new apps, use `IRepositoryLoaderAndCreator`.
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IAppsAndZonesLoader: IHasLog, IContentTypeLoader
+public interface IAppsAndZonesLoader: IHasLog, IZoneLoader, IContentTypeLoader
 {
     /// <summary>
     /// will enforce that app settings etc. are created
@@ -29,9 +29,6 @@ public interface IAppsAndZonesLoader: IHasLog, IContentTypeLoader
     /// <param name="entityIds"></param>
     /// <returns></returns>
     IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds);
-
-
-    IDictionary<int, Zone> Zones();
 
     string PrimaryLanguage { get; set; }
 }

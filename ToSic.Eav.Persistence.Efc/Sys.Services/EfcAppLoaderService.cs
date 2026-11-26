@@ -94,7 +94,7 @@ public class EfcAppLoaderService(
 
     #region IRepositoryLoader Zones and ContentTypes
 
-    IDictionary<int, Zone> IAppsAndZonesLoader.Zones()
+    IDictionary<int, Zone> IZoneLoader.Zones()
         => new EfcZoneLoaderService(this).LoadZones(logStore);
 
     /// <inheritdoc />

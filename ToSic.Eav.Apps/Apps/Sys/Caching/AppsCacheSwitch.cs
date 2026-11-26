@@ -1,4 +1,5 @@
-﻿using ToSic.Eav.Apps.Sys.Loaders;
+﻿using Microsoft.Extensions.DependencyInjection;
+using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Sys.Caching;
 using ToSic.Sys.Capabilities.Features;
 
@@ -6,7 +7,7 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 
 /// <summary>
 /// This will retrieve the current AppCache.
-/// Basically it will get all registered <see cref="IAppsCacheSwitchable"/> and get the first which says it's valid.
+/// Basically it will get all registered <see cref="IAppsCache"/> and get the first which says it's valid.
 /// Once it's found the right one, it will keep returning that,
 /// unless the features report that a setting has been changed, in which case it will re-evaluate the best match. 
 /// </summary>
@@ -17,32 +18,35 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 public class AppsCacheSwitch(
     ILogStore logStore,
     ISysFeaturesService featuresService,
-    LazySvc<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher,
+    //LazySvc<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher,
+    [FromKeyedServices(AppsCache.DefaultNameId)]
+    IAppsCache appsCache,
     LazySvc<IAppLoaderTools> appLoaderTools
-    )
-    : ServiceSwitcherSingleton<IAppsCacheSwitchable>(logStore, serviceSwitcher, connect: [featuresService, appLoaderTools]),
+)
+    : ServiceBase("Eav.ApChSw", connect: [featuresService, appLoaderTools]),
+        //ServiceSwitcherSingleton<IAppsCacheSwitchable>(logStore, serviceSwitcher, connect: [featuresService, appLoaderTools]),
         ICacheDependent, IAppCachePurger
 {
     public IAppLoaderTools AppLoaderTools => appLoaderTools.Value;
 
     #region Main Value Handling (access static presolved value, optionally reset)
 
-    public new IAppsCacheSwitchable Value => field ??= GetOnceDuringCurrentRequest();
+    public IAppsCache Value => field ??= GetOnceDuringCurrentRequest();
 
     public void Purge(IAppIdentity app)
         => Value.Purge(app);
 
 
-    private IAppsCacheSwitchable GetOnceDuringCurrentRequest()
+    private IAppsCache GetOnceDuringCurrentRequest()
     {
         // First call and/or not created yet, retrieve as expected
         if (!CacheChanged())
-            return base.Value;
+            return appsCache;
 
         // Otherwise reset the previously Singleton result and force new retrieve
-        Reset();
+        //Reset();
         CacheTimestamp = featuresService.CacheTimestamp;
-        return base.Value;
+        return appsCache;
     }
 
     public long CacheTimestamp { get; private set; }

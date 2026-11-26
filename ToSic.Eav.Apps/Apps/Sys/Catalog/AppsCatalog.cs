@@ -14,7 +14,7 @@ public class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
     internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
 
     public IAppIdentityPure AppIdentity(int appId)
-        => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, AppsCacheSwitch.AppLoaderTools), appId);
+        => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, AppsCacheSwitch.AppLoaderTools.RepositoryLoader(null)), appId);
 
     public IAppIdentityPure PrimaryAppIdentity(int zoneId)
         => new AppIdentityPure(zoneId, Zones[zoneId].PrimaryAppId);
@@ -29,7 +29,7 @@ public class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
         => Zones[zoneId].Apps;
 
     [field: AllowNull, MaybeNull]
-    public IReadOnlyDictionary<int, Zone> Zones => field ??= AppsCacheSwitch.Value.Zones(AppsCacheSwitch.AppLoaderTools);
+    public IReadOnlyDictionary<int, Zone> Zones => field ??= AppsCacheSwitch.Value.Zones(AppsCacheSwitch.AppLoaderTools.RepositoryLoader(null));
 
     public Zone Zone(int zoneId) => Zones.TryGetValue(zoneId, out var zone)
         ? zone

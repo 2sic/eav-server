@@ -28,10 +28,10 @@ public interface IAppsCache: ILogShouldNeverConnect
     ///// The list of zones, which internally contains the list of apps. 
     ///// </summary>
     [PrivateApi]
-    IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools);
+    IReadOnlyDictionary<int, Zone> Zones(IZoneLoader tools);
 
     [PrivateApi]
-    int ZoneIdOfApp(int appId, IAppLoaderTools tools);
+    int ZoneIdOfApp(int appId, IZoneLoader tools);
 
     #endregion
 

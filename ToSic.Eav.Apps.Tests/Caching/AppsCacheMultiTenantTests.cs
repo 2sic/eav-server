@@ -2,10 +2,6 @@ using System.Collections.ObjectModel;
 using ToSic.Eav.Apps.Sys;
 using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.Apps.Sys.Loaders;
-using ToSic.Eav.Data;
-using ToSic.Eav.Data.Sys.Dimensions;
-using ToSic.Eav.Metadata.Sys;
-using ToSic.Eav.Persistence.Sys.AppState;
 
 namespace ToSic.Eav.Apps.Tests.Caching;
 
@@ -15,22 +11,25 @@ public class AppsCacheCollection { }
 [Collection("AppsCache")]
 public class AppsCacheMultiTenantTests
 {
+    private IAppsCache CreateAppsCacheTac(IAppCacheKeyService appCacheKeyService)
+        => new AppsCache(appCacheKeyService);
+
     [Fact]
     public void ZonesAreIsolatedByAppCacheKey()
     {
-        var loaderTenantA = new FakeAppsAndZonesLoader(() => ZonesWithAppName("TenantA-App"));
-        var loaderTenantB = new FakeAppsAndZonesLoader(() => ZonesWithAppName("TenantB-App"));
+        var loaderTenantA = new FakeZoneLoader(() => ZonesWithAppName("TenantA-App"));
+        var loaderTenantB = new FakeZoneLoader(() => ZonesWithAppName("TenantB-App"));
 
-        var toolsTenantA = new FakeAppLoaderTools(loaderTenantA);
-        var toolsTenantB = new FakeAppLoaderTools(loaderTenantB);
+        //var toolsTenantA = new FakeAppLoaderTools(loaderTenantA);
+        //var toolsTenantB = new FakeAppLoaderTools(loaderTenantB);
 
-        var cacheTenantA = new AppsCache(new FixedAppCacheKeyService("tenant-a"));
-        var cacheTenantB = new AppsCache(new FixedAppCacheKeyService("tenant-b"));
+        var cacheTenantA = CreateAppsCacheTac(new FixedAppCacheKeyService("tenant-a"));
+        var cacheTenantB = CreateAppsCacheTac(new FixedAppCacheKeyService("tenant-b"));
 
         cacheTenantA.PurgeZones();
 
-        var zonesTenantA = cacheTenantA.Zones(toolsTenantA);
-        var zonesTenantB = cacheTenantB.Zones(toolsTenantB);
+        var zonesTenantA = cacheTenantA.Zones(loaderTenantA);
+        var zonesTenantB = cacheTenantB.Zones(loaderTenantB);
 
         Equal("TenantA-App", zonesTenantA[1].Apps[12]);
         Equal("TenantB-App", zonesTenantB[1].Apps[12]);
@@ -42,19 +41,18 @@ public class AppsCacheMultiTenantTests
     public void ZonesDoNotCacheWhenAppCacheKeyMissing()
     {
         var callCount = 0;
-        var loader = new FakeAppsAndZonesLoader(() =>
+        var loader = new FakeZoneLoader(() =>
         {
             var name = $"Call-{Interlocked.Increment(ref callCount)}";
             return ZonesWithAppName(name);
         });
 
-        var tools = new FakeAppLoaderTools(loader);
-        var cache = new AppsCache(new ThrowingAppCacheKeyService());
+        var cache = CreateAppsCacheTac(new ThrowingAppCacheKeyService());
 
         cache.PurgeZones();
 
-        var first = cache.Zones(tools);
-        var second = cache.Zones(tools);
+        var first = cache.Zones(loader);
+        var second = cache.Zones(loader);
 
         NotEqual(first[1].Apps[12], second[1].Apps[12]);
         Equal(2, loader.ZonesCallCount);
@@ -63,19 +61,19 @@ public class AppsCacheMultiTenantTests
     [Fact]
     public void ZonesIncludeGlobalPresetApp()
     {
-        var loader = new FakeAppsAndZonesLoader(() => new Dictionary<int, Zone>());
-        var tools = new FakeAppLoaderTools(loader);
-        var cache = new AppsCache(new FixedAppCacheKeyService("tenant"));
+        var loader = new FakeZoneLoader(() => new Dictionary<int, Zone>());
+        //var tools = new FakeAppLoaderTools(loader);
+        var cache = CreateAppsCacheTac(new FixedAppCacheKeyService("tenant"));
 
         cache.PurgeZones();
 
-        var zones = cache.Zones(tools);
+        var zones = cache.Zones(loader);
 
         True(zones.ContainsKey(KnownAppsConstants.PresetZoneId));
         var presetZone = zones[KnownAppsConstants.PresetZoneId];
         True(presetZone.Apps.ContainsKey(KnownAppsConstants.PresetAppId));
         True(presetZone.Apps.ContainsKey(KnownAppsConstants.GlobalPresetAppId));
-        Equal(KnownAppsConstants.PresetZoneId, cache.ZoneIdOfApp(KnownAppsConstants.GlobalPresetAppId, tools));
+        Equal(KnownAppsConstants.PresetZoneId, cache.ZoneIdOfApp(KnownAppsConstants.GlobalPresetAppId, loader));
     }
 
     private static IDictionary<int, Zone> ZonesWithAppName(string appName)
@@ -111,12 +109,38 @@ public class AppsCacheMultiTenantTests
         public string AppCacheKey(IAppIdentity appIdentity) => throw new InvalidOperationException("No runtime key");
     }
 
-    private sealed class FakeAppLoaderTools(IAppsAndZonesLoader loader) : IAppLoaderTools
-    {
-        public IAppsAndZonesLoader RepositoryLoader(ILog? parentLog) => loader;
-    }
+    //private sealed class FakeAppLoaderTools(IAppsAndZonesLoader loader) : IAppLoaderTools
+    //{
+    //    public IAppsAndZonesLoader RepositoryLoader(ILog? parentLog) => loader;
+    //}
 
-    private sealed class FakeAppsAndZonesLoader(Func<IDictionary<int, Zone>> zonesFactory) : IAppsAndZonesLoader
+    //private sealed class FakeAppsAndZonesLoader(Func<IDictionary<int, Zone>> zonesFactory) : IAppsAndZonesLoader
+    //{
+    //    private int _zonesCalls;
+
+    //    public int ZonesCallCount => _zonesCalls;
+
+    //    public ILog? Log => null;
+
+    //    public string PrimaryLanguage { get; set; } = "en-us";
+
+    //    public IAppStateCache AppState(int appId, CodeRefTrail codeRefTrail) =>
+    //        throw new NotImplementedException();
+
+    //    public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds) =>
+    //        throw new NotImplementedException();
+
+    //    public IDictionary<int, Zone> Zones()
+    //    {
+    //        _zonesCalls++;
+    //        return zonesFactory();
+    //    }
+
+    //    public ICollection<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source) =>
+    //        throw new NotImplementedException();
+    //}
+
+    private sealed class FakeZoneLoader(Func<IDictionary<int, Zone>> zonesFactory) : IZoneLoader
     {
         private int _zonesCalls;
 
@@ -124,21 +148,10 @@ public class AppsCacheMultiTenantTests
 
         public ILog? Log => null;
 
-        public string PrimaryLanguage { get; set; } = "en-us";
-
-        public IAppStateCache AppState(int appId, CodeRefTrail codeRefTrail) =>
-            throw new NotImplementedException();
-
-        public IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds) =>
-            throw new NotImplementedException();
-
         public IDictionary<int, Zone> Zones()
         {
             _zonesCalls++;
             return zonesFactory();
         }
-
-        public ICollection<IContentType> ContentTypes(int appId, IHasMetadataSourceAndExpiring source) =>
-            throw new NotImplementedException();
     }
 }

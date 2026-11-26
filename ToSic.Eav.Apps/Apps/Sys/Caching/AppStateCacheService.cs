@@ -25,5 +25,5 @@ public class AppStateCacheService(AppsCacheSwitch appsCacheSwitch) : IAppStateCa
         => AppsCacheSwitch.Value.Has(appId);
 
     private IAppIdentityPure AppIdentity(int appId)
-        => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, AppsCacheSwitch.AppLoaderTools), appId);
+        => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, AppsCacheSwitch.AppLoaderTools.RepositoryLoader(null)), appId);
 }

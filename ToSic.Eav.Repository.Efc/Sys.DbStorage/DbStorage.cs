@@ -24,7 +24,7 @@ public class DbStorage(
     EavDbContext dbContext,
     LazySvc<EfcAppLoaderService> efcLoaderLazy,
     LazySvc<IUser> userLazy,
-    IAppCachePurger appsCache,
+    IAppCachePurger appsCachePurger,
     Generator<IJsonDataWriter> jsonWriteGenerator,
     ILogStore logStore,
     LazySvc<Compressor> compressor,
@@ -32,7 +32,7 @@ public class DbStorage(
     DataImportLogSettings importLogSettings,
     ISysFeaturesService features)
     : ServiceBase("Db.Data",
-        connect: [efcLoaderLazy, userLazy, appsCache, logStore, dbContext, jsonWriteGenerator, compressor, dataAssembler, importLogSettings, features]
+        connect: [efcLoaderLazy, userLazy, appsCachePurger, logStore, dbContext, jsonWriteGenerator, compressor, dataAssembler, importLogSettings, features]
     ), IStorage, IAppIdentity
 {
 
@@ -291,7 +291,7 @@ public class DbStorage(
     {
         var l = LogDetails.Fn($"{_purgeAppCacheOnSave}");
         if (_purgeAppCacheOnSave)
-            appsCache.Purge(this);
+            appsCachePurger.Purge(this);
         l.Done();
     }
 

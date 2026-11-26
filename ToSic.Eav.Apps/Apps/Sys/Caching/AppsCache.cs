@@ -1,5 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using ToSic.Eav.Apps.Sys.Loaders;
+using ToSic.Eav.Persistence.Sys.AppState;
+using ToSic.Eav.Sys;
+using ToSic.Sys.Locking;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys.Caching;
@@ -9,30 +12,28 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// </summary>
 [PrivateApi]
 internal class AppsCache(IAppCacheKeyService appCacheKeyService)
-#pragma warning disable CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
-    : AppsCacheBase(appCacheKeyService), IAppsCacheSwitchable
-#pragma warning restore CS9107 // Parameter is captured into the state of the enclosing type and its value is also passed to the base constructor. The value might be captured by the base class as well.
+    : IAppsCache //, IAppsCacheSwitchable
 {
     #region SwitchableService
 
     public const string DefaultNameId = "DefaultCache";
 
-    public override string NameId => DefaultNameId;
+    //public  string NameId => DefaultNameId;
 
-    public override bool IsViable() => true;
+    //public bool IsViable() => true;
 
-    public override int Priority => 1;
+    //public int Priority => 1;
 
     #endregion
 
-    public override IReadOnlyDictionary<int, Zone> Zones(IAppLoaderTools tools)
+    public IReadOnlyDictionary<int, Zone> Zones(IZoneLoader tools)
     {
         // Cache zones per-tenant runtime key; if unavailable, skip caching to avoid cross-tenant bleed.
         if (!TryZoneCacheKey(out var cacheKey))
-            return LoadZones(tools);
+            return new ZoneCachePresetHelper().AddPresetZone(tools.Zones());
 
         // Lazy ensures only one LoadZones per tenant key, even under concurrency.
-        var lazy = ZoneAppCaches.GetOrAdd(cacheKey, _ => new(() => LoadZones(tools)));
+        var lazy = ZoneAppCaches.GetOrAdd(cacheKey, _ => new(() => new ZoneCachePresetHelper().AddPresetZone(tools.Zones())));
         return lazy.Value;
     }
 
@@ -65,10 +66,16 @@ internal class AppsCache(IAppCacheKeyService appCacheKeyService)
     private static readonly IDictionary<string, IAppStateCache> Caches = new Dictionary<string, IAppStateCache>();
 
     /// <inheritdoc />
-    protected override bool Has(string cacheKey) => Caches.ContainsKey(cacheKey);
+    public bool Has(IAppIdentity app) => Caches.ContainsKey(appCacheKeyService.AppCacheKey(app));
+
+    ///// <inheritdoc />
+    //private bool Has(string cacheKey) => Caches.ContainsKey(cacheKey);
+
+    [PrivateApi]
+    public void Add(IAppStateCache appState) => Set(appCacheKeyService.AppCacheKey(appState), appState);
 
     /// <inheritdoc />
-    protected override void Set(string key, IAppStateCache item)
+    private void Set(string key, IAppStateCache item)
     {
         try
         {
@@ -87,15 +94,120 @@ internal class AppsCache(IAppCacheKeyService appCacheKeyService)
         }
     }
 
-    /// <inheritdoc />
-    protected override IAppStateCache Get(string key) => Caches[key];
+    ///// <inheritdoc />
+    //private IAppStateCache Get(string key) => Caches[key];
 
     /// <inheritdoc />
-    protected override void Remove(string key) => Caches.Remove(key);    // returns false if key was not found (no Exception)
+    public IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools)
+        => GetOrBuild(tools, app);
+
+
+    /// <inheritdoc />
+    public void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools)
+        => GetOrBuild(tools, app, primaryLanguage);
+
+    ///// <inheritdoc />
+    //protected void Remove(string key) => Caches.Remove(key);    // returns false if key was not found (no Exception)
 
     #endregion
 
-    /// <inheritdoc />
-    public override void PurgeZones() => ZoneAppCaches.Clear();
+    #region GetOrBuild / Lock
 
+    private IAppStateCache GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string? primaryLanguage = null)
+    {
+        if (appIdentity.ZoneId == 0 || appIdentity.AppId == KnownAppsConstants.AppIdEmpty)
+            return null!;
+
+        var cacheKey = appCacheKeyService
+                           .AppCacheKey(appIdentity)
+                           .NullIfNoValue()
+                       ?? throw new InvalidOperationException($"No cache key available for appIdentity: {appIdentity.Show()}");
+
+        //IAppStateCache? appState = null;
+        Caches.TryGetValue(cacheKey, out var appState);
+        if (appState != null)
+            return appState;
+
+        // create lock to prevent parallel initialization
+        var lockKey = LoadLocks.Get(cacheKey);
+        lock (lockKey)
+        {
+            // now that lock is free, it could have been initialized, so re-check
+            Caches.TryGetValue(cacheKey, out appState);
+            if (appState != null)
+                return appState;
+
+            // Init EavSqlStore once
+            var loader = tools.RepositoryLoader(null);
+            if (primaryLanguage != null)
+                loader.PrimaryLanguage = primaryLanguage;
+            appState = loader.AppState(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}; DateTime: {DateTime.Now:O}; 2sxc Version: {EavSystemInfo.VersionString}"));
+            Set(cacheKey, appState);
+        }
+
+        return appState;
+    }
+
+    /// <summary>
+    /// List of locks, to ensure that each app locks the loading process separately
+    /// </summary>
+    private static readonly NamedLocks LoadLocks = new();
+
+
+    #endregion
+
+    #region Update
+
+    /// <inheritdoc />
+    public virtual void Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
+    {
+        var entityIds = entities.ToArray();
+        var l = log.Fn($"{appIdentity}, {entityIds.Length} entities");
+        // if it's not cached yet, ignore the request as partial update won't be necessary
+        if (!Has(appIdentity))
+            l.Done("not cached, won't update; probably updating an app in the process of being created.");
+        //throw new NullReferenceException($"Trying to update an app which doesn't exist in the cache. This should never happen."); 
+        var appState = Get(appIdentity, tools);
+        if (appState == null)
+            throw new NullReferenceException($"AppState was returned null. This should never happen.");
+        tools.RepositoryLoader(log).Update(appState, AppStateLoadSequence.ItemLoad, new(), [.. entityIds]);
+        l.Done("ok");
+    }
+
+    #endregion
+
+
+    #region Purge Cache
+
+    /// <inheritdoc />
+    public void Purge(IAppIdentity app)
+    {
+        var key = appCacheKeyService.AppCacheKey(app);
+        if (Caches.TryGetValue(key, out var inCache))
+            inCache?.PreRemove();
+        Caches.Remove(key);
+    }
+
+    #endregion
+
+    #region Zones
+
+    [PrivateApi]
+    public int ZoneIdOfApp(int appId, IZoneLoader tools)
+    {
+        try
+        {
+            var zones = Zones(tools);
+            return zones.Single(z => z.Value.Apps.Any(a => a.Key == appId)).Key;
+        }
+        catch (Exception ex)
+        {
+            throw new($"Error trying to run {nameof(ZoneIdOfApp)}({appId}) - probably something wrong with the {nameof(appId)}", ex);
+        }
+    }
+
+    /// <inheritdoc />
+    public void PurgeZones() => ZoneAppCaches.Clear();
+
+    #endregion
 }
