@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Apps.Sys.Caching;
 
-internal class AppsCacheStateInMemory : IAppsCacheState
+internal class AppsCacheInMemory : IAppsCacheInMemory
 {
     public const string DefaultNameId = "MemoryCache";
 

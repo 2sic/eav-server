@@ -44,8 +44,8 @@ public static class StartupEavApps
     public static IServiceCollection AddEavAppsCache(this IServiceCollection services)
     {
         // The true cache state as stored locally in memory
-        services.TryAddSingleton<IAppsCacheState, AppsCacheStateInMemory>();
-        services.TryAddKeyedSingleton<IAppsCacheState, AppsCacheStateInMemory>(AppsCacheStateInMemory.DefaultNameId); // New v22.03, preparing to use Keyed instead of Switchable
+        services.TryAddSingleton<IAppsCacheInMemory, AppsCacheInMemory>();
+        services.TryAddKeyedSingleton<IAppsCacheInMemory, AppsCacheInMemory>(AppsCacheInMemory.DefaultNameId); // New v22.03, preparing to use Keyed instead of Switchable
 
         // Register the default memory cache, which should only be used if something wants to override it.
         services.TryAddTransient<AppsCacheManager>();

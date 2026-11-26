@@ -6,7 +6,7 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// Represents the currently stored state of the cache in memory.
 /// </summary>
 [PrivateApi]
-public interface IAppsCacheState
+public interface IAppsCacheInMemory
 {
     /// <summary>
     /// Lists all zones with the corresponding apps.
