@@ -34,8 +34,13 @@ public class AppsCacheSwitch(
     /// <returns></returns>
     private string GetPreferredKey()
     {
-        return AppsCache.DefaultNameId;
+        return PreferredKey;
     }
+
+    /// <summary>
+    /// WIP - currently here to allow testing overrides.
+    /// </summary>
+    public static string PreferredKey = AppsCache.DefaultNameId;
 
     #endregion
 

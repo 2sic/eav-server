@@ -8,7 +8,7 @@ public class ExportBundlePrepare(Generator<IJsonDataWriter> jsonSerializer)
     : ServiceWithSetup<IAppDataContext>("Api.EaCtEx", connect: [jsonSerializer])
 {
     
-    internal (ExportConfiguration export, string fileContent) CreateBundleExport(Guid exportConfiguration, int indentation)
+    public (ExportConfiguration export, string fileContent) CreateBundleExport(Guid exportConfiguration, int indentation)
     {
         var l = Log.Fn<(ExportConfiguration export, string fileContent)>($"create bundle export for ExportConfiguration:{exportConfiguration}");
 
