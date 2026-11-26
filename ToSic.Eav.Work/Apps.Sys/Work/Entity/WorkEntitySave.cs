@@ -22,7 +22,7 @@ namespace ToSic.Eav.Apps.Sys.Work;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntitySave(
     LazySvc<DataAssembler> dataAssembler,
-    AppsCacheSwitch appsCache,
+    LazySvc<IAppCacheUpdate> appsCache,
     LazySvc<ImportExportPathsAndOptions> environmentLazy,
     DataImportLogSettings importLogSettings,
     LazySvc<ContentTypeChangeActionRunner> contentTypeChangeActions
@@ -123,7 +123,7 @@ public class WorkEntitySave(
 
             // Tell the cache to do a partial update
             var intIds = idList.Select(i => i.Id).ToListOpt();
-            appsCache.Update(appReader.PureIdentity(), intIds);
+            appsCache.Value.Update(appReader.PureIdentity(), intIds);
             return idList;
         }
     }

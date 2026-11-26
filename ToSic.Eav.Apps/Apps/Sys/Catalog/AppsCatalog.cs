@@ -10,12 +10,10 @@ namespace ToSic.Eav.Apps.Sys.Catalog;
 /// </summary>
 [PrivateApi("internal")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppsCatalog(AppsCacheSwitch appsCacheSwitch, LazySvc<IAppLoaderTools> appLoaderTools) : IAppsCatalog
+public class AppsCatalog(IAppsCacheSelector appsCacheSelector, LazySvc<IAppLoaderTools> appLoaderTools) : IAppsCatalog
 {
-    internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
-
     public IAppIdentityPure AppIdentity(int appId)
-        => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader(null)), appId);
+        => new AppIdentityPure(appsCacheSelector.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader(null)), appId);
 
     public IAppIdentityPure PrimaryAppIdentity(int zoneId)
         => new AppIdentityPure(zoneId, Zones[zoneId].PrimaryAppId);
@@ -31,7 +29,7 @@ public class AppsCatalog(AppsCacheSwitch appsCacheSwitch, LazySvc<IAppLoaderTool
 
     [field: AllowNull, MaybeNull]
     public IReadOnlyDictionary<int, Zone> Zones => field
-        ??= AppsCacheSwitch.Value.Zones(appLoaderTools.Value.RepositoryLoader(null));
+        ??= appsCacheSelector.Value.Zones(appLoaderTools.Value.RepositoryLoader(null));
 
     public Zone Zone(int zoneId)
         => Zones.TryGetValue(zoneId, out var zone)

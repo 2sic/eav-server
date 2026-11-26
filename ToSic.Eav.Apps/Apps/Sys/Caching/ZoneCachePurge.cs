@@ -1,7 +1,7 @@
 ﻿namespace ToSic.Eav.Apps.Sys.Caching;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-internal class ZoneCachePurge(AppsCacheSwitch appsCacheSelector) : ServiceBase("App.SysMng"),
+internal class ZoneCachePurge(IAppsCacheSelector appsCacheSelector) : ServiceBase("App.SysMng"),
     IZoneCachePurge
 {
     /// <inheritdoc/>

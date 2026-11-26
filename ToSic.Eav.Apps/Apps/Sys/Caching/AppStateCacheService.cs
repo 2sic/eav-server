@@ -10,22 +10,20 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// </summary>
 [PrivateApi("internal")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppStateCacheService(AppsCacheSwitch appsCacheSwitch, LazySvc<IAppLoaderTools> appLoaderTools)
+public class AppStateCacheService(IAppsCacheSelector appsCacheSelector, LazySvc<IAppLoaderTools> appLoaderTools)
     : IAppStateCacheService
 {
-    internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
-
     /// <inheritdoc />
     public IAppStateCache Get(IAppIdentity app)
-        => AppsCacheSwitch.Value.Get(app, appLoaderTools.Value);
+        => appsCacheSelector.Value.Get(app, appLoaderTools.Value);
 
     /// <inheritdoc />
     public IAppStateCache Get(int appId)
-        => AppsCacheSwitch.Value.Get(AppIdentity(appId), appLoaderTools.Value);
+        => appsCacheSelector.Value.Get(AppIdentity(appId), appLoaderTools.Value);
 
     public bool IsCached(IAppIdentity appId)
-        => AppsCacheSwitch.Value.Has(appId);
+        => appsCacheSelector.Value.Has(appId);
 
     private IAppIdentityPure AppIdentity(int appId)
-        => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader(null)), appId);
+        => new AppIdentityPure(appsCacheSelector.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader(null)), appId);
 }

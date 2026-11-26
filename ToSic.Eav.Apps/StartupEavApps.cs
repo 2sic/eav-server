@@ -44,18 +44,19 @@ public static class StartupEavApps
     public static IServiceCollection AddEavAppsCache(this IServiceCollection services)
     {
         // Register the default memory cache, which should only be used if something wants to override it.
-        services.TryAddSingleton<AppsCache>();
+        services.TryAddSingleton<AppsCacheInMemory>();
 
         // Register with the default name
-        services.TryAddKeyedSingleton<IAppsCache, AppsCache>(AppsCache.DefaultNameId); // New v22, preparing to use Keyed instead of Switchable
+        services.TryAddKeyedSingleton<IAppsCache, AppsCacheInMemory>(AppsCacheInMemory.DefaultNameId); // New v22, preparing to use Keyed instead of Switchable
 
-        services.TryAddTransient<AppsCacheSwitch>();
+        services.TryAddScoped<IAppsCacheSelector, AppsCacheSelector>();
         services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
         services.TryAddTransient<IAppCacheKeyService, AppCacheKeyServiceDefault>();
 
         // Units of Work
         services.AddTransient<IAppCachePurge, AppCachePurge>(); // Implementation for the Database layer to use
         services.AddTransient<IZoneCachePurge, ZoneCachePurge>(); // Implementation for the Database layer to use
+        services.AddTransient<IAppCacheUpdate, AppCacheUpdate>(); // Implementation for the Database layer to use
 
         // Catalog
         services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18

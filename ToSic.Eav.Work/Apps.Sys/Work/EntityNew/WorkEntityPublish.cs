@@ -5,7 +5,7 @@ using ToSic.Eav.Repository.Efc.Sys.DbParts;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkEntityPublish(AppsCacheSwitch appsCache)
+public class WorkEntityPublish(LazySvc<IAppCacheUpdate> appsCache)
     : ServiceWithSetup<IAppWorkContext>("AWk.EntPub", connect: [appsCache])
 {
     /// <summary>
@@ -24,7 +24,7 @@ public class WorkEntityPublish(AppsCacheSwitch appsCache)
                  /* ignore */
             }
         // Tell the cache to do a partial update
-        appsCache.Update(MyOptions, entityIds);
+        appsCache.Value.Update(MyOptions, entityIds);
         l.Done();
     }
 

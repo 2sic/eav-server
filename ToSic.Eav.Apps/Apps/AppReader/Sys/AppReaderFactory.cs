@@ -4,8 +4,8 @@ using static ToSic.Eav.Apps.Sys.KnownAppsConstants;
 
 namespace ToSic.Eav.Apps.AppReader.Sys;
 
-internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCacheService appStates, Generator<AppReader> readerGenerator)
-    : ServiceBase("Eav.AppRds"), IAppReaderFactory
+internal class AppReaderFactory(IAppsCacheSelector appsCacheSelector, LazySvc<IAppsCatalog> appsCatalog, IAppStateCacheService appStates, Generator<AppReader> readerGenerator)
+    : ServiceBase("Eav.AppRds", connect: [appsCacheSelector, appsCatalog, appStates, readerGenerator]), IAppReaderFactory
 {
     public IAppReader GetOrKeep(IAppIdentity appIdOrReader)
         => appIdOrReader as IAppReader ?? Get(appIdOrReader);
@@ -55,7 +55,7 @@ internal class AppReaderFactory(LazySvc<IAppsCatalog> appsCatalog, IAppStateCach
 
     public IAppReader? TryGetSystemPreset(bool nullIfNotLoaded)
     {
-        if (nullIfNotLoaded && !((AppStateCacheService)appStates).AppsCacheSwitch.Value.Has(PresetIdentity)) 
+        if (nullIfNotLoaded && !appsCacheSelector.Value.Has(PresetIdentity)) 
             return null;
         return GetSystemPreset();
     }

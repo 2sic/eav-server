@@ -5,8 +5,8 @@ using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Sys.DI;
 
 namespace ToSic.Eav.Apps.Mocks;
-public class AppsCatalogMock(AppsCacheSwitch appsCacheSwitch, LazySvc<IAppLoaderTools> appLoaderTools)
-    : AppsCatalog(appsCacheSwitch, appLoaderTools), IAppsCatalog
+public class AppsCatalogMock(IAppsCacheSelector appsCacheSelector, LazySvc<IAppLoaderTools> appLoaderTools)
+    : AppsCatalog(appsCacheSelector, appLoaderTools), IAppsCatalog
 {
     IAppIdentityPure IAppsCatalog.AppIdentity(int appId)
     {

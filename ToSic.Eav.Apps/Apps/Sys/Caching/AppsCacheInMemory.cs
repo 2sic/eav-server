@@ -12,10 +12,10 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// To replace this, you can implement your own IAppsCache and register it in the DI system.
 ///
 /// 1. Either create a full replacement implementing <see cref="IAppsCache"/> and register it both as <see cref="IAppsCache"/> and as the key it's using.
-/// 2. Or create a lightweight wrapper and inject this <see cref="AppsCache"/> (it is also registered in DI).
+/// 2. Or create a lightweight wrapper and inject this as <see cref="IAppsCache"/> (it is also registered in DI).
 /// </remarks>
 [PrivateApi]
-internal class AppsCache(IAppCacheKeyService appCacheKeyService)
+internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
     : IAppsCache
 {
     #region SwitchableService
@@ -66,7 +66,7 @@ internal class AppsCache(IAppCacheKeyService appCacheKeyService)
     #region The cache-variable + HasCacheItem, SetCacheItem, Get, Remove
 
     // Global app-state cache shared by all instances; entries are runtime-key scoped.
-    private static readonly IDictionary<string, IAppStateCache> Caches = new Dictionary<string, IAppStateCache>();
+    private static readonly ConcurrentDictionary<string, IAppStateCache> Caches = new();
 
     /// <inheritdoc />
     public bool Has(IAppIdentity app)
@@ -118,7 +118,7 @@ internal class AppsCache(IAppCacheKeyService appCacheKeyService)
         var key = appCacheKeyService.AppCacheKey(app);
         if (Caches.TryGetValue(key, out var inCache))
             inCache?.PreRemove();
-        Caches.Remove(key);
+        Caches.TryRemove(key, out _);
     }
 
     #endregion

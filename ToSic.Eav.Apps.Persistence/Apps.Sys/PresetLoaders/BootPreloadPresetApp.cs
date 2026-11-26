@@ -13,7 +13,7 @@ internal sealed class BootPreloadPresetApp(
     ILogStore logStore,
     // loader should be lazy, so we can swap the log before it's created
     LazySvc<IAppStateLoader> appLoader,
-    AppsCacheSwitch appsCache,
+    IAppsCacheSelector appsCache,
     EavFeaturesLoader featuresLoader)
     : ServiceBase("AppPst", connect: [logStore, appLoader, appsCache, featuresLoader]), IBootProcess
 {

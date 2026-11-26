@@ -5,7 +5,7 @@
 // and we don't want to make internals visible to that?
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppCachePurge(AppsCacheSwitch appsCacheSelector) : ServiceBase("App.SysMng"),
+public class AppCachePurge(IAppsCacheSelector appsCacheSelector) : ServiceBase("App.SysMng"),
     IAppCachePurge
 {
     /// <inheritdoc/>

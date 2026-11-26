@@ -12,7 +12,7 @@ public class AppsCacheCollection { }
 public class AppsCacheMultiTenantTests
 {
     private IAppsCache CreateAppsCacheTac(IAppCacheKeyService appCacheKeyService)
-        => new AppsCache(appCacheKeyService);
+        => new AppsCacheInMemory(appCacheKeyService);
 
     [Fact]
     public void ZonesAreIsolatedByAppCacheKey()
