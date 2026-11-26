@@ -19,30 +19,46 @@ public static class StartupEavApps
 {
     public static IServiceCollection AddEavApps(this IServiceCollection services)
     {
+        // App Readers and Factory
         services.TryAddTransient<AppReader>();
+        services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
+
+        // State Builder for cache etc.
         services.TryAddTransient<IAppStateBuilder, AppState.AppStateBuilder>();
 
         // Global Content Types - needed by the Persistence Layer
         services.TryAddTransient<IGlobalDataService, GlobalDataService>();
 
-        // Runtimes and Managers
-        services.AddTransient<IAppCachePurge, AppCachePurge>(); // Implementation for the Database layer to use
-        services.AddTransient<IZoneCachePurge, ZoneCachePurge>(); // Implementation for the Database layer to use
-        services.TryAddTransient<AppFinder>();
-
         // App-State and Cache
-        services.AddTransient<AppsCacheSwitch>();
-        services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
-        services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
-        services.TryAddSingleton<IAppsCache, AppsCache>();
-        services.TryAddKeyedSingleton<IAppsCache, AppsCache>(AppsCache.DefaultNameId); // New v22, preparing to use Keyed instead of Switchable
-        //services.AddSingleton<IAppsCacheSwitchable, AppsCache>();
-        services.TryAddTransient<IAppReaderFactory, AppReaderFactory>(); // new v18
+        services.AddEavAppsCache();
 
+        // Data Stack
         services.TryAddTransient<AppDataStackService>();
 
+        // App Finder Helper for searching for apps by Name
+        services.TryAddTransient<AppFinder>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddEavAppsCache(this IServiceCollection services)
+    {
+        // Register the default memory cache, which should only be used if something wants to override it.
+        services.TryAddSingleton<AppsCache>();
+
+        // Register with the default name
+        services.TryAddKeyedSingleton<IAppsCache, AppsCache>(AppsCache.DefaultNameId); // New v22, preparing to use Keyed instead of Switchable
+
+        services.TryAddTransient<AppsCacheSwitch>();
+        services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
         services.TryAddTransient<IAppCacheKeyService, AppCacheKeyServiceDefault>();
 
+        // Units of Work
+        services.AddTransient<IAppCachePurge, AppCachePurge>(); // Implementation for the Database layer to use
+        services.AddTransient<IZoneCachePurge, ZoneCachePurge>(); // Implementation for the Database layer to use
+
+        // Catalog
+        services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
         return services;
     }
 
