@@ -8,8 +8,8 @@ using ToSic.Eav.Sys;
 namespace ToSic.Eav.ImportExport.Sys.Zip;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZipImport(Generator<AppFileManager> fileManGen, IImportExportEnvironment envSvc, Generator<XmlImportWithFiles> xmlImpExpFiles, AppCachePurger appCachePurger, IAppsCatalog appsCatalog)
-    : ServiceWithSetup<ZipImport.Options>("Zip.Imp", connect: [fileManGen, envSvc, xmlImpExpFiles, appCachePurger, appsCatalog])
+public class ZipImport(Generator<AppFileManager> fileManGen, IImportExportEnvironment envSvc, Generator<XmlImportWithFiles> xmlImpExpFiles, IAppCachePurge appCachePurge, IAppsCatalog appsCatalog)
+    : ServiceWithSetup<ZipImport.Options>("Zip.Imp", connect: [fileManGen, envSvc, xmlImpExpFiles, appCachePurge, appsCatalog])
 {
     public record Options(int ZoneId, int? AppId, bool AllowCode);
 
@@ -214,7 +214,7 @@ public class ZipImport(Generator<AppFileManager> fileManGen, IImportExportEnviro
         // New in V11 - now that we just imported content types into the /system folder
         // the App must be refreshed to ensure these are available for working
         // Must happen after CopyAppFiles(...)
-        appCachePurger.PurgeApp(appId);
+        appCachePurge.Purge(appsCatalog.AppIdentity(appId));
 
         l.Done("ok");
     }

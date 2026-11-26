@@ -6,8 +6,8 @@ using ToSic.Eav.ImportExport.Sys.XmlList;
 namespace ToSic.Eav.ImportExport.Sys.XmlData;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ImportDataXml(LazySvc<ImportListXml> importListXml, AppCachePurger appCachePurger, IAppsCatalog appsCatalog, DataImportLogSettings importLogSettings)
-    : ServiceWithSetup<IAppWorkContext>("Api.EaCtIm", connect: [importListXml, appCachePurger, appsCatalog, importLogSettings])
+public class ImportDataXml(LazySvc<ImportListXml> importListXml, IAppCachePurge appCachePurge, IAppsCatalog appsCatalog, DataImportLogSettings importLogSettings)
+    : ServiceWithSetup<IAppWorkContext>("Api.EaCtIm", connect: [importListXml, appCachePurge, appsCatalog, importLogSettings])
 {
     
     public ContentImportResult XmlImport(ContentFileImportOptions args)
@@ -16,13 +16,13 @@ public class ImportDataXml(LazySvc<ImportListXml> importListXml, AppCachePurger 
 
         var import = PrepareXmlImport(args);
 
-        if (!import.ErrorLog.HasErrors)
-        {
-            import.PersistImportToRepository();
-            appCachePurger.PurgeApp(args.AppId);
-        }
+        if (import.ErrorLog.HasErrors)
+            return l.Return(new(false, import.ErrorLog.Errors), "done, errors: true");
 
-        return l.Return(new(!import.ErrorLog.HasErrors, null), $"done, errors: {import.ErrorLog.HasErrors}");
+        import.PersistImportToRepository();
+        appCachePurge.Purge(appsCatalog.AppIdentity(args.AppId));
+
+        return l.Return(new(!import.ErrorLog.HasErrors, import.ErrorLog.Errors), $"done, errors: {import.ErrorLog.HasErrors}");
     }
 
     public ImportListXml PrepareXmlImport(ContentFileImportOptions args)

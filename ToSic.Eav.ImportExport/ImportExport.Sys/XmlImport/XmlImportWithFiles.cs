@@ -12,13 +12,14 @@ public partial class XmlImportWithFiles(
     LazySvc<ImportService> importerLazy,
     Generator<IStorage, StorageOptions> storageFactory,
     IImportExportEnvironment environment,
-    AppCachePurger appCachePurger,
+    LazySvc<IAppCachePurge> appCachePurger,
+    LazySvc<IZoneCachePurge> zoneCachePurger,
     IAppsCatalog appsCatalog,
     Generator<XmlToEntity, XmlToEntity.Options> xmlToEntity,
     LazySvc<DataAssembler> dataAssembler,
     LazySvc<ContentTypeAssemblyKit> typeAssembler,
     DataImportLogSettings dataImportLogSettings)
-    : ServiceBase("Xml.ImpFil", connect: [importerLazy, storageFactory, environment, appsCatalog, xmlToEntity, appCachePurger, dataAssembler, typeAssembler, dataImportLogSettings])
+    : ServiceBase("Xml.ImpFil", connect: [importerLazy, storageFactory, environment, appsCatalog, xmlToEntity, appCachePurger, zoneCachePurger, dataAssembler, typeAssembler, dataImportLogSettings])
 {
     public int AppId { get; private set; }
     public int ZoneId { get; private set; }

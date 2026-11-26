@@ -5,8 +5,8 @@ using ToSic.Eav.Repository.Efc.Sys.DbStorage;
 namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZoneManager(Generator<DbStorage, StorageOptions> dbLazy, LazySvc<AppCachePurger> appCachePurger)
-    : ServiceBase("App.Zone", connect: [dbLazy, appCachePurger]), IZoneIdentity
+public class ZoneManager(Generator<DbStorage, StorageOptions> dbLazy, LazySvc<IAppCachePurge> appCachePurge, LazySvc<IZoneCachePurge> zoneCachePurge)
+    : ServiceBase("App.Zone", connect: [dbLazy, appCachePurge, zoneCachePurge]), IZoneIdentity
 {
 
     public int ZoneId { get; private set; }
@@ -24,8 +24,17 @@ public class ZoneManager(Generator<DbStorage, StorageOptions> dbLazy, LazySvc<Ap
     #region App management
 
     public void DeleteApp(int appId, bool fullDelete)
-        => appCachePurger.Value.DoAndPurge(ZoneId, appId, () => DbStorage.App.DeleteApp(appId, fullDelete), true);
-
+    {
+        var appIdentity = new AppIdentity(ZoneId, appId);
+        var l = Log.Fn($"AppIdentity: {appIdentity.Show()}");
+        DbStorage.App.DeleteApp(appId, fullDelete);
+        // Purge the app itself, ensuring that pre-purge/cleanup happens.
+        appCachePurge.Value.Purge(appIdentity);
+        // TODO: IDEALLY this would optimize to only purge the correct zone,
+        // but for now we just purge all zone
+        zoneCachePurge.Value.PurgeZoneList();
+        l.Done();
+    }
 
     #endregion
 
@@ -35,7 +44,7 @@ public class ZoneManager(Generator<DbStorage, StorageOptions> dbLazy, LazySvc<Ap
     {
         var l = Log.Fn($"save languages code:{cultureCode}, txt:{cultureText}, act:{active}");
         DbStorage.Dimensions.AddOrUpdateZoneDimension(cultureCode, cultureText, active);
-        appCachePurger.Value.PurgeZoneList();
+        zoneCachePurge.Value.PurgeZoneList();
         l.Done();
     }
 

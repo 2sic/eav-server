@@ -81,7 +81,7 @@ partial class XmlImportWithFiles
         import.ImportIntoDb(importTypes, importEntities.Cast<Entity>().ToList());
 
         l.A($"Purging {ZoneId}/{AppId}");
-        appCachePurger.Purge(ZoneId, AppId);
+        appCachePurger.Value.Purge(new AppIdentity(ZoneId, AppId));
 
         Messages.AddRange(import.Storage.ImportLogToBeRefactored);
 

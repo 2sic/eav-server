@@ -1,11 +1,12 @@
-﻿using ToSic.Eav.Apps.Sys.Caching;
+﻿using ToSic.Eav.Apps.Sys;
+using ToSic.Eav.Apps.Sys.Caching;
 using ToSic.Eav.DataSource.Query.Sys;
 
 namespace ToSic.Eav.DataSources.Query.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class WorkQueryDelete(AppCachePurger systemManagerLazy, QueryDefinitionService queryDefSvc, AppWorkChain<WorkEntityDelete> delete)
-    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod", connect: [systemManagerLazy, queryDefSvc, delete])
+public class WorkQueryDelete(IAppCachePurge appCachePurge, QueryDefinitionService queryDefSvc, AppWorkChain<WorkEntityDelete> delete)
+    : ServiceWithSetup<IAppWorkContext>("AWk.QryMod", connect: [appCachePurge, queryDefSvc, delete])
 {
     public bool Delete(int id)
     {
@@ -34,7 +35,7 @@ public class WorkQueryDelete(AppCachePurger systemManagerLazy, QueryDefinitionSe
         entDelete.Delete(id);
 
         // flush cache
-        systemManagerLazy.PurgeApp(MyOptions.AppId);
+        appCachePurge.Purge(MyOptions.PureIdentity());
 
         return l.ReturnTrue();
     }

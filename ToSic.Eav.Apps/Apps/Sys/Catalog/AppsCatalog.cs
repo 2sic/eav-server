@@ -1,4 +1,5 @@
 ﻿using ToSic.Eav.Apps.Sys.Caching;
+using ToSic.Eav.Apps.Sys.Loaders;
 
 namespace ToSic.Eav.Apps.Sys.Catalog;
 
@@ -9,12 +10,12 @@ namespace ToSic.Eav.Apps.Sys.Catalog;
 /// </summary>
 [PrivateApi("internal")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
+public class AppsCatalog(AppsCacheSwitch appsCacheSwitch, LazySvc<IAppLoaderTools> appLoaderTools) : IAppsCatalog
 {
     internal readonly AppsCacheSwitch AppsCacheSwitch = appsCacheSwitch;
 
     public IAppIdentityPure AppIdentity(int appId)
-        => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, AppsCacheSwitch.AppLoaderTools.RepositoryLoader(null)), appId);
+        => new AppIdentityPure(AppsCacheSwitch.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader(null)), appId);
 
     public IAppIdentityPure PrimaryAppIdentity(int zoneId)
         => new AppIdentityPure(zoneId, Zones[zoneId].PrimaryAppId);
@@ -29,10 +30,11 @@ public class AppsCatalog(AppsCacheSwitch appsCacheSwitch) : IAppsCatalog
         => Zones[zoneId].Apps;
 
     [field: AllowNull, MaybeNull]
-    public IReadOnlyDictionary<int, Zone> Zones => field ??= AppsCacheSwitch.Value.Zones(AppsCacheSwitch.AppLoaderTools.RepositoryLoader(null));
+    public IReadOnlyDictionary<int, Zone> Zones => field
+        ??= AppsCacheSwitch.Value.Zones(appLoaderTools.Value.RepositoryLoader(null));
 
-    public Zone Zone(int zoneId) => Zones.TryGetValue(zoneId, out var zone)
-        ? zone
-        : throw new ArgumentOutOfRangeException(nameof(zoneId), zoneId, $@"Zone {zoneId} found");
-
+    public Zone Zone(int zoneId)
+        => Zones.TryGetValue(zoneId, out var zone)
+            ? zone
+            : throw new ArgumentOutOfRangeException(nameof(zoneId), zoneId, $@"Zone {zoneId} found");
 }

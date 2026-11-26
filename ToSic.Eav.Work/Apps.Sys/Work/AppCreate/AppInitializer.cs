@@ -28,12 +28,10 @@ public class AppInitializer(
     Generator<IAppsAndZonesLoaderWithRaw> repoLoader,
     AppWorkQuick<WorkEntitySave> entitySaveWithNewCtx,
     AppWorkChain<WorkContentTypesMod> contentTypesMod,
-    AppCachePurger cachePurger,
+    IAppCachePurge appCachePurge,
     IAppReaderFactory appReaders)
-    : ServiceWithSetup<IAppWorkContext>("Eav.AppBld", connect: [builder, repoLoader, entitySaveWithNewCtx, contentTypesMod, cachePurger, appReaders])
+    : ServiceWithSetup<IAppWorkContext>("Eav.AppBld", connect: [builder, repoLoader, entitySaveWithNewCtx, contentTypesMod, appCachePurge, appReaders])
 {
-
-    protected readonly AppCachePurger CachePurger = cachePurger;
 
     /// <summary>
     /// Create app-describing entity for configuration and add Settings and Resources Content Type
@@ -96,7 +94,7 @@ public class AppInitializer(
         {
             // since the types were re-created, we must flush it from the cache
             // this is because other APIs may access the AppStates (though they shouldn't)
-            CachePurger.Purge(appReader);
+            appCachePurge.Purge(appReader);
             // get the latest app-state, but not fully initialized so we can make changes
             appReader = repoLoader.New().AppReaderRaw(appReader.AppId, codeRefTrail.WithHere());
         }
@@ -115,7 +113,7 @@ public class AppInitializer(
         entSaver.Save(entitySavePairs);
 
         // 6. Reset App-State to ensure it's reloaded with the added configuration
-        CachePurger.Purge(appReader);
+        appCachePurge.Purge(appReader);
 
         // 7. Return informing that we created something
         return l.ReturnFalse("ok");

@@ -26,12 +26,12 @@ public static class StartupEavApps
         services.TryAddTransient<IGlobalDataService, GlobalDataService>();
 
         // Runtimes and Managers
-        services.TryAddTransient<AppCachePurger>();
+        services.AddTransient<IAppCachePurge, AppCachePurge>(); // Implementation for the Database layer to use
+        services.AddTransient<IZoneCachePurge, ZoneCachePurge>(); // Implementation for the Database layer to use
         services.TryAddTransient<AppFinder>();
 
         // App-State and Cache
         services.AddTransient<AppsCacheSwitch>();
-        services.AddTransient<IAppCachePurger, AppsCacheSwitch>(); // Implementation for the Database layer to use
         services.TryAddTransient<IAppStateCacheService, AppStateCacheService>();
         services.TryAddTransient<IAppsCatalog, AppsCatalog>(); // new v18
         services.TryAddSingleton<IAppsCache, AppsCache>();

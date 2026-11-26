@@ -22,7 +22,7 @@ public class AppControllerReal(
     LazySvc<AppStateSyncSave> appStateSyncSave,
     LazySvc<AppStateSyncRestore> appStateSyncRestore,
     AppWorkQuick<WorkViewsGet> workViews,
-    LazySvc<AppCachePurger> systemManagerLazy)
+    LazySvc<IAppCachePurge> systemManagerLazy)
     : ServiceBase($"{EavLogs.WebApi}.{LogSuffix}Rl",
         connect:
         [
@@ -46,7 +46,7 @@ public class AppControllerReal(
     public bool FlushCache(int zoneId, int appId)
     {
         var l = Log.Fn<bool>($"{zoneId}, {appId}");
-        systemManagerLazy.Value.Purge(zoneId, appId);
+        systemManagerLazy.Value.Purge(new AppIdentity(zoneId, appId));
         return l.ReturnTrue("ok");
     }
 

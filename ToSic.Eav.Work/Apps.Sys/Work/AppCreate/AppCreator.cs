@@ -14,9 +14,9 @@ namespace ToSic.Eav.Apps.Sys.Work;
 public class AppCreator(
     Generator<DbStorage, StorageOptions> db,
     IAppsAndZonesLoaderWithRaw appsAndZonesLoader,
-    AppCachePurger appCachePurger,
+    IZoneCachePurge zoneCachePurge,
     AppWorkQuick<AppInitializer> appInitGenerator)
-    : ServiceBase("Eav.AppBld", connect: [db, appInitGenerator, appCachePurger, appsAndZonesLoader])
+    : ServiceBase("Eav.AppBld", connect: [db, appInitGenerator, zoneCachePurge, appsAndZonesLoader])
 {
     #region Constructor / DI
 
@@ -63,7 +63,7 @@ public class AppCreator(
             .Single();
 
         dbStorage.App.SetInheritanceAndSave(appId, inheritAppId);
-        appCachePurger.PurgeZoneList();
+        zoneCachePurge.PurgeZoneList();
         l.A($"default app configured a:{appId}, inherit:{inheritAppId}");
         return l.Return(appId);
     }
@@ -75,7 +75,7 @@ public class AppCreator(
         var app = db.New(new(_zoneId, null, inheritAppId))
             .App.AddAppAndSave(_zoneId, appGuid, inheritAppId);
 
-        appCachePurger.PurgeZoneList();
+        zoneCachePurge.PurgeZoneList();
         l.A($"app created a:{app.AppId}, guid:{appGuid}");
         return l.Return(app.AppId);
     }

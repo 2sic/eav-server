@@ -2,7 +2,7 @@
 
 namespace ToSic.Eav.Sys.Insights.App;
 
-internal class InsightsPurgeApp(LazySvc<AppCachePurger> appCachePurger)
+internal class InsightsPurgeApp(LazySvc<IAppCachePurge> appCachePurger, IAppsCatalog appsCatalog)
     : InsightsProvider(new()
     {
         Name = Link,
@@ -19,7 +19,7 @@ internal class InsightsPurgeApp(LazySvc<AppCachePurger> appCachePurger)
         if (UrlParamsIncomplete(appId, out var message))
             return message;
 
-        appCachePurger.Value.PurgeApp(appId.Value);
+        appCachePurger.Value.Purge(appsCatalog.AppIdentity(appId.Value));
 
         return $"app {appId} has been purged";
     }

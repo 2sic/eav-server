@@ -9,8 +9,8 @@ namespace ToSic.Eav.Apps.Sys.Work;
 /// It's not part of the normal AppManager / ZoneManager, because when it's initialized it doesn't yet have a real app identity
 /// </summary>
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public class ZoneCreator(Generator<DbStorage, StorageOptions> db, AppCachePurger appCachePurger)
-    : ServiceBase("Eav.AppBld", connect: [db, appCachePurger])
+public class ZoneCreator(Generator<DbStorage, StorageOptions> db, IZoneCachePurge zoneCachePurge)
+    : ServiceBase("Eav.AppBld", connect: [db, zoneCachePurge])
 {
 
     public int Create(string name) 
@@ -18,7 +18,7 @@ public class ZoneCreator(Generator<DbStorage, StorageOptions> db, AppCachePurger
         var l = Log.Fn<int>($"create zone:{name}");
         var zoneId = db.New(new(null, null))
             .Zone.AddZone(name);
-        appCachePurger.PurgeZoneList();
+        zoneCachePurge.PurgeZoneList();
         return l.Return(zoneId, $"created zone {zoneId}");
     }
 

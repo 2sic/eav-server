@@ -26,7 +26,7 @@ public class ImportContent(
     IGlobalConfiguration globalConfiguration,
     IAppReaderFactory appReaders,
     LazySvc<IUser> userLazy,
-    AppCachePurger appCachePurger,
+    LazySvc<IAppCachePurge> appCachePurger,
     LazySvc<ISysFeaturesService> features,
     AppWorkQuick<WorkEntitySave> workEntSave)
     : ServiceBase("Bck.Export",
@@ -36,9 +36,6 @@ public class ImportContent(
             appReaders, appCachePurger, userLazy, features, workEntSave
         ])
 {
-
-    protected readonly AppCachePurger AppCachePurger = appCachePurger;
-
     public ImportResult Import(int zoneId, int appId, string fileName, Stream stream, string defaultLanguage)
     {
         var l = Log.Fn<ImportResult>();
@@ -134,7 +131,7 @@ public class ImportContent(
                 import.ImportIntoDb(types, []);
 
                 l.A($"Purging {zoneId}/{appId}");
-                AppCachePurger.Purge(zoneId, appId);
+                appCachePurger.Value.Purge(new AppIdentity(zoneId, appId));
             }
 
             // are there any entities from bundles for import?

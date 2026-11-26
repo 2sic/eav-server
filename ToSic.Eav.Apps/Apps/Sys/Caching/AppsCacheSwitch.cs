@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ToSic.Eav.Apps.Sys.Loaders;
-using ToSic.Sys.Caching;
+﻿using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Sys.Capabilities.Features;
 
 namespace ToSic.Eav.Apps.Sys.Caching;
@@ -16,22 +14,19 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// </remarks>
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class AppsCacheSwitch(
-    ILogStore logStore,
     ISysFeaturesService featuresService,
     Generator<IAppsCache> appsCache,
     LazySvc<IAppLoaderTools> appLoaderTools)
-    : ServiceBase("Eav.ApChSw", connect: [featuresService, appLoaderTools]),
-        ICacheDependent,
-        IAppCachePurger
+    : ServiceBase("Eav.ApChSw", connect: [featuresService])
 {
-    public IAppLoaderTools AppLoaderTools => appLoaderTools.Value;
-
     #region Main Value Handling (access static presolved value, optionally reset)
 
-    public IAppsCache Value => field ??= GetOnceDuringCurrentRequest();
-
-    public void Purge(IAppIdentity app)
-        => Value.Purge(app);
+    /// <summary>
+    /// Get the current AppsCache - using the name/key from the settings
+    /// so that it could be overloaded.
+    /// </summary>
+    public IAppsCache Value => field
+        ??= appsCache.New(GetPreferredKey());
 
     /// <summary>
     /// TODO: change this to use the key as provided by the featuresService
@@ -41,32 +36,6 @@ public class AppsCacheSwitch(
     {
         return AppsCache.DefaultNameId;
     }
-
-    private IAppsCache GetOnceDuringCurrentRequest()
-    {
-        // First call and/or not created yet, retrieve as expected
-        if (!CacheChanged())
-            return appsCache.New(GetPreferredKey());
-
-        // If the cache has changed, we will
-
-        // Otherwise reset the previously Singleton result and force new retrieve
-        logStore.Add(LogNames.LogStoreServiceSwitcher, Log);
-        Log.Fn(message: "Cache changed; re-check singleton service");
-
-        // Now update the timestamp, so next iteration will know if the cache has changed again
-        CacheTimestamp = featuresService.CacheTimestamp;
-        return appsCache.New(GetPreferredKey());
-    }
-
-    public long CacheTimestamp { get; private set; }
-
-    /// <summary>
-    /// Regard the cache as having changed, if the feature service changes.
-    /// This is important, since features can change which cache is to be used. 
-    /// </summary>
-    /// <returns></returns>
-    public bool CacheChanged() => featuresService.CacheChanged(CacheTimestamp);
 
     #endregion
 

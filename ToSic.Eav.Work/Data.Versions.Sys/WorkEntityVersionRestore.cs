@@ -10,11 +10,11 @@ namespace ToSic.Eav.Data.Versions.Sys;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityVersionRestore(
-    AppCachePurger appCachePurger,
+    IAppCachePurge appCachePurge,
     LazySvc<ImportService> import,
     Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer,
     Generator<DbStorage, StorageOptions> dbGen)
-    : ServiceWithSetup<IAppDataContext>("AWk.EntCre", connect: [appCachePurger, jsonSerializer, import, dbGen])
+    : ServiceWithSetup<IAppDataContext>("AWk.EntCre", connect: [appCachePurge, jsonSerializer, import, dbGen])
 {
 
     /// <summary>
@@ -50,7 +50,7 @@ public class WorkEntityVersionRestore(
         if (entityDraft.HasValue)
             db.Entities.DeleteEntities([entityDraft.Value]);
 
-        appCachePurger.Purge(MyOptions.PureIdentity());
+        appCachePurge.Purge(MyOptions.PureIdentity());
     }
 
 }

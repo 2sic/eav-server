@@ -18,13 +18,13 @@ namespace ToSic.Eav.Apps.Sys.Work;
 
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class WorkEntityRecycle(
-    AppCachePurger appCachePurger,
+    IAppCachePurge appCachePurge,
     LazySvc<ImportService> import,
     Generator<IJsonDataReader, IJsonDataReader.Options> jsonSerializer,
     LazySvc<Compressor> compressor,
     ISysFeaturesService featuresService,
     Generator<DbStorage, StorageOptions> dbGen)
-    : ServiceWithSetup<IAppDataContext>("Wrk.EntRcl", connect: [appCachePurger, import, jsonSerializer, compressor, featuresService, dbGen])
+    : ServiceWithSetup<IAppDataContext>("Wrk.EntRcl", connect: [appCachePurge, import, jsonSerializer, compressor, featuresService, dbGen])
 {
     private const string EntitiesTableName = "ToSIC_EAV_Entities";
 
@@ -68,7 +68,7 @@ public class WorkEntityRecycle(
             RestoreParentRelationshipsFromHistory(appId, historyJsonEntities, restoredEntitiesByGuid);
 
         db.SaveChanges();
-        appCachePurger.Purge(MyOptions.PureIdentity());
+        appCachePurge.Purge(MyOptions.PureIdentity());
 
         l.Done();
     }
