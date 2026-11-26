@@ -8,7 +8,7 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 /// </summary>
 [InternalApi_DoNotUse_MayChangeWithoutNotice("this is just fyi")]
 [ShowApiWhenReleased(ShowApiMode.Never)]
-public interface IAppsCache: ILogShouldNeverConnect
+public interface IAppsCache: IHasIdentityNameId, ILogShouldNeverConnect
 {
     #region Get an App
 

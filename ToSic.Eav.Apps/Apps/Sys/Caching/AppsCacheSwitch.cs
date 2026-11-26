@@ -18,14 +18,11 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 public class AppsCacheSwitch(
     ILogStore logStore,
     ISysFeaturesService featuresService,
-    //LazySvc<ServiceSwitcher<IAppsCacheSwitchable>> serviceSwitcher,
-    [FromKeyedServices(AppsCache.DefaultNameId)]
-    IAppsCache appsCache,
-    LazySvc<IAppLoaderTools> appLoaderTools
-)
+    Generator<IAppsCache> appsCache,
+    LazySvc<IAppLoaderTools> appLoaderTools)
     : ServiceBase("Eav.ApChSw", connect: [featuresService, appLoaderTools]),
-        //ServiceSwitcherSingleton<IAppsCacheSwitchable>(logStore, serviceSwitcher, connect: [featuresService, appLoaderTools]),
-        ICacheDependent, IAppCachePurger
+        ICacheDependent,
+        IAppCachePurger
 {
     public IAppLoaderTools AppLoaderTools => appLoaderTools.Value;
 
@@ -36,17 +33,30 @@ public class AppsCacheSwitch(
     public void Purge(IAppIdentity app)
         => Value.Purge(app);
 
+    /// <summary>
+    /// TODO: change this to use the key as provided by the featuresService
+    /// </summary>
+    /// <returns></returns>
+    private string GetPreferredKey()
+    {
+        return AppsCache.DefaultNameId;
+    }
 
     private IAppsCache GetOnceDuringCurrentRequest()
     {
         // First call and/or not created yet, retrieve as expected
         if (!CacheChanged())
-            return appsCache;
+            return appsCache.New(GetPreferredKey());
+
+        // If the cache has changed, we will
 
         // Otherwise reset the previously Singleton result and force new retrieve
-        //Reset();
+        logStore.Add(LogNames.LogStoreServiceSwitcher, Log);
+        Log.Fn(message: "Cache changed; re-check singleton service");
+
+        // Now update the timestamp, so next iteration will know if the cache has changed again
         CacheTimestamp = featuresService.CacheTimestamp;
-        return appsCache;
+        return appsCache.New(GetPreferredKey());
     }
 
     public long CacheTimestamp { get; private set; }

@@ -1,28 +1,31 @@
 ﻿using System.Collections.Concurrent;
 using ToSic.Eav.Apps.Sys.Loaders;
 using ToSic.Eav.Persistence.Sys.AppState;
-using ToSic.Eav.Sys;
-using ToSic.Sys.Locking;
 using ToSic.Sys.Utils;
 
 namespace ToSic.Eav.Apps.Sys.Caching;
 
 /// <summary>
-/// The default Apps Cache system running on a normal environment.
+/// The local and default Apps Cache system running on a normal environment.
 /// </summary>
+/// <remarks>
+/// To replace this, you can implement your own IAppsCache and register it in the DI system.
+///
+/// 1. Either create a full replacement implementing <see cref="IAppsCache"/> and register it both as <see cref="IAppsCache"/> and as the key it's using.
+/// 2. Or create a lightweight wrapper and inject this <see cref="AppsCache"/> (it is also registered in DI).
+/// </remarks>
 [PrivateApi]
 internal class AppsCache(IAppCacheKeyService appCacheKeyService)
-    : IAppsCache //, IAppsCacheSwitchable
+    : IAppsCache
 {
     #region SwitchableService
 
     public const string DefaultNameId = "DefaultCache";
 
-    //public  string NameId => DefaultNameId;
-
-    //public bool IsViable() => true;
-
-    //public int Priority => 1;
+    /// <summary>
+    /// Identifies this cache to check if the one currently used matches this one.
+    /// </summary>
+    public string NameId => DefaultNameId;
 
     #endregion
 
@@ -66,95 +69,25 @@ internal class AppsCache(IAppCacheKeyService appCacheKeyService)
     private static readonly IDictionary<string, IAppStateCache> Caches = new Dictionary<string, IAppStateCache>();
 
     /// <inheritdoc />
-    public bool Has(IAppIdentity app) => Caches.ContainsKey(appCacheKeyService.AppCacheKey(app));
-
-    ///// <inheritdoc />
-    //private bool Has(string cacheKey) => Caches.ContainsKey(cacheKey);
+    public bool Has(IAppIdentity app)
+        => Caches.ContainsKey(appCacheKeyService.AppCacheKey(app));
 
     [PrivateApi]
-    public void Add(IAppStateCache appState) => Set(appCacheKeyService.AppCacheKey(appState), appState);
+    public void Add(IAppStateCache appState)
+        => Caches.Set(appCacheKeyService.AppCacheKey(appState), appState);
 
-    /// <inheritdoc />
-    private void Set(string key, IAppStateCache item)
-    {
-        try
-        {
-            // add or create
-            // 2018-03-28 added lock - because I assume that's the cause of the random errors sometimes on system-load - see #1498
-            lock (Caches)
-            {
-                Caches[key] = item;
-            }
-        }
-        catch (Exception ex)
-        {
-            // unclear why this pops up sometime...if it would also hit on live, so I'm adding some more info
-            throw new("issue with setting cache item - key is '" + key + "' and cache is null =" +
-                      (Caches == null!) + " and item is null=" + (item == null!), ex);
-        }
-    }
-
-    ///// <inheritdoc />
-    //private IAppStateCache Get(string key) => Caches[key];
 
     /// <inheritdoc />
     public IAppStateCache Get(IAppIdentity app, IAppLoaderTools tools)
-        => GetOrBuild(tools, app);
+        => Caches.GetOrBuild(appCacheKeyService, tools, app);
 
 
     /// <inheritdoc />
     public void Load(IAppIdentity app, string primaryLanguage, IAppLoaderTools tools)
-        => GetOrBuild(tools, app, primaryLanguage);
-
-    ///// <inheritdoc />
-    //protected void Remove(string key) => Caches.Remove(key);    // returns false if key was not found (no Exception)
+        => Caches.GetOrBuild(appCacheKeyService, tools, app, primaryLanguage);
 
     #endregion
 
-    #region GetOrBuild / Lock
-
-    private IAppStateCache GetOrBuild(IAppLoaderTools tools, IAppIdentity appIdentity, string? primaryLanguage = null)
-    {
-        if (appIdentity.ZoneId == 0 || appIdentity.AppId == KnownAppsConstants.AppIdEmpty)
-            return null!;
-
-        var cacheKey = appCacheKeyService
-                           .AppCacheKey(appIdentity)
-                           .NullIfNoValue()
-                       ?? throw new InvalidOperationException($"No cache key available for appIdentity: {appIdentity.Show()}");
-
-        //IAppStateCache? appState = null;
-        Caches.TryGetValue(cacheKey, out var appState);
-        if (appState != null)
-            return appState;
-
-        // create lock to prevent parallel initialization
-        var lockKey = LoadLocks.Get(cacheKey);
-        lock (lockKey)
-        {
-            // now that lock is free, it could have been initialized, so re-check
-            Caches.TryGetValue(cacheKey, out appState);
-            if (appState != null)
-                return appState;
-
-            // Init EavSqlStore once
-            var loader = tools.RepositoryLoader(null);
-            if (primaryLanguage != null)
-                loader.PrimaryLanguage = primaryLanguage;
-            appState = loader.AppState(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}; DateTime: {DateTime.Now:O}; 2sxc Version: {EavSystemInfo.VersionString}"));
-            Set(cacheKey, appState);
-        }
-
-        return appState;
-    }
-
-    /// <summary>
-    /// List of locks, to ensure that each app locks the loading process separately
-    /// </summary>
-    private static readonly NamedLocks LoadLocks = new();
-
-
-    #endregion
 
     #region Update
 
