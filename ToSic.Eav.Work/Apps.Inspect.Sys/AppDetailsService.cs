@@ -27,8 +27,7 @@ public class AppDetailsService(CodeInfoStats codeStats, Generator<IAppPathsMicro
         return new()
         {
             Id = appReader.AppId,
-            IsApp = specs.NameId != KnownAppsConstants.DefaultAppGuid &&
-                    specs.NameId != KnownAppsConstants.PrimaryAppGuid, // #SiteApp v13
+            IsApp = !specs.IsContentApp() && !specs.IsSiteSettingsApp(), // #SiteApp v13
             Guid = specs.NameId,
             Name = specs.Name,
             Folder = specs.Folder,

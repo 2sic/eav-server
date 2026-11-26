@@ -13,7 +13,7 @@ namespace ToSic.Eav.Apps.Sys.Catalog;
 public class AppsCatalog(IAppsCacheSelector appsCacheSelector, LazySvc<IAppLoaderTools> appLoaderTools) : IAppsCatalog
 {
     public IAppIdentityPure AppIdentity(int appId)
-        => new AppIdentityPure(appsCacheSelector.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader(null)), appId);
+        => new AppIdentityPure(appsCacheSelector.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader()), appId);
 
     public IAppIdentityPure PrimaryAppIdentity(int zoneId)
         => new AppIdentityPure(zoneId, Zones[zoneId].PrimaryAppId);
@@ -29,7 +29,7 @@ public class AppsCatalog(IAppsCacheSelector appsCacheSelector, LazySvc<IAppLoade
 
     [field: AllowNull, MaybeNull]
     public IReadOnlyDictionary<int, Zone> Zones => field
-        ??= appsCacheSelector.Value.Zones(appLoaderTools.Value.RepositoryLoader(null));
+        ??= appsCacheSelector.Value.Zones(appLoaderTools.Value.RepositoryLoader());
 
     public Zone Zone(int zoneId)
         => Zones.TryGetValue(zoneId, out var zone)

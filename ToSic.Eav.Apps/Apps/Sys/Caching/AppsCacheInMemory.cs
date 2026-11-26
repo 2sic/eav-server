@@ -18,7 +18,7 @@ namespace ToSic.Eav.Apps.Sys.Caching;
 internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
     : IAppsCache
 {
-    #region SwitchableService
+    #region Keyed Service Identity
 
     public const string DefaultNameId = "DefaultCache";
 
@@ -92,7 +92,7 @@ internal class AppsCacheInMemory(IAppCacheKeyService appCacheKeyService)
     #region Update
 
     /// <inheritdoc />
-    public virtual void Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
+    public void Update(IAppIdentity appIdentity, IEnumerable<int> entities, ILog log, IAppLoaderTools tools)
     {
         var entityIds = entities.ToArray();
         var l = log.Fn($"{appIdentity}, {entityIds.Length} entities");

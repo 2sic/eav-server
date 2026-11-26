@@ -25,5 +25,5 @@ public class AppStateCacheService(IAppsCacheSelector appsCacheSelector, LazySvc<
         => appsCacheSelector.Value.Has(appId);
 
     private IAppIdentityPure AppIdentity(int appId)
-        => new AppIdentityPure(appsCacheSelector.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader(null)), appId);
+        => new AppIdentityPure(appsCacheSelector.Value.ZoneIdOfApp(appId, appLoaderTools.Value.RepositoryLoader()), appId);
 }

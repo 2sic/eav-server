@@ -8,7 +8,6 @@ public static class AppSpecsInspector
     public static bool IsContentApp(this IAppSpecs specs)
         => specs.NameId == KnownAppsConstants.DefaultAppGuid;
 
-    // TODO: @STV - try to use this where possible
     public static bool IsSiteSettingsApp(this IAppSpecs specs)
         => specs.NameId == KnownAppsConstants.PrimaryAppGuid;
 

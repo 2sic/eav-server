@@ -53,7 +53,7 @@ public static class AppsCacheLockExtensions
                 return appState;
 
             // Init EavSqlStore once
-            var loader = tools.RepositoryLoader(null);
+            var loader = tools.RepositoryLoader();
             if (primaryLanguage != null)
                 loader.PrimaryLanguage = primaryLanguage;
             appState = loader.AppState(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}; DateTime: {DateTime.Now:O}; 2sxc Version: {EavSystemInfo.VersionString}"));
