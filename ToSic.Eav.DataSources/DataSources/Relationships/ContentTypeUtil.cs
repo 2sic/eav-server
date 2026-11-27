@@ -31,6 +31,17 @@ internal class ContentTypeUtil
         [ContentTypeTitle]
         public string Name => contentType.Name;
 
+        public string Label
+        {
+            get
+            {
+                var label = contentType.DetailsOrNull()?.Label;
+                return string.IsNullOrEmpty(label) ? contentType.Name : label!;
+            }
+        }
+
+        public string? Description => contentType.DetailsOrNull()?.Description;
+
         public string NameId => contentType.NameId;
         public bool IsDynamic => contentType.IsDynamic;
         public string Scope => contentType.Scope;
