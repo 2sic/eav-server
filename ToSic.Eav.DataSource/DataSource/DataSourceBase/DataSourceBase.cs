@@ -39,7 +39,7 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Depend
     /// <param name="callSetup">Whether to call the Setup method - which usually must be overriden. It's only here to differentiate between constructors.</param>
     /// <param name="connect"></param>
     [PrivateApi]
-    protected internal DataSourceBase(Dependencies services, string logName, bool callSetup, object[]? connect = default) : this(services, logName, connect: connect)
+    protected internal DataSourceBase(Dependencies services, bool callSetup, string logName,  object[]? connect = default) : this(services, logName, connect: connect)
     {
         if (callSetup)
             // ReSharper disable once VirtualMemberCallInConstructor

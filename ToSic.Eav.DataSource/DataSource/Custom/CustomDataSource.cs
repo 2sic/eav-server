@@ -39,12 +39,16 @@ public class CustomDataSource: DataSourceBase
     /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.Dependencies)</param>
     /// <param name="logName">Optional name for logging such as `My.JsonDS`</param>
     /// <param name="connect"></param>
-    protected internal CustomDataSource(Dependencies services, string? logName = null, object[]? connect = null)
-        : base(services, logName ?? "Ds.CustLt", connect: connect)
+    protected internal CustomDataSource(Dependencies services, string logName, object[]? connect = null)
+        : base(services: services, logName: logName ?? "Ds.CustLt", connect: connect)
     {
         // Provide a default out, in case the overriding class doesn't
         ProvideOut(() => ConvertRaw(GetDefault, null));
     }
+
+    protected internal CustomDataSource(Dependencies services, bool callSetup, string logName, object[]? connect = null)
+        : base(services: services, logName: logName, callSetup: callSetup, connect: connect)
+    { }
 
     /// <summary>
     /// Every new DataSource based on this is [immutable](xref:NetCode.Conventions.Immutable).
