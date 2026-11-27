@@ -30,5 +30,5 @@ public interface IAppsAndZonesLoader: IHasLog, IZoneLoader, IContentTypeLoader
     /// <returns></returns>
     IAppStateCache Update(IAppStateCache app, AppStateLoadSequence startAt, CodeRefTrail codeRefTrail, int[] entityIds);
 
-    string PrimaryLanguage { get; set; }
+    //string PrimaryLanguage { get; set; }
 }

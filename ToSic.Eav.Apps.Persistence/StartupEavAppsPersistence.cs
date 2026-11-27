@@ -21,8 +21,6 @@ public static class StartupEavAppsPersistence
     public static IServiceCollection AddEavAppsPersistence(this IServiceCollection services)
     {
         // App Loaders
-        services.TryAddTransient<IAppLoaderTools, AppLoaderTools>();
-
         services.AddTransient<IBootProcess, BootWarmUpAssemblies>();
         services.AddTransient<IBootProcess, BootPreloadPresetApp>();
         services.TryAddTransient<AppLoaderLogSettings>();   // new v20

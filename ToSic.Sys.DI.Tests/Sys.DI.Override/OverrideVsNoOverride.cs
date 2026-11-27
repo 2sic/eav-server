@@ -30,8 +30,8 @@ public class OverrideVsNoOverride(ISysServiceProvider sp)
         // must be registered as transient, and just created once.
         // so we could have the implementation as scoped
         //services.TryAddScoped(OverrideService<IMockScopedToReRegisterReqITransient>.Register<MockScopedToReRegisterReqITransient>());
-        services.TryAddTransient<Implementation>();
-        services.TryAddTransient(OverrideService<IInterface>.RegisterScoped<Implementation>());
+        services.TryAddScoped<Implementation>();
+        services.TryAddTransient(OverrideService<IInterface>.Register<Implementation>());
     });
 
     #endregion

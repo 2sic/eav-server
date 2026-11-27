@@ -30,6 +30,24 @@ public abstract partial class DataSourceBase : ServiceBase<DataSourceBase.Depend
         this.AutoLoadAllConfigMasks(GetType(), services.ConfigDataLoader);
     }
 
+    /// <summary>
+    /// Special Constructor, internal only.
+    /// This is for special data sources who need to specify multiple streams, but want to benefit from primary constructors to KISS.
+    /// </summary>
+    /// <param name="services">All the needed services - see [](xref:NetCode.Conventions.Dependencies)</param>
+    /// <param name="logName">Your own log name, such as `My.CsvDs`</param>
+    /// <param name="callSetup">Whether to call the Setup method - which usually must be overriden. It's only here to differentiate between constructors.</param>
+    /// <param name="connect"></param>
+    [PrivateApi]
+    protected internal DataSourceBase(Dependencies services, string logName, bool callSetup, object[]? connect = default) : this(services, logName, connect: connect)
+    {
+        if (callSetup)
+            // ReSharper disable once VirtualMemberCallInConstructor
+            SetupProvideOut();
+    }
+
+    protected internal virtual void SetupProvideOut() {}
+
     /// <inheritdoc />
     [PrivateApi]
     [ShowApiWhenReleased(ShowApiMode.Never)]

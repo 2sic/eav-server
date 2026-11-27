@@ -37,6 +37,9 @@ public static class StartupEavContext
         // v22 separate AppToZoneMapping
         services.TryAddTransient<ISiteOfAppSvc, SiteOfAppSvc>();
 
+        // v22 separate ZoneCultureResolver - provide the default from DI if not overriden
+        //services.TryAddTransient<OverrideService<CtxValue<IZoneCultureResolver>, ZoneCultureResolver>>();
+
         return services;
     }
 

@@ -15,131 +15,110 @@ public sealed class ContextualServiceProvider
         IServiceScopeFactory
 {
     private readonly ISystemServiceProviderExplicit _inner;
-    private readonly ExecutionContext? _capturedContext;
-    private readonly bool _capturedHasOverrides;
+    private readonly AmbientOverrideTracker.Entry? _capturedOverrides;
 
     public ContextualServiceProvider(ISystemServiceProviderExplicit inner)
-        : this(inner, ExecutionContext.Capture(), AmbientOverrideTracker.HasActiveOverrides)
+        : this(inner, AmbientOverrideTracker.Current)
     {
     }
 
     private ContextualServiceProvider(
         ISystemServiceProviderExplicit inner,
-        ExecutionContext? capturedContext,
-        bool capturedHasOverrides)
+        AmbientOverrideTracker.Entry? capturedOverrides)
     {
-        _inner = inner ?? throw new ArgumentNullException(nameof(inner));
-        _capturedContext = capturedContext;
-        _capturedHasOverrides = capturedHasOverrides;
+        _inner = inner;
+        _capturedOverrides = capturedOverrides;
     }
 
     public object? GetService(Type serviceType)
     {
-        // Intercept nested requests for the provider or scope factory
-        if (serviceType == typeof(ISystemServiceProviderExplicit)   /* IServiceProvider */
-            || serviceType == typeof(IKeyedServiceProvider)
-            || serviceType == typeof(IServiceScopeFactory))
+        if (serviceType == typeof(ISystemServiceProviderExplicit) ||
+            serviceType == typeof(IKeyedServiceProvider) ||
+            serviceType == typeof(IServiceScopeFactory))
+        {
             return this;
+        }
 
-        // Self-Capture: not necessary, as it will happen automatically
-        // when the underlying ServiceProvider is called
-        //if (serviceType == typeof(ISysServiceProvider))
-        //    return new ContextualServiceProvider(_inner);
+        if (serviceType == typeof(ISysServiceProvider))
+        {
+            var merged = AmbientOverrideTracker.Merge(_capturedOverrides, AmbientOverrideTracker.Current);
+            return new ContextualServiceProvider(_inner, merged);
+        }
 
-        if (/*AmbientOverrideTracker.HasActiveOverrides ||*/ !_capturedHasOverrides || _capturedContext == null)
-            return _inner.GetService(serviceType);
-
-        var state = new ResolveState { Provider = _inner, ServiceType = serviceType };
-        ExecutionContext.Run(_capturedContext.CreateCopy(), ResolveCallback, state);
-        return state.Result;
+        return ExecuteWithOverrides(_inner, static (p, t) => p.GetService(t), serviceType);
     }
 
     public object? GetKeyedService(Type serviceType, object? serviceKey)
     {
         if (_inner is not IKeyedServiceProvider keyedInner)
-            throw new InvalidOperationException("Underlying provider does not support keyed services.");
+            throw new InvalidOperationException("This service provider doesn't support keyed services.");
 
-        if (/*AmbientOverrideTracker.HasActiveOverrides ||*/ !_capturedHasOverrides || _capturedContext == null)
-            return keyedInner.GetKeyedService(serviceType, serviceKey);
-
-        var state = new ResolveState
-        {
-            Provider = _inner,
-            ServiceType = serviceType,
-            ServiceKey = serviceKey,
-            IsKeyed = true
-        };
-        ExecutionContext.Run(_capturedContext.CreateCopy(), ResolveCallback, state);
-        return state.Result;
+        return ExecuteWithOverrides(
+            keyedInner,
+            static (p, args) => p.GetKeyedService(args.serviceType, args.serviceKey),
+            (serviceType, serviceKey));
     }
 
     public object GetRequiredKeyedService(Type serviceType, object? serviceKey)
     {
         if (_inner is not IKeyedServiceProvider keyedInner)
-            throw new InvalidOperationException("Underlying provider does not support keyed services.");
+            throw new InvalidOperationException("This service provider doesn't support keyed services.");
 
-        if (/*AmbientOverrideTracker.HasActiveOverrides ||*/ !_capturedHasOverrides || _capturedContext == null)
-            return keyedInner.GetRequiredKeyedService(serviceType, serviceKey);
-
-        var state = new ResolveState
-        {
-            Provider = _inner,
-            ServiceType = serviceType,
-            ServiceKey = serviceKey,
-            IsKeyed = true,
-            IsRequired = true
-        };
-        ExecutionContext.Run(_capturedContext.CreateCopy(), ResolveCallback, state);
-        return state.Result!;
+        return ExecuteWithOverrides(
+            keyedInner,
+            static (p, args) => p.GetRequiredKeyedService(args.serviceType, args.serviceKey),
+            (serviceType, serviceKey));
     }
 
-    public IServiceScope CreateScope()
+    public ContextualServiceScope CreateScope()
     {
-        var innerScope = _inner.CreateScope();
-        return new ContextualServiceScope(innerScope, _capturedContext, _capturedHasOverrides);
+        var merged = AmbientOverrideTracker.Merge(_capturedOverrides, AmbientOverrideTracker.Current);
+        return new(_inner.CreateScope(), merged);
     }
 
-    private static readonly ContextCallback ResolveCallback = static s =>
+    IServiceScope IServiceScopeFactory.CreateScope() => CreateScope();
+
+    private TResult ExecuteWithOverrides<TProvider, TState, TResult>(
+        TProvider provider,
+        Func<TProvider, TState, TResult> resolve,
+        TState state)
     {
-        var state = (ResolveState)s!;
-        state.Result = (state.IsKeyed, state.IsRequired) switch
+        if (_capturedOverrides is null)
+            return resolve(provider, state);
+
+        var current = AmbientOverrideTracker.Current;
+        var effective = current is null ? _capturedOverrides : AmbientOverrideTracker.Merge(current, _capturedOverrides);
+
+        AmbientOverrideTracker.Current = effective;
+        try
         {
-            (false, _) => state.Provider.GetService(state.ServiceType),
-            (true, false) => ((IKeyedServiceProvider)state.Provider).GetKeyedService(state.ServiceType, state.ServiceKey),
-            (true, true) => ((IKeyedServiceProvider)state.Provider).GetRequiredKeyedService(state.ServiceType, state.ServiceKey)
-        };
-    };
-
-    private sealed class ResolveState
-    {
-        public required ISystemServiceProviderExplicit Provider { get; init; }
-        public required Type ServiceType { get; init; }
-        public object? ServiceKey { get; init; }
-        public bool IsKeyed { get; init; }
-        public bool IsRequired { get; init; }
-        public object? Result { get; set; }
-    }
-
-    private sealed class ContextualServiceScope(
-        IServiceScope innerScope,
-        ExecutionContext? capturedContext,
-        bool capturedHasOverrides)
-        : IServiceScope, IAsyncDisposable
-    {
-        public ISystemServiceProviderExplicit ServiceProvider { get; } = new ContextualServiceProvider(
-            innerScope.ServiceProvider,
-            capturedContext,
-            capturedHasOverrides);
-
-        public void Dispose() => innerScope.Dispose();
-
-        public ValueTask DisposeAsync()
-        {
-            if (innerScope is IAsyncDisposable asyncDisposable)
-                return asyncDisposable.DisposeAsync();
-
-            innerScope.Dispose();
-            return default;
+            return resolve(provider, state);
         }
+        finally
+        {
+            AmbientOverrideTracker.Current = current;
+        }
+    }
+
+    public sealed class ContextualServiceScope : IServiceScope, IAsyncDisposable
+    {
+        private readonly IServiceScope _innerScope;
+
+        public ISysServiceProvider ServiceProvider { get; }
+        ISystemServiceProviderExplicit IServiceScope.ServiceProvider => ServiceProvider;
+
+        internal ContextualServiceScope(
+            IServiceScope innerScope,
+            AmbientOverrideTracker.Entry? capturedOverrides)
+        {
+            _innerScope = innerScope;
+            ServiceProvider = new ContextualServiceProvider(innerScope.ServiceProvider, capturedOverrides);
+        }
+
+        public void Dispose() => _innerScope.Dispose();
+
+        public ValueTask DisposeAsync() => _innerScope is IAsyncDisposable asyncDisposable
+            ? asyncDisposable.DisposeAsync()
+            : new(Task.Run(_innerScope.Dispose));
     }
 }

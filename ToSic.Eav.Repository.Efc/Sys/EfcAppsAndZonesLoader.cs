@@ -36,10 +36,4 @@ internal class EfcAppsAndZonesLoader(Generator<DbStorage.DbStorage, StorageOptio
         _dbStorage.Zone.AddMissingPrimaryApps();
         return _dbStorage.Loader.Zones();
     }
-
-    public string PrimaryLanguage
-    {
-        get => _dbStorage.Loader.PrimaryLanguage;
-        set => _dbStorage.Loader.PrimaryLanguage = value;
-    }
 }

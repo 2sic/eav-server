@@ -31,7 +31,8 @@ namespace ToSic.Eav.Persistence.Efc.Sys.Services;
 [ShowApiWhenReleased(ShowApiMode.Never)]
 public class EfcAppLoaderService(
     EavDbContext context,
-    LazySvc<IZoneCultureResolver> environmentLazy,
+    Ctx<IZoneCultureResolver> ctxCulture,
+    LazySvc<IZoneCultureResolver> zoneCulture,
     IAppInitializedChecker initializedChecker,
     IAppsCatalog appsCatalog,
     IAppStateCacheService appStates,
@@ -45,7 +46,7 @@ public class EfcAppLoaderService(
     : ServiceBase("Db.Efc11",
         connect:
         [
-            context, environmentLazy, initializedChecker, appsCatalog, appStates, logStore, sysFeaturesSvc, dataAssembler, ctAssemblyKit,
+            context, ctxCulture, zoneCulture, initializedChecker, appsCatalog, appStates, logStore, sysFeaturesSvc, dataAssembler, ctAssemblyKit,
             dataDeserializer, appFileContentTypesLoader, appStateBuilder
         ]), IAppsAndZonesLoaderWithRaw
 {
@@ -74,7 +75,9 @@ public class EfcAppLoaderService(
             if (field != null)
                 return field;
             var l = Log.Fn<string>();
-            field = environmentLazy.Value.DefaultCultureCode.ToLowerInvariant();
+            // Try to get the culture from the current context (search scenario)
+            // or from the current zone culture (normal scenario)
+            field = (ctxCulture.ValueOptional ?? zoneCulture.Value).DefaultCultureCode.ToLowerInvariant();
             return l.Return(field, $"Primary language from Env (for value sorting): {field}");
         }
         set;
@@ -133,7 +136,10 @@ public class EfcAppLoaderService(
         // Note that to ensure the Content app works, we must perform the same check again in the 
         // API Endpoint which will edit this data
 
-        var l = Log.Fn<IAppStateCache>($"{appId}", timer: true);
+        var l = Log.Fn<IAppStateCache>($"App: {appId}", timer: true);
+
+        //if (primaryLanguage.HasValue())
+        //    PrimaryLanguage = primaryLanguage;
 
         var builder = LoadAppStateRawFromDb(appId, codeRefTrail.WithHere().AddMessage("First Build"));
 

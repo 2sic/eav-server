@@ -54,19 +54,19 @@ public sealed class Ctx<TService>(ISysServiceProvider sp)
     /// Register a replacement for the context.
     /// </summary>
     /// <param name="value"></param>
-    /// <param name="cName"></param>
+    /// <param name="callerName"></param>
     /// <returns></returns>
-    public static IDisposable Use(TService value, [CallerMemberName] string? cName = null)
-        => OverrideService<CtxValue<TService>>.Use(new CtxValue<TService>(value), cName: cName);
+    public static IDisposable Use(TService value, [CallerMemberName] string? callerName = null)
+        => OverrideService<CtxValue<TService>>.Use(new CtxValue<TService>(value), callerName: callerName);
 
     /// <summary>
     /// Register a replacement using a function - for delayed retrieval.
     /// </summary>
     /// <param name="valueFactory"></param>
-    /// <param name="cName"></param>
+    /// <param name="callerName"></param>
     /// <returns></returns>
-    public static IDisposable Use(Func<TService> valueFactory, [CallerMemberName] string? cName = null)
-        => OverrideService<CtxValue<TService>>.Use((_) => new(valueFactory()), cName: cName);
+    public static IDisposable Use(Func<TService> valueFactory, [CallerMemberName] string? callerName = null)
+        => OverrideService<CtxValue<TService>>.Use((_) => new(valueFactory()), callerName: callerName);
 }
 
 internal class CtxNotAssignedException(Type ctxType)

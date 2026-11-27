@@ -28,7 +28,7 @@ public static class AppsCacheLockExtensions
 
     #region GetOrBuild / Lock
 
-    public static IAppStateCache GetOrBuild(this IDictionary<string, IAppStateCache> caches, IAppCacheKeyService appCacheKeyService, IAppLoaderTools tools, IAppIdentity appIdentity, string? primaryLanguage = null)
+    public static IAppStateCache GetOrBuild(this IDictionary<string, IAppStateCache> caches, IAppCacheKeyService appCacheKeyService, LazySvc<IAppsAndZonesLoader> tools, IAppIdentity appIdentity)
     {
         if (appIdentity.ZoneId == 0 || appIdentity.AppId == KnownAppsConstants.AppIdEmpty)
             return null!;
@@ -53,9 +53,9 @@ public static class AppsCacheLockExtensions
                 return appState;
 
             // Init EavSqlStore once
-            var loader = tools.RepositoryLoader(null);
-            if (primaryLanguage != null)
-                loader.PrimaryLanguage = primaryLanguage;
+            var loader = tools.Value;
+            //if (primaryLanguage != null)
+            //    loader.PrimaryLanguage = primaryLanguage;
             appState = loader.AppState(appIdentity.AppId, new CodeRefTrail().AddMessage($"App: {cacheKey}; DateTime: {DateTime.Now:O}; 2sxc Version: {EavSystemInfo.VersionString}"));
             caches.Set(cacheKey, appState);
         }

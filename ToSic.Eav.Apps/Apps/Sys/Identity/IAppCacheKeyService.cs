@@ -1,3 +1,5 @@
+using ToSic.Sys.Utils;
+
 namespace ToSic.Eav.Apps.Sys;
 
 /// <summary>
@@ -16,4 +18,26 @@ public interface IAppCacheKeyService
     /// Build a runtime-specific key for an app identity.
     /// </summary>
     string AppCacheKey(IAppIdentity appIdentity);
+}
+
+public static class IAppCacheKeyServiceExtensions
+{
+    // Returns true only when we have a tenant-aware runtime key to safely partition zone caches.
+    public static bool TryZoneCacheKey(this IAppCacheKeyService appCacheKeyService, out string cacheKey)
+    {
+        try
+        {
+            // Use a stable app identity with no DB lookup; tenant-aware runtimes will encode tenant here.
+            var identity = new AppIdentity(KnownAppsConstants.DefaultZoneId, KnownAppsConstants.AppIdEmpty);
+            // Use runtime key presence as the guard for safe, tenant-scoped caching.
+            cacheKey = appCacheKeyService.AppCacheKey(identity);
+            return cacheKey.HasValue();
+        }
+        catch
+        {
+            // Any failure means we cannot reliably scope cache entries to a tenant.
+            cacheKey = string.Empty;
+            return false;
+        }
+    }
 }
